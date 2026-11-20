@@ -95,7 +95,16 @@ def _need_for(store: str, sheet_id: str | None = None) -> str:
     f = sheetctx.pool_dir(sheet_id) / f"{store}.json"
     lines = sorted({lid for r in (json.loads(f.read_text()) if f.exists() else []) for lid in r["line_ids"]})
     needs = {l["id"]: l["need"] for l in sheet["lines"]}
-    return needs.get(lines[0]) if lines else sheet["lines"][0]["need"]
+    if lines:
+        return needs[lines[0]]
+    try:  # nothing kept for the store: the line it returned the most candidates for (pool_summary.json)
+        summ = json.loads((sheetctx.pool_dir(sheet_id).parent / "pool_summary.json").read_text())["stores"][store]
+        best = max(summ, key=lambda lid: summ[lid]["candidates"])
+        if summ[best]["candidates"]:
+            return needs[best]
+    except Exception:  # noqa: BLE001
+        pass
+    return sheet["lines"][0]["need"]
 
 
 def ask(store: str, query: str | None = None) -> dict:

@@ -1,0 +1,571 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.hiboy.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Hiboy",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.hiboy.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "42563502247"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "42563502247"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7552549355769",
+   "title": "Hiboy KS4 Pro Premium Electric Scooter",
+   "description": {
+    "html": "An electric scooter is faster and more efficient than a motor or kick scooter. The Hiboy KS4 Pro Premium electric scooter is the best fit for riders looking for a powerful yet lightweight electric scooter. The Hiboy KS4 Pro electric scooter has a 500W (Peak 750W) motor and a high-capacity battery. With a high speed of 19 mph, it smoothly achieves 25 miles of travel range per charge under specific conditions. It suits city commuting and traveling, helping you conquer up to a 15% grade slope. The powerful 500 W motor makes it ideal for city commuting and extended travel. It has 10-inch honeycomb tires for a stable ride and three brilliant light systems: headlight, taillight, and sidelight, for riding safely at night. The Hiboy KS4 Pro Premium electric scooter also has a 36 V 11.6 Ah battery, dual rear suspensions, customized cruise and speed control, and dual braking."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-ks4-pro-advanced-commuter-electric-scooter",
+   "handle": "hiboy-ks4-pro-advanced-commuter-electric-scooter",
+   "price_range": {
+    "min": {
+     "amount": 37999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 73999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 95000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 149998,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42476491079929",
+     "sku": "Hiboy-KS4Pro-94678401",
+     "title": "Basic",
+     "description": {
+      "html": "An electric scooter is faster and more efficient than a motor or kick scooter. The Hiboy KS4 Pro Premium electric scooter is the best fit for riders looking for a powerful yet lightweight electric scooter. The Hiboy KS4 Pro electric scooter has a 500W (Peak 750W) motor and a high-capacity battery. With a high speed of 19 mph, it smoothly achieves 25 miles of travel range per charge under specific conditions. It suits city commuting and traveling, helping you conquer up to a 15% grade slope. The powerful 500 W motor makes it ideal for city commuting and extended travel. It has 10-inch honeycomb tires for a stable ride and three brilliant light systems: headlight, taillight, and sidelight, for riding safely at night. The Hiboy KS4 Pro Premium electric scooter also has a 36 V 11.6 Ah battery, dual rear suspensions, customized cruise and speed control, and dual braking."
+     },
+     "price": {
+      "amount": 37999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 95000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Basic"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1-2_726c37d3-eb28-4c38-bb00-5dde52ed2526.png?v=1725260756"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/42476491079929:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46511168782585",
+     "sku": "KS4PRO-2-Pack-94678401",
+     "title": "2-Pack KS4 Pro",
+     "description": {
+      "html": "An electric scooter is faster and more efficient than a motor or kick scooter. The Hiboy KS4 Pro Premium electric scooter is the best fit for riders looking for a powerful yet lightweight electric scooter. The Hiboy KS4 Pro electric scooter has a 500W (Peak 750W) motor and a high-capacity battery. With a high speed of 19 mph, it smoothly achieves 25 miles of travel range per charge under specific conditions. It suits city commuting and traveling, helping you conquer up to a 15% grade slope. The powerful 500 W motor makes it ideal for city commuting and extended travel. It has 10-inch honeycomb tires for a stable ride and three brilliant light systems: headlight, taillight, and sidelight, for riding safely at night. The Hiboy KS4 Pro Premium electric scooter also has a 36 V 11.6 Ah battery, dual rear suspensions, customized cruise and speed control, and dual braking."
+     },
+     "price": {
+      "amount": 73999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 149998,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "2-Pack KS4 Pro"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/ks4-pro_606e1e84-07ab-481d-98ee-2a92dbd29161.jpg?v=1752481041"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/46511168782585:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45721507102969",
+     "sku": "KS4Pro-bag-94678401",
+     "title": "With 3L Scooter Bag",
+     "description": {
+      "html": "An electric scooter is faster and more efficient than a motor or kick scooter. The Hiboy KS4 Pro Premium electric scooter is the best fit for riders looking for a powerful yet lightweight electric scooter. The Hiboy KS4 Pro electric scooter has a 500W (Peak 750W) motor and a high-capacity battery. With a high speed of 19 mph, it smoothly achieves 25 miles of travel range per charge under specific conditions. It suits city commuting and traveling, helping you conquer up to a 15% grade slope. The powerful 500 W motor makes it ideal for city commuting and extended travel. It has 10-inch honeycomb tires for a stable ride and three brilliant light systems: headlight, taillight, and sidelight, for riding safely at night. The Hiboy KS4 Pro Premium electric scooter also has a 36 V 11.6 Ah battery, dual rear suspensions, customized cruise and speed control, and dual braking."
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 95000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "With 3L Scooter Bag"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1-2_0a44734d-9cd1-4203-affb-3affeb0eca42.png?v=1774926290"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/45721507102969:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43399351697657",
+     "sku": "KS4ProWithSeat-94678401",
+     "title": "With Seat",
+     "description": {
+      "html": "An electric scooter is faster and more efficient than a motor or kick scooter. The Hiboy KS4 Pro Premium electric scooter is the best fit for riders looking for a powerful yet lightweight electric scooter. The Hiboy KS4 Pro electric scooter has a 500W (Peak 750W) motor and a high-capacity battery. With a high speed of 19 mph, it smoothly achieves 25 miles of travel range per charge under specific conditions. It suits city commuting and traveling, helping you conquer up to a 15% grade slope. The powerful 500 W motor makes it ideal for city commuting and extended travel. It has 10-inch honeycomb tires for a stable ride and three brilliant light systems: headlight, taillight, and sidelight, for riding safely at night. The Hiboy KS4 Pro Premium electric scooter also has a 36 V 11.6 Ah battery, dual rear suspensions, customized cruise and speed control, and dual braking."
+     },
+     "price": {
+      "amount": 42999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 95000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "With Seat"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/KS4-PRO_seat_jpg.png?v=1752481041"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/43399351697657:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Type",
+     "values": [
+      {
+       "label": "Basic"
+      },
+      {
+       "label": "2-Pack KS4 Pro"
+      },
+      {
+       "label": "With Seat"
+      },
+      {
+       "label": "With 3L Scooter Bag"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1-2_726c37d3-eb28-4c38-bb00-5dde52ed2526.png?v=1725260756",
+     "alt_text": "Hiboy KS4 Pro Premium Electric Scooter Hiboy"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/sg-4-15-1-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Adult Electric Scooters",
+    "Affiliate",
+    "Electric Scooters",
+    "KS Series"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/206197555367",
+     "handle": "all",
+     "title": "All Hiboy Products",
+     "description": {
+      "html": "All Hiboy Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/206199193767",
+     "handle": "electric-scooters",
+     "title": "Adult Electric Scooter",
+     "description": {
+      "html": "Our passions are our wheels comes in many forms, and fun is our personal driver. We have adult e-scooters for sale that we\u2019ve designed for adults and kept affordable for beginners. With our motorized scooter, you can arrive at your destination fast and with fun. Let our electric scooter for adults be the best you've ever experienced! Our collection has an array options and colors, so everyone can buy their ideal e-scooter. Decide which of our motorized scooters is perfect for your commute as you ride around town in style. Please contact our team if you have questions about our electric scooters for adults or other great options in the Hiboy shop. You can get in touch with us by emailing us.support@hiboy.com; we do our best to respond within 24 hours. So buy an electric scooter today!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268969738407",
+     "handle": "best-sellers",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/391502364921",
+     "handle": "ks-series",
+     "title": "KS Series Scooters",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/401503518969",
+     "handle": "laboy-day-gift",
+     "title": "Labor Day Gift",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15387457782009",
+   "title": "Hiboy DM14 Electric Bike Headset",
+   "description": {
+    "html": "*Hiboy DM14 Electric Bike Headset replacement works as genuine parts.*This part can not be returned."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-dm14-electric-bike-headset",
+   "handle": "hiboy-dm14-electric-bike-headset",
+   "price_range": {
+    "min": {
+     "amount": 2300,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2300,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/67743759106297",
+     "sku": "dm14-headset-20100012",
+     "title": "Default Title",
+     "description": {
+      "html": "*Hiboy DM14 Electric Bike Headset replacement works as genuine parts.*This part can not be returned."
+     },
+     "price": {
+      "amount": 2300,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/DM14_6f4c542d-24e0-483c-b683-2135aec1cc4f.jpg?v=1794973809"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/67743759106297:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/DM14_6f4c542d-24e0-483c-b683-2135aec1cc4f.jpg?v=1794973809"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate",
+    "DM14 Accessories",
+    "E-scooter Accessories",
+    "Handlebars & Poles",
+    "Headset Parts",
+    "Kids Ebike Accessories"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/206366933159",
+     "handle": "accessories",
+     "title": "Accessories",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/405054914809",
+     "handle": "electric-bike-for-kids-accessories",
+     "title": "Kids Bike Accessories",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408548475129",
+     "handle": "affiliate",
+     "title": "All products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/508883108089",
+     "handle": "dm14-parts-accessories",
+     "title": "DM14 Parts & Accessories",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

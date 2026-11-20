@@ -1,0 +1,2224 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.hiboy.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Hiboy",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.hiboy.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "42563502247"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "42563502247"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8729304695033",
+   "title": "Hiboy Q2 Lite Electric Scooter for Kids Aged 5-8",
+   "description": {
+    "html": "Why Choose the Hiboy Q2 Lite? The Hiboy Q2 Lite is the ultimate electric scooter for kids, offering a safe, fun, and comfortable ride. Designed with features that prioritize safety and ease of use, it's built to keep up with every adventure. From the soft seat and toy basket for added convenience to the smooth ride with three-speed modes that adapt as your child grows, every detail is crafted for enjoyment and security. The reliable braking system provides peace of mind for parents, while the colorful LED lights and smooth ride make every journey exciting for kids. With a five-mile range, the Q2 Lite ensures endless outdoor fun\u2014rain or shine! Every ride is a new adventure in your child\u2019s journey of discovery."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-q2-lite-a-electric-scooter-for-kids-aged-5-8",
+   "handle": "hiboy-q2-lite-a-electric-scooter-for-kids-aged-5-8",
+   "price_range": {
+    "min": {
+     "amount": 19599,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46280126628089",
+     "sku": "Q2Lite-Black",
+     "title": "Black",
+     "description": {
+      "html": "Why Choose the Hiboy Q2 Lite? The Hiboy Q2 Lite is the ultimate electric scooter for kids, offering a safe, fun, and comfortable ride. Designed with features that prioritize safety and ease of use, it's built to keep up with every adventure. From the soft seat and toy basket for added convenience to the smooth ride with three-speed modes that adapt as your child grows, every detail is crafted for enjoyment and security. The reliable braking system provides peace of mind for parents, while the colorful LED lights and smooth ride make every journey exciting for kids. With a five-mile range, the Q2 Lite ensures endless outdoor fun\u2014rain or shine! Every ride is a new adventure in your child\u2019s journey of discovery."
+     },
+     "price": {
+      "amount": 19599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/Q2_lite__1600x1600_1_a1418701-0141-4a1b-b8df-2d0fe2d24704.jpg?v=1765881564"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/46280126628089:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48806454100217",
+     "sku": "Q2Lite-Green",
+     "title": "Green",
+     "description": {
+      "html": "Why Choose the Hiboy Q2 Lite? The Hiboy Q2 Lite is the ultimate electric scooter for kids, offering a safe, fun, and comfortable ride. Designed with features that prioritize safety and ease of use, it's built to keep up with every adventure. From the soft seat and toy basket for added convenience to the smooth ride with three-speed modes that adapt as your child grows, every detail is crafted for enjoyment and security. The reliable braking system provides peace of mind for parents, while the colorful LED lights and smooth ride make every journey exciting for kids. With a five-mile range, the Q2 Lite ensures endless outdoor fun\u2014rain or shine! Every ride is a new adventure in your child\u2019s journey of discovery."
+     },
+     "price": {
+      "amount": 19599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/2.png2.jpg?v=1786416957"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48806454100217:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48806454067449",
+     "sku": "Q2Lite-Purple",
+     "title": "Purple",
+     "description": {
+      "html": "Why Choose the Hiboy Q2 Lite? The Hiboy Q2 Lite is the ultimate electric scooter for kids, offering a safe, fun, and comfortable ride. Designed with features that prioritize safety and ease of use, it's built to keep up with every adventure. From the soft seat and toy basket for added convenience to the smooth ride with three-speed modes that adapt as your child grows, every detail is crafted for enjoyment and security. The reliable braking system provides peace of mind for parents, while the colorful LED lights and smooth ride make every journey exciting for kids. With a five-mile range, the Q2 Lite ensures endless outdoor fun\u2014rain or shine! Every ride is a new adventure in your child\u2019s journey of discovery."
+     },
+     "price": {
+      "amount": 19599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1_37ad9eda-1fa9-43b7-8e9a-6d2809535cc4.jpg?v=1786416952"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48806454067449:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46280126497017",
+     "sku": "Q2Lite-Blue",
+     "title": "Blue",
+     "description": {
+      "html": "Why Choose the Hiboy Q2 Lite? The Hiboy Q2 Lite is the ultimate electric scooter for kids, offering a safe, fun, and comfortable ride. Designed with features that prioritize safety and ease of use, it's built to keep up with every adventure. From the soft seat and toy basket for added convenience to the smooth ride with three-speed modes that adapt as your child grows, every detail is crafted for enjoyment and security. The reliable braking system provides peace of mind for parents, while the colorful LED lights and smooth ride make every journey exciting for kids. With a five-mile range, the Q2 Lite ensures endless outdoor fun\u2014rain or shine! Every ride is a new adventure in your child\u2019s journey of discovery."
+     },
+     "price": {
+      "amount": 19599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/Q2_lite__1600x1600_1_23a18843-b882-4039-b480-bbf36ce83448.jpg?v=1768902395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/46280126497017:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46295261610233",
+     "sku": "Q2Lite-Pink",
+     "title": "Pink",
+     "description": {
+      "html": "Why Choose the Hiboy Q2 Lite? The Hiboy Q2 Lite is the ultimate electric scooter for kids, offering a safe, fun, and comfortable ride. Designed with features that prioritize safety and ease of use, it's built to keep up with every adventure. From the soft seat and toy basket for added convenience to the smooth ride with three-speed modes that adapt as your child grows, every detail is crafted for enjoyment and security. The reliable braking system provides peace of mind for parents, while the colorful LED lights and smooth ride make every journey exciting for kids. With a five-mile range, the Q2 Lite ensures endless outdoor fun\u2014rain or shine! Every ride is a new adventure in your child\u2019s journey of discovery."
+     },
+     "price": {
+      "amount": 19599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/Q2_lite__1600x1600_1_07224b58-0a11-4940-9e76-fcf29358a3c0.jpg?v=1772159447"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/46295261610233:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Green"
+      },
+      {
+       "label": "Purple"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Pink"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1_37ad9eda-1fa9-43b7-8e9a-6d2809535cc4.jpg?v=1786416952"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/sg-4-15-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate",
+    "Kids",
+    "Kids Scooters"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/206197555367",
+     "handle": "all",
+     "title": "All Hiboy Products",
+     "description": {
+      "html": "All Hiboy Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408548475129",
+     "handle": "affiliate",
+     "title": "All products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408613880057",
+     "handle": "electric-scooter-for-kids",
+     "title": "Electric Scooter for Kids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/419702243577",
+     "handle": "kids-favorites",
+     "title": "Sale-Kids\u2019 Favorites",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/420199170297",
+     "handle": "special-offer",
+     "title": "Special Offer",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7436224102649",
+   "title": "Hiboy BK1 Electric Balance Bike For Kids",
+   "description": {
+    "html": "An electric balance bike for the youngest riders from 2 to 5 years old, under 77 lbs with comfortable balancing or riding on two wheels, and need a larger platform to practice their skills. By the time they're ready to move on to their next bike, the BK1 electric balance bike for toddlers will help them develop confidence and skills for that next stage."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-bk1-electric-balance-bike-for-kids",
+   "handle": "hiboy-bk1-electric-balance-bike-for-kids",
+   "price_range": {
+    "min": {
+     "amount": 16999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45625790497017",
+     "sku": "BWAL-66884654",
+     "title": "Black",
+     "description": {
+      "html": "An electric balance bike for the youngest riders from 2 to 5 years old, under 77 lbs with comfortable balancing or riding on two wheels, and need a larger platform to practice their skills. By the time they're ready to move on to their next bike, the BK1 electric balance bike for toddlers will help them develop confidence and skills for that next stage."
+     },
+     "price": {
+      "amount": 16999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/02_6a8ca28e-37e0-410b-8415-de53e5237ca4.png?v=1751018425"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/45625790497017:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45625821135097",
+     "sku": "WWAL-66884655",
+     "title": "White",
+     "description": {
+      "html": "An electric balance bike for the youngest riders from 2 to 5 years old, under 77 lbs with comfortable balancing or riding on two wheels, and need a larger platform to practice their skills. By the time they're ready to move on to their next bike, the BK1 electric balance bike for toddlers will help them develop confidence and skills for that next stage."
+     },
+     "price": {
+      "amount": 16999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/01_39e592af-0369-41f3-bce8-dbf6d9601c17.png?v=1752482509"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/45625821135097:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/02_6a8ca28e-37e0-410b-8415-de53e5237ca4.png?v=1751018425"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/tg-5-20-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate",
+    "Kids Electric Bikes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/206197555367",
+     "handle": "all",
+     "title": "All Hiboy Products",
+     "description": {
+      "html": "All Hiboy Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/401503518969",
+     "handle": "laboy-day-gift",
+     "title": "Labor Day Gift",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/407006511353",
+     "handle": "electric-dirt-bike",
+     "title": "Electric Bikes for Kids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408540020985",
+     "handle": "exclusive-discounts-products",
+     "title": "Exclusive Discounts Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408548475129",
+     "handle": "affiliate",
+     "title": "All products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/5470594072743",
+   "title": "Hiboy S2 Lite Electric Scooter for Teens",
+   "description": {
+    "html": "When seeking a safe and comfortable electric scooter for your teen's first riding experience, the Hiboy S2 Lite stands out with its exceptional performance. Its vibrant design and sleek style make commuting enjoyable and help your kids stand out in crowds. Available in pink and black, the Hiboy S2 Lite caters to different preferences. Equipped with a 36V 5Ah battery, it offers a maximum range of 10.6 miles and a top speed of 13 mph. The scooter fully charges in just 3.5 to 4.5 hours, ensuring quick preparation for the next ride. Its 6.5-inch solid tires provide a smooth journey. The Hiboy S2 Lite features dual brakes, including an ABS E-brake and a rear pedal brake, for enhanced control and stopping power. This lightweight scooter combines geometric design frames, components, and accessories in a simple yet elegant package. With its colorful blend and suitable size, the Hiboy S2 Lite delivers style, safety, and an exciting riding experience for your kids. Additionally, the Hiboy S2 Lite is equipped with a headlight on the stem, providing excellent illumination for safer night riding. This electric scooter excels in performance while reflecting thoughtful consideration for safety and convenience in its details. Choose the Hiboy S2 Lite for a safe and stylish riding experience for your teens/ kids."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-s2-lite",
+   "handle": "hiboy-s2-lite",
+   "price_range": {
+    "min": {
+     "amount": 25499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 25499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 43999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 43999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/36458015162535",
+     "sku": "04D0R",
+     "title": "Pink",
+     "description": {
+      "html": "When seeking a safe and comfortable electric scooter for your teen's first riding experience, the Hiboy S2 Lite stands out with its exceptional performance. Its vibrant design and sleek style make commuting enjoyable and help your kids stand out in crowds. Available in pink and black, the Hiboy S2 Lite caters to different preferences. Equipped with a 36V 5Ah battery, it offers a maximum range of 10.6 miles and a top speed of 13 mph. The scooter fully charges in just 3.5 to 4.5 hours, ensuring quick preparation for the next ride. Its 6.5-inch solid tires provide a smooth journey. The Hiboy S2 Lite features dual brakes, including an ABS E-brake and a rear pedal brake, for enhanced control and stopping power. This lightweight scooter combines geometric design frames, components, and accessories in a simple yet elegant package. With its colorful blend and suitable size, the Hiboy S2 Lite delivers style, safety, and an exciting riding experience for your kids. Additionally, the Hiboy S2 Lite is equipped with a headlight on the stem, providing excellent illumination for safer night riding. This electric scooter excels in performance while reflecting thoughtful consideration for safety and convenience in its details. Choose the Hiboy S2 Lite for a safe and stylish riding experience for your teens/ kids."
+     },
+     "price": {
+      "amount": 25499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 43999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/S2_Lite-Pink-light_1.jpg?v=1774939901"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/36458015162535:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/36458015129767",
+     "sku": "03QCM",
+     "title": "Black",
+     "description": {
+      "html": "When seeking a safe and comfortable electric scooter for your teen's first riding experience, the Hiboy S2 Lite stands out with its exceptional performance. Its vibrant design and sleek style make commuting enjoyable and help your kids stand out in crowds. Available in pink and black, the Hiboy S2 Lite caters to different preferences. Equipped with a 36V 5Ah battery, it offers a maximum range of 10.6 miles and a top speed of 13 mph. The scooter fully charges in just 3.5 to 4.5 hours, ensuring quick preparation for the next ride. Its 6.5-inch solid tires provide a smooth journey. The Hiboy S2 Lite features dual brakes, including an ABS E-brake and a rear pedal brake, for enhanced control and stopping power. This lightweight scooter combines geometric design frames, components, and accessories in a simple yet elegant package. With its colorful blend and suitable size, the Hiboy S2 Lite delivers style, safety, and an exciting riding experience for your kids. Additionally, the Hiboy S2 Lite is equipped with a headlight on the stem, providing excellent illumination for safer night riding. This electric scooter excels in performance while reflecting thoughtful consideration for safety and convenience in its details. Choose the Hiboy S2 Lite for a safe and stylish riding experience for your teens/ kids."
+     },
+     "price": {
+      "amount": 25499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 43999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/S2_Lite-Black-light_1.jpg?v=1764662908"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/36458015129767:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Pink"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/S2_Lite-Pink-light_1.jpg?v=1774939901"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/sg-4-15-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "10.6 Miles Range",
+    "13 MPH Top Speed",
+    "Affiliate",
+    "Kids",
+    "Kids Scooters",
+    "Lighting & Safety"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/206197555367",
+     "handle": "all",
+     "title": "All Hiboy Products",
+     "description": {
+      "html": "All Hiboy Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268969738407",
+     "handle": "best-sellers",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/272459563175",
+     "handle": "s2-series",
+     "title": "S2  Series Scooters",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408540020985",
+     "handle": "exclusive-discounts-products",
+     "title": "Exclusive Discounts Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408548475129",
+     "handle": "affiliate",
+     "title": "All products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7701057831161",
+   "title": "Hiboy DK1 Electric Dirt Bike For Kids Ages 3-10",
+   "description": {
+    "html": "Equipped with a high-strength shock-absorbing spring, which has a super shock-absorbing capacity and no noise while driving. Provides you great performance with 3-speed modes and up to 13.7 miles long-range with a rechargeable 36V sealed lithium battery system in all scenarios. Takes only 4-5 hours to fully charge."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-dk1-electric-dirt-bike-for-kids-ages-3-13",
+   "handle": "hiboy-dk1-electric-dirt-bike-for-kids-ages-3-13",
+   "price_range": {
+    "min": {
+     "amount": 33999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 33999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 60999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 60999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43052292571385",
+     "sku": "DK1-BL-8030002",
+     "title": "Blue",
+     "description": {
+      "html": "Equipped with a high-strength shock-absorbing spring, which has a super shock-absorbing capacity and no noise while driving. Provides you great performance with 3-speed modes and up to 13.7 miles long-range with a rechargeable 36V sealed lithium battery system in all scenarios. Takes only 4-5 hours to fully charge."
+     },
+     "price": {
+      "amount": 33999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 60999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/black.jpg?v=1765425463"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/43052292571385:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43052292505849",
+     "sku": "DK1-B-8030001",
+     "title": "Red",
+     "description": {
+      "html": "Equipped with a high-strength shock-absorbing spring, which has a super shock-absorbing capacity and no noise while driving. Provides you great performance with 3-speed modes and up to 13.7 miles long-range with a rechargeable 36V sealed lithium battery system in all scenarios. Takes only 4-5 hours to fully charge."
+     },
+     "price": {
+      "amount": 33999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 60999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/red_97677491-36da-4788-a5bb-e98957007e53.jpg?v=1769157931"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/43052292505849:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Red"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/DK2_232782e9-4914-4021-b49a-56323640a6ae.png?v=1769157931",
+     "alt_text": "Hiboy DK1 Electric Dirt Bike For Kids Ages 3-10 Hiboy"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/vp-2-2-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate",
+    "Kids",
+    "Kids Electric Bikes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/206197555367",
+     "handle": "all",
+     "title": "All Hiboy Products",
+     "description": {
+      "html": "All Hiboy Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/401503518969",
+     "handle": "laboy-day-gift",
+     "title": "Labor Day Gift",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/407006511353",
+     "handle": "electric-dirt-bike",
+     "title": "Electric Bikes for Kids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408540020985",
+     "handle": "exclusive-discounts-products",
+     "title": "Exclusive Discounts Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408548475129",
+     "handle": "affiliate",
+     "title": "All products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8957252141305",
+   "title": "Hiboy Joy Haul Electric Scooter for Kids Aged 5-8",
+   "description": {
+    "html": "Meet Joy Haul ! More than just a scooter, it\u2019s a fun buddy for every ride! Built on the safe and comfy design of the Q2 Lite, Joy Haul comes with an exciting twist: Chompy Pompy, the friendly shark bag. With his zippered belly, Chompy Pompy carries toys, snacks, and little treasures, turning every trip into a playful adventure. Parents love the safety and durability, kids love the fun and smiles.Chompy Pompy, always happy!"
+   },
+   "url": "https://www.hiboy.com/products/hiboy-joy-haul-electric-scooter-for-kids-aged-5-8",
+   "handle": "hiboy-joy-haul-electric-scooter-for-kids-aged-5-8",
+   "price_range": {
+    "min": {
+     "amount": 19599,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46876942172409",
+     "sku": "JH-Pink-8636006",
+     "title": "Pink",
+     "description": {
+      "html": "Meet Joy Haul ! More than just a scooter, it\u2019s a fun buddy for every ride! Built on the safe and comfy design of the Q2 Lite, Joy Haul comes with an exciting twist: Chompy Pompy, the friendly shark bag. With his zippered belly, Chompy Pompy carries toys, snacks, and little treasures, turning every trip into a playful adventure. Parents love the safety and durability, kids love the fun and smiles.Chompy Pompy, always happy!"
+     },
+     "price": {
+      "amount": 19599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/2_7dbd3e47-fc96-4448-901e-a07c19da5d98.jpg?v=1765881242"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/46876942172409:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46876942205177",
+     "sku": "JH-Blue-8636007",
+     "title": "Blue",
+     "description": {
+      "html": "Meet Joy Haul ! More than just a scooter, it\u2019s a fun buddy for every ride! Built on the safe and comfy design of the Q2 Lite, Joy Haul comes with an exciting twist: Chompy Pompy, the friendly shark bag. With his zippered belly, Chompy Pompy carries toys, snacks, and little treasures, turning every trip into a playful adventure. Parents love the safety and durability, kids love the fun and smiles.Chompy Pompy, always happy!"
+     },
+     "price": {
+      "amount": 19599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/2_9bd6bd54-51e3-48c2-9a7c-83241ffd5bff.jpg?v=1765881242"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/46876942205177:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48806494339321",
+     "sku": "JH-Purple-10100002",
+     "title": "Purple",
+     "description": {
+      "html": "Meet Joy Haul ! More than just a scooter, it\u2019s a fun buddy for every ride! Built on the safe and comfy design of the Q2 Lite, Joy Haul comes with an exciting twist: Chompy Pompy, the friendly shark bag. With his zippered belly, Chompy Pompy carries toys, snacks, and little treasures, turning every trip into a playful adventure. Parents love the safety and durability, kids love the fun and smiles.Chompy Pompy, always happy!"
+     },
+     "price": {
+      "amount": 19599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/3_7adffdce-55e1-4fe8-badb-9b9d382dd45f.jpg?v=1786416965"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48806494339321:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48806494372089",
+     "sku": "JH-Green-10100003",
+     "title": "Green",
+     "description": {
+      "html": "Meet Joy Haul ! More than just a scooter, it\u2019s a fun buddy for every ride! Built on the safe and comfy design of the Q2 Lite, Joy Haul comes with an exciting twist: Chompy Pompy, the friendly shark bag. With his zippered belly, Chompy Pompy carries toys, snacks, and little treasures, turning every trip into a playful adventure. Parents love the safety and durability, kids love the fun and smiles.Chompy Pompy, always happy!"
+     },
+     "price": {
+      "amount": 19599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/2_2546b31b-86a8-4aff-9f7e-b45eb458e351.jpg?v=1786416961"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48806494372089:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Pink"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Purple"
+      },
+      {
+       "label": "Green"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1_4b5ac259-a134-4fb3-b9e5-a1717a8277da.jpg?v=1761636035"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/sg-4-15-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Kids",
+    "Kids Scooters"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/206197555367",
+     "handle": "all",
+     "title": "All Hiboy Products",
+     "description": {
+      "html": "All Hiboy Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408613880057",
+     "handle": "electric-scooter-for-kids",
+     "title": "Electric Scooter for Kids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/419702243577",
+     "handle": "kids-favorites",
+     "title": "Sale-Kids\u2019 Favorites",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/441417433337",
+     "handle": "kids-e-rides",
+     "title": "Kids' E-Rides",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449504248057",
+     "handle": "bktsch-kidserd",
+     "title": "BKTSCH-KidsERD",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10243251634425",
+   "title": "Hiboy DM14 Electric Dirt Bike",
+   "description": {
+    "html": "Designed for riders looking to take their rides beyond smooth pavement, DM14 combines capable performance with stable, confidence-inspiring control. Whether cruising around the neighborhood, exploring park paths, or taking on light dirt trails, it offers a fun and versatile way to experience the outdoors. With a rugged dirt-bike-inspired design and rider-friendly handling, DM14 makes every ride feel like a new adventure."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-dm14-electric-dirt-bike",
+   "handle": "hiboy-dm14-electric-dirt-bike",
+   "price_range": {
+    "min": {
+     "amount": 53999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 59999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 86999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 86999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/48978312200441",
+     "sku": "DM14-YELLOW-20100038",
+     "title": "Yellow",
+     "description": {
+      "html": "Designed for riders looking to take their rides beyond smooth pavement, DM14 combines capable performance with stable, confidence-inspiring control. Whether cruising around the neighborhood, exploring park paths, or taking on light dirt trails, it offers a fun and versatile way to experience the outdoors. With a rugged dirt-bike-inspired design and rider-friendly handling, DM14 makes every ride feel like a new adventure."
+     },
+     "price": {
+      "amount": 53999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 86999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/6_1_688a7ba9-2b0d-48a5-bfdc-4a4d89e95b8c.jpg?v=1793067488"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48978312200441:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48979394330873",
+     "sku": "DM14-BLACK-20100037",
+     "title": "Black",
+     "description": {
+      "html": "Designed for riders looking to take their rides beyond smooth pavement, DM14 combines capable performance with stable, confidence-inspiring control. Whether cruising around the neighborhood, exploring park paths, or taking on light dirt trails, it offers a fun and versatile way to experience the outdoors. With a rugged dirt-bike-inspired design and rider-friendly handling, DM14 makes every ride feel like a new adventure."
+     },
+     "price": {
+      "amount": 53999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 86999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/4_1_aacf10bb-680c-4212-8dc5-ba8801c25fcb.jpg?v=1793067481"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48979394330873:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48978312167673",
+     "sku": "DM14-BLUE-20100039",
+     "title": "Blue",
+     "description": {
+      "html": "Designed for riders looking to take their rides beyond smooth pavement, DM14 combines capable performance with stable, confidence-inspiring control. Whether cruising around the neighborhood, exploring park paths, or taking on light dirt trails, it offers a fun and versatile way to experience the outdoors. With a rugged dirt-bike-inspired design and rider-friendly handling, DM14 makes every ride feel like a new adventure."
+     },
+     "price": {
+      "amount": 59999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 86999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/5_1_d3507f64-17c8-408e-9f3c-9dc19da0f0fc.jpg?v=1793067485"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48978312167673:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Yellow"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Blue"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/6_1_688a7ba9-2b0d-48a5-bfdc-4a4d89e95b8c.jpg?v=1793067488"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/vp-2-2-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate",
+    "Kids",
+    "Kids Electric Bikes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/206197555367",
+     "handle": "all",
+     "title": "All Hiboy Products",
+     "description": {
+      "html": "All Hiboy Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/401503518969",
+     "handle": "laboy-day-gift",
+     "title": "Labor Day Gift",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/407006511353",
+     "handle": "electric-dirt-bike",
+     "title": "Electric Bikes for Kids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408540020985",
+     "handle": "exclusive-discounts-products",
+     "title": "Exclusive Discounts Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408548475129",
+     "handle": "affiliate",
+     "title": "All products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10095252373753",
+   "title": "Hiboy DK2 Electric Dirt Bike For Kids Ages 3-7",
+   "description": {
+    "html": "The DK2 Electric Dirt Bike is a great first ride for young adventurers. Designed to help kids build confidence and enjoy the excitement of riding. It\u2019s an ideal introduction to dirt biking and outdoor exploration."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-dk2-electric-dirt-bike-for-kids-ages-3-7",
+   "handle": "hiboy-dk2-electric-dirt-bike-for-kids-ages-3-7",
+   "price_range": {
+    "min": {
+     "amount": 25499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 25499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 60999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 60999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/48538931593465",
+     "sku": "DK2-yellow-10190004",
+     "title": "Yellow",
+     "description": {
+      "html": "The DK2 Electric Dirt Bike is a great first ride for young adventurers. Designed to help kids build confidence and enjoy the excitement of riding. It\u2019s an ideal introduction to dirt biking and outdoor exploration."
+     },
+     "price": {
+      "amount": 25499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 60999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1-3_61800348-b8c7-4078-95b6-5c33001afba6.jpg?v=1781663076"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48538931593465:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48538628292857",
+     "sku": "DK2-red-10190001",
+     "title": "Red",
+     "description": {
+      "html": "The DK2 Electric Dirt Bike is a great first ride for young adventurers. Designed to help kids build confidence and enjoy the excitement of riding. It\u2019s an ideal introduction to dirt biking and outdoor exploration."
+     },
+     "price": {
+      "amount": 25499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 60999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1-1_96a251f1-aabc-4196-97db-4d1a3896f267.jpg?v=1781663076"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48538628292857:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48538931626233",
+     "sku": "DK2-green-10190003",
+     "title": "Green",
+     "description": {
+      "html": "The DK2 Electric Dirt Bike is a great first ride for young adventurers. Designed to help kids build confidence and enjoy the excitement of riding. It\u2019s an ideal introduction to dirt biking and outdoor exploration."
+     },
+     "price": {
+      "amount": 25499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 60999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1_637cb9a4-ae8a-4bfb-8bb3-28cda8f83329.jpg?v=1781663077"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48538931626233:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48538628325625",
+     "sku": "DK2-blue-10190002",
+     "title": "Blue",
+     "description": {
+      "html": "The DK2 Electric Dirt Bike is a great first ride for young adventurers. Designed to help kids build confidence and enjoy the excitement of riding. It\u2019s an ideal introduction to dirt biking and outdoor exploration."
+     },
+     "price": {
+      "amount": 25499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 60999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1-2_3f343213-11aa-4cd9-87cb-e12f0644702e.jpg?v=1781663077"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/48538628325625:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Yellow"
+      },
+      {
+       "label": "Red"
+      },
+      {
+       "label": "Green"
+      },
+      {
+       "label": "Blue"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1-2_3f343213-11aa-4cd9-87cb-e12f0644702e.jpg?v=1781663077"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/vp-2-2-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate",
+    "Kids",
+    "Kids Electric Bikes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/206197555367",
+     "handle": "all",
+     "title": "All Hiboy Products",
+     "description": {
+      "html": "All Hiboy Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/401503518969",
+     "handle": "laboy-day-gift",
+     "title": "Labor Day Gift",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/407006511353",
+     "handle": "electric-dirt-bike",
+     "title": "Electric Bikes for Kids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408475926777",
+     "handle": "new",
+     "title": "Hiboy New Arrivals - The Latest Electric Scooters & Bikes Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408548475129",
+     "handle": "affiliate",
+     "title": "All products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8644448747769",
+   "title": "Hiboy BK1 Refurbished Electric Balance Bike For Kids",
+   "description": {
+    "html": "Please take note of the following terms:No returns or exchanges refunds are applicable for refurbished bikes.We offer a 2-week warranty for electronic components (controller, battery, motor, and charger) from the original delivery date.Except for the electronic control components mentioned above, no warranty is provided for other parts of the refurbished electric bike. The refurbished bikes may exhibit signs of wear, such as scratches or torn stickers.If you encounter any concerns within the specified warranty period, feel free to reach out to our team for assistance. We appreciate your understanding and value your satisfaction with our products."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-bk1-refurbished-electric-balance-bike-for-kids",
+   "handle": "hiboy-bk1-refurbished-electric-balance-bike-for-kids",
+   "price_range": {
+    "min": {
+     "amount": 15399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45803419566329",
+     "sku": "Re-EK1-W",
+     "title": "White",
+     "description": {
+      "html": "Please take note of the following terms:No returns or exchanges refunds are applicable for refurbished bikes.We offer a 2-week warranty for electronic components (controller, battery, motor, and charger) from the original delivery date.Except for the electronic control components mentioned above, no warranty is provided for other parts of the refurbished electric bike. The refurbished bikes may exhibit signs of wear, such as scratches or torn stickers.If you encounter any concerns within the specified warranty period, feel free to reach out to our team for assistance. We appreciate your understanding and value your satisfaction with our products."
+     },
+     "price": {
+      "amount": 15399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/white.jpg?v=1752482509"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/45803419566329:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45803419533561",
+     "sku": "Re-EK1-B",
+     "title": "Black",
+     "description": {
+      "html": "Please take note of the following terms:No returns or exchanges refunds are applicable for refurbished bikes.We offer a 2-week warranty for electronic components (controller, battery, motor, and charger) from the original delivery date.Except for the electronic control components mentioned above, no warranty is provided for other parts of the refurbished electric bike. The refurbished bikes may exhibit signs of wear, such as scratches or torn stickers.If you encounter any concerns within the specified warranty period, feel free to reach out to our team for assistance. We appreciate your understanding and value your satisfaction with our products."
+     },
+     "price": {
+      "amount": 15399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/products/BK1_5c1af334-6efc-4534-a02d-18e42ecc7d9e.jpg?v=1747897621"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/45803419533561:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/1_9344389b-2d8a-41c8-af5c-87c1d2cf5f0a.jpg?v=1752482509",
+     "alt_text": "Hiboy BK1 Electric Balance Bike For Kids Amazon Hiboy"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/vp-2-2-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate",
+    "Refurbished scooter or bike",
+    "\u5e38\u7528\u8fd4\u4fee\u8f66"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/393346121977",
+     "handle": "refurbished-electric-scooter",
+     "title": "Refurbished Electric Scooter",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/407006511353",
+     "handle": "electric-dirt-bike",
+     "title": "Electric Bikes for Kids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/408548475129",
+     "handle": "affiliate",
+     "title": "All products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9142417457401",
+   "title": "Hiboy Q2 Lite Refurbished Electric Scooter for Kids Aged 5-8",
+   "description": {
+    "html": "Please take note of the following terms:No returns, exchanges or refunds are applicable for refurbished scooters.We offer a 2-week warranty for electronic components (controller, battery, motor, and charger) from the original delivery date.Except for the electronic control components mentioned above, no warranty is provided for other parts of the refurbished electric scooter.The refurbished scooters may exhibit signs of wear, such as scratches or torn stickers.If you encounter any concerns within the specified warranty period, feel free to reach out to our team for assistance. We appreciate your understanding and value your satisfaction with our products."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-q2-lite-a-refurbished-electric-scooter-for-kids-aged-5-8",
+   "handle": "hiboy-q2-lite-a-refurbished-electric-scooter-for-kids-aged-5-8",
+   "price_range": {
+    "min": {
+     "amount": 16099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16099,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47455781388537",
+     "sku": "Q2Lite-re-Blue",
+     "title": "Blue",
+     "description": {
+      "html": "Please take note of the following terms:No returns, exchanges or refunds are applicable for refurbished scooters.We offer a 2-week warranty for electronic components (controller, battery, motor, and charger) from the original delivery date.Except for the electronic control components mentioned above, no warranty is provided for other parts of the refurbished electric scooter.The refurbished scooters may exhibit signs of wear, such as scratches or torn stickers.If you encounter any concerns within the specified warranty period, feel free to reach out to our team for assistance. We appreciate your understanding and value your satisfaction with our products."
+     },
+     "price": {
+      "amount": 16099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/Q2_lite__1600x1600_1.jpg?v=1772159447"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/47455781388537:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47262045372665",
+     "sku": "Q2Lite-re-Pink",
+     "title": "Pink",
+     "description": {
+      "html": "Please take note of the following terms:No returns, exchanges or refunds are applicable for refurbished scooters.We offer a 2-week warranty for electronic components (controller, battery, motor, and charger) from the original delivery date.Except for the electronic control components mentioned above, no warranty is provided for other parts of the refurbished electric scooter.The refurbished scooters may exhibit signs of wear, such as scratches or torn stickers.If you encounter any concerns within the specified warranty period, feel free to reach out to our team for assistance. We appreciate your understanding and value your satisfaction with our products."
+     },
+     "price": {
+      "amount": 16099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/Q2_lite__1600x1600_1_07224b58-0a11-4940-9e76-fcf29358a3c0.jpg?v=1772159447"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/47262045372665:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Pink"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/6_4a3c6927-2d7f-4ac5-9b1a-0271a636e700.png?v=1772159129"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/sg-4-15-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate",
+    "Refurbished scooter or bike"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/408548475129",
+     "handle": "affiliate",
+     "title": "All products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/419702243577",
+     "handle": "kids-favorites",
+     "title": "Sale-Kids\u2019 Favorites",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/420199170297",
+     "handle": "special-offer",
+     "title": "Special Offer",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/434606113017",
+     "handle": "gifts",
+     "title": "Gifts",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449504248057",
+     "handle": "bktsch-kidserd",
+     "title": "BKTSCH-KidsERD",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8759446339833",
+   "title": "Hiboy ES-1 Refurbished Electric Scooter for Kids Aged 4-10",
+   "description": {
+    "html": "Please take note of the following terms:No returns or exchanges refunds are applicable for refurbished escooters.We offer a 2-week warranty for electronic components (controller, battery, motor, and charger) from the original delivery date.Except for the electronic control components mentioned above, no warranty is provided for other parts of the refurbished electric scooter. The refurbished escooters may exhibit signs of wear, such as scratches or torn stickers.If you encounter any concerns within the specified warranty period, feel free to reach out to our team for assistance. We appreciate your understanding and value your satisfaction with our products."
+   },
+   "url": "https://www.hiboy.com/products/hiboy-es-1-refurbished-electric-scooter-for-kids-aged-4-10",
+   "handle": "hiboy-es-1-refurbished-electric-scooter-for-kids-aged-4-10",
+   "price_range": {
+    "min": {
+     "amount": 9099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9099,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 26999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46359426498809",
+     "sku": "Re-ES1-Grey",
+     "title": "Grey",
+     "description": {
+      "html": "Please take note of the following terms:No returns or exchanges refunds are applicable for refurbished escooters.We offer a 2-week warranty for electronic components (controller, battery, motor, and charger) from the original delivery date.Except for the electronic control components mentioned above, no warranty is provided for other parts of the refurbished electric scooter. The refurbished escooters may exhibit signs of wear, such as scratches or torn stickers.If you encounter any concerns within the specified warranty period, feel free to reach out to our team for assistance. We appreciate your understanding and value your satisfaction with our products."
+     },
+     "price": {
+      "amount": 9099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 26999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Grey"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/2_fc296cba-9719-4399-b803-4bf3fd072bd7.jpg?v=1752302015"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/46359426498809:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46359444029689",
+     "sku": "Re-ES1-Blue",
+     "title": "Blue",
+     "description": {
+      "html": "Please take note of the following terms:No returns or exchanges refunds are applicable for refurbished escooters.We offer a 2-week warranty for electronic components (controller, battery, motor, and charger) from the original delivery date.Except for the electronic control components mentioned above, no warranty is provided for other parts of the refurbished electric scooter. The refurbished escooters may exhibit signs of wear, such as scratches or torn stickers.If you encounter any concerns within the specified warranty period, feel free to reach out to our team for assistance. We appreciate your understanding and value your satisfaction with our products."
+     },
+     "price": {
+      "amount": 9099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 26999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/2_c5b3493c-c60b-4c54-8cd2-b8e1bfdb4f2b.jpg?v=1752302015"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/46359444029689:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46359444062457",
+     "sku": "Re-ES1-Pink",
+     "title": "Pink",
+     "description": {
+      "html": "Please take note of the following terms:No returns or exchanges refunds are applicable for refurbished escooters.We offer a 2-week warranty for electronic components (controller, battery, motor, and charger) from the original delivery date.Except for the electronic control components mentioned above, no warranty is provided for other parts of the refurbished electric scooter. The refurbished escooters may exhibit signs of wear, such as scratches or torn stickers.If you encounter any concerns within the specified warranty period, feel free to reach out to our team for assistance. We appreciate your understanding and value your satisfaction with our products."
+     },
+     "price": {
+      "amount": 9099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 26999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/KS1_2_0025.jpg?v=1752302015"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://hiboystore.myshopify.com/cart/46359444062457:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Grey"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Pink"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0425/6350/2247/files/3_27a46ff7-78ff-4973-8f56-f0418f0d7161.jpg?v=1765881588"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/sg-4-15-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate",
+    "Refurbished scooter or bike"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/408548475129",
+     "handle": "affiliate",
+     "title": "All products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzROelU1TkRRMk16TTVPRE16TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}
