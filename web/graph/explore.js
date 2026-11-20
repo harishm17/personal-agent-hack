@@ -48,7 +48,8 @@ function plan(k) {
   if (eventPhase) {
     // the event fills the canvas: its people, the messages, the facts quoted from them; the order grows at the right
     put("event", 0, 0);
-    around.forEach((n, i) => put(n.id, 0, CH + px(22) + i * (CH + px(10))));
+    if (nodes.get("event").held_by) texts.push({ x: px(2), y: CH + px(15), cls: "gs", html: esc(nodes.get("event").held_by) });
+    around.forEach((n, i) => put(n.id, 0, CH + px(26) + i * (CH + px(10))));
     notes.forEach((n, i) => put(n.id, XI, i * (CH + px(10))));
     const fy = new Map();
     known.forEach((n, i) => { fy.set(n.id, i * (CH + px(6))); put(n.id, XS, fy.get(n.id), { w: FW, o: k >= iOrder && !n.used ? 0.4 : 1 }); });
@@ -341,6 +342,7 @@ function go(k, instant = false) {
 
 // ---------- the surface the page uses ----------
 export function mount(host, data, hooks, opts = {}) {
+  if (X) { clearInterval(X.timer); cancelAnimationFrame(X.raf); }   // one canvas, one clock
   host.innerHTML = "";
   const svg = el("svg", { class: "xp", width: host.clientWidth, height: host.clientHeight });
   host.appendChild(svg);

@@ -186,8 +186,12 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
         file = context.get("file")
         role = {(sheet.get(r) or {}).get("id"): r for r in ("issuer", "shopper")}
         ev = context["event"]
+        held_by = context.get("held_by") if isinstance(context.get("held_by"), dict) else {}
+        holder = next(((sheet.get(r) or {}).get("name") for r in ("issuer", "shopper") if (sheet.get(r) or {}).get("id") == held_by.get("who")), None) \
+            or next((p.get("name") for p in context["people"] if p.get("id") == held_by.get("who")), None)
         extra["event"] = {"id": "event", "kind": "event", "owner": "system", "label": ev.get("label"),
-                          "sub": "%s to %s" % (_day(ev.get("starts")), _day(ev.get("ends"))), "text": ev.get("label"),
+                          "sub": "%s to %s" % (_day(ev.get("starts")), _day(ev.get("ends"))), "text": held_by.get("note") or ev.get("label"),
+                          "held_by": "held by %s's agent" % holder if holder else None,
                           "invented": context.get("invented"), "source": {"record": "context", "file": file, "pointer": "/event"}}
         event_ids.append("event")
         who = {}

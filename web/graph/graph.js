@@ -89,13 +89,17 @@ function curve(a, b) {
   return { d: `M${x1} ${y1}C${m} ${y1} ${m} ${y2} ${x2} ${y2}`, lx: m, ly: (y1 + y2) / 2 + 3 };
 }
 
+function controls() {
+  // drawn before the canvas is measured, so the canvas keeps its height
+  if ($("#scrub")) return;
+  $("#ctl").innerHTML = `<button class="chip" data-play>Play</button><button class="chip" data-step="-1" aria-label="Back">‹</button><button class="chip" data-step="1" aria-label="Next">›</button>
+    <input type="range" id="scrub" min="0" max="1" step="1" aria-label="Stage"><span class="cap" id="count">1 of 1</span>`;
+  $("#scrub").addEventListener("input", (e) => { XP.play(false); XP.jump(Number(e.target.value)); });
+}
+
 function renderStage(s, k, n) {
   $("#heads").innerHTML = `<span class="st"><b>${esc(s.title)}</b>${esc(s.caption)}${s.at ? `<i>${esc(clock(s.at))}</i>` : ""}</span>`;
-  if (!$("#scrub")) {
-    $("#ctl").innerHTML = `<button class="chip" data-play></button><button class="chip" data-step="-1" aria-label="Back">‹</button><button class="chip" data-step="1" aria-label="Next">›</button>
-      <input type="range" id="scrub" min="0" max="${n - 1}" step="1" aria-label="Stage"><span class="cap" id="count"></span>`;
-    $("#scrub").addEventListener("input", (e) => { XP.play(false); XP.jump(Number(e.target.value)); });
-  }
+  controls();
   $("#scrub").max = n - 1; $("#scrub").value = k;
   $("#count").textContent = `${k + 1} of ${n}`;
   $("[data-play]").textContent = XP.playing() ? "Pause" : "Play";
@@ -103,6 +107,8 @@ function renderStage(s, k, n) {
 
 function drawExplore() {
   $("#ctl").hidden = false;
+  controls();
+  if (!$("#heads").innerHTML) $("#heads").innerHTML = `<span class="st"><b>&nbsp;</b></span>`;
   if (!xdata?.stages) { $("#stage").innerHTML = ""; $("#heads").innerHTML = ""; return; }
   const key = JSON.stringify([xdata, innerWidth, innerHeight]);
   if (key === xkey) return;

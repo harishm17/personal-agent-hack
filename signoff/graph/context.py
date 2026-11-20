@@ -68,4 +68,4 @@ def read(context: dict | None, sheet: dict, file: str = "") -> dict | None:
         facts.append(dict(f, feeds=feeds, index=i))
     return {"file": file, "invented": context.get("invented"), "event": context.get("event"),
             "people": context.get("people") or [], "messages": list(messages.values()), "facts": facts,
-            "dropped": dropped, "classes": context.get("classes") or {}}
+            "dropped": dropped, "classes": context.get("classes") or {}, "held_by": context.get("held_by")}
