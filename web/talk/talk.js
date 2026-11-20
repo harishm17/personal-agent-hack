@@ -23,7 +23,9 @@ function renderTop() {
   const d = ui.data, cut = d.threads.reduce((a, t) => a + withheld(t), 0);
   topBar(q("#top"), "/talk/");  // the same bar as the decision screen: the sheet, the views, the signed pill, the total
   const mark = (k) => esc(d.marks[k] || k);
-  q("#band").innerHTML = `<span class="cap">A store's agent may receive</span>${d.rule.may.map((k) => `<span class="pill">${mark(k)}</span>`).join("")}
+  q("#band").innerHTML = `<span class="rule">A store's agent may receive: ${d.rule.may.map(mark).join(" · ")}. Never: ${d.rule.sealed.map(mark).join(" · ")}</span>
+    <span class="grow"></span><span class="tally">${cut} withheld · ${d.count.not_sent} of ${d.count.messages} messages not sent${d.count.over_cautious ? `, ${d.count.over_cautious} of those over-cautious` : ""}</span>`;
+}
     <span class="cap">never</span>${d.rule.sealed.map((k) => `<span class="pill sealed">${mark(k)}</span>`).join("")}
     <span class="grow"></span><span class="tally">${cut} withheld · ${d.count.not_sent} of ${d.count.messages} messages not sent${d.count.over_cautious ? `, ${d.count.over_cautious} of those over-cautious` : ""}</span>`;
 }
