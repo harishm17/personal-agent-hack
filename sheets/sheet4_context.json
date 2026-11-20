@@ -1,0 +1,290 @@
+{
+  "id": "sheet4_context",
+  "sheet": "sheet4",
+  "invented": true,
+  "invented_note": "Invented family, hospital and messages. This is the context a personal agent would hold about the event before any shopping starts; it is typed in here, not read from anyone's mail or calendar.",
+  "event": {
+    "id": "surgery",
+    "label": "Robert's hip replacement",
+    "about": "robert",
+    "starts": "2026-11-24",
+    "ends": "2026-12-02"
+  },
+  "people": [
+    {
+      "id": "robert",
+      "name": "Robert",
+      "role": "patient",
+      "role_label": "Elena's father",
+      "invented": true
+    },
+    {
+      "id": "marcus",
+      "name": "Marcus",
+      "role": "family",
+      "role_label": "Elena's brother",
+      "invented": true
+    },
+    {
+      "id": "hospital",
+      "name": "The hospital",
+      "role": "hospital",
+      "role_label": "scheduling and discharge",
+      "invented": true
+    }
+  ],
+  "classes": {
+    "health": "never leaves",
+    "person": "never leaves",
+    "home": "never leaves",
+    "limit": "never leaves",
+    "schedule": "the need-by date may travel; nothing else"
+  },
+  "messages": [
+    {
+      "id": "m1",
+      "from": "hospital",
+      "from_label": "Hospital scheduling",
+      "to": "elena",
+      "channel": "email",
+      "at": "2026-11-10T09:12:00-08:00",
+      "text": "Robert's hip replacement is scheduled for Tuesday, November 24 at 7:30 am. Please arrive by 5:30 am. He will need someone to drive him home when he is discharged."
+    },
+    {
+      "id": "m2",
+      "from": "marcus",
+      "from_label": "Marcus",
+      "to": "family",
+      "channel": "family chat",
+      "at": "2026-11-11T18:40:00-08:00",
+      "text": "I can drop Dad off on the 24th before work."
+    },
+    {
+      "id": "m3",
+      "from": "elena",
+      "from_label": "Elena",
+      "to": "family",
+      "channel": "family chat",
+      "at": "2026-11-11T18:52:00-08:00",
+      "text": "Then I'll pick him up when he is discharged and stay at the house for two weeks."
+    },
+    {
+      "id": "m4",
+      "from": "hospital",
+      "from_label": "Discharge planner",
+      "to": "elena",
+      "channel": "email",
+      "at": "2026-11-19T15:05:00-08:00",
+      "text": "We expect to discharge Robert from the rehabilitation unit on Wednesday, December 2. The equipment for the house should be in place before he arrives."
+    },
+    {
+      "id": "m5",
+      "from": "dana",
+      "from_label": "Dana",
+      "to": "elena",
+      "channel": "message",
+      "at": "2026-11-20T10:20:00-08:00",
+      "text": "I saw Robert today. He weighs 280 lb, so everything he puts his weight on must be rated for at least 300 lb. I have not seen the house, so please measure the tub and the bathroom door. I will send the written order this morning."
+    },
+    {
+      "id": "m6",
+      "from": "elena",
+      "from_label": "Elena",
+      "to": "dana",
+      "channel": "message",
+      "at": "2026-11-20T10:41:00-08:00",
+      "text": "The tub is 21.5 inches wide inside and the bathroom door opening is 28 inches."
+    }
+  ],
+  "facts": [
+    {
+      "id": "surgery_date",
+      "label": "Surgery",
+      "value": "2026-11-24",
+      "class": "health",
+      "owner": "elena",
+      "source": "m1",
+      "quote": "hip replacement is scheduled for Tuesday, November 24 at 7:30 am",
+      "feeds": [],
+      "start": 9,
+      "end": 73
+    },
+    {
+      "id": "drop_off",
+      "label": "Marcus drops him off",
+      "value": "2026-11-24",
+      "class": "person",
+      "owner": "elena",
+      "source": "m2",
+      "quote": "I can drop Dad off on the 24th",
+      "feeds": [],
+      "start": 0,
+      "end": 30
+    },
+    {
+      "id": "pick_up",
+      "label": "Elena picks him up",
+      "value": null,
+      "class": "person",
+      "owner": "elena",
+      "source": "m3",
+      "quote": "I'll pick him up when he is discharged",
+      "feeds": [],
+      "start": 5,
+      "end": 43
+    },
+    {
+      "id": "at_the_house",
+      "label": "Elena stays at the house",
+      "value": "two weeks",
+      "class": "person",
+      "owner": "elena",
+      "source": "m3",
+      "quote": "stay at the house for two weeks",
+      "feeds": [
+        {
+          "to": "/shopper",
+          "verb": "is why she measures and receives"
+        }
+      ],
+      "start": 48,
+      "end": 79
+    },
+    {
+      "id": "discharge_date",
+      "label": "Comes home",
+      "value": "2026-12-02",
+      "class": "schedule",
+      "owner": "elena",
+      "source": "m4",
+      "quote": "discharge Robert from the rehabilitation unit on Wednesday, December 2",
+      "feeds": [
+        {
+          "to": "/need_by",
+          "verb": "sets the need-by date",
+          "equals": true
+        }
+      ],
+      "start": 13,
+      "end": 83
+    },
+    {
+      "id": "in_place_before",
+      "label": "Equipment in place before he arrives",
+      "value": null,
+      "class": "schedule",
+      "owner": "elena",
+      "source": "m4",
+      "quote": "should be in place before he arrives",
+      "feeds": [
+        {
+          "to": "/need_by",
+          "verb": "is why delivery time matters"
+        }
+      ],
+      "start": 113,
+      "end": 149
+    },
+    {
+      "id": "patient_weight",
+      "label": "Robert weighs 280 lb",
+      "value": 280,
+      "unit": "lb",
+      "class": "health",
+      "owner": "dana",
+      "source": "m5",
+      "quote": "He weighs 280 lb",
+      "feeds": [
+        {
+          "to": "/lines/0/limits/0",
+          "verb": "is why"
+        },
+        {
+          "to": "/lines/1/limits/0",
+          "verb": "is why"
+        },
+        {
+          "to": "/lines/2/limits/0",
+          "verb": "is why"
+        }
+      ],
+      "start": 20,
+      "end": 36
+    },
+    {
+      "id": "rated_300",
+      "label": "Rated for at least 300 lb",
+      "value": 300,
+      "unit": "lb",
+      "class": "limit",
+      "owner": "dana",
+      "source": "m5",
+      "quote": "must be rated for at least 300 lb",
+      "feeds": [
+        {
+          "to": "/lines/0/limits/0/bound/value",
+          "verb": "became the limit",
+          "equals": true
+        }
+      ],
+      "start": 74,
+      "end": 107
+    },
+    {
+      "id": "not_seen_house",
+      "label": "Dana has not seen the house",
+      "value": null,
+      "class": "home",
+      "owner": "dana",
+      "source": "m5",
+      "quote": "I have not seen the house, so please measure the tub and the bathroom door",
+      "feeds": [
+        {
+          "to": "/shopper_facts",
+          "verb": "is why Elena measures"
+        }
+      ],
+      "start": 109,
+      "end": 183
+    },
+    {
+      "id": "tub_width",
+      "label": "Tub inside width 21.5 in",
+      "value": 21.5,
+      "unit": "in",
+      "class": "home",
+      "owner": "elena",
+      "source": "m6",
+      "quote": "The tub is 21.5 inches wide inside",
+      "feeds": [
+        {
+          "to": "/shopper_facts/0/value",
+          "verb": "became the measurement",
+          "equals": true
+        }
+      ],
+      "start": 0,
+      "end": 34
+    },
+    {
+      "id": "door_opening",
+      "label": "Door opening 28 in",
+      "value": 28.0,
+      "unit": "in",
+      "class": "home",
+      "owner": "elena",
+      "source": "m6",
+      "quote": "the bathroom door opening is 28 inches",
+      "feeds": [
+        {
+          "to": "/shopper_facts/1/value",
+          "verb": "became the measurement",
+          "equals": true
+        }
+      ],
+      "start": 39,
+      "end": 77
+    }
+  ],
+  "reading": "Each fact is an exact quote from one message, with its offsets. `feeds` points into the sheet (a JSON pointer); `equals: true` means code must find the same value there, else the edge is drawn as a disagreement. A fact with no `feeds` is held and not used for this order."
+}
