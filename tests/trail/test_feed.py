@@ -161,3 +161,24 @@ def test_the_senders_own_parts_and_withheld_lists_are_passed_through_when_a_row_
     c = build(egress=rows)["events"][0]["context"]
     assert c["parts"] == [{"name": "page text", "calls": 1, "chars": 3900}, {"name": "figure meanings", "calls": 1, "chars": 400}]
     assert c["withheld"] == [{"name": "limits", "calls": 1}, {"name": "prices", "calls": 1}]
+
+
+def test_the_flow_follows_one_item_from_the_records_and_says_nothing_it_has_no_record_for():
+    out = build(state=state())
+    f = out["flow"]
+    assert f["focus"]["line_id"] == "T1" and f["pick"]["title"] == "A thing" and f["pick"]["price"] == "$12.00"
+    assert f["said"]["page"]["excerpt"] == [{"text": "30 in wide", "quote": [0, 10]}] and f["model"]["quoted"] == ["30 in wide"]
+    assert f["model"]["source"] == "prompt builder" and f["model"]["outside"] is None   # no ledger rows for the reads
+    assert f["refused"] is None and f["talk"] is None and f["memory"] is None and f["signature"]["signed"] is False
+    assert [s["id"] for s in f["rail"]] == list(feed.STEP_IDS)
+    assert feed.build({})["flow"] is None
+
+
+def test_the_guard_row_is_the_message_about_the_picked_product_with_the_most_removed():
+    talk = [{"draft": "hello", "removed": [], "left": [], "product": {"id": "p1"}, "store": "shop.example", "reply": {"text": "hi"}},
+            {"draft": "my mum, 280 lb", "removed": [{"text": "280 lb", "mark": "health detail"}], "left": [{"mark": "product name"}],
+             "product": {"id": "p1"}, "store": "shop.example", "reply": {"text": "ok"}, "decision": "rewritten"},
+            {"draft": "other", "removed": [{"text": "a"}, {"text": "b"}], "product": {"id": "p2"}, "store": "shop.example"}]
+    g = build(state=state(), talk=talk)["flow"]["talk"]
+    assert g["draft"] == "my mum, 280 lb" and g["removed"] == [{"text": "280 lb", "mark": "health detail"}]
+    assert g["left"] == ["product name"] and g["reply"] == "ok" and g["messages"] == 3 and g["stopped"] == 3

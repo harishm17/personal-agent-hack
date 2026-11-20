@@ -65,18 +65,19 @@ def select(sheet: dict, memories: list, now=None) -> dict:
     data_ids = {sheet.get("id"), sheet.get("data_from") or sheet.get("id")}
 
     facts = []
-    for m in _newest([m for m in memories if m["kind"] == "home_measurement"], lambda m: (m["owner_id"], m["key"])):
+    mine = [m for m in memories if m["kind"] == "home_measurement" and _same_person(m, sheet.get("shopper"))]
+    for m in _newest(mine, lambda m: m["key"]):  # the last measurement of each fact, whoever's record names the sheet
         fact = on_sheet.get(m["key"])
-        if fact is None or not _same_person(m, sheet.get("shopper")) or m["value"].get("unit") != fact.get("unit"):
+        if fact is None or m["value"].get("unit") != fact.get("unit"):
             continue
         facts.append(dict(_ref(m), fact_id=m["key"], value=m["value"]["value"], unit=m["value"]["unit"], by="shopper",
                           measured_by=m.get("owner_name") or "the shopper", measured_at=m["created_at"],
                           used_by=facts_used.get(m["key"], []), age=age(m["created_at"], now)))
 
     strikes = []
-    for m in _newest([m for m in memories if m["kind"] == "strike"],
-                     lambda m: (m["owner_id"], m["key"], m["value"].get("line_id"))):
-        if not m["value"].get("struck") or not _same_person(m, sheet.get("issuer")) or m["value"].get("line_id") not in lines:
+    mine = [m for m in memories if m["kind"] == "strike" and _same_person(m, sheet.get("issuer"))]
+    for m in _newest(mine, lambda m: (m["key"], m["value"].get("line_id"))):  # the last strike or unstrike of each product
+        if not m["value"].get("struck") or m["value"].get("line_id") not in lines:
             continue
         entry = dict(_ref(m), line_id=m["value"]["line_id"], product_key=m["key"], title=m["value"].get("title"),
                      reason=m["value"].get("reason"), by="issuer", by_name=m.get("owner_name"), at=m["created_at"],

@@ -259,7 +259,9 @@ def _from_talk(path, thread):
 # --- all records, and one record ------------------------------------------------------------------------------
 
 def _with_id(memory: dict) -> dict:
-    ref = {k: memory["source"].get(k) for k in ("type", "chain", "n", "hash", "file", "index", "turn", "entry_hash")}
+    ref = {k: memory["source"].get(k) for k in ("type", "chain", "n", "hash", "file", "index", "entry_hash")}
+    if "turn" in memory["source"]:  # added later; left out where absent so the ids of earlier rows stay what they were
+        ref["turn"] = memory["source"]["turn"]
     return dict(memory, id="m_" + receipts.digest({"source": ref, "kind": memory["kind"], "key": memory["key"]})[:16])
 
 

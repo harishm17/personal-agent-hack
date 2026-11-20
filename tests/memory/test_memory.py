@@ -276,3 +276,13 @@ def test_what_a_stores_own_agent_replied_is_the_stores_memory_and_what_we_wrote_
     with pytest.raises(memory.Refused):  # the turn the guard refused has no reply, so it proves nothing
         memory.write(dict(talked[0], source=dict(talked[0]["source"], turn=2)))
     assert talked[0]["id"] in {a["memory_id"] for a in memory.recall(sheet)["store_answers"]}
+
+
+def test_the_newest_measurement_wins_even_when_one_chain_names_no_sheet(records, sheet):
+    receipts.start("sheet sheet4")
+    _measure(22.5)
+    receipts._c.update(id=None, receipts=[], file=None, previous=None)  # a restart: the next chain names no sheet
+    receipts.start("process start")
+    last = _measure(23.0, was=22.5)
+    [fact] = memory.recall(sheet)["facts"]
+    assert (fact["value"], fact["measured_at"], fact["measured_by"]) == (23.0, last["at"], "the shopper")

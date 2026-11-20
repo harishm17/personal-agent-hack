@@ -5,7 +5,7 @@ from signoff.obs import tools
 
 def test_a_row_has_the_agreed_keys_and_a_short_job():
     r = tools._row("X", "Four word job here", 3, "things", "detail.", "/api/x", True, "live")
-    assert set(r) == {"tool", "job", "number", "unit", "detail", "source", "ok", "basis"} and r["ok"] is True
+    assert set(r) == {"tool", "job", "number", "unit", "detail", "source", "ok", "live", "agrees", "basis"} and r["ok"] is True and r["live"] is True and r["agrees"] is None
     try:
         tools._row("X", "this job has far too many words", 1, "u", "d", "s", True, "b")
     except AssertionError:

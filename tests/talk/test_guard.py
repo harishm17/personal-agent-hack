@@ -83,3 +83,16 @@ def test_cut_leaves_a_gap_where_each_span_was(sheet, finder):
     out = guard.cut(text, spans)
     assert "280" not in out and "300" not in out and "Maria" not in out and "mother" not in out.lower()
     assert out.endswith("Can it be returned?") and guard.GAP in out
+
+
+def test_the_check_sweeps_until_what_remains_is_clean(sheet):
+    """Seen live, 20 Nov 14:12: the span model marked "Rosa" and missed "my mother" beside it on the first pass."""
+    text = "It is for my mother, Maria, who had a hip replacement."
+
+    def one_at_a_time(t, labels):
+        from tests.talk.conftest import fake_finder
+        return fake_finder(t, labels)[:1]
+
+    spans = guard.check(text, sheet, None, one_at_a_time)
+    assert [s["text"] for s in spans] == ["my mother", "Maria", "hip replacement"]
+    assert all(text[s["start"]:s["end"]] == s["text"] for s in spans)
