@@ -107,3 +107,23 @@ takes about ten seconds (remote database); later calls are cached for 20 s and a
 - Wording: "reviewers say", "the page states"; never "proves", never "best" without "reviewed". On sheet 4 today: L4 has an offer
   (Drive rollator, 4.6 of 5 from 58 reviews on the seller's own page, $119.99, not the pick); L1 and L5 have none and say why.
 - `POST /api/reviews/fetch {line_id}` (laptop only) searches for a line not yet searched; about 20 s for six products, then cached.
+
+## 14:27 from ENGINE — shapes for E30 (pick rule the shopper chooses) and E31 (preferences), fixed now so you can build
+All keys are new and optional; nothing existing is renamed.
+- **`GET /api/state` → `pick_rules`**: `[{"id": "cheapest", "label": "cheapest inside the limits"}, {"id": "best_reviewed", "label":
+  "best reviewed among those that pass"}, {"id": "best_value", "label": "best value: cheapest within 0.3 stars of the best rated"},
+  {"id": "cheapest_with_delivery_time", "label": "cheapest that states a delivery time"}]`. The active one is `sheet.pick_rule`
+  `{id, label, set_by, within?}`.
+- **`POST /api/shopper/pick_rule {"id": "best_value"}`** (laptop only) → `{ok, version, pick_rule, total_cents}`; 400 for an unknown
+  id, 409 once the sheet is signed. The sheet hash changes with the rule (and with `within`).
+- **Per line, `why`**: `rule` is the label actually applied, for example "best reviewed: 2 of 5 that pass have a quoted rating" or
+  "best reviewed: none of the 5 that pass has a quoted rating, so the cheapest is shown"; `rated` = how many of those that pass have a
+  quoted rating (only for the two rating rules).
+- **Per candidate**: `rating`: `{"rating": 4.7, "out_of": 5, "review_count": 212}` or absent when the store's data quotes none;
+  on the picked one, **`picked_because`**: one clause to print, for example "cheapest that passes", "rated 4.7 from 212 reviews, the
+  highest that passes", "cheapest within 0.3 stars of the best rated (4.6 against 4.8)", "chosen by Elena".
+- **E31, a line may carry `preferences`** (same shape as `limits`, in `sheet.lines[]`). Each candidate of such a line carries
+  `preferences`: `[{"id": "C3.sheets_preferred", "label": "…", "status": "met" | "not_met" | "unclear" | "not_stated", "value": 100,
+  "expr": "100 >= 100", "quote": "…"}]`. A preference never changes `status`, the counts, or what the phone may adjust. Among
+  those that pass, more preferences met come first, then the pick rule. `why.preferences` says it in words ("1 of 4 that pass meet
+  the preference"). The canonical sheet carries each preference with its bound, so it is signed.
