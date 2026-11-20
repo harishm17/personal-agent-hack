@@ -10,13 +10,12 @@ const clock = (at) => (at ? String(at).slice(11, 19) : "");
 
 let root = null, data = null, drawn = "", open = location.hash === "#left", sel = null;
 
-/** The totals, as the records have them. Nothing else in prose. */
+/** The totals, as the records have them, for the two groups of recipient. Nothing else in prose. */
 function line(t) {
-  const sealed = t.carried ? `<b class="${t.carried_to_stores ? "bad" : ""}">${t.carried}</b> carried a limit, a measurement or a name${t.carried_to_stores ? `, <b class="bad">${t.carried_to_stores}</b> to a store` : ", none to a store"}`
-    : "<b>0</b> carried a limit, a measurement or a name";
+  const outside = `outside parties: <b>${t.outside_payloads}</b> payloads, <b class="${t.outside_carried ? "bad" : ""}">${t.outside_carried}</b> carried a limit, a measurement or a name`;
   const guard = t.messages ? `<b>${t.spans_stopped}</b> stopped at the guard` : "";
-  const undeclared = t.undeclared ? `<b class="bad">${t.undeclared}</b> held one the sender did not declare` : "";
-  return [`<b>${t.payloads}</b> payloads to <b>${t.recipients}</b> recipients`, sealed, undeclared, guard].filter(Boolean).join('<span class="sep">·</span>');
+  const own = `our own services: <b>${t.own_payloads}</b> payloads, <b>${t.own_carried}</b> carried one${t.undeclared ? `, <b class="bad">${t.undeclared}</b> not declared` : ""}`;
+  return [outside, guard, own].filter(Boolean).join('<span class="sep">·</span>');
 }
 
 function cellHtml(row, col, c) {
@@ -54,9 +53,12 @@ function html() {
   if (!open) return head;
   if (!data.rows.length || !data.columns.length) return head + `<div class="lm"><span class="faint">no outbound records</span></div>`;
   const cols = `grid-template-columns: minmax(17rem, 1.6fr) repeat(${data.columns.length}, minmax(6rem, 1fr));`;
+  const span = (g) => data.columns.filter((c) => c.group === g).length;
+  const groups = `<div class="lr gr" style="${cols}"><span></span>${[["outside", "Outside parties"], ["own", "Our own services"]].filter(([g]) => span(g))
+    .map(([g, words]) => `<span class="lg" style="grid-column: span ${span(g)}">${words}</span>`).join("")}</div>`;
   const header = `<div class="lr hd" style="${cols}"><span></span>${data.columns.map((c) => `<span class="lcol" title="${esc(c.members.join(", "))}"><b>${esc(c.label)}</b><i>${esc(c.kind)} · ${c.payloads}</i></span>`).join("")}</div>`;
   const rows = data.rows.map((r) => `<div class="lr" style="${cols}"><span class="lrow" title="${esc(r.travel || "")}">${dot(r.owner)}<b>${esc(r.label)}</b><i>${esc(r.example)}</i></span>${data.columns.map((c) => cellHtml(r, c, data.cells[r.id][c.id])).join("")}</div>`).join("");
-  return `${head}<div class="lm">${header}${rows}</div>${detail()}`;
+  return `${head}<div class="lm">${groups}${header}${rows}</div>${detail()}`;
 }
 
 function render(move) {

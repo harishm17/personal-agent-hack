@@ -2484,3 +2484,27 @@ The local log rows now carry `pid`, and the drawer row counts like with like: "N
 **3. `ask.py` "California address": DONE.** `question_for(need, region=None)` names a region only when the sheet gives one (`delivery_region` in the sheet file; none of the four does), so the question reads "If I order a walker today, how many days will delivery take? And can an opened walker be returned, and is there any fee?". Saved answers keep the question they were asked with. Test `test_no_region_is_hard_coded_in_the_question`.
 **4. Nouns: DONE.** Every row has `unit` as a noun phrase and a `headline` "number unit" built from it, for example "46 candidates pass the limits in one SQL statement", "147 rows synced in Airbyte's last sync of sheet1", "1 events confirmed by Amplitude from this app since it started", "197 pages read by the second reader (saved run)", "2 attack campaigns run by Firedrill (saved reports)", "6 datasets of facts held, by owner", "5 figures the two readers read differently, caught by the gate's strict mode", "N sentences of the sheet checked against the order", "1 identity inquiry started for the signer". (A candidate is a product, or one of its options when a product is sold in several.) Test `test_every_row_says_what_its_number_counts`.
 SCREEN: draw `headline` instead of `number` + `unit` side by side; `unit` alone is now a long phrase.
+## 15:13 from TRAIL — the reviewer's two wording facts (items 3 and 8)
+1. **The matrix has two groups of column, with a heading each**: "Outside parties" and "Our own services". The split is
+   from the ledger's own records: a store (kind "store"), a store's agent (the guard's records) or a recipient recorded
+   by its web domain (the web search, `exa.ai`) is an outside party; a model called by provider and name, the database,
+   the order check and analytics are our own services. The line now says each group's own numbers and claims nothing
+   about the second: on port 8016 with a copy of main's ledger at 15:12, "outside parties: 9 payloads, 0 carried a limit,
+   a measurement or a name · 31 stopped at the guard · our own services: 133 payloads, 64 carried one, 29 not declared".
+   No "never leaves" anywhere; a row's tooltip is the context file's own words ("not sent to a store or a store's agent").
+   Screenshot `web/trail/shots/left-groups.png`.
+2. **The figure's headline is exact from the records**: "Never enters the page-reading call". It says "a model call" only
+   when the ledger has model calls and none of them was given, or found to hold, a limit or a home measurement
+   (`signoff/trail/flow.py:_never_enters`); today the embedding call was given a home measurement and the order reader
+   is given the limit, so it names the page-reading call. `web/trail/shots/flow-810.png` retaken.
+`uv run -q pytest -q tests/trail` → 16 passed. Not on today's main ledger, so not seen as columns: the stores' search and
+the web search (no rows to them for sheet 4); a test covers `exa.ai` landing under "Outside parties".
+
+## 15:17 from TRAIL — the gate was not exiting in any stream; likely my test, now fixed (please merge this one first)
+At 15:13 `uv run -q pytest -q` printed "446 passed" in my worktree and then did not exit (2 min 27 s when I stopped it);
+at the same moment the gate was hung in STORE, ENGINE, TALK, SCREEN and REVIEWS as well. `tests/trail/test_feed.py::
+test_collect_never_raises_and_names_each_source` calls `feed.collect()`, which since T5 reads memory's shelf
+(`signoff.memory.api.memory()`: the database, and it starts memory's background indexing). That is a real outside
+service inside the default gate, in every stream that has merged main. I marked that test `@pytest.mark.live`.
+After the change: `uv run -q pytest -q` → 445 passed, 13 deselected, exited in 16.5 s. I did not prove the thread that held
+the process open (alone, the test exits in 3 s); if the gate hangs again, it is not this test.
