@@ -293,3 +293,29 @@ def apply_unambiguous_rule(row):
                unsure_reason="%s (%s) and %s" % (AMBIGUOUS, ", ".join(row["number_check"]["other_numbers"]),
                                                  "the text pairs the label %r with another number" % label if ok is False else how))
     return True
+
+
+def _fold_label(text):
+    """Option names as stores write them, made comparable: 12", 12” and 12 inch are the same option."""
+    text = "".join(FOLD.get(ch, ch) for ch in str(text)).lower()
+    text = re.sub(r"\s*(?:inch(?:es)?|in\.)(?![a-z])", '"', text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def apply_option_rule(row, variant):
+    """A product sold in several options: when the quote itself names an option that is not the one in the pool
+    and does not name the one that is, the text ties the figure to another option, so it is unsure. Nothing is
+    marked merely because a product has several options. Returns True when this call marked the figure."""
+    if row.get("unsure") or not variant.get("other_option_labels"):
+        return False
+    quote = _fold_label(row.get("quote") or "")
+    def named(label):
+        label = _fold_label(label)
+        return len(label) >= 2 and re.search(r"(?<![a-z0-9.])%s(?![a-z0-9])" % re.escape(label), quote) is not None
+    others = [l for l in variant["other_option_labels"] if named(l)]
+    if not others or any(named(l) for l in variant.get("option_labels") or []):
+        return False
+    row.update(unsure=True, caught_by="code: the quote names another option",
+               unsure_reason="the text ties this figure to the option %s; the option in the pool is %s" % (
+                   ", ".join(others[:3]), variant.get("variant_title")))
+    return True

@@ -223,3 +223,16 @@ def test_the_comparison_lists_disagreements_extras_and_what_the_rule_caught(tmp_
     assert len(caught) == 1 and caught[0]["value"] == "14.75" and caught[0]["number_check"]["paired"] is False
     assert made["number_rule"]["reference_figures_caught"] == 0 and list(made["number_rule"]["caught"]) == ["small"]
     assert [e["figure"] for e in small["extra"]] == ["length"]
+
+
+def test_a_figure_the_text_ties_to_another_option_is_unsure_and_several_options_alone_change_nothing():
+    variant = {"variant_title": '12"', "option_labels": ['12"'], "other_option_labels": ['16"', '24"']}
+    tied = {"figure": "weight_capacity", "quote": "Supports 500 pounds (24” bar)", "value": 500}
+    assert spans.apply_option_rule(tied, variant) is True
+    assert tied["unsure_reason"] == 'the text ties this figure to the option 24"; the option in the pool is 12"'
+    both = {"figure": "length", "quote": 'Length: 12" or 16"', "value": 12}
+    assert spans.apply_option_rule(both, variant) is False  # the quote names the option in the pool too
+    plain = {"figure": "weight_capacity", "quote": "Weight Capacity: 250 lb.", "value": 250}
+    assert spans.apply_option_rule(plain, variant) is False and "unsure" not in plain
+    words = {"variant_title": "18 Inch", "option_labels": ["18 Inch"], "other_option_labels": ["12 Inch", "24 Inch"]}
+    assert spans.apply_option_rule({"figure": "weight_capacity", "quote": "500 Pounds (24”)", "value": 500}, words) is True

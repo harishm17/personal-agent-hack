@@ -88,3 +88,23 @@ def test_the_cached_figures_of_the_reference_all_pass_the_number_rule_or_say_why
                         if term["owner"] == "store":
                             fig = next(f for f in c["figures"] if f["figure"] == term["figure"] and f["quote"] == term["quote"])
                             assert not fig.get("unsure") and fig.get("number_check", {"paired": True})["paired"] is True
+
+
+def test_each_pick_names_its_variant_quantity_and_currency_and_says_whose_answer_delivery_is(real_pool):
+    s = state.reset()
+    canonical = json.loads(state.canonical_sheet())
+    for line in canonical["lines"]:
+        if line["pick"]:
+            assert line["pick"]["quantity"] == 1 and line["pick"]["currency"] == "USD" and line["pick"]["variant_title"]
+            assert line["pick"]["delivery"]["scope"] in ("store-wide", "this product")
+    for l in s["lines"]:
+        for c in l["candidates"]:
+            assert c["arrival"]["scope"] in ("store-wide", "this product") and c["variants"] >= 1
+            if c["arrival"]["scope"] == "this product":  # the product's own reply never changes whether a time is stated
+                assert c["arrival"]["status"] == "stated" and c["arrival"]["question"]
+            if c["undo"] and "specify" in (c["undo"]["quote"] or "") and "doesn" in c["undo"]["quote"]:
+                assert c["undo"]["returnable"] == "unclear"
+    picks = state.signed_picks(state.sheet_hash())
+    assert all(p["variant_title"] and p["currency"] == "USD" and p["quantity"] == 1 for p in picks)
+    state.release_signing()
+    assert s["degraded"] == [] and s["counts"]["store_agent"]["figures_stated"] == 0
