@@ -111,7 +111,8 @@ def _log_local(name: str, ms: float, ok: bool, error: str | None) -> None:
             return
         end = datetime.datetime.now().astimezone()
         row = {"name": name, "at": (end - datetime.timedelta(milliseconds=ms or 0)).isoformat(timespec="milliseconds"),
-               "ended_at": end.isoformat(timespec="milliseconds"), "duration_ms": round(float(ms or 0), 1), "success": bool(ok),
+               "ended_at": end.isoformat(timespec="milliseconds"), "duration_ms": round(float(ms or 0), 1),
+               "latency_ms": round(float(ms or 0), 1), "success": bool(ok),
                "session_id": _state.get("session_id"), "sheet_id": _state.get("sheet_id")}
         if error:
             row["error"] = str(error)[:200]
