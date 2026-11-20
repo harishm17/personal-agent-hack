@@ -67,6 +67,21 @@ def shopper_fact(body: Fact):
     return {"ok": True, "version": new["version"]}
 
 
+class Confirm(BaseModel):
+    fact_id: str
+
+
+@router.post("/api/shopper/confirm")
+def shopper_confirm(body: Confirm):
+    """The shopper confirms one of her measurements as it stands (a suggested value becomes hers). Refused once
+    the sheet is signed. Laptop only, like every `/api/shopper/` route."""
+    try:
+        new = state.confirm_shopper_fact(body.fact_id)
+    except state.EngineError as error:
+        return _refuse(error)
+    return {"ok": True, "version": new["version"], "fact_id": body.fact_id, "confirmed": True, "unconfirmed": new["unconfirmed"]}
+
+
 class Choose(BaseModel):
     line_id: str
     candidate_id: str | None = None

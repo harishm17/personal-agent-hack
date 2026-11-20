@@ -458,6 +458,8 @@ def _apply_memory(sheet, strikes, pool):
 
 
 def _load(keep_changes=False):
+    if not keep_changes:
+        _s["confirmed"] = {}  # a new run: every measurement is a suggestion again until its owner confirms it
     sheet_id = _s.get("sheet_id") or os.environ.get("SIGNOFF_SHEET") or "sheet1"
     _s["sheet_id"] = sheet_id
     rules.declare_units(_read(SHEETS / (sheet_id + ".json")))  # before anything is prepared: units decide what a rival number is
@@ -617,8 +619,12 @@ def _canonical_obj(state):
     covered = {"id": rule["id"], "label": rule["label"], "set_by": rule.get("set_by")}  # who chose the ordering is shown, so signed
     if rule["id"] == "best_value":
         covered["within"] = rules.within_of(state["sheet"])
-    return _one_form({"sheet_id": state["sheet"]["id"], "pick_rule": covered,
-                      "lines": lines, "total_cents": state["total_cents"]})
+    out = {"sheet_id": state["sheet"]["id"], "pick_rule": covered, "lines": lines, "total_cents": state["total_cents"]}
+    if state["sheet"]["shopper_facts"]:  # what is signed says each measurement was confirmed by its owner
+        held = _s.get("confirmed") or {}
+        out["measurements"] = [{"id": f["id"], "value": f["value"], "unit": f.get("unit"), "confirmed": f["id"] in held}
+                               for f in state["sheet"]["shopper_facts"]]
+    return _one_form(out)
 
 
 def _canonical(state):
@@ -626,7 +632,7 @@ def _canonical(state):
 
 
 # What the signed hash is computed over, in words for the seal. Kept beside `_canonical_obj`: change both together.
-COVERS = ["limits", "strikes", "picks", "product name", "variant and quantity", "prices and currency", "sums", "store quotes",
+COVERS = ["limits", "measurements and whether each was confirmed", "strikes", "picks", "product name", "variant and quantity", "prices and currency", "sums", "store quotes",
           "delivery quotes", "pick rule", "total"]
 
 
@@ -769,6 +775,7 @@ def _attach(state):
         state["memory"] = _s["memory"]  # what was applied from memory at the start of this run, and what was ignored
     state["pick_rules"] = rules.pick_rules(rules.within_of(state["sheet"]))  # the orderings the shopper may choose
     _suggested_from(state["sheet"])
+    _confirmations(state)
     state["degraded"] = health.all()  # every fallback in use is named here; empty when all is well
     try:
         state["receipts"] = receipts.summary()
@@ -822,6 +829,23 @@ def _apply_choices(state):
                                if c["picked"] and l["status"] in ("ready", "next_candidate"))
     state["counts"]["lines_ready"] = sum(1 for l in state["lines"] if l["status"] in ("ready", "next_candidate"))
     return state
+
+
+def _confirmations(state):
+    """A measurement the agent brought (the sheet's default, the context file, memory) is a suggestion until its
+    owner confirms it. Picks are computed with it all the same; the state names every unconfirmed one that a limit
+    uses, and the approver cannot sign while that list is not empty (the refusal is in `signoff.sign`). Limits
+    are prescribed and never carry this."""
+    sheet, held = state["sheet"], _s.setdefault("confirmed", {})
+    for fact in sheet["shopper_facts"]:
+        fact["confirmed"], fact["confirmed_at"] = fact["id"] in held, held.get(fact["id"])
+    used = {l["bound"]["fact"] for line in sheet["lines"] for l in line["limits"] if l["bound"]["source"] == "shopper"} | \
+        {t["fact"] for line in sheet["lines"] for l in line["limits"] for t in l["terms"] if t["source"] == "shopper"}
+    open_ = [f for f in sheet["shopper_facts"] if f["id"] in used and not f["confirmed"]]
+    state["unconfirmed"] = [f["id"] for f in open_]
+    state["unconfirmed_facts"] = [{"id": f["id"], "label": f["label"]} for f in open_]
+    state["unconfirmed_text"] = "%s has not confirmed: %s" % (sheet["shopper"]["name"], ", ".join(f["label"] for f in open_)) \
+        if open_ else None
 
 
 _FACT_VALUE = re.compile(r"^/shopper_facts/(\d+)/value$")
@@ -1030,9 +1054,25 @@ def set_shopper_fact(fact_id, value) -> dict:
             raise EngineError("no shopper fact %r on this sheet" % (fact_id,), 404)
         was = fact["value"]
         fact["value"] = _number(value, fact.get("min"), fact.get("max"), fact_id)
+        _s.setdefault("confirmed", {})[fact_id] = _now()  # a value she sets is hers: setting it confirms it
         receipts.append("shopper_fact", "shopper", None, {"fact_id": fact_id, "value": value},
                         {"fact_id": fact_id, "from": was, "to": fact["value"], "unit": fact["unit"]})
         return _recompute(why="shopper_fact")
+
+
+def confirm_shopper_fact(fact_id) -> dict:
+    """Not in the contract's list: the shopper confirms one of her measurements as it stands. Until she does, a
+    value from the sheet's default, the context file or memory is a suggestion, and the approver cannot sign."""
+    with _lock:
+        _ensure()
+        _open_for_changes()
+        fact = next((f for f in _s["sheet"]["shopper_facts"] if f["id"] == fact_id), None)
+        if fact is None:
+            raise EngineError("no shopper fact %r on this sheet" % (fact_id,), 404)
+        _s.setdefault("confirmed", {})[fact_id] = _now()
+        receipts.append("shopper_confirm", "shopper", None, {"fact_id": fact_id, "value": fact["value"]},
+                        {"fact_id": fact_id, "value": fact["value"], "unit": fact.get("unit")})
+        return _recompute(why="shopper_confirm")
 
 
 def set_pick_rule(rule_id) -> dict:

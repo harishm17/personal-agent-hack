@@ -79,7 +79,9 @@ def test_the_state_shows_the_orders_sentence_on_each_limit_and_marks_an_override
         assert limits["L1.tub"]["from_order"]["measurement"] == {"id": "tub_inside_width", "label": "tub inside width",
                                                                 "source": "from the home"}
         before = state.sheet_hash()
-        assert state._s["sheet"] == sheet()  # the sheet the engine runs on carries no annotation
+        running = dict(state._s["sheet"], shopper_facts=[{k: v for k, v in f.items() if k not in ("confirmed", "confirmed_at")}
+                                                         for f in state._s["sheet"]["shopper_facts"]])
+        assert running == sheet()  # the sheet the engine runs on carries no annotation (but whether each measurement is confirmed)
         s = state.apply_issuer({"type": "set_limit", "limit_id": "L2.height", "value": 19.5})
         limits = {l["id"]: l for line in s["sheet"]["lines"] for l in line["limits"]}
         assert limits["L2.height"]["from_order"]["matches"] is False and limits["L2.capacity"]["from_order"]["matches"] is True

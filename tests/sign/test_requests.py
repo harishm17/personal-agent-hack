@@ -239,3 +239,22 @@ def test_a_sign_request_refused_as_stale_is_spent_and_never_accepted_later(env):
     assert env.cart.calls == [] and not env.engine.get_state()["seal"].get("signed")
     fresh = post(env, env.phone.request("sign_sheet", sheet_hash=hash_a))   # a new tap, a higher number: accepted
     assert fresh.status_code == 200 and fresh.json()["applied"] == "sign_sheet"
+
+
+def test_the_approver_cannot_sign_over_a_measurement_its_owner_has_not_confirmed(env):
+    """E34: while the engine's state lists an unconfirmed measurement, a sign request is refused in plain words,
+    nothing is created, and the refused request is spent like any other."""
+    env.engine.state["unconfirmed"] = ["tub_inside_width", "door_clear_opening"]
+    env.engine.state["unconfirmed_text"] = "Elena has not confirmed: tub inside width, bathroom door clear opening"
+    body = env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash())
+    refused = post(env, body)
+    assert refused.status_code == 409 and refused.json()["error"] == "measurements_not_confirmed"
+    assert refused.json()["detail"] == "Elena has not confirmed: tub inside width, bathroom door clear opening"
+    assert env.cart.calls == [] and not env.engine.get_state()["seal"].get("signed")
+    env.engine.state["unconfirmed"], env.engine.state["unconfirmed_text"] = [], None     # she confirmed them
+    again = post(env, body)                                                              # the old tap is spent
+    assert again.status_code == 409 and again.json()["error"] == "replayed_seq" and env.cart.calls == []
+    signed = sign(env)                                                                   # a new tap signs
+    assert signed.status_code == 200 and signed.json()["applied"] == "sign_sheet"
+    limit = post(env, env.phone.request("set_limit", **LIMIT))                           # (already signed: refused as before)
+    assert limit.status_code == 409
