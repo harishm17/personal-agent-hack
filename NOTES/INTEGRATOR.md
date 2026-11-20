@@ -2226,3 +2226,17 @@ one message; STORE/SIGN: the database writes and two Senso payloads carry names 
   second quote is used only if code finds it on the page with the rating and the scale in it (10 pages asked, 1 changed: Best Buy).
   (2) When the reader rounds ("4.6" for the page's "4.5915494"), the page's own number is kept, with `value_as_reported` beside it.
   `best_reviewed` and `ratings()` now use one rule (out of five, at least 5 reviews); the tie-break text is updated in the reply.
+
+## 14:58 from TRAIL — the replay no longer moves when a record arrives; T6 rows from the sheet's context file
+- **Replay and live records.** A refresh that arrives while the replay is playing, or paused part-way, is held and drawn
+  when the run ends or when someone moves it by hand (rail, step buttons). Seen on port 8016 with the event stream open
+  (`/trail/`, no `live=0`): pressed Play, sent `POST /api/admin/reset` to my own port at about 3 s and again at about
+  10 s; the clock read step 3 at 0:06, step 4 at 0:13, step 5 at 0:16, step 6 at 0:20, step 7 at 0:23 and ended at 0:24
+  with the button back to "Play". The figure also no longer carries memory's ages, which changed its records every minute.
+- **T6 rows.** When `sheets/<sheet id>_context.json` exists, its `classes` come first, in its order, each with the words
+  of its first fact as the example and its travel rule as the row's tooltip: health detail, a person, home measurement,
+  order limit, need-by date; then the classes only the ledger knows (product name, page text, the order, prices). The
+  file's "home" and "schedule" are the ledger's and guard's "home_measurement" and "need_by" (one small table of the two
+  names in `signoff/trail/left.py`). Screenshots `web/trail/shots/left-context-0.png` and `left-context-1.png`. Totals
+  at this moment with a copy of main's ledger: 107 payloads to 5 recipients · 49 carried a limit, a measurement or a
+  name, none to a store · 22 held one the sender did not declare · 31 stopped at the guard. `uv run -q pytest -q` → 427 passed.

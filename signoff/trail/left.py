@@ -18,6 +18,10 @@ DETECTED = ("limit", "home_measurement", "person")      # what the ledger's own 
 OWNER = {"limit": "issuer", "order": "issuer", "need_by": "issuer", "home_measurement": "shopper", "person": "shopper",
          "health": "shopper", "money": "shopper", "address": "shopper", "delivery_region": "shopper",
          "product": "store", "store_text": "store", "price": "store"}
+# A sheet may have a context file (sheets/<id>_context.json): what the agent holds about the event, each fact with a
+# sharing class, and `classes` saying what may travel. Its class names, where they differ from the ledger's and the
+# guard's names for the same class.
+CONTEXT_CLASS = {"home": "home_measurement", "schedule": "need_by"}
 GROUP_OVER = 3      # more stores than this are one column, counted
 LISTED = 6          # records listed behind one cell; the rest are counted
 
@@ -58,13 +62,29 @@ def _examples(sheet: dict, flow: dict, messages: list) -> dict:
     return out
 
 
-def build(sheet: dict, flow: dict, rows: list, messages: list, rule: dict = None, marks: dict = None) -> dict:
+def _held(context) -> tuple:
+    """From a sheet's context file: (class -> one real example, class -> what may travel), in the file's order."""
+    examples, travel = {}, {}
+    if not isinstance(context, dict):
+        return examples, travel
+    for name, says in (context.get("classes") or {}).items():
+        travel[CONTEXT_CLASS.get(name, name)] = str(says)
+    for fact in context.get("facts") or []:
+        c = CONTEXT_CLASS.get(fact.get("class"), fact.get("class"))
+        if c and c not in examples and (fact.get("quote") or fact.get("value")):
+            examples[c] = str(fact.get("quote") or "%s: %s" % (fact.get("label"), fact.get("value")))
+    return examples, travel
+
+
+def build(sheet: dict, flow: dict, rows: list, messages: list, rule: dict = None, marks: dict = None, context=None) -> dict:
     """The matrix. `rows`: the ledger's rows of this run; `messages`: the guard's records; `rule`: the sheet's
     sharing rule as the guard reads it (`may`, `sealed`); `marks`: the guard's words for its classes."""
     rows = [r for r in rows or [] if isinstance(r, dict)]
     messages = [m for m in messages or [] if isinstance(m, dict)]
     rule, marks = rule or {}, marks or {}
     examples = _examples(sheet, flow, messages)
+    held, travel = _held(context)
+    examples.update(held)          # the agent's own context first: its words are the example
 
     # columns: who received anything
     by_recipient = {}
@@ -95,10 +115,11 @@ def build(sheet: dict, flow: dict, rows: list, messages: list, rule: dict = None
     # rows: the classes that exist in this run (an example of it, or a record that carries or stops it)
     seen = {c for r in rows for c in (r.get("declared_classes") or []) + (r.get("fact_classes") or []) if c != "none"}
     seen |= {x.get("class") for m in messages for x in (m.get("removed") or []) + (m.get("left") or []) if x.get("class")}
-    order = list(dict.fromkeys(list(rule.get("may") or []) + list(rule.get("sealed") or []) + list(CLASS_WORDS)))
+    order = list(dict.fromkeys(list(travel) + list(rule.get("may") or []) + list(rule.get("sealed") or []) + list(CLASS_WORDS)))
     classes = [c for c in order + sorted(seen - set(order)) if c in seen or examples.get(c)]
     out_rows = [{"id": c, "label": marks.get(c) or CLASS_WORDS.get(c) or _plain(c), "owner": OWNER.get(c),
-                 "example": examples.get(c) or "", "sealed": c in (rule.get("sealed") or [])} for c in classes]
+                 "example": examples.get(c) or "", "sealed": c in (rule.get("sealed") or []),
+                 "travel": travel.get(c)} for c in classes]
 
     def ledger_item(r, cls=None):
         hits = [h.partition(": ")[2] for h in r.get("sealed_found_in_payload") or [] if h.partition(": ")[0] == cls]
@@ -182,7 +203,13 @@ def collect() -> dict:
     talk = read("talk", _talk, {}) or {}
     from signoff.trail import feed
     flow = read("flow", lambda: feed.build(feed.collect()).get("flow"), None)
+    def _context():
+        import json
+        import pathlib
+        path = pathlib.Path(__file__).resolve().parent.parent.parent / "sheets" / ("%s_context.json" % (state.get("sheet") or {}).get("id"))
+        return json.loads(path.read_text()) if path.is_file() else None     # a sheet without the file has none
+
     out = build(state.get("sheet") or {}, flow, read("ledger", _rows, []), talk.get("messages") or [],
-                talk.get("rule") or {}, talk.get("marks") or {})
+                talk.get("rule") or {}, talk.get("marks") or {}, read("context", _context, None))
     out["missing"] = missing
     return out
