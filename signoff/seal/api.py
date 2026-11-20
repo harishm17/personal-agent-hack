@@ -60,7 +60,7 @@ def events(receipts: list, seal: dict) -> list:
             except ValueError:
                 pass
             out.append({"at": sent or r["at"], "from": "phone", "to": "agent",
-                        "text": "signature over %s · seq %s" % (_short(d.get("sheet_hash")), d.get("seq"))})
+                        "text": "signature over %s" % _short(d.get("sheet_hash"))})
             out.append({"at": r["at"], "from": "agent", "to": "agent", "text": "verified with the public key"})
             carts = [c for c in (seal or {}).get("carts", []) if c.get("cart_url") or c.get("cart_id")]
             if carts:
