@@ -80,3 +80,28 @@ def test_the_words_shown_for_an_option_are_its_own_line_not_the_list_of_every_si
     assert term["sentence"][slice(*term["quote_in_sentence"])] == term["quote"]
     assert "12” Grab bar" not in term["sentence"] and "24” Grab bar" not in term["sentence"]
     assert term["option_match"]["why"] == "the option you would buy is 16 Inch; the page's line for it: 16” Grab bar- 19.11” end to end"
+
+
+def stmt(value, figure="length", variant="v16", **over):
+    base = {"store": "v.example", "product_id": "p", "variant_id": variant, "figure": figure, "kind": "single", "value": value,
+            "low": value, "high": value, "unit": "in", "quote": "q%s" % value, "start": 0, "end": 2, "span_found_in_text": True}
+    return dict(base, **over)
+
+
+def test_both_readers_must_agree_a_figure_counts_only_when_the_second_reader_reports_the_same_value():
+    key = lambda variant: ("v.example", "p", variant, "length")  # noqa: E731
+    reference = [stmt(16, variant="a"), stmt(31, variant="b"), stmt(12, variant="c"), stmt(20, variant="e"), stmt(17, variant="e")]
+    second = {key("a"): [stmt(16, variant="a")],                      # the same value: it counts
+              key("b"): [stmt(14.75, variant="b")],                   # another number: the readers disagree
+              key("d"): [stmt(24, variant="d")],                      # only the second reader reports it
+              key("e"): [stmt(17, variant="e")]}                      # one of two statements is confirmed
+    made, tally = state._require_agreement(reference, second)
+    by = {(f["variant_id"], f["value"]): f for f in made}
+    assert tally == {"agreed": 2, "disagreed": 1, "only_reference": 1, "only_second": 1}
+    assert "disagree" not in by[("a", 16)] and "disagree" not in by[("e", 17)]
+    assert by[("b", 31)]["disagree"] == "readers disagree: 31 and 14.75 in"
+    assert by[("c", 12)]["disagree"] == "only one reader found it" and by[("d", 24)]["disagree"] == "only one reader found it"
+    assert by[("e", 20)]["disagree"] == "only one reader found this statement"
+    # and the rules: a statement the readers do not agree on cannot be compared, so the check is unclear, not absent
+    assert rules.comparable(by[("b", 31)], "in") == "readers disagree: 31 and 14.75 in"
+    assert rules.comparable(by[("a", 16)], "in") is None

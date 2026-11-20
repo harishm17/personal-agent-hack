@@ -152,6 +152,8 @@ def comparable(fig, limit_unit, unit_required=True):
     if fig.get("kind") not in ("single", "spread", "adjustable") or \
             any(not isinstance(v, (int, float)) or isinstance(v, bool) for v in numbers):
         return "stated without a number code can compare"
+    if fig.get("disagree"):
+        return fig["disagree"]  # the two readers do not report the same value for it
     if fig.get("for_other_option"):
         return fig["for_other_option"]
     if unit_name(fig.get("unit")) is None:
