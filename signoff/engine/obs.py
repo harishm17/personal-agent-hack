@@ -23,5 +23,17 @@ def session(sheet_id):
         pass
 
 
+def egress(recipient, purpose, payload, fact_classes):
+    """The outbound ledger (`signoff.obs.egress`, the STORE stream's): what was sent to whom, and which kinds
+    of fact it held. Called at every place ENGINE code sends anything out. A no-op until that function exists."""
+    try:
+        from signoff import obs
+        record = getattr(obs, "egress", None)
+        if record:
+            record(recipient, purpose, payload, list(fact_classes))
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def ms_since(started):
     return int((time.perf_counter() - started) * 1000)

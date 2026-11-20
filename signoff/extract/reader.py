@@ -17,6 +17,7 @@ import time
 import httpx
 
 from signoff import config
+from signoff.engine import obs
 
 DEFAULT_MODEL = "claude-sonnet-5-5"  # the reference reader (CONTRACT.md, amendment 11:25)
 ARCEE_URL = "https://api.arcee.ai/api/v1/chat/completions"
@@ -194,8 +195,18 @@ def ask_anthropic(model, system, user, live=False):
     return ask_claude_cli(model, system, user, timeout=25.0 if live else 180.0)  # a person is waiting: fail soon
 
 
-def ask(model, system, user, live=False):
-    """(reply text, usage, extractor name). `live=True` only for a call a person is waiting on."""
+def recipient_of(model):
+    if model.startswith("claude"):
+        return "Anthropic (%s)" % model
+    return "Superlinked SIE (%s)" % model[4:] if model.startswith("sie:") else "Arcee (%s)" % model
+
+
+def ask(model, system, user, live=False, purpose="read figures from one store page",
+        fact_classes=("store_text", "product")):
+    """(reply text, usage, extractor name). `live=True` only for a call a person is waiting on.
+    Every call is entered in the outbound ledger first: recipient, purpose, the two strings sent, and the
+    kinds of fact they hold. A figure read holds the store's text and the figure names, nothing else."""
+    obs.egress(recipient_of(model), purpose, {"system": system, "user": user}, fact_classes)
     if model.startswith("claude"):
         text, usage = ask_anthropic(model, system, user, live)
         return text, usage, "anthropic:%s" % model

@@ -59,7 +59,8 @@ def detect(product, model=None):
     """Instruction-like passages in one page: [{quote, start, end, found_by}], every one a span of the text."""
     model = model or config.env("SIGNOFF_READER_MODEL") or reader.DEFAULT_MODEL
     text = product.get("text") or ""
-    reply, _, extractor = reader.ask(model, SYSTEM, "Product page text, between the markers:\n<<<TEXT\n%s\nTEXT>>>" % text)
+    reply, _, extractor = reader.ask(model, SYSTEM, "Product page text, between the markers:\n<<<TEXT\n%s\nTEXT>>>" % text,
+                                     purpose="look for instructions to software in one store page")
     obj = json.loads(reply[reply.find("{"):reply.rfind("}") + 1])
     kept, dropped = [], 0
     for item in obj.get("instructions") or []:

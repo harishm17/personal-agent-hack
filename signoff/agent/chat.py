@@ -20,6 +20,9 @@ from signoff.engine import obs, state
 from signoff.extract import reader
 
 DEFAULT_MODEL = "claude-sonnet-5-5"
+# What a chat call holds, for the outbound ledger: the sheet's limits, the home's measurements, the two names,
+# store quotes, products and prices. It goes to the chat model only, never to a store.
+SENT = ("limit", "home_measurement", "person", "store_text", "product", "price")
 CHANGES = ("restore_struck", "change_limit", "strike", "make_cart", "sign", "suggest_limit")
 
 # The plain words of a request for a change. Checked by code before any model is asked.
@@ -182,12 +185,14 @@ def say(text: str, source=state, history=None, live=True) -> dict:
             sheet["shopper"]["name"], text)
         stray = []
         try:
-            raw, _, used = reader.ask(model, system, user, live=live)
+            raw, _, used = reader.ask(model, system, user, live=live, purpose="answer the shopper's chat message",
+                                      fact_classes=SENT)
             intent, reply = _parse(raw)
             stray = stray_numbers(reply, user)
             if stray and intent not in CHANGES:  # once more, naming the numbers; then code's own words
                 raw, _, used = reader.ask(model, system, user + "\n\nYour last answer contained numbers that are not "
-                                          "in the tool results: %s. Answer again without them." % ", ".join(stray), live=live)
+                                          "in the tool results: %s. Answer again without them." % ", ".join(stray),
+                                          live=live, purpose="answer the shopper's chat message", fact_classes=SENT)
                 intent, reply = _parse(raw)
                 stray = stray_numbers(reply, user)
                 if stray:

@@ -111,6 +111,61 @@ def _load_readers(from_data):
         return None
 
 
+def _load_order(sheet_id, from_data):
+    """The limits as the agent read them from the written order (signoff.extract.order writes the file). Each
+    quote is looked up again here in the order's own text. Shown beside the sheet; the engine runs on the sheet."""
+    path = DATA / "order" / "derived.json"
+    if not from_data or not path.exists():
+        return None
+    try:
+        made = _read(path)
+        if made.get("sheet_id") != sheet_id:
+            return None
+        text = (ROOT / made["doc"]).read_text()
+        for row in made["limits"] + made.get("fulfilment", []):
+            row["span_found_in_text"] = rules.span_found(row, text)
+        return made
+    except (ValueError, KeyError, OSError):
+        return None
+
+
+def _with_order(sheet):
+    """(a copy of the sheet whose limits carry `from_order`, the `order` summary). The sheet the engine runs on
+    is not touched. `matches` is worked out now, so a limit Dana has moved shows as changed from the order."""
+    made = _s.get("order")
+    if not made:
+        return sheet, None
+    read = {r["limit_id"]: r for r in made["limits"] if r.get("span_found_in_text")}
+    lines, matching, total = [], 0, 0
+    for line in sheet["lines"]:
+        limits = []
+        for limit in line["limits"]:
+            total += 1
+            r, b = read.get(limit["id"]), limit["bound"]
+            if r is None:
+                limits.append(limit)
+                continue
+            same = r["op"] == limit["op"] and r["unit"] == limit["unit"] and (
+                (b["source"] == "issuer" and r["bound"]["source"] == "issuer" and abs(b["value"] - r["value"]) < 1e-9) or
+                (b["source"] == "shopper" and r["bound"]["source"] == "shopper" and b["fact"] == r["bound"]["fact"]))
+            matching += 1 if same else 0
+            limits.append(dict(limit, from_order={
+                "doc": made["doc"], "quote": r["quote"], "start": r["start"], "end": r["end"], "value": r["value"],
+                "op": r["op"], "unit": r["unit"], "terms": r["terms"], "measurement": r.get("measurement"),
+                "extractor": r["extractor"], "span_found_in_text": True, "matches": same}))
+        lines.append(dict(line, limits=limits))
+    how = {f["line_id"]: f for f in made.get("fulfilment", []) if f.get("span_found_in_text")}
+    lines = [dict(l, fulfilment_from_order={k: how[l["id"]][k] for k in ("how", "quote", "start", "end")},
+                  ) if l["id"] in how else l for l in lines]
+    summary = {"doc": made["doc"], "title": made.get("title"), "issuer": made.get("issuer"),
+               "limits_in_sheet": total, "limits_derived": len(read), "limits_matching": matching,
+               "limits_matching_sheet_file": made.get("limits_equal_to_the_sheet"),
+               "reading": "the agent's reading of the order matches the sheet on %d of %d limits" % (matching, total),
+               "derived_at": made.get("derived_at"), "extractor": made.get("extractor"),
+               "delivered_by": _s.get("order_delivery") or {"via": "file", "doc": made["doc"]}}
+    return dict(sheet, lines=lines), summary
+
+
 def _load_extras(pool, from_data):
     """Display-only material beside the figures: instruction-like passages found on pages (each a span of the
     page's text, checked again here) and the planted test page's own reading. None of it reaches the pick rule."""
@@ -140,7 +195,8 @@ def _load(keep_changes=False):
     from_data = _has_data_pool() and not any(str(p["store"]).endswith(".example") for p in pool)
     mode = "fixture" if not from_data else ("replay" if config.mode() == "replay" else "live")
     _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data), mode=mode, loaded=True,
-              readers=_load_readers(from_data), extras=_load_extras(pool, from_data))
+              readers=_load_readers(from_data), extras=_load_extras(pool, from_data),
+              order=_load_order(sheet_id, from_data))
     if keep_changes and (_s.get("sheet") or {}).get("id") == sheet_id:
         return
     strikes_file = (DATA if from_data else FIXTURES) / "strikes.json"
@@ -237,6 +293,9 @@ def _attach(state):
             made["cheaper_than_the_pick"] = bool(line["why"]["pick_price_cents"]) and \
                 made["candidate"]["product"]["price_cents"] < line["why"]["pick_price_cents"]
             state["planted"] = made
+    state["sheet"], order = _with_order(state["sheet"])
+    if order:
+        state["order"] = order
     state["issuer_key"] = dict(_s["issuer_key"])
     state["readers"] = _s.get("readers")
     if _s.get("readers"):
@@ -435,6 +494,15 @@ def use_sheet(sheet_id: str) -> dict:
         _load()
         obs.session(sheet_id)
         return _recompute(why="use_sheet")
+
+
+def set_order_delivery(info: dict) -> dict:
+    """Not in the contract's list: how the order reached the app (for example an Airbyte sync's job id and
+    time). Shown as `order.delivered_by`; it changes nothing else."""
+    with _lock:
+        _ensure()
+        _s["order_delivery"] = dict(info or {}) or None
+        return _recompute(record=False, why="order_delivery")
 
 
 def reload_data() -> dict:

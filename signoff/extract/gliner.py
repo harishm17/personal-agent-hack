@@ -7,7 +7,7 @@ it for the quote. The same `spans.finish` check judges the result as for every o
 import re
 
 from signoff import config
-from signoff.engine import rules
+from signoff.engine import obs, rules
 from signoff.extract import spans
 
 MODEL = "urchade/gliner_multi-v2.1"
@@ -40,6 +40,8 @@ def entities(text, names):
     labels = [LABELS.get(n, n.replace("_", " ")) for n in names]
     if not labels or not text:
         return []
+    obs.egress("Superlinked SIE (%s)" % MODEL, "mark figure spans in one store page",
+               {"text": text, "labels": labels}, ("store_text", "product"))
     return client().extract(MODEL, {"text": text}, labels=labels).get("entities") or []
 
 
