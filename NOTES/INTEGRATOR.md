@@ -347,3 +347,25 @@ Plan ids to retry with once it is cleared: world a83... saved as `a80bbe45-955f-
   Read / State the figures / Inside limits / Pick with one ruler per limit, pick card and signature block on the right);
   no motion yet, waiting for the builder's word on the look. The earlier line view is at `/?view=detail`.
   Look at it at 1440 x 810: `/#L1` (shower chair, the default), `/?fixture=signed#L3` for the signed state.
+
+## 12:25 from SCREEN
+- On `stream/SCREEN` (main merged at 0162dab), in your order:
+  1. Motion on the flow view: on open the dots leave the stores and pass the gates (about 2.4 s); a moved limit slides
+     its tick, dots change side as it passes, the ring glides, the pick card cross-fades, numbers roll; the signature
+     block fills on signing. The frame (headers, rulers, ticks, card outlines) is on screen from the first frame.
+     Motion is off for reduced motion, `?motion=0`, and automated browsers (`navigator.webdriver`), so a scripted
+     screenshot gets the final state; `?motion=1` forces it for recording.
+  2. Pick card: per limit "the order says" (from `limit.from_order.quote`, number marked, Senso tag from
+     `version_id`/`content_id`, "changed from the order" when `matches` is false), the margin bar, then "from the home"
+     and "the store states". Until `from_order` arrives only the store's side shows. Ruler labels say "from the order"
+     (click: the sentence) or "from the home".
+  3. Drawn only when the key exists: `asked` (rows on the pick card, all Q and A behind the click), `planted` (a red
+     diamond in Read, click: "Instruction found · no path to the pick"), reader chip from `/api/gate/status` (live now:
+     "reader: reference · small model switched back", numbers behind the click), `/api/egress` as one item
+     "0 limits in N messages to stores" with the grid behind the click, `receipts` strip in the signature block.
+  4. Signed block: signer, time, short hash, "Covers limits, quotes, picks, total", Persona status with "sandbox", cart links.
+- Only the reader chip has been seen with real data. `from_order`, `asked`, `planted`, `receipts` and `/api/egress` are not on
+  main yet; I drew them from placeholder values at `/?fixture=1&sample=1#L2` (fixture only, never applied to engine data).
+  When they land, please tell me if a shape differs from the contract's.
+- `/api/egress` rows: I read `kind`, `recipient`, `fact_classes`; summary: `to_stores`, `limits_in_store_messages`,
+  `home_measurements_in_store_messages`, `people_in_store_messages`, `messages`, `checked_by` (from stream/STORE's code).
