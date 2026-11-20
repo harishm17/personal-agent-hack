@@ -78,6 +78,7 @@ function render() {
   $("stage").classList.add("ready");
   const sheetView = location.hash === "#sheet";
   $("stage").classList.toggle("sheet", sheetView);
+  $("stage").classList.toggle("sql", !sheetView && ui.panel === "sql");
   if (sheetView) { renderSheet(); renderSeal(); flashChanges(); return; }
   if (!$("box")) $("mid").innerHTML = '<div id="plot"><svg id="box" role="img" aria-label="Every candidate of this line against its limits"></svg></div><div id="side"></div>';
   const id = lineId();
@@ -113,10 +114,12 @@ function renderHead({ line, index }) {
     <span class="key shopper">${esc(shopper.name)} stated</span>
     <span class="key store">store's words</span>
     <span class="key unknown">not stated</span>
+    <button id="sqlbtn" aria-pressed="${!!line && ui.panel === "sql"}" title="The one SQL statement that returns this line's passing box. Key: Q">SQL</button>
     <button id="elena" aria-pressed="${!!line && ui.panel === "shopper"}" title="${esc(shopper.name)}'s measurements and her chat with the agent. Key: E">${esc(shopper.name)}</button>
     ${SIM ? `<button id="simbtn" class="simbtn" aria-pressed="${ui.panel === "sim"}">SIMULATION</button>` : ""}
     ${mode ? `<span class="badge">${mode}</span>` : ""}`;
   $("elena").onclick = () => togglePanel("shopper");
+  $("sqlbtn").onclick = () => togglePanel("sql");
   if (SIM) $("simbtn").onclick = () => togglePanel("sim");
 }
 
@@ -172,6 +175,7 @@ function storeWords(c) {
 }
 
 function renderSide(view) {
+  if (ui.panel === "sql") return renderSqlPanel(view);
   if (ui.panel === "shopper") return renderShopperPanel(view);
   if (ui.panel === "sim") return renderSimPanel(view);
   const { line, shown, pick } = view;
@@ -180,9 +184,8 @@ function renderSide(view) {
   let html = "";
   if (shown) {
     const { parts, ends } = storeWords(shown);
-    html += `<div class="cap">${esc(shown.product.store)} states, in its own words</div>
-      <div class="words">${parts.join(" ") || "No sentence with a figure was found on this page."}
-        <a href="${esc(shown.product.url)}" target="_blank" rel="noopener" title="${esc(shown.product.title)}">the store's page ↗</a>
+    html += `<div class="words">${parts.join(" ") || "No sentence with a figure was found on this page."}
+        <a href="${esc(shown.product.url)}" target="_blank" rel="noopener" title="${esc(shown.product.title)}">${esc(shown.product.store)}'s page ↗</a>
         ${ends.map((e) => `<span class="end">${e}</span>`).join("")}</div>`;
   } else {
     html += `<div class="cap">Nothing is proposed for this line</div>
@@ -204,7 +207,48 @@ function renderSide(view) {
   } else {
     html += `<div class="why"><b>${why.inside} of ${why.total}</b> are inside ${limitsWord}. ${rule}, has nothing to choose from.</div>`;
   }
+  if (shown) html += agentWords(shown);
   $("side").innerHTML = html;
+}
+
+/** What the store's own agent answered about delivery and returns, in its words. */
+function agentWords(c) {
+  const bits = [];
+  if (c.arrival && c.arrival.quote) bits.push(`delivery, stated not guaranteed: “${esc(c.arrival.quote)}”`);
+  else if (c.arrival) bits.push("delivery time: not stated");
+  const u = c.undo;
+  if (u && u.quote) bits.push(`to undo${u.applies_to && u.applies_to !== "all" ? " (" + esc(u.applies_to) + ")" : ""}: “${esc(u.quote)}”${u.fee ? ", " + esc(u.fee) : ""}`);
+  return bits.length ? `<p class="asked"><b>${esc(c.product.store)}'s agent, asked:</b> ${bits.join("; ")}</p>` : "";
+}
+
+// ---------- the SQL view: one statement returns the passing box ----------
+const sql = { key: null, data: null, error: null };
+
+function renderSqlPanel({ line }) {
+  const key = line.line_id + "|" + state.version;
+  if (sql.key !== key && !FIXTURE && !SIM) {
+    sql.key = key;
+    fetch("/api/sql/passing-box?line_id=" + encodeURIComponent(line.line_id))
+      .then((res) => res.ok ? res.json() : Promise.reject(new Error(res.status === 503 ? "SingleStore is not reachable" : "HTTP " + res.status)))
+      .then((data) => { sql.data = data; sql.error = null; })
+      .catch((error) => { sql.data = null; sql.error = error.message; })
+      .finally(() => { if (ui.panel === "sql") renderSqlPanel({ line: state.lines.find((l) => l.line_id === lineId()) }); });
+  }
+  let body;
+  if (FIXTURE || SIM) body = `<div class="none">The SQL view needs the live engine and SingleStore; this page is drawing ${FIXTURE ? "fixture data" : "a simulation"}.</div>`;
+  else if (sql.error) body = `<div class="none">${esc(sql.error)}. The screen and the checks do not depend on the database.</div>`;
+  else if (!sql.data || sql.data.line_id !== line.line_id) body = `<div class="none">Asking SingleStore…</div>`;
+  else {
+    const id = (store, pid) => store + "|" + pid;
+    const rows = new Set(sql.data.rows.map((r) => id(r.store, r.product_id)));
+    const inside = new Set(line.candidates.filter((c) => c.status === "inside").map((c) => id(c.product.store, c.product.product_id)));
+    const same = rows.size === inside.size && [...rows].every((r) => inside.has(r));
+    const onlySql = [...rows].filter((r) => !inside.has(r)).length, onlyEngine = [...inside].filter((r) => !rows.has(r)).length;
+    body = `<pre class="sqltext">${esc(sql.data.sql)}</pre>
+      <p class="sqlresult ${same ? "same" : "differ"}"><b>${rows.size} rows</b> came back. The engine, in Python, has <b>${inside.size}</b> amber dots.
+      ${same ? "<b>They are the same products.</b>" : `<b>They differ:</b> ${onlySql} only in the query, ${onlyEngine} only in the engine.`}</p>`;
+  }
+  $("side").innerHTML = `<div class="panel"><h2>SingleStore: this one statement is the passing box of this line</h2>${body}</div>`;
 }
 
 // ---------- Elena's controls ----------
@@ -354,6 +398,13 @@ function renderSheet() {
 }
 
 // ---------- the seal ----------
+function sensoSummary() {
+  const rows = Array.isArray(state.senso) ? state.senso : [];
+  if (!rows.length) return "";
+  const blocked = rows.filter((r) => r.verdict === "conflict" || r.verdict === "unsupported").length;
+  return `<span class="senso ${blocked ? "blocked" : ""}" title="Each sentence of the sheet, checked by Senso against the order and the handout">Senso: ${rows.length} sentences checked, ${blocked ? blocked + " block the signature" : "none in conflict"}</span>`;
+}
+
 function renderSeal() {
   const { seal, issuer_key: key, sheet } = state;
   const el = $("seal");
@@ -361,7 +412,7 @@ function renderSeal() {
   if (!seal.signed) {
     el.innerHTML = `<span class="state">${esc(seal.text || "Not signed. No cart exists at any store.")}</span>
       <span class="issuer"><b>Only ${esc(sheet.issuer.name)}'s signature creates the carts.</b></span>
-      <span class="grow"></span><span class="total">${state.counts.lines_ready} of ${state.counts.lines_total} lines ready${state.total_cents ? " · " + money(state.total_cents) : ""}</span>`;
+      <span class="grow"></span>${sensoSummary()}<span class="total">${state.counts.lines_ready} of ${state.counts.lines_total} lines ready${state.total_cents ? " · " + money(state.total_cents) : ""}</span>`;
     return;
   }
   const sig = seal.signature || {};
@@ -396,6 +447,7 @@ addEventListener("keydown", (e) => {
   if (n >= 1 && n <= state.lines.length) location.hash = state.lines[n - 1].line_id;
   if (e.key === "0" || e.key === "Escape") location.hash = "sheet";
   if (e.key === "e") { e.preventDefault(); togglePanel("shopper"); }
+  if (e.key === "q") togglePanel("sql");
 });
 
 new ResizeObserver(() => state && render()).observe($("mid"));
