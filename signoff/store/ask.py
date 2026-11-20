@@ -87,19 +87,35 @@ def parse_reply(store: str, question: str, answer: str, asked_at: str) -> dict:
             "delivery": delivery, "returns": returns}
 
 
-def ask(store: str, query: str = QUESTION) -> dict:
-    """One real ask_business call; the reply is kept verbatim in `answer`."""
+def _need_for(store: str, sheet_id: str | None = None) -> str:
+    """The `need` of the first line the store has products for in the active sheet (the sheet's own words)."""
+    from signoff.store import sheetctx
+    sheet_id = sheet_id or sheetctx.active_id()
+    sheet = json.loads((ROOT / "sheets" / f"{sheet_id}.json").read_text())
+    f = sheetctx.pool_dir(sheet_id) / f"{store}.json"
+    lines = sorted({lid for r in (json.loads(f.read_text()) if f.exists() else []) for lid in r["line_ids"]})
+    needs = {l["id"]: l["need"] for l in sheet["lines"]}
+    return needs.get(lines[0]) if lines else sheet["lines"][0]["need"]
+
+
+def ask(store: str, query: str | None = None) -> dict:
+    """One real ask_business call; the reply is kept verbatim in `answer`. Without a query: the delivery and returns question
+    for the first line the store has products for in the active sheet."""
+    from signoff.store import sheetctx
+    query = query or question_for(_need_for(store))
     r = ucp.ask_business(store, query)
     answer = ((r.get("answer") or {}).get("plain")) or json.dumps(r.get("answer"))
     now = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
     rec = parse_reply(store, query, answer, now)
     if r.get("mode") == "replay":
         rec["mode"] = "replay"
-        saved = ANSWERS / f"{store}.json"
-        if saved.exists():  # the saved record keeps its own question and time
-            old = json.loads(saved.read_text())
-            old = old[0] if isinstance(old, list) else old
-            rec.update(question=old.get("question", query), asked_at=old.get("asked_at", now))
+        for d in [sheetctx.answers_dir(), *sheetctx.all_answer_dirs()]:
+            saved = d / f"{store}.json"
+            if saved.exists():  # the saved record keeps its own question and time
+                old = json.loads(saved.read_text())
+                old = old[0] if isinstance(old, list) else old
+                rec.update(question=old.get("question", query), asked_at=old.get("asked_at", now))
+                break
     return rec
 
 
@@ -114,10 +130,7 @@ def refresh(stores: list[str] | None = None, sheet_id: str | None = None) -> lis
     needs = {l["id"]: l["need"] for l in sheet["lines"]}
     out = []
     for s in stores or sheet["stores"]:
-        f = pool_dir / f"{s}.json"
-        lines = sorted({lid for r in (json.loads(f.read_text()) if f.exists() else []) for lid in r["line_ids"]})
-        need = needs.get(lines[0]) if lines else sheet["lines"][0]["need"]
-        rec = ask(s, question_for(need))
+        rec = ask(s, question_for(_need_for(s, sheet_id)))
         (ans_dir / f"{s}.json").write_text(json.dumps([rec], indent=1, ensure_ascii=False))
         out.append(rec)
     return out
