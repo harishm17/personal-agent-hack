@@ -87,13 +87,17 @@ function apply() {
 }
 // Optional extras from their own routes; either may be missing, and the screen draws only what exists.
 const aux = { egress: null, gate: null, key: "" };
+let introUntil = 0;
 async function loadAux() {
   if (FIXTURE) return;
   const get = (url) => fetch(url, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
   const [egress, gate] = await Promise.all([get("/api/egress?limit=5000"), get("/api/gate/status")]);
   const key = JSON.stringify([egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, gate.history && gate.history.length]]);
   aux.egress = egress; aux.gate = gate;
-  if (key !== aux.key && state) { aux.key = key; last.quiet = true; render(); }
+  if (key !== aux.key && state) {       // redraw quietly, and never in the middle of the opening motion
+    aux.key = key;
+    setTimeout(() => { last.quiet = true; render(); }, Math.max(0, introUntil - performance.now()));
+  }
 }
 setInterval(loadAux, 5000);
 let live = false;
@@ -162,6 +166,7 @@ function travel(node, from, delay, duration = 460) {
 function intro() {
   const gates = [...document.querySelectorAll(".gate")];
   if (gates.length < 4) return;
+  introUntil = performance.now() + 2700;
   const byId = (root) => new Map([...root.querySelectorAll("[data-id]")].map((n) => [n.dataset.id, n]));
   const T = [0, 520, 1080, 1640, 2100];        // when each gate's dots set off; the last entry is the pick card
   // the frame (headers, rulers, ticks) is there from the first frame; counts and bars come up with their gate
