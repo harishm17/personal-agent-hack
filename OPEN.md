@@ -58,6 +58,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | S12 | replay mode for sheet 2 | ok |
 | S16 | sheet 3 pool and store answers fetched once into data/sheet3/ (the teacher's list: eleven stores, four lines), with options and images; counts per store and line in NOTES | ok |
 | S17 | tables, SQL, ledger, replay and carts follow sheet 4 through `data_from`; `create_carts` returns the cart's `lines` so SIGN's line comparison (G6) can run | ok |
+| S18 | `GET /api/tools`: one real number per tool used in this run, each with its source | open |
 | S13 | Amplitude: the gate's variant attached to the session from its start (`experiments` is null now); both arms run once; delivered counts checked (only 2 events were delivered in the 13:25 run) | open |
 | S14 | the gate's verdict re-run after the three reading rules; it says "kept" or "switched back" from the numbers, with the evidence; no line claims Amplitude decided it | open |
 | S15 | `/api/sql/passing-box?source=airbyte` runs the same statement on the rows Airbyte delivered (`airbyte_pool`), only if under 20 minutes; otherwise WONTDO and the claim is "delivered beforehand" | open |
@@ -97,6 +98,8 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | C9 | a quiet sheet switcher in the top bar (from `GET /api/sheets`), laptop only | main |
 | C10 | evidence shows the shortest statement that carries the value for this option, with the reason it was matched; the "Method" line replaced by what guards the right number (two readers agree, the number sits with its label, every stated value passes), only as far as it is true in the state | open |
 | C11 | a passing row can be chosen by the shopper ("choose this one"), shown as chosen by her; only when the route exists | open |
+| C12 | the demo director's six fixes (unclear rows say why; the fold line summarises what it folds; plurals; the 404; a warning before switching sheets; "now at <store>" when a pick moves) | open |
+| C13 | a "Tools at work" drawer from `GET /api/tools` | open |
 | C8 | Detail view, dots, rulers, trays and tiles removed | open |
 
 ## TRAIL
@@ -129,7 +132,15 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 |---|---|---|
 | H1 | the run's knowledge as a graph built from real records only: people, the home's facts, the order's items and limits, products, stores, strikes, purchases, and who owns each | open |
 | H2 | Cognee holds it: a dataset per owner with its permissions; a write to the issuer's dataset by the shopper's side is refused and shown | open |
+| H4 | `/graph/` leads with the run as a workflow graph: each step a node with its tool and its real count, products shown by name moving along it and leaving at the rule they fail; the knowledge graph of one decision below it | open |
 | H3 | `GET /api/graph?line_id=` (nodes and edges for one item, with which backend answered) and `/graph/` drawing it quietly | open |
+
+## REVIEWS (what the web says, quoted with its source)
+| id | item | status |
+|---|---|---|
+| R1 | for the products that pass an item's rules: a web search for reviews (Exa), the pages read, and a rating, a review count or one reviewer sentence kept only as an exact quote with its source address; cached; nothing kept that cannot be quoted | open |
+| R2 | `GET /api/reviews?line_id=` and an optional `reviews` block per candidate for the screens; reviews never change whether a product passes; "best reviewed among those that pass" offered to the shopper as a choice, not applied silently | open |
+| R3 | the step in the run's records (trail feed, outbound ledger: what was sent to the search service, and that no limit, measurement or name was in it) | open |
 
 ## AIRBYTE / RELAY thread
 | id | item | status |
@@ -145,7 +156,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I1 | main switched to sheet 2 when it holds end to end; sheet 1 intact as the fallback | open |
 | I2 | a hand-read sample of `not_stated` and `unclear` on both sheets before any count is said aloud | open |
 | I3 | the list of figures behind the final cart for the builder to read himself | open |
-| I4 | DEMO.md rewritten for the plumber story and the new screen | open |
+| I4 | DEMO.md rewritten from the director's run (surgery lead, class list second); to be checked against the screen at 15:00 | main |
 | I5 | SUBMISSION.md and README from what runs (after the sponsor audit) | open |
 | I6 | backup clip recorded; three timed rehearsals, one in replay mode with the network off | open |
 | I7 | repo public and pushed (needs the builder's yes at 15:45); form submitted by 16:10 | open |
@@ -155,7 +166,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I12 | the lead example is sheet 3, the teacher's list (the builder, 13:25); sheet 2 is second and the fallback | ok |
 | I13 | main switched to sheet 4 (the lead) when it holds end to end; sheet 3 reachable through the switcher | ok (13:38; sheet 3 through the switcher still to be seen) |
 | I14 | the lead example is sheet 4, surgery short; sheet 3 the class list is the 15-second second; the plumber and six-item sheets are not shown (the builder: "your choice", 13:30) | ok |
-| I15 | the run of show from the demo director, and the flow designer's spec forwarded to TRAIL and SCREEN | open |
+| I15 | the run of show from the demo director, and the flow designer's spec forwarded to TRAIL and SCREEN | ok |
 | I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
 ## The builder

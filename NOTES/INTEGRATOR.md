@@ -1633,3 +1633,181 @@ Quiet two-word cards where no record exists yet: "no ledger rows" (what stayed o
 "No memory record" (`/api/talk/threads` and `/api/memory` answer 404 on main).
 The replay engine (play, pause, step, the rail as scrubber, space and arrow keys, 24 s) is in the same commit but I have
 not yet watched it frame by frame; that is next.
+## 13:59 from ENGINE — DONE E27: three reading modes, "disagreement blocks" is the default
+- Modes in the state, named as you asked: `reference`, `disagreement blocks` (default), `both must agree` (strict, for the gate).
+  `two_readers.modes` lists them with one sentence each; `two_readers.strict_mode_measured` keeps the strict mode's outcome,
+  computed in code on the sheet as on disk whichever mode is on. STORE is told what the gate calls (NOTES/STORE.md).
+- **The default's effect, measured against the reference alone:**
+  | sheet | figures the readers read differently | candidates whose status changes | picks | total |
+  |---|---|---|---|---|
+  | 4 | 5 (238 agree, 27 only the reference, 3 only Qwen) | **1**: "Shower Chair with Removable Back" (vivehealth.com), inside → unclear, "fits inside the tub: readers disagree: 21.5 and 17.75 in" | no change | $114.69 |
+  | 3 | 0 (197 agree, 2 only the reference, 37 only Qwen) | 0 | no change | $523.68 |
+  You expected the 5 to become unclear: 5 **figures** are blocked, but only one **candidate** changes, because the other four
+  disagreements sit on candidates that were already outside or unclear on another stated value. Sheet 4 now: L1 8 inside / 12
+  outside / 2 unclear / 20 not stated; L4 46 / 16 / 4 / 7; L5 7 / 20 / 3 / 7.
+- **The strict mode's stored outcome, as measured:** sheet 4: 5 real disagreements caught, 27 right figures blocked, 18 candidates
+  moved to unclear, the walker pick $44.71 → $69.99, total $114.69 → $139.97 ($25.28 dearer). Sheet 3: 0 caught, 37 figures only
+  Qwen found, 39 candidates moved to unclear, no pick changes.
+- Proof: `tests/engine/test_options.py::test_by_default_only_a_real_disagreement_blocks…` and `…both_readers_must_agree…`; 282 pass.
+- **Two mistakes of mine in this step, both fixed, so you know what was on my branch for a few minutes:** (1) commit `166e7d9` went
+  in with a STORE test failing (a sheet's declared units leaked between tests); the next commit fixes it by making declared units
+  belong to one sheet at a time. (2) While checking a total I found that on the **first** load of a sheet that declares units, its
+  figures were prepared before the units were declared, so the first load could differ from a reload (it did on sheet 3's stored
+  strict outcome). Units are now declared before anything is prepared; `test_the_first_load_of_a_sheet_that_declares_units_equals_every_later_load`.
+
+## 14:04 from ENGINE — DONE E29; the prompt example changed and sampled; read-ledger rows are committed
+**DONE E29: the shopper may choose any candidate that passes.** `POST /api/shopper/choose {line_id, candidate_id}` (I added nothing
+to your guard list: add the path) → `state.set_shopper_choice`. Accepted only for a candidate whose status is `inside`; a choice of
+an outside, unclear, not stated or struck candidate is refused with 409 and the reason ("that product cannot be chosen: it is
+unclear (bar length: page states both 14 and 18.75 and 40 in)"). The line gains `picked_by`: `"shopper"` or `"rule"` (the default,
+`null` when the line has no pick); `{"candidate_id": null}` returns to the rule; the canonical sheet carries `picked_by` per line, so
+the hash changes with a choice and returns when it is undone. A limit change that puts the chosen product outside drops the choice:
+the rule's pick stands and the line carries `choice_dropped: {candidate_id, title, why}`. Receipts: `shopper_choice` for each
+choice and each return, `shopper_choice_dropped` when a limit drops one. On sheet 4 over HTTP: choosing the 24 Inch bar ($34.99)
+moves the total $114.69 → $121.69 and back. Test `test_the_shopper_may_choose_any_candidate_that_passes_and_nothing_that_does_not`;
+284 tests pass. It took about fifteen minutes.
+
+**The reader's example (TRAIL's finding 1).** The example at the end of the instructions showed `"value": 300 … "unit": "lb"`, the
+lead sheet's weight limit. It now shows `"value": 7.25 … "unit": "<unit as written>"`, which is no sheet's figure, bound or unit, and
+a test asserts that nothing in a prompt outside the store's own page text holds 300, 21.5, 28, a price, "lb" in quotes or a name.
+- **Sample re-read under the new example** (reference reader, 65 option pages of sheet 4 including the three picks' pages, 120
+  figures): **114 have the same numbers, 6 differ, none of them a weight capacity** (the figure the old example could have primed)
+  and none on a pick's deciding value. All 6 are grab bar lengths at vivehealth.com: on three option pages the reader now also
+  returns "19.11 end to end" beside 16; on three it no longer returns a "6" among 6, 8 and 12. That is the size of the reader's
+  own variation between passes (5%), so I cannot attribute it to the example; no status or pick depends on it.
+- The committed readings were made with the old example. I kept them (your rule: read once, cached): the cache accepts a reading
+  made with instructions that differ only in that example line (`reader.SYSTEM_WITH_THE_OLD_EXAMPLE`), and every new read uses the
+  new one. If you want every page re-read under the new example, it is `extract.run --force` per sheet (about 3 minutes each).
+
+**The ledger rows for the reads (TRAIL's finding 2).**
+- Why main had none and why many were 28 bytes: `data/egress/` is git-ignored, so rows written in my worktree never reach main;
+  and the 28-byte rows were mine, from **tests**: a faked reader call (`{"system": "s", "user": "u"}`) was being written to the real
+  ledger, 252 times. Tests now set `SIGNOFF_EGRESS=off` and leave no rows.
+- Now committed with the readings: **`<figures>/_runs/read_ledger.jsonl`** (`data/figures/_runs/` for sheet 1's data, which sheet 4
+  uses: 591 rows, 197 pages × 3 readers; sheet 3: 1,041 rows), rebuilt by `python -m signoff.extract.ledger --sheet <id>` and after
+  every `extract.run`. A row is rebuilt only when the cached reading's key matches the prompt the code builds for that page, so
+  `bytes` and `payload_sha256` are those of the prompt as sent (317 to 11,225 bytes; 1.08 MB to the reference in all on sheet 4).
+  Each row has `parts` (reading instructions; figure names with units and meanings from the sheet; the store's page text for that
+  option, each with its size), `withheld` (limits and their values, the home's measurements, prices, other pages and other stores,
+  the order document, the people on the sheet), `tools: 0`, `transport`, and the page it was about.
+- Said on the row rather than hidden: rows for `claude -p` carry `added_by_the_command_line` (the tool adds a note with the
+  logged-in account's address and a description of the local environment and titles the session from the same text; `bytes` counts
+  our prompt only).
+- For the trail: `GET /api/reads/ledger` (`?rows=false` for the summary) returns them for the running sheet with `calls`,
+  `by_recipient`, `withheld_in_every_call`, `tools_in_any_call`. Test `test_a_read_ledger_row_says_what_the_call_was_given…`.
+- [ ] For TRAIL or STORE: these rows are not in STORE's `/api/egress`; either the trail reads `/api/reads/ledger` beside it, or
+  STORE's `record()` gains optional `parts` and `withheld` and I pass them on every live call (I pass the classes today).
+
+**E26's re-check:** nothing is left; the note at 13:42 stands, with the counts corrected at 13:44.
+**I am idle after this.** Open with you, not with me: add `/api/shopper/choose` (and, if wanted, `/api/reads/ledger`) to the guard
+list; the vanity words on sheet 2 (not shown). All ENGINE lines E1 to E29 are closed.
+## 14:10 from SCREEN (your 13:56 note; main merged at 2bd928c; my port: sheet 4 then sheet 3, replay mode)
+- DONE C10: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s4-L5.png. The evidence shows the engine's shortest statement for the option ("16” Grab bar") with
+  "· option: 16 Inch" beside "the store states". The "Method" sentence is gone from every sheet. Under each passing figure:
+  "two readers agree" / "3 readers agree" (from the figure's `agreed_by`, or `readers` when E27 lands), "sits with its
+  label" (the figure's `label`, and `number_check.paired` not false), "every stated value passes" (several `values`, or
+  `statements` > 1, on a passing check). Nothing is drawn when the state does not carry it. I changed my own test with
+  it: tests/screen no longer asserts the Method sentence, it still asserts the screen never says "proves".
+- VERIFIED, limit change with a really signed request over the event stream (replay mode, my port, a key enrolled with
+  the laptop's code by `demo/signer.py`, which signs as the phone does): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-real-limit.png and
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-real-limit2.png. Grab bar length 16 → 24: the header value rolls, cells re-check, the pick moves to the
+  24 Inch bar at $34.99, the old pick is pinned under the fold line with "was picked" for about 3 s, the why card shows
+  "changed from the list".
+- VERIFIED, signing with a real signed request in replay mode: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-real-sign.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s4-signed-real.png. The last
+  two steps fill, then signer, "self-declared", hash, "Hash covers limits, strikes, picks +7", three cart links (marked
+  "replay") and "5 receipts verified". Two things to know: (1) the server refuses a signature until the identity check
+  passes (403 identity_not_verified); I cannot pass Persona's hosted flow from a script, so I ran MY port with
+  PERSONA_REQUIRED=0 for this, which is why it reads "self-declared". The "identity checked (sandbox)" line is still
+  unseen with real data. (2) The signed name was shown twice ("Dana (self-declared)" then "self-declared"); fixed.
+- VERIFIED C9 against the real route: I clicked the menu in the page and chose "Room 12 class supplies"; the screen
+  redrew for sheet 3 with a new enrol code (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/menu-real.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-after-switch.png). Only `show: true` sheets are listed.
+- Sheet 3 on live data, every item: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live-C1-several.png (headphones: rows that never state a level, "95 dB" in
+  red, "× 24"), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live-C2.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live-C3.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live-C4.png. NOT found in the live state: any headphone whose
+  term carries several values, so the "75, 85 or 94 dB" cell is only seen in my placeholder fixture (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-C1.png). The
+  live state has several values on crayons and pencils only (status unclear). If the BuddyPhones page should show it,
+  that is ENGINE's reading.
+- Tabs: Memory (/graph/) and Conversations (/talk/) are in the bar and show only when their page answers 200 to HEAD.
+  NOTES/GRAPH.md and NOTES/TALK.md carry the exact top-bar markup and the visual system.
+- Memory keys (E28), written against guessed names, unseen: a home measurement with `remembered: true` shows
+  "remembered by <remembered_by|by>, <date>"; a struck candidate whose `strike.remembered` or `strike.from_memory` is true
+  reads "struck before", reason on click.
+- NOT DONE yet: the 150% and 1920 pass on sheets 4 and 3 (screenshots taken, not yet gone through), hit areas.
+
+## 14:20 from SCREEN: the designer's remaining items (stream/SCREEN)
+- DONE, 150% zoom (960 x 540) and 1920 x 1080 on sheets 4 and 3, live data: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s4-L5-960.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s4-L5-1920.png,
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s4-L1-960.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s4-L1-1920.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s3-C1-960.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s3-C4-1920.png. Changes: the sheet title is never
+  cut (at narrow widths the grey meta text gives way to "· invented"); stepper labels wrap instead of being cut; product
+  names wrap to two lines when narrow; the number of rejected rows shown above the pick is fitted to the height (one at
+  150%, five at 1440 x 810, more on a taller window), the rest behind the fold line. Still cut with an ellipsis by
+  design: a long product name at 1440 (full name in the why card) and the store agent's reply (full text on click).
+- DONE, hit areas: "change", "store page", the fold lines' links and the shopper link have an invisible 0.5rem margin.
+- DONE, signed state on real data: see 14:10 (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s4-signed-real.png), with the caveat there (identity requirement off
+  on my port, so "self-declared"; "identity checked (sandbox)" unseen with real data).
+- My port 8003: sheet 4, replay mode, PERSONA_REQUIRED=0, a rehearsal key enrolled by demo/signer.py. It is a dev port;
+  nothing on main was touched.
+## 13:59 from MEMORY — DONE M1, DONE M2; M4 runs on 8007 with two checks waiting for two receipt fields from ENGINE
+DONE M1: `signoff/memory/` (`sources.py`: what may become a memory; `store.py`: `write`, the SingleStore table `memory`, the mirror `data/memory/memory.jsonl`).
+A memory is made only from a receipt in a chain that recomputes, or from a saved store answer; an approver's memory needs the accepted signed request with the
+same key behind its receipt. Every read is proved against the records again, so a row put into the table by hand is shown `proved: false` and never recalled.
+`uv run -q pytest tests/memory -q` → `11 passed, 1 deselected in 0.16s`; `-m live` (its own table in SingleStore, dropped after) → `1 passed`. The refusals:
+`test_a_made_up_memory_is_refused`, `test_an_issuer_memory_without_a_signed_request_is_refused`, `test_a_memory_that_says_more_than_its_record_is_refused`,
+`test_nothing_is_remembered_from_a_chain_that_was_edited`, `test_a_row_put_in_the_store_by_hand_is_never_recalled_and_is_shown_as_not_proved`.
+DONE M2: `signoff.memory.recall(sheet)` in ENGINE's shape (their hook applies it; 6 ms cold, 1.4 ms after, no network), `GET /api/memory`, `GET /api/memory/recall[?line_id=]`.
+`curl -s localhost:8007/api/memory` → `"read_from": "singlestore", "counts": {"rows": 42, "proved": 42, "not_proved": 0, "by_kind": {"store_answer": 39, "home_measurement": 1, "strike": 1, "purchase": 1}}`.
+`curl -s 'localhost:8007/api/memory/recall?line_id=L5'` → 6 recalled of 42: the strike ("struck from this item before, by a signed request") and 5 store answers. Shapes: NOTES/GRAPH.md, SCREEN.md, TRAIL.md.
+M4 so far (`uv run python -m tests.memory.second_run` against 8007, replay, sheet 4): after the reset the tub width starts at the changed 22.0 in (`remembered`, with the time),
+"Textured Grab Bars" is struck `from_memory` and the pick is the next one ("Metal Grab Bar"), 9 store answers reused with their age. **Two checks fail and are not papered over:**
+the reason and the names. The `strike` receipt keeps no reason and no receipt names the sheet, so the run shows "struck earlier" and "the shopper" instead of the reason and "Elena",
+and the signed order is not tied to a sheet. Asked of ENGINE at 13:53 in NOTES/ENGINE.md (two additive fields in the receipts). M4 closes when they land; nothing else is open on it.
+
+## 14:05 from MEMORY — DONE M3; one finding in the ledger for you; M4 still waits for ENGINE's two receipt fields
+DONE M3: `signoff/memory/meaning.py`. Each memory's sentence is embedded once with Superlinked SIE (`Qwen/Qwen3-Embedding-4B`, 2560 numbers) and kept in SingleStore
+(`memory_vec`, `VECTOR(2560)`); for an item, its need in the sheet's words is the query; one SQL statement ranks with `<*>` and filters by owner and kind among the
+memories recalled for the sheet. It ranks what is shown beside an item and decides nothing. Proof, on 8007: `curl -s 'localhost:8007/api/memory/recall?line_id=L5'` → `by_meaning`:
+`query "grab bar. weight capacity. bar length"`, `recalled 5 of 11`, first `0.466 issuer strike "… struck Textured Grab Bars …"`, then `0.376` the tub measurement, then store answers
+`0.312`, `0.294`, `0.292`. Live test `test_meaning_ranks_the_memories_about_the_item_first` (own tables, dropped after): `uv run -q pytest tests/memory -q -m live` → `2 passed`.
+What each model call was given: `GET /api/memory/context`, counted from the outbound ledger. With main's ledger (`GET localhost:8800/api/egress?sheet=all&limit=5000`, 909 rows, sheets 1 and 4):
+**347 model calls, 0 given memory.** 214 Sonnet and 132 Qwen calls "read figures from one store page" (3,426 and 5,611 bytes a call: one page and the figure meanings), 1 call read the
+order. The only call that carries memory is the embedding of the memories' own sentences, and it is in the ledger under "memory: embed the sentences of memories".
+- [ ] **Finding, not mine to fix:** in 16 of the 214 Sonnet page reads and 16 of the 132 Qwen ones the ledger found a home value in the payload (`sealed_found_in_payload`,
+  class `home_measurement`). I read no payloads (the ledger keeps hashes), so I cannot say whether a store page happens to state the same number or a measurement was sent.
+  Before anyone says "the reader never sees the home", ENGINE or STORE should look at one of those 16.
+- Gate: `./hk check` → `PASS (default) uv run -q pytest -q -x`. Memory reads `data/receipts/` only when receipts are kept on disk (`SIGNOFF_RECEIPTS=file`, the app's default);
+  the test suites that set `memory` get nothing remembered, so a demo run on a laptop cannot change another stream's test.
+- Quirks for the log (AGENTS.md is yours): SIE `Qwen/Qwen3-Embedding-4B` timed out cold at 60 s, answered in 7.7 s on the next call and 0.2 s warm, so warm it before the demo
+  (`GET /api/memory` starts the indexing in the background); `r[0]["dense"]` is a numpy array. `from signoff.obs import egress` is a function, the module is `importlib.import_module("signoff.obs.egress")`.
+## TALK 14:04 — the time box holds; K1, K2, K3 are on `stream/TALK`, K4 follows by 14:40
+- DONE K1: `signoff/talk/` (talk.py, writer.py). A Superlinked model (`Qwen/Qwen3.8-27B-FP8`) writes our message from a
+  purpose and the product; the store's own agent answers through `ucp.ask_business`; the model marks the answering
+  words (kept only if found in the reply word for word); one follow-up carries the short thread. Real run, 13:58, sheet 4,
+  the three picks: `uv run python -m signoff.talk.run --sheet sheet4 --state http://localhost:8800/api/state` →
+  parentgiving.com, carex.com, vivehealth.com: 6 real calls (3 first messages, 3 follow-ups), spaced 3 s, saved in
+  `data/talk/threads/sheet4/*.json`. A saved purpose or message is not asked again; replay mode asks nothing
+  (`status: "not_saved"` when it was never asked). No cart or checkout tool is called anywhere in `signoff/talk/`.
+- DONE K2: `signoff/talk/guard.py`, `uv run pytest tests/talk -q` → `51 passed`. The rule is data (`sharing` on the
+  sheet, default below). Check (a): the sheet's sealed values by match (a limit or home measurement in digits or words,
+  with or without its unit; names; roles). Check (b): spans from `urchade/gliner_multi-v2.1` (Superlinked `extract`);
+  code keeps a span only with true offsets, score ≥ 0.5 and a sealed kind. Cut, rewritten once, checked again; a rewrite
+  that still carries a sealed part or a gap mark is not sent. Each decision is a ledger row (`talk guard: withheld …` or
+  `talk guard: refused, not sent …`, the second with `blocked: true`); a sent message also gets the store client's own row.
+- DONE K3: `POST /api/talk/ask` on my port, three real asks to parentgiving.com about the bath bench, all kept:
+  1. 14:00 `f9faad4b5aed`: 5 parts cut; refused, because the span model marked the word "I" as a person in the rewrite.
+     Nothing was sent. Fixed in code as a general rule: a marked span of under three letters or digits states no fact.
+  2. 14:01 `1553b09d0333`: 5 parts cut; refused, because the writer returned the gaps unchanged. Nothing was sent.
+  3. 14:02 `cbd3c7f37f4f`: 7 parts cut ("My mother", "280 lbs", "hip surgery", "300 lbs", "21.5 inches", "therapist",
+     "Dana"); sent: "Please arrange for expedited shipping of the Deluxe Aluminum Bath Bench by Drive to ensure it
+     arrives by December 2, 2026. Could you also confirm if an opened item can be returned?"; the store agent's real
+     reply begins "Nothing has been arranged, and the store's information does not specify expedited shipping…". The
+     follow-up tried to ask about 300 lbs and 21.5 inches and was refused.
+- For you (sheets are yours). Exact text, the same in `sheets/sheet4.json` and `sheets/sheet3.json`, top level:
+  `"sharing": {"store": ["product", "need_by", "delivery_region"]},`
+  `"delivery_region": "California",`
+  Kinds a rule may list: product, need_by, delivery_region, limit, home_measurement, person, health, money, address.
+  A kind not listed for a recipient is sealed for it. Without `sharing` the code uses exactly this default, and the
+  route says so (`rule.source: "default"`). Without `delivery_region` the agent is not told a region and names none.
+- For you (app.py is yours): nothing to add. `signoff.talk.api` is already in OPTIONAL_ROUTERS and `/talk` is mounted.
+  `POST /api/talk/run` (laptop only) runs the agent's questions for the picks of the active sheet; saved ones cost nothing.
+- Know this: the ledger file is per checkout (`data/egress/` is ignored), so main's ledger gets rows only for what main
+  itself sends. The saved threads carry their own record (draft, removed, sent, reply) and the page reads those.
+- For STORE (noted in NOTES/STORE.md): `egress.CLASSES` has no `health`, `money`, `address`, so those kinds appear in a
+  row's purpose text, not in `fact_classes`.

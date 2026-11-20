@@ -95,7 +95,7 @@ def test_both_readers_must_agree_a_figure_counts_only_when_the_second_reader_rep
               key("b"): [stmt(14.75, variant="b")],                   # another number: the readers disagree
               key("d"): [stmt(24, variant="d")],                      # only the second reader reports it
               key("e"): [stmt(17, variant="e")]}                      # one of two statements is confirmed
-    made, tally = state._require_agreement(reference, second)
+    made, tally = state._require_agreement(reference, second, strict=True)
     by = {(f["variant_id"], f["value"]): f for f in made}
     assert tally == {"agreed": 2, "disagreed": 1, "only_reference": 1, "only_second": 1}
     assert "disagree" not in by[("a", 16)] and "disagree" not in by[("e", 17)]
@@ -105,3 +105,17 @@ def test_both_readers_must_agree_a_figure_counts_only_when_the_second_reader_rep
     # and the rules: a statement the readers do not agree on cannot be compared, so the check is unclear, not absent
     assert rules.comparable(by[("b", 31)], "in") == "readers disagree: 31 and 14.75 in"
     assert rules.comparable(by[("a", 16)], "in") is None
+
+
+def test_by_default_only_a_real_disagreement_blocks_and_a_figure_only_the_reference_reports_counts():
+    key = lambda variant: ("v.example", "p", variant, "length")  # noqa: E731
+    reference = [stmt(16, variant="a"), stmt(31, variant="b"), stmt(12, variant="c"), stmt(20, variant="e"), stmt(17, variant="e")]
+    second = {key("a"): [stmt(16, variant="a")], key("b"): [stmt(14.75, variant="b")], key("d"): [stmt(24, variant="d")],
+              key("e"): [stmt(17, variant="e")]}
+    made, tally = state._require_agreement(reference, second, strict=False)
+    by = {(f["variant_id"], f["value"]): f for f in made}
+    assert tally == {"agreed": 2, "disagreed": 1, "only_reference": 1, "only_second": 1}  # the same measurement either way
+    assert by[("b", 31)]["disagree"] == "readers disagree: 31 and 14.75 in"                # the one real disagreement blocks
+    assert "disagree" not in by[("c", 12)] and "disagree" not in by[("e", 20)]              # only the reference: it counts
+    assert ("d", 24) not in by                                                              # only the second: left as the reference read it
+    assert set(state.MODES) == {"reference", "disagreement blocks", "both must agree"} and state.DEFAULT_MODE == "disagreement blocks"

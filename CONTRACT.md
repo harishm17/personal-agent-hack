@@ -517,3 +517,21 @@ sum, a screen of dots), not from the case.
   sheet 4 through `data_from`. The integrator switches main to sheet 4 when it holds.
 - Also in this commit: `figures` for sheet 1 in the order's words (E18), and `"several": "largest"` on
   sheet 2's flush limit, as ENGINE asked.
+
+## Amendment 14:15 — the build ends at 15:30 (the builder); the last hour is for the demo
+- **15:10** everything new is on main: memory, conversations with the guard, the workflow graph, reviews,
+  the replay. After 15:10 only fixes. **15:20** the integrator has seen each working on main; anything not
+  seen working is cut and its tab hidden. **15:30** the build ends: no commits to main except a fix the
+  integrator asks for.
+- **15:30 to 16:30**: rehearsals, the video, the README and the form, a short deck if there is time.
+  15:50 the repo goes public (needs the builder's yes) and the video is uploaded; 16:10 the form's first
+  version is submitted; 16:30 is the deadline. 17:00 finalists demo live.
+- Every stream's own time box moves by twenty-five minutes, to these lines and no further.
+- New since 14:00, each a stream with its own page and no edits to the working path: MEMORY (owned,
+  sourced memory recalled on a new run), TALK (our agent's messages to each store's own agent, with a
+  guard in code on what may leave), GRAPH (the run as a workflow graph and the memory as a knowledge
+  graph; Cognee if it holds it), REVIEWS (web reviews of passing products through Exa, kept only as exact
+  quotes with their source; `EXA_API_KEY`, with `EXA_API_KEY_BACKUP` if the first stops working).
+- The demo's lead view is the TRAIL stream's replay (one product's context going into and around the
+  model's frame, the guard row, the memory shelf), from the designer's mock in
+  `scratchpad/flow-design/mock.png`; the run of show is DEMO.md.
