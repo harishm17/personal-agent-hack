@@ -19,3 +19,9 @@ def clear(key: str) -> None:
 def all() -> list:
     with _lock:
         return [{"what": k, "note": v} for k, v in sorted(_notes.items())]
+
+
+def reset() -> None:
+    """Forget every note (for tests, and for a fresh start of the process)."""
+    with _lock:
+        _notes.clear()

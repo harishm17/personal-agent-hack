@@ -188,6 +188,7 @@ def say(text: str, source=state, history=None, live=True) -> dict:
             raw, _, used = reader.ask(model, system, user, live=live, purpose="answer the shopper's chat message",
                                       fact_classes=SENT)
             intent, reply = _parse(raw)
+            health.clear("chat model")
             stray = stray_numbers(reply, user)
             if stray and intent not in CHANGES:  # once more, naming the numbers; then code's own words
                 raw, _, used = reader.ask(model, system, user + "\n\nYour last answer contained numbers that are not "
