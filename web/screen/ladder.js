@@ -10,10 +10,14 @@ const cap = (s) => String(s || "").charAt(0).toUpperCase() + String(s || "").sli
 const words = (s) => String(s || "").replace(/_/g, " ");
 const clip = (t, n) => (String(t).length > n ? String(t).slice(0, n - 1).trimEnd() + "…" : String(t));
 const g = (v) => (v === null || v === undefined ? "?" : String(+(+v).toFixed(2)));      // 10, 21.5, 1.28
+const withUnit = (text, unit) => (unit && unit !== "count" ? `${text} ${unit}` : String(text));   // "85 dB", "70 sheets", "24"
+/** How many of an item are bought, when the sheet says so (a class set of 24); else 1. */
+const qty = (line) => (sheetLineOf(line) || {}).quantity || line.quantity || 1;
+const times = (line) => (qty(line) > 1 ? ` × ${qty(line)}` : "");
 const q = (sel, root = document) => root.querySelector(sel);
 const params = new URLSearchParams(location.search);
 const SIM = params.get("sim") === "1";
-const FIXTURE = { 1: "/screen/fixture-state.json", signed: "/screen/fixture-signed.json", sheet2: "/screen/fixture-sheet2.json" }[params.get("fixture")];
+const FIXTURE = { 1: "/screen/fixture-state.json", signed: "/screen/fixture-signed.json", sheet2: "/screen/fixture-sheet2.json", sheet3: "/screen/fixture-sheet3.json" }[params.get("fixture")];
 
 let server = null, state = null, raw = "";
 // ?open=above,below unfolds the list; ?drawer=shopper|step:3|<candidate id> opens the side sheet; ?show=<candidate id> selects a row
@@ -112,7 +116,7 @@ const boundOf = (limit) => (limit.bound.source === "issuer" ? limit.bound.value 
 function limitHead(limit) {
   const only = limit.terms.length === 1 && limit.terms[0].source === "store" ? words(limit.terms[0].figure) : null;
   const name = only && limit.name.trim().split(/\s+/).length > 2 ? only : limit.name;
-  return { name: cap(name), rule: `${opSymbol(limit.op)} ${g(boundOf(limit))} ${limit.unit}` };
+  return { name: cap(name), rule: `${opSymbol(limit.op)} ${withUnit(g(boundOf(limit)), limit.unit)}` };
 }
 
 /** The page's own figure behind a check that is unclear: read, quoted, but not one clear value. */
@@ -122,6 +126,23 @@ function unsureFigure(c, ch) {
 }
 const isUnclear = (c, ch) => ch.state === "unclear" || (ch.state === "not_stated" && (/stated, but not clearly/.test(ch.missing_why || "") || !!unsureFigure(c, ch)));
 
+/** Every value a page states for one figure, when it states several ("three sound levels: 75, 85 or 94 dB"). */
+function severalOf(term) {
+  const many = term && (term.values || term.stated_values || term.all_values || term.stated);
+  if (!Array.isArray(many) || many.length < 2) return null;
+  return many.map((v) => (typeof v === "object" && v ? v.value : v)).filter((v) => v != null);
+}
+const meets = (op, v, b) => (op === ">=" ? v >= b : op === "==" ? Math.abs(v - b) < 1e-9 : v <= b);
+
+/** A cell for a figure with several stated values: all of them, the ones that fail the limit marked. */
+function severalHtml(ch) {
+  const many = severalOf(ch.terms.find((x) => x.owner === "store")), unit = ch.bound.unit;
+  if (!many) return null;
+  const parts = many.map((v) => (meets(ch.op, v, ch.bound.value) ? esc(g(v)) : `<b class="bad">${esc(g(v))}</b>`));
+  const list = parts.length > 1 ? parts.slice(0, -1).join(", ") + " or " + parts[parts.length - 1] : parts[0];
+  return unit && unit !== "count" ? `${list} ${esc(unit)}` : list;
+}
+
 /** What a cell shows for one check: the value the page states, as the page gives it. */
 function statedText(ch, c) {
   const t = ch.terms.find((x) => x.owner === "store") || {}, unit = ch.bound.unit;
@@ -130,11 +151,11 @@ function statedText(ch, c) {
     const u = f.unit || "no unit";
     return f.low != null && f.high != null && f.low !== f.high ? `${g(f.low)} or ${g(f.high)} ${u}` : f.value != null || f.low != null ? `${g(f.value ?? f.low)} ${u}` : "";
   }
-  const many = t.values || t.stated_values || t.stated;
-  if (Array.isArray(many) && many.length > 1) return `${many.map((v) => g(typeof v === "object" && v ? v.value : v)).join(" or ")} ${unit}`;
+  const many = severalOf(t);
+  if (many) return withUnit(many.map(g).join(", ").replace(/, ([^,]*)$/, " or $1"), unit);
   if (ch.stated_text || t.stated_text) return ch.stated_text || t.stated_text;
-  if (ch.terms.length === 1 && t.low != null && t.high != null && t.low !== t.high) return `${g(t.low)}${t.kind === "adjustable" ? "–" : " / "}${g(t.high)} ${unit}`;
-  return ch.lhs == null ? "" : `${g(ch.lhs)} ${unit}`;
+  if (ch.terms.length === 1 && t.low != null && t.high != null && t.low !== t.high) return withUnit(`${g(t.low)}${t.kind === "adjustable" ? "–" : " / "}${g(t.high)}`, unit);
+  return ch.lhs == null ? "" : withUnit(g(ch.lhs), unit);
 }
 
 /** Two to four plain words for a check that did not pass. */
@@ -143,7 +164,8 @@ function failWords(ch) {
   if (ch.state === "not_stated") return `never states ${words(ch.missing_figure || ch.name)}`;
   if (ch.state === "unclear") return "unclear";
   if (ch.lhs == null) return "not clear";
-  return ch.op === "==" ? `${g(ch.lhs)} ${unit}, needs ${b}` : ch.op === ">=" ? `${g(ch.lhs)} ${unit}, under ${b}` : `${g(ch.lhs)} ${unit}, over ${b}`;
+  const has = withUnit(g(ch.lhs), unit);
+  return ch.op === "==" ? `${has}, needs ${b}` : ch.op === ">=" ? `${has}, under ${b}` : `${has}, over ${b}`;
 }
 
 /** The row's result: the pick, a rejection with its reason, or one that passes but was not needed. */
@@ -223,8 +245,8 @@ function stepList(line, pick) {
     { id: "list_read", label: "List read", small: limits ? `${limits} limits, quoted` : "limits on the sheet", done: true },
     { id: "stores_searched", label: "Stores searched", small: `${sheet.stores.length} stores`, done: pages > 0 },
     { id: "pages_read", label: "Pages read", small: `${pages} pages`, done: pages > 0 },
-    { id: "checked", label: "Checked", small: "cheapest first", done: pages > 0 },
-    { id: "picked", label: "Picked", small: pick ? money(pick.product.price_cents) : "nothing passes", done: !!pick, k: "step.pick" },
+    { id: "checked", label: "Checked", small: "cheapest first", done: state.lines.some((l) => l.candidates.length > 0) },
+    { id: "picked", label: "Picked", small: pick ? money(pick.product.price_cents) + times(line) : "nothing passes", done: !!pick, k: "step.pick" },
     { id: "signs", label: `${cap(sheet.issuer.role || "approver")} signs`, small: seal.signed ? `${sheet.issuer.name}, ${time}` : "from the phone", done: !!seal.signed },
     { id: "carts", label: "Carts", small: seal.signed ? `${(seal.carts || []).length} created` : "none exist yet", done: !!seal.signed && (seal.carts || []).length > 0 },
   ];
@@ -246,7 +268,7 @@ function requirement(limit) {
     const [s, e] = figureSpan(o.quote, { value });
     return s === 0 && e === o.quote.length ? esc(o.quote) : `${esc(o.quote.slice(0, s))}<mark>${esc(o.quote.slice(s, e))}</mark>${esc(o.quote.slice(e))}`;
   }
-  return limit.bound.source === "shopper" ? `${esc(cap(limit.label || limit.name))}.` : `${esc(cap(limit.label || limit.name))} <mark>${g(b)} ${esc(limit.unit)}</mark>.`;
+  return limit.bound.source === "shopper" ? `${esc(cap(limit.label || limit.name))}.` : `${esc(cap(limit.name))}: ${esc(limit.label || "")} <mark>${esc(withUnit(g(b), limit.unit))}</mark>.`;
 }
 
 function renderDoc(current) {
@@ -258,13 +280,13 @@ function renderDoc(current) {
   q("#doc").innerHTML = `<div class="cap">${esc(issuer.name)}'s list · ${esc(issuer.role_label || issuer.role || "")}${issuer.invented ? " · invented" : ""}</div>
     <div class="paper">${state.lines.map((l) => {
       const p = pickOf(l), sl = sheetLineOf(l);
-      const right = p ? (l.status === "pick_up" ? "pick up" : money(p.product.price_cents)) : "open";
+      const right = p ? (l.status === "pick_up" ? "pick up" : money(p.product.price_cents) + times(l)) : "open";
       const seen = new Set();
       const text = sl.limits.map((limit) => requirement(limit) + home(limit)).filter((t) => !seen.has(t) && seen.add(t)).join(" ");
       return `<a class="it" href="#${l.line_id}" aria-current="${l.line_id === current.line_id}">
         <span class="stt" data-k="doc.${l.line_id}">${right}</span><h4>${esc(cap(l.need))}</h4><p>${text}</p></a>`;
     }).join("")}</div>
-    <button class="link asker" data-open="shopper">${esc(shopper.name)}: measurements, chat</button>`;
+    <button class="link asker" data-open="shopper">${esc(shopper.name)}: ${state.sheet.shopper_facts && state.sheet.shopper_facts.length ? "measurements, chat" : "ask the agent"}</button>`;
 }
 
 // ---------- centre: the candidates, cheapest first ----------
@@ -274,6 +296,8 @@ function rowHtml(c, line, pick, limits) {
     if (fail >= 0 && i > fail) return `<span class="cell skip">—</span>`;
     if (isUnclear(c, ch)) return `<span class="cell"><span class="chip unclear">${esc(statedText(ch, c) || "unclear")}</span></span>`;
     if (ch.state === "not_stated") return `<span class="cell"><span class="chip none">not stated</span></span>`;
+    const several = severalHtml(ch);
+    if (several) return `<span class="cell">${several}</span>`;
     return `<span class="cell ${ch.pass ? "" : "bad"}">${esc(statedText(ch))}</span>`;
   }).join("");
   const option = c.product.variant_title && !/^default/i.test(c.product.variant_title) ? `${c.product.variant_title} · ` : "";
@@ -284,29 +308,31 @@ function rowHtml(c, line, pick, limits) {
   const was = ui.was && ui.was.id === c.id && !c.picked ? `<span class="was">was picked</span>` : "";
   return `<button class="rowx ${c.picked ? "picked" : v.kind === "also" ? "also" : "rej"}${c.id === ui.show ? " shown" : ""}${was ? " waspick" : ""}" data-id="${esc(c.id)}" style="--n:${limits.length}">${was}
     ${img}<span class="nm"><b>${esc(c.product.title)}</b><i>${esc(option + c.product.store)}</i></span>
-    <span class="pr">${money(c.product.price_cents)}</span>${cells}${result}</button>`;
+    <span class="pr">${money(c.product.price_cents)}${qty(line) > 1 ? `<small>${esc(times(line).trim())}</small>` : ""}</span>${cells}${result}</button>`;
 }
 
 function renderList(line, pick) {
   const limits = sheetLineOf(line).limits, rows = priced(line), at = pick ? rows.indexOf(pick) : -1;
   const cheaper = at >= 0 ? rows.slice(0, at) : rows, dearer = at >= 0 ? rows.slice(at + 1) : [];
   const also = dearer.filter((c) => c.status === "inside").length;
-  let fold = cheaper.length > 6 && !ui.open.has("above") && at >= 0 ? cheaper.length - 6 : 0;
+  let fold = cheaper.length > 5 && !ui.open.has("above") && at >= 0 ? cheaper.length - 5 : 0;      // five rejections, the pick and both fold lines fit without scrolling
   if (fold && ui.was && cheaper.slice(0, fold).some((c) => c.id === ui.was.id)) fold = 0;      // keep the old pick in view while it says so
   const forged = (limit) => limit.bound.source === "issuer" && !state.seal.signed
     ? `<span class="forge" role="button" tabindex="0" data-forge="${esc(limit.id)}" title="Try to change this limit from here, without the approver's key" aria-label="Try to change this limit from here">change</span>` : "";
   const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span>${esc(h.name)} <b data-k="head.${limit.id}">${esc(h.rule)}</b></span>${forged(limit)}</span>`; }).join("");
   const sub = at >= 0 ? `Cheapest first. ${rows.length} read · <span data-k="sub.rej">${cheaper.length}</span> cheaper ones rejected · <span data-k="sub.also">${also}</span> dearer ones also pass`
-    : `Cheapest first. ${rows.length} read · nothing passes`;
+    : rows.length ? `Cheapest first. ${rows.length} read · nothing passes` : "No page has been read for this item yet";
+  const keep = q("#rows") && last.line === line.line_id ? q("#rows").scrollTop : 0;      // a redraw never moves the list under the viewer
   q("#list").innerHTML = `<div class="lhd"><h1>${esc(cap(line.need))}</h1><p class="sub">${sub}</p></div>
     <div class="hd" style="--n:${limits.length}"><span></span><span>Product</span><span>Price</span>${heads}<span>Result</span></div>
     <div class="rows" id="rows">
       ${fold ? `<button class="more" data-toggle="above">${fold} cheaper ones above, each rejected with its reason</button>` : ""}
       ${cheaper.slice(fold).map((c) => rowHtml(c, line, pick, limits)).join("")}
-      ${pick ? rowHtml(pick, line, pick, limits) : `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>`}
+      ${pick ? rowHtml(pick, line, pick, limits) : (rows.length ? `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>` : "")}
       ${dearer.length ? (ui.open.has("below") ? dearer.map((c) => rowHtml(c, line, pick, limits)).join("")
         : dearer.filter((c) => ui.was && ui.was.id === c.id).map((c) => rowHtml(c, line, pick, limits)).join("") + `<button class="more" data-toggle="below">+ ${dearer.length} dearer, not needed</button>`) : ""}
     </div>`;
+  q("#rows").scrollTop = keep;
 }
 
 // ---------- right: why this one, in the list's words and the store's words ----------
@@ -362,12 +388,12 @@ function renderSide(line, c) {
         ${u && u.quote ? `<div class="k">returns${scope(u)}</div><div class="qt">“${esc(clip(u.quote, 90))}”</div>` : ""}</div>` : "";
     card = `<section class="card why"><div class="cap">${c.picked ? "Why this one" : "Why not this one"}</div>
       <h2 title="${esc(c.product.title)}">${esc(c.product.title)}</h2>
-      <div class="meta2">${esc(option + c.product.store)} · <span data-k="why.price">${money(c.product.price_cents)}</span> · <a class="link" href="${esc(c.product.url)}" target="_blank" rel="noopener">store page ↗</a></div>
+      <div class="meta2">${esc(option + c.product.store)} · <span data-k="why.price">${money(c.product.price_cents)}</span>${qty(line) > 1 ? `${esc(times(line))} = ${money(c.product.price_cents * qty(line))}` : ""} · <a class="link" href="${esc(c.product.url)}" target="_blank" rel="noopener">store page ↗</a></div>
       ${c.status === "struck" ? `<div class="pair"><div class="ph2"><span>Struck by ${esc(state.sheet.issuer.name)}</span></div><div class="qt">“${esc(c.reason || "")}”</div></div>` : ""}
       ${shown.map((ch) => pairHtml(ch, limits.find((l) => l.id === ch.limit_id), c)).join("")}${agent}
       ${!c.picked && pickOf(line) ? `<button class="link" data-show="">Back to the pick</button>` : ""}</section>`;
   } else {
-    card = `<section class="card why"><div class="cap">Why this one</div><h2>Nothing passes</h2><div class="muted">${esc(cap(line.reason || "no product meets every limit"))}. Select a row to read why.</div></section>`;
+    card = `<section class="card why"><div class="cap">Why this one</div><h2>${line.candidates.length ? "Nothing passes" : "Nothing to show yet"}</h2><div class="muted">${line.candidates.length ? esc(cap(line.reason || "no product meets every limit")) + ". Select a row to read why." : "No page has been read for this item."}</div></section>`;
   }
   q("#side").innerHTML = card + signatureHtml();
 }

@@ -82,24 +82,15 @@ def row(name, value, **over):
     return dict(base, **over)
 
 
-def test_the_reference_reader_decides_and_agreement_is_recorded():
+def test_the_reference_readers_statements_are_kept_and_agreement_is_noted():
     out = combine.combine([("ref", [row("ref", 300)]), ("b", [row("b", 300)])], [("e", [row("e", 300)])])
-    assert out[0]["extractor"] == "ref" and out[0]["agreed_by"] == ["ref", "b"]
-    assert out[0]["also_marked_by"][0]["extractor"] == "e"
+    assert out[0]["extractor"] == "ref" and out[0]["agreed_by"] == ["ref", "b", "e"]
     out = combine.combine([("ref", [row("ref", 300)]), ("b", [row("b", 350)])])
-    assert out[0]["value"] == 300 and out[0]["agreed_by"] == ["ref"] and len(out[0]["readers"]) == 2
-    assert combine.combine([("ref", []), ("b", [row("b", 350)])]) == []  # the reference reports nothing: no figure
-    unsure = combine.combine([("ref", [row("ref", 300, unsure=True, unsure_reason="two sizes")]), ("b", [row("b", 300)])])
-    assert unsure[0]["unsure"] and "agreed_by" not in unsure[0]
-
-
-def test_under_the_agree_policy_a_figure_counts_only_when_the_readers_match():
-    both = [("a", [row("a", 300)]), ("b", [row("b", 300)])]
-    assert combine.counted(combine.combine(both, policy="agree")[0])
-    differ = combine.combine([("a", [row("a", 300)]), ("b", [row("b", 350)])], policy="agree")[0]
-    assert differ["unsure"] and "readers differ" in differ["unsure_reason"]
-    alone = combine.combine([("a", [row("a", 300)]), ("b", [])], policy="agree")[0]
-    assert alone["unsure"] and "only a reports it" in alone["unsure_reason"]
+    assert out[0]["value"] == 300 and out[0]["agreed_by"] == ["ref"]
+    assert combine.combine([("ref", []), ("b", [row("b", 350)])]) == []  # the reference states nothing: no record
+    # a page that states a figure twice keeps both statements: every stated value is tested downstream
+    twice = combine.combine([("ref", [row("ref", 300), row("ref", 350, quote="q2")]), ("b", [row("b", 300)])])
+    assert [r["value"] for r in twice] == [300, 350] and twice[1]["agreed_by"] == ["ref"]
 
 
 def test_only_a_live_call_uses_the_api_key_and_it_is_capped_with_the_command_line_as_fallback(monkeypatch):
@@ -123,11 +114,10 @@ def test_only_a_live_call_uses_the_api_key_and_it_is_capped_with_the_command_lin
     assert calls[-1] == "cli" and calls.count("api failed") == 1 and reader._api_calls["capped_logged"]
 
 
-def test_a_record_without_its_number_agrees_with_nothing_and_does_not_break_the_comparison():
-    empty = row("ref", None, unsure=True, unsure_reason="no number was reported")
+def test_a_record_without_its_number_agrees_with_nothing_and_does_not_break_combining():
+    empty = row("ref", None)
     out = combine.combine([("ref", [empty]), ("b", [row("b", 300)])], [("e", [row("e", 300)])])
-    assert out[0]["unsure"] and "also_marked_by" not in out[0] and "agreed_by" not in out[0]
-    assert combine.same(empty, row("b", 300)) is False
+    assert len(out) == 1 and "agreed_by" not in out[0]
 
 
 def test_units_come_from_the_sheets_limit_so_another_sheet_needs_no_code():
@@ -214,3 +204,26 @@ def test_a_dual_flush_page_reads_as_two_numbers_and_the_full_flush_cannot_be_dro
     litres = spans.finish({"figure": "flush_volume", "kind": "single", "value": 4.8, "unit": "Lpf", "quote": "4.8 Lpf"},
                           {"store": "s", "product_id": "p", "text": "Uses 4.8 Lpf."}, "any", target_unit="gpf")
     assert litres["value"] == 1.27 and litres["stated_unit"] == "Lpf"
+
+
+def test_a_sheet_declares_its_own_units_and_no_code_names_them():
+    from signoff.engine import rules
+    sheet = {"units": {"dB": ["db", "dba", "decibels"], "mph": ["mph", "miles per hour"]}}
+    try:
+        rules.declare_units(sheet)
+        assert rules.unit_name("Decibels") == "dB" and rules.unit_name("MPH") == "mph" and rules.convert(85, "dBA", "dB") == 85
+        assert rules.convert(85, "dB", "mph") is None  # two declared units are two kinds of measure
+        text = "Kids headphones. Volume limiting: Yes (85 dB). Unlimited mode plays at 95 dB as the default. Battery 20 hours."
+        page = {"store": "s", "product_id": "p", "text": text}
+        made = spans.finish({"figure": "max_volume", "kind": "single", "value": 85, "unit": "dB",
+                             "quote": "Volume limiting: Yes (85 dB)"}, page, "any", target_unit="dB")
+        assert (made["value"], made["unit"]) == (85, "dB") and "possible" not in made
+        both = spans.finish({"figure": "max_volume", "kind": "spread", "low": 85, "high": 95, "unit": "decibels",
+                             "quote": "Volume limiting: Yes (85 dB). Unlimited mode plays at 95 dB"}, page, "any", target_unit="dB")
+        assert (both["low"], both["high"], both["unit"]) == (85, 95, "dB")
+        assert [n["family"] for n in spans.quote_numbers("85 dB and 20 hours and 15 mph")] == ["dB", "other unit", "mph"]
+    finally:
+        for name in sheet["units"]:
+            for spelling in rules.DECLARED.pop(name, []):
+                rules.ALIASES.pop(spelling, None)
+            rules.FAMILY.pop(name, None)

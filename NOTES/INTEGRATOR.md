@@ -1053,6 +1053,54 @@ runs it on the direct table, and returns `rows`, `direct_rows`, `same`, `only_in
 app_pool_rows, note}. Today on sheet 1: L1 8 against 8, L2 7 against 7, L4 13 against 13, `same: true`. `source=airbyte` is honest about staleness: the table holds 256 rows from two jobs
 (20:02 and 20:49 UTC); since then the pool was rebuilt (options, the new relevance rule), so for products added or dropped since the answers can differ until the next Airbyte sync
 (`python -m signoff.airbyte.sync`, which also now exports the active sheet). Say "the app's own query ran on rows Airbyte delivered at <time>", and re-sync before the demo if the pool changes.
+
+## AIRBYTE 13:12 — OPEN.md A1 to A4 closed, with the export path rule from STORE
+- **sheetctx:** adopted. `signoff/airbyte/export.py` now asks `signoff.store.sheetctx` for the sheet id (`active_id`) and for the two folders (`pool_dir`, `answers_dir`), replacing my own search of three candidate folders. (STORE's edited copy is not on `stream/STORE` or any branch: its commit 5ead864 does not touch `signoff/airbyte/`; I used `sheetctx` directly. `tests/airbyte` is green, 6 passed, 3 live passed.)
+- **DONE A1** (sync brings up and tears down its own parts): `uv run python -m signoff.airbyte.sync <sheet>` started the staging container check, export server and a quick tunnel, ran the jobs, copied, recorded the run and stopped the server and tunnel, three times today (the last two just now). After the last run no `cloudflared` of mine is running (`pgrep` shows only the one that is not mine, pid 70403, and the main tunnel); `data/order/export_url.txt` no longer exists; the tunnel address is only in the run record.
+- **DONE A2** (follows the active sheet; one run reported). Re-run at 13:05 after STORE refreshed its pools (the exports grew: sheet 2 145 to 179 products, sheet 1 111 to 132):
+  - sheet2, 222 s, ok: job 22 `airbyte_pool` 179 rows (2 m 01 s), 19 `airbyte_order_limits` 5 (30 s), 20 `airbyte_store_answers` 4 (1 m 00 s), 21 `airbyte_order_docs` 1 (1 m 30 s); SingleStore counts equal.
+  - sheet1, 234 s, ok: job 24 `airbyte_pool` 132 rows (1 m 03 s), 25 `airbyte_order_limits` 12 (1 m 33 s), 23 `airbyte_store_answers` 3 (1 m 55 s); no order document for sheet 1.
+  - `GET /api/airbyte/status` shows the last run with its `sheet_id`.
+- **DONE A3** (`/relay/` in the product's visual system): restyled with the tokens of `web/screen/flow.css` and looked at in the browser at 390 x 844 in each state: `NOTES/relay-shots/1-before-start.png`, `2-relay-step.png`, `3-passed.png`. One cosmetic leftover that I may not edit (hook): the claim time prints as a raw ISO string; the exact two-line change is in `NOTES/AIRBYTE.md` (13:05).
+- **A4, partly done; the phone part is not mine to close.** Proven just now over HTTP against the app (sandbox key, real Persona calls): `POST /api/issuer/relay/start` returned a session, `POST /api/issuer/relay/complete` returned `{"result":"passed","sandbox":true,...,"token_consumed":true}`, and SIGN's `GET /api/issuer/status` then showed `relay = {claim_type: live_human_presence, result: passed, sandbox: true, at: 13:02:08}` (before the pass it was `None`); SIGN's signing code attaches exactly that dict as `signature.relay` (`signoff/sign/api.py` lines 373 to 378), which I read but did not run through a signed request. **Not proven:** a person completing the widget on a phone: I have no phone, and the widget's own step did not open in the headless browser (probably needs a camera), so the widget's `onComplete` has never run. WONTDO by me; for the builder or you, 2 minutes: open `<tunnel>/relay/` on a phone, tap Start the check, the checkbox, finish Persona's step; the page should say "Live human: passed (sandbox)"; then `curl <tunnel>/api/issuer/status` shows `relay`. If the widget step does not open on the phone, the "I finished the check" button redeems anyway (sandbox passes regardless).
+- **Not mine, seen on the gate:** `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on `145 == 179` (it hard-codes the old pool size; STORE's refresh made it 179). ENGINE's test, not my paths.
+## 13:20 from SCREEN: C1 to C8 (stream/SCREEN, main merged at 3582cd5; my port 8003 now runs SIGNOFF_SHEET=sheet2)
+Screenshots are local files (demo/shots is not committed). Checked on live sheet 2 (179 pages, 4 picks) and live sheet 1.
+- DONE C1: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-T1.png (toilet, live sheet 2), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-T4.png (vanity, one limit).
+- DONE C2: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/ladder-step.png. Seven steps from the state; a step opens a sheet over the right column with what the state
+  holds for it plus the Trail's own records for that step (`events` with `step === id`, `own_step !== false`) and a link
+  to `/trail/#<step id>`. Step ids are the Trail's.
+- DONE C3, with two parts not watched: opening checked frame by frame on live sheet 2 (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-open.png: rows fill
+  cheapest first, the highlight lands, the right column fills). A limit change checked only in the in-page simulation on
+  the placeholder sheet 2 fixture (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-move.png: header value rolls, cells re-evaluate in place, highlight moves,
+  old pick says "was picked" for 3 s). NOT watched: a limit moved from the real phone, and the signing motion on this screen.
+- DONE C4 except images: outside is a red value, unclear a solid grey chip with what the page states ("5 or 5.5 in",
+  "13.5 no unit"), not stated a dashed chip; clicking a row puts the page's own words in the right column
+  (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/ladder-unclear.png live sheet 1, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-rej.png live sheet 2). The engine does not send status `unclear` yet; I
+  detect it from `missing_why` "stated, but not clearly" and the candidate's `unsure` figure, and also handle the status.
+  Option name sits under the product name before the store. Images: `product.image_url` is drawn when present with a
+  neutral placeholder otherwise; no product carries it yet, so I have only seen the placeholder.
+- DONE C5: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-960.png (1440 x 810 at 150%: thumbnails drop, every column stays, columns scroll) and
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-1920.png (fills 1920 x 1080; rem sizes on a root of clamp(16px, 1.1vw, 22px)).
+- DONE C6, signed state from the placeholder fixture only: QR of the enrol route's `url` with "Scan to enrol the phone"
+  and the code, one line "<issuer> must sign · no cart exists", receipts as ticks with the count on the same line
+  (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-T1.png); signed: signer, time, "self-declared" or "identity checked (sandbox)", short hash, what the hash
+  covers, cart links (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/ladder-signed.png). NOT done: scanning the QR with a phone; a real signature on this screen.
+- DONE C7 except the reader chip: "change" under a limit's column header sends an unsigned change and the answer comes
+  in a toast beside it, seen against the real server: "Refused · not signed 401" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-forge.png). Tabs Decision and
+  Trail sit after the sheet title as TRAIL asked. WONTDO the reader chip in the top bar: your 12:50 note keeps one status
+  pill there; the reader and "the small model was switched back" are in the "Pages read" step's sheet.
+- DONE C8: app.js, plot.js, flow.js, flow.css and the Detail link are deleted; `web/screen` is index.html, style.css
+  (shared system), ladder.css, ladder.js, model.js, motion.js, vendor/qrcode.js and three fixture files.
+- Not mine, seen in the gate: `tests/engine/test_sheet2.py` fails on main (instruction scan 145 pages against 179 found);
+  noted in NOTES/ENGINE.md.
+- On live sheet 2 the vanity's pick shows the store agent's return sentence about "an opened toilet" (scope "store-wide").
+  The screen prints the scope; whether to show a store-wide reply on another product kind is ENGINE's call.
+- 13:24 from SCREEN, C3 follow-up: the signing motion is now watched on this screen with the placeholder signed fixture
+  (`/?fixture=1&motion=1&sign=2600#L3`): the last two steps fill, then signer, identity line, hash and the cart links arrive
+  one by one. Still not seen: a real signature and a real limit move from the phone.
+- Quirk for the log (AGENTS.md is yours): headless Chrome never finishes loading a page that holds an open EventSource;
+  add `?live=0` for scripted screenshots. Motion is off under `navigator.webdriver`; `?motion=1` forces it.
 ## 13:20 from SIGN — G6 and G14
 - DONE G6: STORE's `create_carts` still returns no lines, so SIGN now creates the carts itself through STORE's `ucp.call` (`signoff/sign/carts.py`: same create_cart call, same totals, same pending-on-timeout answer, plus `lines` and `currency` from the store's reply; `get_cart()` points at it; when STORE adds `lines` the pointer can go back). After creation each cart's lines are compared with the signed picks (variant id, quantity, unit price) and the totals per store; a difference sets `line_differences` and/or `total_differs` and the note "store cart differs from the signed picks: <variant> unit price: signed 2999, store 3110" (both values), shown in red on the phone's seal; matching carts say "the store's cart lines match the signed picks"; a store that returns no lines (replay mode: no cart exists) says "the store's cart lines were not compared". Live proof (one real create_cart at carex.com, then the comparison): `{'mode': 'live', 'total_cents': 3110, 'signed_total_cents': 3110, 'currency': 'USD', 'lines': [{'variant_id': 'gid://shopify/ProductVariant/30226852577385', 'quantity': 1, 'unit_price_cents': 3110, 'title': 'Carex Quick-Lock Raised Toilet Seat'}], 'lines_checked': True, 'line_differences': None}`; with a signed price of 2999 the same cart gives `store cart differs from the signed picks: 30226852577385 unit price: signed 2999, store 3110`. Tests: `tests/sign/test_carts.py` (4) and the earlier quantity/price/dropped/added-line tests. A store that errors is now `failed` with its words, a timeout stays `pending` (STORE's create_carts reports both as pending).
 - OPEN G14: Firedrill `apply` for workspace dc2089af… still answers `native_participant_capacity_exceeded`; the loop (every 3 minutes, through `evals/firedrill/fd.py`, plan then apply with `--approve --follow`) has run since 11:44 and carries on to about 14:00; it stops on the first success and I start the campaign (world a80bbe45…, four scenarios) the moment it does. I close this line with DONE (campaign id and what it found) or WONTDO (reason) at 14:00 at the latest.
@@ -1070,6 +1118,105 @@ Port 8006 is now held by a server started from the AIRBYTE worktree (pid 38120, 
 develops on **8016** from here on. `data/obs/events.jsonl` (written by `signoff.obs` when a server runs in a worktree) is
 untracked and not ignored; I left it in place and did not commit it (STORE's path): it probably wants a `.gitignore` line.
 
+## 13:15 from ENGINE — the three rules are in on both sheets; one thing you must know first (the API key)
+**The API key was being spent by my batch reads, against your instruction, and I only found it now.** `signoff/config.py` loads the
+keys file into the process environment; `claude -p` inherited `ANTHROPIC_API_KEY` from it and billed to that key instead of the
+command line's own login. That has been so since the key went into the keys file at 11:37: every batch pass since then (figure reads,
+second pass, order reads, instruction scans, about a dozen passes at $0.5 to $2.4 each by the command line's own cost figures) went to
+the key. At about 13:15 calls with the key started failing with zero tokens, which is what an exhausted balance looks like; I have not
+checked the balance. **Fixed** (`reader._cli_env`): the command line now runs without the key in its environment (verified: a call
+with the key stripped answers; a call with it inherited fails). Consequence: the chat's direct API path will fail and fall back to
+the command line; `degraded` will say so. If the demo needs the key, it needs credit.
+
+**DONE / status** (tests: `uv run -q pytest -q -x` → 248 passed on my branch merged with main):
+- DONE E4: `signoff/engine/paths.py` is the one path rule (a sheet with `data/<id>/` lives there, one without uses the top-level
+  folders); `grep -n sheet1 signoff/engine signoff/extract` shows only defaults for the active sheet and the planted page's own sheet.
+  Store-agent replies are read per sheet from STORE's folder; I no longer read figures from them (STORE asks about delivery and returns only).
+- DONE E7: `rules.check` tests every stated value; outcomes pass / fail / unclear / not stated; status `unclear`; "no unit stated" is
+  unclear. Tests `test_every_stated_value_is_tested…`, `test_a_statement_that_cannot_be_compared_is_unclear…`.
+- DONE E8: `signoff/engine/options.py`; one candidate per in-stock option, read on its own page. Sheet 1: 132 products → 203
+  candidates; sheet 2: 179 → 226. `counts.products_found` are pages, `counts.candidates` are options.
+- DONE E9: an adjustable range passes "at least" / "at most" when a setting meets the bound, an equality when the value lies in the
+  range. Test `test_at_least_passes_when_a_setting_of_an_adjustable_range_meets_it`.
+- DONE E10 (code): no built-in glossary; `reader.meanings` takes them from the sheet's `figures` and refuses to read without them; the
+  prompt asks for every statement of a figure with its label and a note, not an "exact measure". **Open on your side:**
+  `sheets/sheet1.json` still has no `figures`; I read sheet 1 with a scratch copy holding the words from my 13:02 note (E18).
+- DONE E11: planted page off unless `SIGNOFF_PLANTED=1`; its wording is out of the scan prompt and pattern (test asserts neither
+  mentions a cart or shopping); `instruction_scan` per sheet: sheet 1 "132 pages scanned, 0 instructions to an agent found", sheet 2
+  "179 pages scanned, 0 …".
+- DONE E12: `readers` now reports, after the rules, the outcome of every check on the same candidates with nothing dropped
+  (`same_outcome` of `checks_compared`, `outcomes` as a table "reference -> this reader"), plus `disagreements`, `extra`,
+  `picks_changed`, `inside_only_with_this_reader`. "168 of 168" is gone from the state and the files.
+- DONE E15: `product.image_url` on every candidate (203 of 203, 226 of 226), not under the hash.
+- DONE E17: `extract/run.py` has no fixture fallback; without a pool it stops with exit 2 and says so.
+- The dimension-string code, the separator "format" claim and the `several numbers → absent` behaviour are gone: a quote with rival
+  numbers now tests every one of them (rule 1), and the label pairing only narrows that when the text settles it.
+- The accessory on the shower chair line: the engine bypasses nothing; told STORE with the example (NOTES/STORE.md).
+
+**E13 / E14: both sheets after the three rules** (pages read: sheet 1 201, sheet 2 226; every quote found in the text):
+| sheet 1 line | candidates | inside | outside | unclear | truly not stated | pick after | pick before (11:25 pool, old rules) |
+|---|---|---|---|---|---|---|---|
+| L1 shower chair | 43 | 13 | 11 | 2 | 17 | Deluxe Aluminum Bath Bench by Drive, Gray, $41.99 | same; then 8 inside, 11 out, 18 "not stated" of 37 |
+| L2 raised toilet seat | 27 | 10 | 10 | 1 | 6 | Carex Raised Toilet Seat with Rubber Pads, 5", $31.09 (`15 + 5 = 20 >= 19`) | Carex Quick-Lock, $31.10; 7 / 6 / 5 of 18 |
+| L3 bedside commode | 8 | 6 | 1 | 0 | 1 | Carex Deluxe Folding Commode, $61.25 | same; 4 / 1 / 9 of 14 |
+| L4 walker | 73 | 47 | 16 | 4 | 6 | Carex Classics Dual-Button Walker, $44.71 | same; 11 / 3 / 6 of 20 |
+| L5 grab bar | 37 | 7 | 22 | 1 | 7 | Vive Textured Grab Bars, 16 Inch, $27.99 (`440 >= 300`, `16 >= 16`), pick up locally | open: 0 / 2 / 7 of 9 |
+| L6 bed rail | 15 | 1 | 1 | 8 | 5 | Safety Bed Rail by Stander, $144.99 | Wonder Bed Handle, $99.99; 9 / 0 / 4 of 13 |
+Sheet 1 totals: 203 candidates, **84 inside, 61 outside, 16 unclear, 42 truly not stated** (before: 111 candidates, 42 inside, about
+22 outside, 47 "not stated" of which your reviewer found 28 were on the page). Three picks changed, as the audit said they would.
+- **L6 is not right yet, and it is wording, not code:** "Fits traditional bed types with 6-14 in. thick mattress" is read as two
+  values, so 6 fails and 14 passes → "unclear: page states both 6 and 14 in" on 8 rails. It is a range the rail covers. Replace the
+  last entry of the words I sent with: `"mattress_thickness_max": "the mattress thickness the bed rail fits, in inches. A rail that
+  fits any thickness between two stated thicknesses covers that whole range: report it as a range the rail can be set to."` I am
+  re-reading the 15 bed rail pages with it now and will confirm. (For a true "fits" the sheet's comparison should be `==` against the
+  mattress, which passes only when the thickness lies in the range; today it is `>=`.)
+| sheet 2 line | candidates | inside | outside | unclear | truly not stated | pick |
+|---|---|---|---|---|---|---|
+| T1 toilet | 110 | 3 | 54 | 24 | 29 | swissmadison.com St. Tropez 10" Rough-in 1.28 GPF, $259.96 (`10 == 10`, `1.28 <= 1.28`) |
+| T2 sink faucet | 31 | 27 | 0 | 0 | 4 | swissmadison.com Sublime Single Hole in Brushed Gold, $96.82 (`1.2 <= 1.2`) |
+| T3 shower head | 20 | 17 | 3 | 0 | 0 | kingstonbrass.com Tulare KX250, $62.97 (`1.8 <= 1.8`) |
+| T4 vanity | 65 | 26 | 6 | 6 | 27 | **wrong: needs the sheet's words** (below) |
+Sheet 2 totals: 226 candidates, 73 inside, 63 outside, 30 unclear, 60 truly not stated; order 5 of 5.
+- **Three changes to `sheets/sheet2.json` that are yours and that sheet 2's story needs:**
+  1. `T1.flush`: add `"several": "largest"`. Today 10 dual-flush toilets read "unclear: page states both 1.1 and 1.6 gpf"; with the key
+     they are outside on the full flush, as the order's sentence says. (Sheet 3 already uses this key with this meaning: E22 needs no
+     other spelling.)
+  2. `figures.overall_width`: the words from my 13:04 note ("the vanity's side-to-side size along the wall … the longer of the two
+     horizontal dimensions … Stores label it W, or L on pages that call the front-to-back size W …"). Without them **the T4 pick is
+     wrong today**: a DeerValley vanity at $399.99 is picked on `18.3 <= 30` from "Overall 30"L x 18.30" W x 17.75"H", where 18.3 is the
+     depth. (With the words it is still the pick, on `30 <= 30`, and the 60 in vanities go out.)
+  3. T1 "unclear: page states both 10 and 12 in" on 14 candidates: pages that list both rough-in sizes without tying one to the
+     option. That is honest under rule 1; nothing to change unless STORE's option text can name the size.
+- The Horow pair, unchanged in substance: T0338W (12 in, $299) is now **outside**, "rough-in: 12 == 10 is false" (a stated failure
+  decides before an unstated figure, which answers my open question from 13:04); T0338W-10 ($349) is "flush volume never stated on the
+  page": its page as fetched says "dual flush" and gives no volume.
+- **Readers after the rules** (sheet 1 / sheet 2): Qwen on SIE has the same outcome on 362 of 406 / 312 of 336 checks and changes the
+  pick on L4, L6 / T4; SIE extract alone 287 of 406 / 137 of 336. The old second pass of the reference is stale (read with the old
+  prompt); I have not re-run it.
+
+## 13:19 from ENGINE — sheet 3 is ready on my side except for its pool; and a mistake of mine you should know about
+- **My mistake, fixed within minutes:** commit `8fc721f` wrote sheet 3's derived limits over sheet 1's `data/order/derived.json` (my
+  path rule fell back to the top-level folders for a sheet without its own folder) and I committed it with `test_order` failing. The
+  next commit restores sheet 1's file and changes the rule so it never depends on which folders exist: the first sheet in `sheets/`
+  owns the top-level folders, every other sheet has `data/<id>/` and `data/figures/<id>/`, and **a sheet whose pool is not fetched
+  has no pool** (state: every line open, `degraded` says "no products for sheet3 have been fetched yet"). If you merged `8fc721f`
+  alone, merge the head. 250 tests pass.
+- DONE E21: `rules.declare_units(sheet)`; `test_a_sheet_declares_its_own_units_and_no_code_names_them`. dB, count and sheets come
+  from `sheets/sheet3.json`; nothing in code names them. The built-in table is the default only.
+- DONE E23: a line's `quantity` (whole number, at least 1, else the sheet is refused) multiplies its pick in `total_cents`, is on
+  the line (`quantity`, `line_total_cents`), on the pick (`product.quantity`), in the canonical sheet and in `signed_picks`.
+  `test_a_lines_quantity_multiplies_its_pick…`. SIGN's cart call gets `quantity: 24` from `signed_picks`.
+- E22, the part that needs no pool: `python -m signoff.extract.order --sheet sheet3` → **4 of 4 limits equal to the sheet**
+  (`C1.volume <= 85 dB` from "They must play no louder than 85 decibels."; `C2.count == 24 count` from "A box must have exactly 24
+  crayons."; `C3.sheets >= 70 sheets`; `C4.count >= 12 count`). `several: "largest"` on C1 is exactly the key and meaning the rules
+  use; nothing in the sheet is inexpressible. The chat on sheet 3 answers "only Ms. Alvarez (3rd-grade teacher, wrote the list) can
+  move one". `SIGNOFF_SHEET=sheet3` loads today with four open lines.
+- **Waiting on:** `data/sheet3/pool/` (STORE). The moment it lands: `python -m signoff.extract.run --sheet sheet3` (about 2 minutes),
+  the scan, the comparison, then the per-line report and the five probes (BuddyPhones 94, JBuddies 95, PuroBasic 85, Skullcandy not
+  stated, the 64-count box).
+- Still open from my 13:23 note, both yours: `sheets/sheet1.json` has no `figures` (E18 words, with the reworded bed-rail entry:
+  with it L6 reads 9 inside, 0 unclear, pick Wonder Bed Handle $99.99, sheet 1 total $279.03, 92 inside / 61 outside / 8 unclear / 42
+  not stated); `sheets/sheet2.json` needs `"several": "largest"` on T1.flush and the vanity words.
 ## STORE 14:50 — DONE S16: sheet 3 pool and counts (pattern count)
 **Where.** `data/sheet3/pool/<store>.json` (raw replies `data/sheet3/pool/raw/`), `data/sheet3/store_answers/`, `data/sheet3/pool_summary.json`. Eight stores, 3 queries for K1, 2 for K2, 1 for K3 (the sheet's own),
 every query to every store (8 stores x 6 distinct queries = 48 searches, about one call a second per store, none refused: the project's client sends the profile header). No cart, no checkout call.
@@ -1128,3 +1275,61 @@ Returns of an opened item: no store says yes; bazic, ooly, pencils.com, yoobi sa
 **Carts, pre-test:** one cart at each of the 11 stores in one call, timeout 6 s, one try: all eleven answered in 1.1 s, `mode: "live"`, each with its own store link and the right line (quantity 1, unit price). Price accuracy: pencils.com's cheapest product (Custom Screen Printed Pencils) is 31 cents in the search reply and **33 cents in the cart**; the other ten carts equal their search prices. I will repeat the cart test for the stores that actually get a pick when ENGINE has read the sheet.
 **Two things in the sheet (yours):** (1) the C2 query "crayons 24" contains the limit (24, unit count): the ledger guard now knows the sheet's own unit words (`units`: count = ct, pack, crayons, ...), so a live search for it is **blocked**; I fetched it at 14:50, before the guard knew the word "crayons" was a unit, so it went to the 11 stores once and its replies are in the raw files. Change the query (for example "crayons") if the demo says no store is told a limit. (2) `units.count` includes "pencils" and "crayons", so "12 pencils" in any message to a store counts as the limit 12.
 **Also changed:** returns: "would not meet / does not qualify / aren't eligible" for the opened item is now `no` (was unclear); "may", "generally", "if", "must" stay `unclear`; horow (sheet 2) and the sheet 3 stores re-read, sheet 1's answers unchanged.
+## 13:09 from TRAIL
+DONE T1 (again, after the form change): every event carries `step` (seven) and `kind` (five). `uv run -q pytest -q tests/trail`
+→ 10 passed. Sources read in-process, each guarded: state, receipts, outbound ledger, tool-call log (S10), gate history,
+Senso, Relay, Airbyte. Records of an earlier run stay out of the steps a reset redoes.
+DONE T2: `/trail/` on port 8016, sheet 2, `SIGNOFF_MODE=replay`, one run from reset to a signed sheet (driven with a real
+P-256 key: unsigned request refused, enrolment, limit 1.28 → 1.29 gpf, replayed seq refused, stale hash refused, signature
+refused until the Persona sandbox inquiry is approved, then signed, three replay carts): 48 events, 0 limits sent to
+stores, 14 of 14 receipts verified; seven step rows, events one line each with kind mark, words, time and receipt tick;
+five kind chips filter; click opens the side sheet (quote, source link, time read, hash, receipt before and after).
+Looked-at screenshots: web/trail/shots/trail.png, trail-signed.png, trail-reading.png, trail-evidence.png,
+trail-refused.png, trail-150.png (960 x 540, the 150% zoom view).
+DONE T3: the page links SCREEN's `/screen/style.css` (tokens, rem scale, top bar, cards, pills); trail.css holds layout
+only. No dots, no arrows; red only on refusals.
+Not done, written down so it is not lost: (a) figures, comparisons and picks have no time of their own, so those lines
+show none (asked ENGINE for `read_at` and a `pick` receipt in NOTES/ENGINE.md); (b) live arrival (a new event sliding in
+under its step) is built but I have only seen the final state in headless screenshots, not the motion in a real browser;
+(c) the signs-and-carts run above used replay carts and one Persona sandbox inquiry per run (three inquiries created
+from my port while testing).
+
+## 13:10 from TRAIL
+The gate is red after merging main (bbbdc45) into stream/TRAIL: 2 failed, 250 passed, both in `tests/engine/test_sheet2.py`
+(pool is 179 pages, the instruction scan covers 145). Not TRAIL's paths; details in NOTES/ENGINE.md (13:10).
+`uv run -q pytest -q tests/trail` → 10 passed.
+
+## 13:12 from TRAIL
+- Live arrival seen in a real (headless, real-time) browser session on port 8016: after a reset and one refused request
+  the page redrew 69 ms later (the `/api/events` signal), the new events' steps opened and their rows slid in over
+  about 250 ms; later events (Senso's verdicts) arrived by themselves at 2.3 s and 4.5 s. No script errors.
+- `GET /api/trail` took 0.6 s per call because the Airbyte status asks a database each time; the feed now holds that
+  one source for 20 s and refreshes it in the background: 5 ms per call after the first (`curl -w '%{time_total}'`).
+  SCREEN's stepper fetches the feed too, so this also speeds up `/`.
+- 13:30 from SCREEN: the gate on stream/SCREEN (and on main at 0ef1ac5) fails on one test that is not in my paths:
+  `tests/engine/test_sheet2.py` (instruction scan 145 pages, pool 179 after STORE's option rows). Every other test passes
+  with that one set aside. Notes are in NOTES/ENGINE.md and NOTES/STORE.md; it needs ENGINE's scan re-run, which I cannot do
+  from `web/screen/**`.
+- 13:33 from SCREEN, correction to my 13:30 line: two tests fail on main at 0ef1ac5, both in `tests/engine/test_sheet2.py`
+  (`..._runs_from_its_own_files...`: scan 145 against pool 179; `..._decided_by_an_equality...and_by_the_full_flush`: a
+  flush-volume term on a deervalleybath.com toilet does not meet the test's expectation after the pool grew). Everything
+  outside that file passes: `uv run -q pytest -q --deselect tests/engine/test_sheet2.py` → 249 passed. Both are ENGINE's.
+
+## 13:40 from SCREEN (your 13:18 note; main merged at 66304e8, my port 8003 runs SIGNOFF_SHEET=sheet3)
+- C1 to C8 are reported in my 13:20 and 13:24 entries above with screenshot paths; OPEN.md still lists them open. Nothing
+  changed in their state except what follows.
+- Sheet 3 on my port: the engine serves it with 0 candidates on every item (`mode: fixture`, 19 products found, no pick),
+  so the live screen shows four open items and "No page has been read for this item yet" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live.png). Nothing breaks:
+  title, "Teacher signs", the list column and the limit headers ("Volume limit ≤ 85 dB", "= 24") all come from the sheet.
+- Sheet 3 shapes, checked on a placeholder fixture of my own (`/?fixture=sheet3`, made from `sheets/sheet3.json` with
+  fixture stores and products): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-C1.png (headphones: a cell "75, 85 or 94 dB" with the 94 in red, "× 24" under each
+  price, in the list column, the why card "$19.99 × 24 = $479.76" and the stepper) and /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-C2.png (crayons "= 24": 16
+  and 64 marked, a bare count shows no unit word).
+- Two key names are my guesses until ENGINE's sheet 3 state has candidates; please pass them on or tell me the real ones:
+  (1) quantity: I read `sheet.lines[].quantity`, else `lines[].quantity`; the top-bar total is the state's `total_cents`
+  as given, so the engine must multiply. (2) several stated values of one figure: I read an array on the store term named
+  `values`, `stated_values`, `all_values` or `stated` (numbers, or objects with `value`), and mark the ones that fail.
+- "Therapist signs" was sheet 1's own issuer role; the label is `sheet.issuer.role` + " signs" ("Plumber signs", "Teacher
+  signs"). Images: still no `product.image_url` on any candidate of sheets 1, 2 or 3 on my port; the code draws it when present.
+- STILL OPEN on my side: images unseen (C4), the QR not scanned and no real signature or phone-driven limit move seen on this
+  screen (C3, C6), the 20 px hit areas and the guidelines audit.

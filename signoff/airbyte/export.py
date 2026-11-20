@@ -5,8 +5,7 @@
   order.csv            the issuer's limits, one row per limit, from the sheet (invented)
   order_doc.jsonl      the order document (the text the issuer wrote), when the sheet names one
 
-Where a sheet's pool lives is found by its own store list (see `_dir`), so a move of the folder by STORE needs no
-change here. Run: uv run python -m signoff.airbyte.export [sheet_id]
+Where a sheet's files live is STORE's rule, `signoff.store.sheetctx` (see `_dir`). Run: uv run python -m signoff.airbyte.export [sheet_id]
 """
 import csv
 import json
@@ -22,29 +21,23 @@ ORDER_FIELDS = ["sheet_id", "line_id", "need", "limit_id", "name", "op", "value"
 
 def active_sheet() -> str:
     """The sheet the app is running; never raises."""
-    import os
-    try:
-        from signoff.engine import state
-        return state.get_state()["sheet"]["id"]
-    except Exception:  # noqa: BLE001
-        return os.environ.get("SIGNOFF_SHEET") or "sheet1"
+    from signoff.store import sheetctx
+    return sheetctx.active_id()
 
 
 def load_sheet(sheet_id: str, root: pathlib.Path = ROOT) -> dict:
     return json.loads((root / "sheets" / f"{sheet_id}.json").read_text())
 
 
-def _dir(kind: str, sheet_id: str, stores: list[str], root: pathlib.Path = ROOT) -> pathlib.Path | None:
-    """The first folder that holds a file for the sheet's stores. `kind` is "pool" or "store_answers"."""
-    candidates = [root / "data" / sheet_id / kind, root / "data" / sheet_id / "bathroom" / kind, root / "data" / kind]
-    for d in candidates:
-        if d.is_dir() and any((d / f"{s}.json").exists() for s in stores):
-            return d
-    return None
+def _dir(kind: str, sheet_id: str) -> pathlib.Path:
+    """STORE's one path rule (signoff.store.sheetctx): sheet1 keeps data/pool and data/store_answers, any other
+    sheet keeps data/<sheet id>/pool and data/<sheet id>/store_answers. `kind` is "pool" or "store_answers"."""
+    from signoff.store import sheetctx
+    return sheetctx.pool_dir(sheet_id) if kind == "pool" else sheetctx.answers_dir(sheet_id)
 
 
-def pool_rows(sheet: dict, root: pathlib.Path = ROOT) -> list[dict]:
-    d = _dir("pool", sheet["id"], sheet["stores"], root)
+def pool_rows(sheet: dict) -> list[dict]:
+    d = _dir("pool", sheet["id"])
     rows = []
     for store in sheet["stores"]:
         f = d / f"{store}.json" if d else None
@@ -58,8 +51,8 @@ def pool_rows(sheet: dict, root: pathlib.Path = ROOT) -> list[dict]:
     return rows
 
 
-def answer_rows(sheet: dict, root: pathlib.Path = ROOT) -> list[dict]:
-    d = _dir("store_answers", sheet["id"], sheet["stores"], root)
+def answer_rows(sheet: dict) -> list[dict]:
+    d = _dir("store_answers", sheet["id"])
     rows = []
     for store in sheet["stores"]:
         f = d / f"{store}.json" if d else None
@@ -103,7 +96,7 @@ def write_all(sheet_id: str = "sheet1", root: pathlib.Path = ROOT, out: pathlib.
     d = out / sheet_id
     d.mkdir(parents=True, exist_ok=True)
     counts = {}
-    for name, rows in (("pool", pool_rows(sheet, root)), ("store_answers", answer_rows(sheet, root)),
+    for name, rows in (("pool", pool_rows(sheet)), ("store_answers", answer_rows(sheet)),
                        ("order_doc", order_doc_rows(sheet, root))):
         with (d / f"{name}.jsonl").open("w") as f:
             for r in rows:

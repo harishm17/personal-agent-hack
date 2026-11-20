@@ -40,52 +40,32 @@ def overlaps(a, b):
         a["start"] < b["end"] and b["start"] < a["end"]
 
 
+def numbers_at(rows):
+    """{(store, product, variant, figure): the numbers a reader states there}."""
+    out = {}
+    for r in rows:
+        if r.get("span_found_in_text") and r.get("number_in_quote") is not False:
+            numbers = [r.get("value")] if r.get("kind") == "single" else [r.get("low"), r.get("high")]
+            out.setdefault((r["store"], r["product_id"], r.get("variant_id"), r["figure"]), set()).update(
+                n for n in numbers if isinstance(n, (int, float)))
+    return out
+
+
 def combine(deciding, evidence=(), policy="first"):
-    """`deciding` and `evidence` are lists of (extractor name, rows). The first deciding reader is the one
-    whose quote is shown. Policy `first` lets the first reader decide alone (the others are still recorded)."""
-    keys, by_reader = [], []
-    for name, rows in list(deciding) + list(evidence):
-        index = {}
-        for r in rows:
-            key = (r["store"], r["product_id"], r["figure"])
-            index.setdefault(key, r)
-            if key not in keys:
-                keys.append(key)
-        by_reader.append((name, index))
+    """The records the engine uses: every statement of the first reader (the reference), each one noting
+    which other readers state the same numbers for that figure on that page (`agreed_by`). The other readers'
+    own records stay in their run folders and are compared after the rules by `signoff.extract.score`.
+    `deciding` and `evidence` are lists of (reader name, rows)."""
+    if not deciding:
+        return []
+    others = [(name, numbers_at(rows)) for name, rows in list(deciding[1:]) + list(evidence)]
     out = []
-    for key in keys:
-        have = [(name, index[key]) for name, index in by_reader[:len(deciding)] if key in index]
-        if not have:
-            continue  # only the evidence reader marked something: recorded in its own run, not a figure
-        good = [(n, r) for n, r in have if counted(r)]
-        base = dict((good or have)[0][1])
-        base["readers"] = [brief(r) for _, r in have]
-        agreed = len(good) == len(deciding) and all(same(good[0][1], r) for _, r in good[1:])
-        if policy == "first":
-            if have[0][0] != deciding[0][0]:
-                continue  # the reference reader reports nothing here: other readers' records stay in their runs
-            base = dict(have[0][1], readers=base["readers"])
-            if counted(base):
-                base["agreed_by"] = [n for n, r in good if same(base, r)]
-        elif agreed:
-            base.pop("unsure", None), base.pop("unsure_reason", None)
-            base["agreed_by"] = [n for n, _ in good]
-        else:
-            if len(good) >= 2 and not all(same(good[0][1], r) for _, r in good[1:]):
-                reason = "readers differ: " + "; ".join("%s reads %s" % (n, shown(r)) for n, r in good)
-            elif any(r.get("unsure") for _, r in have):
-                n, r = next((n, r) for n, r in have if r.get("unsure"))
-                reason = "%s is unsure: %s" % (n, r.get("unsure_reason"))
-            elif any(not r.get("span_found_in_text") for _, r in have):
-                reason = "a reader's quote is not in the store's text"
-            else:
-                reason = "only %s reports it; %s does not" % (
-                    ", ".join(n for n, _ in have), ", ".join(n for n, _ in deciding if n not in [h[0] for h in have]))
-            base.update(unsure=True, unsure_reason=reason)
-        for name, index in by_reader[len(deciding):]:
-            mark = index.get(key)
-            if mark and counted(mark) and counted(base) and overlaps(mark, base) and mark["kind"] == base["kind"] and same(mark, base):
-                base.setdefault("also_marked_by", []).append(
-                    {"extractor": name, "start": mark["start"], "end": mark["end"], "quote": mark["quote"]})
-        out.append(base)
+    for row in deciding[0][1]:
+        row = dict(row)
+        key = (row["store"], row["product_id"], row.get("variant_id"), row["figure"])
+        mine = {n for n in ([row.get("value")] if row.get("kind") == "single" else [row.get("low"), row.get("high")])
+                if isinstance(n, (int, float))}
+        if row.get("span_found_in_text") and mine:
+            row["agreed_by"] = [deciding[0][0]] + [name for name, at in others if mine <= at.get(key, set())]
+        out.append(row)
     return out
