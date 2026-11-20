@@ -49,14 +49,62 @@ def test_a_spread_uses_the_end_that_could_fail():
     assert rules.deciding(fig, ">=") == 5.0 and rules.deciding(fig, "<=") == 5.5
 
 
-def test_an_adjustable_range_passes_only_when_the_limit_lies_inside_it():
+def test_at_least_passes_when_a_setting_of_an_adjustable_range_meets_it():
+    """Rule 3: "must reach at least" is met by a seat that can be set to it or higher; the bound need not lie in the range."""
     sheet, pool, figures, answers, _ = inputs()
     seat = next(l for l in sheet["lines"][2]["limits"] if l["id"] == "L3.seat")
-    seat["bound"]["value"] = 16.5  # N adjusts from 17 to 23: it reaches 16.5 and beyond, but cannot be set to it
+    seat["bound"]["value"] = 16.5  # N adjusts from 17 to 23: every setting is at least 16.5
     n = next(c for c in line(rules.build_state(sheet, pool, figures, answers, []), "L3")["candidates"]
              if c["product"]["product_id"] == "fx-N")
-    assert n["status"] == "outside" and n["checks"][1]["margin"] == -0.5
-    assert n["reason"] == "seat height: 16.5 within 17 to 23 is false"
+    assert n["status"] == "inside" and n["checks"][1]["expr"] == "23 >= 16.5"
+    seat["bound"]["value"] = 23.0  # it can be set to 23
+    n = next(c for c in line(rules.build_state(sheet, pool, figures, answers, []), "L3")["candidates"]
+             if c["product"]["product_id"] == "fx-N")
+    assert n["status"] == "inside" and n["checks"][1]["margin"] == 0
+    seat["bound"]["value"] = 23.5  # no setting reaches it
+    n = next(c for c in line(rules.build_state(sheet, pool, figures, answers, []), "L3")["candidates"]
+             if c["product"]["product_id"] == "fx-N")
+    assert n["status"] == "outside" and n["reason"] == "seat height: 23 >= 23.5 is false"
+
+
+def test_every_stated_value_is_tested_and_values_that_differ_make_the_candidate_unclear():
+    sheet, pool, figures, answers, strikes = inputs()
+    height = next(l for l in sheet["lines"][1]["limits"] if l["id"] == "L2.height")
+    a = lambda: line(rules.build_state(sheet, pool, figures, answers, strikes), "L2")["candidates"][0]  # noqa: E731
+    assert a()["status"] == "inside"            # "adds 5 to 5.5": 20 and 20.5 both reach 19
+    height["bound"]["value"] = 20.25            # 20 fails, 20.5 passes: the page does not settle it
+    got = a()
+    assert got["status"] == "unclear" and got["reason"] == "finished seat height: page states both 5 and 5.5 in"
+    assert got["checks"][1]["state"] == "unclear" and got["checks"][1]["expr"] == "20 or 20.5 >= 20.25"
+    assert [v["pass"] for v in got["checks"][1]["values"]] == [False, True] and not got["picked"]
+    height["bound"]["value"] = 21.0             # both fail
+    assert a()["status"] == "outside" and a()["reason"] == "finished seat height: 15 + 5.5 = 20.5 >= 21 is false"
+    # the order may say which of several stated values counts ("the full flush counts")
+    height["bound"]["value"] = 20.25
+    height["several"] = "largest"
+    assert a()["status"] == "inside" and a()["checks"][1]["expr"] == "15 + 5.5 = 20.5 >= 20.25"
+    height["several"] = "smallest"
+    assert a()["status"] == "outside"
+
+
+def test_a_statement_that_cannot_be_compared_is_unclear_not_absent_and_a_real_failure_comes_first():
+    sheet, pool, figures, answers, strikes = inputs()
+    no_unit = copy.deepcopy(figures)
+    next(f for f in no_unit if f["product_id"] == "fx-A" and f["figure"] == "added_height")["unit"] = None
+    a = line(rules.build_state(sheet, pool, no_unit, answers, strikes), "L2")["candidates"][0]
+    assert a["status"] == "unclear" and a["reason"] == "finished seat height: no unit stated"
+    assert a["checks"][1]["terms"][1]["quote"]  # the statement is still shown
+    # two numbers in one quote that the text does not settle: both are tested
+    rivals = copy.deepcopy(figures)
+    f = next(f for f in rivals if f["product_id"] == "fx-B" and f["figure"] == "added_height")
+    f["possible"] = [3.0]                        # 4.5 reaches 19 with the rim's 15, 3 does not
+    b = line(rules.build_state(sheet, pool, rivals, answers, strikes), "L2")["candidates"][1]
+    assert b["status"] == "unclear" and "page states both 3 and 4.5 in" in b["reason"]
+    # H states no capacity; if what it does state fails, it is outside, not "not stated"
+    sheet["lines"][1]["limits"][1]["bound"]["value"] = 19.5   # H adds 4: 19 < 19.5
+    h = next(c for c in line(rules.build_state(sheet, pool, figures, answers, strikes), "L2")["candidates"]
+             if c["product"]["product_id"] == "fx-H")
+    assert h["status"] == "outside" and h["reason"] == "finished seat height: 15 + 4 = 19 >= 19.5 is false"
 
 
 def test_a_figure_whose_quote_is_not_in_the_text_does_not_count():
@@ -70,19 +118,19 @@ def test_a_figure_whose_quote_is_not_in_the_text_does_not_count():
     target["span_found_in_text"] = rules.span_found(target, text[(target["store"], "fx-A")])
     assert target["span_found_in_text"] is False
     a = line(rules.build_state(sheet, pool, bad, answers, strikes), "L2")["candidates"][0]
-    assert a["status"] == "not_stated" and "quote not found" in a["reason"] and not a["picked"]
+    assert a["status"] == "not_stated" and a["reason"] == "added height never stated on the page" and not a["picked"]
 
 
-def test_a_missing_or_unsure_figure_is_not_stated_never_a_guess():
+def test_a_figure_with_no_statement_is_not_stated_and_an_unsure_one_is_still_tested():
     sheet, pool, figures, answers, strikes = inputs()
     state = rules.build_state(sheet, pool, figures, answers, strikes)
     h = next(c for c in line(state, "L2")["candidates"] if c["product"]["product_id"] == "fx-H")
     assert h["status"] == "not_stated" and h["reason"] == "weight capacity never stated on the page"
     unsure = copy.deepcopy(figures)
     f = next(f for f in unsure if f["product_id"] == "fx-A" and f["figure"] == "weight_capacity")
-    f.update(unsure=True, unsure_reason="two sizes, two capacities")
+    f.update(unsure=True, unsure_reason="two sizes, two capacities")  # the reader's doubt is a note, not an absence
     a = line(rules.build_state(sheet, pool, unsure, answers, strikes), "L2")["candidates"][0]
-    assert a["status"] == "not_stated" and "two sizes" in a["reason"]
+    assert a["status"] == "inside" and a["checks"][0]["expr"] == "300 >= 300"
 
 
 def test_a_figure_in_another_unit_is_not_compared():
@@ -90,7 +138,7 @@ def test_a_figure_in_another_unit_is_not_compared():
     other = copy.deepcopy(figures)
     next(f for f in other if f["product_id"] == "fx-A" and f["figure"] == "added_height")["unit"] = "cm"
     a = line(rules.build_state(sheet, pool, other, answers, strikes), "L2")["candidates"][0]
-    assert a["status"] == "not_stated"
+    assert a["status"] == "unclear" and a["reason"] == "finished seat height: stated in cm, not in"
     assert rules.convert(12.7, "cm", "in") == 5.0 and rules.convert(300, "lbs.", "lb") == 300
 
 
@@ -151,9 +199,9 @@ def test_equality_is_a_real_comparison_with_a_margin_of_zero_when_it_matches():
     line, check = only_check(*sheet_with("==", 10.0, value=12.0))
     assert (check["expr"], check["pass"], check["margin"]) == ("12 == 10", False, -2.0)
     assert line["candidates"][0]["status"] == "outside" and line["candidates"][0]["reason"] == "rough-in: 12 == 10 is false"
-    # a spread matches only if both ends do: the end further from the value decides
+    # a page that states both 10 and 12 does not settle an equality: unclear
     _, check = only_check(*sheet_with("==", 10.0, kind="spread", low=10.0, high=12.0))
-    assert check["expr"] == "12 == 10" and check["pass"] is False
+    assert check["state"] == "unclear" and check["unclear_why"] == "page states both 10 and 12 in"
     # an adjustable range that takes in the value is set to it
     _, check = only_check(*sheet_with("==", 10.0, kind="adjustable", low=10.0, high=12.0))
     assert check["expr"] == "10 == 10" and check["pass"] is True

@@ -44,3 +44,22 @@ def test_a_store_that_does_not_answer_is_pending_not_an_exception(monkeypatch):
     assert out[0]["mode"] == "live" or out[0]["mode"] == cart.config.mode()
     assert out[1]["mode"] == "pending" and out[1]["cart_url"] is None and "timed out" in out[1]["error"]
     assert seen == {"ok.com": (0, 3), "slow.com": (0, 3)}
+
+
+def test_a_cart_carries_its_lines_and_currency(monkeypatch):
+    def fake(store, tool, args, **kw):
+        return {"id": "c", "currency": "USD", "totals": [{"type": "total", "amount": 30}], "continue_url": "https://x/c",
+                "line_items": [{"id": "l", "quantity": 2, "item": {"id": "v1", "title": "Thing", "price": 15}}]}
+    monkeypatch.setattr(ucp, "call", fake)
+    out = cart.create_carts([{"store": "a.com", "variant_id": "v1", "quantity": 2}])[0]
+    assert out["currency"] == "USD" and out["lines"] == [{"variant_id": "v1", "quantity": 2, "unit_price_cents": 15, "title": "Thing"}]
+
+
+def test_a_replayed_cart_returns_its_lines_in_the_same_shape(monkeypatch):
+    import json
+    monkeypatch.setenv("SIGNOFF_MODE", "replay")
+    pool = json.loads((cart.__file__ and __import__("pathlib").Path(cart.__file__).resolve().parents[2] / "data" / "sheet2" / "pool" / "swissmadison.com.json").read_text())
+    o = pool[0]["options"][0]
+    out = cart.create_carts([{"store": "swissmadison.com", "variant_id": o["variant_id"], "quantity": 3}])[0]
+    assert out["mode"] == "replay" and out["lines"][0]["variant_id"] == o["variant_id"] and out["lines"][0]["quantity"] == 3
+    assert out["lines"][0]["unit_price_cents"] == o["price_cents"] and out["total_cents"] == 3 * o["price_cents"]

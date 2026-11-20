@@ -82,3 +82,12 @@ def test_counts_come_from_the_saved_log_for_the_active_sheet(monkeypatch):
     import sys
     sys.modules["signoff.obs.egress"]._rows.clear()  # a restart: memory is gone, the file is not
     assert summary()["to_stores"] == 2 and summary(rows("sheet1"))["to_stores"] == 1 and len(rows("all")) == 3
+
+
+def test_row_numbers_stay_unique_when_another_process_wrote_the_file():
+    import sys
+    mod = sys.modules["signoff.obs.egress"]
+    a = record("x.com", "p", "a", kind="store")
+    mod._rows.clear()  # a second process starts with an empty memory and appends to the same file
+    b = record("x.com", "p", "b", kind="store")
+    assert b["n"] == a["n"] + 1
