@@ -53,189 +53,135 @@ def cost(log):
     return out or None
 
 
-def item(key, row, titles):
-    out = {"store": key[0], "product_id": key[1], "title": titles.get(key[:2]), "figure": key[2],
-           "value": combine.shown(row), "quote": row["quote"]}
-    if row.get("number_check"):
-        out["number_check"] = row["number_check"]
-    if row.get("unsure_reason"):
-        out["unsure_reason"] = row["unsure_reason"]
+def stated(rows):
+    """{(store, product, variant, figure): the numbers the reader states there, with its quotes}."""
+    out = {}
+    for r in rows:
+        if not r.get("span_found_in_text") or r.get("number_in_quote") is False:
+            continue
+        numbers = [r.get("value")] if r.get("kind") == "single" else [r.get("low"), r.get("high")]
+        key = (r["store"], r["product_id"], r.get("variant_id"), r["figure"])
+        out.setdefault(key, {"numbers": set(), "quotes": []})
+        out[key]["numbers"].update(n for n in numbers if isinstance(n, (int, float)))
+        out[key]["quotes"].append(r.get("quote"))
     return out
 
 
-def measure(name, index, log, reference, titles, picks=None):
-    counted = {k: r for k, r in index.items() if combine.counted(r)}
-    ref = {k: r for k, r in reference.items() if combine.counted(r)}
-    both = [k for k in ref if k in counted]
-    same = [k for k in both if combine.same(ref[k], counted[k])]
-    different = [k for k in both if not combine.same(ref[k], counted[k])]
-    missing = [k for k in ref if k not in counted]
-    extra = [k for k in counted if k not in ref]
-    products = {(r["store"], r["product_id"]) for r in log if r.get("asked")}
-    clean = products - {k[:2] for k in different + missing + extra}
+def built(rows, sheet, pool, answers):
+    """A reader's figures run through the engine's own rules on the sheet as on disk: each candidate's status,
+    each check's outcome, and each line's pick."""
+    from signoff.engine import rules
+    text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
+    ready = [spans.ready(dict(r), text.get((r["store"], r["product_id"]))) for r in rows]
+    state = rules.build_state(json.loads(json.dumps(sheet)), pool, ready, answers, [], "comparison")
+    checks, status, picks = {}, {}, {}
+    for line in state["lines"]:
+        pick = next((c for c in line["candidates"] if c["picked"]), None)
+        picks[line["line_id"]] = pick and {"store": pick["product"]["store"], "title": pick["product"]["title"],
+                                           "price_cents": pick["product"]["price_cents"],
+                                           "sums": [k["expr"] for k in pick["checks"]],
+                                           "quotes": [t["quote"] for k in pick["checks"] for t in k["terms"] if t.get("quote")]}
+        for c in line["candidates"]:
+            status[c["id"]] = {"line_id": line["line_id"], "store": c["product"]["store"], "title": c["product"]["title"],
+                               "price_cents": c["product"]["price_cents"], "status": c["status"], "reason": c["reason"],
+                               "sums": [k["expr"] for k in c["checks"]]}
+            for k in c["checks"]:
+                checks[(c["id"], k["limit_id"])] = k["state"]
+    return {"checks": checks, "status": status, "picks": picks, "stated": stated(ready)}
+
+
+def measure(name, rows, log, mine, ref, titles, is_reference):
+    """One reader against the reference, after the rules: the outcomes of the same checks on the same candidates.
+    Nothing is dropped: a check that is unclear or not stated for a reader is counted as that outcome."""
+    pages = {(r["store"], r["product_id"], r.get("variant_id")) for r in log if r.get("asked")}
     seconds = [r["seconds"] for r in log if r.get("seconds") is not None and r.get("asked")]
+    found = sum(1 for r in rows if r.get("span_found_in_text"))
+    same = [k for k in ref["checks"] if mine["checks"].get(k) == ref["checks"][k]]
+    table = {}
+    for k, theirs in ref["checks"].items():
+        pair = "%s -> %s" % (theirs, mine["checks"].get(k))
+        table[pair] = table.get(pair, 0) + 1
+    both = [k for k in ref["stated"] if k in mine["stated"]]
+    differ = [k for k in both if ref["stated"][k]["numbers"] != mine["stated"][k]["numbers"]]
+
+    def row(key, source):
+        return {"store": key[0], "product_id": key[1], "title": titles.get(key[:2]), "figure": key[3],
+                "values": sorted(source[key]["numbers"]), "quote": source[key]["quotes"][0]}
+
+    def statuses(made):
+        return {s: sum(1 for c in made["status"].values() if c["status"] == s)
+                for s in ("inside", "outside", "unclear", "not_stated")}
     out = {
-        "extractor": name, "products_read": len(products),
-        "figures_reported": len(index),
-        "span_found": sum(1 for r in index.values() if r.get("span_found_in_text")),
-        "span_found_share": round(sum(1 for r in index.values() if r.get("span_found_in_text")) / len(index), 3) if index else None,
-        "marked_unsure": sum(1 for r in index.values() if r.get("unsure")),
-        "figures_counted": len(counted),
-        # the honest reading: of the figures BOTH readers found, how many carry the same number
-        "both_found": len(both), "same_number": len(same), "different_number": len(different),
-        "only_reference_found": len(missing), "only_this_reader_found": len(extra),
-        "agreement": round(len(same) / len(both), 3) if both else None,
-        "statement": "same number on %d of %d figures both readers found; the reference alone found %d, this "
-                     "reader alone found %d" % (len(same), len(both), len(missing), len(extra)),
-        "disagreements": [dict(item(k, counted[k], titles), reference_value=combine.shown(ref[k]),
-                               reference_quote=ref[k]["quote"]) for k in sorted(different)],
-        "extra": [dict(item(k, counted[k], titles),
-                       reference_says=(reference[k].get("unsure_reason") or "unsure") if k in reference else "not stated")
-                  for k in sorted(extra)],
-        "missing": [dict(item(k, ref[k], titles),
-                         reader_says=(index[k].get("unsure_reason") or "unsure") if k in index else "not stated")
-                    for k in sorted(missing)],
-        "picks_changed": picks,
-        "products_fully_agreeing": len(clean),
-        "seconds_per_product_median": round(statistics.median(seconds), 2) if seconds else None,
-        "seconds_per_product_mean": round(statistics.mean(seconds), 2) if seconds else None,
+        "extractor": name, "pages_read": len(pages), "statements": len(rows), "span_found": found,
+        "span_found_share": round(found / len(rows), 3) if rows else None,
+        "candidates": statuses(mine),
+        "checks_compared": len(ref["checks"]), "same_outcome": len(same),
+        "outcomes": dict(sorted(table.items())),  # "what the reference found -> what this reader found": how many checks
+        "statement": "same outcome on %d of %d checks (pass, fail, unclear or not stated, on the same candidates)" % (
+            len(same), len(ref["checks"])),
+        "figures_both_state": len(both), "same_numbers": len(both) - len(differ),
+        "only_reference_states": sum(1 for k in ref["stated"] if k not in mine["stated"]),
+        "only_this_reader_states": sum(1 for k in mine["stated"] if k not in ref["stated"]),
+        "disagreements": [dict(row(k, mine), reference_values=sorted(ref["stated"][k]["numbers"]),
+                               reference_quote=ref["stated"][k]["quotes"][0]) for k in sorted(differ, key=str)],
+        "extra": [row(k, mine) for k in sorted((k for k in mine["stated"] if k not in ref["stated"]), key=str)],
+        "picks_changed": None if is_reference else [
+            {"line_id": line, "with_reference": ref["picks"][line], "with_this_reader": pick}
+            for line, pick in mine["picks"].items() if (pick or {}).get("title") != (ref["picks"][line] or {}).get("title")],
+        "inside_only_with_this_reader": None if is_reference else [
+            dict(c, with_reference=ref["status"][cid]["status"], reference_reason=ref["status"][cid]["reason"])
+            for cid, c in mine["status"].items() if c["status"] == "inside" and ref["status"][cid]["status"] != "inside"],
+        "inside_only_with_reference": None if is_reference else [
+            dict(c, with_this_reader=mine["status"][cid]["status"], this_reader_reason=mine["status"][cid]["reason"])
+            for cid, c in ref["status"].items() if c["status"] == "inside" and mine["status"][cid]["status"] != "inside"],
+        "seconds_per_page_median": round(statistics.median(seconds), 2) if seconds else None,
         "cost": cost(log),
-        # kept for readers of the first version of this file
-        "reference_figures": len(ref), "same_as_reference": len(same), "missing_count": len(missing),
-        "extra_count": len(extra),
     }
+    out["seconds_per_product_median"] = out["seconds_per_page_median"]  # the earlier name, kept
     return out
 
 
-def picks_by_reader(runs, sheet_id="sheet1"):
-    """{reader name: {line id: pick}} when that reader's figures decide, by the engine's own rules on the sheet
-    as on disk. None when the sheet's inputs are not in this checkout."""
-    try:
-        from signoff.engine import rules
-        from signoff.extract import run as runner
-        sheet = json.loads((ROOT / "sheets" / (sheet_id + ".json")).read_text())
-        files = runner.pool_files(sheet_id=sheet_id)
-        pool = [p for f in files for p in json.loads(pathlib.Path(f).read_text())]
-        answers_dir = (ROOT / "data" / "store_answers") if sheet_id == "sheet1" else (ROOT / "data" / sheet_id / "store_answers")
-        answers = [a for f in sorted(answers_dir.glob("*.json")) for a in json.loads(f.read_text())] if answers_dir.is_dir() else []
-        text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
-        out, status = {}, {}
-        for name, index, _ in runs:
-            rows = [dict(r, span_found_in_text=rules.span_found(r, text.get((r["store"], r["product_id"]))))
-                    for r in index.values()]
-            built = rules.build_state(json.loads(json.dumps(sheet)), pool, rows, answers, [], "comparison")
-            out[name] = {l["line_id"]: next(({"store": c["product"]["store"], "title": c["product"]["title"],
-                                              "price_cents": c["product"]["price_cents"],
-                                              "sums": [k["expr"] for k in c["checks"]],
-                                              "quotes": [t["quote"] for k in c["checks"] for t in k["terms"] if t.get("quote")]}
-                                             for c in l["candidates"] if c["picked"]), None) for l in built["lines"]}
-            status[name] = {c["id"]: {"line_id": l["line_id"], "store": c["product"]["store"], "title": c["product"]["title"],
-                                      "price_cents": c["product"]["price_cents"], "status": c["status"],
-                                      "reason": c["reason"], "sums": [k["expr"] for k in c["checks"]]}
-                            for l in built["lines"] for c in l["candidates"]}
-        return out, status
-    except Exception:  # noqa: BLE001
-        return None, None
-
-
-def compare(figures=FIGURES, reference=None):
+def inputs(figures):
+    """(sheet id, sheet, pool rows, store answers) of the sheet whose figure folder this is."""
+    from signoff.extract import run as runner
     figures = pathlib.Path(figures)
-    runs = [load_run(f) for f in sorted((figures / "_runs").iterdir()) if f.is_dir()]
+    sheet_id = next((p.stem for p in sorted((ROOT / "sheets").glob("*.json"))
+                     if runner.sheet_dirs(p.stem)[1].resolve() == figures.resolve()), None)
+    if sheet_id is None:
+        return None, None, [], []
+    sheet = json.loads((ROOT / "sheets" / (sheet_id + ".json")).read_text())
+    pool = runner.rows_of(runner.pool_files(sheet_id=sheet_id))
+    answers_dir = runner.sheet_dirs(sheet_id)[0].parent / "store_answers"
+    answers = [a for f in sorted(answers_dir.glob("*.json")) for a in json.loads(f.read_text())] if answers_dir.is_dir() else []
+    return sheet_id, sheet, pool, answers
+
+
+def compare(figures=FIGURES, reference=None, sheet_inputs=None):
+    figures = pathlib.Path(figures)
+    runs = []
+    for folder in sorted((figures / "_runs").iterdir()):
+        if folder.is_dir():
+            name, _, log = load_run(folder)
+            rows = [r for f in sorted(folder.glob("*.json")) for r in json.loads(f.read_text())]
+            runs.append((name, rows, log))
     if not runs:
         raise SystemExit("no reader runs under %s/_runs" % figures)
     first = [r for r in runs if "(second pass)" not in r[0]]
     ref = next((r for r in first if reference and reference in r[0]), None) or \
         next((r for r in first if "claude-sonnet" in r[0]), first[0])
-    sheet_id = "sheet1" if figures.resolve() == FIGURES.resolve() else figures.name
-    titles = {}
-    try:
-        from signoff.extract import run as runner
-        for f in runner.pool_files(sheet_id=sheet_id):
-            for p in json.loads(pathlib.Path(f).read_text()):
-                titles[(p["store"], p["product_id"])] = p.get("title")
-    except Exception:  # noqa: BLE001
-        pass
-    def one_pass(these, reference_index):
-        """Every reader measured against the reference: once on the figures as read, once with the rule on."""
-        picks, status = picks_by_reader(these, sheet_id)
-        out = {}
-        for name, index, log in these:
-            changed, inside, inside_ref = None, None, None
-            if picks and name != ref[0]:
-                changed = [{"line_id": line, "with_reference": picks[ref[0]][line], "with_this_reader": mine}
-                           for line, mine in picks[name].items()
-                           if (mine or {}).get("title") != (picks[ref[0]][line] or {}).get("title")]
-                inside = [dict(mine, with_reference=status[ref[0]][cid]["status"],
-                               reference_reason=status[ref[0]][cid]["reason"])
-                          for cid, mine in status[name].items()
-                          if mine["status"] == "inside" and status[ref[0]][cid]["status"] != "inside"]
-                inside_ref = [dict(theirs, with_this_reader=status[name][cid]["status"],
-                                   this_reader_reason=status[name][cid]["reason"])
-                              for cid, theirs in status[ref[0]].items()
-                              if theirs["status"] == "inside" and status[name][cid]["status"] != "inside"]
-            made = measure(name, index, log, reference_index, titles, changed)
-            made["inside_only_with_this_reader"] = inside
-            made["inside_only_with_reference"] = inside_ref
-            out[name] = made
-        return out
-
-    def with_rule(index):
-        fresh, caught = {}, []
-        for key, row in index.items():
-            row = dict(row)
-            if spans.apply_unambiguous_rule(row):
-                caught.append(key)
-            fresh[key] = row
-        return fresh, caught
-
-    def as_read(index):
-        out = {}
-        for key, row in index.items():
-            row = dict(row)
-            if row.get("caught_by"):  # marked by the rule when it was read: take the mark off for the "before" pass
-                for k in ("unsure", "unsure_reason", "caught_by", "number_check"):
-                    row.pop(k, None)
-            out[key] = row
-        return out
-
-    raw = [(name, as_read(index), log) for name, index, log in runs]
-    ruled, caught = [], {}
-    for name, index, log in raw:
-        fresh, hit = with_rule(index)
-        ruled.append((name, fresh, log))
-        caught[name] = [item(k, fresh[k], titles) for k in hit]
-    before = one_pass(raw, next(i for n, i, _ in raw if n == ref[0]))
-    after = one_pass(ruled, next(i for n, i, _ in ruled if n == ref[0]))
-    brief = lambda m: {  # noqa: E731
-        "figures_counted": m["figures_counted"], "statement": m["statement"],
-        "picks_changed": [p["line_id"] for p in m["picks_changed"] or []],
-        "inside_only_with_this_reader": len(m["inside_only_with_this_reader"] or []),
-        "inside_only_with_reference": len(m["inside_only_with_reference"] or []),
-        "inside_only_with_this_reader_titles": [x["title"] for x in m["inside_only_with_this_reader"] or []]}
-    readers = []
-    for name, _, _ in runs:
-        made = after[name]
-        index = next(i for n, i, _ in ruled if n == name)
-        needing = [r for r in index.values() if r.get("number_check")]
-        made["number_rule"] = {"quotes_with_several_numbers": len(needing),
-                               "label_paired_by_the_text": sum(1 for r in needing if r["number_check"]["paired"] is True),
-                               "caught": caught[name], "before": brief(before[name]), "after": brief(after[name])}
-        readers.append(made)
-    readers.sort(key=lambda r: (r["extractor"] != ref[0], -(r["agreement"] or 0)))
-    return {"made_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
-            "number_rule": {
-                "rule": "a figure counts only if its number is unambiguous in its quote: either the quote holds no other "
-                        "number of the same kind of unit, or the reader named the label the text puts on the number and "
-                        "code found that pairing in the quote (the label's place in a list of labels against the values' "
-                        "places, or the label standing next to the number); otherwise the figure is unsure",
-                "applies_to": "every reader, in code; no format is named",
-                "caught": {r["extractor"]: r["number_rule"]["caught"] for r in readers if r["number_rule"]["caught"]},
-                "reference_figures_caught": len(caught[ref[0]])},
-            "reference": ref[0], "measure": "same number, on the figures both readers found, on the same products",
-            "note": "Agreement, not accuracy: no person read these pages. A figure counts when its quote is "
-                    "found in the store's text and the reader did not mark it unsure. Figures only one reader "
-                    "found are listed separately, and so are the lines whose pick changes when that reader decides.",
-            "products": len({(r["store"], r["product_id"]) for r in ref[2] if r.get("asked")}), "readers": readers}
+    sheet_id, sheet, pool, answers = sheet_inputs or inputs(figures)
+    if sheet is None:
+        raise SystemExit("%s is not the figure folder of a sheet in sheets/" % figures)
+    titles = {(p["store"], p["product_id"]): p.get("title") for p in pool}
+    made = {name: built(rows, sheet, pool, answers) for name, rows, _ in runs}
+    readers = [measure(name, rows, log, made[name], made[ref[0]], titles, name == ref[0]) for name, rows, log in runs]
+    readers.sort(key=lambda r: (r["extractor"] != ref[0], -r["same_outcome"]))
+    return {"made_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "sheet_id": sheet_id,
+            "reference": ref[0],
+            "measure": "the outcome of every check (pass, fail, unclear, not stated) on the same candidates, after the rules",
+            "note": "Agreement with the reference reader, not accuracy: no person read every page. Nothing is dropped "
+                    "from the count: a check that is unclear or not stated for a reader is counted as that outcome.",
+            "pages": len(pool), "readers": readers}
 
 
 def write(figures=FIGURES, reference=None):
@@ -251,28 +197,19 @@ def main(argv=None):
     ap.add_argument("--detail", action="store_true")
     args = ap.parse_args(argv)
     result = json.loads(write(args.figures, args.reference).read_text())
-    print("reference: %s · %d products · %s" % (result["reference"], result["products"], result["measure"]))
+    print("sheet %s · reference %s · %d pages · %s" % (result["sheet_id"], result["reference"], result["pages"], result["measure"]))
     for r in result["readers"]:
-        rule = r["number_rule"]
-        print("%-42s %s · spans found %d of %d · picks changed on %s · %ss per product · cost %s" % (
-            r["extractor"], r["statement"], r["span_found"], r["figures_reported"],
+        print("%-42s %s · candidates %s · picks changed on %s · %s s per page · cost %s" % (
+            r["extractor"], r["statement"], r["candidates"],
             [p["line_id"] for p in r["picks_changed"]] if r["picks_changed"] is not None else "n/a",
-            r["seconds_per_product_median"], json.dumps(r["cost"])))
-        print("      number rule: %d quotes hold several numbers, %d paired by the text, %d caught %s · counted %d -> %d · "
-              "inside only with this reader %d -> %d · picks changed %s -> %s" % (
-                  rule["quotes_with_several_numbers"], rule["label_paired_by_the_text"], len(rule["caught"]),
-                  [(c["title"], c["figure"], c["value"]) for c in rule["caught"]][:6], rule["before"]["figures_counted"],
-                  rule["after"]["figures_counted"], rule["before"]["inside_only_with_this_reader"],
-                  rule["after"]["inside_only_with_this_reader"], rule["before"]["picks_changed"], rule["after"]["picks_changed"]))
-        if args.detail and r["extractor"] != result["reference"]:
+            r["seconds_per_page_median"], json.dumps(r["cost"])))
+        if args.detail and r["picks_changed"] is not None:
+            print("      outcomes (reference -> this reader):", r["outcomes"])
             for d in r["disagreements"]:
-                print("    differs  %s | %s | %s | reference %s %r | reader %s %r %s" % (
-                    d["store"], (d["title"] or "")[:34], d["figure"], d["reference_value"], d["reference_quote"][:50],
-                    d["value"], d["quote"][:50], d.get("number_check") or ""))
-            for d in r["extra"]:
-                print("    extra    %s | %s | %s | %s %r | reference: %s" % (
-                    d["store"], (d["title"] or "")[:34], d["figure"], d["value"], d["quote"][:50], d["reference_says"][:70]))
-            for d in r["picks_changed"] or []:
+                print("    differs  %s | %s | %s | reference %s %r | reader %s %r" % (
+                    d["store"], (d["title"] or "")[:34], d["figure"], d["reference_values"], (d["reference_quote"] or "")[:50],
+                    d["values"], (d["quote"] or "")[:50]))
+            for d in r["picks_changed"]:
                 print("    pick     %s | reference: %s | this reader: %s" % (
                     d["line_id"], d["with_reference"] and (d["with_reference"]["title"], d["with_reference"]["sums"]),
                     d["with_this_reader"] and (d["with_this_reader"]["title"], d["with_this_reader"]["sums"])))

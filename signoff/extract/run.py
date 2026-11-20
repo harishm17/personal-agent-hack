@@ -54,6 +54,11 @@ def pool_files(folder=None, sheet_id="sheet1"):
     return []
 
 
+def rows_of(files):
+    """Every candidate page of a pool: one row per product, or one per option on sale when the pool carries options."""
+    return [row for path in files for row in json.loads(pathlib.Path(path).read_text())]
+
+
 def text_key(product, model, sheet=None, system=None):
     """Same text, same reader, same instructions: the cached reading stands ("read once, cached")."""
     salt = gliner.MODEL if model == gliner.EXTRACTOR else (system or reader.SYSTEM)

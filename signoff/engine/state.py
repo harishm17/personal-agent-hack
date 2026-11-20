@@ -95,10 +95,10 @@ def _load_figures(pool, from_data, variants=None):
     variants = variants or {}
     for f in figures:
         page = text.get((f["store"], f["product_id"]))
-        f["span_found_in_text"] = rules.span_found(f, page)
-        if f["span_found_in_text"] and config.env("SIGNOFF_NUMBER_RULE") != "off":
-            # for every reader: one number in the quote, or a number the text itself labels; else unsure
-            spans.apply_unambiguous_rule(f)
+        if config.env("SIGNOFF_NUMBER_RULE") == "off":
+            f["span_found_in_text"] = rules.span_found(f, page)
+        else:
+            spans.ready(f, page)
         if f["span_found_in_text"] and variants.get((f["store"], f["product_id"])):
             spans.apply_option_rule(f, variants[(f["store"], f["product_id"])])
         if f["span_found_in_text"]:  # the store's whole sentence, for the screen to show around the quote
@@ -115,9 +115,7 @@ def _load_readers(from_data):
     try:
         made = _read(path)
         return {"reference": made["reference"], "measure": made["measure"], "note": made["note"],
-                "number_rule": made.get("number_rule"),
-                "products": made["products"], "made_at": made["made_at"],
-                "readers": [{k: v for k, v in r.items() if k not in ("differences", "missing")} for r in made["readers"]]}
+                "pages": made.get("pages"), "made_at": made["made_at"], "readers": made["readers"]}
     except (ValueError, KeyError):
         return None
 
@@ -474,7 +472,7 @@ def _attach(state):
     state["issuer_key"] = dict(_s["issuer_key"])
     state["readers"] = _s.get("readers")
     if _s.get("readers"):
-        used = next((f["extractor"] for f in _s["figures"]), _s["readers"]["reference"])
+        used = next((f.get("extractor") for f in _s["figures"]), None) or _s["readers"]["reference"]
         state["readers"] = dict(_s["readers"], deciding=used, switched=bool(_s.get("reader")))
     state["senso"] = list(senso)
     state["senso_current"] = state["sheet_hash"] in kept
