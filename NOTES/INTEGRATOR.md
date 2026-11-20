@@ -1511,3 +1511,16 @@ Sheet 3 on my port: the live engine still has no figures (`state_every_figure` 0
   "remembered by <remembered_by|by>, <date>"; a struck candidate whose `strike.remembered` or `strike.from_memory` is true
   reads "struck before", reason on click.
 - NOT DONE yet: the 150% and 1920 pass on sheets 4 and 3 (screenshots taken, not yet gone through), hit areas.
+
+## 14:20 from SCREEN: the designer's remaining items (stream/SCREEN)
+- DONE, 150% zoom (960 x 540) and 1920 x 1080 on sheets 4 and 3, live data: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s4-L5-960.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s4-L5-1920.png,
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s4-L1-960.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s4-L1-1920.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s3-C1-960.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/z-s3-C4-1920.png. Changes: the sheet title is never
+  cut (at narrow widths the grey meta text gives way to "· invented"); stepper labels wrap instead of being cut; product
+  names wrap to two lines when narrow; the number of rejected rows shown above the pick is fitted to the height (one at
+  150%, five at 1440 x 810, more on a taller window), the rest behind the fold line. Still cut with an ellipsis by
+  design: a long product name at 1440 (full name in the why card) and the store agent's reply (full text on click).
+- DONE, hit areas: "change", "store page", the fold lines' links and the shopper link have an invisible 0.5rem margin.
+- DONE, signed state on real data: see 14:10 (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s4-signed-real.png), with the caveat there (identity requirement off
+  on my port, so "self-declared"; "identity checked (sandbox)" unseen with real data).
+- My port 8003: sheet 4, replay mode, PERSONA_REQUIRED=0, a rehearsal key enrolled by demo/signer.py. It is a dev port;
+  nothing on main was touched.

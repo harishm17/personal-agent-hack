@@ -108,6 +108,8 @@ if (params.get("live") !== "0") {
   events.onerror = () => { live = false; };
 }
 setInterval(() => { if (!live) load(); }, 2000);
+let resizeTimer = null;
+addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (state) { last.quiet = true; render(); } }, 150); });
 addEventListener("hashchange", () => { ui.drawer = null; ui.show = null; ui.open.clear(); render(); });
 
 // ---------- the model of one item ----------
@@ -357,7 +359,10 @@ function renderList(line, pick) {
   const limits = sheetLineOf(line).limits, rows = priced(line), at = pick ? rows.indexOf(pick) : -1;
   const cheaper = at >= 0 ? rows.slice(0, at) : rows, dearer = at >= 0 ? rows.slice(at + 1) : [];
   const also = dearer.filter((c) => c.status === "inside").length;
-  let fold = cheaper.length > 5 && !ui.open.has("above") && at >= 0 ? cheaper.length - 5 : 0;      // five rejections, the pick and both fold lines fit without scrolling
+  // as many rejected rows as fit above the pick without scrolling (two to eight), the rest behind the fold line
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), room = q("#list").clientHeight - (innerWidth < 1180 ? 9.4 : 7.6) * rem;
+  const fit = Math.max(1, Math.min(8, Math.floor((room - 4.6 * rem - 5.6 * rem) / (3.9 * rem))));
+  let fold = cheaper.length > fit && !ui.open.has("above") && at >= 0 ? cheaper.length - fit : 0;
   // while the old pick says "was picked" it stays in view: if it sits in the folded part, it is shown just under the fold line
   const pinned = fold && ui.was ? cheaper.slice(0, fold).filter((c) => c.id === ui.was.id) : [];
   if (pinned.length) fold += 1;
@@ -376,6 +381,7 @@ function renderList(line, pick) {
       ${dearer.length ? (ui.open.has("below") ? dearer.map((c) => rowHtml(c, line, pick, limits)).join("")
         : dearer.filter((c) => ui.was && ui.was.id === c.id).map((c) => rowHtml(c, line, pick, limits)).join("") + `<button class="more" data-toggle="below">+ ${dearer.length} dearer, not needed</button>`) : ""}
     </div>`;
+  q("#rows").dataset.fit = `${fit} rows for ${Math.round(room)} px at ${rem} px`;      // for checking the fold at a given size
   q("#rows").scrollTop = keep;
 }
 
