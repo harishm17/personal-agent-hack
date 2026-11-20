@@ -85,6 +85,22 @@ def shopper_choose(body: Choose):
             "total_cents": new["total_cents"]}
 
 
+class PickRule(BaseModel):
+    id: str
+
+
+@router.post("/api/shopper/pick_rule")
+def shopper_pick_rule(body: PickRule):
+    """The shopper chooses the ordering among the products that pass (`cheapest`, `best_reviewed`, `best_value`,
+    ...; `pick_rules` in the state lists them). Refused once the sheet is signed. Laptop only, like every
+    `/api/shopper/` route."""
+    try:
+        new = state.set_pick_rule(body.id)
+    except state.EngineError as error:
+        return _refuse(error)
+    return {"ok": True, "version": new["version"], "pick_rule": new["sheet"]["pick_rule"], "total_cents": new["total_cents"]}
+
+
 @router.get("/api/sheet/canonical")
 def canonical():
     return {"canonical": state.canonical_sheet(), "sheet_hash": state.sheet_hash()}
