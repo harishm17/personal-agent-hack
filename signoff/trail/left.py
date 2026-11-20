@@ -11,7 +11,21 @@ A cell is: `sent` (the sender declared the class), `found` (the ledger's search 
 declare it: shown in red), `stopped` (the guard removed it from a message), `never` (every payload to that party was
 checked by something that can find the class, and none held it) or `not_recorded` (no record can tell).
 """
+import re
+
 from signoff.trail.feed import CLASS_WORDS, _epoch, _plain
+
+# Two groups of recipient. An outside party is someone on the open web that we do not run or hold an account with to keep
+# our data: a store (the ledger's kind "store"), a store's own agent (the guard's records), or a recipient the ledger
+# records by its web domain (a search engine). Everything else is one of our own services: a model we call by provider
+# and name, the database, the order check, analytics. What the product claims is about the first group; the second is
+# shown as it is.
+DOMAIN = re.compile(r"^[a-z0-9-]+(\.[a-z0-9-]+)+$")
+
+
+def _outside(kind: str, recipient: str) -> bool:
+    return kind == "store" or bool(DOMAIN.match(str(recipient or "").lower()))
+
 
 DETECTED = ("limit", "home_measurement", "person")      # what the ledger's own search can find in a payload
 # Whose fact each class is: the dot beside the row. A class not listed gets no dot.
@@ -22,6 +36,8 @@ OWNER = {"limit": "issuer", "order": "issuer", "need_by": "issuer", "home_measur
 # sharing class, and `classes` saying what may travel. Its class names, where they differ from the ledger's and the
 # guard's names for the same class.
 CONTEXT_CLASS = {"home": "home_measurement", "schedule": "need_by"}
+# The services' own names, as they write them. A recipient not listed is shown as the ledger has it.
+NAMES = {"singlestore": "SingleStore", "senso": "Senso", "amplitude": "Amplitude", "statsig": "Statsig", "exa.ai": "Exa"}
 GROUP_OVER = 3      # more stores than this are one column, counted
 LISTED = 6          # records listed behind one cell; the rest are counted
 
@@ -99,18 +115,19 @@ def build(sheet: dict, flow: dict, rows: list, messages: list, rule: dict = None
         word = {"sponsor service": "service"}.get(kind, kind)
         if kind == "store" and len(group) > GROUP_OVER:   # many stores are one column; every other party has its own
             col = "kind:%s" % kind
-            columns.append({"id": col, "label": "%d %ss" % (len(group), word), "kind": word,
+            columns.append({"id": col, "label": "%d %ss" % (len(group), word), "kind": word, "group": "outside",
                             "payloads": sum(len(rs) for _, rs in group), "members": [name for name, _ in group]})
             payloads_of[col] = [r for _, rs in group for r in rs]
         else:
             for name, rs in group:
-                columns.append({"id": name, "label": name.split(":")[-1].split("/")[-1], "kind": word, "payloads": len(rs),
-                                "members": [name]})
+                columns.append({"id": name, "label": NAMES.get(name.lower()) or name.split(":")[-1].split("/")[-1], "kind": word, "payloads": len(rs),
+                                "group": "outside" if _outside(kind, name) else "own", "members": [name]})
                 payloads_of[name] = rs
     stores = sorted({m.get("store") for m in messages if m.get("store")})
     if messages:      # the stores' own agents first: they are the outside party the sharing rule is about
         columns.insert(0, {"id": "agents", "label": "%d store agent%s" % (len(stores), "" if len(stores) == 1 else "s"),
-                        "kind": "store agent", "payloads": len(messages), "members": stores})
+                        "kind": "store agent", "group": "outside", "payloads": len(messages), "members": stores})
+    columns.sort(key=lambda c: c["group"] != "outside")       # outside parties first; the order within a group is kept
 
     # rows: the classes that exist in this run (an example of it, or a record that carries or stops it)
     seen = {c for r in rows for c in (r.get("declared_classes") or []) + (r.get("fact_classes") or []) if c != "none"}
@@ -158,6 +175,9 @@ def build(sheet: dict, flow: dict, rows: list, messages: list, rule: dict = None
             line[col["id"]] = cell
         cells[c] = line
 
+    sealed_for_stores = set(rule.get("sealed") or [])
+    crossed = [m for m in messages if m.get("sent") and any(x.get("class") in sealed_for_stores for x in m.get("left") or [])]
+    outside_rows = [r for r in rows if _outside(r.get("kind") or "", r.get("recipient") or "")]
     carried = [r for r in rows if set(DETECTED) & (set(r.get("declared_classes") or []) | {h.partition(": ")[0] for h in r.get("sealed_found_in_payload") or []})]
     times = sorted(t for t in (_epoch(r.get("at")) for r in rows) if t is not None)
     return {
@@ -165,6 +185,11 @@ def build(sheet: dict, flow: dict, rows: list, messages: list, rule: dict = None
         "rule": rule,
         "totals": {"payloads": len(rows), "recipients": len(by_recipient),
                    "carried": len(carried), "carried_to_stores": sum(1 for r in carried if r.get("kind") == "store"),
+                   # outside parties: the ledger's rows to them, and the messages that went to a store's agent
+                   "outside_payloads": len(outside_rows) + sum(1 for m in messages if m.get("sent")),
+                   "outside_carried": sum(1 for r in carried if r in outside_rows) + len(crossed),
+                   "own_payloads": len(rows) - len(outside_rows),
+                   "own_carried": sum(1 for r in carried if r not in outside_rows),
                    "undeclared": sum(1 for r in rows if any(h.partition(": ")[0] not in (r.get("declared_classes") or [])
                                                             for h in r.get("sealed_found_in_payload") or [])),
                    "blocked": sum(1 for r in rows if r.get("blocked")),

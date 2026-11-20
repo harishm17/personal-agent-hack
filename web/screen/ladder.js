@@ -62,6 +62,7 @@ document.body.innerHTML = `<div id="app">
   <main class="list card" id="list"><p class="muted">Loading…</p></main>
   <aside class="side" id="side" aria-label="Why this one, and the signature"></aside>
   <aside class="drawer card" id="drawer" hidden aria-live="polite"></aside>
+  <div class="replay" id="replay" hidden role="dialog" aria-modal="true" aria-label="How the agent got here"></div>
   <div class="toast" id="toast" hidden role="status"></div>
   <div class="tip" id="tip" hidden></div></div>`;
 
@@ -99,6 +100,10 @@ async function loadAux() {
       if (p) p.picked_because = byPrice() ? "the cheapest that passes" : "rated 4.7 from 212 reviews, the highest that passes";
       last.quiet = true; render();
     }
+    if (params.get("msg") && state && !state.sheet.shopper_facts.some((f) => f.suggested_from)) {
+      state.sheet.shopper_facts.forEach((f, i) => { f.suggested_from = { message_id: "sample", from_label: "the sample message", at: "2026-11-20T10:41:00-08:00", quote: "Sample message: I measured it this morning.", matches: params.get("msg") === "1" || i > 0 }; });
+      last.quiet = true; render();
+    }
     if (params.get("tools") === "1" && state && !aux.tools) { aux.tools = { tools: [
       { name: "SingleStore", number: 1, words: "statement, 9 rows, same as the screen", route: "/api/sql/passing-box", detail: "Sample row: the one statement returns the rows the engine shows as passing." },
       { name: "Statsig", number: 1, words: "gate checked, reader switched back", route: "/api/gate/status", detail: "Sample row." },
@@ -127,26 +132,43 @@ async function loadAux() {
   const needCode = state && !(state.issuer_key && state.issuer_key.enrolled) && !state.seal.signed;
   const opt = (path, url) => (has(path) ? get(url || path) : null);
   aux.asks = has("/api/asks") ? await get("/api/asks") : null;
+  if (params.get("replay") === "show") aux.embed = true;       // to look at the overlay before the graph page has its embed mode
+  if (aux.embed === undefined && aux.pages["/graph/"]) {
+    const text = (url) => fetch(url, { cache: "no-store" }).then((r) => (r.ok ? r.text() : "")).catch(() => "");
+    const html = await text("/graph/"), scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((m) => new URL(m[1], location.origin + "/graph/").pathname);
+    aux.embed = /\bembed\b/.test(html) || (await Promise.all(scripts.map(text))).some((js) => /[?&'"]embed\b|get\(["']embed["']\)/.test(js));
+  }
   const [egress, gate, enroll, trail, sheets] = await Promise.all([opt("/api/egress", "/api/egress?limit=5000"), opt("/api/gate/status"),
     needCode ? opt("/api/issuer/enroll-code") : null, opt("/api/trail"), opt("/api/sheets")]);
-  const key = JSON.stringify([aux.pages, aux.reviews, aux.asks, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
+  const key = JSON.stringify([aux.pages, aux.embed, aux.reviews, aux.asks, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
   Object.assign(aux, { egress, gate, enroll, trail, sheets });
   if (key !== aux.key && state) {       // redraw quietly, and never in the middle of the opening motion
     aux.key = key;
     setTimeout(() => { last.quiet = true; render(); }, Math.max(0, introUntil - performance.now()));
   }
 }
-setInterval(loadAux, 5000);
+setInterval(() => { if (!document.hidden) loadAux(); }, 5000);
 let live = false;
 if (params.get("live") !== "0") {
-  const events = new EventSource("/api/events");
-  events.onopen = () => { live = true; };
-  events.onmessage = () => load();
-  events.onerror = () => { live = false; };
+  // One stream per visible tab. A browser allows six connections to one host; a hidden tab that keeps its
+  // stream open starves the others, so the stream closes when the tab is hidden and reopens when it is shown.
+  let events = null;
+  const openStream = () => {
+    if (events || document.hidden) return;
+    events = new EventSource("/api/events");
+    events.onopen = () => { live = true; };
+    events.onmessage = () => load();
+    events.onerror = () => { live = false; };
+  };
+  const closeStream = () => { if (events) { events.close(); events = null; live = false; } };
+  document.addEventListener("visibilitychange", () => { if (document.hidden) closeStream(); else { openStream(); load(); } });
+  addEventListener("pagehide", closeStream);
+  openStream();
 }
-setInterval(() => { if (!live) load(); }, 2000);
+setInterval(() => { if (!live && !document.hidden) load(); }, 2000);
 let resizeTimer = null;
 addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (state) { last.quiet = true; render(); } }, 150); });
+addEventListener("wheel", (e) => { if (e.target.closest && e.target.closest("#rows")) ui.scrolled = true; }, { passive: true });
 addEventListener("hashchange", () => { ui.drawer = null; ui.show = null; ui.open.clear(); render(); loadAux(); });
 
 // ---------- the model of one item ----------
@@ -215,7 +237,7 @@ function failWords(ch) {
 
 /** The row's result: the pick, a rejection with its reason, or one that passes but was not needed. */
 function verdict(c, line, pick) {
-  if (c.picked) return { kind: "pick", text: line.picked_by === "shopper" ? `chosen by ${state.sheet.shopper.name}` : c.picked_because ? "Recommended" : "picked", why: c.picked_because || "" };
+  if (c.picked) return { kind: "pick", text: line.picked_by === "shopper" ? `chosen by ${state.sheet.shopper.name}` : "Recommended", why: c.picked_because || "" };
   if (c.status === "struck") {
     const st = c.strike || {}, before = st.remembered || st.from_memory || c.remembered || c.from_memory;
     return { kind: "no", text: before ? "struck before" : `struck by ${state.sheet.issuer.name}`, why: c.reason };
@@ -263,7 +285,8 @@ function render() {
     else moveChanges(before, last.pick, pickId);
     if (justSigned) signedMotion();
   }
-  if (opening || pickId !== last.pick) q("#rows > .rowx.picked")?.scrollIntoView({ block: "nearest" });    // the pick is never below the fold
+  if (opening) ui.scrolled = false;
+  if (opening || pickId !== last.pick || !ui.scrolled) q("#rows > .rowx.picked")?.scrollIntoView({ block: "nearest" });    // the recommended row is never cut by the fold
   rollChanges(!opening && !last.quiet);
   Object.assign(last, { line: id, pick: pickId, signed: !!state.seal.signed, quiet: false });
 }
@@ -334,8 +357,29 @@ function toolsSheet() {
     ${rows.map((r, i) => `<button class="tool" data-toggle="tool:${i}" aria-expanded="${ui.open.has("tool:" + i)}">
       <span class="tn"><i class="tm ${r.ok ? "ok" : ""}"></i>${esc(r.name)}</span><span class="tv">${r.number !== "" ? `<b>${esc(r.number)}</b> ` : ""}${esc(r.words)}</span></button>
       ${ui.open.has("tool:" + i) ? `<p class="small tooldetail">${r.job ? `<b>${esc(r.job)}.</b> ` : ""}${esc(r.detail)}${r.basis ? ` <span class="faint">${esc(cap(r.basis))}.</span>` : ""}${r.route ? `<br><code>${esc(r.route)}</code>` : ""}</p>` : ""}`).join("")}
-    <p class="small"><i class="tm ok"></i>the tool's own check holds · <i class="tm"></i>read the detail</p>`;
+`;
 }
+
+// ---------- how the agent got here: the run replayed (the graph page, embedded), then back to the list ----------
+function openReplay() {
+  const el = q("#replay"), line = theLine();
+  el.innerHTML = `<div class="rpanel"><div class="rhead"><span>How the agent got here · ${esc(cap(line.need))}</span><button class="btn" data-replay-close>Back to the list</button></div>
+    <iframe title="The run, replayed" src="/graph/?embed=1&autoplay=1&line_id=${encodeURIComponent(line.line_id)}"></iframe></div>`;
+  el.hidden = false;
+  if (fx.MOTION) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: "ease-out" });
+  q("[data-replay-close]").focus();
+}
+function closeReplay() {
+  const el = q("#replay");
+  if (el.hidden) return;
+  const done = () => {
+    el.hidden = true; el.innerHTML = "";
+    const pick = q("#rows > .rowx.picked");            // the list is there, with the pick highlighted
+    if (pick) { pick.scrollIntoView({ block: "nearest" }); if (fx.MOTION) pick.animate([{ boxShadow: "0 0 0 0.375rem var(--accent-pale)" }, { boxShadow: "0 0 0 0 transparent" }], { duration: 900, easing: "ease-out" }); }
+  };
+  if (fx.MOTION) el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in" }).finished.then(done, done); else done();
+}
+addEventListener("message", (e) => { if (e.origin === location.origin && e.data && e.data.type === "signoff:replay-done") closeReplay(); });
 
 // ---------- the stepper: the run across the top. Every number is from the state ----------
 function stepList(line, pick) {
@@ -348,16 +392,17 @@ function stepList(line, pick) {
     { id: "list_read", label: "List read", small: limits ? `${n_(limits, "limit", "limits")}, quoted` : "limits on the sheet", done: true },
     { id: "stores_searched", label: "Stores searched", small: n_(sheet.stores.length, "store", "stores"), done: pages > 0 },
     { id: "pages_read", label: "Pages read", small: n_(pages, "page", "pages"), done: pages > 0 },
-    { id: "checked", label: "Checked", small: `${line.candidates.filter((c) => c.status !== "inside").length} rejected, with reasons`, done: state.lines.some((l) => l.candidates.length > 0), k: "step.rej" },
-    { id: "picked", label: "Picked", small: pick ? money(pick.product.price_cents) + times(line) : "nothing passes", done: !!pick, k: "step.pick" },
+    { id: "checked", label: "Checked", small: `${line.candidates.filter((c) => c.status !== "inside").length} rejected`, done: state.lines.some((l) => l.candidates.length > 0), k: "step.rej" },
+    { id: "picked", label: "Picked", small: pick || state.total_cents ? `${n_(state.lines.filter((l) => l.pick).length, "item", "items")} · ${money(state.total_cents)}` : "nothing passes", done: !!pick, k: "step.pick" },
     { id: "signs", label: `${cap(sheet.issuer.role || "approver")} signs`, small: seal.signed ? `signed by ${sheet.issuer.name}` : "from the phone", done: !!seal.signed },
     { id: "carts", label: "Carts", small: seal.signed ? `${(seal.carts || []).length} created` : "none exist yet", done: !!seal.signed && (seal.carts || []).length > 0 },
   ];
 }
 
 function renderSteps(line, pick) {
-  const steps = stepList(line, pick), current = steps.findIndex((s) => !s.done);
-  q("#steps").innerHTML = steps.map((s, i) => `<button class="step ${s.done ? "done" : "todo"}${i === current ? " now" : ""}${s.id === "signs" || s.id === "carts" ? " key" : ""}" data-open="step:${s.id}" ${i === current ? 'aria-current="step"' : ""}>
+  const steps = stepList(line, pick), current = state.seal.signed ? -1 : steps.findIndex((s) => !s.done);
+  const replayBtn = aux.embed ? `<button class="replaybtn" data-replay title="How the agent got here: replay the run">▶ Replay the run</button>` : "";
+  q("#steps").innerHTML = replayBtn + steps.map((s, i) => `<button class="step ${s.done ? "done" : "todo"}${i === current ? " now" : ""}${s.id === "signs" || s.id === "carts" ? " key" : ""}" data-open="step:${s.id}" ${i === current ? 'aria-current="step"' : ""}>
     <span class="n">${s.done ? "✓" : i + 1}</span><span class="t"><span class="l">${esc(s.label)}</span><small ${s.k ? `data-k="${s.k}"` : ""}>${esc(s.small)}</small></span></button>`).join("");
 }
 
@@ -378,10 +423,10 @@ function renderDoc(current) {
   const { issuer, shopper } = state.sheet;
   const home = (limit) => {                           // a requirement that points at the house carries the measurement beside it
     const f = limit.bound.source === "shopper" && state.sheet.shopper_facts.find((x) => x.id === limit.bound.fact);
-    const who = f && f.remembered ? " · measured last time" : "";
+    const who = f && f.suggested_from ? "" : f && f.remembered ? ` · ${shopper.name} measured` : "";      // where it came from is said once, under the item's title
     return f ? ` <span class="home" title="from the home: ${esc(f.label)}">(${g(f.value)} ${esc(f.unit)}${esc(who)})</span>` : "";
   };
-  q("#doc").innerHTML = `<div class="cap">${esc(issuer.name)} · ${esc(issuer.role || issuer.role_label || "")} · the order</div>
+  q("#doc").innerHTML = `<div class="cap">${esc(issuer.name)}'s limits</div>
     <div class="paper">${state.lines.map((l) => {
       const p = pickOf(l), sl = sheetLineOf(l);
       const right = p ? (l.status === "pick_up" ? "pick up" : money(p.product.price_cents) + times(l)) : "open";
@@ -400,15 +445,16 @@ const byPrice = () => !Array.isArray(state.pick_rules) || /^cheapest/.test(ruleI
 /** What reviewers say of a product, from GET /api/reviews for this item (or the candidate itself): only what a page states. */
 function ratingOf(c) {
   const list = aux.reviews && aux.reviews.line === c.order_line.id ? aux.reviews.rows : [];
-  const r = c.rating && typeof c.rating === "object" ? c.rating : list.find((x) => x.candidate_id === c.id);
-  if (!r || r.found === false) return null;
-  const value = r.rating ?? r.value, sentence = r.sentence || {}, first = (r.sources || [])[0] || {};
-  if (value == null && !sentence.quote && !r.quote) return null;
-  return { value: value == null ? null : +value, outOf: r.out_of ?? null, count: r.review_count ?? r.count ?? null, source: r.rating_site || r.source || sentence.site || "",
-    quote: sentence.quote || r.quote || "", url: sentence.url || r.url || first.url || "", site: sentence.site || first.site || "", matched: first.matched_by || "", note: r.note || "" };
+  const rev = list.find((x) => x.candidate_id === c.id) || {}, eng = c.rating && typeof c.rating === "object" ? c.rating : null;
+  const value = eng ? eng.rating ?? eng.value : rev.found === false ? null : rev.rating, sentence = rev.sentence || {}, first = (rev.sources || [])[0] || {};
+  if (value == null && !sentence.quote) return null;
+  // usable for ordering only when the engine carries it on the candidate, or the reviews route says it was used
+  const used = !!eng || (rev.ordering && rev.ordering.used === true);
+  return { value: value == null ? null : +value, outOf: (eng || rev).out_of ?? null, count: (eng || rev).review_count ?? c.review_count ?? null, source: rev.rating_site || sentence.site || "",
+    used, reason: used ? "" : (rev.ordering && rev.ordering.reason) || "", quote: sentence.quote || "", url: sentence.url || first.url || "", site: sentence.site || first.site || "", matched: first.matched_by || "" };
 }
-/** "4.6/5 · 58 reviews · parentgiving.com": the scale only when the page wrote one, the count only when it gave one. */
-const ratingText = (r) => (r.value == null ? "" : `${+(+r.value).toFixed(1)}${r.outOf ? "/" + g(r.outOf) : ""}${r.count != null ? ` · ${n_(r.count, "review", "reviews")}` : ""}${r.source ? ` · ${r.source}` : ""}`);
+/** "★ 4.6 (58 on parentgiving.com)": the count and the site only when the page gave them. */
+const ratingText = (r) => (r.value == null ? "" : `★ ${+(+r.value).toFixed(1)}${r.outOf && +r.outOf !== 5 ? "/" + g(r.outOf) : ""}${r.count != null || r.source ? ` (${[r.count != null ? r.count : "", r.source ? "on " + r.source : ""].filter((x) => x !== "").join(" ")})` : ""}`);
 const prefsMet = (c) => (c.preferences || []).filter((x) => x.status === "met");
 /** The order of the rows under the active rule: the engine's own rank when it gives one, else price, or the rule's key among those that pass. */
 function ordered(line) {
@@ -436,6 +482,15 @@ async function choose(candidateId, anchor) {
     ui.show = null;
     await load();
   } catch (error) { toast(anchor, `Not chosen <span class="code2">${esc(clip(error.message, 60))}</span>`); }
+}
+
+/** Where a home measurement came from, when the state says (`suggested_from`): the sender's own label and the date, or that it was changed since. */
+function fromMessage(f) {
+  const m = f.suggested_from;
+  if (!m) return "";
+  const who = state.sheet.shopper.name, at = m.at ? new Date(m.at) : null;
+  const date = at && !isNaN(at) ? ", " + at.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+  return m.matches === false ? ` · changed by ${who} since the message` : ` · from ${m.from_label || who + "'s message"}${date}`;
 }
 
 // ---------- centre: the candidates, cheapest first ----------
@@ -468,7 +523,7 @@ function rowHtml(c, line, pick, limits) {
   const v = verdict(c, line, pick), fail = c.status === "struck" ? -1 : firstFail(c);
   const cells = c.checks.map((ch, i) => {
     if (fail >= 0 && i > fail) return `<span class="cell skip">—</span>`;
-    if (isUnclear(c, ch)) return `<span class="cell"><span class="chip unclear">${esc(statedText(ch, c) || "unclear")}</span></span>`;
+    if (isUnclear(c, ch)) return `<span class="cell"><span class="chip unclear">${esc((statedText(ch, c) || "unclear").replace(/ no unit$/, " ?"))}</span></span>`;
     if (ch.state === "not_stated") return `<span class="cell"><span class="chip none">not stated</span></span>`;
     const several = severalHtml(ch);
     if (several) return `<span class="cell">${several}</span>`;
@@ -477,11 +532,11 @@ function rowHtml(c, line, pick, limits) {
   const option = c.product.variant_title && !/^default/i.test(c.product.variant_title) ? `${c.product.variant_title} · ` : "";
   const img = c.product.image_url ? `<img src="${esc(c.product.image_url)}" alt="" loading="lazy" width="44" height="44" onerror="this.outerHTML='<span class=ph></span>'">` : `<span class="ph" aria-hidden="true"></span>`;
   const r = c.status === "inside" ? ratingOf(c) : null, met = c.status === "inside" ? prefsMet(c) : [];
-  const extra = (r && r.value != null ? `<small class="rate">${esc(ratingText(r))}</small>` : "") + (met.length ? `<small class="tag pref" title="${esc(met.map((x) => x.label).join("; "))}">preferred</small>` : "");
+  const extra = (r && r.value != null && r.used && !byPrice() ? `<small class="rate">${esc(ratingText(r))}</small>` : "")      // on a row only a rating the engine orders by + (met.length ? `<small class="tag pref" title="${esc(met.map((x) => x.label).join("; "))}">preferred</small>` : "");
   const result = v.kind === "pick" ? `<span class="res"><span class="pickd" title="${esc(v.why || "")}">✓ ${esc(v.text)}</span>${extra}</span>`
     : v.kind === "also" ? `<span class="res also">✓ ${esc(v.text)}${extra}</span>`
     : `<span class="res no" title="${esc(v.why || "")}">✕ ${esc(v.text)}${v.extra ? ` <span class="faint">${esc(v.extra)}</span>` : ""}</span>`;
-  const was = ui.was && ui.was.id === c.id && !c.picked ? `<span class="was">was picked</span>` : "";
+  const was = ui.was && ui.was.id === c.id && !c.picked ? `<span class="was">was recommended</span>` : "";
   return `<button class="rowx ${c.picked ? "picked" : v.kind === "also" ? "also" : "rej"}${c.id === ui.show ? " shown" : ""}${was ? " waspick" : ""}" data-id="${esc(c.id)}" style="--n:${limits.length}">${was}
     ${img}<span class="nm"><b>${esc(c.product.title)}</b><i>${esc(option + c.product.store)}</i></span>
     <span class="pr">${money(c.product.price_cents)}${qty(line) > 1 ? `<small>${esc(times(line).trim())}</small>` : ""}</span>${cells}${result}</button>`;
@@ -495,30 +550,29 @@ function renderList(line, pick) {
   const after = ladder ? (at >= 0 ? rows.slice(at + 1) : []) : passing.filter((c) => c !== pick);
   const rejectedBefore = before.filter((c) => c.status !== "inside").length, also = after.filter((c) => c.status === "inside").length;
   // as many rows as fit around the pick without scrolling (one to eight), the rest behind a fold line
-  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), room = q("#list").clientHeight - (innerWidth < 1180 ? 11 : 9.2) * rem;
-  const fit = Math.max(1, Math.min(8, Math.floor((room - 4.6 * rem - 5.6 * rem) / (3.9 * rem))));
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), room = q("#list").clientHeight - (innerWidth < 1180 ? 13.5 : 9.2) * rem;
+  const fit = Math.max(innerWidth < 1180 ? 0 : 1, Math.min(8, Math.floor((room - 4.6 * rem - 5.6 * rem) / (3.9 * rem))));
   let fold = before.length > fit && !ui.open.has("above") && at >= 0 ? before.length - fit : 0;
   // while the old pick says "was picked" it stays in view: if it sits in a folded part, it is shown beside the fold line
   const pinned = fold && ui.was ? before.slice(0, fold).filter((c) => c.id === ui.was.id) : [];
   if (pinned.length) fold += 1;
   // a limit is the approver's: read-only on the laptop. Where the route exists, the shopper can ask for a change.
   const canAsk = aux.routes && aux.routes.has("/api/shopper/ask-change") && !state.seal.signed && !FIXTURE;
-  const owned = (limit) => {
+  const owned = (limit) => {         // beside the limit's value: whose it is (the way to ask, where the route exists), or the ask's outcome
     if (limit.bound.source !== "issuer") return "";
-    const ask = askFor(limit.id), name = esc(state.sheet.issuer.name);
-    const status = !ask ? "" : /pend|wait|open/.test(ask.status || "pending") ? `asked ${name} · waiting`
-      : /declin|refus|reject/.test(ask.status) ? `${name} declined` : `${name} changed it to ${esc(withUnit(g(ask.value ?? ask.applied_value ?? boundOf(limit)), limit.unit))}`;
-    return `<span class="own" title="${name}'s limit: it changes only from ${name}'s phone, with a signature">${name}'s limit · phone only</span>`
-      + (status ? `<span class="askst">${status}</span>` : canAsk ? `<span class="ask" role="button" tabindex="0" data-open="ask:${esc(limit.id)}">Ask ${name}</span>` : "");
+    const ask = askFor(limit.id), name = esc(state.sheet.issuer.name), open = canAsk ? ` role="button" tabindex="0" data-open="ask:${esc(limit.id)}"` : "";
+    return ask ? `<span class="askst${canAsk ? " ask" : ""}"${open} title="${esc(ask.text || "")}">${esc(ask.outcome || ask.status)}</span>`
+      : `<span class="${canAsk ? "ask" : "own"}"${open} title="${name}'s limit: it changes only from ${name}'s phone, with a signature${canAsk ? ". Select to ask " + name + " for a change." : ""}">${name}'s limit</span>`;
   };
-  const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span>${esc(h.name)} <b data-k="head.${limit.id}">${esc(h.rule)}</b></span>${owned(limit)}</span>`; }).join("");
+  const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span class="ln">${esc(h.name)}</span><span class="lr"><b data-k="head.${limit.id}">${esc(h.rule)}</b>${owned(limit) ? `<span class="ow"> · ${owned(limit)}</span>` : ""}</span></span>`; }).join("");
   const rules = Array.isArray(state.pick_rules) && state.pick_rules.length > 1 ? state.pick_rules : null;
   const cut = (r) => cap(String(r.short || r.label || r.id).replace(/:.*$/, "").replace(/ (that|inside|among) .*$/, "").replace(/_/g, " "));
   const short = (r) => ((rules || []).filter((x) => cut(x) === cut(r)).length > 1 && r.id !== (rules || []).find((x) => cut(x) === cut(r)).id ? cap(String(r.id).replace(/_/g, " ").replace(/ time$/, "")) : cut(r));
-  const seg = rules ? `<div class="seg" role="group" aria-label="Order of the products that pass">${rules.map((r) => `<button data-rule="${esc(r.id)}" aria-pressed="${r.id === ruleId()}" ${state.seal.signed ? "disabled" : ""} title="${esc(r.label || "")}">${esc(short(r))}</button>`).join("")}</div>` : "";
+  const shownRules = (rules || []).filter((r) => r.id === ruleId() || (rules || []).find((x) => cut(x) === cut(r)).id === r.id);
+  const seg = rules ? `<div class="seg" role="group" aria-label="Order of the products that pass">${shownRules.map((r) => `<button data-rule="${esc(r.id)}" aria-pressed="${r.id === ruleId()}" ${state.seal.signed ? "disabled" : ""} title="${esc(r.label || "")}">${esc(short(r))}</button>`).join("")}</div>` : "";
   const lead = ladder ? "Cheapest first" : `${short((rules || []).find((r) => r.id === ruleId()) || { id: ruleId() })} first`;
   const sub = !rows.length ? "No page has been read for this item yet" : at < 0 ? `${lead}. ${rows.length} read · nothing passes`
-    : ladder ? `${rows.length} read · <span data-k="sub.rej">${rejectedBefore}</span> cheaper rejected`
+    : ladder ? `${rows.length} read · <span data-k="sub.rej">${failing.length}</span> rejected · <span data-k="sub.pass">${passing.length}</span> ${passing.length === 1 ? "passes" : "pass"}`
     : `${lead}. ${rows.length} read · <span data-k="sub.pass">${passing.length}</span> ${passing.length === 1 ? "passes" : "pass"} · <span data-k="sub.fail">${failing.length}</span> ${failing.length === 1 ? "does" : "do"} not`;
   const keep = q("#rows") && last.line === line.line_id ? q("#rows").scrollTop : 0;      // a redraw never moves the list under the viewer
   const row = (c) => rowHtml(c, line, pick, limits), wasRows = (list) => list.filter((c) => ui.was && ui.was.id === c.id).map(row).join("");
@@ -527,7 +581,7 @@ function renderList(line, pick) {
     body = `${fold ? `<button class="more" data-toggle="above" title="Show these rows"><b>${fold - pinned.length} cheaper above:</b> ${esc(foldSummary(before.slice(0, fold).filter((c) => !pinned.includes(c))))}</button>` : ""}
       ${pinned.map(row).join("")}${before.slice(fold).map(row).join("")}
       ${pick ? row(pick) : (rows.length ? `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>` : "")}
-      ${after.length ? (ui.open.has("below") ? after.map(row).join("") : wasRows(after) + `<button class="more" data-toggle="below">+ ${after.length} dearer${also ? ` (${also} ${also === 1 ? "passes" : "pass"})` : ""}, not needed</button>`) : ""}`;
+      ${after.length ? (ui.open.has("below") ? after.map(row).join("") : wasRows(after) + `<button class="more" data-toggle="below">+ ${after.length} dearer, not needed</button>`) : ""}`;
   } else {
     const showN = ui.open.has("below") ? after.length : Math.max(0, fit - 1), hidden = after.slice(showN);
     body = `${pick ? row(pick) : `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>`}
@@ -536,8 +590,8 @@ function renderList(line, pick) {
       ${failing.length ? (ui.open.has("above") ? failing.map(row).join("") : wasRows(failing) + `<button class="more" data-toggle="above" title="Show these rows"><b>${failing.length} ${failing.length === 1 ? "does" : "do"} not pass:</b> ${esc(foldSummary(failing))}</button>`) : ""}`;
   }
   const facts = factsOfLine(sheetLineOf(line)), shopper = state.sheet.shopper;
-  const homeLine = `<button class="homeline" data-open="shopper" title="${esc(shopper.name)}'s measurements and questions to the agent"><b>${esc(shopper.name)}</b>${facts.length
-    ? ` · the home: ${facts.map((f) => `${esc(f.short || f.label)} <span data-k="home.${f.id}">${g(f.value)} ${esc(f.unit)}</span>`).join(" · ")}` : " · ask the agent"}</button>`;
+  const homeLine = `<button class="homeline" data-open="shopper" title="${esc(facts.map((f) => (f.suggested_from && f.suggested_from.quote ? `“${f.suggested_from.quote}”` : "")).filter(Boolean).join(" ") || shopper.name + "'s measurements and questions to the agent")}"><b>${esc(shopper.name)}</b>${facts.length
+    ? ` · the home: ${facts.map((f) => `${esc(f.short || f.label)} <span data-k="home.${f.id}">${g(f.value)} ${esc(f.unit)}</span>${esc(fromMessage(f))}`).join(" · ")}` : " · no measurement needed"}</button>`;
   q("#list").innerHTML = `<div class="lhd"><div class="lht"><h1>${esc(cap(line.need))}</h1>${seg}</div><p class="sub">${sub}</p>${homeLine}</div>
     <div class="hd" style="--n:${limits.length}"><span></span><span>Product</span><span>Price</span>${heads}<span>Result</span></div>
     <div class="rows" id="rows">${body}</div>`;
@@ -580,7 +634,7 @@ function pairHtml(ch, limit, c) {
   if (isUnclear(c, ch)) {
     const quote = (f && f.quote) || t.quote, why = ch.unclear_why || ch.missing_why || (f && f.unsure_reason) || "";
     store = src("the store", quote ? fragment(quote, f || t) : `<span class="chip unclear">${esc(statedText(ch, c) || "unclear")}</span>`)
-      + (why ? src("why it is unclear", esc(clip(why.replace(/^stated, but not clearly[^:]*:\s*/, ""), 120))) : "");
+      + (why ? src("why", esc(clip(why.replace(/^stated, but not clearly[^:]*:\s*/, ""), 120))) : "");
   } else if (ch.state === "not_stated") store = src("the store", `<span class="chip none">not stated on the page</span>`);
   else store = t.quote ? src(`<span title="${esc(optionOf(c) ? "option: " + optionOf(c) : "")}">the store</span>`, fragment(t.quote, t)) + (ch.pass ? guards(c, ch, t) : "") : "";
   return `<div class="pair" data-open="${esc(c.id)}">
@@ -596,6 +650,7 @@ function extrasHtml(c) {
   const met = prefsMet(c), r = ratingOf(c);
   return (met.length ? `<div class="pair"><div class="ph2"><span>Preferred</span><span class="okw">✓ ${n_(met.length, "preference", "preferences")} met</span></div>${met.map((x) => `<div class="qt">${esc(x.label)}</div>`).join("")}</div>` : "")
     + (r ? `<div class="pair"><div class="ph2"><span>Reviewers say</span><span class="greyw">${esc(ratingText(r))}</span></div>
+        ${r.value != null && !r.used ? `<div class="k">${esc(r.reason || "not used for ordering")}</div>` : ""}
         ${r.quote ? `<div class="qt">“${esc(clip(r.quote, 140))}”</div>` : ""}
         ${r.url ? `<div class="k"><a class="link" href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.site || "the page")} ↗</a>${r.matched ? ` · matched by ${esc(clip(r.matched, 70))}` : ""}</div>` : ""}</div>` : "");
 }
@@ -617,15 +672,15 @@ function renderSide(line, c) {
     const agent = c.picked && ((a && a.quote) || (u && u.quote)) ? `<div class="pair agent" data-open="${esc(c.id)}"><div class="ph2"><span>The store's agent states</span></div>
         ${a && a.quote ? `<div class="kv"><span class="k">delivery</span><span class="qt">“${esc(clip(a.quote, 90))}”</span></div>` : ""}
         ${u && u.quote ? `<div class="kv"><span class="k">returns</span><span class="qt">“${esc(clip(u.quote, 90))}”</span></div>` : ""}</div>` : "";
-    card = `<section class="card why"><div class="cap">${c.picked ? (line.picked_by === "shopper" ? `Chosen by ${esc(state.sheet.shopper.name)}` : c.picked_because ? "Recommended" : "Why this one") : c.status === "inside" ? "Passes, not the pick" : "Why not this one"}${c.picked && ui.was && ui.was.store !== c.product.store ? ` <span class="nowat">now at ${esc(c.product.store)}</span>` : ""}</div>
+    card = `<section class="card why"><div class="cap">${c.picked ? (line.picked_by === "shopper" ? `Chosen by ${esc(state.sheet.shopper.name)}` : "Recommended") : c.status === "inside" ? "Passes, not recommended" : "Why not this one"}${c.picked && ui.was && ui.was.store !== c.product.store ? ` <span class="nowat">now at ${esc(c.product.store)}</span>` : ""}</div>
       <h2 title="${esc(c.product.title)}">${esc(c.product.title)}</h2>
       <div class="meta2">${esc(option + c.product.store)} · <span data-k="why.price">${money(c.product.price_cents)}</span>${qty(line) > 1 ? `${esc(times(line))} = ${money(c.product.price_cents * qty(line))}` : ""} · <a class="link" href="${esc(c.product.url)}" target="_blank" rel="noopener" title="The store's page">page ↗</a></div>
       ${c.picked && c.picked_because && line.picked_by !== "shopper" ? `<div class="because">${esc(cap(c.picked_because))}</div>` : ""}
       ${c.status === "struck" ? `<div class="pair"><div class="ph2"><span>Struck by ${esc(state.sheet.issuer.name)}</span></div><div class="qt">“${esc(c.reason || "")}”</div></div>` : ""}
-      ${shown.map((ch) => pairHtml(ch, limits.find((l) => l.id === ch.limit_id), c)).join("")}${agent}${extrasHtml(c)}
+      ${shown.map((ch) => pairHtml(ch, limits.find((l) => l.id === ch.limit_id), c)).join("")}${agent}${ui.show === c.id || !byPrice() || prefsMet(c).length ? extrasHtml(c) : ""}
       ${canChoose(line, c) ? `<button class="btn choose" data-choose="${esc(c.id)}">Choose this one</button>` : ""}
-      ${c.picked && line.picked_by === "shopper" && !state.seal.signed && aux.routes && aux.routes.has("/api/shopper/choose") ? `<button class="link" data-choose="">Back to the rule's pick</button>` : ""}
-      ${!c.picked && pickOf(line) ? `<button class="link" data-show="">Back to the pick</button>` : ""}</section>`;
+      ${c.picked && line.picked_by === "shopper" && !state.seal.signed && aux.routes && aux.routes.has("/api/shopper/choose") ? `<button class="link" data-choose="">Back to the recommended one</button>` : ""}
+      ${!c.picked && pickOf(line) ? `<button class="link" data-show="">Back to the recommended one</button>` : ""}</section>`;
   } else {
     card = `<section class="card why"><div class="cap">Why this one</div><h2>${line.candidates.length ? "Nothing passes" : "Nothing to show yet"}</h2><div class="muted">${line.candidates.length ? esc(cap(line.reason || "no product meets every limit")) + ". Select a row to read why." : "No page has been read for this item."}</div></section>`;
   }
@@ -656,7 +711,7 @@ function qrSvg(text) {
 function whatIsSigned() {
   const limits = state.sheet.lines.reduce((n, l) => n + l.limits.length, 0);
   const picks = state.lines.filter((l) => l.pick && l.status !== "pick_up").length;
-  return `${n_(limits, "limit", "limits")} · the quotes · ${n_(picks, "pick", "picks")} · <span data-k="sig.total">${money(state.total_cents)}</span>`;
+  return `${n_(limits, "limit", "limits")} · ${n_(picks, "pick", "picks")} · <span data-k="sig.total">${money(state.total_cents)}</span>`;
 }
 
 function signatureHtml() {
@@ -665,8 +720,8 @@ function signatureHtml() {
     const en = aux.enroll, enrolled = state.issuer_key && state.issuer_key.enrolled;
     const link = en && (en.url || en.link || en.phone_url || en.phone), qr = !enrolled && link ? qrSvg(link) : "";
     return `<section class="card sign"><div class="cap">Signature</div>
-      <div class="signs"><b>${esc(sheet.issuer.name)} signs:</b> ${whatIsSigned()}</div>
-      <div class="muted small">${enrolled ? "From the enrolled phone" : "From the phone"} · no cart exists until then</div>
+      <div class="signs"><b>${esc(sheet.issuer.name)} signs</b> ${whatIsSigned()}</div>
+      <div class="muted small">${enrolled ? "Phone enrolled" : "From the phone"} · no cart exists yet</div>
       ${!enrolled && en && en.code ? `<div class="enrol">${qr ? `<a class="qr" href="${esc(link)}" target="_blank" rel="noopener" aria-label="Open the phone page">${qr}</a>` : ""}
         <div class="muted small"><div>Scan to enrol the phone</div><div>code <span class="code">${esc(en.code)}</span></div></div></div>` : ""}
       ${receiptsRow()}</section>`;
@@ -681,9 +736,8 @@ function signatureHtml() {
   return `<section class="card sign signed"><div class="cap">Signature</div>
     <div class="row part"><span class="who"><span class="tickmark">✓</span> Signed by ${esc(who)}</span></div>
     <div class="muted small part">${esc(identity)}</div>
-    ${hash ? `<div class="row part"><span class="muted">Sheet hash</span><code title="${esc(hash)}">${esc(hash.slice(0, 12))}</code></div>` : ""}
-    ${covers.length ? `<div class="muted small part" title="${esc(covers.join(", "))}">Hash covers ${esc(covers.slice(0, 3).join(", "))}${covers.length > 3 ? ` +${covers.length - 3}` : ""}</div>` : ""}
-    ${(seal.carts || []).map((c) => `<div class="row part cart"><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">${esc(c.store)} cart ↗</a><span>${c.mode === "replay" ? '<span class="faint small">replay </span>' : ""}${c.total_cents ? money(c.total_cents) : ""}</span></div>${differs(c) ? `<div class="badw small part">store total differs · signed ${money(c.signed_total_cents)} · store ${money(c.total_cents)}</div>` : ""}`).join("") || `<div class="muted part">No cart link came back</div>`}
+    ${hash ? `<div class="row part"><span class="muted">Code</span><code class="fp" title="${esc(hash)}">${esc(hash.slice(0, 12).replace(/(.{4})(?=.)/g, "$1 "))}</code></div>` : ""}
+    ${(seal.carts || []).map((c) => `<div class="row part cart"><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">${esc(c.store)} cart ↗</a><span>${c.total_cents ? money(c.total_cents) : ""}</span></div>${differs(c) ? `<div class="badw small part">store total differs · signed ${money(c.signed_total_cents)} · store ${money(c.total_cents)}</div>` : ""}`).join("") || `<div class="muted part">No cart link came back</div>`}
     ${receiptsRow()}</section>`;
 }
 
@@ -712,11 +766,10 @@ function shopperSheet(el, line) {
   }
   el.dataset.for = "shopper:" + line.line_id;
   const sheetLine = sheetLineOf(line), shopper = state.sheet.shopper, facts = factsOfLine(sheetLine), turn = ui.chat[ui.chat.length - 1];
-  el.innerHTML = `${closeBtn}<h2>${esc(shopper.name)}${shopper.invented ? " · invented" : ""}</h2><p>${esc(cap(shopper.role_label || ""))}</p>
-    ${facts.length ? `<h3>From the home</h3>` + facts.map((f) => slider("fact", f.id, f.label, f.value, f.unit, f)).join("") : ""}
+  el.innerHTML = `${closeBtn}<h2>${esc(shopper.name)}</h2><p>${esc(cap(shopper.role_label || ""))}</p>
+    ${facts.length ? `<h3>From the home</h3>` + facts.map((f) => slider("fact", f.id, f.label, f.value, f.unit, f) + (f.suggested_from && f.suggested_from.quote ? `<p class="small">“${esc(f.suggested_from.quote)}”${esc(fromMessage(f))}</p>` : "")).join("") : ""}
     ${SIM ? `<h3>Simulation only, not ${esc(state.sheet.issuer.name)}'s phone</h3>` + sheetLine.limits.filter((l) => l.bound.source === "issuer").map((l) => slider("limit", l.id, l.label, l.bound.value, l.unit, l.bound)).join("") : ""}
-    <h3>Ask the agent</h3>
-    <form id="say"><input id="sayText" name="say" type="text" autocomplete="off" aria-label="Message to the agent" placeholder="Ask the agent…"><button class="btn" type="submit">Send</button></form>
+    <form id="say"><input id="sayText" name="say" type="text" autocomplete="off" aria-label="Message to the agent" placeholder="Ask about this item…"><button class="btn" type="submit">Send</button></form>
     <div id="reply" aria-live="polite">${turn ? chatHtml(turn) : ""}</div>`;
 }
 
@@ -845,7 +898,7 @@ function intro() {
   }
   introUntil = performance.now() + t + 700;
   // the right column fills when the pick is found: the card and its content come in together
-  fx.arrive(q("#side .why"), t + 80, 340, 4);
+  document.querySelectorAll("#side .why > *:not(.cap)").forEach((n) => fx.arrive(n, t + 80, 340, 4));
   fx.appear(q('#steps [data-open="step:picked"] small'), t, 300, 0.2);
 }
 
@@ -969,26 +1022,29 @@ function toast(anchor, html) {
 }
 /** The shopper's asks to the approver (GET /api/asks), newest last; the latest one for a limit. */
 function askFor(limitId) {
-  const raw = aux.asks, list = Array.isArray(raw) ? raw : raw && (raw.asks || raw.items || [...(raw.pending || []), ...(raw.settled || [])]);
-  return (Array.isArray(list) ? list : []).filter((x) => x.limit_id === limitId).slice(-1)[0] || null;
+  const list = (aux.asks && aux.asks.asks) || [];
+  return list.filter((x) => x.limit_id === limitId && x.status !== "replaced").slice(-1)[0] || null;
 }
 function askSheet(limitId, line) {
   const limit = sheetLineOf(line).limits.find((l) => l.id === limitId);
   if (!limit) return null;
   const name = esc(state.sheet.issuer.name), b = limit.bound;
-  return `<h2>Ask ${name}</h2><p>${esc(state.sheet.shopper.name)} proposes a value for “${esc(limit.name)}”. ${name} decides on the phone; nothing changes until then.</p>
+  return `<h2>Ask ${name}</h2><p>${esc(state.sheet.shopper.name)} proposes; ${name} decides on the phone.</p>
     <form id="askform" data-limit="${esc(limit.id)}">
       <label class="field"><span>${esc(cap(limit.label || limit.name))}</span><output>${esc(withUnit(g(b.value), limit.unit))}</output>
         <input type="range" data-kind="ask" data-unit="${esc(limit.unit)}" name="value" min="${b.min}" max="${b.max}" step="${b.step}" value="${b.value}"></label>
-      <input id="askNote" name="note" type="text" autocomplete="off" maxlength="140" aria-label="A short note" placeholder="A short note…">
+      <input id="askNote" name="note" type="text" autocomplete="off" maxlength="300" aria-label="A short note" placeholder="A short note…">
       <button class="btn" type="submit">Send to ${name}</button></form><div id="askReply" aria-live="polite"></div>`;
 }
 
 // ---------- interaction ----------
 document.addEventListener("click", (e) => {
-  const t = e.target.closest("[data-rule], [data-choose], [data-sheet], [data-menu], [data-toggle], [data-show], [data-open], [data-close], .rowx");
+  if (e.target.id === "replay") return closeReplay();             // a click on the dimmed page
+  const t = e.target.closest("[data-replay], [data-replay-close], [data-rule], [data-choose], [data-sheet], [data-menu], [data-toggle], [data-show], [data-open], [data-close], .rowx");
   if (ui.menu && !(t && (t.dataset.sheet || t.dataset.menu !== undefined))) { ui.menu = false; ui.confirm = null; if (!t) { last.quiet = true; render(); return; } }
   if (!t || e.target.closest("a, input")) return;
+  if (t.dataset.replay !== undefined) return openReplay();
+  if (t.dataset.replayClose !== undefined) return closeReplay();
   if (t.dataset.rule) return setRule(t.dataset.rule, t);
   if (t.dataset.choose !== undefined) return choose(t.dataset.choose, t);
   if (t.dataset.sheet) return useSheet(t.dataset.sheet, t.dataset.sure === "1");
@@ -1003,6 +1059,7 @@ document.addEventListener("click", (e) => {
   if (ui.drawer === "shopper") q("#sayText")?.focus();
 });
 addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !q("#replay").hidden) return closeReplay();
   if (e.key === "Escape" && (ui.drawer || ui.show || ui.menu)) { ui.drawer = null; ui.show = null; ui.menu = false; last.quiet = true; render(); }
   if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("ask")) { e.preventDefault(); e.target.click(); }
   if (e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey || !state) return;

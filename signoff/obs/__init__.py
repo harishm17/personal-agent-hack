@@ -8,6 +8,7 @@ import atexit
 import json
 import datetime
 import logging
+import os
 import pathlib
 import queue
 import sys
@@ -113,7 +114,7 @@ def _log_local(name: str, ms: float, ok: bool, error: str | None) -> None:
         row = {"name": name, "at": (end - datetime.timedelta(milliseconds=ms or 0)).isoformat(timespec="milliseconds"),
                "ended_at": end.isoformat(timespec="milliseconds"), "duration_ms": round(float(ms or 0), 1),
                "latency_ms": round(float(ms or 0), 1), "success": bool(ok),
-               "session_id": _state.get("session_id"), "sheet_id": _state.get("sheet_id")}
+               "session_id": _state.get("session_id"), "sheet_id": _state.get("sheet_id"), "pid": os.getpid()}
         if error:
             row["error"] = str(error)[:200]
         with _log_lock:
@@ -140,11 +141,20 @@ def recent(n: int = 200, session_id: str | None = None, sheet_id: str | None = N
         return []
 
 
+def _active_sheet_id() -> str | None:
+    try:
+        from signoff.store import sheetctx
+        return sheetctx.active_id()
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def tool_call(name: str, input: dict | None = None, output=None, success: bool = True, latency_ms: float = 0.0,
               error: str | None = None) -> None:
     try:
-        if _state["session_id"] is None:
-            session("sheet1")
+        sheet = _active_sheet_id()
+        if _state["session_id"] is None or (sheet and _state.get("sheet_id") != sheet):
+            session(sheet or _state.get("sheet_id") or "sheet")  # named from the sheet on the table; a new sheet is a new session
         _log_local(name, latency_ms, success, error)
         _put(("tool", name, _clip(input), _clip(output), bool(success), float(latency_ms or 0.0), error))
     except Exception:  # noqa: BLE001
@@ -252,7 +262,7 @@ def _handle(item: tuple) -> None:
             _sess.add_experiments(item[1])
     elif kind == "tool":
         if _sess is None:
-            _sess = _agent.session(session_id=_state["session_id"] or "sheet1", user_id="signoff-demo",
+            _sess = _agent.session(session_id=_state["session_id"] or (_active_sheet_id() or "sheet"), user_id="signoff-demo",
                                    experiments=_state["experiments"], auto_flush=False)
         _, name, inp, out, ok, ms, err = item
         meta = {"tool": name, "success": ok, "latency_ms": ms, "error": err}
@@ -279,8 +289,14 @@ def _handle(item: tuple) -> None:
 
 
 def _run() -> None:
-    flushed = 0
+    flushed, last_flush = 0, time.time()
     while not _closing:
+        if _ai is not None and stats["sent"] != flushed and time.time() - last_flush > 5:  # busy for a while: do not wait for idleness
+            flushed, last_flush = stats["sent"], time.time()
+            try:
+                _ai.flush()
+            except Exception as e:  # noqa: BLE001
+                stats["last_error"] = type(e).__name__ + ": " + str(e)[:160]
         try:
             item = _q.get(timeout=3)
         except queue.Empty:  # idle: hand what Amplitude's buffer holds to the network, without waiting for it

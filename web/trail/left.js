@@ -10,20 +10,19 @@ const clock = (at) => (at ? String(at).slice(11, 19) : "");
 
 let root = null, data = null, drawn = "", open = location.hash === "#left", sel = null;
 
-/** The totals, as the records have them. Nothing else in prose. */
+/** The totals, as the records have them, for the two groups of recipient. Nothing else in prose. */
 function line(t) {
-  const sealed = t.carried ? `<b class="${t.carried_to_stores ? "bad" : ""}">${t.carried}</b> carried a limit, a measurement or a name${t.carried_to_stores ? `, <b class="bad">${t.carried_to_stores}</b> to a store` : ", none to a store"}`
-    : "<b>0</b> carried a limit, a measurement or a name";
+  const outside = `outside parties: <b>${t.outside_payloads}</b> payloads, <b class="${t.outside_carried ? "bad" : ""}">${t.outside_carried}</b> carried a limit, a measurement or a name`;
   const guard = t.messages ? `<b>${t.spans_stopped}</b> stopped at the guard` : "";
-  const undeclared = t.undeclared ? `<b class="bad">${t.undeclared}</b> held one the sender did not declare` : "";
-  return [`<b>${t.payloads}</b> payloads to <b>${t.recipients}</b> recipients`, sealed, undeclared, guard].filter(Boolean).join('<span class="sep">·</span>');
+  const own = `our own services: <b>${t.own_payloads}</b> payloads, <b>${t.own_carried}</b> carried one${t.undeclared ? `, <b class="bad">${t.undeclared}</b> not declared` : ""}`;
+  return [outside, guard, own].filter(Boolean).join('<span class="sep">·</span>');
 }
 
 function cellHtml(row, col, c) {
   const id = `${row.id}|${col.id}`, on = sel === id ? " sel" : "";
   const parts = [];
   if (c.stopped) parts.push(`<span class="lv stopped" data-part="stopped">stopped <i>${c.stopped}</i></span>`);
-  if (c.found) parts.push(`<span class="lv found" data-part="found">found <i>${c.found}</i></span>`);
+  if (c.found) parts.push(`<span class="lv found" data-part="found"><i>${c.found}</i> not declared</span>`);
   if (c.sent) parts.push(`<span class="lv sent" data-part="sent">sent <i>${c.sent}</i></span>`);
   if (!parts.length) parts.push(c.state === "never" ? `<span class="lv never">never</span>` : `<span class="lv unknown">not recorded</span>`);
   return `<button class="lc${on}" data-cell="${esc(id)}">${parts.join("")}</button>`;
@@ -54,9 +53,12 @@ function html() {
   if (!open) return head;
   if (!data.rows.length || !data.columns.length) return head + `<div class="lm"><span class="faint">no outbound records</span></div>`;
   const cols = `grid-template-columns: minmax(17rem, 1.6fr) repeat(${data.columns.length}, minmax(6rem, 1fr));`;
+  const span = (g) => data.columns.filter((c) => c.group === g).length;
+  const groups = `<div class="lr gr" style="${cols}"><span></span>${[["outside", "Outside parties"], ["own", "Our own services"]].filter(([g]) => span(g))
+    .map(([g, words]) => `<span class="lg" style="grid-column: span ${span(g)}">${words}</span>`).join("")}</div>`;
   const header = `<div class="lr hd" style="${cols}"><span></span>${data.columns.map((c) => `<span class="lcol" title="${esc(c.members.join(", "))}"><b>${esc(c.label)}</b><i>${esc(c.kind)} · ${c.payloads}</i></span>`).join("")}</div>`;
   const rows = data.rows.map((r) => `<div class="lr" style="${cols}"><span class="lrow" title="${esc(r.travel || "")}">${dot(r.owner)}<b>${esc(r.label)}</b><i>${esc(r.example)}</i></span>${data.columns.map((c) => cellHtml(r, c, data.cells[r.id][c.id])).join("")}</div>`).join("");
-  return `${head}<div class="lm">${header}${rows}</div>${detail()}`;
+  return `${head}<div class="lm">${groups}${header}${rows}</div>${detail()}`;
 }
 
 function render(move) {
@@ -64,7 +66,7 @@ function render(move) {
   if (move && MOTION && open) {          // the panel opens: rows arrive in turn, and what was stopped is struck through
     [...root.querySelectorAll(".lr")].forEach((n, i) => n.animate([{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }],
       { duration: 300, delay: i * 40, easing: "cubic-bezier(.2, .7, .2, 1)", fill: "backwards" }));
-    [...root.querySelectorAll(".lv.stopped")].forEach((n, i) => n.animate([{ backgroundSize: "0% 1px" }, { backgroundSize: "100% 1px" }],
+    [...root.querySelectorAll(".lv.stopped")].forEach((n, i) => n.animate([{ opacity: 0.2 }, { opacity: 1 }],
       { duration: 600, delay: 500 + i * 80, easing: "cubic-bezier(.4, 0, .2, 1)", fill: "backwards" }));
   }
 }
@@ -76,18 +78,18 @@ export function update(el, next) {
   if (now === drawn) return;
   drawn = now;
   data = next;
-  el.hidden = !next;
-  if (next) render(false);
+  el.hidden = !next || !open;
+  if (next && open) render(false);
 }
 
 document.addEventListener("click", (ev) => {
   if (!root || !data) return;
-  const toggle = ev.target.closest("[data-left-toggle]"), cell = ev.target.closest("#left [data-cell]");
+  const toggle = ev.target.closest("[data-left-toggle], [data-left-open]"), cell = ev.target.closest("#left [data-cell]");
   if (toggle) {
-    open = !open;
+    open = toggle.hasAttribute("data-left-open") ? true : !open;
     sel = null;
-    render(true);
-    if (open) root.scrollIntoView({ block: "nearest", behavior: MOTION ? "smooth" : "auto" });
+    root.hidden = !open;
+    if (open) { render(true); root.scrollIntoView({ block: "start", behavior: MOTION ? "smooth" : "auto" }); }
   } else if (cell) {
     sel = sel === cell.dataset.cell || !cell.dataset.cell ? null : cell.dataset.cell;
     render(false);

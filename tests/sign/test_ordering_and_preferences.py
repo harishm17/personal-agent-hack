@@ -20,7 +20,7 @@ def phone_js(expr, state, canon_rule=None):
     return json.loads(out.stdout)
 
 
-STATE = {"sheet": {"shopper": {"name": "Elena"}, "pick_rule": {"id": "best_reviewed", "label": "the best reviewed that passes", "set_by": "shopper"},
+STATE = {"sheet": {"shopper": {"name": "Elena"}, "pick_rule": {"id": "best_reviewed", "label": "the best reviewed that passes", "set_by": "Elena"},
                    "lines": [{"preferences": [{"id": "C3.sheets", "label": "at least"}]}]}}
 
 
@@ -34,7 +34,7 @@ def test_it_does_not_claim_a_choice_the_state_does_not_show():
     other["sheet"]["pick_rule"]["id"] = "cheapest"          # the state names another rule than the signed sheet
     assert phone_js('ruleText({pick_rule:{id:"best_reviewed",label:"the best reviewed that passes"}})', other) == \
         "Pick rule: the best reviewed that passes"
-    other["sheet"]["pick_rule"] = {"id": "best_reviewed", "label": "x", "set_by": "default"}
+    other["sheet"]["pick_rule"] = {"id": "best_reviewed", "label": "x", "set_by": "shopper"}   # the sheet's own rule, not her choice
     assert phone_js('ruleText({pick_rule:{id:"best_reviewed",label:"the best reviewed that passes"}})', other).startswith("Pick rule: ")
 
 

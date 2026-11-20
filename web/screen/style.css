@@ -41,7 +41,7 @@ mark { background: var(--mark); color: var(--t1); font-weight: 600; padding: 0 0
 .tabs a { display: flex; align-items: center; padding: 0 0.5rem; font-size: 0.8125rem; color: var(--t2); border-bottom: 2px solid transparent; margin-bottom: -1px; }
 .tabs a:hover { color: var(--t1); }
 .tabs a[aria-current="page"] { color: var(--t1); font-weight: 500; border-bottom-color: var(--t1); }
-.pill { font-size: 0.75rem; line-height: 1.25rem; padding: 0 0.5rem; border: 1px solid var(--line); border-radius: 0.625rem; color: var(--t2); background: var(--surface); }
+.pill { font-size: 0.75rem; line-height: 1.25rem; padding: 0 0.5rem; border: 1px solid var(--line); border-radius: 999px; color: var(--t2); background: var(--surface); }
 .pill.signed { color: var(--t1); border-color: var(--t1); }
 .total { font-weight: 600; }
 
@@ -70,3 +70,11 @@ code { font: 0.75rem var(--mono); color: var(--t2); }
 .link::after, .forge::after, .asker::after { content: ""; position: absolute; inset: -0.5rem -0.375rem; }
 @media (max-width: 1180px) { .top { gap: 0.5rem; } .top .meta { display: none; } .top .sheet::after { content: " · invented"; color: var(--t3); } }
 a.pill:hover { border-color: var(--t3); color: var(--t1); }
+
+/* Moving between the pages: the top bar stays where it is and the page below cross-fades, so a tab change
+   reads as one app. Each page is its own document; the browser does the transition (cross-document view
+   transitions), and the pages a tab points to are prepared on hover (speculation rules in each page's head). */
+@view-transition { navigation: auto; }
+.top { view-transition-name: topbar; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 180ms; animation-timing-function: ease-out; }
+::view-transition-old(topbar), ::view-transition-new(topbar) { animation: none; mix-blend-mode: normal; }

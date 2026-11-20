@@ -29,7 +29,7 @@ def test_persona_requests_are_in_the_ledger_and_each_new_result_is_a_receipt(env
     fake = FakePersona()
     monkeypatch.setattr(persona.httpx, "post", fake.post)
     monkeypatch.setattr(persona.httpx, "get", fake.get)
-    env.client.post("/api/issuer/persona/start")
+    env.client.post("/api/issuer/request", json=env.phone.request("persona_start"))
     env.client.get("/api/issuer/persona/status")        # unchanged: no second receipt
     env.client.post("/api/admin/persona/simulate", json={"action": "approve"})
     assert [e[0] for e in log.egress] == ["persona"] * 4

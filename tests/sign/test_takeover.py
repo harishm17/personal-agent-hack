@@ -22,14 +22,38 @@ def test_enrolment_needs_the_code(env):
     assert enroll(env.client, api.keystore.code, "Dana").status_code == 200
 
 
-def test_wrong_codes_lock_enrolment_for_a_minute(env):
+OUTSIDE = {"cf-connecting-ip": "203.0.113.9"}
+
+
+def enroll_from(env, code, headers=None):
+    return env.client.post("/api/issuer/enroll", json={"public_key_jwk": Phone().jwk, "name": "Mallory", "code": code}, headers=headers or {})
+
+
+def test_wrong_codes_lock_the_caller_not_the_laptop(env):
+    """H2: five wrong codes from outside used to lock the right code out of the laptop too."""
     fresh(env)
     for _ in range(5):
-        assert enroll(env.client, "nope").status_code == 403
-    locked = enroll(env.client, api.keystore.code)
+        assert enroll_from(env, "nope", OUTSIDE).status_code == 403
+    locked = enroll_from(env, "nope", OUTSIDE)
     assert locked.status_code == 429 and locked.json()["error"] == "code_locked"
-    api.keystore.locked_until = 0
-    assert enroll(env.client, api.keystore.code).status_code == 200
+    assert enroll_from(env, api.keystore.code, OUTSIDE).status_code == 429      # the same caller stays locked, even with the right one
+    assert enroll_from(env, "nope", {"cf-connecting-ip": "198.51.100.7"}).status_code == 403   # another caller is not locked
+    assert enroll_from(env, api.keystore.code).status_code == 200            # the laptop enrols with the code it shows
+
+
+def test_the_laptop_is_never_locked_and_can_always_show_a_fresh_code(env):
+    fresh(env)
+    for _ in range(12):
+        assert enroll_from(env, "nope").status_code == 403
+    for _ in range(12):
+        assert enroll_from(env, "nope", OUTSIDE).status_code in (403, 429)
+    assert env.client.get("/api/issuer/enroll-code").json()["code"] == api.keystore.code
+    assert enroll_from(env, api.keystore.code).status_code == 200
+
+
+def test_the_code_is_too_long_to_guess(env):
+    fresh(env)
+    assert len(api.keystore.code) >= 12 and int(api.keystore.code, 16) >= 0
 
 
 def test_a_reset_makes_a_new_code(env):

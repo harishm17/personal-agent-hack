@@ -551,12 +551,24 @@ def _limit(limit_id):
     raise EngineError("no limit %r on this sheet" % (limit_id,), 404)
 
 
+def _one_form(v):
+    """The same number in one form, however it arrived: 16.0 from a sheet file and 16 from a request are both
+    written 16, so the same sheet always has the same signed text and the same hash."""
+    if isinstance(v, float) and v.is_integer():
+        return int(v)
+    if isinstance(v, dict):
+        return {k: _one_form(x) for k, x in v.items()}
+    if isinstance(v, (list, tuple)):
+        return [_one_form(x) for x in v]
+    return v
+
+
 def _number(value, low, high, what):
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or value != value or value in (float("inf"), float("-inf")):
         raise EngineError("%s needs a number" % what)
     if (low is not None and value < low) or (high is not None and value > high):
         raise EngineError("%s must be between %g and %g" % (what, low, high))
-    return value
+    return _one_form(value)
 
 
 def _canonical_obj(state):
@@ -568,7 +580,7 @@ def _canonical_obj(state):
         line = by_id[sheet_line["id"]]
         def with_bound(l):
             b = l["bound"]
-            return {"id": l["id"], "op": l["op"], "unit": l["unit"], "set_by": b["source"],
+            return {"id": l["id"], "name": l.get("name"), "label": l.get("label"), "op": l["op"], "unit": l["unit"], "set_by": b["source"],
                     "bound": b["value"] if b["source"] == "issuer" else facts[b["fact"]],
                     "terms": [t.get("figure") or "%s=%g" % (t["fact"], facts[t["fact"]]) for t in l["terms"]]}
         limits = [with_bound(l) for l in sheet_line["limits"]]
@@ -576,6 +588,8 @@ def _canonical_obj(state):
                "fulfilment": sheet_line.get("fulfilment"), "limits": limits,
                "struck": sorted(s["product_key"] for s in line["struck"]), "pick": None,
                "picked_by": line.get("picked_by")}
+        if line["struck"]:  # the approver's own words for each strike are shown, so they are signed
+            out["strike_reasons"] = {s["product_key"]: s.get("reason") for s in line["struck"]}
         if sheet_line.get("preferences"):  # a preference is signed with its bound, like a limit
             out["preferences"] = [with_bound(w) for w in sheet_line["preferences"]]
         pick = next((c for c in line["candidates"] if c["picked"]), None)
@@ -583,6 +597,7 @@ def _canonical_obj(state):
             p = pick["product"]
             out["pick"] = {"id": pick["id"], "store": p["store"], "product_id": p["product_id"],
                            "variant_id": p["variant_id"], "product_key": p["product_key"],
+                           "title": p["title"],  # the name the approver reads is the name the approver signs
                            "price_cents": p["price_cents"], "quantity": p.get("quantity", 1),
                            "currency": p.get("currency"), "variant_title": p.get("variant_title"),
                            "checks": [{"limit_id": c["limit_id"], "expr": c["expr"]} for c in pick["checks"]],
@@ -599,11 +614,11 @@ def _canonical_obj(state):
                 if rule["id"] == "most_popular":
                     out["pick"]["review_count"] = pick.get("review_count")
         lines.append(out)
-    covered = {"id": rule["id"], "label": rule["label"]}
+    covered = {"id": rule["id"], "label": rule["label"], "set_by": rule.get("set_by")}  # who chose the ordering is shown, so signed
     if rule["id"] == "best_value":
         covered["within"] = rules.within_of(state["sheet"])
-    return {"sheet_id": state["sheet"]["id"], "pick_rule": covered,
-            "lines": lines, "total_cents": state["total_cents"]}
+    return _one_form({"sheet_id": state["sheet"]["id"], "pick_rule": covered,
+                      "lines": lines, "total_cents": state["total_cents"]})
 
 
 def _canonical(state):
@@ -611,7 +626,7 @@ def _canonical(state):
 
 
 # What the signed hash is computed over, in words for the seal. Kept beside `_canonical_obj`: change both together.
-COVERS = ["limits", "strikes", "picks", "variant and quantity", "prices and currency", "sums", "store quotes",
+COVERS = ["limits", "strikes", "picks", "product name", "variant and quantity", "prices and currency", "sums", "store quotes",
           "delivery quotes", "pick rule", "total"]
 
 
@@ -753,6 +768,7 @@ def _attach(state):
     if _s.get("memory"):
         state["memory"] = _s["memory"]  # what was applied from memory at the start of this run, and what was ignored
     state["pick_rules"] = rules.pick_rules(rules.within_of(state["sheet"]))  # the orderings the shopper may choose
+    _suggested_from(state["sheet"])
     state["degraded"] = health.all()  # every fallback in use is named here; empty when all is well
     try:
         state["receipts"] = receipts.summary()
@@ -806,6 +822,41 @@ def _apply_choices(state):
                                if c["picked"] and l["status"] in ("ready", "next_candidate"))
     state["counts"]["lines_ready"] = sum(1 for l in state["lines"] if l["status"] in ("ready", "next_candidate"))
     return state
+
+
+_FACT_VALUE = re.compile(r"^/shopper_facts/(\d+)/value$")
+
+
+def _suggested_from(sheet):
+    """Where a home measurement's number was quoted from, when the sheet has a context file. The approver
+    prescribes the limits; the home's numbers come from what the family wrote. Each shopper fact that a context
+    fact feeds with `equals: true` carries the message it was quoted from and whether the sheet's value still
+    equals the quoted one. Only shopper facts are looked at: a limit never gets this, whatever the file points to.
+    It is shown, not signed: nothing here is in the canonical sheet. The file is read by `signoff.graph.context`,
+    which also checks every quote against its message; a fact whose quote is not there is not used."""
+    for fact in sheet["shopper_facts"]:
+        fact.pop("suggested_from", None)
+    try:
+        from signoff.graph import context
+        doc, name = context.load(sheet["id"], SHEETS)
+        checked = context.read(doc, sheet, name) if doc is not None else None
+    except Exception as error:  # noqa: BLE001
+        health.note("context", "the sheet's context file could not be read (%s); no measurement shows where its number "
+                    "came from" % type(error).__name__)
+        return
+    health.clear("context")
+    if not checked:
+        return
+    messages = {m.get("id"): m for m in checked["messages"]}
+    for quoted in checked["facts"]:
+        for feed in quoted["feeds"]:
+            at = _FACT_VALUE.match(str(feed.get("to") or ""))
+            if not at or not feed.get("equals") or not feed.get("found"):
+                continue
+            message = messages.get(quoted.get("source")) or {}
+            sheet["shopper_facts"][int(at.group(1))]["suggested_from"] = {
+                "message_id": message.get("id"), "from_label": message.get("from_label"), "at": message.get("at"),
+                "quote": quoted.get("quote"), "value": quoted.get("value"), "matches": bool(feed.get("matches"))}
 
 
 def _ratings_fn():
@@ -1000,7 +1051,7 @@ def set_pick_rule(rule_id) -> dict:
         if rule_id == on_disk.get("id"):
             new = dict(on_disk)  # the sheet's own rule, in the sheet's own words
         else:
-            new = {"id": rule_id, "label": known[rule_id]["label"], "set_by": sheet["shopper"]["name"]}
+            new = {"id": rule_id, "label": known[rule_id]["label"], "set_by": "shopper"}  # the role, as the sheet files write it
             if "within" in was:
                 new["within"] = was["within"]
         sheet["pick_rule"] = new

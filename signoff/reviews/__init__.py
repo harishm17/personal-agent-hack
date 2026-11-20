@@ -4,7 +4,10 @@ MINIMUM_REVIEWS = 5
 
 
 def ratings(line_id, line=None):
-    """For the engine's orderings: {candidate_id: {"rating": float, "out_of": 5, "review_count": int}} for one line.
+    """For the engine's orderings, one line: {candidate_id: {"rating": float, "out_of": 5, "review_count": int,
+    "independent": bool, "site": str}}. `independent` is false when the rating is quoted from the seller's own page
+    (the review page's registered domain is the product's store) and true when it is on another site; `site` is
+    the page's site. It describes the evidence and does not change which candidates appear.
 
     From the cache under data/reviews/ only: it never touches the network, and returns {} when nothing is cached
     (or the line does not exist). A candidate appears only when all of this holds: it passes the order's rules and

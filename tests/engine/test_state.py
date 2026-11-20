@@ -216,7 +216,8 @@ def test_signed_picks_are_those_of_exactly_the_signed_hash_and_hold_the_sheet_un
 
 def test_the_hash_covers_the_pick_rule_and_each_picks_delivery_quote():
     canonical = json.loads(state.canonical_sheet())
-    assert canonical["pick_rule"] == {"id": "cheapest_with_delivery_time", "label": "cheapest that states a delivery time"}
+    assert canonical["pick_rule"] == {"id": "cheapest_with_delivery_time", "label": "cheapest that states a delivery time",
+                                      "set_by": "shopper"}
     l2 = next(l for l in canonical["lines"] if l["line_id"] == "L2")
     assert l2["pick"]["delivery"]["quote"] == "standard shipping takes 3 to 5 days" and l2["pick"]["delivery"]["status"] == "stated"
     assert state.get_state()["seal"]["covers"] == state.COVERS and "delivery quotes" in state.COVERS \
@@ -325,3 +326,85 @@ def test_the_shopper_may_choose_any_candidate_that_passes_and_nothing_that_does_
     assert line(s, "L2")["pick"] == rule_pick and line(s, "L2")["picked_by"] == "rule" and state.sheet_hash() == before
     from signoff.engine import receipts
     assert [r["type"] for r in receipts.chain()["receipts"]].count("shopper_choice") == 3
+
+
+def test_the_name_the_approver_reads_is_under_the_hash():
+    """H1: the same ids with another product name must not sign to the same fingerprint."""
+    s = state.get_state()
+    before = state.sheet_hash()
+    pick = next(c for c in line(s, "L2")["candidates"] if c["picked"])
+    sheet = json.loads(state.canonical_sheet())
+    assert next(l for l in sheet["lines"] if l["line_id"] == "L2")["pick"]["title"] == pick["product"]["title"]
+    row = next(p for p in state._s["pool"] if p["product_id"] == pick["product"]["product_id"] and "L2" in p["line_ids"])
+    row["title"] = "Another name on the same ids"
+    state._recompute(why="test")
+    assert state.sheet_hash() != before and "Another name on the same ids" in state.canonical_sheet()
+    assert "product name" in state.COVERS
+    # the words of each limit and the reason for a strike are shown at signing too, so they are signed too
+    assert next(l for l in sheet["lines"] if l["line_id"] == "L2")["limits"][0]["name"]
+    limit = state._s["sheet"]["lines"][1]["limits"][0]
+    now, limit["label"] = state.sheet_hash(), "at most"                 # the word shown beside the number
+    state._recompute(why="test")
+    assert state.sheet_hash() != now and json.loads(state.canonical_sheet())["lines"][1]["limits"][0]["label"] == "at most"
+    now, state._s["sheet"]["pick_rule"]["set_by"] = state.sheet_hash(), "somebody else"   # who chose the ordering
+    state._recompute(why="test")
+    assert state.sheet_hash() != now
+    struck = next(l for l in s["lines"] if l["struck"])
+    signed = next(l for l in json.loads(state.canonical_sheet())["lines"] if l["line_id"] == struck["line_id"])
+    assert signed["strike_reasons"] == {x["product_key"]: x["reason"] for x in struck["struck"]}
+
+
+def test_one_value_has_one_fingerprint_however_it_arrived():
+    """H5: a limit or a measurement set to another value and back gives the first hash again."""
+    first, text = state.sheet_hash(), state.canonical_sheet()
+    state.apply_issuer({"type": "set_limit", "limit_id": "L5.length", "value": 20})     # 16.0 in the sheet file
+    assert state.sheet_hash() != first
+    state.apply_issuer({"type": "set_limit", "limit_id": "L5.length", "value": 16})     # back, typed as a whole number
+    assert state.sheet_hash() == first and state.canonical_sheet() == text
+    state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 325.0})
+    state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 300.0})  # 300 in the file, back as a decimal
+    assert state.sheet_hash() == first
+    was = next(f for f in state.get_state()["sheet"]["shopper_facts"] if f["id"] == "toilet_rim_height")["value"]
+    state.set_shopper_fact("toilet_rim_height", was + 0.5)
+    assert state.sheet_hash() != first
+    state.set_shopper_fact("toilet_rim_height", int(was) if float(was).is_integer() else was)
+    assert state.sheet_hash() == first and state.canonical_sheet() == text
+    assert state._one_form({"a": [16.0, 16.5, True, "16.0"]}) == {"a": [16, 16.5, True, "16.0"]}
+    assert '16.0' not in json.dumps(json.loads(text)["lines"][4]["limits"])
+
+
+def test_a_home_measurement_says_which_message_its_number_was_quoted_from(monkeypatch, tmp_path):
+    """E33: provenance for the screen, from the sheet's context file; shown, not signed, and never on a limit."""
+    s = state.get_state()
+    assert all("suggested_from" not in f for f in s["sheet"]["shopper_facts"])       # sheet 1 has no context file
+    first_hash, first_text = state.sheet_hash(), state.canonical_sheet()
+    facts = s["sheet"]["shopper_facts"]
+    text = "The rim is %g inches from the floor. I think the limit should be 250." % facts[1]["value"]
+    quote, wish = "The rim is %g inches from the floor" % facts[1]["value"], "the limit should be 250"
+    (tmp_path / "sheet1.json").write_text((ROOT / "sheets" / "sheet1.json").read_text())
+    (tmp_path / "sheet1_context.json").write_text(json.dumps({
+        "messages": [{"id": "m1", "from": "elena", "from_label": "Elena", "at": "2026-11-20T10:41:00-08:00", "text": text}],
+        "facts": [{"id": "rim", "value": facts[1]["value"], "source": "m1", "quote": quote, "start": 0, "end": len(quote),
+                   "feeds": [{"to": "/shopper_facts/1/value", "verb": "became the measurement", "equals": True}]},
+                  {"id": "why", "value": None, "source": "m1", "quote": quote, "start": 0, "end": len(quote),
+                   "feeds": [{"to": "/shopper_facts/0/value", "verb": "is why she measures"}]},          # not `equals`
+                  {"id": "a limit", "value": 250, "source": "m1", "quote": wish, "start": text.index(wish),
+                   "end": text.index(wish) + len(wish),
+                   "feeds": [{"to": "/lines/0/limits/0/bound/value", "verb": "would set a limit", "equals": True}]},
+                  {"id": "not there", "value": 9, "source": "m1", "quote": "nine inches", "start": 0, "end": 11,
+                   "feeds": [{"to": "/shopper_facts/2/value", "verb": "became the measurement", "equals": True}]}]}))
+    monkeypatch.setattr(state, "SHEETS", tmp_path)
+    s = state.reset()
+    facts = s["sheet"]["shopper_facts"]
+    assert facts[1]["suggested_from"] == {"message_id": "m1", "from_label": "Elena", "at": "2026-11-20T10:41:00-08:00",
+                                          "quote": quote, "value": facts[1]["value"], "matches": True}
+    assert "suggested_from" not in facts[0] and "suggested_from" not in facts[2]      # no `equals`; a quote not in its message
+    assert "suggested_from" not in json.dumps(s["sheet"]["lines"])                    # a limit is prescribed, never suggested
+    assert state.sheet_hash() == first_hash and state.canonical_sheet() == first_text  # shown, not signed: no hash moves
+    was = facts[1]["value"]
+    s = state.set_shopper_fact(facts[1]["id"], was + 0.5)                             # she changes it: her value stands
+    fact = s["sheet"]["shopper_facts"][1]
+    assert fact["value"] == was + 0.5 and fact["suggested_from"]["matches"] is False and fact["suggested_from"]["value"] == was
+    assert "suggested_from" not in state.canonical_sheet()
+    s = state.set_shopper_fact(facts[1]["id"], was)
+    assert s["sheet"]["shopper_facts"][1]["suggested_from"]["matches"] is True and state.sheet_hash() == first_hash

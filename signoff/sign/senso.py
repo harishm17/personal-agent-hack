@@ -30,7 +30,6 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 DOCS = pathlib.Path(__file__).with_name("senso_docs")
 REGISTRY = pathlib.Path(__file__).with_name("_runtime") / "senso_docs.json"
 BLOCKING = ("conflict", "unsupported")
-ORDER_NAME = {"shower chair": "shower chair or transfer bench"}  # the order's own words for a line
 STORE_SENTENCES = config.env("SENSO_STORE_SENTENCES") == "1"  # off: a quote naming no brand got "unsupported" every time
 STORE_BLOCKS = config.env("SENSO_BLOCK_STORE") == "1"
 _lock = threading.RLock()
@@ -326,7 +325,7 @@ def sentences_for(state: dict) -> list[dict]:
                 sentence = _fit_value(by_limit[limit["id"]], old if old is not None else b["value"], b["value"])
             out.append({**base, "kind": "limit", "blocks": False, "moved_from_order": bool(fo and fo.get("matches") is False),
                         "sentence": sentence or _limit_sentence(line["need"], limit, b["value"])})
-        need = ORDER_NAME.get(line["need"], line["need"])
+        need = line["need"]   # the order's own words for the line come from its document (the "In short" block); this is the fallback
         if line["status"] == "pick_up":
             how = re.match(r"must be (.+?);", sheet[line["line_id"]].get("fulfilment_note") or "")
             out.append({**base, "kind": "order", "blocks": True,

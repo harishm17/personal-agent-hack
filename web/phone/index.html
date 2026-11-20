@@ -39,6 +39,7 @@
   .lim.changed .src { color:var(--t1); font-weight:500; text-decoration:underline; text-underline-offset:3px; }
   .quote { margin:4px 0 0; padding-left:8px; border-left:1px solid var(--line); color:var(--t2); overflow-wrap:anywhere; }
   .total { font:500 20px/28px var(--f); }
+  .code { font:600 20px/28px ui-monospace, Menlo, monospace; color:var(--t1); letter-spacing:.02em; }
   .hash { font:12px/16px ui-monospace, Menlo, monospace; color:var(--t2); overflow-wrap:anywhere; }
   .stack { display:flex; flex-direction:column; gap:4px; }
   .rule { border-top:1px solid var(--line); }
@@ -50,6 +51,7 @@
   button.act:disabled { opacity:.4; }
   button.link { border:0; background:none; padding:0; color:var(--t1); font:500 14px/20px var(--f); text-decoration:underline; text-underline-offset:3px; }
   button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible { outline:2px solid var(--t1); outline-offset:2px; border-radius:4px; }
+  .asks { display:flex; flex-direction:column; gap:8px; } .asks:empty { display:none; }
   .btns { display:flex; gap:8px; flex-wrap:wrap; }
   input[type=text] { width:100%; height:44px; font:400 14px/20px var(--f); padding:0 12px; border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--t1); }
   input[type=range] { width:100%; height:32px; accent-color:var(--accent); margin:0; }
@@ -112,7 +114,10 @@ let keyRec = null;      // { privateKey, jwk, key_id|null, seq }
 let issuer = null;      // { enrolled, key_id, name, persona, senso }
 let state = null, persona = null, canon = null, notice = "", lastSheetId = null;
 let tab = "sheet", signed = false, busy = false, openLimit = null;
-let lastKey = null, armedUntil = 0, signNote = "";
+let lastKey = null, armedUntil = 0, armedHash = null, signNote = "";
+/* arm:start */
+function armed(now, until, armedFor, current) { return now < until && !!armedFor && armedFor === current; }   // armed only for the sheet that was on screen at the first tap
+/* arm:end */
 const shown = new Set();   // limit ids whose order sentence is open
 const dragging = new Set();
 
@@ -151,6 +156,10 @@ const hashNow = () => canon && canon.hash;               // computed on this pho
 const serverHashNow = () => canon && canon.serverHash;   // what the server says (Senso verdicts are keyed by it)
 const mine = () => issuer && issuer.enrolled && keyRec && keyRec.key_id === issuer.key_id;
 
+/* the fingerprint as the laptop and /seal/ show it: the first twelve characters in groups of four, large; the whole value is behind a tap */
+const shortCode = (h) => (h || "").slice(0, 12).replace(/(.{4})(?=.)/g, "$1 ");
+function codeBlock(full) { return `<div class="code">${esc(shortCode(full))}</div><details><summary>Full code</summary><div class="hash">${esc(full || "")}</div></details>`; }
+
 /* ---------- boot ---------- */
 async function boot() {
   if (!window.crypto || !crypto.subtle || !window.indexedDB) {
@@ -184,21 +193,48 @@ async function loadState() {
     const mine = await sha256hex(c.canonical);
     canon = { text: c.canonical, obj: JSON.parse(c.canonical), hash: mine, serverHash: c.sheet_hash, match: mine === c.sheet_hash };
   } catch (e) { canon = null; }
+  if (armedHash && (!canon || canon.hash !== armedHash)) { armedUntil = 0; armedHash = null; }   // the sheet changed: the armed tap is void at once
 }
 function startEvents() {
   let pending = false, again = false;
   const refetch = async () => {
     if (pending) { again = true; return; }
     pending = true;
-    try { await loadState(); await refreshIssuer(); if (runChanged()) render(); else renderLive(); } catch (e) { /* offline blip */ }
+    try { await loadState(); await refreshIssuer(); if (runChanged()) render(); else { renderLive(); paintAsks(); } } catch (e) { /* offline blip */ }
     pending = false; if (again) { again = false; refetch(); }
   };
-  try { const evt = new EventSource("/api/events"); evt.onmessage = refetch; } catch (e) { /* polling below */ }
-  setInterval(refetch, 3000);
+  // One stream per visible page: a browser allows six connections to one host, so a hidden page closes its
+  // stream and reopens it when shown. Polling below covers a stream that cannot open.
+  let evt = null;
+  const openStream = () => { if (evt || document.hidden) return; try { evt = new EventSource("/api/events"); evt.onmessage = refetch; } catch (e) { evt = null; } };
+  const closeStream = () => { if (evt) { evt.close(); evt = null; } };
+  document.addEventListener("visibilitychange", () => { if (document.hidden) closeStream(); else { openStream(); refetch(); } });
+  addEventListener("pagehide", closeStream);
+  openStream();
+  setInterval(() => { if (!document.hidden) refetch(); }, 3000);
+}
+
+/* ---------- the shopper's ask (G23): a card for each pending ask, on every tab; accepting is her own signed limit change ---------- */
+function asksHtml() {
+  if (!issuer || !issuer.enrolled || !mine() || signed) return "";
+  return (issuer.asks || []).filter((a) => a.status === "pending").map((a) => `<div class="card ask">
+    <div class="cap">${esc(a.by)} asks you to change a ${esc(LIM())}</div>
+    <div class="pick">${esc(a.text)}</div>
+    ${a.note ? `<div class="quote">“${esc(a.note)}”</div>` : ""}
+    <div class="btns"><button class="act primary" data-ask-accept="${esc(a.id)}">Accept</button><button class="act" data-ask-decline="${esc(a.id)}">Decline</button></div></div>`).join("");
+}
+function paintAsks() {
+  const el = $("#asks"); if (!el || el.querySelector("button:disabled")) return;
+  const h = asksHtml(); if (el.dataset.h !== h) { el.innerHTML = h; el.dataset.h = h; }
+}
+async function answerAsk(button, type, fields) {
+  button.closest(".ask").querySelectorAll("button").forEach((b) => (b.disabled = true));
+  try { await signedRequest(type, fields); await loadState(); await refreshIssuer(); render(); }
+  catch (err) { handleError(err); await refreshIssuer().catch(() => {}); render(); }
 }
 
 /* ---------- render ---------- */
-function show(html, center = false) { const m = $("#main"); m.innerHTML = html; m.hidden = false; m.classList.toggle("center", center); return m; }
+function show(html, center = false) { const m = $("#main"); m.innerHTML = (center ? "" : '<div id="asks" class="asks">' + asksHtml() + "</div>") + html; m.hidden = false; m.classList.toggle("center", center); return m; }
 function head() {
   $("#h1").textContent = state ? state.sheet.title : "Sign-Off";
   if (!issuer.enrolled || !mine()) return;
@@ -232,7 +268,7 @@ function renderEnrol(name) {
   $("#nav").hidden = true;
   $("#who").textContent = "";
   show(`<div class="card">${notice ? `<div class="need" role="alert">${esc(notice)}</div>` : ""}<div class="need">Use this phone to sign</div>
-    <div class="sub">A key was made in this browser and cannot leave it. Only requests signed with it can change the sheet or create carts.</div>
+    <div class="sub">This phone holds the signing key.</div>
     <label class="stack"><span class="cap">Name on the seal</span><input type="text" id="nm" value="${esc(name)}" autocomplete="name"></label>
     <label class="stack"><span class="cap">Code from the laptop</span><input type="text" id="code" value="${esc(new URLSearchParams(location.search).get("code") || "")}" autocomplete="off" autocapitalize="off" inputmode="text"></label>
     <button class="act primary big" id="enrol">Enrol this phone</button></div>`, true);
@@ -280,7 +316,7 @@ function ruleText(c) {
   const r = c.pick_rule; if (!r) return "";
   const label = typeof r === "string" ? r : (r.label || r.id || JSON.stringify(r)), id = typeof r === "string" ? r : r.id;
   const sr = state && state.sheet && state.sheet.pick_rule;
-  return sr && sr.id === id && sr.set_by === "shopper" ? shopperName() + " asked for " + label : "Pick rule: " + label;
+  return sr && sr.id === id && sr.set_by === shopperName() ? shopperName() + " asked for " + label : "Pick rule: " + label;
 }
 /* a preference: the same shape as a limit, shown quietly and never adjustable; it never rejects a product */
 function sheetPref(id) { for (const line of state.sheet.lines) for (const p of line.preferences || []) if (p.id === id) return p; return null; }
@@ -297,8 +333,8 @@ function itemCard(L, c) {
   else if (!p) body = `<div class="pick sub">no pick: ${esc(L.status)}</div>`;
   else {
     const cand = stateCandidate(p), title = p.title || (cand && cand.product.title) || p.product_key;
-    const variant = p.variant_title ? " · " + p.variant_title : "";
-    body = `<div class="pick">${esc(title)}</div><div class="sub">${esc(p.store)}${esc(variant)} · × ${esc(p.quantity || 1)}${p.currency ? " · " + esc(p.currency) : ""}</div>`;
+    const variant = p.variant_title && p.variant_title !== "Default Title" ? " · " + p.variant_title : "";   // a product with one variant has no variant to name
+    body = `<div class="pick">${esc(title)}</div><div class="sub">${esc(p.store)}${esc(variant)}${(p.quantity || 1) !== 1 ? " · × " + esc(p.quantity) : ""}</div>`;
   }
   const limits = (L.limits || []).map(limitRowC).join("");
   const prefs = (L.preferences || []).map(prefRowC).join("");
@@ -361,10 +397,10 @@ function renderSheet() {
     const who = (seal.signature && seal.signature.name) || "";
     show(`<div class="card"><div class="cap">Signed</div><div class="big-v">${esc(who)}</div>
       <div class="sub">${esc(when((seal.signature && seal.signature.at) || ""))}</div>
-      <div class="hash">${esc(seal.sheet_hash || "")}</div></div>
-      <div class="card"><div class="cap">Carts</div><ul class="plain">${(seal.carts || []).map((c) => `<li class="stack"><div class="row"><span>${esc(c.store)}</span><span class="num">${money(c.total_cents)}</span></div>${c.total_differs || c.line_differences ? `<div class="sub" style="color:var(--bad)">${esc(c.note)}</div>` : (c.cart_url ? `<div class="sub">${c.lines_checked ? "the store's cart lines match the signed picks" : "the store's cart lines were not compared"}</div>` : "")}${c.cart_url ? `<div><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> <span class="sub">· ${esc(c.mode || "")}</span></div>` : `<span class="sub">${c.mode === "pending" ? "still being created at the store" : "not created: " + esc(c.note || "")}</span>`}</li>`).join("")}</ul></div>
+      ${codeBlock(seal.sheet_hash)}</div>
+      <div class="card"><div class="cap">Carts</div><ul class="plain">${(seal.carts || []).map((c) => `<li class="stack"><div class="row"><span>${esc(c.store)}</span><span class="num">${money(c.total_cents)}</span></div>${c.total_differs || c.line_differences ? `<div class="sub" style="color:var(--bad)">${esc(c.note)}</div>` : (c.cart_url ? `<div class="sub">${c.lines_checked ? "the store's cart lines match the signed picks" : "the store's cart lines were not compared"}</div>` : "")}${c.cart_url ? `<div><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> ${c.mode === "replay" ? '<span class="sub">· a saved copy, not the store\'s live cart</span>' : ""}</div>` : `<span class="sub">${c.mode === "pending" ? "still being created at the store" : "not created: " + esc(c.note || "")}</span>`}</li>`).join("")}</ul></div>
       <div class="card"><div class="cap">Checks</div>
-      <div class="sub">${(() => { const q = (seal.signature && seal.signature.persona) || {}; return q.inquiry_id ? esc(q.label || "") + " · " + esc(q.inquiry_id) + " · " + esc(q.status || "") + " · sandbox" : "identity not checked"; })()}</div>
+      <div class="sub">${(() => { const q = (seal.signature && seal.signature.persona) || {}; return q.inquiry_id ? esc(q.label || "") : "identity not checked"; })()}</div>
       ${seal.signature && seal.signature.relay ? `<div class="sub">Live human: ${esc(seal.signature.relay.result)} (sandbox: a sandbox claim passes with nobody present)</div>` : ""}
       <div class="sub">${esc(sensoSealText(seal.signature, O()))}</div></div>
       <div class="sub">To start over, reset from the laptop.</div>`);
@@ -383,26 +419,26 @@ function renderSheet() {
     <div class="sub">${esc(sl.text)}</div>
     ${sl.rows.length ? `<details><summary>Sentences</summary><ul class="plain">${sl.rows.map((r) => `<li class="stack"><span><span class="tag ${r.verdict === "verified" ? "ok" : r.verdict === "conflict" ? "bad" : ""}">${esc(r.verdict)}</span>${r.blocks ? "" : ' <span class="tag">advisory</span>'}</span><span>${esc(r.sentence)}</span>${r.source && r.source.version_id ? `<span class="sub">against ${esc(r.source.title || "the " + O())}, version ${esc(r.source.version_num || String(r.source.version_id).slice(0, 8))}${r.source.version_num == null && r.source.latest_version_id ? " (an older version)" : ""}</span>` : ""}${r.moved_from_order ? `<span class="sub">changed from the ${esc(O())}</span>` : ""}</li>`).join("")}</ul></details>` : ""}</div>
     <div class="rule"></div>
-    <div class="stack"><div class="cap">What you sign</div><div class="hash">${esc(canon.hash)}</div>
-    <div class="sub" style="color:${canon.match ? "var(--ok)" : "var(--bad)"}">${canon.match ? "Computed on this phone from the sheet above; the server's hash is the same." : "This phone computed a different hash from the one the server sent. It will not sign."}</div></div></div>
-    <button class="act primary big" id="sign" ${canon.match && buyable ? "" : "disabled"}>${Date.now() < armedUntil ? "Tap again to sign" : "Sign"}</button>
+    <div class="stack"><div class="cap">What you sign</div>${codeBlock(canon.hash)}
+    <div class="sub" style="color:${canon.match ? "var(--ok)" : "var(--bad)"}">${canon.match ? "✓ Same code as the laptop. This phone worked it out from the sheet above." : "This phone computed a different hash from the one the server sent. It will not sign."}</div></div></div>
+    <button class="act primary big" id="sign" ${canon.match && buyable ? "" : "disabled"}>${armed(Date.now(), armedUntil, armedHash, hashNow()) ? "Tap again to sign" : "Sign"}</button>
     ${signNote ? `<div class="sub" style="color:var(--bad)">Not signed: ${esc(signNote)}</div>` : ""}`);
   main.querySelectorAll("details[data-why]").forEach((d) => { d.open = openWhy.has(d.dataset.why); d.addEventListener("toggle", () => (d.open ? openWhy.add(d.dataset.why) : openWhy.delete(d.dataset.why))); });
   ensureSenso();
   $("#pstart").onclick = async () => {
     try {
-      persona = await getJSON(per.inquiry_id ? "/api/issuer/persona/status" : "/api/issuer/persona/start", per.inquiry_id ? undefined : { method: "POST" });
+      persona = per.inquiry_id ? await getJSON("/api/issuer/persona/status") : await signedRequest("persona_start", {});   // a new inquiry is a signed request
       await refreshIssuer(); renderSheet(); if (!persona.link && !persona.inquiry_id) toast(persona.reason || persona.label);
     } catch (e) { toast(e.message); }
   };
   $("#sign").onclick = async () => {
     const btn = $("#sign"), seen = hashNow();
-    if (Date.now() >= armedUntil) {   // the first tap arms the button; a second tap within four seconds signs
-      armedUntil = Date.now() + 4000; btn.textContent = "Tap again to sign";
+    if (!armed(Date.now(), armedUntil, armedHash, seen)) {   // the first tap arms the button; a second tap within four seconds, on the same sheet, signs
+      armedUntil = Date.now() + 4000; armedHash = seen; btn.textContent = "Tap again to sign";
       setTimeout(() => { if ($("#sign") && !busy && Date.now() >= armedUntil) $("#sign").textContent = "Sign"; }, 4100);
       return;
     }
-    armedUntil = 0; signNote = "";
+    armedUntil = 0; armedHash = null; signNote = "";
     busy = true; btn.disabled = true; btn.textContent = "Signing…";
     try { await signedRequest("sign_sheet", { sheet_hash: seen }); await loadState(); busy = false; renderSheet(); }
     catch (e) { busy = false; signNote = e.message; await loadState().catch(() => {}); renderSheet(); }
@@ -480,6 +516,8 @@ function renderLines() {
 document.addEventListener("click", async (e) => {
   const t = e.target.closest("button"); if (!t) return;
   if (t.dataset.tab) { tab = t.dataset.tab; document.querySelectorAll("nav button").forEach((b) => b.setAttribute("aria-selected", b === t)); render(); window.scrollTo(0, 0); return; }
+  if (t.dataset.askAccept) { const a = ((issuer && issuer.asks) || []).find((x) => x.id === t.dataset.askAccept); if (a) answerAsk(t, "set_limit", { limit_id: a.limit_id, value: a.to, ask_id: a.id }); return; }
+  if (t.dataset.askDecline) { answerAsk(t, "decline_ask", { ask_id: t.dataset.askDecline }); return; }
   if (t.dataset.lim) { shown.has(t.dataset.lim) ? shown.delete(t.dataset.lim) : shown.add(t.dataset.lim); renderSheet(); return; }
   if (t.dataset.open) { openLimit = openLimit === t.dataset.open ? null : t.dataset.open; document.querySelectorAll("[data-limit] .body").forEach((b) => (b.hidden = b.parentElement.dataset.limit !== openLimit)); return; }
   if (t.dataset.back) {
