@@ -181,6 +181,12 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
   `[{"id", "status", "expr"}]`, and with a review ordering `rating` (the object above or null) and, for `most_popular`,
   `review_count`. `picked_because` is words for the screen and is not in the canonical sheet.
 
+## 15:18 from ENGINE — the canonical sheet gained fields (reviewer's H1, H5); every sheet hash changes
+- `pick.title`; `limits[].name` and `limits[].label` (also on `preferences[]`); `strike_reasons`: `{product_key: reason}` on
+  a line with strikes; `pick_rule.set_by`. Whole numbers are written without ".0" everywhere in the canonical text (16, not 16.0).
+- `sheet.pick_rule.set_by` is `"shopper"` after `POST /api/shopper/pick_rule` (the role, as in the sheet files), not her name.
+- Nothing was removed or renamed. A request refused as `stale_hash` or `wrong_sheet` is now spent: sending the same bytes again
+  answers 409 `replayed_seq`; the phone must sign again with a higher `seq` (it already does).
 ## 15:06 from SIGN — G23, the shopper asks and the approver decides: JSON shapes (the code follows within minutes; these are the contract)
 - **`POST /api/shopper/ask-change {"limit_id": "L1.capacity", "value": 250, "note": "the chair I like is rated 250"}`** (laptop only, like the rest of `/api/shopper/`) →
   `{"ok": true, "ask": ASK}`. `note` is optional text, 300 characters at most. One pending ask per limit: a new one for the same limit replaces the
