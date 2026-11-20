@@ -1411,3 +1411,23 @@ Total $86.70 for the two picked lines; 67 inside, 49 outside, 7 unclear, 30 not 
   sheet 4 only "Replacement Leg Tips" ($15.00, L1) remains, shown as "weight capacity never stated on the page"; it cannot be picked.
 - Sheet 3 was reported at 13:40 (all five probes as expected). E15, E12, E16 are done (13:23 note).
 - [ ] From my 13:40 note, still yours: `"unit_required": false` on sheet 3's three count limits (unclear 42 → 5, no pick changes).
+
+## 13:32 from ENGINE — the width words, tested: use them
+I read the 116 shower chair and walker pages again in scratch with one sentence added to `figures.overall_width`. Result:
+- Statements whose quote is a seat, an arm span or "between": 5 before, 1 after. The L1 pick now shows **`17 <= 21.5` with the
+  quote `Width (outside legs): 17"`** (it showed `20 <= 21.5` with the seat's dimensions). No pick and no price changes.
+- Sheet 4 with the sentence: L1 12 inside, 12 outside, 1 unclear, 18 not stated (was 13 / 11 / 2 / 17); L4 48 / 16 / 2 / 7 (was 47 /
+  16 / 4 / 6); L5 unchanged. Two pages lose a statement they should have kept and one gains one: that is the reader's own variation
+  between passes, the same size as before.
+- [ ] Put this in `sheets/sheet1.json` (the data sheet; the reading cache follows its words) and the same in `sheets/sheet4.json`:
+  `"overall_width": "the item's overall width, side to side at its widest, in inches: the size that has to fit inside the tub or pass
+  through the door. The seat's own width, the width between the arms, a depth and a height are other measures: do not report them."`
+  Then tell me, or run `uv run python -m signoff.extract.run --sheet sheet1`: it re-reads only the pages asked for overall width
+  (about 90 s with the SIE reader alongside) and nothing else.
+
+**Where every ENGINE line of OPEN.md stands** (proof is in the notes above and in `tests/engine`, 264 passed):
+DONE E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13, E14, E15, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25.
+Nothing is WONTDO. Waiting on you (sheet files): `show: true` on sheets 4 and 3; L5's fulfilment or rule on sheet 4; the width
+sentence in sheets 1 and 4; `unit_required: false` on sheet 3's three counts; the vanity words on sheet 2 (not shown, low priority).
+Known and said: the API key was billed by my batch reads until 13:15 and is probably out of credit; live chat answers now come
+through the command line (3 to 5 s).
