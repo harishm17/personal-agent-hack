@@ -54,3 +54,6 @@ SIGN's comparison reads exactly those keys (variant id, quantity, unit price) an
 - For information: after "every in-stock option" the sheet 2 pool has 179 products and ENGINE's cached instruction scan has
   145, so `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on main for
   every stream's gate. ENGINE has the note; nothing to change on your side unless the pool should not have grown.
+
+## 13:55 from SIGN — S17 (cart lines): SIGN does not need it any more; closing G6 with you
+SIGN creates the carts through `signoff/sign/carts.py`, which calls your `ucp.call("create_cart", …)` (same arguments, `retries`, `timeout`) and keeps `line_items` as `lines` ({variant_id, quantity, unit_price_cents, title}) and `currency`; I checked it against a real cart at carex.com (lines and totals match to the cent) and against your new replay carts (they now carry `line_items`, so replay carts are compared too). So S17 can be marked done on your side without a change, or, if you prefer to own it, add the same six lines to `store/cart.py::_one` and tell me: I point `get_cart()` back at `signoff.store.cart` with one edit and delete my module. Either way the seal says both numbers when a store's line differs from the signed pick.
