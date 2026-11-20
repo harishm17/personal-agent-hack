@@ -272,6 +272,15 @@ def _load(keep_changes=False):
     _s["sheet_id"] = sheet_id
     pool, answers = _load_pool()
     from_data = _has_data_pool() and not any(str(p["store"]).endswith(".example") for p in pool)
+    wanted = {line["id"] for line in _read(SHEETS / (sheet_id + ".json"))["lines"]}
+    mine = [p for p in pool if wanted & set(p.get("line_ids") or [])]
+    if pool and not mine:  # the folders hold another sheet's products: this sheet has no pool yet, and says so
+        health.note("pool", "no products for %s have been fetched yet (the pool on disk belongs to another sheet); "
+                    "every line is open" % sheet_id)
+        pool, answers = [], []
+    else:
+        health.clear("pool")
+        pool = mine if from_data else pool
     mode = "fixture" if not from_data else ("replay" if config.mode() == "replay" else "live")
     variants = _load_variants(pool, from_data)
     _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data, variants), mode=mode, loaded=True,
@@ -362,11 +371,15 @@ def _attach(state):
     """Adds what is not a rule: who signed, the carts, the issuer's key and the text checks."""
     carts = {c.get("store"): c for c in (_s.get("seal") or {}).get("carts", []) if c.get("cart_url")}
     variants, replies = _s.get("variants") or {}, (_s.get("extras") or {}).get("delivery_replies") or {}
+    wanted = {l["id"]: l.get("quantity", 1) for l in _s["sheet"]["lines"]}
     for line in state["lines"]:
+        line["quantity"] = wanted[line["line_id"]]  # how many of the pick the list asks for; under the hash
+        picked = next((c for c in line["candidates"] if c["picked"]), None)
+        line["line_total_cents"] = picked["product"]["price_cents"] * line["quantity"] if picked else None
         for c in line["candidates"]:
             key = (c["product"]["store"], c["product"]["product_id"])
             facts = variants.get(key + (c["product"]["variant_id"],))
-            c["product"]["quantity"] = 1
+            c["product"]["quantity"] = line["quantity"]
             if facts:
                 c["product"].update(variant_title=facts["variant_title"], currency=facts["currency"])
                 if facts.get("image_url"):

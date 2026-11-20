@@ -46,6 +46,9 @@ def validate_sheet(sheet):
     """A sheet the rules cannot run is refused when it is loaded, with the reason: an unknown comparison or an
     unknown pick rule is an error, never quietly treated as something else."""
     for line in sheet["lines"]:
+        q = line.get("quantity", 1)
+        if isinstance(q, bool) or not isinstance(q, int) or q < 1:
+            raise ValueError("line %s has the quantity %r; it must be a whole number of at least 1" % (line.get("id"), q))
         for limit in line["limits"]:
             if limit.get("op") not in OPS:
                 raise ValueError("limit %s has the comparison %r; the rules know %s" % (limit.get("id"), limit.get("op"), ", ".join(OPS)))
@@ -387,7 +390,8 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
                               "rule": sheet["pick_rule"]["label"],
                               "pick_price_cents": pick["product"]["price_cents"] if pick else None},
                       "struck": struck, "candidates": cands})
-    total = sum(c["product"]["price_cents"] for l in lines for c in l["candidates"]
+    quantity = {line["id"]: line.get("quantity", 1) for line in sheet["lines"]}  # how many of the pick the list asks for
+    total = sum(c["product"]["price_cents"] * quantity[l["line_id"]] for l in lines for c in l["candidates"]
                 if c["picked"] and l["status"] in ("ready", "next_candidate"))
     return {"version": 1, "mode": mode, "sheet": sheet,
             "seal": {"signed": False, "text": "Not signed. No cart exists at any store.", "sheet_hash": None,
