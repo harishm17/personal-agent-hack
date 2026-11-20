@@ -248,7 +248,8 @@ def test_a_preference_is_signed_with_its_bound(live):
     assert picked(s)["id"] == D                                             # sheet 1 wants a delivery time; C states none
     sheet = json.loads(state.canonical_sheet())
     l2 = next(l for l in sheet["lines"] if l["line_id"] == "L2")
-    assert l2["preferences"] == [{"id": "L2.capacity_wished", "op": ">=", "unit": "lb", "set_by": "issuer", "bound": 450,
+    assert l2["preferences"] == [{"id": "L2.capacity_wished", "name": "holds 450 lb if they have one", "op": ">=",
+                                  "unit": "lb", "set_by": "issuer", "bound": 450,
                                   "terms": ["weight_capacity"]}]
     assert l2["pick"]["preferences"] == [{"id": "L2.capacity_wished", "status": "met", "expr": "450 >= 450"}]
     assert "preferences" not in next(l for l in sheet["lines"] if l["line_id"] == "L1") and state.sheet_hash() != before
