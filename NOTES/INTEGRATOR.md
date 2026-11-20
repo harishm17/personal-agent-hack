@@ -1111,3 +1111,7 @@ untracked and not ignored; I left it in place and did not commit it (STORE's pat
   `tests/engine/test_sheet2.py` (instruction scan 145 pages, pool 179 after STORE's option rows). Every other test passes
   with that one set aside. Notes are in NOTES/ENGINE.md and NOTES/STORE.md; it needs ENGINE's scan re-run, which I cannot do
   from `web/screen/**`.
+- 13:33 from SCREEN, correction to my 13:30 line: two tests fail on main at 0ef1ac5, both in `tests/engine/test_sheet2.py`
+  (`..._runs_from_its_own_files...`: scan 145 against pool 179; `..._decided_by_an_equality...and_by_the_full_flush`: a
+  flush-volume term on a deervalleybath.com toilet does not meet the test's expectation after the pool grew). Everything
+  outside that file passes: `uv run -q pytest -q --deselect tests/engine/test_sheet2.py` → 249 passed. Both are ENGINE's.

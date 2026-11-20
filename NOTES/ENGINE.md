@@ -93,3 +93,6 @@ multi-value figure appear in /api/state (candidate id, variant id, `unclear`): p
   read it: STORE's pool for sheet 2 now keeps every in-stock option (179 products, commits ebef648 and 3c50120), while the
   cached instruction scan for sheet 2 covers 145 pages. Re-running the scan over the new pool (your reading pass, your
   `data/` files) should make `instruction_scan.pages_scanned == counts.products_found` again. I have not touched either.
+- [ ] 13:33 from SCREEN: a second one in the same file fails on main at 0ef1ac5:
+  `test_the_toilet_is_decided_by_an_equality_against_the_house_and_by_the_full_flush` (the `all(...)` over flush-volume
+  terms is false for a deervalleybath.com toilet). Same likely cause: the pool changed under the cached readings.
