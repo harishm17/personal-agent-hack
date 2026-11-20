@@ -2034,3 +2034,42 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
    The page `/talk/` shows it within five seconds.
 - Shots retaken at 14:14 with the fifth ask: `web/talk/shots/talk-withheld.png`, `talk-thread.png`.
 - `uv run pytest tests/talk -q` → `54 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`.
+
+## 14:37 from ENGINE — E30, E31, E32 done on stream/ENGINE (commits b48951d and the one after); E28 and E29 closed
+- DONE E30: `rules.PICK_RULES` has `best_reviewed` and `best_value`; each rule is one sort key over the candidates that pass
+  (`rules.pick_order`), no second path: with nothing quoted the same key orders by price and the line says "none of the 8 that
+  pass has a quoted rating, so the cheapest is shown". `POST /api/shopper/pick_rule`, `pick_rules` in the state, `why.rated`,
+  `why.rule`, `picked_because`; `within` is read from the sheet's `pick_rule` (default 0.3), is in the label and under the
+  hash. An unknown id is still an error (400 on the route, ValueError on a sheet). Proof: `uv run -q pytest -q` → "411 passed,
+  12 deselected" at 14:36; `tests/engine/test_pick_rules.py` (12 tests). On 8001, sheet 4: `curl -X POST
+  /api/shopper/pick_rule -d '{"id":"best_value"}'` → `{"ok":true,"version":2,"pick_rule":{"id":"best_value","label":"best value:
+  cheapest within 0.3 stars of the best rated","set_by":"Elena"},"total_cents":11469}`; `{"id":"nicest"}` → 400.
+  **Open on REVIEWS, not on me:** `signoff.reviews.ratings` does not exist on my branch yet (R4), so on the real sheets every
+  line reads "none of the N that pass has a quoted rating" and the pick does not move. The moment R4 is merged it is used; what it
+  must return is in NOTES/REVIEWS.md. I have not seen a pick move on real data, only in the tests with invented ratings.
+- DONE E32: `most_popular`: the most reviews counted, then rating, then price; no quoted count follows by price; same key
+  pattern, `why.rated` (how many have a quoted count), `picked_because` ("212 reviews (rated 4.8), the most that passes"). Its
+  label is "most reviewed among those that pass", in the style of the other three; say if you want exactly "Most reviewed".
+  Proof: `test_most_popular_is_the_most_reviews_counted_then_the_rating_then_the_price`.
+- DONE E31: a line's `preferences` are checked by `rules.check`, the same function as a limit, on the figures already read;
+  status, counts, SQL and the phone's limits are untouched (tested: counts and every candidate's status are equal with and without
+  the preference; `set_limit` on a preference id is refused). Among those that pass, more preferences met come first, then the
+  rule's key; `why.preferences`; the canonical sheet carries each preference with its bound and the pick's result. Proof:
+  `test_a_preference_orders_those_that_pass_and_changes_no_status_and_no_count`, `test_a_preference_is_signed_with_its_bound`.
+  For I16, tried in memory on sheet 3 (sheet file not touched): "at least 100 sheets" as a preference on the notebook line gives
+  "38 of 43 that pass meet the preference" and **the pick does not move**: the $1.05 pick already states 100 sheets ("With 100
+  sheets of paper in each composition book"). Cheapest passing notebook per stated count, from the state: 70 → $2.99, 80 →
+  $16.00, 100 → $1.05, 120 → $2.99, 150 → $5.99. A preference of 120 would move the pick to $2.99; that is your call.
+- Decisions I took that you may want to overrule: (1) a rating with no stated scale is not ordered (never guess a rating); its
+  review count still counts for `most_popular`. If REVIEWS returns most ratings without `out_of`, best reviewed will find few.
+  (2) `best_value`: rated products outside the 0.3 window come after those inside it and before the unrated ones.
+  (3) the pick's quoted rating is in the canonical sheet when a review ordering is active, so the approver signs what the order
+  rested on. (4) recompute now builds the candidates twice when a ratings function exists (REVIEWS reads candidates from the
+  state): measured 9.5 ms and 12.1 ms per change on sheets 4 and 3 with no ratings function; I will measure again with R4.
+- DONE E28: `state._apply_memory`, `tests/engine/test_state.py::test_what_memory_recalls_is_applied_at_the_start_of_a_run_and_nowhere_else`
+  (in the 411 passed); shape in NOTES/MEMORY.md.
+- DONE E29: `POST /api/shopper/choose`, `state.set_shopper_choice`, `picked_by` in the canonical sheet;
+  `test_the_shopper_may_choose_any_candidate_that_passes_and_nothing_that_does_not` (in the 411 passed). Her choice now also
+  carries `picked_because: "chosen by Elena"`.
+- Shapes are in NOTES/SCREEN.md, SIGN.md, GRAPH.md and TALK.md. New route `/api/shopper/pick_rule` is under `/api/shopper/`,
+  so the laptop-only guard already covers it.
