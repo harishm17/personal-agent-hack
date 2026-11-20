@@ -182,15 +182,14 @@ def test_senso_conflict_blocks_signing(env):
     r = sign(env)
     assert r.status_code == 409 and r.json()["error"] == "senso_blocked"
     assert env.cart.calls == []
-    # unsupported does not stop the signer unless asked to
-    senso.set_checks([{"sentence": "A stair lift is required for the hall.", "verdict": "unsupported", "blocks": True}])
-    assert sign(env).status_code == 200
 
 
-def test_unsupported_blocks_when_asked(env, monkeypatch):
-    monkeypatch.setenv("SENSO_BLOCK_UNSUPPORTED", "1")
-    senso.set_checks([{"sentence": "A stair lift is required for the hall.", "verdict": "unsupported", "blocks": True}])
+def test_unsupported_blocks_unless_relaxed(env, monkeypatch):
+    rows = [{"sentence": "Our order requires a stair lift for the hall.", "verdict": "unsupported", "blocks": True}]
+    senso.set_checks(rows)
     assert sign(env).json()["error"] == "senso_blocked"
+    monkeypatch.setenv("SENSO_BLOCK_UNSUPPORTED", "0")
+    assert sign(env).status_code == 200
 
 
 def test_moved_limit_conflict_does_not_stop_the_signer(env):

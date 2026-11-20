@@ -15,9 +15,14 @@ def test_sentences_are_terms_and_never_name_a_store():
     stores = {r["store"] for r in rows}
     for r in rows:
         assert not any(s in r["sentence"] for s in stores)  # a claim naming another brand gets no verdict
-    kinds = {r["kind"] for r in rows}
-    assert kinds == {"limit", "order", "store"}
-    assert all(r["blocks"] for r in rows if r["kind"] == "order") and not any(r["blocks"] for r in rows if r["kind"] in ("limit", "store"))
+    assert {r["kind"] for r in rows} == {"limit", "order"}  # store quotes are not sent: a claim naming no brand got no verdict
+    assert all(r["blocks"] for r in rows if r["kind"] == "order") and not any(r["blocks"] for r in rows if r["kind"] == "limit")
+    assert all(r["sentence"].startswith("Our order requires") for r in rows)
+
+
+def test_store_sentences_on_request(monkeypatch):
+    monkeypatch.setattr(senso, "STORE_SENTENCES", True)
+    assert "store" in {r["kind"] for r in senso.sentences_for(state())}
 
 
 def test_pick_up_line_is_checked_as_pick_up_not_as_a_cart():

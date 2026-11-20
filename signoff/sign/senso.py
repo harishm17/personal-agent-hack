@@ -29,6 +29,7 @@ DOCS = pathlib.Path(__file__).with_name("senso_docs")
 REGISTRY = pathlib.Path(__file__).with_name("_runtime") / "senso_docs.json"
 BLOCKING = ("conflict", "unsupported")
 ORDER_NAME = {"shower chair": "shower chair or transfer bench"}  # the order's own words for a line
+STORE_SENTENCES = config.env("SENSO_STORE_SENTENCES") == "1"  # off: a quote naming no brand got "unsupported" every time
 STORE_BLOCKS = config.env("SENSO_BLOCK_STORE") == "1"
 _lock = threading.RLock()
 _checks: list[dict] = []
@@ -36,10 +37,9 @@ _meta: dict = {"for_hash": None, "ran_at": None, "error": None}
 
 
 def blocking_verdicts() -> tuple:
-    """`conflict` always stops a signature. `unsupported` does too only with SENSO_BLOCK_UNSUPPORTED=1: on
-    11:40 the judge missed a presence sentence the order states word for word in one run of three, so by default
-    it is shown in amber and does not stop the signer."""
-    return BLOCKING if config.env("SENSO_BLOCK_UNSUPPORTED") == "1" else ("conflict",)
+    """`conflict` and `unsupported` stop a signature (after up to three tries on `unsupported`, see `judge`).
+    SENSO_BLOCK_UNSUPPORTED=0 relaxes it to `conflict` only, as a switch for the day if the judge turns flaky."""
+    return ("conflict",) if config.env("SENSO_BLOCK_UNSUPPORTED") == "0" else BLOCKING
 
 
 def configured() -> bool:
@@ -173,12 +173,14 @@ def sentences_for(state: dict) -> list[dict]:
                         "sentence": sentence})
         if line["status"] == "pick_up":
             out.append({**base, "kind": "order", "blocks": True,
-                        "sentence": "A %s must be screw-mounted and fitted, so it is picked up locally and is not bought through a cart." % line["need"]})
+                        "sentence": "Our order requires a %s to be screw-mounted and fitted, so it is picked up locally and not bought through a cart." % line["need"]})
         else:
             out.append({**base, "kind": "order", "blocks": True,
-                        "sentence": "A %s is required for the %s." % (ORDER_NAME.get(line["need"], line["need"]), line["room"])})
+                        "sentence": "Our order requires a %s for the %s." % (ORDER_NAME.get(line["need"], line["need"]), line["room"])})
         # The store's own words, verbatim and without its name (a claim that names another brand gets no verdict).
         # Shown with the verdict, not blocking by default: the judge is not steady on policy text from three stores.
+        if not STORE_SENTENCES:
+            continue
         a = cand.get("arrival") or {}
         if a.get("status") == "stated" and a.get("quote") and line["status"] != "pick_up":
             out.append({**base, "kind": "store", "blocks": STORE_BLOCKS, "sentence": a["quote"].rstrip(".") + "."})
@@ -195,17 +197,18 @@ def _order_values() -> dict:
 
 
 def _limit_sentence(need: str, limit: dict, value: float) -> str:
-    unit = limit["unit"]
+    """"Our order requires ..." reads as the organisation's own terms, so the judge checks it against the order
+    (5 of 5 verdicts in a trial; the same sentence without it got no verdict 2 times in 5)."""
     n = _num(value)
     if limit["name"] == "weight capacity":
-        return "The %s must hold at least %s %s." % (need, n, unit)
+        return "Our order requires the %s to hold at least %s %s." % (need, n, limit["unit"])
     if limit["name"] == "finished seat height":
-        return "The toilet rim height plus the height the %s adds must be at least %s inches." % (need, n)
+        return "Our order requires the toilet rim height plus the height the %s adds to be at least %s inches." % (need, n)
     if limit["name"] == "seat height":
-        return "The %s seat height must reach at least %s inches." % (need, n)
+        return "Our order requires the %s seat height to reach at least %s inches." % (need, n)
     if limit["name"] == "bar length":
-        return "The %s must be at least %s inches long." % (need, n)
-    return "The %s %s %s %s %s." % (need, limit["label"], "at least" if limit["op"] == ">=" else "at most", n, unit)
+        return "Our order requires the %s to be at least %s inches long." % (need, n)
+    return "Our order requires the %s %s %s %s %s." % (need, limit["label"], "at least" if limit["op"] == ">=" else "at most", n, limit["unit"])
 
 
 # ---- judging --------------------------------------------------------------------------------------------
@@ -235,6 +238,12 @@ def _judge_once(client: httpx.Client, s: dict) -> dict:
         if r.status_code >= 400:
             return {**row, "verdict": "error", "reasoning": "Senso answered HTTP %d" % r.status_code}
         run = r.json()
+        deadline = time.time() + 75
+        while run.get("status") in ("queued", "running", "pending") and run.get("eval_run_id") and time.time() < deadline:
+            time.sleep(2)  # wait:true gave up under load; the run keeps going
+            polled = client.get(BASE + "/org/evals/runs/" + run["eval_run_id"])
+            if polled.status_code == 200:
+                run = polled.json()
         if run.get("status") != "completed":
             return {**row, "verdict": "error", "reasoning": "run %s" % run.get("status")}
         claims = run.get("claims") or []
