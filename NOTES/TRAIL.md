@@ -70,3 +70,9 @@ Every string that came from a store is untrusted text: escape it. Shape of one e
 - For the lead row use `id: "cbd3c7f37f4f:1"`: 7 removed, sent, a real reply. `cbd3c7f37f4f:2` is its follow-up, refused.
   The agent's own questions (`origin: "agent"`, 6 messages, 3 stores) have `removed: []`: nothing was stopped, by design.
 - Two earlier asks (`f9faad4b5aed:1`, `1553b09d0333:1`) were refused and sent nothing; they are real and stay in the list.
+
+## TALK 14:15 — one added field in `messages`, nothing changed
+- `purpose_removed`: what the guard finds in the shopper's own words, same span shape as `removed`, offsets in `purpose`;
+  null for the agent's own questions, for a follow-up and for threads saved before 14:12. Optional to draw.
+- A second sent example for the guard row: `98b830ce0828:1` (vivehealth.com, grab bars; six removed, sent, real reply) and
+  its follow-up `98b830ce0828:2` (three removed, sent, real reply). `cbd3c7f37f4f:1` stays valid.
