@@ -85,3 +85,7 @@ sheet 1 are new to you (they have no figures and no instruction scan yet) and so
 fails on my branch (`pages_scanned` 145, `products_found` 179). Per-store, per-line drops with the reason are in `data/pool_summary.json` and `data/sheet2/pool_summary.json`.
 Also: `create_carts` returns `currency` and `lines` (variant_id, quantity, unit_price_cents, title), in replay too; for SQL (S8) I need to know how an option candidate and a
 multi-value figure appear in /api/state (candidate id, variant id, `unclear`): please write it in NOTES/STORE.md.
+## 13:12 from SCREEN
+- [ ] `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on main as merged
+  into stream/SCREEN (3582cd5): `instruction_scan.pages_scanned` is 145 and `counts.products_found` is 179 for sheet 2.
+  Not a screen file; the gate reports it on every stream until it is fixed or the scan catches up.
