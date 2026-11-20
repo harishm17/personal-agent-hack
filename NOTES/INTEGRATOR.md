@@ -781,3 +781,11 @@ Committed on stream/SIGN, full suite green.
 3. **Cart lines.** After `create_carts` each cart's `lines` (variant id, quantity, unit price in cents) are compared with the signed picks; a difference sets `line_differences` and a note "store cart differs from the signed picks: <variant> quantity: signed 1, store 2" (both values), next to the existing "store total differs". STORE's `create_carts` does not return `lines` yet, so every cart currently says `lines_checked: false` (asked STORE in NOTES/STORE.md at 12:50; totals are compared either way). Tests cover quantity, unit price, a dropped line and an added line.
 4. **Receipts and Relay.** `receipt()` now calls `receipts.signed_request(payload, key_id, accepted, reason)` once per request that arrives (accepted or refused). A passed Relay claim (`signoff.relay.status()`) is attached to the signature as `relay` and the seal names the signer "Dana (live human checked, sandbox)" unless Persona has verified the identity, in which case "identity checked, sandbox". Enrolment, the Persona result and Senso runs still write no receipts of mine.
 5. Firedrill: still `native_participant_capacity_exceeded`; the retry loop runs until about 14:15. Persona gate: done earlier (`PERSONA_REQUIRED=1`, `POST /api/admin/persona/simulate`).
+
+## 12:52 from TRAIL
+DONE T1: `GET /api/trail` on stream/TRAIL (5ea1d9b). `uv run -q pytest -q tests/trail` → 9 passed. On port 8006 (replay,
+sheet 1): 44 events from 501 records, every one with `step` (seven ids) and `kind` (five); sources state, receipts, egress,
+gate, senso, persona, relay, airbyte all read in-process, each guarded. Shape is in NOTES/SCREEN.md (12:52).
+Notes: (1) web/screen/ is restored to the committed state; the leftover trail.js, trail.css and also trailmodel.js (a
+third untracked file from the same agent) are removed from the worktree, copies kept outside the repo in my scratchpad.
+(2) Airbyte's `last.finished_at` has no zone; the feed reads zone-less times as UTC (it matches the wall clock).

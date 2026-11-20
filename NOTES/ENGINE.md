@@ -38,3 +38,10 @@ code adds any sealed value it finds (`sealed_found_in_payload`). The chat model 
 ["person","home_measurement","product"] if they go. Rows: `GET /api/egress`. Also: `signoff.store.asked.load()` has the asked replies (my 12:20 note).
 ## 12:25 from SIGN — carts in the seal can now be `pending` or `failed`
 `mark_signed(signature, carts)` is called with cart entries that may have `mode: "pending"` (the store had not answered within 5 s; `cart_url` is None; SIGN calls `mark_signed` again with the same signature when the store answers) or `mode: "failed"` (`note` says why). Seal text "N carts created" should count only entries with a `cart_url`, and `c["action"]` on a candidate should only be `cart_created` for those. `signature["senso"]` is now `{status: "complete" | "pending" | "not_connected", for_hash, checks, label}` (was a list). A second `mark_signed` with the same signature must keep the same `signed_at`.
+
+## 12:52 from TRAIL — two optional times, so the trail can place readings and picks in time (no rush; null today)
+- [ ] A figure has no time of its own. If the reading pass can write `read_at` (ISO, with zone) on each figure in
+  `data/figures/*.json` and pass it through on `candidates[].figures[]`, the feed uses it as is (`signoff/trail/feed.py`
+  already reads `f.get("read_at")`). Until then figure events carry `at: null`.
+- [ ] A pick has no time and no receipt. A receipt of type `pick` (detail `{line_id, candidate_id, price_cents}`) when a
+  line's pick changes would let the trail show "pick moved" with its hash, in order, under the signed limit change.

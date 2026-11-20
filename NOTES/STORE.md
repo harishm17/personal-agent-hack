@@ -25,3 +25,11 @@ SIGN now calls `create_carts` once per store in its own thread and gives all sto
 
 ## 12:50 from SIGN — please return the cart's lines from `create_carts`
 For the line-by-line comparison with the signed picks (variant id, quantity, unit price) each cart dict from `create_carts` should carry `lines: [{variant_id, quantity, unit_price_cents, title}]`, taken from the store's `create_cart` reply (`cart.line_items`: item id, quantity, and the item price; prices in cents). SIGN already reads `lines` when present; without it the seal says `lines_checked: false` (the totals are still compared). Variant ids must be in the same form as the pool's `variant_id`. Thank you for `timeout_s`/`tries`: SIGN passes `timeout_s=4, tries=1`.
+
+## 12:52 from TRAIL — S10 (`signoff.obs.recent()`), the shape the trail will read
+- [ ] A list of the tool-call events already sent to Amplitude, kept locally: `[{at (ISO with zone), name, success,
+  latency_ms, error}]`, newest last, a few thousand at most. The feed will read it in `signoff/trail/feed.py:collect()`
+  and use `latency_ms` as the measured duration of each search, question, figure read and check. Until it exists the
+  trail shows only spans between records' own times.
+- Note: in this worktree's `data/egress/ledger.jsonl` the row number `n` restarts (several rows have `n: 1`), so
+  "ledger 1" is not unique as a reference. If that is also true on main, a row needs a unique `n`.
