@@ -266,3 +266,36 @@ tool: the therapist is the first issuer, not the product.
 - vivehealth.com states no delivery time to three differently worded questions, so under the pick rule
   its products are shown and checked but never picked. Say so if asked; do not invent a time.
 - `ANTHROPIC_API_KEY` is present with about $4.50: live calls only, capped; batch reads use `claude -p`.
+
+## Amendment 12:00 — depth without a new layer (two independent reviews agree)
+The working path (pool, figures, pick rule, signed requests, carts, existing routes and state keys) is
+**not changed**. New work is new files, new routes and new optional state keys only. Anything not on main
+and seen in a rehearsal by **14:30** is cut. Tag `e2e-phone-signed-1146` is the version the builder signed
+from his phone.
+1. **Ask, don't tell** (STORE asks, ENGINE reads). For each line's pick and runner-up, and for products
+   that are `not_stated`, one question to the store's own agent built by a code template from the product
+   title and the figure name only ("What does <title> state for <figure>?", plus one on returns of an
+   opened item and delivery time for picks). The question never contains a limit, a shopper fact or a
+   person. Cached in `data/store_answers/asked/`. The reply is read by the same reader and span check
+   against the reply text. New optional key on a candidate: `asked` (list of `{figure, question, reply,
+   quote, start, end, value, unit, answered, asked_at}`). **Display only: the pick rule ignores it.**
+2. **A planted instruction that changes nothing** (ENGINE). One invented product, store
+   `planted.example`, title prefixed "Planted test page (invented)", whose text contains an instruction to
+   the agent. It is read like any page. New optional keys: on a candidate `embedded_instructions` (list of
+   `{quote, start, end}`, found by the reader and confirmed by span match) and at top level `planted`
+   (`{candidate_id, instructions, effect: "none", why}`). It is never eligible for a cart.
+3. **Receipt chain** (ENGINE owns `signoff/engine/receipts.py`; SIGN calls it for every signed request,
+   accepted or refused). Each receipt: `{n, at, type, actor, key_id, body_hash, prev_hash, hash}`.
+   `GET /api/receipts`, `GET /api/receipts/verify` → `{count, verified, first_bad}`. Say "tamper-evident".
+4. **Outbound ledger** (STORE owns `signoff/obs/egress.py`; every stream calls
+   `obs.egress(recipient, purpose, payload, fact_classes)` where it sends anything out: stores, model
+   providers, Senso, Persona, Amplitude, Statsig, Airbyte). It records recipient, purpose, size, a hash,
+   the fact classes included (`limit`, `home_measurement`, `person`, `order`, `store_text`, `product`,
+   `price`, `none`) and a code check that no limit value with its unit and no shopper fact value appears
+   in a payload to a store. `GET /api/egress` → rows and `{messages, to_stores, limits_in_store_messages}`.
+Wording allowed: "quarantined reader" (the reading model has no tools; its output is typed and
+span-checked), "decision-bound signature" (the hash covers limits, quotes, picks and total), "limits are
+compared locally; no store is told a limit". Not allowed: "provable", any leak rate from fewer than 20
+trials, "hand-checked".
+Cut for good: sheet 2, Cognee, Arcee, Tokens& Observe, a simulated multi-turn store agent, a redaction
+model as the guard.
