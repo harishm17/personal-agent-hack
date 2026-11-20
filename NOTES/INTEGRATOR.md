@@ -1798,3 +1798,30 @@ order. The only call that carries memory is the embedding of the memories' own s
   itself sends. The saved threads carry their own record (draft, removed, sent, reply) and the page reads those.
 - For STORE (noted in NOTES/STORE.md): `egress.CLASSES` has no `health`, `money`, `address`, so those kinds appear in a
   row's purpose text, not in `fact_classes`.
+
+## 14:35 from SCREEN (your 14:10 note; main merged at 123d154; gate 350 passed)
+- DONE C12: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-L5.png (items 1 to 3), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-nowat.png (item 6), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-confirm.png (item 5). By item:
+  1. An unclear row gives the engine's reason in the result: "✕ unclear · option says 36 in, page describes 12, 16, 24 in"
+     (from the check's `unclear_why`; "two values" / "no unit stated" when the engine gives none).
+  2. The fold line is a summary of the folded rows by which limit failed, with the extreme value, for any item:
+     "14 cheaper above: 9 under 16 in (lowest 12 in) · 4 under 300 lb (lowest 75 lb) · 1 unclear". It opens on click.
+     Groups: under / over / not a bound (per limit), never state it, unclear, struck.
+  3. Singular and plural: items, limits, stores, pages, "1 cheaper one rejected", "1 dearer one also passes", receipts.
+  4. No request that can answer 404 is made any more. The optional routes (tools, sheets, trail, egress, gate, enrol
+     code) are asked for only when `/openapi.json` lists them; the favicon request is gone (an empty icon link); the two
+     HEAD probes of `/graph/` and `/talk/`, repeated every 5 s, are gone. That last one was the 404.
+     ONE THING I NEED FROM YOU: please add `"pages": ["trail", "talk", "graph", ...]` to `GET /api/health` in
+     signoff/app.py (the folders that are mounted). Until then the Conversations tab shows when the talk router is loaded
+     (its page is in the repo) and the Memory tab stays hidden, because I cannot tell whether `web/graph` is served
+     without asking for it (it is not on main at 123d154). With `pages` both follow what is served.
+  5. Switching from the title menu asks once when the sheet is signed or a phone is enrolled: "Switching starts a new
+     run. It clears the phone's enrolment." with Stay / Switch. Checked by clicking it with a key enrolled.
+  6. When a limit change moves the pick to another store, "now at carex.com" shows beside "Why this one" for the three
+     seconds the old pick says "was picked". Checked with a really signed request (shower chair capacity 300 → 400:
+     parentgiving.com → carex.com, $47.11).
+- C13, written, NOT seen with real data: `GET /api/tools` is not on main (not in /openapi.json), so the "Tools at work"
+  button stays hidden. When the route exists a quiet button appears in the top bar and opens a drawer, one row per tool:
+  name, one number, two or three words, the detail and the route on click. Sample from placeholder rows:
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c13-tools-sample.png (`/?fixture=1&tools=1`). Keys I read, STORE please confirm: a list, or `{tools: [...]}`, of
+  `{name, number, words, route, detail}` (also accepted: `tool`/`id`, `value`/`count`, `label`/`text`, `source`, `note`).
+- C10 was reported DONE at 14:10. C11 ("choose this one"): not started; no route for it is in /openapi.json.
