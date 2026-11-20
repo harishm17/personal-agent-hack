@@ -1,0 +1,55 @@
+{
+ "version": 1,
+ "descriptor_sha256": "3ec93ec0eb256a688c339e5fca18cc6d40971baed890cba92d7e67bfea1acd4a",
+ "roots": [
+  {
+   "alias": "app",
+   "path": "/Users/harishm/.t3/worktrees/sign-off/stream-SIGN",
+   "identity_sha256": "c5433ef15675c2c8826acd3679ed205dbd4e27759ab6651a594750f27177c5dd"
+  }
+ ],
+ "services": [
+  {
+   "alias": "agent",
+   "root_alias": "app",
+   "mode": "launch",
+   "command": {
+    "executable": "/Users/harishm/.t3/worktrees/sign-off/stream-SIGN/.venv/bin/python",
+    "args": [
+     "-m",
+     "signoff.sign.firedrill_agent"
+    ]
+   },
+   "cwd": ".",
+   "env_passthrough": [
+    "HOME",
+    "PATH"
+   ],
+   "env_static": {},
+   "local_secret_env": [],
+   "readiness": {
+    "kind": "http",
+    "url": "http://127.0.0.1:0/health",
+    "expect_status": [
+     200
+    ]
+   },
+   "readiness_timeout_ms": 90000,
+   "stop_timeout_ms": 5000,
+   "per_drill": true,
+   "port_env": "PORT"
+  }
+ ],
+ "driver": {
+  "profile": "http.v1",
+  "service_alias": "agent",
+  "path": "/chat",
+  "method": "POST",
+  "stream": "none",
+  "session_header": null,
+  "request_template": "message-text",
+  "response_pointer": "/reply"
+ },
+ "state_hooks": [],
+ "max_parallel_drills": 1
+}

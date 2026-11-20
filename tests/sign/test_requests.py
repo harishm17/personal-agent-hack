@@ -73,14 +73,14 @@ def test_wrong_key_id_is_refused(env):
 
 def test_second_key_cannot_enrol(env):
     from tests.sign.conftest import Phone
-    r = env.client.post("/api/issuer/enroll", json={"public_key_jwk": Phone().jwk, "name": "Mallory"})
+    r = env.client.post("/api/issuer/enroll", json={"public_key_jwk": Phone().jwk, "name": "Mallory", "code": api.keystore.code})
     assert r.status_code == 409 and r.json()["error"] == "already_enrolled"
 
 
 def test_enrol_again_only_after_reset(env):
     from tests.sign.conftest import Phone
     env.client.post("/api/admin/reset")
-    r = env.client.post("/api/issuer/enroll", json={"public_key_jwk": Phone().jwk, "name": "Dana"})
+    r = env.client.post("/api/issuer/enroll", json={"public_key_jwk": Phone().jwk, "name": "Dana", "code": api.keystore.code})
     assert r.status_code == 200
 
 
@@ -88,7 +88,7 @@ def test_private_key_part_is_never_stored(env):
     from tests.sign.conftest import Phone
     env.client.post("/api/admin/reset")
     p = Phone()
-    r = env.client.post("/api/issuer/enroll", json={"public_key_jwk": {**p.jwk, "d": "secret"}, "name": "Dana"})
+    r = env.client.post("/api/issuer/enroll", json={"public_key_jwk": {**p.jwk, "d": "secret"}, "name": "Dana", "code": api.keystore.code})
     assert r.status_code == 200 and "d" not in api.keystore.key.jwk
 
 
@@ -124,17 +124,17 @@ def sign(env, **over):
 def test_sign_creates_carts_and_marks_signed(env):
     r = sign(env)
     assert r.status_code == 200, r.text
-    picks = env.cart.calls[0]
+    picks = [x for call in env.cart.calls for x in call]
     assert picks and all(set(p) == {"store", "variant_id", "quantity"} for p in picks)
     kind, signature, carts = env.engine.calls[-1]
     assert kind == "mark_signed" and signature["sheet_hash"] == env.engine.sheet_hash() and carts
-    assert signature["name"] == "Dana" and signature["signer"]["key_id"] and signature["persona"]["label"] == "identity not checked"
+    assert signature["name"] == "Dana (self-declared)" and signature["signer"]["name"] == "Dana" and signature["signer"]["key_id"] and signature["persona"]["label"] == "identity not checked"
     assert env.engine.state["seal"]["signed"]
 
 
 def test_pick_up_lines_get_no_cart(env):
     sign(env)
-    picked = {p["variant_id"] for p in env.cart.calls[0]}
+    picked = {p["variant_id"] for call in env.cart.calls for p in call}
     state = env.engine.state
     grab_bar = next(l for l in state["lines"] if l["line_id"] == "L5")
     cand = next(c for c in grab_bar["candidates"] if c["id"] == grab_bar["pick"])
@@ -157,15 +157,17 @@ def test_hash_changes_after_a_limit_move(env):
 def test_replayed_sign_is_refused(env):
     body = env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash())
     assert post(env, body).status_code == 200
+    made = len(env.cart.calls)  # one call per store
     assert post(env, body).status_code == 409
-    assert len(env.cart.calls) == 1
+    assert len(env.cart.calls) == made
 
 
 def test_signed_sheet_cannot_be_signed_or_changed_again(env):
     sign(env)
+    made = len(env.cart.calls)
     assert sign(env).json()["error"] == "already_signed"
     assert post(env, env.phone.request("set_limit", **LIMIT)).json()["error"] == "already_signed"
-    assert len(env.cart.calls) == 1
+    assert len(env.cart.calls) == made
 
 
 def test_cart_failure_signs_nothing(env):

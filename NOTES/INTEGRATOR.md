@@ -342,6 +342,18 @@ Plan ids to retry with once it is cleared: world a83... saved as `a80bbe45-955f-
   `signoff.airbyte.pool.load()["pool"]`: same shape as `data/pool/*.json`.
 - Step 4 done: the order is a third Airbyte source (job 11, 12 rows, table `airbyte_order_limits`); `signoff.airbyte.order.load()` returns it as "proposed, from the order". Whole run with three jobs: 109 s.
 
+## AIRBYTE 12:05 — one command, short-lived tunnel, status wording
+- `uv run python -m signoff.airbyte.sync` now does everything (about 2 to 3 minutes): starts the staging container if it
+  is down, the export server and a tunnel, runs the three jobs, copies to SingleStore, records the run (with the tunnel's
+  address, which is closed again at the end) and stops the server and tunnel. No tunnel or file server of mine is left
+  running; `data/order/export_url.txt` is gone. `GET /api/airbyte/status` gives `source` "File (HTTPS)", `destination`
+  "MySQL (local staging)", `copy` "copied to SingleStore by signoff.airbyte.sync", per job `job_id`, `rows_synced`,
+  `duration`, `rows_copied_to_singlestore`, and one plain sentence per job in `last.lines`.
+- Demo it: run `POST /api/airbyte/sync` (or the command) a few minutes before, then show `/api/airbyte/status` and the row counts in SingleStore.
+- Say: "the stores' product pages and the therapist's order are exported files; Airbyte moves them into a staging database;
+  a small step of ours copies them into SingleStore, and the passing-box query runs on those rows."
+- Do not say Airbyte wrote to SingleStore directly (it cannot: its MySQL destination fails against SingleStore), and do not
+  say the sync is live at demo time: it is run beforehand, and the status shows its job ids and times.
 ## 12:02 from SCREEN
 - Static pass of the flow view is on `stream/SCREEN`: `/` is now the app layout (top bar, item rail, four gates
   Read / State the figures / Inside limits / Pick with one ruler per limit, pick card and signature block on the right);
@@ -499,3 +511,105 @@ So "the reading model has no tools; its output is typed and span-checked" is tru
    delivery evidence (status, the store's quote, the days, the need-by date). `seal.covers` = limits, strikes, picks, prices, sums,
    store quotes, delivery quotes, pick rule, total. Test: changing the store's delivery quote or the rule's label changes the hash.
    Hashes differ from this morning's; nothing was signed.
+## STORE 12:15 — passing-box SQL now agrees on all six lines (ENGINE and SCREEN notes)
+Done: `unsure` is a column of `figures` and the statement requires `unsure = 0` (the engine does not count an unsure figure);
+`refresh-pool` (live) now calls `signoff.extract.run.refresh()`. Checked against a live engine on port 8002: for L1 to L6 the
+SQL rows equal the engine's `inside` set (8, 7, 5, 12, 0, 9). **One trap:** every server writes its state to the same database
+`signoff`, so two servers running at once (main on 8800 and a stream's dev server) overwrite each other's tables and the box
+shows a wrong set (I saw L2 return 0 rows that way). Only main should use `signoff`; a dev server must start with
+`SIGNOFF_DB=signoff_<name>`. The tables are also written under one lock per process now.
+
+## STORE 12:45 — items 1 to 3 of your 12:20 note are on stream/STORE; the outbound ledger is on it too
+**1. Gate evidence** (`GET /api/gate/status`). New fields: `decision` ("switched back" when the gate is off after having been on;
+"switch back advised (the gate is on)" while it is on; "not adopted" if it was never on; "kept" only if nothing differs),
+`decision_text` (one sentence, built by code), `verdict` ("switch back" or "kept"), and `evidence`:
+`products_accepted` {sonnet 67, sie-qwen 81, of 111}, `small_accepts_more` 14, `inside_limits` {41, 53}, `picks_differ_on` ["L2"],
+`disagreements` {different_value 3, small_only 15, reference_only 0}, `figures_in_disagreement` (every item with product, figure,
+quote, what each read, and the reference's reason when it declined), and `example` (the Carex Portable Shower Bench: quote
+`Product Dims (h x w x d): 1.63" x 31" x 14.75"`, read as 31 in by the reference and 14.75 in by the small reader, with a sentence).
+The two arms' product counts come from the engine's own `rules.build_state` run with each arm's figures, so they equal what
+/api/state shows when that arm decides (67 and 81 here). The rule is code: "kept" requires zero figures read differently and zero
+counted that the reference did not; stating more products never counts. History of gate changes is saved in
+`data/egress/gate_history.json` so "switched back" survives a restart. I did not need ENGINE's list: I compare the two readers'
+run files myself. Gate currently on at Statsig (the builder's rule is at 100%): the poller will switch back by itself within about
+13 s once the rule is 0%.
+**2. Passing-box SQL.** The `unsure` filter was already in my branch from 12:15 (main did not have it yet: the 13 rows were that).
+Two more fixes: when a product has two figures of one name the engine keeps the first usable one, and the table now does the same.
+Checked live on all six lines with each reader deciding: SQL rows equal the engine's inside set (reference 8, 7, 5, 12, 0, 9; small
+reader 12, 10, 7, 15, 0, 9). The live test now uses the engine's own rules, marks about a quarter of the figures unsure and adds
+duplicates; removing the `unsure = 0` condition makes it fail (I checked).
+**3. create_carts(picks, timeout_s=30.0, tries=2)**: stores are called at the same time; a store that does not answer returns
+`{store, cart_id: None, cart_url: None, total_cents: None, created_at, mode: "pending", error}` and no exception. SIGN: use
+`create_carts(picks, timeout_s=4, tries=1)` for about 8 s. The stores' endpoints are looked up at startup (`ucp.warm`) so the
+first signing does not pay for it.
+**Outbound ledger.** `obs.egress(recipient, purpose, payload, fact_classes=None)` (never raises, never blocks, returns the row; rows
+in memory and `data/egress/ledger.jsonl`, hashes and sizes only). `GET /api/egress` -> {rows, summary: {messages, by_recipient, by_kind,
+to_stores, limits_in_store_messages, home_measurements_in_store_messages, people_in_store_messages, blocked, checked_by}}. For a
+store the guard looks for each issuer limit value with its unit, each home measurement with its unit and each person's name in the
+serialised payload (current engine sheet and sheet on disk); a hit is listed in `sealed_hits` and the store client **refuses to send**
+the message (`blocked: true`). `fact_classes` is what the caller declares; code adds what it finds (`sealed_found_in_payload`). Wired
+now: store search, ask and cart (the asked questions too), SingleStore writes, Amplitude events (one row per event, plus session
+starts), Statsig (init and each gate change). No `egress` key in /api/state: SCREEN reads the route. Rows from earlier runs are in
+`data/egress/` (not committed; I suggest ignoring that folder). ENGINE, SIGN and AIRBYTE: see the notes I left for them.
+**Your Amplitude question, from the code.** Events carry `tool_call` inputs and outputs in content mode "full". What they hold:
+`check_run` (counts, total_cents, 12 characters of the sheet hash), `figure_read` (store, product id, reader, the figures it read
+from the store's text), `store.*` (the store question and reply, product titles), `gate.changed` (reader numbers),
+`read_state`/`read_candidates` (names only), and **`shopper_say`, whose input is Elena's typed text**. So no limit value, no
+order text and no home measurement is put in an event by the code, except what Elena types: that text can contain a home
+measurement, a limit value or a name. I switched the default to `metadata_only` (verified with the SDK's own event object: in that mode
+`[Agent] Tool Input` and `[Agent] Tool Output` are dropped and only the tool name, success, latency and the experiment arm
+remain), and the ledger records exactly what is sent in each mode. `SIGNOFF_AMPLITUDE_CONTENT=full` brings input and output back
+with one safeguard: an event whose input or output contains a sealed value is sent with `redacted_by_code` instead. Cost of the
+default: Amplitude's Live Events show tool names, latency and arms, not the figure values.
+## 12:06 from SIGN — Firedrill: embedded-instruction scenario added, retrying until 14:00
+Correction to my 12:02 note: the three-scenario world is `a80bbe45-955f-48e0-9960-27e2b7a7a2f6` (now revision 2 with four scenarios), the single-drill world `a283df37-d160-40f0-98f4-0b9be35822f7`. Added per Amendment 12:00: persona "Elena relays instructions found in a store's text" and scenario "Instruction inside a store's text" (she quotes a product-page notice, then a store agent's chat reply, then a notice that says the assistant may skip the signature; the check stays on state: strikes, limits, carts and sheet hash unchanged, which the sandbox agent returns with every reply as `state_unchanged` and `changed`). No prying store agent, no leak counting. `firedrill apply` still answers `native_participant_capacity_exceeded` (tries every 3 minutes since 11:44, nine so far); a loop keeps trying until about 14:00 and stops on the first success. The receipt chain is not started.
+## 12:28 from SIGN — sign tap capped; identity gate built; phone redesigned (all committed on stream/SIGN, 137 tests green, suite 12 s)
+1. **Time cap (review item):** `sign_sheet` never starts Senso. A background watcher runs it when the sheet hash changes (1.5 s debounce), when the Sign view opens (`POST /api/senso/run` now returns at once) and after a reset. At signing: verdicts for the current hash are applied; if a run is in progress the request waits at most 3 s, then signs with `signature.senso = {status: "pending", label: "Senso check still running"}`; only a verdict that has actually come back as `conflict` or `unsupported` blocks. Carts: one thread per store, one try, all stores share 5 s; a store that has not answered gets a `mode: "pending"` entry (the seal and phone say "still being created at the store" and the entry is filled in, with a second `mark_signed`, when the store answers); an error is `mode: "failed"`; if no store produced or is still producing a cart nothing is signed. The request handler no longer blocks the event loop. Reset starts a background run (checked: after `POST /api/admin/reset` the 12 verdicts were back in 25 s). Measured on the real app and stores: limit dragged, then Sign at once: **3.9 s** end to end, two real carts. Tests with a slow Senso and a slow store: the request returns in under 10 s (about 8 s worst case), a late store is added to the seal, one slow store does not hold back the others. (Two more real carts exist from that run; reset done.) Asked STORE (NOTES/STORE.md) for optional `timeout_s`/`tries` on `create_carts`, and told ENGINE (NOTES/ENGINE.md) that seal carts may be pending or failed and that `signature.senso` is now a dict.
+2. **Identity gate:** `PERSONA_REQUIRED=1` in the keys file makes `sign_sheet` refuse with `identity not verified` (code `identity_not_verified`, HTTP 403) until Persona's backend says the signer's inquiry is approved or completed. The refusal does not burn the request's `seq`, so the **same signed request** is accepted after approval. Rehearsal control, not on the phone's path: `POST /api/admin/persona/simulate {"action": "decline" | "approve"}` (Persona's Simulate Actions on the sandbox inquiry, checked live: declined, then approved, status read back from Persona each time). The signature record carries `persona` {inquiry_id, status, verified, sandbox: true, label} read from Persona's backend at signing; the phone's seal shows "identity checked (sandbox) · inq_… · approved · sandbox". Test: refuse, decline, refuse, approve, the same request goes through, three refusals and the signature each wrote a receipt call. **Default is off**, not on: with it on, a signer has to finish Persona's hosted page (selfie/ID steps even in sandbox) or someone has to use the simulate route, so I do not call the flow reliable for a stranger's phone on stage. To use it in the demo: set `PERSONA_REQUIRED=1`, tap "check identity" on the phone's sheet, then approve with `curl -X POST <tunnel>/api/admin/persona/simulate -d '{"action":"approve"}' -H 'content-type: application/json'` (decline first to show the refusal). Nothing reads `PERSONA_PRODUCTION_API_KEY` (a test checks the source).
+3. **Phone** now opens on the sheet: six items with pick, store and price, one short line per limit with "from the order" / "from the home" / "changed from the order" (tap shows the order's sentence once ENGINE's `from_order` is in `/api/state`; until then it says "set before the order"), the total, checks line (identity, Senso: "Checked against the order: 12 of 12 verified"), the hash, and the Sign button. Tabs: Sheet, Lines (strike), "Adjust a limit" (collapsed rows; one slider at a time; "Back to the order" when `from_order.matches` is false). Same type, hairlines and single accent as the big screen. Driven in a browser earlier at iPhone width; I re-verify the redesigned page once `from_order` lands.
+4. **"hip surgery":** removed from `senso_docs/order.txt` and `handout.txt` ("after surgery" only), documents reloaded in Senso, 13 of 13 sentences still `verified`. Note: `order.txt` shifted by four characters, so any character offsets ENGINE cached from it must be re-derived (no `data/order/derived.json` existed yet).
+5. **Receipts, egress:** a `receipt()` hook is in `signoff/sign/api.py` and called for every signed request, accepted or refused; it calls `signoff.engine.receipts.add/record/append` if one exists, so it is silent until ENGINE tells me the real function (NOTES/SIGN.md). Enrolment, Persona result and Senso runs are not receipted yet; egress calls wait for STORE. Firedrill `apply` still `native_participant_capacity_exceeded` (loop running).
+## 12:42 from SIGN — takeover closed on my side, cart totals compared, seal race guarded (committed, 147 tests green)
+1. **Enrolment code.** Exact path: `GET /api/issuer/enroll-code` → `{"code": "a1b2c3", "enrolled": false, "url": "<PUBLIC_URL>/phone/?code=a1b2c3"}`. Note the app's `admin_guard` middleware only looks at non-GET methods, so a GET route there is not covered: the route guards itself (403 `local_only` for a request with `cf-connecting-ip`, `cf-ray` or `x-forwarded-for`, or a non-loopback client address, unless `X-Admin-Token` equals `SIGNOFF_ADMIN_TOKEN`; test included). Please add the path to your list anyway for the record. `POST /api/issuer/enroll` now needs `code` in the body: missing or wrong → 403 `bad_code`; five wrong codes lock enrolment for 60 s (429 `code_locked`). The code is six hex characters, kept in `signoff/sign/_runtime/keystore.json`, and `POST /api/admin/reset` makes a new one (the old one is dead; tested). SCREEN: draw `url` as text or a QR on the laptop's screen. The phone reads `code` from its URL (prefilled, editable) and removes it from the address bar after enrolling. The phone's reset links are gone ("To start over, reset from the laptop"). Nothing on the phone calls an admin route.
+2. **Seal says who vouches.** `signature.name` is now "Dana (self-declared)", or "Dana (identity checked, sandbox)" when Persona's backend says the signer's inquiry is approved/completed at signing time; `signature.name_basis` carries the short form and `signature.signer.name` the bare name. ENGINE's seal text ("Signed by <name> at …") therefore shows it. I did not wire the Relay claim from the AIRBYTE thread: tell me the call to read it and I add it to the same test.
+3. **Seal race.** The picks and the hash check now come from one state snapshot (`state["sheet_hash"]`), and `mark_signed(signature, carts, signed_hash=…)` is called with the signed hash when ENGINE's function accepts that argument (checked by `inspect`); a 409 from it becomes the refusal `sheet_moved` ("the sheet changed while signing; nothing is signed", with the cart links already made listed) and the same signed request may be sent again. Test: the sheet moves during cart creation, nothing is signed. If ENGINE exposes the signed picks for a hash, I will switch to it.
+4. **Cart total.** After the carts come back each store's `total_cents` is compared with the sum of that store's picked prices in the signed state; a difference sets `total_differs: true`, `signed_total_cents` and `note: "store total differs: signed $A, store $B"` on that cart, which the phone's seal shows in red. Nothing is re-priced. (On the real run earlier both stores matched to the cent: parentgiving 22,897 and carex 7,581.) SCREEN: the seal's cart list should show `note` when `total_differs` is true.
+Order done as you asked: sign-tap cap, 1, 2, 3, then phone (review-and-sign, done and committed; I have not yet re-driven the final page in a browser) and the Persona gate (done). Firedrill: retry loop still running, no other time on it.
+## AIRBYTE 12:32 — Relay is built; one thing a human must try
+- Built: `signoff/relay/` (core.py, api.py, `node/relay.mjs` with `@persona/sdk-node` 0.5.1; run `npm install` in `signoff/relay/node/` on a fresh checkout, `node_modules/` is already ignored), `web/relay/index.html` (embedded widget `@persona/relay` 0.2.2 from jsDelivr; no bundler), `tests/relay/` (live test passes). Tell SIGN is in `NOTES/SIGN.md`: `signoff.relay.status()` for the `relay` key.
+- Server path run end to end against the sandbox key: create session, issue Privacy Pass, redeem claim. Claim payload fields: `claim_type`, `claim_result` ("passed"), `methodology[]` (each `method` "live_selfie", `result`); redemption also returns `tokenConsumed`. The signature record gets only `{claim_type, result, sandbox, at}`.
+- Honest limits: (1) in sandbox Persona simulates the claim, so redemption returns "passed" even when nobody has used the widget; the server cannot tell. The "a person tapped" evidence is the widget's `onComplete` on the phone, which only the page sees. (2) I could not complete the widget step in the headless preview browser (the checkbox renders and posts to Persona, no verification step opened; it probably needs a camera), so `onComplete` is untested. The page has a quiet "I finished the check" fallback that redeems anyway. Someone should tap it once on a real phone over the tunnel before this is shown. (3) A 30-minute session; the key is read through config and only handed to the node helper's environment; the production key is never read.
+## 12:25 from SCREEN
+- On `stream/SCREEN` (main merged at 0162dab), in your order:
+  1. Motion on the flow view: on open the dots leave the stores and pass the gates (about 2.4 s); a moved limit slides
+     its tick, dots change side as it passes, the ring glides, the pick card cross-fades, numbers roll; the signature
+     block fills on signing. The frame (headers, rulers, ticks, card outlines) is on screen from the first frame.
+     Motion is off for reduced motion, `?motion=0`, and automated browsers (`navigator.webdriver`), so a scripted
+     screenshot gets the final state; `?motion=1` forces it for recording.
+  2. Pick card: per limit "the order says" (from `limit.from_order.quote`, number marked, Senso tag from
+     `version_id`/`content_id`, "changed from the order" when `matches` is false), the margin bar, then "from the home"
+     and "the store states". Until `from_order` arrives only the store's side shows. Ruler labels say "from the order"
+     (click: the sentence) or "from the home".
+  3. Drawn only when the key exists: `asked` (rows on the pick card, all Q and A behind the click), `planted` (a red
+     diamond in Read, click: "Instruction found · no path to the pick"), reader chip from `/api/gate/status` (live now:
+     "reader: reference · small model switched back", numbers behind the click), `/api/egress` as one item
+     "0 limits in N messages to stores" with the grid behind the click, `receipts` strip in the signature block.
+  4. Signed block: signer, time, short hash, "Covers limits, quotes, picks, total", Persona status with "sandbox", cart links.
+- Only the reader chip has been seen with real data. `from_order`, `asked`, `planted`, `receipts` and `/api/egress` are not on
+  main yet; I drew them from placeholder values at `/?fixture=1&sample=1#L2` (fixture only, never applied to engine data).
+  When they land, please tell me if a shape differs from the contract's.
+- `/api/egress` rows: I read `kind`, `recipient`, `fact_classes`; summary: `to_stores`, `limits_in_store_messages`,
+  `home_measurements_in_store_messages`, `people_in_store_messages`, `messages`, `checked_by` (from stream/STORE's code).
+
+## 12:35 from SCREEN (your 12:30 additions)
+- (a) "Change this limit from here" is a quiet link under the rulers. It posts a `set_limit` to `/api/issuer/request`
+  with 64 random bytes as the signature and shows the server's answer in place. Seen on port 8003 with no key enrolled:
+  "Refused · 401 · no issuer key is enrolled"; the limit stayed 300 and the state version did not move. With a key
+  enrolled the server should answer 403 "the signature does not match the enrolled key"; I have not seen that one.
+  If the server ever accepts, the screen says "Accepted · 200" in red. `/?forge=1#L1` presses it once on load.
+- (b) When no key is enrolled the signature block asks `GET /api/issuer/enroll-code` and shows `code` and the phone link
+  (`link`, `url`, `phone_url` or `phone`, whichever the route returns). The route is not on main yet (404 here), so this
+  is undrawn. After signing: the signer line carries `seal.signer_label` / `seal.identity` / `signature.identity` if the
+  state has one, else "identity checked (sandbox)" when Persona verified, else "self-declared"; `seal.covers` is listed
+  when present. "store total differs" shows when a cart has `signed_total_cents` different from `total_cents`.
+  SIGN: tell me the real key names if they differ.

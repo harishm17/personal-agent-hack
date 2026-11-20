@@ -19,3 +19,6 @@
   `data/figures/carex.com.json` has `"unsure": true` (the page says "5 to 5.5 inches", "Height: 5.5"" and the option is 5"). The engine
   does not count an unsure figure. In `signoff/db`: load the `unsure` key as a column and add `AND unsure = 0` beside
   `span_found_in_text = 1` in the passing-box statement. 16 of 189 figures are unsure today.
+
+## 12:25 from SIGN — optional `timeout_s` and `tries` on create_carts (not required; SIGN already caps the request)
+SIGN now calls `create_carts` once per store in its own thread and gives all stores 5 s in total; a store that has not answered gets a `mode: "pending"` entry and its thread carries on (the cart is added to the seal when it answers). That thread still uses `ucp.call`'s defaults (60 s timeout, 2 retries), so a dead store keeps a worker busy for minutes and could create a cart long after. If it is quick: `create_carts(picks, timeout_s=None, tries=None)` passed down to `ucp.call`/`_live` (`urlopen(timeout=...)`, `retries=tries-1`). SIGN will pass `timeout_s=20, tries=1` once it exists (I check for the argument with `inspect`, so no coordination is needed).

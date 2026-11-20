@@ -68,7 +68,7 @@ def start(reference_id: str | None = None) -> dict:
     if reference_id:
         body["data"]["attributes"]["reference-id"] = reference_id
     try:
-        response = httpx.post(API + "/inquiries", headers=_headers(), json=body, timeout=15)
+        response = httpx.post(API + "/inquiries", headers=_headers(), json=body, timeout=6)
         if response.status_code >= 400:
             return {**record(), "status": "error", "link": None, "label": "identity not checked (Persona refused: HTTP %d)" % response.status_code,
                     "detail": _first_error(response)}
@@ -90,12 +90,30 @@ def status() -> dict:
     if not inquiry_id or not configured():
         return current
     try:
-        response = httpx.get("%s/inquiries/%s" % (API, inquiry_id), headers=_headers(), timeout=15)
+        response = httpx.get("%s/inquiries/%s" % (API, inquiry_id), headers=_headers(), timeout=6)
         if response.status_code >= 400:
             return {**current, "detail": "Persona answered HTTP %d" % response.status_code}
         return _apply(inquiry_id, response.json()["data"]["attributes"]["status"])
     except (httpx.HTTPError, KeyError, ValueError) as error:
         return {**current, "detail": type(error).__name__}
+
+
+def simulate(action: str) -> dict:
+    """Sandbox rehearsal control: `approve` or `decline` the current inquiry through Persona's Simulate Actions
+    (docs "Integration testing"), then read the status back from Persona. Sandbox only: it uses PERSONA_API_KEY,
+    the sandbox key, and nothing else."""
+    kind = {"approve": "approve_inquiry", "decline": "decline_inquiry"}.get(action)
+    current = record()
+    if kind is None or not current.get("inquiry_id") or not configured():
+        return {**current, "simulated": False, "reason": "needs a started inquiry and action approve or decline"}
+    try:
+        r = httpx.post("%s/inquiries/%s/perform-simulate-actions" % (API, current["inquiry_id"]), headers=_headers(),
+                       json={"meta": {"simulate-actions": [{"type": kind}]}}, timeout=10)
+        if r.status_code >= 400:
+            return {**current, "simulated": False, "reason": "Persona answered HTTP %d" % r.status_code}
+    except httpx.HTTPError as error:
+        return {**current, "simulated": False, "reason": type(error).__name__}
+    return {**status(), "simulated": True}
 
 
 def _first_error(response: httpx.Response) -> str:

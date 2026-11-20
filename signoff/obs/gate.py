@@ -29,8 +29,42 @@ _thread: threading.Thread | None = None
 _sdk = None
 _user = None
 _override: bool | None = None
+HISTORY = ROOT / "data" / "egress" / "gate_history.json"
 _s = {"value": False, "arm": "sonnet", "changed_at": None, "polled_at": None, "source": "statsig", "error": None,
       "exists": None, "history": [], "refused": None}
+
+
+def _save_history() -> None:
+    try:
+        HISTORY.parent.mkdir(parents=True, exist_ok=True)
+        HISTORY.write_text(json.dumps(_s["history"]))
+    except Exception:  # noqa: BLE001
+        pass
+
+
+try:
+    _s["history"] = json.loads(HISTORY.read_text())[-20:] if HISTORY.exists() else []
+except Exception:  # noqa: BLE001
+    pass
+
+
+def decision(evid: dict, value: bool) -> dict:
+    """The screen's words, decided by code from the evidence. 'kept' needs no difference between the readers; stating
+    more products is not a reason."""
+    v = verdict_from(evid)
+    ever_on = any(h["value"] for h in _s["history"])
+    d = (evid or {}).get("disagreements") or {}
+    if v is None:
+        return {"decision": None, "text": None}
+    if v == "switch back":
+        name = "switch back advised (the gate is on)" if value else ("switched back" if ever_on else "not adopted")
+        text = ("%s: the small reader read %d figure(s) differently from the reference and counted %d the reference did not, "
+                "although it accepted %d more products (%d against %d)." % (
+                    name.capitalize(), d.get("different_value", 0), d.get("small_only", 0), evid["small_accepts_more"],
+                    evid["products_accepted"]["sie-qwen"], evid["products_accepted"]["sonnet"]))
+        return {"decision": name, "text": text}
+    return {"decision": "kept" if value else "not adopted",
+            "text": "The small reader read every figure the same as the reference and counted none extra."}
 
 
 def _arm(value: bool) -> str:
@@ -42,33 +76,114 @@ def _engine():
     return state
 
 
-def _stating_every_figure(arm: str) -> dict:
-    """Pool products (product and line pairs, as the engine counts) whose deciding figures the arm's own run states
-    with the quote found in the text and not marked unsure."""
+def _arm_figures(arm: str) -> list[dict]:
+    """The arm's own figures, spans re-checked against the pool text exactly as the engine does."""
+    from signoff.engine import rules
+    eng = _engine()
+    folder = ROOT / "data" / "figures" / ("_runs/" + ARMS[arm][1] if arm != "sonnet" else "")
+    figs = eng._read_dir(folder) if arm != "sonnet" else eng._read_dir(ROOT / "data" / "figures")
+    text = {(p["store"], p["product_id"]): p.get("text") for p in eng._s["pool"]}
+    for f in figs:
+        f["span_found_in_text"] = rules.span_found(f, text.get((f["store"], f["product_id"])))
+    return figs
+
+
+_arm_cache: dict = {}
+
+
+def _arm_state(arm: str) -> dict:
+    """What the engine's own rules (rules.build_state) give with this arm's figures on the current limits."""
+    import copy
+    from signoff.engine import rules
+    eng = _engine()
+    key = (arm, eng._s.get("version"))
+    if key not in _arm_cache:
+        with eng._lock:
+            sheet, pool, answers, strikes, mode = (copy.deepcopy(eng._s["sheet"]), eng._s["pool"], eng._s["answers"],
+                                                   copy.deepcopy(eng._s["strikes"]), eng._s["mode"])
+        st = rules.build_state(sheet, pool, _arm_figures(arm), answers, strikes, mode)
+        picks = {l["line_id"]: next((c for c in l["candidates"] if c["picked"]), None) for l in st["lines"]}
+        _arm_cache.clear()
+        _arm_cache[key] = {"counts": st["counts"], "picks": {k: (v and {"title": v["product"]["title"], "store": v["product"]["store"],
+                           "price_cents": v["product"]["price_cents"]}) for k, v in picks.items()}}
+    return _arm_cache[key]
+
+
+def _title(store: str, product_id: str) -> str:
     try:
-        sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
-        need = {l["id"]: {t["figure"] for lim in l["limits"] for t in lim["terms"] if t["source"] == "store"}
-                for l in sheet["lines"]}
-        run = ROOT / "data" / "figures" / "_runs" / ARMS[arm][1]
-        have: dict = {}
-        for f in run.glob("*.json"):
-            for r in json.loads(f.read_text()):
-                if r.get("span_found_in_text") and not r.get("unsure"):
-                    have.setdefault((r["store"], r["product_id"]), set()).add(r["figure"])
-        total = ok = 0
-        for f in (ROOT / "data" / "pool").glob("*.json"):
-            for p in json.loads(f.read_text()):
-                for lid in p["line_ids"]:
-                    total += 1
-                    ok += need[lid] <= have.get((p["store"], p["product_id"]), set())
-        return {"pairs": total, "state_every_figure": ok}
+        return next(p["title"] for p in _engine()._s["pool"] if p["store"] == store and p["product_id"] == product_id)
+    except Exception:  # noqa: BLE001
+        return product_id
+
+
+def _same(a: dict, b: dict) -> bool:
+    return (a.get("low"), a.get("high")) == (b.get("low"), b.get("high"))
+
+
+def _shown(f: dict) -> str:
+    lo, hi, u = f.get("low"), f.get("high"), f.get("unit") or ""
+    return ("%g %s" % (lo, u)) if lo == hi else ("%g to %g %s" % (lo, hi, u))
+
+
+def disagreements() -> dict:
+    """Where the small reader and the reference reader differ, by code, on the same product and figure."""
+    ref, small = _arm_figures("sonnet"), _arm_figures("sie-qwen")
+
+    def idx(rows):
+        return {(r["store"], r["product_id"], r["figure"]): r for r in rows}
+
+    def counts(r):
+        return bool(r and r.get("span_found_in_text") and not r.get("unsure"))
+
+    a, b = idx(ref), idx(small)
+    different, small_only, ref_only = [], [], []
+    for k in sorted(set(a) | set(b)):
+        ra, rb = a.get(k), b.get(k)
+        row = {"store": k[0], "product_id": k[1], "product": _title(k[0], k[1]), "figure": k[2]}
+        if counts(ra) and counts(rb) and not _same(ra, rb):
+            different.append({**row, "quote": rb["quote"], "reference_read": _shown(ra), "small_read": _shown(rb),
+                              "same_quote": ra["quote"] == rb["quote"]})
+        elif counts(rb) and not counts(ra):
+            small_only.append({**row, "quote": rb["quote"], "small_read": _shown(rb),
+                               "reference": ("did not count it: " + (ra.get("unsure_reason") or "marked unsure")) if ra else "did not report it"})
+        elif counts(ra) and not counts(rb):
+            ref_only.append({**row, "quote": ra["quote"], "reference_read": _shown(ra)})
+    return {"different_value": different, "small_only": small_only, "reference_only": ref_only}
+
+
+def evidence() -> dict:
+    """The numbers that decide keep or switch back: products accepted by each arm (the engine's own rules), how many
+    more the small reader accepted, and every figure where the two disagree."""
+    out = {}
+    try:
+        ref, small = _arm_state("sonnet"), _arm_state("sie-qwen")
+        d = disagreements()
+        n_ref, n_small = ref["counts"]["state_every_figure"], small["counts"]["state_every_figure"]
+        ex = next((x for x in d["different_value"] if x["figure"] == "overall_width"), (d["different_value"] or [None])[0])
+        out = {"products_accepted": {"sonnet": n_ref, "sie-qwen": n_small, "of": ref["counts"]["products_found"]},
+               "small_accepts_more": n_small - n_ref,
+               "inside_limits": {"sonnet": ref["counts"]["inside_limits"], "sie-qwen": small["counts"]["inside_limits"]},
+               "picks_differ_on": [l for l in ref["picks"] if (ref["picks"][l] or {}).get("title") != (small["picks"][l] or {}).get("title")],
+               "disagreements": {k: len(v) for k, v in d.items()}, "figures_in_disagreement": d,
+               "example": ex and {**ex, "sentence": "On %s the quote %r was read as %s by the reference and %s by the small reader." % (
+                   ex["product"], ex["quote"], ex["reference_read"], ex["small_read"])}}
     except Exception as e:  # noqa: BLE001
-        return {"error": type(e).__name__}
+        out = {"error": type(e).__name__ + ": " + str(e)[:140]}
+    return out
+
+
+def verdict_from(evid: dict) -> str | None:
+    """Code decides. The small reader is kept only if it never reads a figure differently from the reference and never
+    counts a figure the reference does not. Stating more products is not a reason to keep it."""
+    dis = (evid or {}).get("disagreements")
+    if dis is None:
+        return None
+    return "switch back" if (dis["different_value"] or dis["small_only"]) else "kept"
 
 
 def outcome() -> dict:
-    """Both arms side by side from the engine's `readers` block (agreement, cost, seconds) plus each arm's own count of
-    products stating every figure; `deciding` is the reader the engine uses now."""
+    """Both arms side by side from the engine's `readers` block (agreement, cost, seconds) plus each arm's products accepted
+    under the engine's rules; `deciding` is the reader the engine uses now."""
     out = {"deciding": None, "arms": {}}
     try:
         st = _engine().get_state()
@@ -79,10 +194,12 @@ def outcome() -> dict:
         by = {r["extractor"]: r for r in rd.get("readers", [])}
         for arm, (_, _, rid) in ARMS.items():
             r = by.get(rid) or {}
+            c = _arm_state(arm)["counts"]
             out["arms"][arm] = {"reader": rid, "agreement": r.get("agreement"), "figures_counted": r.get("figures_counted"),
                                 "same_as_reference": r.get("same_as_reference"), "cost": r.get("cost"),
                                 "seconds_per_product_median": r.get("seconds_per_product_median"),
-                                "products_read": r.get("products_read"), **_stating_every_figure(arm)}
+                                "products_read": r.get("products_read"), "pairs": c["products_found"],
+                                "state_every_figure": c["state_every_figure"]}
         out["note"] = rd.get("note")
     except Exception as e:  # noqa: BLE001
         out["error"] = type(e).__name__ + ": " + str(e)[:120]
@@ -98,6 +215,8 @@ def _read_gate() -> bool:
         o = StatsigOptions()
         o.environment = "development"
         _sdk = Statsig(config.env("STATSIG_SERVER_SECRET"), o)
+        obs.egress("statsig", "gate reader: sync of gate rules, then one check of sie_reader per poll (this row once)",
+                   {"gate": GATE, "user_id": "signoff-demo"}, ["none"])
         _sdk.initialize().wait()
         _user = StatsigUser("signoff-demo")
     g = _sdk.get_feature_gate(_user, GATE)
@@ -108,6 +227,7 @@ def _read_gate() -> bool:
 def _apply(value: bool) -> None:
     """Switch the engine's reader to the arm and record before and after. Called only when the value changed."""
     arm = _arm(value)
+    obs.egress("statsig", "gate value changed: exposure event", {"gate": GATE, "value": value, "user_id": "signoff-demo"}, ["none"])
     before = outcome()
     try:
         _engine().set_reader(ARMS[arm][0])
@@ -121,23 +241,10 @@ def _apply(value: bool) -> None:
     now = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
     _s.update(value=value, arm=arm, changed_at=now)
     _s["history"] = (_s["history"] + [{"at": now, "value": value, "arm": arm}])[-20:]
+    _save_history()
     obs.set_experiments([{"key": GATE, "variant": arm}])
     obs.tool_call("gate.changed", {"gate": GATE, "value": value, "arm": arm, "source": _s["source"]},
-                  {"before": before, "after": after, "kept": _verdict(before, after)}, True, 0.0)
-
-
-def _verdict(before: dict, after: dict) -> str | None:
-    """'kept' when the new reader agrees with the reference on at least 95% of figures and states every figure on at
-    least as many products; otherwise 'switch back'. Code decides, from the numbers above."""
-    try:
-        a = after["arms"][_s["arm"]]
-        base = after["arms"]["sonnet"]
-        if _s["arm"] == "sonnet":
-            return None
-        ok = (a["agreement"] or 0) >= 0.95 and (a["state_every_figure"] or 0) >= (base["state_every_figure"] or 0)
-        return "kept" if ok else "switch back"
-    except Exception:  # noqa: BLE001
-        return None
+                  {"before": before, "after": after, "decision": decision(evidence(), value)["decision"]}, True, 0.0)
 
 
 def poll_once() -> None:
@@ -182,10 +289,13 @@ def set_override(value: bool | None) -> None:
 
 def status() -> dict:
     out = outcome()
+    evid = evidence()
+    dec = decision(evid, _s["value"])
     return {"gate": GATE, "value": _s["value"], "arm": _s["arm"], "deciding_reader": out.get("deciding"),
+            "decision": dec["decision"], "decision_text": dec["text"], "evidence": evid,
             "source": "local override" if _override is not None else "statsig",
             "gate_exists_in_statsig": _s["exists"], "changed_at": _s["changed_at"], "history": _s["history"],
             "polling": bool(_thread and _thread.is_alive()), "poll_seconds": POLL_SECONDS,
             "last_polled_ago_s": round(time.time() - _s["polled_at"], 1) if _s["polled_at"] else None,
-            "verdict": _verdict(out, out), "refused": _s["refused"], "error": _s["error"],
+            "verdict": verdict_from(evid), "refused": _s["refused"], "error": _s["error"],
             "outcome": {"arms": out.get("arms"), "note": out.get("note"), "signed": out.get("signed")}}

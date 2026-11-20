@@ -8,10 +8,10 @@ const base = process.env.SCREEN_URL || "http://localhost:8003";
 const port = 9333 + Math.floor(Math.random() * 500);
 const sep = pathq.includes("?") ? "&" : "?";
 const [path, hash = ""] = pathq.split("#");
-const url = `${base}${path}${sep}live=0${hash ? "#" + hash : ""}`;
+const url = `${base}${path}${sep}live=0&motion=1${hash ? "#" + hash : ""}`;
 mkdirSync(outdir, { recursive: true });
 const chrome = spawn("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", ["--headless=new", "--disable-gpu",
-  "--hide-scrollbars", "--window-size=1920,1080", `--remote-debugging-port=${port}`, `--user-data-dir=/tmp/signoff-frames-${port}`, "about:blank"],
+  "--hide-scrollbars", `--window-size=${process.env.SIZE || "1440,810"}`, `--remote-debugging-port=${port}`, `--user-data-dir=/tmp/signoff-frames-${port}`, "about:blank"],
   { stdio: "ignore" });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 try {
