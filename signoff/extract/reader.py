@@ -129,10 +129,37 @@ def ask_claude_cli(model, system, user, timeout=180.0):
     return body.get("result") or "", dict(body.get("usage") or {}, cost_usd=body.get("total_cost_usd"))
 
 
+def ask_anthropic_api(model, system, user, max_tokens=16000):
+    """One Messages API call through the Anthropic SDK. Used only when `ANTHROPIC_API_KEY` exists.
+    No sampling parameters (current models reject them); low effort, because the task is a short read.
+    A policy decline is re-run by the server on its default fallback model; if it still declines, raise."""
+    import anthropic
+    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY"), timeout=60.0)
+    response = client.beta.messages.create(
+        model=model, max_tokens=max_tokens, system=system, messages=[{"role": "user", "content": user}],
+        output_config={"effort": "low"}, betas=["server-side-fallback-2026-07-01"], fallbacks="default")
+    if response.stop_reason == "refusal":
+        raise RuntimeError("the model declined this request")
+    text = "".join(block.text for block in response.content if block.type == "text")
+    usage = {"input_tokens": response.usage.input_tokens, "output_tokens": response.usage.output_tokens,
+             "via": "api", "served_by": response.model}
+    return text, usage
+
+
+def ask_anthropic(model, system, user):
+    """The API when there is a key, else `claude -p`. An API failure of any kind falls back to `claude -p`."""
+    if config.have("ANTHROPIC_API_KEY") and config.env("SIGNOFF_ANTHROPIC_VIA") != "cli":
+        try:
+            return ask_anthropic_api(model, system, user)
+        except Exception:  # noqa: BLE001  (bad key, a parameter the model rejects, the network: use the backstop)
+            pass
+    return ask_claude_cli(model, system, user)
+
+
 def ask(model, system, user):
     """(reply text, usage, extractor name)."""
     if model.startswith("claude"):
-        text, usage = ask_claude_cli(model, system, user)
+        text, usage = ask_anthropic(model, system, user)
         return text, usage, "anthropic:%s" % model
     if model.startswith("sie:"):
         text, usage = ask_openai_style(SIE_URL, config.env("SIE_API_KEY"), model[4:], system, user)
