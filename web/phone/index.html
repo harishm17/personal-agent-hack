@@ -34,6 +34,8 @@
   .lim { display:block; width:100%; text-align:left; border:0; background:none; padding:0; font:400 14px/20px var(--f); color:var(--t2); min-height:24px; }
   .lim b { color:var(--t1); font-weight:500; }
   .lim .src { color:var(--t3); }
+  .pref { padding:4px 0 4px 10px; margin-top:4px; border-left:2px dotted var(--t3); color:var(--t2); font-size:14px; }
+  .pref .src { color:var(--t3); }
   .lim.changed .src { color:var(--t1); font-weight:500; text-decoration:underline; text-underline-offset:3px; }
   .quote { margin:4px 0 0; padding-left:8px; border-left:1px solid var(--line); color:var(--t2); overflow-wrap:anywhere; }
   .total { font:500 20px/28px var(--f); }
@@ -272,7 +274,21 @@ function limitRowC(l) {
   return `<button class="lim ${changed ? "changed" : ""}" data-lim="${esc(l.id)}" aria-expanded="${open}">${esc(label)} <b class="num">${fmt(l.bound)} ${esc(l.unit)}</b> <span class="src">· ${esc(src)}</span></button>` +
     (open ? `<div class="quote">${esc(quote)}</div>` : "");
 }
-function ruleText(c) { const r = c.pick_rule; return r ? "Pick rule: " + (typeof r === "string" ? r : (r.label || r.id || JSON.stringify(r))) : ""; }
+/* ordering-and-preferences:start */
+/* the ordering the shopper chose, in the approver's words; the id and label are the signed ones, who set it is read from the state only when it is the same rule */
+function ruleText(c) {
+  const r = c.pick_rule; if (!r) return "";
+  const label = typeof r === "string" ? r : (r.label || r.id || JSON.stringify(r)), id = typeof r === "string" ? r : r.id;
+  const sr = state && state.sheet && state.sheet.pick_rule;
+  return sr && sr.id === id && sr.set_by === "shopper" ? shopperName() + " asked for " + label : "Pick rule: " + label;
+}
+/* a preference: the same shape as a limit, shown quietly and never adjustable; it never rejects a product */
+function sheetPref(id) { for (const line of state.sheet.lines) for (const p of line.preferences || []) if (p.id === id) return p; return null; }
+function prefRowC(p) {
+  const sp = sheetPref(p.id), word = (sp && sp.label) || OPS[p.op] || p.op;
+  return `<div class="pref">prefers ${esc(word)} <b class="num">${fmt(p.bound)} ${esc(p.unit || "")}</b> <span class="src">· a preference, not a ${esc(LIM())}</span></div>`;
+}
+/* ordering-and-preferences:end */
 function itemCard(L, c) {
   const p = L.pick;
   const head = `<div class="row"><span class="need">${esc(L.need)}</span><span class="num">${p && L.status !== "pick_up" ? money(p.price_cents * (p.quantity || 1)) : ""}</span></div>`;
@@ -285,12 +301,13 @@ function itemCard(L, c) {
     body = `<div class="pick">${esc(title)}</div><div class="sub">${esc(p.store)}${esc(variant)} · × ${esc(p.quantity || 1)}${p.currency ? " · " + esc(p.currency) : ""}</div>`;
   }
   const limits = (L.limits || []).map(limitRowC).join("");
+  const prefs = (L.preferences || []).map(prefRowC).join("");
   const why = p && L.status !== "pick_up" ? `<details data-why="${esc(L.line_id)}" ><summary>Why this one</summary>
       ${(p.checks || []).length ? `<ul class="plain">${p.checks.map((k) => `<li>${esc(k.expr)}</li>`).join("")}</ul>` : ""}
       ${(p.quotes || []).map((q) => `<div class="quote">the store states: “${esc(q)}”</div>`).join("")}
       ${p.delivery && p.delivery.quote ? `<div class="quote">delivery: “${esc(p.delivery.quote)}”${p.delivery.need_by ? " · needed by " + esc(p.delivery.need_by) : ""}</div>` : ""}
       ${(L.struck || []).length ? `<div class="sub">struck here: ${esc(L.struck.join(", "))}</div>` : ""}</details>` : (L.struck || []).length ? `<div class="sub">struck here: ${esc(L.struck.join(", "))}</div>` : "";
-  return `<div class="item">${head}<div class="stack">${body}</div><div class="stack">${limits}</div>${why}</div>`;
+  return `<div class="item">${head}<div class="stack">${body}</div><div class="stack">${limits}${prefs}</div>${why}</div>`;
 }
 const openWhy = new Set();
 
