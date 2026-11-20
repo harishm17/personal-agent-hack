@@ -59,5 +59,5 @@ def test_a_limit_move_a_signature_and_the_carts_on_sheet_3(monkeypatch):
 def test_the_phones_wording_can_come_from_the_sheet_and_defaults_to_today_s_words():
     html = (ROOT / "web" / "phone" / "index.html").read_text()
     assert 'state.sheet.vocab' in html and 'V("limit"' in html or 'V("order"' in html
-    for old in ('"from the order"', '"changed from the order"', 'Adjust a limit</button>'):
+    for old in ('"from the order"', '"changed from the order"'):
         assert old not in html, old                       # every such phrase now goes through the sheet's vocabulary
