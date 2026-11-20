@@ -15,9 +15,11 @@ def raw_path(store: str, query: str, raw_dir: pathlib.Path = RAW) -> pathlib.Pat
 
 
 def _pool_rows() -> list:
+    from signoff.store import sheetctx
     out: list = []
-    for f in sorted((ROOT / "data" / "pool").glob("*.json")):
-        out.extend(json.loads(f.read_text()))
+    for d in sheetctx.all_pool_dirs():
+        for f in sorted(d.glob("*.json")):
+            out.extend(json.loads(f.read_text()))
     return out
 
 
@@ -35,15 +37,17 @@ def search_catalog(store: str, query: str) -> dict:
 
 
 def ask_business(store: str, query: str) -> dict:
-    cached = ROOT / "data" / "store_answers" / "asked" / f"{store}.json"
-    if cached.exists():  # a question asked before (signoff.store.asked) is answered with its saved reply
-        hit = next((r for r in json.loads(cached.read_text()) if r["question"] == query), None)
-        if hit:
-            return {"answer": {"plain": hit["reply"]}, "mode": "replay", "saved_question": hit["question"]}
-    f = ANSWERS / f"{store}.json"
-    if not f.exists():
+    from signoff.store import sheetctx
+    for d in sheetctx.all_answer_dirs():  # a question asked before (signoff.store.asked) is answered with its saved reply
+        cached = d / "asked" / f"{store}.json"
+        if cached.exists():
+            hit = next((r for r in json.loads(cached.read_text()) if r["question"] == query), None)
+            if hit:
+                return {"answer": {"plain": hit["reply"]}, "mode": "replay", "saved_question": hit["question"]}
+    found = [d / f"{store}.json" for d in sheetctx.all_answer_dirs() if (d / f"{store}.json").exists()]
+    if not found:
         raise RuntimeError(f"replay: no saved answer for {store}")
-    rec = json.loads(f.read_text())
+    rec = json.loads(found[0].read_text())
     rec = rec[0] if isinstance(rec, list) else rec
     return {"answer": {"plain": rec["answer"]}, "mode": "replay", "saved_question": rec.get("question")}
 

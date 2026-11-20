@@ -8,7 +8,9 @@ import atexit
 import json
 import datetime
 import logging
+import pathlib
 import queue
+import sys
 import threading
 import time
 import uuid
@@ -84,11 +86,52 @@ def set_experiments(experiments: list[dict] | None) -> None:
         pass
 
 
+_DEFAULT_LOG = pathlib.Path(__file__).resolve().parent.parent.parent / "data" / "obs" / "events.jsonl"
+LOG = _DEFAULT_LOG
+_log_lock = threading.Lock()
+
+
+def _log_local(name: str, ms: float, ok: bool, error: str | None) -> None:
+    """Every tool-call event also goes to a local JSON-lines log (name, at, duration_ms, success), whatever Amplitude does."""
+    try:
+        if LOG == _DEFAULT_LOG and "pytest" in sys.modules:  # unit tests of other streams must not write the real log
+            return
+        end = datetime.datetime.now().astimezone()
+        row = {"name": name, "at": (end - datetime.timedelta(milliseconds=ms or 0)).isoformat(timespec="milliseconds"),
+               "ended_at": end.isoformat(timespec="milliseconds"), "duration_ms": round(float(ms or 0), 1), "success": bool(ok),
+               "session_id": _state.get("session_id"), "sheet_id": _state.get("sheet_id")}
+        if error:
+            row["error"] = str(error)[:200]
+        with _log_lock:
+            LOG.parent.mkdir(parents=True, exist_ok=True)
+            with LOG.open("a") as f:
+                f.write(json.dumps(row) + "\n")
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def recent(n: int = 200, session_id: str | None = None, sheet_id: str | None = None) -> list[dict]:
+    """The last n tool-call events from the local log, oldest first: {name, at, ended_at, duration_ms, success, session_id,
+    sheet_id[, error]}. `session_id` or `sheet_id` narrow it. Never raises."""
+    try:
+        with _log_lock:
+            lines = LOG.read_text().splitlines() if LOG.exists() else []
+        rows = [json.loads(l) for l in lines[-20000:] if l.strip()]
+        if session_id:
+            rows = [r for r in rows if r.get("session_id") == session_id]
+        if sheet_id:
+            rows = [r for r in rows if r.get("sheet_id") == sheet_id]
+        return rows[-n:]
+    except Exception:  # noqa: BLE001
+        return []
+
+
 def tool_call(name: str, input: dict | None = None, output=None, success: bool = True, latency_ms: float = 0.0,
               error: str | None = None) -> None:
     try:
         if _state["session_id"] is None:
             session("sheet1")
+        _log_local(name, latency_ms, success, error)
         _put(("tool", name, _clip(input), _clip(output), bool(success), float(latency_ms or 0.0), error))
     except Exception:  # noqa: BLE001
         pass
@@ -252,7 +295,7 @@ atexit.register(shutdown)
 
 
 def egress(recipient: str, purpose: str, payload=None, fact_classes=None, kind: str | None = None,
-           block_on_hit: bool = False) -> dict:
+           block_on_hit: bool = False, mask: list | None = None) -> dict:
     """Record one outbound message in the ledger (signoff/obs/egress.py). Never raises, never blocks; returns the row,
     whose `sealed_hits` lists any sealed value found in a payload to a store."""
-    return _egress_module.record(recipient, purpose, payload, fact_classes, kind, block_on_hit)
+    return _egress_module.record(recipient, purpose, payload, fact_classes, kind, block_on_hit, mask)

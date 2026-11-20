@@ -2,7 +2,8 @@
 
 Same rules as the engine (CONTRACT.md "Rules code decides"): a figure counts only with its quote found in the
 text; a spread uses the end that could fail; an adjustable range passes when the limit lies inside it; a missing
-figure fails; a struck product_key is out.
+figure fails; a figure in another unit than the limit fails; `==` needs the figure to equal the bound (a range passes when the
+bound lies inside it); a struck product_key is out.
 """
 import json
 
@@ -18,7 +19,10 @@ WHERE JSON_ARRAY_CONTAINS_STRING(p.line_ids, %(line_id)s)
   AND p.product_key NOT IN (SELECT product_key FROM strikes WHERE line_id = %(line_id)s)
 GROUP BY p.store, p.product_id, p.title, p.price_cents, p.product_key
 HAVING MIN(CASE WHEN f.figure IS NULL THEN 0
-                WHEN f.kind = 'adjustable' THEN l.shopper_sum + f.low <= l.bound AND l.bound <= l.shopper_sum + f.high
+                WHEN f.unit <> l.unit THEN 0
+                WHEN f.kind = 'adjustable' OR (l.op = '==' AND f.kind = 'spread')
+                     THEN l.shopper_sum + f.low <= l.bound + 1e-9 AND l.bound <= l.shopper_sum + f.high + 1e-9
+                WHEN l.op = '==' THEN ABS(l.shopper_sum + f.value - l.bound) < 1e-9
                 WHEN l.op = '>=' THEN l.shopper_sum + IF(f.kind = 'spread', f.low, f.value) >= l.bound
                 ELSE l.shopper_sum + IF(f.kind = 'spread', f.high, f.value) <= l.bound END) = 1
 ORDER BY p.price_cents, p.store, p.product_id
