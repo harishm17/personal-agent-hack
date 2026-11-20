@@ -121,6 +121,21 @@ def run(files, sheet, deciding, out, evidence=(), policy="first", workers=8, lim
     return summary
 
 
+def refresh(workers=8):
+    """For the app, after the pool was refetched: read what changed, combine, compare, reload the engine."""
+    sheet = json.loads((ROOT / "sheets" / ((os.environ.get("SIGNOFF_SHEET") or "sheet1") + ".json")).read_text())
+    files = pool_files()
+    if not files:
+        return {"products": 0, "errors": ["no data/pool"]}
+    evidence = [gliner.EXTRACTOR] if config.have("SIE_API_KEY") else []
+    summary = run(files, sheet, readers(), ROOT / "data" / "figures", evidence, workers=workers, quiet=True)
+    from signoff.engine import state
+    from signoff.extract import score
+    score.write(ROOT / "data" / "figures")
+    state.reload_data()
+    return summary
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--pool-dir", default=None, help="default: $SIGNOFF_POOL_DIR, then data/pool")

@@ -191,8 +191,14 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
                         "text": "nothing to spare" if t["margin"] == 0 else "%g %s to spare" % (t["margin"], t["bound"]["unit"])}
         else:
             status, tightest = "open", None
-            reason = "no page states every figure" if not inside and any(c["status"] == "not_stated" for c in cands) \
-                else ("nothing inside the limits" if not inside else "nothing inside the limits states a delivery time")
+            if inside:
+                reason = "nothing inside the limits states a delivery time"
+            elif any(c["status"] == "outside" for c in cands):  # pages that state every figure exist, and all fail
+                reason = "nothing inside the limits"
+            elif any(c["status"] == "not_stated" for c in cands):
+                reason = "no page states every figure"
+            else:
+                reason = "nothing inside the limits"
         lines.append({"line_id": line["id"], "need": line["need"], "room": line["room"], "status": status,
                       "reason": reason, "pick": pick["id"] if pick else None, "tightest": tightest,
                       "why": {"total": len(cands), "inside": len(inside), "with_delivery_time": len(eligible),

@@ -76,12 +76,27 @@ def _load_figures(pool, from_data):
     return figures
 
 
+def _load_readers(from_data):
+    """Which reader decided, and how far the others agree with it (signoff.extract.score writes the file)."""
+    path = DATA / "figures" / "_runs" / "comparison.json"
+    if not from_data or not path.exists():
+        return None
+    try:
+        made = _read(path)
+        return {"reference": made["reference"], "measure": made["measure"], "note": made["note"],
+                "products": made["products"], "made_at": made["made_at"],
+                "readers": [{k: v for k, v in r.items() if k != "differences"} for r in made["readers"]]}
+    except (ValueError, KeyError):
+        return None
+
+
 def _load(keep_changes=False):
     sheet_id = os.environ.get("SIGNOFF_SHEET") or "sheet1"
     pool, answers = _load_pool()
     from_data = _has_data_pool() and not any(str(p["store"]).endswith(".example") for p in pool)
     mode = "fixture" if not from_data else ("replay" if config.mode() == "replay" else "live")
-    _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data), mode=mode, loaded=True)
+    _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data), mode=mode, loaded=True,
+              readers=_load_readers(from_data))
     if keep_changes and _s.get("sheet", {}).get("id") == sheet_id:
         return
     strikes_file = (DATA if from_data else FIXTURES) / "strikes.json"
@@ -162,6 +177,7 @@ def _attach(state):
                 c["action"] = {"type": "cart_created", "mode": cart.get("mode"), "cart_url": cart.get("cart_url"),
                                "cart_id": cart.get("cart_id"), "at": cart.get("created_at")}
     state["issuer_key"] = dict(_s["issuer_key"])
+    state["readers"] = _s.get("readers")
     state["senso"] = list(_s.get("senso") or [])
     state["sheet_hash"] = hashlib.sha256(_canonical(state).encode()).hexdigest()
     state["seal"] = _seal(state, state["sheet_hash"])
