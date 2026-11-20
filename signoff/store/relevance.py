@@ -29,7 +29,14 @@ def words(text: str) -> list[str]:
 
 def phrases(label: str) -> list[list[str]]:
     parts = re.split(r"\s*(?:&|,|\||;|\s-\s|\s–\s|\swith\s|\sby\s|\sin\s|\sfor\s|\sand\s)\s*", html.unescape(label or ""), flags=re.I)
-    return [w for w in (words(p) for p in parts) if w]
+    out = []
+    for p in parts:
+        w = words(p)
+        while w and w[-1].isdigit():  # a trailing size or count ("5-1/2") is not the thing's name
+            w.pop()
+        if w:
+            out.append(w)
+    return out
 
 
 def need_parts(need: str) -> tuple[str, set[str]]:

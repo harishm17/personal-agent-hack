@@ -1,34 +1,19 @@
-"""Build data/pool/<store>.json from the raw search replies in data/pool/raw/ (replay and live share this)."""
+"""Build the pool of a sheet from its raw search replies: data/pool/<store>.json (sheet1) or data/<sheet>/pool/<store>.json.
+
+One rule for every sheet: a product from a line's query stays in the pool for that line when the store's own labels or title
+say what it is (signoff.store.relevance), and every in-stock option is carried. Nothing in here knows a brand, a product type or
+a sheet. A product that is dropped is counted, with the reason, in `<pool folder's parent>/pool_summary.json`.
+"""
 import datetime
-import glob
 import html
 import json
 import pathlib
 import re
 import sys
 
-from signoff.store import ucp
-from signoff.store.fetch import RAW, raw_path
+from signoff.store import relevance, replay, sheetctx, ucp
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
-POOL = ROOT / "data" / "pool"
-
-# Per line: title must match `inc` and must not match `exc`. Titles only: no figure is read here.
-RULES = {
-    "L1": (r"shower (chair|seat|bench|stool)|bath(ing)? (seat|bench|chair|stool)|bath & shower|transfer bench",
-           r"transport|wall mounted|reclining|\bmat\b|leg tips|\bdisc\b|\bboard\b|belt|blanket|sling|slide sheet"
-           r"|stand assist|liner|\bpads?\b|^[^|]*commode(?!.*bench)"),
-    "L2": (r"toilet seat|seat riser|seat elevator|toilet riser",
-           r"cushion|commode|shower|safety (frame|rail)|\brail\b"),
-    "L3": (r"commode", r"liners?\b|\bpads\b|bucket|transport|wheelchair|bench|sitz|opening"),
-    "L4": (r"walker", r"walker bag|knee|3[- ]wheel|4[- ]wheel|transport|rollator|upright"),
-    "L5": (r"grab bars?|bath handle",
-           r"suction|reacher|floor to ceiling|accessory|toilet rail|\bpole\b|bed assist|bumper"),
-    "L6": (r"bed ?(side )?rails?|bedside rail|bed (assist )?(bar|handle|cane)|stable rail|mobility rail",
-           r"bumper|\bpads\b|fall mat|ladder|electric|riser|toilet|bath|tub|stand assist|transport|leg lift"),
-}
-BRANDS = ["carex", "drive", "medline", "guardian", "stander", "probasics", "nova", "elements", "dmi", "pride", "vive"]
-STORE_BRAND = {"carex.com": "carex", "vivehealth.com": "vive"}
 
 
 def image_url(prod: dict):
@@ -52,82 +37,93 @@ def clean_title(t: str) -> str:
     return re.sub(r"[™®]", "", t).strip()
 
 
-def product_key(store: str, title: str) -> str:
-    """Maker and model, lower-cased: 'Wonder EZ Adjust Bed Rail by Stander' -> 'stander wonder ez adjust bed rail'."""
-    t = clean_title(title).lower()
-    maker = None
-    m = re.search(r"\s+by\s+([a-z0-9+ ]+?)(?:\s+with\b.*)?$", t)
-    if m and m.group(1).strip().split()[0] in BRANDS:
-        maker = m.group(1).strip().split()[0]
-        t = t[:m.start()] + (t[m.end(1):] if False else "")
-        t = re.sub(r"\s+by\s+" + re.escape(m.group(1)), "", clean_title(title).lower())
-    for b in BRANDS:
-        if maker is None and re.match(rf"{b}\b", t):
-            maker = b
-            t = t[len(b):]
-    maker = maker or STORE_BRAND.get(store, "")
-    t = re.sub(r"[^a-z0-9.\" ]+", " ", t)
-    return re.sub(r"\s+", " ", f"{maker} {t}").strip()
+def _norm(s: str) -> str:
+    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9.\" ]+", " ", clean_title(s).lower())).strip()
 
 
-def line_ids_for(sheet: dict, title: str, queries_hit: set) -> list:
-    out = []
-    for line in sheet["lines"]:
-        if not set(line["queries"]) & queries_hit:
-            continue
-        inc, exc = RULES.get(line["id"], (r".", r"$^"))
-        t = clean_title(title).lower()
-        if re.search(inc, t) and not re.search(exc, t):
-            out.append(line["id"])
-    return out
+def product_key(prod: dict | str) -> str:
+    """The store's own vendor (or brand) and model fields, lower-cased, or its title when the store gives none. The same product
+    at another store has the same key only if both stores say so; nothing is guessed from a list of brands."""
+    if isinstance(prod, str):
+        return _norm(prod)
+    maker = prod.get("vendor") or prod.get("brand") or ""
+    model = prod.get("model") or prod.get("title") or ""
+    key = _norm(model)
+    return _norm(f"{maker} {model}") if maker and _norm(str(maker)) not in key else key
 
 
-def build(sheet_path: str = "sheets/sheet1.json") -> dict:
-    sheet = json.loads((ROOT / sheet_path).read_text())
-    summary = {}
+def build(sheet_id: str | None = None) -> dict:
+    """Rebuild the pool of the sheet from the raw replies on disk. Returns {store: rows}; writes the pool files and the summary."""
+    sheet_id = sheet_id or sheetctx.active_id()
+    sheet = json.loads((ROOT / "sheets" / f"{sheet_id}.json").read_text())
+    pool_dir = sheetctx.pool_dir(sheet_id)
+    raw_dir = pool_dir / "raw"
+    pool_dir.mkdir(parents=True, exist_ok=True)
+    out, summary = {}, {"sheet": sheet_id, "rule": "a product stays for a line when its title or one of the store's own labels "
+                        "(collections, tags, categories) has a phrase ending with the head word of the line's need or of one of "
+                        "its queries, and the rest of that phrase is named in the title or labels", "stores": {}}
     for store in sheet["stores"]:
         found: dict = {}
         for line in sheet["lines"]:
             for q in line["queries"]:
-                p = raw_path(store, q)
+                p = replay.raw_path(store, q, raw_dir)
                 if not p.exists():
                     continue
                 fetched = datetime.datetime.fromtimestamp(p.stat().st_mtime).astimezone().isoformat(timespec="seconds")
                 for prod in json.loads(p.read_text()).get("products", []):
-                    e = found.setdefault(prod["id"], {"prod": prod, "queries": set(), "fetched_at": fetched})
-                    e["queries"].add(q)
-        rows = []
+                    e = found.setdefault(prod["id"], {"prod": prod, "lines": set(), "fetched_at": fetched})
+                    e["lines"].add(line["id"])
+        rows, per_line = [], {l["id"]: {"candidates": 0, "kept": 0, "dropped": []} for l in sheet["lines"]}
         for pid, e in found.items():
-            prod = e["prod"]
-            lids = line_ids_for(sheet, prod["title"], e["queries"])
-            variants = [v for v in prod.get("variants", []) if (v.get("availability") or {}).get("available")]
-            if not lids or not variants:
+            prod, kept_for = e["prod"], []
+            for line in sheet["lines"]:
+                if line["id"] not in e["lines"]:
+                    continue
+                per_line[line["id"]]["candidates"] += 1
+                ok, why = False, ""
+                for need in [line["need"], *line["queries"]]:  # the need, or any way the sheet itself names the item
+                    ok, why = relevance.belongs(prod, need)
+                    if ok:
+                        break
+                if ok:
+                    kept_for.append(line["id"])
+                else:
+                    per_line[line["id"]]["dropped"].append({"product_id": pid, "title": clean_title(prod["title"]), "why": why})
+            options = options_of(prod)
+            if kept_for and not options:
+                for lid in kept_for:
+                    per_line[lid]["dropped"].append({"product_id": pid, "title": clean_title(prod["title"]), "why": "no option in stock"})
                 continue
-            v = min(variants, key=lambda v: v["price"]["amount"])
+            if not kept_for:
+                continue
+            for lid in kept_for:
+                per_line[lid]["kept"] += 1
+            v = min((v for v in prod["variants"] if (v.get("availability") or {}).get("available")), key=lambda v: v["price"]["amount"])
             title = clean_title(prod["title"])
             text = title + ".\n" + ucp.plain((prod.get("description") or {}).get("html", ""))
-            if v.get("title") not in (None, "", "Default Title", "Each"):
-                text += "\nSelected option: " + ucp.plain(v["title"]) + "."
-            rows.append({
-                "store": store, "product_id": pid, "variant_id": v["id"], "title": title,
-                "price_cents": v["price"]["amount"], "url": prod.get("url", ""), "text": text,
-                "fetched_at": e["fetched_at"], "image_url": image_url(prod), "options": options_of(prod), "product_key": product_key(store, prod["title"]),
-                "line_ids": lids,
-            })
+            vt = v.get("title")
+            if vt not in (None, "", "Default Title", "Each"):
+                text += "\nSelected option: " + ucp.plain(vt) + "."
+            rows.append({"store": store, "product_id": pid, "variant_id": v["id"], "title": title,
+                         "price_cents": v["price"]["amount"], "url": prod.get("url", ""), "text": text,
+                         "fetched_at": e["fetched_at"], "image_url": image_url(prod), "options": options,
+                         "product_key": product_key(prod), "line_ids": sorted(kept_for),
+                         "variants": len(options), "variant_title": vt})
         rows.sort(key=lambda r: (r["line_ids"], r["price_cents"]))
-        (POOL / f"{store}.json").write_text(json.dumps(rows, indent=1, ensure_ascii=False))
-        summary[store] = rows
-    return summary
+        (pool_dir / f"{store}.json").write_text(json.dumps(rows, indent=1, ensure_ascii=False))
+        out[store] = rows
+        summary["stores"][store] = {lid: {"candidates": d["candidates"], "kept": d["kept"], "dropped": len(d["dropped"]),
+                                          "dropped_why": d["dropped"]} for lid, d in per_line.items()}
+    (pool_dir.parent / "pool_summary.json").write_text(json.dumps(summary, indent=1, ensure_ascii=False))
+    return out
 
 
 if __name__ == "__main__":
-    s = build(*sys.argv[1:])
-    keys: dict = {}
+    sid = sys.argv[1] if len(sys.argv) > 1 else None
+    s = build(sid)
     for store, rows in s.items():
-        per = {}
+        per: dict = {}
         for r in rows:
             for l in r["line_ids"]:
                 per[l] = per.get(l, 0) + 1
-            keys.setdefault(r["product_key"], set()).add(store)
-        print(store, len(rows), dict(sorted(per.items())))
-    print("keys at 2+ stores:", {k: sorted(v) for k, v in keys.items() if len(v) > 1})
+        print(store, len(rows), dict(sorted(per.items())), sum(len(r["options"]) for r in rows), "options")
