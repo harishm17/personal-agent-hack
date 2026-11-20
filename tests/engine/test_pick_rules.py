@@ -74,6 +74,26 @@ def test_best_value_is_the_cheapest_within_the_stated_distance_of_the_best_rated
         built("best_value", RATINGS, within="close")
 
 
+def test_most_popular_is_the_most_reviews_counted_then_the_rating_then_the_price():
+    counts = dict(RATINGS, A={"rating": 4.4, "out_of": None, "review_count": 212})   # a count quoted with no scale still counts
+    counts[A] = counts.pop("A")
+    s = built("most_popular", counts)
+    inside = [c for c in line(s)["candidates"] if c["status"] == "inside"]
+    order, _, _ = rules.pick_order("most_popular", 0.3, inside, counts, {})
+    assert [c["id"] for c in sorted(inside, key=order)] == [D, A, E, B, C]   # 212 rated 4.8, 212 unrated, 90, 40, no count
+    assert picked(s)["id"] == D and picked(s)["picked_because"] == "212 reviews (rated 4.8), the most that passes"
+    assert line(s)["why"]["rated"] == 4 and line(s)["why"]["rule"] == "most reviewed: 4 of 5 that pass have a quoted review count"
+    a = next(c for c in inside if c["id"] == A)
+    assert a["review_count"] == 212 and "rating" not in a                    # its rating has no scale, so only the count is shown
+    assert not next(c for c in line(s)["candidates"] if c["id"] == F)["picked"]   # 900 reviews and outside the limit
+    s = built("most_popular", {})
+    assert picked(s)["id"] == A and line(s)["why"]["rated"] == 0
+    assert picked(s)["picked_because"] == "cheapest that passes; none of them has a quoted review count"
+    assert line(s)["why"]["rule"] == "most reviewed: none of the 5 that pass has a quoted review count, so the cheapest is shown"
+    s = built("most_popular", {B: {"rating": None, "out_of": None, "review_count": 1}})
+    assert picked(s)["id"] == B and picked(s)["picked_because"] == "1 review, the most that passes"
+
+
 def test_with_no_quoted_rating_every_product_is_unrated_and_the_line_says_so():
     for rule in ("best_reviewed", "best_value"):
         s = built(rule, {})
@@ -152,7 +172,8 @@ def live(monkeypatch, tmp_path):
 def test_the_shopper_sets_the_ordering_and_the_approver_signs_it(live):
     s = state.get_state()
     v, before = s["version"], state.sheet_hash()
-    assert [r["id"] for r in s["pick_rules"]] == ["cheapest", "best_reviewed", "best_value", "cheapest_with_delivery_time"]
+    assert [r["id"] for r in s["pick_rules"]] == ["cheapest", "best_reviewed", "best_value", "most_popular",
+                                                  "cheapest_with_delivery_time"]
     assert picked(s)["id"] == A and "rating" not in picked(s)
     assert next(c for c in line(s)["candidates"] if c["id"] == D)["rating"]["review_count"] == 212   # shown under every rule
     client = TestClient(app)
@@ -165,6 +186,9 @@ def test_the_shopper_sets_the_ordering_and_the_approver_signs_it(live):
     reviewed = state.sheet_hash()
     assert reviewed != before and '"pick_rule":{"id":"best_reviewed"' in state.canonical_sheet()
     assert '"rating":{"out_of":5,"rating":4.8,"review_count":212}' in state.canonical_sheet()
+    state.set_pick_rule("most_popular")
+    assert picked(state.get_state())["id"] == D and '"review_count":212' in state.canonical_sheet()
+    assert '"pick_rule":{"id":"most_popular"' in state.canonical_sheet() and state.sheet_hash() not in (before, reviewed)
     # best value: the distance is under the hash
     state.set_pick_rule("best_value")
     assert picked(state.get_state())["id"] == B and '"within":0.3' in state.canonical_sheet()
@@ -183,7 +207,7 @@ def test_the_shopper_sets_the_ordering_and_the_approver_signs_it(live):
     back = state.set_pick_rule("cheapest_with_delivery_time")
     assert back["sheet"]["pick_rule"] == json.loads((ROOT / "sheets" / "sheet1.json").read_text())["pick_rule"]
     assert state.sheet_hash() == before
-    assert [x["type"] for x in receipts.chain()["receipts"]].count("shopper_pick_rule") == 3
+    assert [x["type"] for x in receipts.chain()["receipts"]].count("shopper_pick_rule") == 4
     # refused once signed; a reset returns to the sheet's rule
     state.set_pick_rule("best_reviewed")
     state.mark_signed({"name": "Dana", "at": "2026-11-20T14:00:00-08:00", "sheet_hash": state.sheet_hash()}, [])

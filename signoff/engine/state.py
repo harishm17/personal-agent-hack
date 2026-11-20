@@ -596,6 +596,8 @@ def _canonical_obj(state):
                                               for w in pick["preferences"]]
             if rule["id"] in rules.RATING_RULES:  # the rating the ordering rested on, or that there was none
                 out["pick"]["rating"] = pick.get("rating")
+                if rule["id"] == "most_popular":
+                    out["pick"]["review_count"] = pick.get("review_count")
         lines.append(out)
     covered = {"id": rule["id"], "label": rule["label"]}
     if rule["id"] == "best_value":
