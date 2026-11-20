@@ -2117,6 +2117,29 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
 - STILL NEEDED FROM YOU: `"pages": [...]` in `GET /api/health` (the mounted page folders; app.py line 92 already has
   the list). Without it I list the pages known to be in the repo (talk, graph) and /seal/ will not appear when it lands,
   because asking for a page that is not there is the console 404 the director reported.
+
+## 15:10 from SCREEN (your 14:46 note, the judge's list; stream/SCREEN, main merged at bc3ce1d)
+- Step 1 DONE (items 1, 2, 8): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/j1-step1.png. The Signature card's headline is "Dana signs: 6 limits · the quotes ·
+  3 picks · $114.69", counted from the state, with the code to scan small under it. "try to change" under a limit; the
+  server's refusal shows in the column header for about 4 s: "Refused: only Dana's phone can change this 401". Step 4
+  reads "34 rejected, with reasons" for the open item; "Therapist signs" and "Carts" are in full ink.
+- Step 2 DONE (items 6, 21, 7, 12, 9, 11, 10 and the cuts for /): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/j2-step2.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/j2-step2-L5.png.
+  One line under each figure, "✓ quoted from the page · 3 models agree" (the models' names on hover); who says it sits
+  beside the words (Dana / Elena / the store), so the Why panel fits at 810 with the store agent's delivery and returns
+  visible; "+ 40 dearer (7 pass), not needed"; subtitle "42 read · 1 cheaper rejected"; "Total $114.69"; "✓ 2 receipts
+  verified"; "Elena · the home: tub inside 21.5 in" under the item's title (it opens her measurements and the chat);
+  "(21.5 in · measured last time)" for a remembered measurement (unseen: no fact is marked remembered on my port);
+  placeholder "Ask the agent…"; no times on the screen; header "invented people, real stores"; list title
+  "Dana · therapist · the order" (I wrote "the order", not "her order": the sheet gives no pronoun).
+  Also fixed: the tools route takes seconds (live queries) and was holding up the tabs, the QR and the reviews on load.
+- Step 3, PARTLY: the bar on / is Decision · Trail · Memory · Conversations, always. "Signature" (/seal/) is in the list
+  but hidden, because `web/seal` is not on main (7b3b56e) and I will not show a tab that opens a 404. It appears by
+  itself when /api/health has `"pages"` with "seal" in it; without that key please tell me when the folder lands.
+- Step 4 DONE: the drawer's caption is cut; each row has its noun from the route's `unit` ("SingleStore · 9 candidates
+  inside the limits", "Airbyte · 311 rows delivered"). It is closed by default.
+- Step 5, C14: NOT CLOSED. `state.pick_rules` is still null and `POST /api/shopper/pick_rule` is not in /openapi.json on
+  main at bc3ce1d, so the segments cannot be shown or clicked on real data. The code is in place (see 14:55 and 15:00).
+- C11: DONE at 14:55 on the real route ("Choose this one", "chosen by Elena").
 ## SIGN 14:35 — G22 (ordering and preferences on the phone), and what the derive step needs
 - DONE G22 (a): `web/phone/index.html` `ruleText`: "<shopper> asked for <label>" (e.g. "Elena asked for the best reviewed that passes") under the total, label from the signed canonical `pick_rule.label`; the shopper's name and `set_by == "shopper"` are read from `state.sheet.pick_rule` only when its id equals the signed rule's id, otherwise it says "Pick rule: <label>" and claims no choice. ENGINE: please set `sheet.pick_rule.set_by` to "shopper" only when she chose it (today the default `cheapest` already says "shopper", so the default would read "Elena asked for cheapest that meets the order"). Proof: `uv run pytest tests/sign/test_ordering_and_preferences.py -q` → 5 passed (phrase from the real function run in node; no claim when the state names another rule).
 - DONE G22 (a, binding): the ordering is under the hash, so a change after she looked is refused: `test_a_changed_ordering_after_she_looked_is_refused_by_the_hash` signs the earlier hash after the pick rule changed, with the engine's own `state._canonical`: 409 `stale_hash`, no cart call, nothing sealed.
@@ -2200,3 +2223,25 @@ open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` 
   second quote is used only if code finds it on the page with the rating and the scale in it (10 pages asked, 1 changed: Best Buy).
   (2) When the reader rounds ("4.6" for the page's "4.5915494"), the page's own number is kept, with `value_as_reported` beside it.
   `best_reviewed` and `ratings()` now use one rule (out of five, at least 5 reviews); the tie-break text is updated in the reply.
+
+## 15:20 from SCREEN (your 15:05 correction; stream/SCREEN, main merged as bb68be4)
+- C15, the read-only half DONE: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c15-L5.png. The "change" / "try to change" link and its refusal are removed from the
+  laptop. Under each of the approver's limits the header reads "Dana's limit · phone only" (hover: "it changes only from
+  Dana's phone, with a signature"; I avoided "her": the sheet gives no pronoun). The home's measurements stay Elena's to
+  change. This undoes item 2 of my 15:10 report.
+- C15, "Ask Dana": WRITTEN, NOT SEEN. `POST /api/shopper/ask-change` and `GET /api/asks` are not in /openapi.json on main
+  at bb68be4 and no shape is in NOTES/SCREEN.md yet, so the link stays hidden. When the route exists: "Ask Dana" beside
+  the limit opens a small sheet (a value within the limit's min, max and step, a short note, "Send to Dana"); the limit
+  then shows "asked Dana · waiting", "Dana changed it to N" or "Dana declined". Keys I guessed for `/api/asks`: a list or
+  `{asks: [...]}` / `{pending, settled}` of `{limit_id, value, status}` with status pending / accepted / declined.
+- DONE C14, real data: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-live-mid.png (1440 x 810), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-live-960.png (150%). `state.pick_rules` and
+  `POST /api/shopper/pick_rule` are on main now. I clicked "Best reviewed" in the page on the walker: the list re-sorted
+  (the pick first, the others that pass, then "27 do not pass: 15 under 300 lb (lowest 250 lb) · …"), the pick moved to
+  the Drive rollator at $119.99 with "✓ Recommended" and "Rated 4.6 from 58 reviews, the highest that passes" from
+  `picked_because`, "now at parentgiving.com" and "was picked" showed, and the total followed. The control draws all five
+  rules the engine lists. Two limits of what I saw: the engine sends no `rank`, so among the others that pass I order by
+  rating and then price, which may differ from the engine's own order below the pick; and no candidate carries
+  `preferences` yet, so the "preferred" mark and "prefers …" are still seen only on placeholder data.
+- Step 3 DONE: `web/seal` is on main, so the bar on / is Decision · Trail · Memory · Conversations · Signature, and the
+  "Not signed" chip links to /seal/.
+- My port's rule is back on "cheapest".
