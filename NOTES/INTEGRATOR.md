@@ -1479,3 +1479,28 @@ Sheet 3 on my port: the live engine still has no figures (`state_every_figure` 0
   `{id, title, items}`. Tell me the real shape and body key if they differ.
 - Sheet 4 on my port (SIGNOFF_SHEET=sheet4) falls back to fixture data (`mode: fixture`, 3 + 2 + 1 candidates), so I checked
   the three lead items on sheet 1's live data instead. My port is back on sheet 1.
+
+## 13:42 from ENGINE — DONE E26: an option's own name is a statement about it; a statement about another size is not
+- **Why the old rule missed it.** It only set aside a statement whose quote named another option **that is on sale** ("16 Inch",
+  "24 Inch", "36 Inch"). "12” Grab bar" names a size that is not one of the four options, so nothing matched and it was read as a
+  statement about the 18 Inch and 36 Inch rows. (`12”` against `18 Inch` was compared correctly; the 12 simply was not on the list.)
+- **The rule now** (`state._option_names`, `options.named_figures`; no product, store or format named): when an option's name holds
+  a number whose kind of unit belongs to exactly one figure asked of that line, the name is a statement of that figure, with its
+  span in the candidate's own text ("Selected option: 18 Inch."). Page statements that give the same value, or whose passage names
+  this option's value, are about this option; every other page statement of that figure describes another size and is not put to
+  this candidate's test. If no page statement is about this option, the check is **unclear with both shown**.
+- **Proof:** `tests/engine/test_options.py` (2 tests); 275 tests pass. On sheet 4 now:
+  - Textured Grab Bars **18 Inch** ($19.99): **unclear**, "bar length: option says 18 in; the page describes 12, 16 and 24 in".
+  - Textured Grab Bars **36 Inch** ($19.99): **unclear**, "bar length: option says 36 in; the page describes 12, 16 and 24 in".
+  - Textured Grab Bars 16 Inch ($27.99): inside, `16 >= 16`, quote `16” Grab bar`: still the pick. 24 Inch: inside.
+- **Every option row on sheets 4 and 3, re-checked** (rule off against rule on, same readings):
+  - Sheet 4: 23 option rows have a name that states a figure (all on L5). **6 rows change, no pick changes, total still $114.69.**
+    Two go outside → unclear (the two above). Four keep their status and change their reason: Metal Grab Bar 12" in Brushed Nickel,
+    Bronze, White and Polished read "bar length: 15.11 >= 16 is false" and now read "bar length: 12 >= 16 is false".
+  - Sheet 3: no option's name states a figure (its options are colours and "Default Title"): **0 rows change**, no pick changes.
+- **The Metal Grab Bar rows, since you asked:** not the same problem, a smaller one. On four of the five 12" rows the reader returned
+  two statements, `12” Grab bar- 15.11” end to end …` (12) and a second quote `15.11” end to end when installed …` (15.11); the fifth
+  row had only the first, which is why the screen showed 15.11 on some rows and 12 on others. Both numbers are about the 12 in bar and
+  both fail 16, so the status was right. With E26 all five show 12, from the option's name and the page's "12” Grab bar…" passage,
+  and the lone "15.11” end to end" quote is set aside because it does not name this option. The 16" rows are inside on 16 as before.
+- Sheet 4 after E26: 153 candidates, L1 12 inside / 12 outside / 1 unclear / 18 not stated; L4 48 / 16 / 2 / 7; L5 7 / 20 / 3 / 7.
