@@ -143,15 +143,25 @@ async function loadAux() {
     setTimeout(() => { last.quiet = true; render(); }, Math.max(0, introUntil - performance.now()));
   }
 }
-setInterval(loadAux, 5000);
+setInterval(() => { if (!document.hidden) loadAux(); }, 5000);
 let live = false;
 if (params.get("live") !== "0") {
-  const events = new EventSource("/api/events");
-  events.onopen = () => { live = true; };
-  events.onmessage = () => load();
-  events.onerror = () => { live = false; };
+  // One stream per visible tab. A browser allows six connections to one host; a hidden tab that keeps its
+  // stream open starves the others, so the stream closes when the tab is hidden and reopens when it is shown.
+  let events = null;
+  const openStream = () => {
+    if (events || document.hidden) return;
+    events = new EventSource("/api/events");
+    events.onopen = () => { live = true; };
+    events.onmessage = () => load();
+    events.onerror = () => { live = false; };
+  };
+  const closeStream = () => { if (events) { events.close(); events = null; live = false; } };
+  document.addEventListener("visibilitychange", () => { if (document.hidden) closeStream(); else { openStream(); load(); } });
+  addEventListener("pagehide", closeStream);
+  openStream();
 }
-setInterval(() => { if (!live) load(); }, 2000);
+setInterval(() => { if (!live && !document.hidden) load(); }, 2000);
 let resizeTimer = null;
 addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (state) { last.quiet = true; render(); } }, 150); });
 addEventListener("hashchange", () => { ui.drawer = null; ui.show = null; ui.open.clear(); render(); loadAux(); });

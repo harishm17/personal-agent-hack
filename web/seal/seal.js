@@ -270,4 +270,4 @@ document.addEventListener("focusout", (e) => {
   if (e.target.matches("#rows input") && ui.editing === Number(e.target.dataset.id)) commit(Number(e.target.dataset.id), e.target.value);
 });
 load();
-setInterval(() => { if (ui.editing === null) load(); }, 5000);
+setInterval(() => { if (ui.editing === null && !document.hidden) load(); }, 5000);

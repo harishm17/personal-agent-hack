@@ -110,4 +110,4 @@ document.addEventListener("click", (e) => {
   if (wh) { ui.open.has(wh.dataset.open) ? ui.open.delete(wh.dataset.open) : ui.open.add(wh.dataset.open); renderThread(); }
 });
 load();
-setInterval(load, 5000);
+setInterval(() => { if (!document.hidden) load(); }, 5000);

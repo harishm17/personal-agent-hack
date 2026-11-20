@@ -342,4 +342,4 @@ document.addEventListener("keydown", (e) => {
 const renderStageLabel = () => { const b = $("[data-play]"); if (b) b.textContent = XP.playing() ? "Pause" : "Play"; };
 addEventListener("resize", () => data && draw());
 load();
-if (LIVE && !EMBED) setInterval(load, 4000);
+if (LIVE && !EMBED) setInterval(() => { if (!document.hidden) load(); }, 4000);

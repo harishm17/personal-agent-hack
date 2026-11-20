@@ -198,8 +198,15 @@ function startEvents() {
     try { await loadState(); await refreshIssuer(); if (runChanged()) render(); else { renderLive(); paintAsks(); } } catch (e) { /* offline blip */ }
     pending = false; if (again) { again = false; refetch(); }
   };
-  try { const evt = new EventSource("/api/events"); evt.onmessage = refetch; } catch (e) { /* polling below */ }
-  setInterval(refetch, 3000);
+  // One stream per visible page: a browser allows six connections to one host, so a hidden page closes its
+  // stream and reopens it when shown. Polling below covers a stream that cannot open.
+  let evt = null;
+  const openStream = () => { if (evt || document.hidden) return; try { evt = new EventSource("/api/events"); evt.onmessage = refetch; } catch (e) { evt = null; } };
+  const closeStream = () => { if (evt) { evt.close(); evt = null; } };
+  document.addEventListener("visibilitychange", () => { if (document.hidden) closeStream(); else { openStream(); refetch(); } });
+  addEventListener("pagehide", closeStream);
+  openStream();
+  setInterval(() => { if (!document.hidden) refetch(); }, 3000);
 }
 
 /* ---------- the shopper's ask (G23): a card for each pending ask, on every tab; accepting is her own signed limit change ---------- */

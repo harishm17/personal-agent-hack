@@ -301,7 +301,13 @@ document.addEventListener("mouseover", (ev) => {
 
 await load();
 if (LIVE) {
-  const stream = new EventSource("/api/events");   // the state changed: read the feed again
-  stream.onmessage = () => load();
-  setInterval(load, 5000);                          // ledger rows arrive without a state change
+  // The state changed: read the feed again. One stream per visible tab: a browser allows six connections to
+  // one host, so a hidden tab closes its stream and reopens it when shown.
+  let stream = null;
+  const openStream = () => { if (stream || document.hidden) return; stream = new EventSource("/api/events"); stream.onmessage = () => load(); };
+  const closeStream = () => { if (stream) { stream.close(); stream = null; } };
+  document.addEventListener("visibilitychange", () => { if (document.hidden) closeStream(); else { openStream(); load(); } });
+  addEventListener("pagehide", closeStream);
+  openStream();
+  setInterval(() => { if (!document.hidden) load(); }, 5000);   // ledger rows arrive without a state change
 }
