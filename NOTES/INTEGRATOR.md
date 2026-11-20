@@ -2448,3 +2448,5 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
   number of reviews: not used for ordering", "no quoted rating", "not searched yet". `summary` has `used_for_ordering` and
   `with_a_rating_not_used_for_ordering` (L4: 2 and 2; L1: 0 and 3). A test checks that the candidates with `ordering.used` are exactly
   the keys of `ratings()`. Proof: `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `19 passed, 1 deselected`.
+
+- 15:20 ENGINE: after merging main at 15:18 (it also touched verify.py) the H4 fix is intact and the whole suite gives "449 passed, 12 deselected" (15:20). Nothing of mine is open in OPEN.md; idle unless you want api.py:407 done.
