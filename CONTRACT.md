@@ -338,3 +338,42 @@ model as the guard.
 - Tunnel: a quick tunnel; if its process dies the address changes. `scripts/tunnel.sh` restarts it and
   records the new address; never restart it otherwise. `scripts/run_main.sh` restarts the app.
 - Firedrill: keep trying until 14:00 only. Receipt chain: lowest priority, cut at 14:30 if not on main.
+
+## Amendment 12:25 — Persona Relay (optional, time box 13:15), and the Amplitude + Statsig brief
+- **Relay.** The sandbox Persona key works for Relay: with `@persona/sdk-node` 0.5.1 a sandbox session
+  for `live_human_presence` was created and a Privacy Pass issued at 12:20. The AIRBYTE thread (its
+  Airbyte work is done) also owns `signoff/relay/**`, `web/relay/**`, `tests/relay/**` and builds: a
+  "live human" claim taken at the moment of signing, recorded on the signature as optional key `relay`
+  (`{claim_type, result, sandbox: true, at}`). Inquiries answer who signed; Relay answers that a person,
+  not the agent, tapped Sign. Optional router `signoff.relay.api`; the product never depends on it. Not
+  working on main by 13:15: cut. `PERSONA_PRODUCTION_API_KEY` is never read by any code.
+- **Amplitude + Statsig's own brief (their deck):** try a change behind a gate; see what happened in
+  Agent Analytics (tool calls, completion, failures, latency, cost); keep it or switch back; "leave with
+  one feature gate, one useful insight, one better agent; show what changed and why it helped". Ours: the
+  gate is the small reader; the insight is its misread of an `h x w x d` string; the better agent is a
+  code check on multi-dimension strings added because of it, re-measured.
+
+## Amendment 12:30 — fourth review (it attacked a copy of the app): what held, what is being closed
+Held under real requests: unsigned, forged, replayed and stale-hash requests are refused; no cart without
+a verified signature; picks follow from the figures; all 173 counted figures match the store text at their
+offsets and ten of ten sampled are right readings. Being closed now:
+1. **Approver takeover** (anyone could reset and enrol their own key over the tunnel). Done by the
+   integrator: reset, reader override, reloads and shopper routes are laptop-only (`LOCAL_ONLY` in
+   `signoff/app.py`). SIGN: enrolment needs a one-time code that the laptop's screen shows
+   (`GET /api/issuer/enroll-code`, laptop-only; the phone sends it with `enroll`; a new code after each
+   reset). The signer's name is "self-declared" on the seal until an identity check passes.
+2. **Seal race.** `mark_signed` takes the signed hash and refuses if it differs from the current hash;
+   carts are created for exactly the signed picks (ENGINE and SIGN).
+3. **Cart total.** The store's cart total is compared with the signed total per store; a difference is
+   shown on the seal as "store total differs" with both numbers, never hidden (SIGN and STORE).
+4. **The hash covers the rule and the delivery evidence**: the pick rule and each pick's arrival quote
+   join the canonical sheet (ENGINE). The seal lists what the hash covers.
+5. **Unambiguous numbers, as a general rule** (the builder: no overfitting, no format lists): a figure
+   counts only if its number is unambiguous in its quote. When a quote holds several numbers of the same
+   unit, the reader must also return the label the text itself attaches to the number, and code checks
+   that pairing from the text; otherwise the figure is unsure. No prompt line or rule names a format.
+Claims: do not call signed approvals, mandates, replay protection or quote checking new. The closest
+prior work is "Signing the Transaction but Not the Decision" (arXiv 2609.11757, Sept 2026), which
+proposes binding the decision to the signature; say that this build does that, with a signer who is not
+the payer, over real stores. The Personal Agent Protocol is real (Persona's deck today names Persona as a
+design partner; personalagentprotocol.org).
