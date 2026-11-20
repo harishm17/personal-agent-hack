@@ -1776,6 +1776,32 @@ order. The only call that carries memory is the embedding of the memories' own s
   the test suites that set `memory` get nothing remembered, so a demo run on a laptop cannot change another stream's test.
 - Quirks for the log (AGENTS.md is yours): SIE `Qwen/Qwen3-Embedding-4B` timed out cold at 60 s, answered in 7.7 s on the next call and 0.2 s warm, so warm it before the demo
   (`GET /api/memory` starts the indexing in the background); `r[0]["dense"]` is a numpy array. `from signoff.obs import egress` is a function, the module is `importlib.import_module("signoff.obs.egress")`.
+
+## 14:08 from MEMORY — M4 seen working on 8007 at 14:05 in 6 of 7 checks; the seventh (the reason) needs one line from ENGINE. Not marked DONE.
+`uv run python -m tests.memory.second_run` (8007, replay, sheet 4, started from no earlier receipts; the two states are saved in `data/memory/second_run/run1.json` and `run2.json`):
+```
+measurement  tub_inside_width: 21.5 -> 22.0 in; run 2 starts at 22.0 (by Elena, 2026-11-20T14:05:23.978-08:00)
+struck       L5: 'Textured Grab Bars'; run 2 pick: 'Metal Grab Bar'
+struck again [{"line_id": "L5", "product_key": "textured grab bars", "by": "issuer", "reason": "struck earlier", "at": "2026-11-20T14:05:24.020-08:00", "from_memory": true}]
+answers      9 reused, e.g. carex.com on returns: "Opened bath seats cannot be returned". (2 h 51 min old)
+recalled     12 of 42
+ok    run 2 is a new run (new chain, not signed, no key)
+ok    the measurement is remembered
+ok    with who and when
+ok    the struck product is out, from memory
+FAIL  with the approver's reason
+ok    the stores' answers are reused with their age
+ok    the signed order is remembered
+```
+- [ ] **The one open thing, ENGINE's file:** `signoff/engine/state.py`, the `strike` / `unstrike` receipt: add `"reason"` to its `detail`. The reason is only inside `body_hash` today, so after
+  a reset no record can say why she struck it, and I will not take it from anywhere that is not a record. Asked at 13:53 in NOTES/ENGINE.md; not there on stream/ENGINE at 14:07.
+  My side is done and tested with that field (`test_a_new_run_recalls_the_measurement_the_strike_and_the_stores_answers`). When it lands I rerun the script and write DONE M4.
+  Smallest honest version if it does not land: the product stays out, marked "struck before" with who and when, and the words "reason not kept in the receipt".
+- The sheet's name is no longer open: a chain started by "use-sheet" names the sheet and I follow `previous` from a reset back to it. Only a run that starts at process start with no
+  use-sheet has no sheet on record (then names show as "the shopper" / "the approver"). `"sheet_id"` in `chain_started` would close that too (same note to ENGINE).
+- The shelf for the central view is in `GET /api/memory` → `shelf` (four slots, cards with owner, kind, text, source, time and age); shape in NOTES/TRAIL.md, 14:08.
+- For main: I dropped the tables `memory` and `memory_vec` (they held only my test runs) and my server on 8007 now uses `SIGNOFF_MEMORY_TABLE=memory_dev`, so main's shelf starts with
+  the stores' saved answers and nothing of mine. Main's own receipts in `data/receipts/` are read as they are.
 ## TALK 14:04 — the time box holds; K1, K2, K3 are on `stream/TALK`, K4 follows by 14:40
 - DONE K1: `signoff/talk/` (talk.py, writer.py). A Superlinked model (`Qwen/Qwen3.8-27B-FP8`) writes our message from a
   purpose and the product; the store's own agent answers through `ucp.ask_business`; the model marks the answering
@@ -1834,3 +1860,52 @@ mode), in a real-time browser session, no script errors.
   this product's figures (the ledger's recipient equals the figure's `extractor`), never from another model's calls.
 - Not done: the second-run opening (shelf full at 0:00, the measurement rising into the left column, a struck product
   already refused) has no motion of its own yet; the tag and the shelf are drawn from the records when they exist.
+## 14:35 from SCREEN (your 14:10 note; main merged at 123d154; gate 350 passed)
+- DONE C12: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-L5.png (items 1 to 3), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-nowat.png (item 6), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-confirm.png (item 5). By item:
+  1. An unclear row gives the engine's reason in the result: "✕ unclear · option says 36 in, page describes 12, 16, 24 in"
+     (from the check's `unclear_why`; "two values" / "no unit stated" when the engine gives none).
+  2. The fold line is a summary of the folded rows by which limit failed, with the extreme value, for any item:
+     "14 cheaper above: 9 under 16 in (lowest 12 in) · 4 under 300 lb (lowest 75 lb) · 1 unclear". It opens on click.
+     Groups: under / over / not a bound (per limit), never state it, unclear, struck.
+  3. Singular and plural: items, limits, stores, pages, "1 cheaper one rejected", "1 dearer one also passes", receipts.
+  4. No request that can answer 404 is made any more. The optional routes (tools, sheets, trail, egress, gate, enrol
+     code) are asked for only when `/openapi.json` lists them; the favicon request is gone (an empty icon link); the two
+     HEAD probes of `/graph/` and `/talk/`, repeated every 5 s, are gone. That last one was the 404.
+     ONE THING I NEED FROM YOU: please add `"pages": ["trail", "talk", "graph", ...]` to `GET /api/health` in
+     signoff/app.py (the folders that are mounted). Until then the Conversations tab shows when the talk router is loaded
+     (its page is in the repo) and the Memory tab stays hidden, because I cannot tell whether `web/graph` is served
+     without asking for it (it is not on main at 123d154). With `pages` both follow what is served.
+  5. Switching from the title menu asks once when the sheet is signed or a phone is enrolled: "Switching starts a new
+     run. It clears the phone's enrolment." with Stay / Switch. Checked by clicking it with a key enrolled.
+  6. When a limit change moves the pick to another store, "now at carex.com" shows beside "Why this one" for the three
+     seconds the old pick says "was picked". Checked with a really signed request (shower chair capacity 300 → 400:
+     parentgiving.com → carex.com, $47.11).
+- C13, written, NOT seen with real data: `GET /api/tools` is not on main (not in /openapi.json), so the "Tools at work"
+  button stays hidden. When the route exists a quiet button appears in the top bar and opens a drawer, one row per tool:
+  name, one number, two or three words, the detail and the route on click. Sample from placeholder rows:
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c13-tools-sample.png (`/?fixture=1&tools=1`). Keys I read, STORE please confirm: a list, or `{tools: [...]}`, of
+  `{name, number, words, route, detail}` (also accepted: `tool`/`id`, `value`/`count`, `label`/`text`, `source`, `note`).
+- C10 was reported DONE at 14:10. C11 ("choose this one"): not started; no route for it is in /openapi.json.
+## TALK 14:12 — K4 done; all four items closed
+- DONE K4: `/talk/` (`web/talk/index.html`, `talk.js`, `talk.css`, on `/screen/style.css` with the same top bar and a
+  Conversations tab) and `GET /api/talk/threads`. Looked at, 1440 x 810, on port 8008 with the real threads:
+  `web/talk/shots/talk-thread.png` (the sent message, the withheld marks, the reply with the answering words marked, the
+  refused follow-up), `talk-withheld.png` (the removed words behind the click, struck in the draft), `talk-agent.png`
+  (an agent thread with its follow-up), `talk-refused.png` (an ask that was not sent). `curl -s localhost:8008/api/talk/threads`
+  → keys `sheet, title, rule, marks, threads, messages`; 6 threads, 10 messages.
+- For TRAIL's guard row: the flat `messages` shape is in NOTES/TRAIL.md (14:10), with one real entry. Lead row: `cbd3c7f37f4f:1`.
+- Checks: `uv run pytest tests/talk -q` → `52 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`.
+- To merge: `signoff/talk/**`, `tests/talk/**`, `data/talk/**`, `web/talk/**`, NOTES. Nothing outside those paths is touched.
+  On main, after the merge, `/talk/` and the route show the six saved threads with no call to anyone (they are read from
+  `data/talk/threads/sheet4/`). In replay mode a new ask answers `status: "not_saved"` and calls nobody.
+- Not done, say if you want it: conversations for sheet 3 (its eleven stores were not asked; main is on sheet 4), and an
+  ask box on the page (the route is `POST /api/talk/ask {store, product_id?, text}`, laptop only).
+- Quirks for the AGENTS.md log (yours to add; the file is outside my paths):
+  - TALK 14:00: the span model (`urchade/gliner_multi-v2.1`, label "person name") marks the word "I" as a person at about
+    0.62. Code drops a marked span with under three letters or digits (`guard.MIN_CHARS`).
+  - TALK 14:01: `Qwen/Qwen3.8-27B-FP8` at temperature 0 can return a text with `[…]` gaps unchanged when asked to rewrite it;
+    stating the task with one neutral example fixed it on the real texts. Code refuses any message that still has a gap.
+  - TALK 13:57: `signoff.obs.egress` is the function; the ledger module is `signoff.obs._egress_module`. A script outside
+    pytest needs `PYTHONPATH=.` or `python -m`.
+  - TALK 14:02: a store's agent answers a request as a question: asked to "arrange expedited shipping", parentgiving.com's
+    agent replied "Nothing has been arranged". `ask_business` reads the store's information; it does nothing.

@@ -78,6 +78,16 @@ def _text(reply) -> str:
     return ""
 
 
+def _parts(reply, datasets: dict) -> list:
+    """Cognee answers once per dataset, so each part is one owner's knowledge speaking: [{owner, dataset, text}]."""
+    owner_of = {d["id"]: o for o, d in datasets.items()}
+    parts = []
+    for x in reply if isinstance(reply, list) else []:
+        if isinstance(x, dict) and x.get("dataset_id") in owner_of:
+            parts.append({"owner": owner_of[x["dataset_id"]], "dataset": x.get("dataset_name"), "text": _text(x)})
+    return parts
+
+
 def question(need: str) -> str:
     return "What do we know that decides the %s, and from whom? Name who said each thing." % need
 
@@ -112,7 +122,7 @@ def ask(line_id: str):
         return JSONResponse({"backend": "cognee", "answered": False, "line_id": line_id, "question": q,
                              "error": str(error)[:300]}, status_code=502, headers=NO_STORE)
     body = {"backend": "cognee", "answered": True, "line_id": line_id, "sheet_id": sheet.get("id"), "question": q,
-            "answer": text, "seconds": got["seconds"], "search_type": got["search_type"], "datasets": got["datasets"],
+            "answer": text, "parts": _parts(got["reply"], cognee.facts().get("datasets") or {}), "seconds": got["seconds"], "search_type": got["search_type"], "datasets": got["datasets"],
             "at": cognee._now()}
     ANSWERS.mkdir(parents=True, exist_ok=True)
     _answer_file(sheet.get("id"), line_id).write_text(json.dumps(body, indent=1) + "\n")

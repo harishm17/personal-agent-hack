@@ -66,7 +66,7 @@ def _put(item: tuple) -> None:
 
 
 GATE_KEY = "sie_reader"
-_variants: dict = {GATE_KEY: "sonnet"}  # the gate's arm now (the reference reader until the gate says otherwise)
+_variants: dict = {GATE_KEY: "disagreement-blocks"}  # the gate's arm now (the default reading mode until the gate says otherwise)
 
 
 def current_experiments() -> list[dict]:

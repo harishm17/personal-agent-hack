@@ -1,4 +1,5 @@
-"""The Statsig gate `sie_reader`: on = the SIE reader decides the figures, off = the Sonnet reference.
+"""The Statsig gate `sie_reader`: on = the engine's strict reading mode "both must agree" (a figure counts only when both readers,
+Sonnet and the SIE model, report it), off = its default "disagreement blocks".
 
 A background thread polls the gate every few seconds. On a change it switches the engine's reader, tags the Amplitude
 session with the arm, and sends one `gate.changed` tool-call event carrying the outcome before and after. Never raises,
@@ -20,17 +21,13 @@ log = logging.getLogger("signoff.gate")
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 GATE = "sie_reader"
 POLL_SECONDS = 3.0
-ARMS = {  # arm name -> (engine reader name, folder of that reader's own run, reader id in /api/state `readers`)
-    "sonnet": (None, "claude-sonnet-5-5", "anthropic:claude-sonnet-5-5"),
-    "sie-qwen": ("sie:Qwen/Qwen3.8-27B-FP8", "sie-Qwen-Qwen3.8-27B-FP8", "sie:Qwen/Qwen3.8-27B-FP8"),
-}
 _lock = threading.RLock()
 _thread: threading.Thread | None = None
 _sdk = None
 _user = None
 _override: bool | None = None
 HISTORY = ROOT / "data" / "egress" / "gate_history.json"
-_s = {"value": False, "arm": "sonnet", "changed_at": None, "polled_at": None, "source": "statsig", "error": None,
+_s = {"value": False, "arm": "disagreement-blocks", "changed_at": None, "polled_at": None, "source": "statsig", "error": None,
       "exists": None, "history": [], "refused": None}
 
 
@@ -52,24 +49,31 @@ def decision(evid: dict, value: bool) -> dict:
     """The screen's words, decided by code from the evidence (never by Amplitude, which only records the change)."""
     v = verdict_from(evid)
     ever_on = any(h["value"] for h in _s["history"])
-    d = (evid or {}).get("disagreements") or {}
+    who = "code, from the engine's two-reader measurement"
     if v is None:
-        return {"decision": None, "text": None, "decided_by": "code, from the run files"}
-    acc = evid["products_accepted"]
-    extra = "It also read %d figure(s) the reference did not count; they move %d candidate(s) inside the limits and are listed for a check." % (
-        d.get("small_only", 0), len(evid.get("inside_only_small_reader") or []))
+        return {"decision": None, "text": None, "decided_by": who}
+    pick = ""
+    if evid["picks_changed"]:
+        c = evid["picks_changed"][0]
+        pick = " and changed the %s pick (%s $%.2f to %s $%.2f, $%.2f more)" % (
+            c["line_id"], c["one_reader"]["title"], c["one_reader"]["price_cents"] / 100,
+            c["both_must_agree"]["title"], c["both_must_agree"]["price_cents"] / 100, evid["extra_cost_cents"] / 100)
+    cost = "blocked %s right figures only the reference found, moved %s candidates to unclear%s" % (
+        evid.get("figures_blocked_that_only_the_reference_found"), evid.get("moved_to_unclear"), pick)
     if v == "switch back":
         name = "switch back advised (the gate is on)" if value else ("switched back" if ever_on else "not adopted")
-        text = "%s: on %d quote(s) the small reader read a different number from the reference. %s It accepted %d more products (%d against %d)." % (
-            name.capitalize(), d.get("different_value", 0), extra, evid["small_accepts_more"], acc["sie-qwen"], acc["sonnet"])
-        return {"decision": name, "text": text, "decided_by": "code, from the two readers' run files"}
-    return {"decision": "kept" if value else "not adopted",
-            "text": "The small reader never read a quote to a different number than the reference. " + extra,
-            "decided_by": "code, from the two readers' run files"}
+        return {"decision": name, "decided_by": who,
+                "text": "%s: \"both must agree\" caught %s real disagreements but %s." % (name.capitalize(), evid.get("real_disagreements_caught"), cost)}
+    return {"decision": "kept" if value else "not adopted", "decided_by": who,
+            "text": "\"Both must agree\" caught %s real disagreements and changed no pick and no spend (it %s)." % (evid.get("real_disagreements_caught"), cost)}
+
+
+MODES = {True: "both must agree", False: "disagreement blocks"}  # the engine's reading modes the gate switches between
+ARM_NAMES = {True: "both-must-agree", False: "disagreement-blocks"}
 
 
 def _arm(value: bool) -> str:
-    return "sie-qwen" if value else "sonnet"
+    return ARM_NAMES[bool(value)]
 
 
 def _engine():
@@ -77,142 +81,60 @@ def _engine():
     return state
 
 
-def _arm_figures(arm: str) -> list[dict]:
-    """The arm's own figures, spans re-checked against the pool text exactly as the engine does."""
-    from signoff.engine import rules
-    eng = _engine()
-    folder = ROOT / "data" / "figures" / ("_runs/" + ARMS[arm][1] if arm != "sonnet" else "")
-    figs = eng._read_dir(folder) if arm != "sonnet" else eng._read_dir(ROOT / "data" / "figures")
-    text = {(p["store"], p["product_id"]): p.get("text") for p in eng._s["pool"]}
-    for f in figs:
-        f["span_found_in_text"] = rules.span_found(f, text.get((f["store"], f["product_id"])))
-    return figs
-
-
-_arm_cache: dict = {}
-
-
-def _arm_state(arm: str) -> dict:
-    """What the engine's own rules (rules.build_state) give with this arm's figures on the current limits."""
-    import copy
-    from signoff.engine import rules
-    eng = _engine()
-    key = (arm, eng._s.get("version"))
-    if key not in _arm_cache:
-        with eng._lock:
-            sheet, pool, answers, strikes, mode = (copy.deepcopy(eng._s["sheet"]), eng._s["pool"], eng._s["answers"],
-                                                   copy.deepcopy(eng._s["strikes"]), eng._s["mode"])
-        st = rules.build_state(sheet, pool, _arm_figures(arm), answers, strikes, mode)
-        picks = {l["line_id"]: next((c for c in l["candidates"] if c["picked"]), None) for l in st["lines"]}
-        inside = {c["id"]: {"line": l["line_id"], "title": c["product"]["title"], "store": c["product"]["store"]}
-                  for l in st["lines"] for c in l["candidates"] if c["status"] == "inside"}
-        _arm_cache.clear()
-        _arm_cache[key] = {"counts": st["counts"], "inside": inside,
-                           "picks": {k: (v and {"title": v["product"]["title"], "store": v["product"]["store"],
-                                                "price_cents": v["product"]["price_cents"]}) for k, v in picks.items()}}
-    return _arm_cache[key]
-
-
-def _title(store: str, product_id: str) -> str:
-    try:
-        return next(p["title"] for p in _engine()._s["pool"] if p["store"] == store and p["product_id"] == product_id)
-    except Exception:  # noqa: BLE001
-        return product_id
-
-
-def _same(a: dict, b: dict) -> bool:
-    return (a.get("low"), a.get("high")) == (b.get("low"), b.get("high"))
-
-
-def _shown(f: dict) -> str:
-    lo, hi, u = f.get("low"), f.get("high"), f.get("unit") or ""
-    return ("%g %s" % (lo, u)) if lo == hi else ("%g to %g %s" % (lo, hi, u))
-
-
-def disagreements() -> dict:
-    """Where the small reader and the reference reader differ, by code, on the same product and figure."""
-    ref, small = _arm_figures("sonnet"), _arm_figures("sie-qwen")
-
-    def idx(rows):
-        return {(r["store"], r["product_id"], r["figure"]): r for r in rows}
-
-    def counts(r):
-        return bool(r and r.get("span_found_in_text") and not r.get("unsure"))
-
-    a, b = idx(ref), idx(small)
-    different, small_only, ref_only = [], [], []
-    for k in sorted(set(a) | set(b)):
-        ra, rb = a.get(k), b.get(k)
-        row = {"store": k[0], "product_id": k[1], "product": _title(k[0], k[1]), "figure": k[2]}
-        if counts(ra) and counts(rb) and not _same(ra, rb):
-            different.append({**row, "quote": rb["quote"], "reference_read": _shown(ra), "small_read": _shown(rb),
-                              "same_quote": ra["quote"] == rb["quote"]})
-        elif counts(rb) and not counts(ra):
-            small_only.append({**row, "quote": rb["quote"], "small_read": _shown(rb),
-                               "reference": ("did not count it: " + (ra.get("unsure_reason") or "marked unsure")) if ra else "did not report it"})
-        elif counts(ra) and not counts(rb):
-            ref_only.append({**row, "quote": ra["quote"], "reference_read": _shown(ra)})
-    return {"different_value": different, "small_only": small_only, "reference_only": ref_only}
-
-
 def evidence() -> dict:
-    """The numbers that decide keep or switch back: products accepted by each arm (the engine's own rules), how many
-    more the small reader accepted, and every figure where the two disagree."""
-    out = {}
+    """What the gate's strict mode ("both must agree") does against the default ("disagreement blocks"), measured by the engine
+    in code on the sheet as on disk (`two_readers.strict_mode_measured`), plus each reader's cost and time per page."""
     try:
-        ref, small = _arm_state("sonnet"), _arm_state("sie-qwen")
-        d = disagreements()
-        n_ref, n_small = ref["counts"]["state_every_figure"], small["counts"]["state_every_figure"]
-        only_small = [{"candidate": k, **v} for k, v in small["inside"].items() if k not in ref["inside"]]
-        only_ref = [{"candidate": k, **v} for k, v in ref["inside"].items() if k not in small["inside"]]
-        rd = {r["extractor"]: r for r in ((_engine().get_state().get("readers") or {}).get("readers") or [])}
-        per_page = {arm: {"seconds_median": (rd.get(rid) or {}).get("seconds_per_product_median"),
-                          "cost": (rd.get(rid) or {}).get("cost"), "pages": (rd.get(rid) or {}).get("products_read")}
-                    for arm, (_, _, rid) in ARMS.items()}
-        ex = next((x for x in d["different_value"] if x["figure"] == "overall_width"), (d["different_value"] or [None])[0])
-        out = {"products_accepted": {"sonnet": n_ref, "sie-qwen": n_small, "of": ref["counts"]["products_found"]},
-               "small_accepts_more": n_small - n_ref,
-               "inside_limits": {"sonnet": ref["counts"]["inside_limits"], "sie-qwen": small["counts"]["inside_limits"]},
-               "inside_only_small_reader": only_small, "inside_only_reference": only_ref, "per_page": per_page,
-               "picks_differ_on": [l for l in ref["picks"] if (ref["picks"][l] or {}).get("title") != (small["picks"][l] or {}).get("title")],
-               "disagreements": {k: len(v) for k, v in d.items()}, "figures_in_disagreement": d,
-               "example": ex and {**ex, "sentence": "On %s the quote %r was read as %s by the reference and %s by the small reader." % (
-                   ex["product"], ex["quote"], ex["reference_read"], ex["small_read"])}}
+        st = _engine().get_state()
+        tr = st.get("two_readers") or {}
+        m = tr.get("strict_mode_measured") or {}
+        if not m:
+            return {"error": "the engine reports no two_readers measurement (no second reader's run for this sheet)"}
+        rd = {r["extractor"]: r for r in ((st.get("readers") or {}).get("readers") or [])}
+        per_page = {name: {"reader": rid, "pages": (rd.get(rid) or {}).get("pages_read"),
+                           "seconds_median": (rd.get(rid) or {}).get("seconds_per_page_median"),
+                           "cost": (rd.get(rid) or {}).get("cost")}
+                    for name, rid in (("reference", tr.get("reference")), ("second", tr.get("second")))}
+        return {"mode_now": tr.get("mode"), "reference": tr.get("reference"), "second": tr.get("second"),
+                "figures_agreed": m.get("figures_agreed"), "real_disagreements_caught": m.get("real_disagreements_caught"),
+                "figures_blocked_that_only_the_reference_found": m.get("figures_blocked_that_only_the_reference_found"),
+                "figures_only_the_second_reader_found": m.get("figures_only_the_second_reader_found"),
+                "candidates_changed": m.get("candidates_changed"), "moved_to_unclear": m.get("moved_to_unclear"),
+                "picks_changed": m.get("picks_changed") or [],
+                "total_cents": {"one_reader": m.get("total_cents_one_reader"), "both_must_agree": m.get("total_cents_both_must_agree")},
+                "extra_cost_cents": (m.get("total_cents_both_must_agree") or 0) - (m.get("total_cents_one_reader") or 0),
+                "live_tally": {k: tr.get(k) for k in ("figures_agreed", "figures_disagreed", "only_reference_found", "only_second_found")},
+                "per_page": per_page, "measured_on": m.get("measured_on")}
     except Exception as e:  # noqa: BLE001
-        out = {"error": type(e).__name__ + ": " + str(e)[:140]}
-    return out
+        return {"error": type(e).__name__ + ": " + str(e)[:140]}
 
 
 def verdict_from(evid: dict) -> str | None:
-    """Code decides, from the two readers' run files. The small reader is kept unless it ever reads the same quote to a
-    different number than the reference (then which of them is right cannot be settled by code, and the reference stays the
-    default). Extra figures it reads are not held against it (they may be right): they are counted and listed, with the
-    candidates they move inside the limits, for a person to check. Stating more products is not by itself a reason to keep it."""
-    dis = (evid or {}).get("disagreements")
-    if dis is None:
+    """Code decides, from the engine's measurement. The strict mode is kept only if it costs nothing in what is bought: no pick
+    changes and no extra spend. Catching real disagreements is its benefit and is shown beside the cost, but it does not buy a
+    dearer or different pick on its own."""
+    if not evid or evid.get("error") or evid.get("picks_changed") is None:
         return None
-    return "switch back" if dis["different_value"] else "kept"
+    return "switch back" if (evid["picks_changed"] or (evid.get("extra_cost_cents") or 0) > 0) else "kept"
 
 
 def outcome() -> dict:
-    """Both arms side by side from the engine's `readers` block (agreement, cost, seconds) plus each arm's products accepted
-    under the engine's rules; `deciding` is the reader the engine uses now."""
+    """Each reader's own numbers from the engine's `readers` block (pages, statements, agreement of outcomes, cost and time per
+    page); `deciding` is the reading mode the engine uses now."""
     out = {"deciding": None, "arms": {}}
     try:
         st = _engine().get_state()
         rd = st.get("readers") or {}
-        out["deciding"] = rd.get("deciding")
+        tr = st.get("two_readers") or {}
+        out["deciding"] = tr.get("mode")
         out["signed"] = bool((st.get("seal") or {}).get("signed"))
         out["live_counts"] = st.get("counts")
         by = {r["extractor"]: r for r in rd.get("readers", [])}
-        for arm, (_, _, rid) in ARMS.items():
+        for arm, rid in (("sonnet", tr.get("reference")), ("sie-qwen", tr.get("second"))):
             r = by.get(rid) or {}
-            c = _arm_state(arm)["counts"]
-            out["arms"][arm] = {"reader": rid, "agreement": r.get("agreement"), "figures_counted": r.get("figures_counted"),
-                                "same_as_reference": r.get("same_as_reference"), "cost": r.get("cost"),
-                                "seconds_per_product_median": r.get("seconds_per_product_median"),
-                                "products_read": r.get("products_read"), "pairs": c["products_found"],
-                                "state_every_figure": c["state_every_figure"]}
+            out["arms"][arm] = {"reader": rid, "pages_read": r.get("pages_read"), "statements": r.get("statements"),
+                                "candidates": r.get("candidates"), "statement": r.get("statement"),
+                                "cost": r.get("cost"), "seconds_per_page_median": r.get("seconds_per_page_median")}
         out["note"] = rd.get("note")
     except Exception as e:  # noqa: BLE001
         out["error"] = type(e).__name__ + ": " + str(e)[:120]
@@ -243,7 +165,7 @@ def _apply(value: bool) -> None:
     obs.egress("statsig", "gate value changed: exposure event", {"gate": GATE, "value": value, "user_id": "signoff-demo"}, ["none"])
     before = outcome()
     try:
-        _engine().set_reader(ARMS[arm][0])
+        _engine().set_reading_mode(MODES[bool(value)])
     except Exception as e:  # noqa: BLE001  (the engine refuses after signing, or the run is missing)
         _s["refused"] = type(e).__name__ + ": " + str(e)[:120]
         obs.tool_call("gate.changed", {"gate": GATE, "value": value, "arm": arm}, {"refused": _s["refused"]}, False, 0.0,

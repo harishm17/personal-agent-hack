@@ -10,6 +10,7 @@ const cap = (s) => String(s || "").charAt(0).toUpperCase() + String(s || "").sli
 const words = (s) => String(s || "").replace(/_/g, " ");
 const clip = (t, n) => (String(t).length > n ? String(t).slice(0, n - 1).trimEnd() + "…" : String(t));
 const g = (v) => (v === null || v === undefined ? "?" : String(+(+v).toFixed(2)));      // 10, 21.5, 1.28
+const n_ = (n, one, many) => `${n} ${n === 1 ? one : many}`;                                 // "1 page", "3 pages"
 const withUnit = (text, unit) => (unit && unit !== "count" ? `${text} ${unit}` : String(text));   // "85 dB", "70 sheets", "24"
 /** How many of an item are bought, when the sheet says so (a class set of 24); else 1. */
 const qty = (line) => (sheetLineOf(line) || {}).quantity || line.quantity || 1;
@@ -25,7 +26,10 @@ const ui = { open: new Set((params.get("open") || "").split(",").filter(Boolean)
   chat: [], busy: false, sim: { limits: {}, facts: {}, strikes: [] } };
 const last = { line: null, pick: null, signed: null, quiet: false };
 const aux = { egress: null, gate: null, enroll: null, trail: null, sheets: null, pages: {}, key: "" };
-const TABS = [["/", "Decision"], ["/trail/", "Trail"], ["/graph/", "Memory"], ["/talk/", "Conversations"]];   // the last two show only when their page answers
+// The last two tabs show only when their page is served: from /api/health's `pages` when it has that key; until then
+// from the routers it lists, for the pages known to be in the repo (asking for a page that is not there would log a 404).
+const TABS = [["/", "Decision"], ["/trail/", "Trail"], ["/graph/", "Memory", "signoff.graph.api"], ["/talk/", "Conversations", "signoff.talk.api"]];
+const KNOWN_PAGES = new Set(["/talk/"]);
 let introUntil = 0;
 
 if (SIM) {
@@ -83,16 +87,27 @@ function apply() {
 // Optional extras from their own routes; any may be missing, and the screen draws only what exists.
 async function loadAux() {
   if (FIXTURE) {     // ?fixture=..&menu=1: a sample of the sheet menu, to look at it without the route
+    if (params.get("tools") === "1" && state && !aux.tools) { aux.tools = { tools: [
+      { name: "SingleStore", number: 1, words: "statement, 9 rows, same as the screen", route: "/api/sql/passing-box", detail: "Sample row: the one statement returns the rows the engine shows as passing." },
+      { name: "Statsig", number: 1, words: "gate checked, reader switched back", route: "/api/gate/status", detail: "Sample row." },
+      { name: "Amplitude", number: 212, words: "tool-call events sent", route: "/api/egress", detail: "Sample row." }] }; ui.drawer = "tools"; ui.open.add("tool:0"); last.quiet = true; render(); }
     if (params.get("menu") === "1" && state) { aux.sheets = { sheets: [{ id: state.sheet.id, title: state.sheet.title, items: state.lines.length }, { id: "sample", title: "Sample second list", items: 4 }] }; ui.menu = true; last.quiet = true; render(); }
     return;
   }
   const get = (url) => fetch(url, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  // Nothing is requested that might not exist: the app's own route list says which optional routes are there,
+  // and /api/health says which pages are served (its `pages` key; until it has one, no page is probed).
+  if (!aux.routes || !aux.routes.has("/api/tools")) aux.routes = new Set(Object.keys(((await get("/openapi.json")) || {}).paths || {}));
+  const has = (path) => aux.routes.has(path);
+  const health = (await get("/api/health")) || {};
+  const served = Array.isArray(health.pages) ? health.pages.map((x) => "/" + String(x).replace(/^\/|\/$/g, "") + "/") : null;
+  aux.pages = Object.fromEntries(TABS.slice(2).map(([href, , router]) => [href, served ? served.includes(href) : (health.routers || []).includes(router) && KNOWN_PAGES.has(href)]));
+  aux.tools = has("/api/tools") ? await get("/api/tools") : null;
   const needCode = state && !(state.issuer_key && state.issuer_key.enrolled) && !state.seal.signed;
-  const [egress, gate, enroll, trail, sheets] = await Promise.all([get("/api/egress?limit=5000"), get("/api/gate/status"),
-    needCode ? get("/api/issuer/enroll-code") : null, get("/api/trail"), get("/api/sheets")]);
-  const here = async (href) => { try { const r = await fetch(href, { method: "HEAD", cache: "no-store" }); return r.ok; } catch (error) { return false; } };
-  aux.pages = { "/graph/": await here("/graph/"), "/talk/": await here("/talk/") };
-  const key = JSON.stringify([aux.pages, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
+  const opt = (path, url) => (has(path) ? get(url || path) : null);
+  const [egress, gate, enroll, trail, sheets] = await Promise.all([opt("/api/egress", "/api/egress?limit=5000"), opt("/api/gate/status"),
+    needCode ? opt("/api/issuer/enroll-code") : null, opt("/api/trail"), opt("/api/sheets")]);
+  const key = JSON.stringify([aux.pages, aux.tools, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
   Object.assign(aux, { egress, gate, enroll, trail, sheets });
   if (key !== aux.key && state) {       // redraw quietly, and never in the middle of the opening motion
     aux.key = key;
@@ -194,7 +209,8 @@ function verdict(c, line, pick) {
     const f = unsureFigure(c, ch) || {}, why = ch.unclear_why || ch.missing_why || f.unsure_reason || (reason.includes(":") ? reason.slice(reason.indexOf(":") + 1).trim() : reason);
     const many = (ch.terms.find((x) => x.owner === "store") || {}).values;
     const short = f.quote && !f.unit ? "no unit stated" : (f.low != null && f.high != null && f.low !== f.high) || (many && many.length > 1) ? (many && many.length > 2 ? "several values" : "two values") : "";
-    return { kind: "no unclear", text: "unclear", why, extra: short };
+    const reason1 = ch.unclear_why || short;      // the engine's own words when it gives them
+    return { kind: "no unclear", text: "unclear", why, extra: reason1 ? "· " + reason1.replace(/; the page/, ", page").replace(/ and (?=[^,]*$)/, ", ") : "" };
   }
   if (/quote not found/.test(reason)) return { kind: "no", text: "quote not in the page", why: reason };
   return { kind: "no", text: failWords(ch), why: reason };
@@ -210,7 +226,7 @@ function render() {
   if (!line.candidates.some((c) => c.id === ui.show)) ui.show = null;
   if (!opening && last.pick && pickId !== last.pick && !last.quiet) {
     const old = line.candidates.find((c) => c.id === last.pick);
-    ui.was = old ? { id: old.id, price: money(old.product.price_cents) } : null;
+    ui.was = old ? { id: old.id, price: money(old.product.price_cents), store: old.product.store } : null;
     clearTimeout(wasTimer);
     wasTimer = setTimeout(() => { ui.was = null; last.quiet = true; render(); }, 3200);
   }
@@ -239,8 +255,9 @@ function renderTop() {
   q("#top").innerHTML = `<span class="brand">Sign-Off</span>
     ${sheetMenu()}
     <nav class="tabs" aria-label="Views">${TABS.filter(([href]) => href === "/" || href === "/trail/" || aux.pages[href]).map(([href, label]) => `<a href="${href}"${href === "/" ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav>
-    <span class="meta">${[`${state.lines.length} items`, sheet.invented ? "invented people" + real : "", ...mode].filter(Boolean).join(" · ")}</span>
+    <span class="meta">${[n_(state.lines.length, "item", "items"), sheet.invented ? "invented people" + real : "", ...mode].filter(Boolean).join(" · ")}</span>
     <span class="grow"></span>
+    ${toolRows().length ? `<button class="toolsbtn" data-open="tools" aria-expanded="${ui.drawer === "tools"}">Tools at work</button>` : ""}
     <span class="pill ${seal.signed ? "signed" : ""}">${seal.signed ? "Signed " + time : "Not signed"}</span>
     <span class="total" data-k="total">${money(state.total_cents)}</span>`;
 }
@@ -255,11 +272,15 @@ function sheetMenu() {
   const { sheet } = state, list = sheetList();
   if (list.length < 2) return `<span class="sheet">${esc(sheet.title)}</span>`;
   return `<span class="sheetmenu"><button class="sheet pickable" data-menu aria-haspopup="menu" aria-expanded="${!!ui.menu}" title="Switch the list">${esc(sheet.title)} <span class="caret">▾</span></button>
-    ${ui.menu ? `<span class="menu" role="menu">${list.map((x) => `<button role="menuitem" data-sheet="${esc(x.id)}" aria-current="${x.id === sheet.id}"><span>${esc(x.title)}</span>${x.sub ? `<small>${esc(x.sub)}</small>` : ""}</button>`).join("")}</span>` : ""}</span>`;
+    ${ui.menu && ui.confirm ? `<span class="menu ask" role="alertdialog" aria-label="Switching starts a new run"><span class="q"><b>Switching starts a new run.</b> It clears ${esc(ui.confirm.atStake)}.</span>
+      <span class="acts"><button class="btn" data-menu>Stay</button><button class="btn go" data-sheet="${esc(ui.confirm.id)}" data-sure="1">Switch</button></span></span>`
+    : ui.menu ? `<span class="menu" role="menu">${list.map((x) => `<button role="menuitem" data-sheet="${esc(x.id)}" aria-current="${x.id === sheet.id}"><span>${esc(x.title)}</span>${x.sub ? `<small>${esc(x.sub)}</small>` : ""}</button>`).join("")}</span>` : ""}</span>`;
 }
-async function useSheet(id) {
-  ui.menu = false;
-  if (id === state.sheet.id) { last.quiet = true; return render(); }
+async function useSheet(id, confirmed) {
+  if (id === state.sheet.id) { ui.menu = false; ui.confirm = null; last.quiet = true; return render(); }
+  const atStake = state.seal.signed ? "the signature and its carts" : state.issuer_key && state.issuer_key.enrolled ? "the phone's enrolment" : "";
+  if (atStake && !confirmed) { ui.confirm = { id, atStake }; last.quiet = true; return render(); }     // ask once, in the menu
+  ui.menu = false; ui.confirm = null;
   try {
     const res = await fetch("/api/admin/use-sheet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sheet_id: id, sheet: id, id }) });
     if (!res.ok) throw new Error(res.status);
@@ -277,6 +298,21 @@ async function useSheet(id) {
   }
 }
 
+// ---------- tools at work: one row per tool, one real number each, from GET /api/tools (drawn only when the route exists) ----------
+function toolRows() {
+  const t = aux.tools, list = Array.isArray(t) ? t : t && (t.tools || t.items || t.rows);
+  if (!Array.isArray(list)) return [];
+  return list.map((x) => ({ name: x.name || x.tool || x.id || "", number: x.number ?? x.value ?? x.count ?? "", words: x.words || x.label || x.text || x.what || "",
+    route: x.route || x.source || x.from || "", detail: x.detail || x.note || x.how || "", ok: x.ok !== false && x.working !== false })).filter((x) => x.name);
+}
+function toolsSheet() {
+  const rows = toolRows();
+  return `<h2>Tools at work</h2><p>One real number per tool, each from the route named under it.</p>
+    ${rows.map((r, i) => `<button class="tool" data-toggle="tool:${i}" aria-expanded="${ui.open.has("tool:" + i)}">
+      <span class="tn">${esc(r.name)}</span><span class="tv">${r.number !== "" ? `<b>${esc(r.number)}</b> ` : ""}${esc(r.words)}${r.ok ? "" : ' <span class="faint">not running</span>'}</span></button>
+      ${ui.open.has("tool:" + i) ? `<p class="small tooldetail">${esc(r.detail)}${r.detail && r.route ? " · " : ""}${r.route ? `<code>${esc(r.route)}</code>` : ""}</p>` : ""}`).join("")}`;
+}
+
 // ---------- the stepper: the run across the top. Every number is from the state ----------
 function stepList(line, pick) {
   const { sheet, seal, counts } = state, o = state.order;
@@ -285,9 +321,9 @@ function stepList(line, pick) {
   const at = seal.signed_at || (seal.signature && seal.signature.at);
   const time = at ? new Date(at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "";
   return [
-    { id: "list_read", label: "List read", small: limits ? `${limits} limits, quoted` : "limits on the sheet", done: true },
-    { id: "stores_searched", label: "Stores searched", small: `${sheet.stores.length} stores`, done: pages > 0 },
-    { id: "pages_read", label: "Pages read", small: `${pages} pages`, done: pages > 0 },
+    { id: "list_read", label: "List read", small: limits ? `${n_(limits, "limit", "limits")}, quoted` : "limits on the sheet", done: true },
+    { id: "stores_searched", label: "Stores searched", small: n_(sheet.stores.length, "store", "stores"), done: pages > 0 },
+    { id: "pages_read", label: "Pages read", small: n_(pages, "page", "pages"), done: pages > 0 },
     { id: "checked", label: "Checked", small: "cheapest first", done: state.lines.some((l) => l.candidates.length > 0) },
     { id: "picked", label: "Picked", small: pick ? money(pick.product.price_cents) + times(line) : "nothing passes", done: !!pick, k: "step.pick" },
     { id: "signs", label: `${cap(sheet.issuer.role || "approver")} signs`, small: seal.signed ? `${sheet.issuer.name}, ${time}` : "from the phone", done: !!seal.signed },
@@ -334,6 +370,31 @@ function renderDoc(current) {
 }
 
 // ---------- centre: the candidates, cheapest first ----------
+/** What a run of rejected rows holds, by which limit failed and how, with the extreme value: a summary of the rows themselves. */
+function foldSummary(rows) {
+  const groups = new Map();
+  const add = (key, text, value, unit, far) => {
+    const gr = groups.get(key) || { n: 0, text, unit, far, extreme: null };
+    gr.n += 1;
+    if (value != null) gr.extreme = gr.extreme == null ? value : far === "lowest" ? Math.min(gr.extreme, value) : far === "highest" ? Math.max(gr.extreme, value) : gr.extreme;
+    groups.set(key, gr);
+  };
+  for (const c of rows) {
+    if (c.status === "struck") { add("struck", "struck"); continue; }
+    const ch = c.checks[Math.max(0, firstFail(c))];
+    if (!ch) continue;
+    const b = withUnit(g(ch.bound.value), ch.bound.unit);
+    if (c.status === "unclear" || isUnclear(c, ch)) add("unclear", "unclear");
+    else if (ch.state === "not_stated") add("none", "never state it");
+    else if (ch.lhs == null) add("unclear", "unclear");
+    else if (ch.op === ">=") add(ch.limit_id, `under ${b}`, ch.lhs, ch.bound.unit, "lowest");
+    else if (ch.op === "<=") add(ch.limit_id, `over ${b}`, ch.lhs, ch.bound.unit, "highest");
+    else add(ch.limit_id, `not ${b}`);
+  }
+  const order = [...groups.values()].sort((a, b) => (a.far ? 0 : 1) - (b.far ? 0 : 1) || b.n - a.n);
+  return order.map((gr) => `${gr.n} ${gr.text === "never state it" && gr.n === 1 ? "never states it" : gr.text}${gr.far && gr.n > 1 && gr.extreme != null ? ` (${gr.far} ${withUnit(g(gr.extreme), gr.unit)})` : ""}`).join(" · ");
+}
+
 function rowHtml(c, line, pick, limits) {
   const v = verdict(c, line, pick), fail = c.status === "struck" ? -1 : firstFail(c);
   const cells = c.checks.map((ch, i) => {
@@ -369,13 +430,13 @@ function renderList(line, pick) {
   const forged = (limit) => limit.bound.source === "issuer" && !state.seal.signed
     ? `<span class="forge" role="button" tabindex="0" data-forge="${esc(limit.id)}" title="Try to change this limit from here, without the approver's key" aria-label="Try to change this limit from here">change</span>` : "";
   const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span>${esc(h.name)} <b data-k="head.${limit.id}">${esc(h.rule)}</b></span>${forged(limit)}</span>`; }).join("");
-  const sub = at >= 0 ? `Cheapest first. ${rows.length} read · <span data-k="sub.rej">${cheaper.length}</span> cheaper ones rejected · <span data-k="sub.also">${also}</span> dearer ones also pass`
+  const sub = at >= 0 ? `Cheapest first. ${rows.length} read · <span data-k="sub.rej">${cheaper.length}</span> cheaper ${cheaper.length === 1 ? "one" : "ones"} rejected · <span data-k="sub.also">${also}</span> dearer ${also === 1 ? "one also passes" : "ones also pass"}`
     : rows.length ? `Cheapest first. ${rows.length} read · nothing passes` : "No page has been read for this item yet";
   const keep = q("#rows") && last.line === line.line_id ? q("#rows").scrollTop : 0;      // a redraw never moves the list under the viewer
   q("#list").innerHTML = `<div class="lhd"><h1>${esc(cap(line.need))}</h1><p class="sub">${sub}</p></div>
     <div class="hd" style="--n:${limits.length}"><span></span><span>Product</span><span>Price</span>${heads}<span>Result</span></div>
     <div class="rows" id="rows">
-      ${fold ? `<button class="more" data-toggle="above">${fold - pinned.length} cheaper ones above, each rejected with its reason</button>` : ""}
+      ${fold ? `<button class="more" data-toggle="above" title="Show these rows"><b>${fold - pinned.length} cheaper above:</b> ${esc(foldSummary(cheaper.slice(0, fold).filter((c) => !pinned.includes(c))))}</button>` : ""}
       ${pinned.map((c) => rowHtml(c, line, pick, limits)).join("")}${cheaper.slice(fold).map((c) => rowHtml(c, line, pick, limits)).join("")}
       ${pick ? rowHtml(pick, line, pick, limits) : (rows.length ? `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>` : "")}
       ${dearer.length ? (ui.open.has("below") ? dearer.map((c) => rowHtml(c, line, pick, limits)).join("")
@@ -451,7 +512,7 @@ function renderSide(line, c) {
     const agent = c.picked && ((a && a.quote) || (u && u.quote)) ? `<div class="pair agent" data-open="${esc(c.id)}"><div class="ph2"><span>The store's agent said</span></div>
         ${a && a.quote ? `<div class="k">delivery${scope(a)} · stated, not guaranteed</div><div class="qt">“${esc(clip(a.quote, 90))}”</div>` : ""}
         ${u && u.quote ? `<div class="k">returns${scope(u)}</div><div class="qt">“${esc(clip(u.quote, 90))}”</div>` : ""}</div>` : "";
-    card = `<section class="card why"><div class="cap">${c.picked ? "Why this one" : "Why not this one"}</div>
+    card = `<section class="card why"><div class="cap">${c.picked ? "Why this one" : "Why not this one"}${c.picked && ui.was && ui.was.store !== c.product.store ? ` <span class="nowat">now at ${esc(c.product.store)}</span>` : ""}</div>
       <h2 title="${esc(c.product.title)}">${esc(c.product.title)}</h2>
       <div class="meta2">${esc(option + c.product.store)} · <span data-k="why.price">${money(c.product.price_cents)}</span>${qty(line) > 1 ? `${esc(times(line))} = ${money(c.product.price_cents * qty(line))}` : ""} · <a class="link" href="${esc(c.product.url)}" target="_blank" rel="noopener">store page ↗</a></div>
       ${c.status === "struck" ? `<div class="pair"><div class="ph2"><span>Struck by ${esc(state.sheet.issuer.name)}</span></div><div class="qt">“${esc(c.reason || "")}”</div></div>` : ""}
@@ -587,7 +648,7 @@ function stepSheet(id, line, pick) {
   if (id === "list_read") {
     const all = sheet.lines.flatMap((l) => l.limits.filter((x) => x.from_order && x.from_order.quote).map((x) => ({ l, x })));
     return `<h2>${esc(o.title || sheet.issuer.name + "'s list")}</h2>
-      ${o.limits_derived != null ? `<p><b>${o.limits_matching} of ${o.limits_derived} limits</b> read from the list match the sheet.</p>` : ""}
+      ${o.limits_derived != null ? `<p><b>${o.limits_matching} of ${n_(o.limits_derived, "limit", "limits")}</b> read from the list ${o.limits_derived === 1 ? "matches" : "match"} the sheet.</p>` : ""}
       ${all.map(({ l, x }) => `<h3>${esc(cap(l.need))} · ${esc(x.name)}${x.from_order.matches === false ? " · changed from the list" : ""}</h3><p>“${fragment(x.from_order.quote, { value: x.from_order.value ?? undefined }, 400, 400)}”</p>`).join("")}${trailRows(id)}`;
   }
   if (id === "stores_searched") return `<h2>Stores searched</h2>${perStore(line.candidates)}${egressHtml()}${trailRows(id)}`;
@@ -641,6 +702,7 @@ function renderDrawer(line, pick) {
   if (d === "shopper") { el.hidden = false; return shopperSheet(el, line); }
   el.dataset.for = "";
   let html = null;
+  if (d === "tools") html = toolRows().length ? toolsSheet() : null;
   if (d && d.startsWith("step:")) html = stepSheet(d.slice(5), line, pick);
   const c = d === "pick" || d === "step:picked" ? pick : line.candidates.find((x) => x.id === d);
   if (!html && c) html = productSheet(c);
@@ -799,10 +861,10 @@ async function forgeChange(anchor) {
 // ---------- interaction ----------
 document.addEventListener("click", (e) => {
   const t = e.target.closest("[data-sheet], [data-menu], [data-forge], [data-toggle], [data-show], [data-open], [data-close], .rowx");
-  if (ui.menu && !(t && (t.dataset.sheet || t.dataset.menu !== undefined))) { ui.menu = false; if (!t) { last.quiet = true; render(); return; } }
+  if (ui.menu && !(t && (t.dataset.sheet || t.dataset.menu !== undefined))) { ui.menu = false; ui.confirm = null; if (!t) { last.quiet = true; render(); return; } }
   if (!t || e.target.closest("a, input")) return;
-  if (t.dataset.sheet) return useSheet(t.dataset.sheet);
-  if (t.dataset.menu !== undefined) { ui.menu = !ui.menu; last.quiet = true; return render(); }
+  if (t.dataset.sheet) return useSheet(t.dataset.sheet, t.dataset.sure === "1");
+  if (t.dataset.menu !== undefined) { ui.menu = !ui.menu; ui.confirm = null; last.quiet = true; return render(); }
   if (t.dataset.forge) return forgeChange(t);
   if (t.dataset.toggle) { ui.open.has(t.dataset.toggle) ? ui.open.delete(t.dataset.toggle) : ui.open.add(t.dataset.toggle); }
   else if (t.dataset.close !== undefined) ui.drawer = null;
