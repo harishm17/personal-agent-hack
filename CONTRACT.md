@@ -251,3 +251,72 @@ tool: the therapist is the first issuer, not the product.
   order" until Dana confirms on her phone. The product never depends on it: `signoff.airbyte.api` is an
   optional router and `signoff.airbyte.order.load()` may return `None`.
 - Airbyte Core 2.5.0 runs at `http://localhost:8900` (Docker through Colima); login in the keys file.
+
+## Amendment 11:40 — what works on main, Senso gate, readers
+- On main at 11:38 (115 tests): real pool, figures, live screen, phone enrol and signed requests, strike,
+  signing with two real carts (carex.com and parentgiving.com), Senso run on the sheet's sentences, Persona
+  sandbox inquiry, replay mode, Amplitude events from store calls, the chat with code-decided refusals.
+- Senso gate as built: `order` sentences (a line is on the order) block the signature on `conflict` or
+  `unsupported`; `limit` sentences are advisory, because Dana may move a limit away from the order ("Dana
+  moved this from the order" is shown, the signature goes through). Store sentences are never sent.
+- Readers: Sonnet is the reference (189 figures, 20 marked unsure and not counted). On the same 111
+  products `sie:Qwen/Qwen3.8-27B-FP8` agrees on 166 of 169 and `sie:urchade/gliner_multi-v2.1` on 118 of
+  169. `signoff.engine.state.set_reader(name)` switches which reader decides; this is the change the
+  Statsig gate controls and Amplitude records. It replaces Arcee, whose key has no credits.
+- vivehealth.com states no delivery time to three differently worded questions, so under the pick rule
+  its products are shown and checked but never picked. Say so if asked; do not invent a time.
+- `ANTHROPIC_API_KEY` is present with about $4.50: live calls only, capped; batch reads use `claude -p`.
+
+## Amendment 12:00 — depth without a new layer (two independent reviews agree)
+The working path (pool, figures, pick rule, signed requests, carts, existing routes and state keys) is
+**not changed**. New work is new files, new routes and new optional state keys only. Anything not on main
+and seen in a rehearsal by **14:30** is cut. Tag `e2e-phone-signed-1146` is the version the builder signed
+from his phone.
+1. **Ask, don't tell** (STORE asks, ENGINE reads). For each line's pick and runner-up, and for products
+   that are `not_stated`, one question to the store's own agent built by a code template from the product
+   title and the figure name only ("What does <title> state for <figure>?", plus one on returns of an
+   opened item and delivery time for picks). The question never contains a limit, a shopper fact or a
+   person. Cached in `data/store_answers/asked/`. The reply is read by the same reader and span check
+   against the reply text. New optional key on a candidate: `asked` (list of `{figure, question, reply,
+   quote, start, end, value, unit, answered, asked_at}`). **Display only: the pick rule ignores it.**
+2. **A planted instruction that changes nothing** (ENGINE). One invented product, store
+   `planted.example`, title prefixed "Planted test page (invented)", whose text contains an instruction to
+   the agent. It is read like any page. New optional keys: on a candidate `embedded_instructions` (list of
+   `{quote, start, end}`, found by the reader and confirmed by span match) and at top level `planted`
+   (`{candidate_id, instructions, effect: "none", why}`). It is never eligible for a cart.
+3. **Receipt chain** (ENGINE owns `signoff/engine/receipts.py`; SIGN calls it for every signed request,
+   accepted or refused). Each receipt: `{n, at, type, actor, key_id, body_hash, prev_hash, hash}`.
+   `GET /api/receipts`, `GET /api/receipts/verify` → `{count, verified, first_bad}`. Say "tamper-evident".
+4. **Outbound ledger** (STORE owns `signoff/obs/egress.py`; every stream calls
+   `obs.egress(recipient, purpose, payload, fact_classes)` where it sends anything out: stores, model
+   providers, Senso, Persona, Amplitude, Statsig, Airbyte). It records recipient, purpose, size, a hash,
+   the fact classes included (`limit`, `home_measurement`, `person`, `order`, `store_text`, `product`,
+   `price`, `none`) and a code check that no limit value with its unit and no shopper fact value appears
+   in a payload to a store. `GET /api/egress` → rows and `{messages, to_stores, limits_in_store_messages}`.
+Wording allowed: "quarantined reader" (the reading model has no tools; its output is typed and
+span-checked), "decision-bound signature" (the hash covers limits, quotes, picks and total), "limits are
+compared locally; no store is told a limit". Not allowed: "provable", any leak rate from fewer than 20
+trials, "hand-checked".
+Cut for good: sheet 2, Cognee, Arcee, Tokens& Observe, a simulated multi-turn store agent, a redaction
+model as the guard.
+
+## Amendment 12:10 — the builder's decisions: the agent derives the limits; items 3 and 4 go ahead; motion
+- **Nobody configures limits.** The therapist's order is a plain document
+  (`signoff/sign/senso_docs/order.txt`, the same text Senso holds). The agent reads it with the same
+  reader and span check it uses on store text and proposes every limit with the order's own sentence
+  quoted. ENGINE: `python -m signoff.extract.order` writes `data/order/derived.json` (per limit id: line,
+  figure terms, op, value, unit, `quote`, `start`, `end`, `extractor`, `span_found_in_text`), read once
+  and cached like the figures. New optional key on each sheet limit in `/api/state`: `from_order`
+  (`{doc, quote, start, end, value, matches}`) and at top level `order` (`{doc, title, limits_derived,
+  limits_matching, derived_at, delivered_by}`). A test proves the derived limits equal
+  `sheets/sheet1.json`; the sheet file stays what the engine runs on, so the working path is unchanged.
+  Elena's home measurements are context the agent holds, shown with their source, not a control surface.
+- **The approver reviews and signs.** The phone opens on the sheet to sign. Each limit shows the order's
+  sentence. One limit can be adjusted as an override (the live moment); it is then marked "changed from
+  the order" (Senso already says so). No screen asks anyone to set six limits.
+- **On screen** every number has a source in one or two words: "from the order", "from the home", "the
+  store states", "the store's agent said". Role jargon and the owner legend go.
+- **Items 3 (receipt chain) and 4 (outbound ledger) of Amendment 12:00 are approved.**
+- **The flow layout is approved; SCREEN adds motion.**
+- Firedrill: the builder's account has 2,000 credits and an assigned seat, so
+  `native_participant_capacity_exceeded` is on Firedrill's side; he is asking their staff.

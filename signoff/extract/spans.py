@@ -78,7 +78,7 @@ def _in(value, numbers):
     return any(abs(value - n) < 1e-6 for n in numbers)
 
 
-def finish(proposal, product, extractor, assume_unit=None):
+def finish(proposal, product, extractor, assume_unit=None, target_unit=None):
     """A figure record from one proposal. Code sets start, end and span_found_in_text, and marks it unsure
     when the reported numbers are not in the quoted words or the unit cannot be compared."""
     text = product.get("text") or ""
@@ -123,9 +123,14 @@ def finish(proposal, product, extractor, assume_unit=None):
         else:
             unsure, reason = True, reason or "the page gives the number without a unit"
     else:
-        base = "lb" if stated_unit in ("lb", "kg") else "in"
+        # the unit the sheet's limit is written in; without one, pounds for weights and inches for lengths
+        base = rules.unit_name(target_unit) or ("lb" if stated_unit in ("lb", "kg") else
+                                                 "in" if rules.FAMILY.get(stated_unit) == "length" else stated_unit)
         record["unit"] = base
-        if stated_unit != base and all(_is_number(v) for v in wanted):
+        if stated_unit != base and rules.convert(1, stated_unit, base) is None:
+            record["unit"] = stated_unit
+            unsure, reason = True, reason or "stated in %s, which cannot be compared with %s" % (stated_unit, base)
+        elif stated_unit != base and all(_is_number(v) for v in wanted):
             record.update(stated_unit=stated_unit, stated_value=value, stated_low=low, stated_high=high,
                           value=None if value is None else rules.convert(value, stated_unit, base),
                           low=rules.convert(low, stated_unit, base), high=rules.convert(high, stated_unit, base))

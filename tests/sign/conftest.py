@@ -43,6 +43,7 @@ def env(monkeypatch):
     monkeypatch.setattr(api, "get_cart", lambda: cart)
     monkeypatch.setattr(api, "keystore", KeyStore(path=None))
     monkeypatch.setattr(persona, "configured", lambda: False)
+    monkeypatch.setattr(senso, "configured", lambda: False)  # no real Senso call from a unit test
     persona.reset()
     senso.reset()
     app = FastAPI()

@@ -3,12 +3,15 @@ import importlib
 import json
 import pathlib
 import threading
+import sys
 import time
 
 from fastapi import APIRouter, HTTPException
 
 from signoff import config
 from signoff.db import passing, records
+from signoff import obs
+from signoff.obs import gate
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 router = APIRouter()
@@ -72,3 +75,31 @@ def refresh_pool():
 @router.get("/api/admin/refresh-pool")
 def refresh_status():
     return _refresh
+
+
+@router.get("/api/gate/status")
+def gate_status():
+    """The Statsig gate `sie_reader`: value, deciding reader, last change, and both arms' outcome numbers."""
+    gate.start()
+    return gate.status()
+
+
+@router.get("/api/obs/status")
+def obs_status():
+    """Amplitude event counters of this process: queued, sent, delivered (HTTP 200 from Amplitude), dropped, last error."""
+    return {**obs.stats, "session_id": obs._state.get("session_id"), "experiments": obs._state.get("experiments"),
+            "key_present": bool(obs.config.env("AMPLITUDE_AI_API_KEY")), "off": obs.config.env("SIGNOFF_OBS") == "off"}
+
+
+@router.post("/api/gate/override")
+def gate_override(body: dict):
+    """Rehearsal without the console: {"value": true|false|null}. Status shows source "local override" while set."""
+    v = body.get("value")
+    if v not in (True, False, None):
+        raise HTTPException(422, "value must be true, false or null")
+    gate.set_override(v)
+    return gate.status()
+
+
+if "pytest" not in sys.modules:
+    gate.start()

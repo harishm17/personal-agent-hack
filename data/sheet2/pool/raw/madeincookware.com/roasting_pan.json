@@ -1,0 +1,2090 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://checkout.madeincookware.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Made In Cookware",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "checkout.madeincookware.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "21315111"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "21315111"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7860856062031",
+   "title": "Roasting Pan",
+   "description": {
+    "html": "Made from super-conductive Stainless Clad, the Roasting Pan yields juicy, perfectly cooked proteins with evenly golden brown crusts. With a more lightweight 3-ply construction, the pan is also easier to carry from oven to table\u2014even while holding an entire 24lb turkey. Designed to eliminate the most common turkey-roasting pitfalls, the Roasting Pan comes with a Stainless Steel Rack to elevate your bird or other protein, preventing it from getting soggy. A nonreactive, warp-resistant stainless steel interior is perfect for building sauces and gravies directly in the Roasting Pan, while specially designed handles allow the pan to be completely sealed with aluminum foil."
+   },
+   "url": "https://checkout.madeincookware.com/products/roasting-pan",
+   "handle": "roasting-pan",
+   "price_range": {
+    "min": {
+     "amount": 16499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 44900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 54700,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43641211912271",
+     "sku": "V1-COOK-ROAST-SS",
+     "title": "Stainless Clad",
+     "description": {
+      "html": "Made from super-conductive Stainless Clad, the Roasting Pan yields juicy, perfectly cooked proteins with evenly golden brown crusts. With a more lightweight 3-ply construction, the pan is also easier to carry from oven to table\u2014even while holding an entire 24lb turkey. Designed to eliminate the most common turkey-roasting pitfalls, the Roasting Pan comes with a Stainless Steel Rack to elevate your bird or other protein, preventing it from getting soggy. A nonreactive, warp-resistant stainless steel interior is perfect for building sauces and gravies directly in the Roasting Pan, while specially designed handles allow the pan to be completely sealed with aluminum foil."
+     },
+     "price": {
+      "amount": 16499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Stainless Clad"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_Stainless_17in_Roasting_Pan-6495_9f7b1958-2f67-4f31-a533-4c73c3322a7f.jpg?v=1759160899"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43641211912271:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43641211945039",
+     "sku": "KIT-TOM-ROAST-RACK",
+     "title": "Carbon Steel",
+     "description": {
+      "html": "Made from super-conductive Stainless Clad, the Roasting Pan yields juicy, perfectly cooked proteins with evenly golden brown crusts. With a more lightweight 3-ply construction, the pan is also easier to carry from oven to table\u2014even while holding an entire 24lb turkey. Designed to eliminate the most common turkey-roasting pitfalls, the Roasting Pan comes with a Stainless Steel Rack to elevate your bird or other protein, preventing it from getting soggy. A nonreactive, warp-resistant stainless steel interior is perfect for building sauces and gravies directly in the Roasting Pan, while specially designed handles allow the pan to be completely sealed with aluminum foil."
+     },
+     "price": {
+      "amount": 21999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 26900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Carbon Steel"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Carbon_Roasting_Pan_Brass_Handle-Hero_Dinner-Napkin-II_d3305b00-3a2e-4ac8-a651-dec7332c81b9.jpg?v=1759160880"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43641211945039:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43794809520207",
+     "sku": "FS-KIT-SERVE-TURKEY",
+     "title": "Holiday Set",
+     "description": {
+      "html": "Made from super-conductive Stainless Clad, the Roasting Pan yields juicy, perfectly cooked proteins with evenly golden brown crusts. With a more lightweight 3-ply construction, the pan is also easier to carry from oven to table\u2014even while holding an entire 24lb turkey. Designed to eliminate the most common turkey-roasting pitfalls, the Roasting Pan comes with a Stainless Steel Rack to elevate your bird or other protein, preventing it from getting soggy. A nonreactive, warp-resistant stainless steel interior is perfect for building sauces and gravies directly in the Roasting Pan, while specially designed handles allow the pan to be completely sealed with aluminum foil."
+     },
+     "price": {
+      "amount": 44900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 54700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Holiday Set"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Tabletop_Thanksgiving_Turkey_Bundle_001.jpg?v=1762269328"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43794809520207:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Stainless Clad"
+      },
+      {
+       "label": "Carbon Steel"
+      },
+      {
+       "label": "Holiday Set"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_Stainless_17in_Roasting_Pan-6495_9f7b1958-2f67-4f31-a533-4c73c3322a7f.jpg?v=1759160899"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "discounteligible",
+    "Stainless-MC"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638761551",
+     "handle": "klaviyo-site-only",
+     "title": "Klaviyo Site only",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7607750787151",
+   "title": "Stainless Clad Roasting Pan",
+   "description": {
+    "html": "Made from super-conductive Stainless Clad, the Roasting Pan yields juicy, perfectly cooked proteins with evenly golden brown crusts. With a more lightweight 3-ply construction, the pan is also easier to carry from oven to table\u2014even while holding an entire 24lb turkey. Designed to eliminate the most common turkey-roasting pitfalls, the Roasting Pan comes with a Stainless Steel Rack to elevate your bird or other protein, preventing it from getting soggy. A nonreactive, warp-resistant stainless steel interior is perfect for building sauces and gravies directly in the Roasting Pan, while specially designed handles allow the pan to be completely sealed with aluminum foil."
+   },
+   "url": "https://checkout.madeincookware.com/products/stainless-clad-roasting-pan",
+   "handle": "stainless-clad-roasting-pan",
+   "price_range": {
+    "min": {
+     "amount": 16499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42206623301711",
+     "sku": "COOK-ROAST-SS",
+     "title": "Roasting Pan",
+     "description": {
+      "html": "Made from super-conductive Stainless Clad, the Roasting Pan yields juicy, perfectly cooked proteins with evenly golden brown crusts. With a more lightweight 3-ply construction, the pan is also easier to carry from oven to table\u2014even while holding an entire 24lb turkey. Designed to eliminate the most common turkey-roasting pitfalls, the Roasting Pan comes with a Stainless Steel Rack to elevate your bird or other protein, preventing it from getting soggy. A nonreactive, warp-resistant stainless steel interior is perfect for building sauces and gravies directly in the Roasting Pan, while specially designed handles allow the pan to be completely sealed with aluminum foil."
+     },
+     "price": {
+      "amount": 16499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Roasting Pan"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_Stainless_17in_Roasting_Pan-6495.jpg?v=1762269326"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42206623301711:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Roasting Pan"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_Stainless_17in_Roasting_Pan-6495.jpg?v=1762269326"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "discounteligible",
+    "Stainless Clad Collection",
+    "Stainless-MC"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74378969167",
+     "handle": "stainless-clad",
+     "title": "Stainless Clad",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/287188844623",
+     "handle": "bfcm-2024-all-cookware",
+     "title": "BFCM 2024: All Cookware",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7130120028239",
+   "title": "Tom Colicchio x Made In",
+   "description": {
+    "html": "When legendary Chef Tom Colicchio came to us with a request for the perfect Roasting Pan, we got straight to work. He had three problems with other roasting pans: moisture loss, ingredients stuck in corners, and uneven browning. Chef's love of Carbon Steel and our mastery of this material come together for an unexpectedly practical execution of a classic shape. It combines the heat retention of cast iron with the control and maneuverability of Stainless Clad, resulting in a natural non stick alternative that can seamlessly transition from stovetop searing to oven roasting. Its rounded edges and straight, high sides ensure your roasts are tender, juicy, and always crispy. Size-wise, our Roasting Pan comfortably fits a 12-pound turkey, and is large enough for caramelizing to take place but compact enough to make stovetop pan sauces. Discover the difference this chef-perfected tool will make in your most cherished meals."
+   },
+   "url": "https://checkout.madeincookware.com/products/tom-colicchio-pan",
+   "handle": "tom-colicchio-pan",
+   "price_range": {
+    "min": {
+     "amount": 16999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 34999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 51800,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42408168325199",
+     "sku": "COOK-9-FRYCN-S",
+     "title": "9\" Frying Pan",
+     "description": {
+      "html": "When legendary Chef Tom Colicchio came to us with a request for the perfect Roasting Pan, we got straight to work. He had three problems with other roasting pans: moisture loss, ingredients stuck in corners, and uneven browning. Chef's love of Carbon Steel and our mastery of this material come together for an unexpectedly practical execution of a classic shape. It combines the heat retention of cast iron with the control and maneuverability of Stainless Clad, resulting in a natural non stick alternative that can seamlessly transition from stovetop searing to oven roasting. Its rounded edges and straight, high sides ensure your roasts are tender, juicy, and always crispy. Size-wise, our Roasting Pan comfortably fits a 12-pound turkey, and is large enough for caramelizing to take place but compact enough to make stovetop pan sauces. Discover the difference this chef-perfected tool will make in your most cherished meals."
+     },
+     "price": {
+      "amount": 16999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "9\" Frying Pan"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/9in.jpg?v=1789491435"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42408168325199:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40841462251599",
+     "sku": "COOK-11-FRYCN-S",
+     "title": "11\" Frying Pan",
+     "description": {
+      "html": "When legendary Chef Tom Colicchio came to us with a request for the perfect Roasting Pan, we got straight to work. He had three problems with other roasting pans: moisture loss, ingredients stuck in corners, and uneven browning. Chef's love of Carbon Steel and our mastery of this material come together for an unexpectedly practical execution of a classic shape. It combines the heat retention of cast iron with the control and maneuverability of Stainless Clad, resulting in a natural non stick alternative that can seamlessly transition from stovetop searing to oven roasting. Its rounded edges and straight, high sides ensure your roasts are tender, juicy, and always crispy. Size-wise, our Roasting Pan comfortably fits a 12-pound turkey, and is large enough for caramelizing to take place but compact enough to make stovetop pan sauces. Discover the difference this chef-perfected tool will make in your most cherished meals."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 24900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "11\" Frying Pan"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/11in.jpg?v=1789491441"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40841462251599:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43630619754575",
+     "sku": "KIT-TOM-ROAST-RACK",
+     "title": "Roasting Pan",
+     "description": {
+      "html": "When legendary Chef Tom Colicchio came to us with a request for the perfect Roasting Pan, we got straight to work. He had three problems with other roasting pans: moisture loss, ingredients stuck in corners, and uneven browning. Chef's love of Carbon Steel and our mastery of this material come together for an unexpectedly practical execution of a classic shape. It combines the heat retention of cast iron with the control and maneuverability of Stainless Clad, resulting in a natural non stick alternative that can seamlessly transition from stovetop searing to oven roasting. Its rounded edges and straight, high sides ensure your roasts are tender, juicy, and always crispy. Size-wise, our Roasting Pan comfortably fits a 12-pound turkey, and is large enough for caramelizing to take place but compact enough to make stovetop pan sauces. Discover the difference this chef-perfected tool will make in your most cherished meals."
+     },
+     "price": {
+      "amount": 21999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 26900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Roasting Pan"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/roaster.jpg?v=1789491449"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43630619754575:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43630621065295",
+     "sku": "KIT-3-TC-FRY-ROAST",
+     "title": "11\" + Roasting Pan",
+     "description": {
+      "html": "When legendary Chef Tom Colicchio came to us with a request for the perfect Roasting Pan, we got straight to work. He had three problems with other roasting pans: moisture loss, ingredients stuck in corners, and uneven browning. Chef's love of Carbon Steel and our mastery of this material come together for an unexpectedly practical execution of a classic shape. It combines the heat retention of cast iron with the control and maneuverability of Stainless Clad, resulting in a natural non stick alternative that can seamlessly transition from stovetop searing to oven roasting. Its rounded edges and straight, high sides ensure your roasts are tender, juicy, and always crispy. Size-wise, our Roasting Pan comfortably fits a 12-pound turkey, and is large enough for caramelizing to take place but compact enough to make stovetop pan sauces. Discover the difference this chef-perfected tool will make in your most cherished meals."
+     },
+     "price": {
+      "amount": 34999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "11\" + Roasting Pan"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Carbon_Tom_Pan_Roasting_Pan_Brass_Handle_Set-Hero_1.jpg?v=1761142573"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43630621065295:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46757191745615",
+     "sku": "KIT-TOM-ROAST-RACK",
+     "title": "Roasting Pan\u00a0",
+     "description": {
+      "html": "When legendary Chef Tom Colicchio came to us with a request for the perfect Roasting Pan, we got straight to work. He had three problems with other roasting pans: moisture loss, ingredients stuck in corners, and uneven browning. Chef's love of Carbon Steel and our mastery of this material come together for an unexpectedly practical execution of a classic shape. It combines the heat retention of cast iron with the control and maneuverability of Stainless Clad, resulting in a natural non stick alternative that can seamlessly transition from stovetop searing to oven roasting. Its rounded edges and straight, high sides ensure your roasts are tender, juicy, and always crispy. Size-wise, our Roasting Pan comfortably fits a 12-pound turkey, and is large enough for caramelizing to take place but compact enough to make stovetop pan sauces. Discover the difference this chef-perfected tool will make in your most cherished meals."
+     },
+     "price": {
+      "amount": 21999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 26900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Roasting Pan\u00a0"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Carbon_Roasting_Pan_Brass_Handle-Hero_Dinner-Napkin-II.jpg?v=1758823562"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46757191745615:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "9\" Frying Pan"
+      },
+      {
+       "label": "11\" Frying Pan"
+      },
+      {
+       "label": "Roasting Pan"
+      },
+      {
+       "label": "11\" + Roasting Pan"
+      },
+      {
+       "label": "Roasting Pan\u00a0"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_CarbonSteel_11in_Tom_Pan-6608.jpg?v=1762201256"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Carbon Steel Collection",
+    "disable-overnight-shipping",
+    "discounteligible",
+    "Hero Bundle"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/439299018",
+     "handle": "main-bundles",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/86851551311",
+     "handle": "carbon-steel",
+     "title": "Carbon Steel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/11080124298",
+   "title": "Stainless Clad Saute Pan",
+   "description": {
+    "html": "Equally useful for roasting, braising, simmering, saut\u00e9ing, and shallow frying, chefs love Saute Pans for their versatility. Ours are crafted in Italy from 5 layers of metal for improved heat conduction and distribution, ideal for building flavor in one-pan meals. The Saute Pan\u2019s wide surface area and shallow depth increases both the rate of evaporation and the quality of searing, while its straight walls make turning all that fond into pan sauce far tidier than it would be in a frying pan. The 5-ply construction also cleans up in seconds, because it prevents hot spots and stuck-on messes. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+   },
+   "url": "https://checkout.madeincookware.com/products/stainless-steel-saute-pan",
+   "handle": "stainless-steel-saute-pan",
+   "price_range": {
+    "min": {
+     "amount": 11999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46064373039183",
+     "sku": "COOK-15L-SAUCE-ISS",
+     "title": "1.75 QT / Stainless",
+     "description": {
+      "html": "Equally useful for roasting, braising, simmering, saut\u00e9ing, and shallow frying, chefs love Saute Pans for their versatility. Ours are crafted in Italy from 5 layers of metal for improved heat conduction and distribution, ideal for building flavor in one-pan meals. The Saute Pan\u2019s wide surface area and shallow depth increases both the rate of evaporation and the quality of searing, while its straight walls make turning all that fond into pan sauce far tidier than it would be in a frying pan. The 5-ply construction also cleans up in seconds, because it prevents hot spots and stuck-on messes. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "1.75 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_1qt_Saute_Pan-Back3q_7495cff7-2632-49a7-9c4c-70330f8c273d.jpg?v=1784642156"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46064373039183:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44266996042",
+     "sku": "COOK-4L-STE-ISS",
+     "title": "3.5 QT / Stainless",
+     "description": {
+      "html": "Equally useful for roasting, braising, simmering, saut\u00e9ing, and shallow frying, chefs love Saute Pans for their versatility. Ours are crafted in Italy from 5 layers of metal for improved heat conduction and distribution, ideal for building flavor in one-pan meals. The Saute Pan\u2019s wide surface area and shallow depth increases both the rate of evaporation and the quality of searing, while its straight walls make turning all that fond into pan sauce far tidier than it would be in a frying pan. The 5-ply construction also cleans up in seconds, because it prevents hot spots and stuck-on messes. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 16499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3.5 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_SautePan_3.5qt-wLid_1x1_004.jpg?v=1784642064"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/44266996042:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40863780700239",
+     "sku": "COOK-4L-STE-ISS-G",
+     "title": "3.5 QT / Antique Brass",
+     "description": {
+      "html": "Equally useful for roasting, braising, simmering, saut\u00e9ing, and shallow frying, chefs love Saute Pans for their versatility. Ours are crafted in Italy from 5 layers of metal for improved heat conduction and distribution, ideal for building flavor in one-pan meals. The Saute Pan\u2019s wide surface area and shallow depth increases both the rate of evaporation and the quality of searing, while its straight walls make turning all that fond into pan sauce far tidier than it would be in a frying pan. The 5-ply construction also cleans up in seconds, because it prevents hot spots and stuck-on messes. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 16499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3.5 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_SautePan_3.5qt-wLid_004_HIRES.jpg?v=1784642104"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40863780700239:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "1.75 QT"
+      },
+      {
+       "label": "3.5 QT"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_SautePan_3.5qt-wLid_1x1_Hero.jpg?v=1762197921"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-12",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bmsm",
+    "Cleaner",
+    "collection-filter:cookware",
+    "Country-Italy",
+    "discounteligible",
+    "Filter-Stainless-Clad",
+    "indexing",
+    "internal",
+    "Logicbroker",
+    "mds-indexing",
+    "PrimeSale",
+    "Saute",
+    "Saute Pan",
+    "Stainless Clad",
+    "Stainless Clad Collection",
+    "Stainless Steel",
+    "Stainless-MC",
+    "YGroup_stainlessclad"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74378969167",
+     "handle": "stainless-clad",
+     "title": "Stainless Clad",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/175245721679",
+     "handle": "new-flexify",
+     "title": "Facebook: Flexify Feed",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261526126671",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261997002831",
+     "handle": "frying-pans",
+     "title": "Frying Pans",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8572525314127",
+   "title": "Stainless Clad Roasting Pan - Wholesale",
+   "description": {
+    "html": ""
+   },
+   "url": "https://checkout.madeincookware.com/products/stainless-clad-roasting-pan-ws",
+   "handle": "stainless-clad-roasting-pan-ws",
+   "price_range": {
+    "min": {
+     "amount": 19900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45028783620175",
+     "sku": "COOK-ROAST-SS-WS2",
+     "title": "Roasting Pan - Wholesale",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Roasting Pan - Wholesale"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45028783620175:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Roasting Pan - Wholesale"
+      }
+     ]
+    }
+   ],
+   "tags": [
+    "Logicbroker",
+    "no-feed",
+    "wholesale"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/298905501775",
+     "handle": "employee-discount-eligible",
+     "title": "Employee Discount Eligible",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312499273807",
+     "handle": "alyssa-test",
+     "title": "Alyssa Test",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8709252055119",
+   "title": "Pollo Plug\u2122 Chicken Roaster",
+   "description": {
+    "html": "The Pollo Plug Chicken Roaster is made from a single piece of 304 stainless steel with no coating, so there is nothing to flake or wear off into your food. Three legs form a stable tripod base that sits securely inside the cookware you already own, holding a full bird upright without tipping or sliding. The stainless construction is oven safe to 800\u00b0F to handle high-heat roasting, and at just 1.6 pounds it is easy to lift in and out. When the meal is done, it is fully dishwasher safe. We designed the Pollo Plug to roast poultry the way it cooks best \u2014 standing up. Elevated above the pan, hot air circulates around the entire bird for even cooking and skin that crisps on every side, while rendered fat drips away instead of pooling underneath. Those drippings fall onto the potatoes, carrots, and onions roasting below, turning one pan into a complete meal. It fits the Made In Cast Iron 10\" and 12\" Skillet, Braiser, and Dutch Oven, plus the Enameled 11\" Skillet, 3.5QT Braiser, and 5.5QT Dutch Oven."
+   },
+   "url": "https://checkout.madeincookware.com/products/chicken-roaster",
+   "handle": "chicken-roaster",
+   "price_range": {
+    "min": {
+     "amount": 4499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45361091444815",
+     "sku": "ACC-CHICKEN-ROAST",
+     "title": "Pollo Plug",
+     "description": {
+      "html": "The Pollo Plug Chicken Roaster is made from a single piece of 304 stainless steel with no coating, so there is nothing to flake or wear off into your food. Three legs form a stable tripod base that sits securely inside the cookware you already own, holding a full bird upright without tipping or sliding. The stainless construction is oven safe to 800\u00b0F to handle high-heat roasting, and at just 1.6 pounds it is easy to lift in and out. When the meal is done, it is fully dishwasher safe. We designed the Pollo Plug to roast poultry the way it cooks best \u2014 standing up. Elevated above the pan, hot air circulates around the entire bird for even cooking and skin that crisps on every side, while rendered fat drips away instead of pooling underneath. Those drippings fall onto the potatoes, carrots, and onions roasting below, turning one pan into a complete meal. It fits the Made In Cast Iron 10\" and 12\" Skillet, Braiser, and Dutch Oven, plus the Enameled 11\" Skillet, 3.5QT Braiser, and 5.5QT Dutch Oven."
+     },
+     "price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Pollo Plug"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Chicken_Roaster-Hero.jpg?v=1780065882"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45361091444815:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "Pollo Plug"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Chicken_Roaster-Hero.jpg?v=1780065882"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "discounteligible"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638761551",
+     "handle": "klaviyo-site-only",
+     "title": "Klaviyo Site only",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8081045454927",
+   "title": "14\" Seasoned Carbon Steel Gratin Dish",
+   "description": {
+    "html": "The 14\" Carbon Steel Oval Gratin delivers the high-heat performance of cast iron with the speed and control of stainless steel. Responsively engineered for roasting vegetables, crisping fish, or browning gratins, it\u2019s a versatile piece built for both everyday meals and entertaining. Pre-seasoned with a blend of shea nut and coconut oil, it arrives ready to cook and naturally non stick from the first use. Sloped walls and a wide oval surface provide generous space for layering ingredients or accommodating large cuts of meat, while dual stay-cool handles make for easy maneuvering in and out of the oven. Designed to go seamlessly from oven to table, the Oval Gratin combines durability, beauty, and performance in one essential roasting pan."
+   },
+   "url": "https://checkout.madeincookware.com/products/carbon-steel-gratin-dish",
+   "handle": "carbon-steel-gratin-dish",
+   "price_range": {
+    "min": {
+     "amount": 14999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 17900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44337751752783",
+     "sku": "COOK-14-OVLG-CN-S",
+     "title": "14\"",
+     "description": {
+      "html": "The 14\" Carbon Steel Oval Gratin delivers the high-heat performance of cast iron with the speed and control of stainless steel. Responsively engineered for roasting vegetables, crisping fish, or browning gratins, it\u2019s a versatile piece built for both everyday meals and entertaining. Pre-seasoned with a blend of shea nut and coconut oil, it arrives ready to cook and naturally non stick from the first use. Sloped walls and a wide oval surface provide generous space for layering ingredients or accommodating large cuts of meat, while dual stay-cool handles make for easy maneuvering in and out of the oven. Designed to go seamlessly from oven to table, the Oval Gratin combines durability, beauty, and performance in one essential roasting pan."
+     },
+     "price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "14\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Carbon_Steel_Gratin_Pan_Stay_Cool_Handle-Hero.jpg?v=1768250073"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/44337751752783:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "14\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Carbon_Steel_Gratin_Pan_Stay_Cool_Handle-Hero.jpg?v=1768250073"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Carbon Steel Collection",
+    "discounteligible"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/86851551311",
+     "handle": "carbon-steel",
+     "title": "Carbon Steel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280769757263",
+     "handle": "non-stick-carbon-cast-iron",
+     "title": "Non Stick + Carbon + Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8926970085455",
+   "title": "10\" Cast Iron Skillet + Chicken Roaster Set",
+   "description": {
+    "html": "Roast a chicken the right way. Stand a whole bird upright inside our Made In Seasoned Cast Iron for even cooking and crisp skin."
+   },
+   "url": "https://checkout.madeincookware.com/products/fry-pan-chicken-roaster",
+   "handle": "fry-pan-chicken-roaster",
+   "price_range": {
+    "min": {
+     "amount": 17900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19800,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46058694344783",
+     "sku": "KIT-10-FRY-CI-CHICK",
+     "title": "10\" Skillet + Pollo Plug",
+     "description": {
+      "html": "Roast a chicken the right way. Stand a whole bird upright inside our Made In Seasoned Cast Iron for even cooking and crisp skin."
+     },
+     "price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10\" Skillet + Pollo Plug"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/ChatGPTImageJul15_2026_03_43_43PM.png?v=1784148266"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46058694344783:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "10\" Skillet + Pollo Plug"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Chicken_Roaster-Hero-Use.jpg?v=1784147295"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-13-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638761551",
+     "handle": "klaviyo-site-only",
+     "title": "Klaviyo Site only",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/11080507722",
+   "title": "ProCoat Non Stick Frying Pan",
+   "description": {
+    "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade, FDA-approved Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. The combination of the Non Stick coating with the heat control of our Frying Pan makes this pan ideal for cooking almost anything, from French omelettes to oil-free stir-frys. A flared lip and long, ergonomic handle makes for comfortable and easy flipping. Plus, our hollow Stay Cool Handle\u2122 and oven-safe coating up to 500F means you can oven-finish dishes. Discover the difference our chef-loved Non Stick Frying Pan will make in your kitchen."
+   },
+   "url": "https://checkout.madeincookware.com/products/non-stick-frying-pan",
+   "handle": "non-stick-frying-pan",
+   "price_range": {
+    "min": {
+     "amount": 11499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15900,
+     "currency": "USD"
+    }
+   },
+   "variants": [],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "8\""
+      },
+      {
+       "label": "10\""
+      },
+      {
+       "label": "12\""
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Graphite"
+      },
+      {
+       "label": "Harbour Blue"
+      }
+     ]
+    },
+    {
+     "name": "LEGACY",
+     "values": [
+      {
+       "label": "Standard"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_NonStickFryingPan_12in_Graphite_1x1_Hero.jpg?v=1762197922"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-13",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Seller",
+    "bmsm",
+    "collection-filter:cookware",
+    "collection-filter:non stick",
+    "Country-Italy",
+    "discounteligible",
+    "Fake Out of Stock|true",
+    "Filter-Non-Stick",
+    "Filter-Stainless-Clad",
+    "Frying Pan",
+    "indexing",
+    "internal",
+    "klaviyo-reviews-procoat-frying-pan",
+    "Logicbroker",
+    "Non-stick",
+    "YGroup_nonstick"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/86848864335",
+     "handle": "best-sellers",
+     "title": "Most Popular",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173933527119",
+     "handle": "non-stick",
+     "title": "Non Stick",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/175245721679",
+     "handle": "new-flexify",
+     "title": "Facebook: Flexify Feed",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261526126671",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/11080104522",
+   "title": "Stainless Clad Frying Pan",
+   "description": {
+    "html": "Meet a true kitchen workhorse. Crafted in Italy and the USA from 5 layers of metal, the Stainless Clad Frying Pan delivers a durable, easy-to-clean cooking surface with superior heat conduction and distribution. This 5-ply construction means far more searing and flavor-building, and far fewer hot spots and burnt-on messes. The Frying Pan yields crusty butter-basted steaks, pan sauces that come together faster, and crispier, lacier edges on perfectly fried eggs. The curvature of the walls is calculated for deeper searing and easier flipping, while a rolled rim allows you to pour sauces without spilling. The hollow build of our proprietary Stay Cool Handle\u2122 dissipates heat to keep it from getting scalding hot while on the stovetop. This means the heat stays on your ingredients, not your hands. Discover the difference that over-engineered cookware makes in your most-loved meals."
+   },
+   "url": "https://checkout.madeincookware.com/products/stainless-steel-frying-pan",
+   "handle": "stainless-steel-frying-pan",
+   "price_range": {
+    "min": {
+     "amount": 8999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40747781554255",
+     "sku": "COOK-6-FRY-ISS",
+     "title": "6\" / Stainless / Standard",
+     "description": {
+      "html": "Meet a true kitchen workhorse. Crafted in Italy and the USA from 5 layers of metal, the Stainless Clad Frying Pan delivers a durable, easy-to-clean cooking surface with superior heat conduction and distribution. This 5-ply construction means far more searing and flavor-building, and far fewer hot spots and burnt-on messes. The Frying Pan yields crusty butter-basted steaks, pan sauces that come together faster, and crispier, lacier edges on perfectly fried eggs. The curvature of the walls is calculated for deeper searing and easier flipping, while a rolled rim allows you to pour sauces without spilling. The hollow build of our proprietary Stay Cool Handle\u2122 dissipates heat to keep it from getting scalding hot while on the stovetop. This means the heat stays on your ingredients, not your hands. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "6\""
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_FryingPan_6in_Hero_1x1_HIRES.jpg?v=1785336373"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40747781554255:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44266864074",
+     "sku": "COOK-8-FRY-ISS-V2",
+     "title": "8\" / Stainless / Standard",
+     "description": {
+      "html": "Meet a true kitchen workhorse. Crafted in Italy and the USA from 5 layers of metal, the Stainless Clad Frying Pan delivers a durable, easy-to-clean cooking surface with superior heat conduction and distribution. This 5-ply construction means far more searing and flavor-building, and far fewer hot spots and burnt-on messes. The Frying Pan yields crusty butter-basted steaks, pan sauces that come together faster, and crispier, lacier edges on perfectly fried eggs. The curvature of the walls is calculated for deeper searing and easier flipping, while a rolled rim allows you to pour sauces without spilling. The hollow build of our proprietary Stay Cool Handle\u2122 dissipates heat to keep it from getting scalding hot while on the stovetop. This means the heat stays on your ingredients, not your hands. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 10899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "8\""
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_FryingPan_8in_1x1_Hero.jpg?v=1719872004"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/44266864074:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42157454000207",
+     "sku": "COOK-8-FRY-ISS-R2-G",
+     "title": "8\" / Antique Brass / Standard",
+     "description": {
+      "html": "Meet a true kitchen workhorse. Crafted in Italy and the USA from 5 layers of metal, the Stainless Clad Frying Pan delivers a durable, easy-to-clean cooking surface with superior heat conduction and distribution. This 5-ply construction means far more searing and flavor-building, and far fewer hot spots and burnt-on messes. The Frying Pan yields crusty butter-basted steaks, pan sauces that come together faster, and crispier, lacier edges on perfectly fried eggs. The curvature of the walls is calculated for deeper searing and easier flipping, while a rolled rim allows you to pour sauces without spilling. The hollow build of our proprietary Stay Cool Handle\u2122 dissipates heat to keep it from getting scalding hot while on the stovetop. This means the heat stays on your ingredients, not your hands. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 10899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "8\""
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_8in_Fry_PVD_Antique_Brass-Hero.jpg?v=1726584848"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42157454000207:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43975799930959",
+     "sku": "COOK-8-FRY-SS-RG",
+     "title": "8\" / Brushed Copper / Standard",
+     "description": {
+      "html": "Meet a true kitchen workhorse. Crafted in Italy and the USA from 5 layers of metal, the Stainless Clad Frying Pan delivers a durable, easy-to-clean cooking surface with superior heat conduction and distribution. This 5-ply construction means far more searing and flavor-building, and far fewer hot spots and burnt-on messes. The Frying Pan yields crusty butter-basted steaks, pan sauces that come together faster, and crispier, lacier edges on perfectly fried eggs. The curvature of the walls is calculated for deeper searing and easier flipping, while a rolled rim allows you to pour sauces without spilling. The hollow build of our proprietary Stay Cool Handle\u2122 dissipates heat to keep it from getting scalding hot while on the stovetop. This means the heat stays on your ingredients, not your hands. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 10899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "8\""
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Brushed_Copper_Frying_Pan_8in--8copy.jpg?v=1766082318"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43975799930959:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42157454032975",
+     "sku": "COOK-8-FRY-ISS-R2-B",
+     "title": "8\" / Graphite / Standard",
+     "description": {
+      "html": "Meet a true kitchen workhorse. Crafted in Italy and the USA from 5 layers of metal, the Stainless Clad Frying Pan delivers a durable, easy-to-clean cooking surface with superior heat conduction and distribution. This 5-ply construction means far more searing and flavor-building, and far fewer hot spots and burnt-on messes. The Frying Pan yields crusty butter-basted steaks, pan sauces that come together faster, and crispier, lacier edges on perfectly fried eggs. The curvature of the walls is calculated for deeper searing and easier flipping, while a rolled rim allows you to pour sauces without spilling. The hollow build of our proprietary Stay Cool Handle\u2122 dissipates heat to keep it from getting scalding hot while on the stovetop. This means the heat stays on your ingredients, not your hands. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 12900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "8\""
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Graphite"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_8in_Fry_PVD_Graphite-Hero.jpg?v=1726584863"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42157454032975:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "6\""
+      },
+      {
+       "label": "8\""
+      },
+      {
+       "label": "10\""
+      },
+      {
+       "label": "12\""
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      },
+      {
+       "label": "Brushed Copper"
+      },
+      {
+       "label": "Graphite"
+      }
+     ]
+    },
+    {
+     "name": "Engraving",
+     "values": [
+      {
+       "label": "Standard"
+      },
+      {
+       "label": "Engraved"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_FryingPan_12in_1x1_Hero.jpg?v=1762197921"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-13",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "American-made",
+    "Best Seller",
+    "bmsm",
+    "Cleaner",
+    "collection-filter:cookware",
+    "Country-Italy",
+    "discounteligible",
+    "Fake Out of Stock|false",
+    "Filter-Stainless-Clad",
+    "Frying Pan",
+    "gifts",
+    "indexing",
+    "internal",
+    "klaviyo-reviews-stainless-frying-pan",
+    "pdq-memorial-day-upsell",
+    "Personalized",
+    "Stainless Clad",
+    "Stainless Clad Collection",
+    "Stainless Steel",
+    "Stainless-MC"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74378969167",
+     "handle": "stainless-clad",
+     "title": "Stainless Clad",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/86848864335",
+     "handle": "best-sellers",
+     "title": "Most Popular",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/175245721679",
+     "handle": "new-flexify",
+     "title": "Facebook: Flexify Feed",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261526126671",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqb3hNVEE0TURFd05EVXlNaXdpY21WMlpYSnpaU0k2ZEhKMVpTd2liMlptYzJWMElqbzVmUT09IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

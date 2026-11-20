@@ -23,3 +23,13 @@ def test_with_keys_inquiry_is_created_and_read(env, monkeypatch):
     assert status["verified"] is True and "sandbox" in status["label"]
     env.client.post("/api/admin/reset")
     assert env.client.get("/api/issuer/persona/status").json()["inquiry_id"] is None
+
+
+def test_signing_can_require_a_passed_check(env, monkeypatch):
+    monkeypatch.setenv("PERSONA_REQUIRED", "1")
+    body = env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash())
+    r = env.client.post("/api/issuer/request", json=body)
+    assert r.status_code == 403 and r.json()["error"] == "identity_needed" and env.cart.calls == []
+    monkeypatch.setattr(persona, "status", lambda: {"verified": True})
+    ok = env.client.post("/api/issuer/request", json=env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash()))
+    assert ok.status_code == 200

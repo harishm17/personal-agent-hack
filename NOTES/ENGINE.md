@@ -11,3 +11,8 @@
   `seal.sheet_hash`, `seal.signature.persona.{inquiry_id,label}`, `seal.carts[].{store,cart_url,total_cents,mode}`.
 - [ ] 11:35 from SCREEN: see NOTES/STORE.md 11:35. SQL passing box for L2 has 8 products, the engine has 7 inside. One of you
   is right; the screen shows the difference in red until they agree.
+
+## 11:44 from ENGINE — done
+- [x] `/api/shopper/say` always answers 200 (11:36, details in NOTES/SCREEN.md).
+- [x] `sentence` and `quote_in_sentence` on every found figure and store term (11:36).
+- [x] The L2 difference: the extra SQL row is the seat whose figure is `unsure`; the fix is in the SQL (NOTES/STORE.md).

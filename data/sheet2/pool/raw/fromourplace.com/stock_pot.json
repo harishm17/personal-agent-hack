@@ -1,0 +1,3489 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://fromourplace.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Our Place",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "fromourplace.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "2441379915"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "2441379915"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8040715157698",
+   "title": "Titanium Perfect Pot Pro 7 qt. 1.0",
+   "description": {
+    "html": "Our stock pot with titanium nonstick technology"
+   },
+   "url": "https://fromourplace.com/products/titanium-perfect-pot-pro",
+   "handle": "titanium-perfect-pot-pro",
+   "price_range": {
+    "min": {
+     "amount": 14500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 21500,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44967043924162",
+     "sku": "POT.TPT.PRO.GLD",
+     "title": "Chrome/Gold",
+     "description": {
+      "html": "Our stock pot with titanium nonstick technology"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 21500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome/Gold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-thumbnail-TitaniumPerfectPotPro-gold_c381cd68-0f6c-40f6-a9df-3f7121e4b647.jpg?v=1768266417"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44967043924162:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45622723576002",
+     "sku": "POT.TPT.LTO.BRHS",
+     "title": "Brushed",
+     "description": {
+      "html": "Our stock pot with titanium nonstick technology"
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Brushed"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-thumbnail-TitaniumPerfectPotPro-Brushed.jpg?v=1768266417"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45622723576002:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44967043891394",
+     "sku": "POT.TPT.PRO.CRM",
+     "title": "Chrome",
+     "description": {
+      "html": "Our stock pot with titanium nonstick technology"
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-thumbnail-TitaniumPerfectPotPro-chrome_93ad1275-9693-4c7e-8196-14cbc46b3de6.jpg?v=1768266417"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44967043891394:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Chrome/Gold"
+      },
+      {
+       "label": "Brushed"
+      },
+      {
+       "label": "Chrome"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-thumbnail-TitaniumPerfectPotPro-gold_c381cd68-0f6c-40f6-a9df-3f7121e4b647.jpg?v=1768266417",
+     "alt_text": "gold titanium perfect pot non toxic nonstick dutch oven pro with silicone spoon"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-14",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "AU",
+    "labelrequired",
+    "product_name_update",
+    "TikTokPipe17",
+    "Titanium Cookware",
+    "warranty:  lifetime",
+    "YGroup_TPP"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289129824450",
+     "handle": "sale",
+     "title": "Black Friday",
+     "description": {
+      "html": "Upgrade your kitchen with our best prices of the year."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292869341378",
+     "handle": "perfect-pots",
+     "title": "Perfect Pots",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8040737538242",
+   "title": "Titanium Perfect Pot Pro 3 qt. 1.0",
+   "description": {
+    "html": "A non-toxic, high-performance long-handled pot"
+   },
+   "url": "https://fromourplace.com/products/titanium-mini-perfect-pot-pro",
+   "handle": "titanium-mini-perfect-pot-pro",
+   "price_range": {
+    "min": {
+     "amount": 9900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 16900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44967052902594",
+     "sku": "POT.TMPP.PRO.GLD",
+     "title": "Chrome/Gold",
+     "description": {
+      "html": "A non-toxic, high-performance long-handled pot"
+     },
+     "price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome/Gold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-thumbnail-TitaniumMiniPerfectPotPro-gold_59f52750-7aa1-40c5-94ac-9f7a02fb4f8d.jpg?v=1768266394"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44967052902594:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45622724231362",
+     "sku": "POT.TMPP.LTO.BRHS",
+     "title": "Brushed",
+     "description": {
+      "html": "A non-toxic, high-performance long-handled pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Brushed"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-thumbnail-TitaniumMiniPerfectPotPro-Brushed.jpg?v=1768266394"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45622724231362:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44967052869826",
+     "sku": "POT.TMPP.PRO.CRM",
+     "title": "Chrome",
+     "description": {
+      "html": "A non-toxic, high-performance long-handled pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-thumbnail-TitaniumMiniPerfectPotPro-chrome_9109db05-d9dd-414b-b576-fa87fdbc39cb.jpg?v=1768266394"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44967052869826:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Chrome/Gold"
+      },
+      {
+       "label": "Brushed"
+      },
+      {
+       "label": "Chrome"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-thumbnail-TitaniumMiniPerfectPotPro-gold_59f52750-7aa1-40c5-94ac-9f7a02fb4f8d.jpg?v=1768266394",
+     "alt_text": "gold titanium mini perfect pot non toxic nonstick dutch oven pro with silicone spoon"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "AU",
+    "labelrequired",
+    "product_name_update",
+    "TikTokPipe17",
+    "Titanium Cookware",
+    "warranty:  lifetime",
+    "YGroup_miniTPP"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289129824450",
+     "handle": "sale",
+     "title": "Black Friday",
+     "description": {
+      "html": "Upgrade your kitchen with our best prices of the year."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292869341378",
+     "handle": "perfect-pots",
+     "title": "Perfect Pots",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6864952688834",
+   "title": "Ceramic Nonstick Perfect Pot 6.5 qt.",
+   "description": {
+    "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+   },
+   "url": "https://fromourplace.com/products/perfect-pot",
+   "handle": "perfect-pot",
+   "price_range": {
+    "min": {
+     "amount": 9900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40452807131330",
+     "sku": "POT.PPT.ESN.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/pink-perfect-pot.jpg?v=1741708962"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/40452807131330:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40457445212354",
+     "sku": "POT.PPT.ESN.CHR",
+     "title": "Char",
+     "description": {
+      "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/black-perfect-pot.jpg?v=1741708962"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/40457445212354:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40452807196866",
+     "sku": "POT.PPT.ESN.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/blue-perfect-pot.jpg?v=1741649012"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/40452807196866:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41123017130178",
+     "sku": "POT.PPT.ESN.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/green-perfect-pot.jpg?v=1741708962"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/41123017130178:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44731315519682",
+     "sku": "POT.PPT.DWL.CLY",
+     "title": "Clay",
+     "description": {
+      "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Clay"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/PerfectPot_Clay_1.jpg?v=1741708962"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44731315519682:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41151061426370",
+     "sku": "POT.PPT.ESN.LAV",
+     "title": "Lavender",
+     "description": {
+      "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Lavender"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/purple-perfect-pot.jpg?v=1741708962"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/41151061426370:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40452807164098",
+     "sku": "POT.PPT.ESN.STM",
+     "title": "Steam",
+     "description": {
+      "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/beige-perfect-pot.jpg?v=1741708962"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/40452807164098:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47723956240578",
+     "sku": "POT.PPT.LTO.CSP",
+     "title": "Vanilla Bean",
+     "description": {
+      "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Vanilla Bean"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/vanilla-bean-perfect-pot-thumbnail-01.jpg?v=1780345915"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/47723956240578:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42567133364418",
+     "sku": "POT.PPT.ESN.TUR",
+     "title": "Turmeric",
+     "description": {
+      "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Turmeric"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Perfect_Pot_-_Turmeric_df7a5cfb-fee9-422f-8b9f-843d677fc3f3.jpg?v=1741708962"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42567133364418:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43630575943874",
+     "sku": "POT.PPT.ESN.BUR",
+     "title": "Charm",
+     "description": {
+      "html": "An 8-in-1 family-sized, stovetop-to-oven nonstick pot"
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Charm"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/PP_burgundy_1_c77a0170-6aab-4400-998b-1ce492c9e39c.png?v=1741708962"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43630575943874:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Spice"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Clay"
+      },
+      {
+       "label": "Lavender"
+      },
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Vanilla Bean"
+      },
+      {
+       "label": "Turmeric"
+      },
+      {
+       "label": "Charm"
+      },
+      {
+       "label": "Rosa"
+      },
+      {
+       "label": "Azul"
+      },
+      {
+       "label": "Cielo"
+      },
+      {
+       "label": "Tierra"
+      },
+      {
+       "label": "Firecracker"
+      },
+      {
+       "label": "Eve"
+      },
+      {
+       "label": "Aura"
+      },
+      {
+       "label": "Acid"
+      },
+      {
+       "label": "Blanch"
+      },
+      {
+       "label": "Butter Yellow"
+      },
+      {
+       "label": "Forget-Me-Not Blue"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/black-perfect-pot.jpg?v=1741708962",
+     "alt_text": "Black perfect pot non toxic nonstick dutch oven"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "1 year warranty",
+    "3 year warranty",
+    "All",
+    "AU",
+    "Ceramic Cookware",
+    "envive",
+    "labelrequired",
+    "Mirakl",
+    "product_name_update",
+    "spring_sale",
+    "TikTokPipe17",
+    "warranty: 1 year",
+    "warranty: 3 year"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292005773506",
+     "handle": "press-page-collections",
+     "title": "Press Page Collections",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292869341378",
+     "handle": "perfect-pots",
+     "title": "Perfect Pots",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8190562074818",
+   "title": "Essentials Cookware Set",
+   "description": {
+    "html": "A non-toxic nonstick set with organized storage"
+   },
+   "url": "https://fromourplace.com/products/essentials-cookware-set-11-pc",
+   "handle": "essentials-cookware-set-11-pc",
+   "price_range": {
+    "min": {
+     "amount": 17900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 34500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 55300,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 55300,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45660794093762",
+     "sku": "CKW.11PC.EPP.TER",
+     "title": "Terracotta",
+     "description": {
+      "html": "A non-toxic nonstick set with organized storage"
+     },
+     "price": {
+      "amount": 27500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 55300,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Terracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCookwareSet-Terracotta-ecomm.jpg?v=1759797061"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660794093762:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660794028226",
+     "sku": "CKW.11PC.EPP.CRM",
+     "title": "Cream",
+     "description": {
+      "html": "A non-toxic nonstick set with organized storage"
+     },
+     "price": {
+      "amount": 34500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 55300,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCookwareSet-Cream-ecomm.jpg?v=1759797061"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660794028226:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660793995458",
+     "sku": "CKW.11PC.EPP.BLK",
+     "title": "Char",
+     "description": {
+      "html": "A non-toxic nonstick set with organized storage"
+     },
+     "price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 55300,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCookwareSet-Chra-ecomm.jpg?v=1759797061"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660793995458:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660794060994",
+     "sku": "CKW.11PC.EPP.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "A non-toxic nonstick set with organized storage"
+     },
+     "price": {
+      "amount": 34500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 55300,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCookwareSet-BlueSalt-ecomm.jpg?v=1759797061"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660794060994:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Terracotta"
+      },
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Blue Salt"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCookwareSet-Terracotta-ecomm.jpg?v=1759797061",
+     "alt_text": "Set of orange cookware including pots and pans on a white background"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Ceramic Cookware",
+    "noreview"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/165750112331",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Our thoughtfully curated cookware bundles help you cook more, and spend less."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292868554946",
+     "handle": "cookware-bundles",
+     "title": "Cookware - Bundles",
+     "description": {
+      "html": "From the stovetop to the kitchen table, save with our special sets curated just for your place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7464079458498",
+   "title": "Ceramic Nonstick Perfect Pot 2.75 qt.",
+   "description": {
+    "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+   },
+   "url": "https://fromourplace.com/products/mini-perfect-pot",
+   "handle": "mini-perfect-pot",
+   "price_range": {
+    "min": {
+     "amount": 8900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12500,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42249908453570",
+     "sku": "POT.MP2.ESN.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/blue-mini-perfect-pot.jpg?v=1734118678"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249908453570:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42249908355266",
+     "sku": "POT.MP2.ESN.STM",
+     "title": "Steam",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/beige-mini-perfect-pot.jpg?v=1734118650"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249908355266:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42249908388034",
+     "sku": "POT.MP2.ESN.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/green-mini-perfect-pot.jpg?v=1734118288"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249908388034:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42249908420802",
+     "sku": "POT.MP2.ESN.CHR",
+     "title": "Char",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/black-mini-perfect-pot.jpg?v=1734118704"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249908420802:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42249908322498",
+     "sku": "POT.MP2.ESN.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/pink-mini-perfect-pot.jpg?v=1734118731"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249908322498:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42249908486338",
+     "sku": "POT.MP2.ESN.LAV",
+     "title": "Lavender",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Lavender"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/purple-mini-perfect-pot.jpg?v=1734118756"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249908486338:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43315634045122",
+     "sku": "POT.MP2.ESN.TAU",
+     "title": "Tierra",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Tierra"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/brown-mini-perfect-pot.jpg?v=1734118780"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43315634045122:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43315634012354",
+     "sku": "POT.MP2.ESN.MIN",
+     "title": "Cielo",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cielo"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/light-blue-mini-perfect-pot.jpg?v=1734118807"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43315634012354:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48607494308034",
+     "title": "Butter Yellow",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Butter Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/butter-yellow-Ceramic-Nonstick-Perfect-Pot-2.75qt-92x92.jpg?v=1786465448"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/48607494308034:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48607855575234",
+     "title": "Vanilla Bean",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pot"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Vanilla Bean"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/vanilla-bean-Ceramic-Nonstick-Perfect-Pot-2.75qt-92x92_37281d10-de48-4672-aca5-b1a67bdb7a9c.jpg?v=1786479363"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/48607855575234:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Spice"
+      },
+      {
+       "label": "Lavender"
+      },
+      {
+       "label": "Tierra"
+      },
+      {
+       "label": "Cielo"
+      },
+      {
+       "label": "Butter Yellow"
+      },
+      {
+       "label": "Vanilla Bean"
+      },
+      {
+       "label": "Forget-Me-Not Blue"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Mini_Perfect_Pot_-_Blue_Salt_dee3d9e6-4160-4819-84a7-7e9ada89fb8e.jpg?v=1704910381",
+     "alt_text": "The Mini Perfect Pot 2.0 in matte blue, featuring a lid and long handle, is displayed against a plain off-white background."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "1 year warranty",
+    "3 year warranty",
+    "All",
+    "AU",
+    "Ceramic Cookware",
+    "Cookware",
+    "labelrequired",
+    "Mirakl",
+    "product_name_update",
+    "spring_sale",
+    "TikTokPipe17",
+    "warranty: 1 year",
+    "warranty: 3 year"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292869341378",
+     "handle": "perfect-pots",
+     "title": "Perfect Pots",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293325701314",
+     "handle": "gifts-under-100",
+     "title": "Gifts $100 and Under",
+     "description": {
+      "html": "Chef-approved cookware gifts under $100, up to 45% off for Black Friday. Ceramic nonstick pans, PFAS-free kitchen essentials & more. The best gifts for foodies."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7637699002562",
+   "title": "Cookware Set",
+   "description": {
+    "html": "A 13-piece Always Pan and Perfect Pot set"
+   },
+   "url": "https://fromourplace.com/products/cookware-set",
+   "handle": "cookware-set",
+   "price_range": {
+    "min": {
+     "amount": 29799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 31500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 51800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 51800,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42995115655362",
+     "sku": "CKW.CWS.BDL.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "A 13-piece Always Pan and Perfect Pot set"
+     },
+     "price": {
+      "amount": 31500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Blue_Always_Pan_Perfect_Pot_Mini_Always_Pan_Mini_Perfect_Pot_bundle.jpg?v=1772474732"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42995115655362:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42995115720898",
+     "sku": "CKW.CWS.BDL.CHR",
+     "title": "Char",
+     "description": {
+      "html": "A 13-piece Always Pan and Perfect Pot set"
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Black_Always_Pan_Perfect_Pot_Mini_Always_Pan_Mini_Perfect_Pot_Cookware_Set_bundle.jpg?v=1771877087"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42995115720898:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42995115753666",
+     "sku": "CKW.CWS.BDL.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "A 13-piece Always Pan and Perfect Pot set"
+     },
+     "price": {
+      "amount": 31500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/CookwareSet_Sage_1.jpg?v=1777054324"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42995115753666:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42995115688130",
+     "sku": "CKW.CWS.BDL.STM",
+     "title": "Steam",
+     "description": {
+      "html": "A 13-piece Always Pan and Perfect Pot set"
+     },
+     "price": {
+      "amount": 31500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Beige_Always_Pan_Perfect_Pot_Mini_Always_Pan_Mini_Perfect_Pot_Cookware_Set_bundle.jpg?v=1771877087"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42995115688130:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42995115786434",
+     "sku": "CKW.CWS.BDL.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "A 13-piece Always Pan and Perfect Pot set"
+     },
+     "price": {
+      "amount": 31500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Pink_Always_Pan_Perfect_Pot_Mini_Always_Pan_Mini_Perfect_Pot_Cookware_Set_bundle.jpg?v=1772474732"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42995115786434:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45594316275906",
+     "sku": "CKW.CWS.BDL.YLW",
+     "title": "Butter Yellow",
+     "description": {
+      "html": "A 13-piece Always Pan and Perfect Pot set"
+     },
+     "price": {
+      "amount": 29799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Butter Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/butter-yellow-cookware-set.jpg?v=1777054324"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45594316275906:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47724147048642",
+     "sku": "CKW.CWS.LTO.CSP",
+     "title": "Vanilla Bean",
+     "description": {
+      "html": "A 13-piece Always Pan and Perfect Pot set"
+     },
+     "price": {
+      "amount": 31500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Vanilla Bean"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/vanilla-bean-cookware-set-thumbnail-01.jpg?v=1780348442"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/47724147048642:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46814707286210",
+     "sku": "CKW.CWS.LTO.LBB",
+     "title": "Forget-Me-Not Blue",
+     "description": {
+      "html": "A 13-piece Always Pan and Perfect Pot set"
+     },
+     "price": {
+      "amount": 31500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Forget-Me-Not Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/forget-me-not-blue-cookware-set-thumbnail.jpg?v=1772474732"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/46814707286210:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44719517597890",
+     "sku": "CKW.CWS.TGB.CRM",
+     "title": "Cream",
+     "description": {
+      "html": "A 13-piece Always Pan and Perfect Pot set"
+     },
+     "price": {
+      "amount": 31500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/White_Always_Pan_Perfect_Pot_Mini_Always_Pan_Mini_Perfect_Pot_Cookware_Set_bundle.jpg?v=1771877087"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44719517597890:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Spice"
+      },
+      {
+       "label": "Butter Yellow"
+      },
+      {
+       "label": "Vanilla Bean"
+      },
+      {
+       "label": "Forget-Me-Not Blue"
+      },
+      {
+       "label": "Cream"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Green_Always_Pan_Perfect_Pot_Mini_Always_Pan_Mini_Perfect_Pot_Cookware_Set_bundle.jpg?v=1771877087",
+     "alt_text": "Green Always Pan, Perfect Pot, Mini Always Pan, Mini Perfect Pot, Cookware Set bundle"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "AU",
+    "Ceramic Cookware",
+    "Cookware",
+    "envive",
+    "pdq-boost",
+    "spring_sale"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/165750112331",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Our thoughtfully curated cookware bundles help you cook more, and spend less."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292868554946",
+     "handle": "cookware-bundles",
+     "title": "Cookware - Bundles",
+     "description": {
+      "html": "From the stovetop to the kitchen table, save with our special sets curated just for your place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292869308610",
+     "handle": "always-pans",
+     "title": "Always Pans",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6898150342850",
+   "title": "Cookware Duo",
+   "description": {
+    "html": "Our two bestsellers, designed to replace an 18-piece cookware set"
+   },
+   "url": "https://fromourplace.com/products/cookware-duo",
+   "handle": "cookware-duo",
+   "price_range": {
+    "min": {
+     "amount": 18900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 28400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 28400,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44946635358402",
+     "sku": "CKW.HCD.BDL.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "Our two bestsellers, designed to replace an 18-piece cookware set"
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Green_Perfect_Pot_and_Always_Pan.jpg?v=1772474757"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44946635358402:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44946641420482",
+     "sku": "CKW.HCD.BDL.STM",
+     "title": "Steam",
+     "description": {
+      "html": "Our two bestsellers, designed to replace an 18-piece cookware set"
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Beige_Perfect_Pot_and_Always_Pan.jpg?v=1771877100"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44946641420482:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44946640797890",
+     "sku": "CKW.HCD.BDL.CHR",
+     "title": "Char",
+     "description": {
+      "html": "Our two bestsellers, designed to replace an 18-piece cookware set"
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Black_Perfect_Pot_and_Always_Pan.jpg?v=1771877100"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44946640797890:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44946639585474",
+     "sku": "CKW.HCD.BDL.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "Our two bestsellers, designed to replace an 18-piece cookware set"
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Blue_Perfect_Pot_and_Always_Pan.jpg?v=1771877100"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44946639585474:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44946638700738",
+     "sku": "CKW.HCD.BDL.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "Our two bestsellers, designed to replace an 18-piece cookware set"
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Pink_Perfect_Pot_and_Always_Pan.jpg?v=1771877100"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44946638700738:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45594329383106",
+     "sku": "CKW.HCD.BDL.YLW",
+     "title": "Butter Yellow",
+     "description": {
+      "html": "Our two bestsellers, designed to replace an 18-piece cookware set"
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Butter Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-ecomm-CookwareDuo-ButterYelllow.jpg?v=1772474757"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45594329383106:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44725667430594",
+     "sku": "CKW.HCD.BDL.CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our two bestsellers, designed to replace an 18-piece cookware set"
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/white_perfect_pot_white_always_pan_bundle.jpg?v=1771877100"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44725667430594:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46814716625090",
+     "sku": "CKW.HCD.LTO.LBB",
+     "title": "Forget-Me-Not Blue",
+     "description": {
+      "html": "Our two bestsellers, designed to replace an 18-piece cookware set"
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Forget-Me-Not Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/forget-me-not-blue-always-pan-perfect-pot-thumbnail.jpg?v=1772474757"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/46814716625090:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Spice"
+      },
+      {
+       "label": "Butter Yellow"
+      },
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Forget-Me-Not Blue"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Green_Perfect_Pot_and_Always_Pan.jpg?v=1772474757",
+     "alt_text": "Green Perfect Pot and non toxic ceramic nonstick always pan"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "AU",
+    "Ceramic Cookware",
+    "Cookware",
+    "igg26_for_wellness",
+    "spring_sale"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/162313896011",
+     "handle": "traditionware",
+     "title": "Traditionware",
+     "description": {
+      "html": "Collections designed to honor the celebrations we hold close and share around the table."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/165750112331",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Our thoughtfully curated cookware bundles help you cook more, and spend less."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292005773506",
+     "handle": "press-page-collections",
+     "title": "Press Page Collections",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8498947227842",
+   "title": "Ceramic Nonstick Perfect Pot 1.75 qt.",
+   "description": {
+    "html": "A non-toxic nonstick pot for personal servings"
+   },
+   "url": "https://fromourplace.com/products/petite-perfect-pot",
+   "handle": "petite-perfect-pot",
+   "price_range": {
+    "min": {
+     "amount": 7500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/48467380928706",
+     "sku": "POT.TGC.ESN.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "A non-toxic nonstick pot for personal servings"
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/spice-petite-perfect-pot-thumbnail.jpg?v=1778000501"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/48467380928706:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48467386368194",
+     "sku": "POT.TGC.ESN.STM",
+     "title": "Steam",
+     "description": {
+      "html": "A non-toxic nonstick pot for personal servings"
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/steam-petite-perfect-pot-thumbnail.jpg?v=1778000501"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/48467386368194:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48467386400962",
+     "sku": "POT.TGC.ESN.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "A non-toxic nonstick pot for personal servings"
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/blue-salt-petite-perfect-pot-thumbnail.jpg?v=1778000501"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/48467386400962:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48467386433730",
+     "sku": "POT.TGC.ESN.CHR",
+     "title": "Char",
+     "description": {
+      "html": "A non-toxic nonstick pot for personal servings"
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/char-petite-perfect-pot-thumbnail.jpg?v=1778000501"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/48467386433730:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48467386466498",
+     "sku": "POT.TGC.ESN.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "A non-toxic nonstick pot for personal servings"
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/sage-petite-perfect-pot-thumbnail.jpg?v=1778000501"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/48467386466498:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Spice"
+      },
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Sage"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/spice-petite-perfect-pot-thumbnail.jpg?v=1778000501",
+     "alt_text": "The Petite Perfect Pot, a matte light brown cooking pot with two side handles and a lid, is centered on a plain off-white background."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "product_name_update"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/304726376642",
+     "handle": "everything-but-ap-and-gift-cards-retention",
+     "title": "everything but AP and gift cards (Retention)",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8190563614914",
+   "title": "Essentials Complete Cookware Set",
+   "description": {
+    "html": "Versatile, non-toxic, high-performance nonstick"
+   },
+   "url": "https://fromourplace.com/products/essentials-complete-cookware-set-17-pc",
+   "handle": "essentials-complete-cookware-set-17-pc",
+   "price_range": {
+    "min": {
+     "amount": 27500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 34900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 83000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 83000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45660817522882",
+     "sku": "CKW.17PC.EPP.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "Versatile, non-toxic, high-performance nonstick"
+     },
+     "price": {
+      "amount": 32900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 83000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCompleteCookwareSet-BlueSalt-ecomm.jpg?v=1759797574"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660817522882:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660817457346",
+     "sku": "CKW.17PC.EPP.BLK",
+     "title": "Char",
+     "description": {
+      "html": "Versatile, non-toxic, high-performance nonstick"
+     },
+     "price": {
+      "amount": 27500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 83000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCompleteCookwareSet-Char-ecomm.jpg?v=1759797574"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660817457346:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660817490114",
+     "sku": "CKW.17PC.EPP.CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Versatile, non-toxic, high-performance nonstick"
+     },
+     "price": {
+      "amount": 34900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 83000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCompleteCookwareSet-Cream-ecomm.jpg?v=1759797574"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660817490114:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660817555650",
+     "sku": "CKW.17PC.EPP.TER",
+     "title": "Terracotta",
+     "description": {
+      "html": "Versatile, non-toxic, high-performance nonstick"
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 83000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Terracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCompleteCookwareSet-Terracotta-ecomm.jpg?v=1759797574"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660817555650:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Terracotta"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCompleteCookwareSet-BlueSalt-ecomm.jpg?v=1759797574",
+     "alt_text": "Set of blue cookware with gold handles on a white background"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Ceramic Cookware",
+    "noreview"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/165750112331",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Our thoughtfully curated cookware bundles help you cook more, and spend less."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292868554946",
+     "handle": "cookware-bundles",
+     "title": "Cookware - Bundles",
+     "description": {
+      "html": "From the stovetop to the kitchen table, save with our special sets curated just for your place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8190564270274",
+   "title": "Essentials Cookware + Bakeware Set",
+   "description": {
+    "html": "Non-toxic nonstick cookware and bakeware"
+   },
+   "url": "https://fromourplace.com/products/essentials-cookware-bakeware-set-21-pc",
+   "handle": "essentials-cookware-bakeware-set-21-pc",
+   "price_range": {
+    "min": {
+     "amount": 39900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 49900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 105800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 105800,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45660832268482",
+     "sku": "CKW.21PC.VBDL.CHR",
+     "title": "Char",
+     "description": {
+      "html": "Non-toxic nonstick cookware and bakeware"
+     },
+     "price": {
+      "amount": 39900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 105800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialsCookwareBakewareSet-ecomm-Char.jpg?v=1759798074"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660832268482:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660832334018",
+     "sku": "CKW.21PC.VBDL.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "Non-toxic nonstick cookware and bakeware"
+     },
+     "price": {
+      "amount": 47500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 105800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialsCookwareBakewareSet-ecomm-BlueSalt.jpg?v=1759798073"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660832334018:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660832301250",
+     "sku": "CKW.21PC.VBDL.CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Non-toxic nonstick cookware and bakeware"
+     },
+     "price": {
+      "amount": 49900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 105800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialCookwareBakewareSet-ecomm-Cream_b2cb52a3-6417-4066-a58d-ca4de5ac1d3b.jpg?v=1769467050"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660832301250:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660832366786",
+     "sku": "CKW.21PC.VBDL.TER",
+     "title": "Terracotta",
+     "description": {
+      "html": "Non-toxic nonstick cookware and bakeware"
+     },
+     "price": {
+      "amount": 44900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 105800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Terracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialsCookwareBakewareSet-ecomm-Terracotta.jpg?v=1759798074"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660832366786:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Terracotta"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialsCookwareBakewareSet-ecomm-Char.jpg?v=1759798074",
+     "alt_text": "Set of black cookware including pots, pans, and skillets on a white background"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Bakeware",
+    "Ceramic Cookware",
+    "noreview"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/165750112331",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Our thoughtfully curated cookware bundles help you cook more, and spend less."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292780998850",
+     "handle": "bakeware",
+     "title": "Non-Toxic Bakeware",
+     "description": {
+      "html": "Ceramic nonstick baking pans, sheets & chef-approved essentials made without PFAS."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292868554946",
+     "handle": "cookware-bundles",
+     "title": "Cookware - Bundles",
+     "description": {
+      "html": "From the stovetop to the kitchen table, save with our special sets curated just for your place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNVGt3TlRZME1qY3dNamMwTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}
