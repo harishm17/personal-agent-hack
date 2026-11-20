@@ -60,3 +60,16 @@ answer (no exception); the other store's cart is still returned. Rows: `GET /api
 - `signoff.relay.status() -> dict | None` (never raises): `{"claim_type": "live_human_presence", "result": "passed", "sandbox": true, "at": ...}` once a person has taken the check, else `None`. Attach it to the signature record as optional key `relay` when present (omit the key when `None`); label it "sandbox" wherever you show it.
 - Page: `/relay/` (on main, works over the tunnel on a phone). The phone's Sign view can link to it (open in a new tab); the person taps "I am a real person", the page then shows "Live human: passed (sandbox)". Do it before signing; `relay.status()` keeps the last result in memory (a new `POST /api/issuer/relay/start` clears it).
 - Routes (optional router `signoff.relay.api`): `POST /api/issuer/relay/start`, `POST /api/issuer/relay/complete`, `GET /api/issuer/relay/status`. Nothing in the signature path should depend on it.
+
+## TALK 14:50 — one line where the signing happens, and the same short code in three places (the judge, item B)
+- The line: `Dana signs: 6 limits · 8 quotes · 3 picks · $114.69` and the code `3ac9 4ba1 dd01`. Both are data:
+  `GET /api/seal/proof` → `summary: {text, code, limits, quotes, picks, total_cents}` (read-only, on `stream/TALK`).
+- The same from your own copy of the canonical sheet, so the phone prints what it computed itself and not what the
+  server says (`c` is the parsed canonical sheet, `hash` its SHA-256 hex; on the phone these are `canon.obj`, `canon.hash`):
+  ```js
+  const picks = c.lines.filter((l) => l.pick), n = (k, one) => `${k} ${one}${k === 1 ? "" : "s"}`;
+  const line = `${name} signs: ${n(c.lines.reduce((a, l) => a + l.limits.length, 0), "limit")} · ${n(picks.reduce((a, l) => a + l.pick.quotes.length + (l.pick.delivery.quote ? 1 : 0), 0), "quote")} · ${n(picks.length, "pick")} · $${(c.total_cents / 100).toFixed(2)}`;
+  const code = hash.slice(0, 12).replace(/(.{4})(?=.)/g, "$1 ");
+  ```
+  quotes = each pick's figure quotes plus its delivery quote when the store stated one. `/seal/` prints the same line and code.
+- For the phone'"'"'s sign screen (`web/phone/index.html:369`, under "What you sign"): print `line` and `code` above the full hash.

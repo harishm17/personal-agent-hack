@@ -92,8 +92,8 @@ function renderCheck() {
   const onPhone = real.signedFingerprint || real.fingerprint;  // the phone computes it from the same canonical text
   const same = r.fingerprint === onPhone;
   q("#codes").innerHTML = `<span class="code ${same ? "" : "off"}" title="${esc(r.fingerprint)}">${esc(short(r.fingerprint))}</span>
-    <span class="sum">${esc(p.summary.text)}</span>
     <span class="phone">${ICON.phone}<span>${esc(who)}'s phone ${p.signed ? "showed" : "shows"} ${same ? "the same code" : `<code>${esc(short(onPhone))}</code>`}</span></span>`;
+  q("#sum").textContent = p.summary.text;
   const restore = edited ? `<button class="link" id="restore">Restore</button>` : "";
   let html;
   if (!p.signature || !p.public_key) {

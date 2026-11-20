@@ -2052,3 +2052,42 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
 - Will not make it: drawn flow lines from each row into the fingerprint (the rows sit beside it instead); a replay
   control for the lanes (they are drawn in order with their times). Parts 2 and 3 share one card: the rows on the left
   are the editable copy, the fingerprint and the check are on the right, so a change and its result are seen together.
+
+## TALK 14:50 — K5 done on `stream/TALK`; the judge's items A and B done
+- DONE K5: `/seal/` (`web/seal/index.html`, `seal.js`, `seal.css`, `verify.js`) and `GET /api/seal/proof`
+  (`signoff/seal/api.py`, read-only). Proof: `uv run pytest tests/seal -q` → `6 passed`. The test verifies a real saved
+  signature (`tests/seal/proof-signed.json`, saved from my port at 14:45), fails on a one-character change, and runs
+  `web/seal/verify.js` itself under node on the same proof: `valid: true`, then `valid: false` after one character.
+  Chrome did the same check on the page: see the shots. `./hk check` → `PASS (default) uv run -q pytest -q -x`.
+- What the page is, in the order it reads (the judge: "Change one thing" first):
+  1. Change one thing, with what the signature covers. 23 rows from the canonical sheet with owner dots (her rules, the
+     home's measurements, the store's words, picks, prices, delivery quotes, the ordering, the total), one column per
+     item. Every value is a button: an edit changes a copy in the page, the browser recomputes the SHA-256, the pattern
+     and the short code change, and the ECDSA check fails: "Not what Dana signed", the row marked, "Restore".
+     Unedited: "Verified in this browser with Dana's public key". Beside it: "A signature over the cart covers 7 of 23
+     rows" against "This signature covers 23 of 23 rows"; pressing the first dims the rows a cart does not hold.
+  2. Who holds what: three lanes, the private key drawn in the phone's lane, the public key in the agent's, the carts in
+     the stores'; the run's real events from the receipt chain in order with their times.
+- Exactly what the browser checks (and the test): SHA-256 of the canonical string's bytes equals the `sheet_hash` named
+  in the signed message; ECDSA P-256 over the message's bytes verifies with the enrolled key. For an edited copy it also
+  tries the signature against the message that would name the new fingerprint: that fails too. An edit splices the one
+  value into the original text, because a re-serialised copy is not the signed bytes (`16.0`, `–`): the test shows it.
+- Shots, each looked at, 1440 x 810, in `web/seal/shots/`: `seal-unsigned.png` (no key, "Nothing is signed yet: no cart can
+  exist", cart gate closed), `seal-unsigned-changed.png`, `seal-enrolled-unsigned.png`, `seal-signed.png` (verified),
+  `seal-changed.png` (300 → 250 fails), `seal-changed-quote.png` (a store quote edited), `seal-cart-coverage.png`,
+  `seal-lanes.png`, and at 150% zoom `seal-signed-150.png`, `seal-changed-150.png` (the check moves above the rows).
+- Honest limits: the signed state in the shots and the test is from my port in replay mode, signed with the kit's
+  `demo/signer.py` (the same message layout and algorithm as the phone, a key made in Python, not on a phone), identity by
+  Persona's sandbox through SIGN's simulate route, carts are replay carts. On main the page shows whatever main holds:
+  right now "nothing is signed yet". A signature is kept in memory only: restart main and it is gone, with its events.
+  Not built: drawn flow lines from the rows into the fingerprint, and a replay button for the lanes (they arrive in
+  order once, on load, unless the OS asks for reduced motion; the pattern's change on an edit always animates).
+- On main: merge, then restart main (the `/seal` mount is made at start, when `web/seal/` exists).
+  `curl -s localhost:8800/api/seal/proof | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['signed'], d['summary'])"`
+  `?still` draws the lanes without the arrival motion (for a screenshot); `?edit=300~250` opens with that change made.
+- Judge A, `/talk/`: the rule chips are the first thing read (16 px, "may receive" in ink, "never" struck and quieter);
+  one conversation per store with "+N more"; "Not sent · the guard stopped it" in quiet ink, no red; no timestamps.
+  `web/talk/shots/talk-thread.png`, `talk-refused.png` retaken.
+- Judge B: the one line and the short code are in the proof (`summary`), with the rule to compute them, in NOTES/SCREEN.md
+  and NOTES/SIGN.md. One top bar: `/talk/` and `/seal/` print the five tabs; the markup is in NOTES/SCREEN.md,
+  NOTES/TRAIL.md and NOTES/GRAPH.md.

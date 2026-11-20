@@ -63,3 +63,7 @@ store_answer → `value.line_id` when present. `GET /api/memory/recall` gives th
   search → recipient `exa.ai`; and from `GET /api/reviews` → `lines[].best_reviewed.candidate_id` as a dashed "offered to the shopper"
   edge. It is never an edge into the pick: `summary.applied` is always false.
 - Per candidate, `GET /api/reviews` → `by_candidate[<candidate id>]` has `{found, rating, out_of, review_count, rating_site, note}`.
+
+## TALK 14:50 — one top bar on every page (the integrator, 14:46)
+- Please print these five tabs, with `aria-current="page"` on your own: `<nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/">Memory</a><a href="/talk/">Conversations</a><a href="/seal/">Signature</a></nav>`
+  `/seal/` is the Signature page (`web/seal/`, on `stream/TALK`).
