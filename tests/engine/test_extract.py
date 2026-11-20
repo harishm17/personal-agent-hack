@@ -144,3 +144,56 @@ def test_units_come_from_the_sheets_limit_so_another_sheet_needs_no_code():
     wrong = spans.finish({"figure": "capacity", "kind": "single", "value": 8, "unit": "in", "quote": "Holds 8 QT"},
                          product, "test", target_unit="qt")
     assert wrong["unsure"] and "cannot be compared" in wrong["unsure_reason"]
+
+
+def test_code_can_tell_which_labelled_dimension_a_number_was_taken_from():
+    at = spans.dimension_position
+    bench = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
+    assert (at(bench, [31])["label"], at(bench, [14.75])["label"]) == ("w", "d")  # the depth is not the width
+    assert at('Product Dims (h x w x d): 16" - 21" x 21" x 18"', [21])["label"] == "w"  # 21 is also in the height range
+    assert at('Product Dims (h x w x d): 12": 1.5" x 12" x 1.25"', [12])["position"] == 2  # the size name is not a dimension
+    assert at('Overall Footprint: 28.5"W x 17.5"D', [28.5])["label"] == "w"
+    assert at('Dimensions: 23.5”W x 20”L x 32” - 40”H', [23.5])["label"] == "w"
+    assert at("Weight Capacity: 300 lbs.", [300]) is None
+
+
+def test_the_comparison_lists_disagreements_extras_and_wrong_positions(tmp_path):
+    from signoff.extract import score
+    quote = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
+    def fig(extractor, figure, value, q=quote):
+        return {"store": "s", "product_id": "p", "figure": figure, "kind": "single", "value": value, "low": value,
+                "high": value, "unit": "in", "quote": q, "start": 0, "end": len(q), "extractor": extractor,
+                "span_found_in_text": True}
+    for name, rows in (("claude-sonnet-5-5", [fig("anthropic:claude-sonnet-5-5", "overall_width", 31)]),
+                       ("small", [fig("small", "overall_width", 14.75), fig("small", "length", 12, "12 in long")])):
+        folder = tmp_path / "_runs" / name
+        folder.mkdir(parents=True)
+        (folder / "s.json").write_text(json.dumps(rows))
+        (folder / "s.log").write_text(json.dumps([{"store": "s", "product_id": "p", "extractor": rows[0]["extractor"],
+                                                   "asked": ["overall_width", "length"], "seconds": 1.0, "usage": {}}]))
+    made = score.compare(tmp_path)
+    small = next(r for r in made["readers"] if r["extractor"] == "small")
+    # as read, the small reader disagrees on the width; with the rule on, code has marked its figure unsure
+    assert small["position_rule"]["before"]["statement"] == (
+        "same number on 0 of 1 figures both readers found; the reference alone found 0, this reader alone found 1")
+    assert small["statement"] == ("same number on 0 of 0 figures both readers found; the reference alone found 1, "
+                                  "this reader alone found 1")
+    caught = small["position_rule"]["caught"]
+    assert len(caught) == 1 and caught[0]["value"] == "14.75" and caught[0]["dimension"]["label"] == "d"
+    assert made["position_rule"]["reference_figures_caught"] == 0 and list(made["position_rule"]["caught"]) == ["small"]
+    assert [e["figure"] for e in small["extra"]] == ["length"]
+
+
+def test_the_position_rule_marks_a_depth_reported_as_a_width_unsure_for_any_reader():
+    text = 'Bench.\nProduct Dims (h x w x d): 1.63" x 31" x 14.75" Weight Capacity: 300 lbs.'
+    page = {"store": "s", "product_id": "p", "text": text}
+    quote = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
+    wrong = spans.finish({"figure": "overall_width", "kind": "single", "value": 14.75, "unit": "in", "quote": quote}, page, "any")
+    assert wrong["span_found_in_text"] and wrong["unsure"] and wrong["unsure_reason"] == spans.POSITION_REASON
+    assert wrong["dimension"] == {"position": 3, "of": 3, "label": "d", "expected": "w", "ok": False}
+    right = spans.finish({"figure": "overall_width", "kind": "single", "value": 31, "unit": "in", "quote": quote}, page, "any")
+    assert "unsure" not in right and right["dimension"]["ok"] is True
+    plain = spans.finish({"figure": "weight_capacity", "kind": "single", "value": 300, "unit": "lbs",
+                          "quote": "Weight Capacity: 300 lbs."}, page, "any")
+    assert "dimension" not in plain and "unsure" not in plain
+    assert spans.expected_label("seat_height") == "h" and spans.expected_label("weight_capacity") is None

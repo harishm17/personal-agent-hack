@@ -15,7 +15,8 @@ import threading
 import time
 
 from signoff import config
-from signoff.engine import obs, rules
+from signoff.engine import obs, planted, receipts, rules
+from signoff.extract import spans
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 DATA, FIXTURES, SHEETS = ROOT / "data", ROOT / "fixtures", ROOT / "sheets"
@@ -91,6 +92,8 @@ def _load_figures(pool, from_data):
     for f in figures:
         page = text.get((f["store"], f["product_id"]))
         f["span_found_in_text"] = rules.span_found(f, page)
+        if f["span_found_in_text"] and config.env("SIGNOFF_POSITION_RULE") != "off":
+            spans.apply_position_rule(f)  # for every reader: a depth is not a width, whatever the model said
         if f["span_found_in_text"]:  # the store's whole sentence, for the screen to show around the quote
             sentence, a, b = rules.sentence_around(page, f["start"], f["end"])
             f.update(sentence=sentence, quote_in_sentence=[a, b])
@@ -105,10 +108,97 @@ def _load_readers(from_data):
     try:
         made = _read(path)
         return {"reference": made["reference"], "measure": made["measure"], "note": made["note"],
+                "position_rule": made.get("position_rule"),
                 "products": made["products"], "made_at": made["made_at"],
-                "readers": [{k: v for k, v in r.items() if k != "differences"} for r in made["readers"]]}
+                "readers": [{k: v for k, v in r.items() if k not in ("differences", "missing")} for r in made["readers"]]}
     except (ValueError, KeyError):
         return None
+
+
+def _load_order(sheet_id, from_data):
+    """The limits as the agent read them from the written order (signoff.extract.order writes the file). Each
+    quote is looked up again here in the order's own text. Shown beside the sheet; the engine runs on the sheet."""
+    path = DATA / "order" / "derived.json"
+    if not from_data or not path.exists():
+        return None
+    try:
+        made = _read(path)
+        if made.get("sheet_id") != sheet_id:
+            return None
+        text = (ROOT / made["doc"]).read_text()
+        for row in made["limits"] + made.get("fulfilment", []):
+            row["span_found_in_text"] = rules.span_found(row, text)
+        return made
+    except (ValueError, KeyError, OSError):
+        return None
+
+
+def _with_order(sheet):
+    """(a copy of the sheet whose limits carry `from_order`, the `order` summary). The sheet the engine runs on
+    is not touched. `matches` is worked out now, so a limit Dana has moved shows as changed from the order."""
+    made = _s.get("order")
+    if not made:
+        return sheet, None
+    read = {r["limit_id"]: r for r in made["limits"] if r.get("span_found_in_text")}
+    lines, matching, total = [], 0, 0
+    for line in sheet["lines"]:
+        limits = []
+        for limit in line["limits"]:
+            total += 1
+            r, b = read.get(limit["id"]), limit["bound"]
+            if r is None:
+                limits.append(limit)
+                continue
+            same = r["op"] == limit["op"] and r["unit"] == limit["unit"] and (
+                (b["source"] == "issuer" and r["bound"]["source"] == "issuer" and abs(b["value"] - r["value"]) < 1e-9) or
+                (b["source"] == "shopper" and r["bound"]["source"] == "shopper" and b["fact"] == r["bound"]["fact"]))
+            matching += 1 if same else 0
+            limits.append(dict(limit, from_order={
+                "doc": made["doc"], "quote": r["quote"], "start": r["start"], "end": r["end"], "value": r["value"],
+                "op": r["op"], "unit": r["unit"], "terms": r["terms"], "measurement": r.get("measurement"),
+                "extractor": r["extractor"], "span_found_in_text": True, "matches": same}))
+        lines.append(dict(line, limits=limits))
+    how = {f["line_id"]: f for f in made.get("fulfilment", []) if f.get("span_found_in_text")}
+    lines = [dict(l, fulfilment_from_order={k: how[l["id"]][k] for k in ("how", "quote", "start", "end")},
+                  ) if l["id"] in how else l for l in lines]
+    summary = {"doc": made["doc"], "title": made.get("title"), "issuer": made.get("issuer"),
+               "limits_in_sheet": total, "limits_derived": len(read), "limits_matching": matching,
+               "limits_matching_sheet_file": made.get("limits_equal_to_the_sheet"),
+               "reading": "the agent's reading of the order matches the sheet on %d of %d limits" % (matching, total),
+               "derived_at": made.get("derived_at"), "extractor": made.get("extractor"),
+               "delivered_by": _s.get("order_delivery") or {"via": "file", "doc": made["doc"]}}
+    return dict(sheet, lines=lines), summary
+
+
+def _load_extras(pool, from_data):
+    """Display-only material beside the figures: instruction-like passages found on pages (each a span of the
+    page's text, checked again here) and the planted test page's own reading. None of it reaches the pick rule."""
+    out = {"instructions": {}, "planted": None, "asked": {}}
+    folder = _dirs()[2]
+    if not from_data:
+        return out
+    if (folder / "_asked").is_dir():  # what the store's own agent replied; each quote looked up again in the reply
+        keep = ("figure", "question", "reply", "quote", "start", "end", "value", "low", "high", "kind", "unit",
+                "answered", "asked_at", "role", "extractor", "unsure_reason")
+        for row in _read_dir(folder / "_asked"):
+            found = rules.span_found(row, row.get("reply"))
+            shown = {k: row.get(k) for k in keep if row.get(k) is not None or k in ("quote", "start", "end", "value", "unit", "answered")}
+            if row.get("answered") and not found:
+                shown["answered"] = False
+            out["asked"].setdefault((row["store"], row["product_id"]), []).append(shown)
+    text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
+    if (folder / "_instructions").is_dir():
+        for row in _read_dir(folder / "_instructions"):
+            page = text.get((row["store"], row["product_id"]))
+            kept = [{"quote": i["quote"], "start": i["start"], "end": i["end"], "found_by": i.get("found_by")}
+                    for i in row.get("instructions") or [] if rules.span_found(i, page)]
+            if kept:
+                out["instructions"][(row["store"], row["product_id"])] = kept
+    if config.env("SIGNOFF_PLANTED") != "off" and (folder / "_planted" / "figures.json").exists():
+        found = _read(folder / "_planted" / "instructions.json") if (folder / "_planted" / "instructions.json").exists() else []
+        out["planted"] = {"figures": _read(folder / "_planted" / "figures.json"),
+                          "instructions": [i for row in found for i in row.get("instructions") or []]}
+    return out
 
 
 def _load(keep_changes=False):
@@ -118,7 +208,8 @@ def _load(keep_changes=False):
     from_data = _has_data_pool() and not any(str(p["store"]).endswith(".example") for p in pool)
     mode = "fixture" if not from_data else ("replay" if config.mode() == "replay" else "live")
     _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data), mode=mode, loaded=True,
-              readers=_load_readers(from_data))
+              readers=_load_readers(from_data), extras=_load_extras(pool, from_data),
+              order=_load_order(sheet_id, from_data))
     if keep_changes and (_s.get("sheet") or {}).get("id") == sheet_id:
         return
     strikes_file = (DATA if from_data else FIXTURES) / "strikes.json"
@@ -156,7 +247,8 @@ def _canonical_obj(state):
             limits.append({"id": l["id"], "op": l["op"], "unit": l["unit"], "set_by": b["source"],
                            "bound": b["value"] if b["source"] == "issuer" else facts[b["fact"]],
                            "terms": [t.get("figure") or "%s=%g" % (t["fact"], facts[t["fact"]]) for t in l["terms"]]})
-        out = {"line_id": line["line_id"], "need": line["need"], "status": line["status"], "limits": limits,
+        out = {"line_id": line["line_id"], "need": line["need"], "status": line["status"],
+               "fulfilment": sheet_line.get("fulfilment"), "limits": limits,
                "struck": sorted(s["product_key"] for s in line["struck"]), "pick": None}
         pick = next((c for c in line["candidates"] if c["picked"]), None)
         if pick:
@@ -165,20 +257,29 @@ def _canonical_obj(state):
                            "variant_id": p["variant_id"], "product_key": p["product_key"],
                            "price_cents": p["price_cents"],
                            "checks": [{"limit_id": c["limit_id"], "expr": c["expr"]} for c in pick["checks"]],
-                           "quotes": [t["quote"] for c in pick["checks"] for t in c["terms"] if t.get("quote")]}
+                           "quotes": [t["quote"] for c in pick["checks"] for t in c["terms"] if t.get("quote")],
+                           "delivery": {"status": pick["arrival"]["status"], "quote": pick["arrival"]["quote"],
+                                        "days_low": pick["arrival"]["days_low"], "days_high": pick["arrival"]["days_high"],
+                                        "need_by": pick["arrival"]["need_by"]}}
         lines.append(out)
-    return {"sheet_id": state["sheet"]["id"], "lines": lines, "total_cents": state["total_cents"]}
+    rule = state["sheet"]["pick_rule"]
+    return {"sheet_id": state["sheet"]["id"], "pick_rule": {"id": rule["id"], "label": rule["label"]},
+            "lines": lines, "total_cents": state["total_cents"]}
 
 
 def _canonical(state):
     return json.dumps(_canonical_obj(state), sort_keys=True, separators=(",", ":"))
 
 
+# What the signed hash is computed over, in words for the seal. Kept beside `_canonical_obj`: change both together.
+COVERS = ["limits", "strikes", "picks", "prices", "sums", "store quotes", "delivery quotes", "pick rule", "total"]
+
+
 def _seal(state, current_hash):
     seal = _s.get("seal")
     if not seal:
-        return state["seal"]
-    return dict(seal, current=seal["sheet_hash"] == current_hash)
+        return dict(state["seal"], covers=list(COVERS))
+    return dict(seal, current=seal["sheet_hash"] == current_hash, covers=list(COVERS))
 
 
 def _attach(state):
@@ -194,8 +295,19 @@ def _attach(state):
         for key in (check.get("candidate_id"), (check.get("store"), check.get("product_id"))):
             if key and key != (None, None):
                 by_candidate.setdefault(key, []).append(check)
+    extras = _s.get("extras") or {"instructions": {}, "planted": None, "asked": {}}
+    beyond = set()
     for line in state["lines"]:
         for c in line["candidates"]:
+            asked = extras.get("asked", {}).get((c["product"]["store"], c["product"]["product_id"]))
+            if asked:  # display only: nothing below reads it, and the pick was made before this point
+                c["asked"] = asked
+                on_page = {f["figure"] for f in c["figures"] if f.get("span_found_in_text") and not f.get("unsure")}
+                if any(a.get("answered") and a["figure"] not in on_page for a in asked):
+                    beyond.add((c["product"]["store"], c["product"]["product_id"]))
+            passages = extras["instructions"].get((c["product"]["store"], c["product"]["product_id"]))
+            if passages:
+                c["embedded_instructions"] = passages
             found = by_candidate.get(c["id"], []) + by_candidate.get((c["product"]["store"], c["product"]["product_id"]), [])
             if found:
                 c["senso"] = {"claims": found}
@@ -203,6 +315,27 @@ def _attach(state):
             if cart and c["picked"] and line["status"] in ("ready", "next_candidate"):
                 c["action"] = {"type": "cart_created", "mode": cart.get("mode"), "cart_url": cart.get("cart_url"),
                                "cart_id": cart.get("cart_id"), "at": cart.get("created_at")}
+    if extras["planted"]:  # worked out on the side, after the lines and picks above were made without it
+        made = planted.candidate(_s["sheet"], [dict(f) for f in extras["planted"]["figures"]],
+                                 extras["planted"]["instructions"], _s["answers"])
+        if made:
+            line = next(l for l in state["lines"] if l["line_id"] == made["line_id"])
+            made["cheaper_than_the_pick"] = bool(line["why"]["pick_price_cents"]) and \
+                made["candidate"]["product"]["price_cents"] < line["why"]["pick_price_cents"]
+            state["planted"] = made
+    if extras.get("asked"):
+        state["counts"]["store_agent_asked"] = len(extras["asked"])
+        state["counts"]["store_agent_stated_beyond_page"] = len(beyond)
+    state["sheet"], order = _with_order(state["sheet"])
+    if order:
+        state["order"] = order
+    held = _s.get("signing")
+    if held and time.time() < held["until"]:
+        state["signing"] = {"in_progress": True, "sheet_hash": held["sheet_hash"], "since": held["since"]}
+    try:
+        state["receipts"] = receipts.summary()
+    except Exception:  # noqa: BLE001  (the chain is a record; it never stops a change)
+        state["receipts"] = {"count": None, "verified": None, "last_hash": None}
     state["issuer_key"] = dict(_s["issuer_key"])
     state["readers"] = _s.get("readers")
     if _s.get("readers"):
@@ -235,9 +368,17 @@ def _ensure():
         _recompute(record=False)
 
 
+def _key_id(action):
+    signer = action.get("signer")
+    return action.get("key_id") or (signer.get("key_id") if isinstance(signer, dict) else None)
+
+
 def _open_for_changes():
     if _s.get("seal"):
         raise EngineError("this sheet is signed and its carts exist; reset to start again", 409)
+    held = _s.get("signing")
+    if held and time.time() < held["until"]:
+        raise EngineError("the sheet is being signed right now (hash %s); try again in a moment" % held["sheet_hash"][:12], 409)
 
 
 # --- decision records go to the database in the background; the app works with the database down ---
@@ -304,8 +445,11 @@ def apply_issuer(action: dict) -> dict:
             bound = limit["bound"]
             if bound["source"] != "issuer":
                 raise EngineError("%s is bounded by a measurement of the shopper's, not by an issuer value" % limit["id"])
+            was = bound["value"]
             bound["value"] = _number(action.get("value"), bound.get("min"), bound.get("max"), limit["id"])
             limit["set_at"] = action.get("at") or _now()
+            receipts.append("limit_set", "issuer", _key_id(action), action,
+                            {"limit_id": limit["id"], "from": was, "to": bound["value"], "unit": limit["unit"]})
         elif kind in ("strike", "unstrike"):
             line_id, key = action.get("line_id"), action.get("product_key")
             if not any(l["id"] == line_id for l in _s["sheet"]["lines"]):
@@ -317,6 +461,8 @@ def apply_issuer(action: dict) -> dict:
                 _s["strikes"].append({"line_id": line_id, "product_key": key, "by": "issuer",
                                       "reason": str(action.get("reason") or "").strip() or "no reason given",
                                       "at": action.get("at") or _now()})
+            receipts.append("strike" if kind == "strike" else "unstrike", "issuer", _key_id(action), action,
+                            {"line_id": line_id, "product_key": key})
         else:
             raise EngineError("unknown issuer request type %r" % (kind,))
         return _recompute(why=kind)
@@ -329,7 +475,10 @@ def set_shopper_fact(fact_id, value) -> dict:
         fact = next((f for f in _s["sheet"]["shopper_facts"] if f["id"] == fact_id), None)
         if fact is None:
             raise EngineError("no shopper fact %r on this sheet" % (fact_id,), 404)
+        was = fact["value"]
         fact["value"] = _number(value, fact.get("min"), fact.get("max"), fact_id)
+        receipts.append("shopper_fact", "shopper", None, {"fact_id": fact_id, "value": value},
+                        {"fact_id": fact_id, "from": was, "to": fact["value"], "unit": fact["unit"]})
         return _recompute(why="shopper_fact")
 
 
@@ -345,17 +494,62 @@ def sheet_hash() -> str:
         return _s["state"]["sheet_hash"]
 
 
+def signed_picks(sheet_hash: str) -> list:
+    """Not in the contract's list: the picks of exactly the sheet that was signed, for `signoff.sign` to create
+    carts from and nothing else: `[{store, variant_id, quantity, line_id, candidate_id, product_id, title,
+    price_cents}]`. Refused if `sheet_hash` is not the sheet as it stands now. From this call until
+    `mark_signed` (or `release_signing`, or 90 seconds) the sheet is held: a change by anyone is refused, so
+    what is sealed is what was signed and what the carts were made from."""
+    with _lock:
+        _ensure()
+        _open_for_changes()
+        if sheet_hash != _s["state"]["sheet_hash"]:
+            raise EngineError("the sheet changed since this hash was made: signed %s, now %s" % (
+                str(sheet_hash)[:12], _s["state"]["sheet_hash"][:12]), 409)
+        picks = [{"store": c["product"]["store"], "variant_id": c["product"]["variant_id"], "quantity": 1,
+                  "line_id": line["line_id"], "candidate_id": c["id"], "product_id": c["product"]["product_id"],
+                  "title": c["product"]["title"], "price_cents": c["product"]["price_cents"]}
+                 for line in _s["state"]["lines"] if line["status"] in ("ready", "next_candidate")
+                 for c in line["candidates"] if c["picked"]]
+        _s["signing"] = {"sheet_hash": sheet_hash, "picks": picks, "since": _now(), "until": time.time() + 90}
+        return [dict(p) for p in picks]
+
+
+def release_signing() -> dict:
+    """Ends a hold that `signed_picks` began, when the signing did not go through (a store refused a cart)."""
+    with _lock:
+        _ensure()
+        _s["signing"] = None
+        return _recompute(record=False, why="signing_released")
+
+
 def mark_signed(signature: dict, carts: list) -> dict:
-    """Called by `signoff.sign` after a verified `sign_sheet` and after the carts were created."""
+    """Called by `signoff.sign` after a verified `sign_sheet` and after the carts were created. The seal records
+    the hash that was signed, `signature["sheet_hash"]`. If the sheet no longer has that hash (someone changed a
+    measurement or a limit while the stores were being called), nothing is sealed and the refusal says so."""
     with _lock:
         _ensure()
         signature, carts = dict(signature or {}), list(carts or [])
+        signed = signature.get("sheet_hash")
+        if not signed:
+            raise EngineError("the signature names no sheet hash, so nothing can be sealed")
+        if signed != _s["state"]["sheet_hash"]:
+            _s["signing"] = None
+            raise EngineError("the sheet changed after it was signed (signed %s, now %s): nothing is sealed. "
+                              "Any cart just created belongs to the signed sheet, not to this one." % (
+                                  str(signed)[:12], _s["state"]["sheet_hash"][:12]), 409)
+        _s["signing"] = None
         name = signature.get("name") or signature.get("signer") or _s["sheet"]["issuer"]["name"]
         at = signature.get("at") or signature.get("signed_at") or _now()
         n = len(carts)
         text = "Signed by %s at %s. %d cart%s created." % (name, str(at)[11:16] or at, n, "" if n == 1 else "s")
-        _s["seal"] = {"signed": True, "text": text, "sheet_hash": _s["state"]["sheet_hash"],
+        _s["seal"] = {"signed": True, "text": text, "sheet_hash": signed,
                       "signature": signature, "carts": carts, "signed_at": at, "signer": name}
+        receipts.append("signed", "issuer", _key_id(signature), signature,
+                        {"sheet_hash": _s["state"]["sheet_hash"], "signer": name, "total_cents": _s["state"]["total_cents"]})
+        receipts.append("carts_created", "system", _key_id(signature), carts,
+                        {"sheet_hash": _s["state"]["sheet_hash"],
+                         "carts": [{k: c.get(k) for k in ("store", "cart_id", "total_cents", "mode")} for c in carts]})
         return _recompute()
 
 
@@ -385,8 +579,10 @@ def set_reader(name=None) -> dict:
         slug = re.sub(r"[^A-Za-z0-9.]+", "-", name).strip("-") if name else None
         if slug and not (_dirs()[2] / "_runs" / slug).is_dir():
             raise EngineError("no run of reader %r under data/figures/_runs" % (name,), 404)
+        was = _s.get("reader")
         _s["reader"] = slug
         _load(keep_changes=True)
+        receipts.append("reader_switched", "system", None, {"reader": name}, {"from": was or "reference", "to": slug or "reference"})
         return _recompute(why="set_reader")
 
 
@@ -399,8 +595,18 @@ def use_sheet(sheet_id: str) -> dict:
             raise EngineError("no sheet %r" % (sheet_id,), 404)
         _s.update(sheet_id=sheet_id, reader=None, sheet=None)
         _load()
+        receipts.start("sheet %s" % sheet_id)
         obs.session(sheet_id)
         return _recompute(why="use_sheet")
+
+
+def set_order_delivery(info: dict) -> dict:
+    """Not in the contract's list: how the order reached the app (for example an Airbyte sync's job id and
+    time). Shown as `order.delivered_by`; it changes nothing else."""
+    with _lock:
+        _ensure()
+        _s["order_delivery"] = dict(info or {}) or None
+        return _recompute(record=False, why="order_delivery")
 
 
 def reload_data() -> dict:
@@ -417,7 +623,9 @@ def reset() -> dict:
     About 7 ms with the real pool."""
     with _lock:
         _s["reader"] = None
+        _s["signing"] = None
         _load()
+        receipts.start("reset")
         try:
             from signoff.agent import chat
             chat.forget()

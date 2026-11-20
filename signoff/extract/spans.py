@@ -136,4 +136,85 @@ def finish(proposal, product, extractor, assume_unit=None, target_unit=None):
                           low=rules.convert(low, stated_unit, base), high=rules.convert(high, stated_unit, base))
     if unsure:
         record.update(unsure=True, unsure_reason=reason)
+    if record["span_found_in_text"]:
+        apply_position_rule(record)
     return record
+
+
+DIMS_HEADER = re.compile(r"\(?\b([hwdl])\s*x\s*([hwdl])(?:\s*x\s*([hwdl]))?\b\)?", re.I)
+DIM_LABEL = re.compile(r"\d\s*(?:[\"”″]|in\.?|inch(?:es)?)?\s*\(?\s*(h|w|d|l|height|width|depth|length|high|wide|deep|long)\b",
+                       re.I)
+LETTER = {"height": "h", "high": "h", "width": "w", "wide": "w", "depth": "d", "deep": "d", "length": "l", "long": "l"}
+
+
+def dimension_position(quote, numbers):
+    """For a quote that lists several dimensions ("Product Dims (h x w x d): 1.63" x 31" x 14.75"", or
+    "19.6" H x 30.3" W x 4.1" D"): which position the reported number sits in and what the store labels that
+    position. None when the quote is not such a list. Code, so a reader that takes the depth for the width
+    can be seen without a second model."""
+    if not quote or " x " not in quote.lower().replace("×", "x"):
+        return None
+    text = quote.replace("×", "x")
+    header = DIMS_HEADER.search(text)
+    body = text[header.end():] if header else text
+    parts = [p for p in re.split(r"\s+x\s+|(?<=[\"”″])\s*x\s*(?=\d)", body) if p.strip()]
+    if len(parts) < 2:
+        return None
+    parts[0] = parts[0].rsplit(":", 1)[-1]  # words and a size name before the first dimension are not a dimension
+    labels = [g.lower() for g in header.groups() if g] if header else []
+    if not labels:  # a label after each number: 28.5"W x 17.5"D
+        for part in parts:
+            found = DIM_LABEL.findall(part)
+            labels.append(LETTER.get(found[-1].lower(), found[-1].lower()) if found else None)
+    wanted = [n for n in numbers if isinstance(n, (int, float))]
+    holds = []
+    for i, part in enumerate(parts):
+        here = numbers_in(part)
+        if wanted and all(any(abs(n - h) < 1e-6 for h in here) for n in wanted):
+            holds.append((len(here) != len(wanted), i, part))  # a part that is exactly these numbers comes first
+    if not holds:
+        return {"position": None, "of": len(parts), "label": None, "labels": labels, "part": None}
+    _, i, part = sorted(holds)[0]
+    return {"position": i + 1, "of": len(parts), "label": labels[i] if i < len(labels) else None,
+            "labels": labels, "part": part.strip()}
+
+
+POSITION_REASON = "position in a dimension string does not match the label"
+
+
+def expected_label(figure):
+    """The dimension a figure name asks for: w for a width, h for a height, l for a length, d for a depth."""
+    name = (figure or "").lower()
+    for word, letter in (("width", "w"), ("height", "h"), ("length", "l"), ("depth", "d")):
+        if word in name:
+            return letter
+    return None
+
+
+def position_check(row):
+    """For a figure quoted from a labelled list of dimensions: `{position, of, label, expected, ok}`; None for
+    any other quote. `ok` is False when the store labels the position the number was taken from as a different
+    dimension than the figure asks for (a depth reported as a width)."""
+    stated = row.get("stated_unit")
+    numbers = [row.get("stated_value")] if stated and row.get("kind") == "single" else \
+        [row.get("stated_low"), row.get("stated_high")] if stated else \
+        [row.get("value")] if row.get("kind") == "single" else [row.get("low"), row.get("high")]
+    at = dimension_position(row.get("quote"), numbers)
+    if not at:
+        return None
+    want = expected_label(row.get("figure"))
+    return {"position": at["position"], "of": at["of"], "label": at["label"], "expected": want,
+            "ok": None if at["label"] is None or want is None else at["label"] == want}
+
+
+def apply_position_rule(row):
+    """The rule, for every reader: a figure taken from the wrong labelled position is marked unsure, so it does
+    not count. Returns True when this call marked it. A figure already unsure keeps its own reason."""
+    at = position_check(row)
+    if at is None:
+        return False
+    row["dimension"] = at
+    if at["ok"] is False and not row.get("unsure"):
+        row.update(unsure=True, unsure_reason=POSITION_REASON, caught_by="code: position in a dimension string")
+        return True
+    return False

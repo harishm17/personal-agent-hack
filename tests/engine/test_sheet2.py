@@ -40,4 +40,4 @@ def test_a_second_sheet_runs_from_its_file_alone(two_sheets):
         state.use_sheet("sheet9")
     back = state.use_sheet("sheet1")
     assert back["sheet"]["id"] == "sheet1" and len(back["lines"]) == 6
-    assert back["sheet"] == json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+    assert state._s["sheet"] == json.loads((ROOT / "sheets" / "sheet1.json").read_text())  # what the engine runs on

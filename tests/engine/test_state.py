@@ -96,7 +96,9 @@ def test_signing_seals_the_hash_and_freezes_the_sheet():
         state.apply_issuer({"type": "sign_sheet", "sheet_hash": "0" * 64})
     carts = [{"store": "fixture-store-a.example", "cart_id": "c1", "cart_url": "https://fixture-store-a.example/cart/c1",
               "total_cents": 1, "created_at": "2026-11-20T14:00:00-08:00", "mode": "fixture"}]
-    s = state.mark_signed({"key_id": "k1", "name": "Dana", "at": "2026-11-20T14:00:00-08:00"}, carts)
+    with pytest.raises(state.EngineError):
+        state.mark_signed({"key_id": "k1", "name": "Dana"}, carts)  # no signed hash: nothing to seal
+    s = state.mark_signed({"key_id": "k1", "name": "Dana", "at": "2026-11-20T14:00:00-08:00", "sheet_hash": h}, carts)
     assert s["seal"]["signed"] and s["seal"]["sheet_hash"] == h and s["seal"]["current"] is True
     assert s["seal"]["text"] == "Signed by Dana at 14:00. 1 cart created."
     picked = [c for l in s["lines"] for c in l["candidates"] if c["picked"] and c["action"]]
@@ -106,7 +108,7 @@ def test_signing_seals_the_hash_and_freezes_the_sheet():
     assert refused.value.status == 409
     s = state.reset()
     assert s["seal"] == {"signed": False, "text": "Not signed. No cart exists at any store.", "sheet_hash": None,
-                         "signature": None, "carts": []}
+                         "signature": None, "carts": [], "covers": state.COVERS}
 
 
 def test_reset_puts_the_sheet_back_as_on_disk():
@@ -147,7 +149,7 @@ def test_routes():
     # no engine route can change a limit, strike a product or sign
     paths = {r.path for r in api.router.routes}
     assert paths == {"/api/state", "/api/events", "/api/shopper/fact", "/api/sheet/canonical", "/api/shopper/say",
-                     "/api/drill/session", "/api/drill/say", "/api/drill/state"}
+                     "/api/drill/session", "/api/drill/say", "/api/drill/state", "/api/receipts", "/api/receipts/verify"}
 
 
 def test_the_reader_can_be_switched_to_another_readers_run(tmp_path):
@@ -166,7 +168,7 @@ def test_reset_is_complete_and_text_checks_follow_the_sheet_they_were_run_on():
     state.apply_issuer({"type": "strike", "line_id": "L2", "product_key": "fixture d", "reason": "x"})
     state.set_shopper_fact("mattress_thickness", 9.0)
     state.set_issuer_key({"enrolled": True, "key_id": "k"})
-    state.mark_signed({"name": "Dana", "at": "2026-11-20T14:00:00-08:00"}, [])
+    state.mark_signed({"name": "Dana", "at": "2026-11-20T14:00:00-08:00", "sheet_hash": state.sheet_hash()}, [])
     started = time.perf_counter()
     s = state.reset()
     assert time.perf_counter() - started < 0.2
@@ -174,3 +176,51 @@ def test_reset_is_complete_and_text_checks_follow_the_sheet_they_were_run_on():
     assert s["issuer_key"]["enrolled"] is False and [k["product_key"] for k in line(s, "L2")["struck"]] == []
     assert s["sheet"] == json.loads((ROOT / "sheets" / "sheet1.json").read_text())
     assert state.set_shopper_fact("mattress_thickness", 12.0)["version"] > s["version"]  # open for changes again
+
+
+def test_a_change_between_verification_and_sealing_is_never_sealed_as_if_signed():
+    """The seal race: the phone signed hash H, the stores are being called, and a measurement changes."""
+    signed = state.sheet_hash()  # what SIGN verified against
+    state.set_shopper_fact("toilet_rim_height", 14.0)  # arrives while the carts are being created
+    assert state.sheet_hash() != signed
+    with pytest.raises(state.EngineError) as refused:
+        state.mark_signed({"name": "Dana", "sheet_hash": signed}, [{"store": "fixture-store-a.example", "cart_id": "c1"}])
+    assert refused.value.status == 409 and "changed after it was signed" in str(refused.value)
+    s = state.get_state()
+    assert s["seal"]["signed"] is False and s["seal"]["carts"] == [] and s["seal"]["sheet_hash"] is None
+
+
+def test_signed_picks_are_those_of_exactly_the_signed_hash_and_hold_the_sheet_until_it_is_sealed():
+    signed = state.sheet_hash()
+    with pytest.raises(state.EngineError):
+        state.signed_picks("0" * 64)
+    picks = state.signed_picks(signed)
+    want = {l["pick"] for l in state.get_state()["lines"] if l["status"] in ("ready", "next_candidate")}
+    assert {p["candidate_id"] for p in picks} == want and all(p["quantity"] == 1 for p in picks)
+    assert set(picks[0]) >= {"store", "variant_id", "quantity", "line_id", "price_cents"}
+    assert state.get_state()["version"] and state._recompute(record=False)["signing"]["in_progress"] is True
+    for change in (lambda: state.set_shopper_fact("toilet_rim_height", 14.0),
+                   lambda: state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 425})):
+        with pytest.raises(state.EngineError) as held:
+            change()
+        assert held.value.status == 409 and "being signed" in str(held.value)
+    s = state.mark_signed({"name": "Dana", "sheet_hash": signed, "at": "2026-11-20T14:00:00-08:00"}, [])
+    assert s["seal"]["signed"] and s["seal"]["sheet_hash"] == signed == state.sheet_hash() and "signing" not in s
+    state.reset()
+    state.signed_picks(state.sheet_hash())
+    state.release_signing()  # the stores refused: the hold ends and the sheet can change again
+    assert state.set_shopper_fact("toilet_rim_height", 14.0)["seal"]["signed"] is False
+
+
+def test_the_hash_covers_the_pick_rule_and_each_picks_delivery_quote():
+    canonical = json.loads(state.canonical_sheet())
+    assert canonical["pick_rule"] == {"id": "cheapest_with_delivery_time", "label": "cheapest that states a delivery time"}
+    l2 = next(l for l in canonical["lines"] if l["line_id"] == "L2")
+    assert l2["pick"]["delivery"]["quote"] == "standard shipping takes 3 to 5 days" and l2["pick"]["delivery"]["status"] == "stated"
+    assert state.get_state()["seal"]["covers"] == ["limits", "strikes", "picks", "prices", "sums", "store quotes",
+                                                    "delivery quotes", "pick rule", "total"]
+    before = state.sheet_hash()
+    state._s["answers"][0]["delivery"]["quote"] = "standard shipping takes 2 to 9 days"  # the store's words change
+    assert state._recompute(record=False)["sheet_hash"] != before
+    state._s["sheet"]["pick_rule"]["label"] = "dearest first"
+    assert state._recompute(record=False)["sheet_hash"] != before

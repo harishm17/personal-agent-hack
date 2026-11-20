@@ -103,7 +103,8 @@ def say(turns, sandbox=None, model=None, said=None):
             json.dumps(sandbox.view(), ensure_ascii=False),
             ("Earlier in this chat:\n%s\n" % "".join(said)) if said else "", sheet["shopper"]["name"], text)
         try:
-            raw, _, _ = reader.ask(model, system, user)
+            raw, _, _ = reader.ask(model, system, user, purpose="comparison agent in a pressure attempt (sandbox)",
+                                   fact_classes=chat.SENT)
             obj = json.loads(raw[raw.find("{"):raw.rfind("}") + 1])
             reply = str(obj.get("reply") or "")
             for call in obj.get("tool_calls") or []:
