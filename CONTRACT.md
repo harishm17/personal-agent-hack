@@ -200,3 +200,18 @@ tool: the therapist is the first issuer, not the product.
   only the agent connector package. The SPONSORS work after 13:10 decides the job once Docker is checked.
 - Firedrill's prize asks to "show what you learned and how you used it to improve your agent".
 - Team: solo.
+
+## Amendment 11:20 — models without an Anthropic key, new keys
+- `ANTHROPIC_API_KEY` arrives only near the end. Until then: the **shopper chat** runs on an Arcee model
+  (OpenAI-compatible, `https://api.arcee.ai/api/v1`, `ARCEE_API_KEY`, `tool_choice` only `auto`); the
+  **figure reader** runs on an Arcee model and, once `SIE_API_KEY` arrives, Superlinked SIE `extract`;
+  `claude -p --model sonnet` is the backstop for the batch read. Keep the model behind
+  `SIGNOFF_READER_MODEL` and `SIGNOFF_CHAT_MODEL` so an Anthropic model is a one-line switch.
+- Arcee model IDs from `GET /models` at 11:18: `zai-org/glm-5.3`, `zai-org/glm-5.3-flash`,
+  `moonshotai/kimi-k3.1-pro`, `moonshotai/kimi-k3`, `deepseek/deepseek-v4.1-flash`,
+  `deepseek/deepseek-v4.1-flash-1017`. Pick by the 30-product score, then cost.
+- In the keys file and tested: `ARCEE_API_KEY`, `SENSO_API_KEY` (`GET /org/kb/root` 200), `PERSONA_API_KEY`
+  (`GET /inquiries` 200; the template id is still to come), SingleStore, Cognee, Amplitude, Statsig.
+- Fallback sheet test (11:12, pattern match, 78 cookware products at five stores): induction stated on 9,
+  an oven temperature on 9, a diameter on 27. All under half: if sheet 2 is built, its limits change to
+  ones those pages state (diameter stays; replace the other two after reading the pool).
