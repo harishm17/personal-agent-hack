@@ -42,6 +42,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | E31 | an order's rule may be a preference, not a requirement: a line's optional `preferences` (same shape as a limit), checked with the same function on figures already read; never changes whether a product passes; among those that pass, more preferences met come first; each candidate carries `preferences: [{id, label, status}]`; under the hash (the builder, 14:24) | open |
 | E32 | a fourth ordering, `most_popular`: the most reviews counted, from the same quoted review counts (the builder, 14:31) | open |
 | E33 | the house's numbers carry where they came from: each measurement fed by a context fact has `suggested_from` (the message, its sender, date and quote; `matches`); never on a limit; not under the hash (the builder, 15:26: the doctor does not prescribe the dimensions) | open |
+| E34 | a value from context or memory is a suggestion until its owner confirms it: `confirmed` on each measurement, `POST /api/shopper/confirm`, `state.unconfirmed`, and signing refused (`measurements_not_confirmed`) until confirmed; under the hash (the builder, 15:57: "the knowledge graph can be off") | open |
 | E19 | receipts for every state change; `GET /api/receipts/verify` | ok |
 | E20 | seal race, hash covers pick rule, delivery quotes, quantity, currency, variant; scope; `degraded` | ok |
 
@@ -109,6 +110,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | C14 | an ordering control on the decision screen (Cheapest · Best reviewed · Best value) that moves the pick; the pick labelled "Recommended" with its one-line reason; a quiet rating on passing rows; a "preferred" mark on rows that meet a preference (E30, E31, R4) | open |
 | C15 | no control on the laptop that can only fail: the "change" link on limits removed; limits read as the approver's, read-only; "Ask Dana" with a value and a note when the route exists, and its state on the limit (waiting, changed, declined) (the builder, 15:02) | open |
 | C16 | "Replay the run" on the decision screen: the step bar's control opens an overlay that plays how the agent got here (the graph's embed mode) once and returns to the list; never on page load; hidden when the embed is unavailable (the builder, 15:09) | open |
+| C17 | "Use it" and "Change" beside a suggested measurement; "confirmed by Elena" after; the next-step card names it first; the left panel headed "Dana's order" with no measurement inside her sentences; the cart in the left panel (the builder, 15:46 to 15:57) | open |
 | C8 | Detail view, dots, rulers, trays and tiles removed | open |
 
 ## TRAIL
@@ -159,6 +161,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | R2 | `GET /api/reviews?line_id=` and an optional `reviews` block per candidate for the screens; reviews never change whether a product passes; "best reviewed among those that pass" offered to the shopper as a choice, not applied silently | open |
 | R3 | the step in the run's records (trail feed, outbound ledger: what was sent to the search service, and that no limit, measurement or name was in it) | open |
 | R4 | `signoff.reviews.ratings(line_id)` for the engine: `{candidate_id: {rating, out_of, review_count}}` from the cache only, no network; the minimum review count stated | open |
+| R5 | reviews widened: every product that passes, 8 to 10 results, two or three query forms from the product's own words only, several sources kept and marked independent or the seller's page; counts and cost reported (the builder, 15:57: "we have a lot of credits") | open |
 
 ## AIRBYTE / RELAY thread
 | id | item | status |
@@ -190,6 +193,8 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I18 | three independent reviewers at 15:00 going through everything: the approver path attacked on a copy; every page for design at 1440 x 810 and 150%; the whole story and the day's decisions for coherence and true claims; findings routed and checked (the builder, 14:58) | open |
 | I19 | the demo's spine is the approver: the laptop's change refused, the ordering changed by the shopper appearing on the phone before she signs, the signature, carts for exactly the signed picks, one value changed and the check failing; DEMO.md rewritten on that at 15:20 | open |
 | I20 | the approver review's six holes (`NOTES/REVIEW-approver-1500.md`): H1, H4, H5 to ENGINE; H2, H3, H6 to SIGN; each with a failing test first; checked on main before the demo | open |
+| I21 | three finishers at 16:00: the video's one-page take list and caption file (with a "Tools at work" take: the builder, 16:02, "mention how we use the sponsors' tools"); the repository checked for secrets and made ready to be public; a six-slide deck with a sponsors slide | open |
+| I22 | pick-up as a shopper's choice per item: WONTDO today (it changes what is signed and which carts are made); named as a next step (the builder, 15:44) | wontdo |
 | I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
 ## The builder
