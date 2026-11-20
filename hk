@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# Hackathon kit commands for this repo. Run ./hk help.
+set -euo pipefail
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+S="$ROOT/scripts/hk"
+cmd="${1:-help}"; shift || true
+
+case "$cmd" in
+  status)     exec python3 "$S/status.py" "$@" ;;
+  clock)      echo '{"hook_event_name":"SessionStart"}' | python3 "$S/clock_hook.py" ;;
+  check)      exec python3 "$S/stop_gate.py" --manual "$@" ;;
+  own)        exec python3 "$S/own.py" "$@" ;;
+  crosscheck) exec python3 "$S/crosscheck.py" "$@" ;;
+  eval)       exec python3 "$S/eval.py" "$@" ;;
+  submit)     exec python3 "$S/submit_check.py" "$@" ;;
+  timeline)   exec python3 "$S/timeline.py" "$@" ;;
+  record)
+    if [ ! -d "$S/node_modules/playwright" ]; then
+      echo "[hk] installing the demo recorder (playwright) into scripts/hk ..."
+      npm install --prefix "$S" --no-audit --no-fund --silent
+      (cd "$S" && npx playwright install chromium >/dev/null)
+    fi
+    exec node "$S/record-demo.mjs" "$@" ;;
+  skills)
+    # ./hk skills list | add PACK...: project-scoped skill packs via the kit that created this repo
+    kit="$(python3 -c "import json;print(json.load(open('$ROOT/.hk/config.json')).get('kit',''))")"
+    if [ -x "$kit/bin/hackkit" ]; then
+      sub="${1:-list}"; shift || true
+      if [ "$sub" = "add" ]; then exec "$kit/bin/hackkit" skills add "$@" --dir "$ROOT"; fi
+      exec "$kit/bin/hackkit" skills "$sub" "$@"
+    fi
+    echo "[hk] kit not found; install vendor skills with: npx skills add <org/repo> -a claude-code -a codex --copy -y"
+    exit 1 ;;
+  stream)
+    # ./hk stream NAME [BASE]: make a worktree + branch for a stream outside T3 Code
+    name="${1:?usage: ./hk stream NAME [BASE]}"; base="${2:-main}"
+    dir="$(dirname "$ROOT")/$(basename "$ROOT")-$(echo "$name" | tr '[:upper:]' '[:lower:]')"
+    git -C "$ROOT" worktree add -b "stream/$(echo "$name" | tr '[:upper:]' '[:lower:]')" "$dir" "$base"
+    (cd "$dir" && python3 "$S/own.py" "$name")
+    echo "[hk] worktree ready: $dir  (start an agent there with the prompt in streams/$name.md)" ;;
+  gate)
+    # ./hk gate on|off: toggle the Stop-hook gate for everyone (edits .hk/config.json)
+    python3 - "$ROOT/.hk/config.json" "${1:?usage: ./hk gate on|off}" <<'PY'
+import json, sys
+p, v = sys.argv[1], sys.argv[2] == "on"
+cfg = json.load(open(p)); cfg.setdefault("gate", {})["enabled"] = v
+json.dump(cfg, open(p, "w"), indent=2); print(f"[hk] gate {'on' if v else 'off'}")
+PY
+    ;;
+  help|*)
+    cat <<'EOF'
+./hk status                 clock, streams' last commits, gate state, open cross-check items
+./hk clock                  the orientation agents see at session start
+./hk timeline --start HH:MM [--break "HH:MM label"] [--write]   milestones from start and deadline
+./hk check [--all]          run the configured checks now (same as the Stop-hook gate)
+./hk gate on|off            turn the Stop-hook gate on or off for this repo
+./hk own STREAM [--add P]   bind this checkout to a stream (edits outside it are denied)
+./hk own --show | --clear
+./hk stream NAME [BASE]     new worktree + branch stream/NAME bound to that stream
+./hk skills list | add PACK project-scoped vendor skill packs (gemini, claude-api, openai, design, ...)
+./hk crosscheck once|watch  second-model review of new commits against CONTRACT.md
+./hk eval [--cmd ...]       run evals/cases.jsonl, write evals/report.md (measured numbers)
+./hk record [shots.json]    record the demo video from demo/shots.json
+./hk submit [--no-net]      check SUBMISSION.md (limits, links) and the repo (pushed, no secrets)
+Env: HK_HOOKS=off disables every kit hook for one session.
+EOF
+    ;;
+esac
