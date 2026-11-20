@@ -59,7 +59,7 @@ function turnHtml(t, turn, prev) {
       ? `<span class="carried" title="${esc(lead)}">${esc(lead)}</span>${esc(turn.sent.slice(lead.length))}` : esc(turn.sent);
     ours = `<div class="who ours-who">Sent ${hhmm(turn.reply_at)}</div><div class="msg ours">${body}</div>`;
   } else {
-    ours = `<div class="who ours-who"><span class="bad">Not sent</span></div><div class="msg ours refused">${esc(turn.why || "")}</div>`;
+    ours = `<div class="who ours-who"><span class="bad">Not sent</span></div><div class="msg ours refused">${esc((turn.why || "").replace(/^./, (c) => c.toUpperCase()))}</div>`;
   }
   const row = turn.removed.length ? `<button class="wh" data-open="${esc(key)}" aria-expanded="${open}">Withheld ${marks}<span class="caret">${open ? "▴" : "▾"}</span></button>` : "";
   const behind = open ? `<div class="behind">${turn.n === 1 && t.origin === "shopper" ? `<span class="cap">The shopper's words</span>${esc(t.purpose)}` : ""}
