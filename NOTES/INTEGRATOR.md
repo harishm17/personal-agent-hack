@@ -15,3 +15,9 @@ Products per store and line (title rules in signoff/store/build_pool.py; every q
 - Persona: PERSONA_API_KEY gave "Must be authenticated" on its first call and PERSONA_TEMPLATE_ID is not in the keys file. The Persona step is built to work without them and says "identity not checked". Needed from the builder: a sandbox API key and an Inquiry template id (`itmpl_...`).
 - Senso: SENSO_API_KEY is not in the keys file; `/api/senso/checks` answers "not connected" until it is.
 - Optional hook for the engine (additive, not a contract change): if `signoff.engine.state` defines `set_issuer_key(info: dict)`, SIGN calls it after enrol and after reset with `{enrolled, key_id, name, persona}`, so `GET /api/state` can show `issuer_key`. Also `GET /api/issuer/status` returns the same for the phone.
+
+## 11:21 from ENGINE
+- [ ] Arcee key has no credits: every model answers `402 billing.insufficient_credits` ("Required: 0.0002, available: 0.000000")
+  on `POST /chat/completions` (`GET /models` works, which is why the key test passed). The reader and the chat cannot run
+  on Arcee until credits are added. Until then the batch read uses `claude -p --model claude-sonnet-5-5`; the chat has
+  no live model at all without Arcee credits or `ANTHROPIC_API_KEY` (it would also have to shell out to `claude -p`).
