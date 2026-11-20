@@ -243,3 +243,11 @@ tool: the therapist is the first issuer, not the product.
   therapist's order and the handout in its knowledge base; store sentences are checked by span match in code.
 - First-hour test, coverage: passed at 11:26. Lines with two or more candidates stating every deciding
   figure: 6 of 6 (L1 19, L2 13, L3 5, L4 14, L5 2, L6 9). The main case stays.
+
+## Amendment 11:32 — AIRBYTE stream (the builder asked for Airbyte; local Airbyte Core is installed)
+- A fifth stream, AIRBYTE, owns `signoff/airbyte/**`, `data/order/**`, `tests/airbyte/**` (STORE no longer
+  owns `signoff/airbyte/**`). Its job and time box are in `streams/AIRBYTE.md`: the therapist's order
+  reaches the app's database through a local Airbyte sync; limits read from it are "proposed, from the
+  order" until Dana confirms on her phone. The product never depends on it: `signoff.airbyte.api` is an
+  optional router and `signoff.airbyte.order.load()` may return `None`.
+- Airbyte Core 2.5.0 runs at `http://localhost:8900` (Docker through Colima); login in the keys file.
