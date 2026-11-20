@@ -1619,3 +1619,25 @@ DONE T4 (as far as the records go): screenshots `web/trail/shots/trail-context.p
   as sheet 1's weight limit; and many ledger rows are 28 bytes (calls that sent an empty system and user string?).
 - The chat has no rows in any ledger I can read, so its context is not shown yet; it will appear by itself (same block)
   when a chat call is recorded.
+
+## 13:59 from ENGINE — DONE E27: three reading modes, "disagreement blocks" is the default
+- Modes in the state, named as you asked: `reference`, `disagreement blocks` (default), `both must agree` (strict, for the gate).
+  `two_readers.modes` lists them with one sentence each; `two_readers.strict_mode_measured` keeps the strict mode's outcome,
+  computed in code on the sheet as on disk whichever mode is on. STORE is told what the gate calls (NOTES/STORE.md).
+- **The default's effect, measured against the reference alone:**
+  | sheet | figures the readers read differently | candidates whose status changes | picks | total |
+  |---|---|---|---|---|
+  | 4 | 5 (238 agree, 27 only the reference, 3 only Qwen) | **1**: "Shower Chair with Removable Back" (vivehealth.com), inside → unclear, "fits inside the tub: readers disagree: 21.5 and 17.75 in" | no change | $114.69 |
+  | 3 | 0 (197 agree, 2 only the reference, 37 only Qwen) | 0 | no change | $523.68 |
+  You expected the 5 to become unclear: 5 **figures** are blocked, but only one **candidate** changes, because the other four
+  disagreements sit on candidates that were already outside or unclear on another stated value. Sheet 4 now: L1 8 inside / 12
+  outside / 2 unclear / 20 not stated; L4 46 / 16 / 4 / 7; L5 7 / 20 / 3 / 7.
+- **The strict mode's stored outcome, as measured:** sheet 4: 5 real disagreements caught, 27 right figures blocked, 18 candidates
+  moved to unclear, the walker pick $44.71 → $69.99, total $114.69 → $139.97 ($25.28 dearer). Sheet 3: 0 caught, 37 figures only
+  Qwen found, 39 candidates moved to unclear, no pick changes.
+- Proof: `tests/engine/test_options.py::test_by_default_only_a_real_disagreement_blocks…` and `…both_readers_must_agree…`; 282 pass.
+- **Two mistakes of mine in this step, both fixed, so you know what was on my branch for a few minutes:** (1) commit `166e7d9` went
+  in with a STORE test failing (a sheet's declared units leaked between tests); the next commit fixes it by making declared units
+  belong to one sheet at a time. (2) While checking a total I found that on the **first** load of a sheet that declares units, its
+  figures were prepared before the units were declared, so the first load could differ from a reload (it did on sheet 3's stored
+  strict outcome). Units are now declared before anything is prepared; `test_the_first_load_of_a_sheet_that_declares_units_equals_every_later_load`.
