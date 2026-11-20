@@ -1064,6 +1064,43 @@ app_pool_rows, note}. Today on sheet 1: L1 8 against 8, L2 7 against 7, L4 13 ag
 - **DONE A3** (`/relay/` in the product's visual system): restyled with the tokens of `web/screen/flow.css` and looked at in the browser at 390 x 844 in each state: `NOTES/relay-shots/1-before-start.png`, `2-relay-step.png`, `3-passed.png`. One cosmetic leftover that I may not edit (hook): the claim time prints as a raw ISO string; the exact two-line change is in `NOTES/AIRBYTE.md` (13:05).
 - **A4, partly done; the phone part is not mine to close.** Proven just now over HTTP against the app (sandbox key, real Persona calls): `POST /api/issuer/relay/start` returned a session, `POST /api/issuer/relay/complete` returned `{"result":"passed","sandbox":true,...,"token_consumed":true}`, and SIGN's `GET /api/issuer/status` then showed `relay = {claim_type: live_human_presence, result: passed, sandbox: true, at: 13:02:08}` (before the pass it was `None`); SIGN's signing code attaches exactly that dict as `signature.relay` (`signoff/sign/api.py` lines 373 to 378), which I read but did not run through a signed request. **Not proven:** a person completing the widget on a phone: I have no phone, and the widget's own step did not open in the headless browser (probably needs a camera), so the widget's `onComplete` has never run. WONTDO by me; for the builder or you, 2 minutes: open `<tunnel>/relay/` on a phone, tap Start the check, the checkbox, finish Persona's step; the page should say "Live human: passed (sandbox)"; then `curl <tunnel>/api/issuer/status` shows `relay`. If the widget step does not open on the phone, the "I finished the check" button redeems anyway (sandbox passes regardless).
 - **Not mine, seen on the gate:** `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on `145 == 179` (it hard-codes the old pool size; STORE's refresh made it 179). ENGINE's test, not my paths.
+## 13:20 from SCREEN: C1 to C8 (stream/SCREEN, main merged at 3582cd5; my port 8003 now runs SIGNOFF_SHEET=sheet2)
+Screenshots are local files (demo/shots is not committed). Checked on live sheet 2 (179 pages, 4 picks) and live sheet 1.
+- DONE C1: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-T1.png (toilet, live sheet 2), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-T4.png (vanity, one limit).
+- DONE C2: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/ladder-step.png. Seven steps from the state; a step opens a sheet over the right column with what the state
+  holds for it plus the Trail's own records for that step (`events` with `step === id`, `own_step !== false`) and a link
+  to `/trail/#<step id>`. Step ids are the Trail's.
+- DONE C3, with two parts not watched: opening checked frame by frame on live sheet 2 (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-open.png: rows fill
+  cheapest first, the highlight lands, the right column fills). A limit change checked only in the in-page simulation on
+  the placeholder sheet 2 fixture (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-move.png: header value rolls, cells re-evaluate in place, highlight moves,
+  old pick says "was picked" for 3 s). NOT watched: a limit moved from the real phone, and the signing motion on this screen.
+- DONE C4 except images: outside is a red value, unclear a solid grey chip with what the page states ("5 or 5.5 in",
+  "13.5 no unit"), not stated a dashed chip; clicking a row puts the page's own words in the right column
+  (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/ladder-unclear.png live sheet 1, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-rej.png live sheet 2). The engine does not send status `unclear` yet; I
+  detect it from `missing_why` "stated, but not clearly" and the candidate's `unsure` figure, and also handle the status.
+  Option name sits under the product name before the store. Images: `product.image_url` is drawn when present with a
+  neutral placeholder otherwise; no product carries it yet, so I have only seen the placeholder.
+- DONE C5: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-960.png (1440 x 810 at 150%: thumbnails drop, every column stays, columns scroll) and
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-1920.png (fills 1920 x 1080; rem sizes on a root of clamp(16px, 1.1vw, 22px)).
+- DONE C6, signed state from the placeholder fixture only: QR of the enrol route's `url` with "Scan to enrol the phone"
+  and the code, one line "<issuer> must sign · no cart exists", receipts as ticks with the count on the same line
+  (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-T1.png); signed: signer, time, "self-declared" or "identity checked (sandbox)", short hash, what the hash
+  covers, cart links (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/ladder-signed.png). NOT done: scanning the QR with a phone; a real signature on this screen.
+- DONE C7 except the reader chip: "change" under a limit's column header sends an unsigned change and the answer comes
+  in a toast beside it, seen against the real server: "Refused · not signed 401" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-forge.png). Tabs Decision and
+  Trail sit after the sheet title as TRAIL asked. WONTDO the reader chip in the top bar: your 12:50 note keeps one status
+  pill there; the reader and "the small model was switched back" are in the "Pages read" step's sheet.
+- DONE C8: app.js, plot.js, flow.js, flow.css and the Detail link are deleted; `web/screen` is index.html, style.css
+  (shared system), ladder.css, ladder.js, model.js, motion.js, vendor/qrcode.js and three fixture files.
+- Not mine, seen in the gate: `tests/engine/test_sheet2.py` fails on main (instruction scan 145 pages against 179 found);
+  noted in NOTES/ENGINE.md.
+- On live sheet 2 the vanity's pick shows the store agent's return sentence about "an opened toilet" (scope "store-wide").
+  The screen prints the scope; whether to show a store-wide reply on another product kind is ENGINE's call.
+- 13:24 from SCREEN, C3 follow-up: the signing motion is now watched on this screen with the placeholder signed fixture
+  (`/?fixture=1&motion=1&sign=2600#L3`): the last two steps fill, then signer, identity line, hash and the cart links arrive
+  one by one. Still not seen: a real signature and a real limit move from the phone.
+- Quirk for the log (AGENTS.md is yours): headless Chrome never finishes loading a page that holds an open EventSource;
+  add `?live=0` for scripted screenshots. Motion is off under `navigator.webdriver`; `?motion=1` forces it.
 ## 13:20 from SIGN — G6 and G14
 - DONE G6: STORE's `create_carts` still returns no lines, so SIGN now creates the carts itself through STORE's `ucp.call` (`signoff/sign/carts.py`: same create_cart call, same totals, same pending-on-timeout answer, plus `lines` and `currency` from the store's reply; `get_cart()` points at it; when STORE adds `lines` the pointer can go back). After creation each cart's lines are compared with the signed picks (variant id, quantity, unit price) and the totals per store; a difference sets `line_differences` and/or `total_differs` and the note "store cart differs from the signed picks: <variant> unit price: signed 2999, store 3110" (both values), shown in red on the phone's seal; matching carts say "the store's cart lines match the signed picks"; a store that returns no lines (replay mode: no cart exists) says "the store's cart lines were not compared". Live proof (one real create_cart at carex.com, then the comparison): `{'mode': 'live', 'total_cents': 3110, 'signed_total_cents': 3110, 'currency': 'USD', 'lines': [{'variant_id': 'gid://shopify/ProductVariant/30226852577385', 'quantity': 1, 'unit_price_cents': 3110, 'title': 'Carex Quick-Lock Raised Toilet Seat'}], 'lines_checked': True, 'line_differences': None}`; with a signed price of 2999 the same cart gives `store cart differs from the signed picks: 30226852577385 unit price: signed 2999, store 3110`. Tests: `tests/sign/test_carts.py` (4) and the earlier quantity/price/dropped/added-line tests. A store that errors is now `failed` with its words, a timeout stays `pending` (STORE's create_carts reports both as pending).
 - OPEN G14: Firedrill `apply` for workspace dc2089af… still answers `native_participant_capacity_exceeded`; the loop (every 3 minutes, through `evals/firedrill/fd.py`, plan then apply with `--approve --follow`) has run since 11:44 and carries on to about 14:00; it stops on the first success and I start the campaign (world a80bbe45…, four scenarios) the moment it does. I close this line with DONE (campaign id and what it found) or WONTDO (reason) at 14:00 at the latest.
@@ -1269,3 +1306,30 @@ The gate is red after merging main (bbbdc45) into stream/TRAIL: 2 failed, 250 pa
 - `GET /api/trail` took 0.6 s per call because the Airbyte status asks a database each time; the feed now holds that
   one source for 20 s and refreshes it in the background: 5 ms per call after the first (`curl -w '%{time_total}'`).
   SCREEN's stepper fetches the feed too, so this also speeds up `/`.
+- 13:30 from SCREEN: the gate on stream/SCREEN (and on main at 0ef1ac5) fails on one test that is not in my paths:
+  `tests/engine/test_sheet2.py` (instruction scan 145 pages, pool 179 after STORE's option rows). Every other test passes
+  with that one set aside. Notes are in NOTES/ENGINE.md and NOTES/STORE.md; it needs ENGINE's scan re-run, which I cannot do
+  from `web/screen/**`.
+- 13:33 from SCREEN, correction to my 13:30 line: two tests fail on main at 0ef1ac5, both in `tests/engine/test_sheet2.py`
+  (`..._runs_from_its_own_files...`: scan 145 against pool 179; `..._decided_by_an_equality...and_by_the_full_flush`: a
+  flush-volume term on a deervalleybath.com toilet does not meet the test's expectation after the pool grew). Everything
+  outside that file passes: `uv run -q pytest -q --deselect tests/engine/test_sheet2.py` → 249 passed. Both are ENGINE's.
+
+## 13:40 from SCREEN (your 13:18 note; main merged at 66304e8, my port 8003 runs SIGNOFF_SHEET=sheet3)
+- C1 to C8 are reported in my 13:20 and 13:24 entries above with screenshot paths; OPEN.md still lists them open. Nothing
+  changed in their state except what follows.
+- Sheet 3 on my port: the engine serves it with 0 candidates on every item (`mode: fixture`, 19 products found, no pick),
+  so the live screen shows four open items and "No page has been read for this item yet" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live.png). Nothing breaks:
+  title, "Teacher signs", the list column and the limit headers ("Volume limit ≤ 85 dB", "= 24") all come from the sheet.
+- Sheet 3 shapes, checked on a placeholder fixture of my own (`/?fixture=sheet3`, made from `sheets/sheet3.json` with
+  fixture stores and products): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-C1.png (headphones: a cell "75, 85 or 94 dB" with the 94 in red, "× 24" under each
+  price, in the list column, the why card "$19.99 × 24 = $479.76" and the stepper) and /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-C2.png (crayons "= 24": 16
+  and 64 marked, a bare count shows no unit word).
+- Two key names are my guesses until ENGINE's sheet 3 state has candidates; please pass them on or tell me the real ones:
+  (1) quantity: I read `sheet.lines[].quantity`, else `lines[].quantity`; the top-bar total is the state's `total_cents`
+  as given, so the engine must multiply. (2) several stated values of one figure: I read an array on the store term named
+  `values`, `stated_values`, `all_values` or `stated` (numbers, or objects with `value`), and mark the ones that fail.
+- "Therapist signs" was sheet 1's own issuer role; the label is `sheet.issuer.role` + " signs" ("Plumber signs", "Teacher
+  signs"). Images: still no `product.image_url` on any candidate of sheets 1, 2 or 3 on my port; the code draws it when present.
+- STILL OPEN on my side: images unseen (C4), the QR not scanned and no real signature or phone-driven limit move seen on this
+  screen (C3, C6), the 20 px hit areas and the guidelines audit.

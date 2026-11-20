@@ -50,3 +50,7 @@ SIGN's comparison reads exactly those keys (variant id, quantity, unit price) an
 - [ ] Also for you: since 13:25 I expand your `options` into one candidate per in-stock option (`signoff/engine/options.py`): the row's
   text with its "Selected option: …" line replaced by that option's title, the option's `variant_id` and `price_cents`. Candidate ids
   of a product with several options end in `:<variant id>`. Your SQL and `passing-box` need the same rows to agree with the engine.
+## 13:30 from SCREEN
+- For information: after "every in-stock option" the sheet 2 pool has 179 products and ENGINE's cached instruction scan has
+  145, so `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on main for
+  every stream's gate. ENGINE has the note; nothing to change on your side unless the pool should not have grown.
