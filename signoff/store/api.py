@@ -106,3 +106,11 @@ def gate_override(body: dict):
 
 if "pytest" not in sys.modules:
     gate.start()
+
+
+@router.get("/api/egress")
+def egress_ledger(limit: int = 500):
+    """The outbound ledger: one row per message that left the process (hashes and sizes only, never payloads)."""
+    from signoff.obs.egress import rows, summary
+    rs = rows()
+    return {"rows": rs[-max(1, min(limit, 5000)):], "summary": summary(rs)}

@@ -62,7 +62,15 @@ def _replay(domain: str, tool: str, arguments: dict) -> dict:
     raise RuntimeError("replay: no saved reply for " + tool)
 
 
+CLASSES = {"search_catalog": ["order"], "ask_business": ["product"], "create_cart": ["product"]}
+
+
 def _live(domain: str, tool: str, arguments: dict, retries: int) -> dict:
+    # the outbound ledger: one row per message; a sealed value (limit, home measurement, person) in it stops the send
+    row = obs.egress(domain, tool, arguments, CLASSES.get(tool), kind="store", block_on_hit=True)
+    if row.get("blocked"):
+        raise RuntimeError("blocked: the message to %s contains a sealed value (%s)" % (
+            domain, ", ".join(h["match"] for h in row["sealed_hits"])))
     args = {"meta": {"ucp-agent": {"profile": profile_url()}}, **arguments}
     body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
                        "params": {"name": tool, "arguments": args}}).encode()

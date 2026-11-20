@@ -98,6 +98,8 @@ def _read_gate() -> bool:
         o = StatsigOptions()
         o.environment = "development"
         _sdk = Statsig(config.env("STATSIG_SERVER_SECRET"), o)
+        obs.egress("statsig", "gate reader: sync of gate rules, then one check of sie_reader per poll (this row once)",
+                   {"gate": GATE, "user_id": "signoff-demo"}, ["none"])
         _sdk.initialize().wait()
         _user = StatsigUser("signoff-demo")
     g = _sdk.get_feature_gate(_user, GATE)
@@ -108,6 +110,7 @@ def _read_gate() -> bool:
 def _apply(value: bool) -> None:
     """Switch the engine's reader to the arm and record before and after. Called only when the value changed."""
     arm = _arm(value)
+    obs.egress("statsig", "gate value changed: exposure event", {"gate": GATE, "value": value, "user_id": "signoff-demo"}, ["none"])
     before = outcome()
     try:
         _engine().set_reader(ARMS[arm][0])

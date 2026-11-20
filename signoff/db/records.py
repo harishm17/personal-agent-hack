@@ -94,6 +94,10 @@ def _write_now_locked(state: dict) -> None:
                 decisions.append((state["version"], cand["id"], line["line_id"], pr["store"], pr["product_id"],
                                   pr["product_key"], cand["status"], cand.get("reason"), 1 if cand.get("picked") else 0,
                                   pr["price_cents"], json.dumps(cand)))
+        from signoff import obs  # the ledger: this write leaves the process for SingleStore
+        obs.egress("singlestore", "write pool, figures, limits, strikes and decision records", {
+            "figures": list(figs.values()), "limits": limit_rows(state), "strikes": list(strikes.items()),
+            "decisions": decisions}, ["limit", "home_measurement", "store_text", "product", "price", "order"])
         cur.execute("DELETE FROM figures")
         _bulk(cur, "INSERT INTO figures (store, product_id, figure, kind, value, low, high, unit, quote,"
                    " start_pos, end_pos, extractor, span_found_in_text, unsure)", list(figs.values()))
