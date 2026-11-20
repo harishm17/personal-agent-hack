@@ -286,7 +286,10 @@ function sensoLine() {
   const fresh = s.for_hash && s.for_hash === serverHashNow();
   if (sensoRunning || !fresh) return { text: "Checking the sheet against the order…", rows: [] };
   const rows = s.checks || [], ok = rows.filter((r) => r.verdict === "verified").length;
-  return { text: "Checked against the order: " + ok + " of " + rows.length + " verified" + ((s.blocking || []).length ? ", " + s.blocking.length + " stop the signature" : ""), rows };
+  if (!rows.length) return { text: "Nothing to check against the order yet", rows };
+  const vs = (s.order_document && s.order_document.versions) || [];
+  const ver = vs.length === 1 ? " (version " + (vs[0].version_num || String(vs[0].version_id).slice(0, 8)) + ")" : "";
+  return { text: "Checked against the order" + ver + ": " + ok + " of " + rows.length + " verified" + ((s.blocking || []).length ? ", " + s.blocking.length + " stop the signature" : ""), rows };
 }
 async function ensureSenso() {
   const s = issuer && issuer.senso;
@@ -309,6 +312,7 @@ function renderSheet() {
       <div class="card"><div class="cap">Carts</div><ul class="plain">${(seal.carts || []).map((c) => `<li class="stack"><div class="row"><span>${esc(c.store)}</span><span class="num">${money(c.total_cents)}</span></div>${c.total_differs || c.line_differences ? `<div class="sub" style="color:var(--bad)">${esc(c.note)}</div>` : ""}${c.cart_url ? `<div><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> <span class="sub">· ${esc(c.mode || "")}</span></div>` : `<span class="sub">${c.mode === "pending" ? "still being created at the store" : "not created: " + esc(c.note || "")}</span>`}</li>`).join("")}</ul></div>
       <div class="card"><div class="cap">Checks</div>
       <div class="sub">${(() => { const q = (seal.signature && seal.signature.persona) || {}; return q.inquiry_id ? esc(q.label || "") + " · " + esc(q.inquiry_id) + " · " + esc(q.status || "") + " · sandbox" : "identity not checked"; })()}</div>
+      ${seal.signature && seal.signature.relay ? `<div class="sub">Live human: ${esc(seal.signature.relay.result)} (sandbox: a sandbox claim passes with nobody present)</div>` : ""}
       <div class="sub">${seal.signature && seal.signature.senso && seal.signature.senso.status === "pending" ? "Senso check still running" : "Checked against the order"}</div></div>
       <div class="sub">To start over, reset from the laptop.</div>`);
     return;
@@ -321,9 +325,10 @@ function renderSheet() {
     `<div class="card"><div class="stack"><div class="cap">Total in carts</div><div class="total">${money(c.total_cents)}</div><div class="sub">${esc(ruleText(c))}</div></div>
     <div class="rule"></div>
     <div class="stack"><div class="cap">Checks</div>
-    <div class="sub">${esc(per.label || "identity not checked")} · <button class="link" id="pstart">${per.inquiry_id ? "refresh" : "check identity"}</button>${per.link ? ` · <a href="${esc(per.link)}" target="_blank" rel="noopener">open</a>` : ""}</div>
+    <div class="sub">${esc(per.label || "identity not checked")}${issuer.identity_required && !per.verified ? " · needed to sign" : ""} · <button class="link" id="pstart">${per.inquiry_id ? "refresh" : "check identity"}</button>${per.link ? ` · <a href="${esc(per.link)}" target="_blank" rel="noopener">open</a>` : ""}</div>
+    <div class="sub">${issuer.relay ? "Live human: " + esc(issuer.relay.result) + " (sandbox: a sandbox claim passes with nobody present)" : 'Live human check (sandbox) · <a href="/relay/" target="_blank" rel="noopener">open</a>'}</div>
     <div class="sub">${esc(sl.text)}</div>
-    ${sl.rows.length ? `<details><summary>Sentences</summary><ul class="plain">${sl.rows.map((r) => `<li class="stack"><span><span class="tag ${r.verdict === "verified" ? "ok" : r.verdict === "conflict" ? "bad" : ""}">${esc(r.verdict)}</span>${r.blocks ? "" : ' <span class="tag">advisory</span>'}</span><span>${esc(r.sentence)}</span>${r.moved_from_order ? '<span class="sub">changed from the order</span>' : ""}</li>`).join("")}</ul></details>` : ""}</div>
+    ${sl.rows.length ? `<details><summary>Sentences</summary><ul class="plain">${sl.rows.map((r) => `<li class="stack"><span><span class="tag ${r.verdict === "verified" ? "ok" : r.verdict === "conflict" ? "bad" : ""}">${esc(r.verdict)}</span>${r.blocks ? "" : ' <span class="tag">advisory</span>'}</span><span>${esc(r.sentence)}</span>${r.source && r.source.version_id ? `<span class="sub">against ${esc(r.source.title || "the order")}, version ${esc(r.source.version_num || String(r.source.version_id).slice(0, 8))}${r.source.version_num == null && r.source.latest_version_id ? " (an older version)" : ""}</span>` : ""}${r.moved_from_order ? '<span class="sub">changed from the order</span>' : ""}</li>`).join("")}</ul></details>` : ""}</div>
     <div class="rule"></div>
     <div class="stack"><div class="cap">What you sign</div><div class="hash">${esc(canon.hash)}</div>
     <div class="sub" style="color:${canon.match ? "var(--ok)" : "var(--bad)"}">${canon.match ? "Computed on this phone from the sheet above; the server's hash is the same." : "This phone computed a different hash from the one the server sent. It will not sign."}</div></div></div>

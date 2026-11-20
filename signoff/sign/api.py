@@ -123,7 +123,7 @@ def enroll_code(request: Request):
 @router.get("/api/issuer/status")
 def issuer_status():
     ensure_watcher()
-    return {**_issuer_info(), "senso": senso.checks()}
+    return {**_issuer_info(), "senso": senso.checks(), "identity_required": identity_required(), "relay": _relay()}
 
 
 # ---- the signed request -------------------------------------------------------------------------------
@@ -330,6 +330,12 @@ async def issuer_request(request: Request):
     return await run_in_threadpool(_handle_request, body)  # blocking work stays off the event loop
 
 
+def identity_required() -> bool:
+    """On by default: the signature is refused until the signer's identity check is approved (sandbox). Switch it off
+    explicitly with PERSONA_REQUIRED=0 in the keys file."""
+    return (config.env("PERSONA_REQUIRED") or "1").strip() != "0"
+
+
 def _handle_request(body: dict):
     ensure_watcher()
     with _lock:
@@ -349,7 +355,7 @@ def _handle_request(body: dict):
                 receipt(body, True)
                 return {"ok": True, "applied": payload["type"], "version": _version(result, engine)}
             who = persona.status() if persona.record().get("inquiry_id") else persona.record()  # read from Persona's backend
-            if config.env("PERSONA_REQUIRED") == "1" and not who.get("verified"):
+            if identity_required() and not who.get("verified"):
                 raise Refused("identity_not_verified", "identity not verified", 403, retry_ok=True)
             gate = _senso_gate(engine)
             if gate["blocking"]:
