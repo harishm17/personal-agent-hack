@@ -20,28 +20,28 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 LEDGER = ROOT / "data" / "egress" / "ledger.jsonl"
 CLASSES = {"limit", "home_measurement", "person", "order", "store_text", "product", "price", "none"}
 MODELS = {"anthropic", "sie", "arcee", "openai", "claude"}
-UNITS = {"lb": r"(?:lbs?\.?|pounds?)", "in": r"(?:in\b\.?|inch(?:es)?\b|\"|”|″)"}
+UNITS = {"lb": r"(?:lbs?\.?|pounds?)", "in": r"(?:in\b\.?|inch(?:es)?\b|\"|”|″)",
+         "gpf": r"(?:gpf\b|gallons? per flush)", "gpm": r"(?:gpm\b|gallons? per minute)"}
 _lock = threading.Lock()
 _rows: list = []
 _loaded = False
 
 
+def _active_sheet() -> tuple[str, dict | None]:
+    """(id, sheet) of the sheet on the table: the engine's own copy (its limits may have moved), else the file on disk."""
+    try:
+        from signoff.store import sheetctx
+        sid = sheetctx.active_id()
+        return sid, sheetctx.sheet(sid)
+    except Exception:  # noqa: BLE001
+        return "sheet1", None
+
+
 def _sheet_values() -> dict:
-    """Sealed values of the sheet the engine runs now (its limits may have moved) and of the sheet on disk."""
+    """Sealed values of the active sheet: issuer limit values with units, the shopper's measurements with units, the names."""
     limits, facts, people, stores = set(), set(), set(), set()
-    sheets = []
-    try:
-        from signoff.engine import state as engine
-        s = getattr(engine, "_s", {}).get("sheet")  # no lock taken: egress may be called from inside the engine
-        if s:
-            sheets.append(s)
-    except Exception:  # noqa: BLE001
-        pass
-    try:
-        sheets.append(json.loads((ROOT / "sheets" / "sheet1.json").read_text()))
-    except Exception:  # noqa: BLE001
-        pass
-    for sh in sheets:
+    _, sh = _active_sheet()
+    if sh:
         stores.update(sh.get("stores", []))
         for who in ("issuer", "shopper"):
             if sh.get(who, {}).get("name"):
@@ -110,7 +110,7 @@ def _load() -> None:
 
 
 def record(recipient: str, purpose: str, payload=None, fact_classes=None, kind: str | None = None,
-           block_on_hit: bool = False) -> dict:
+           block_on_hit: bool = False, mask: list | None = None) -> dict:
     """Add one row and return it (`sealed_hits` empty means clean). Never raises. With block_on_hit, a store payload with a
     sealed value is marked `blocked: true` and the caller must not send it."""
     try:
@@ -118,10 +118,14 @@ def record(recipient: str, purpose: str, payload=None, fact_classes=None, kind: 
         raw = text.encode()
         sealed = _sheet_values()
         k = kind or kind_of(recipient, sealed)
-        found = detect(text, sealed)
+        seen_text = text
+        for m in mask or []:  # the store's own words in the payload (a product title) are not ours to seal
+            if m:
+                seen_text = seen_text.replace(m, " ")
+        found = detect(seen_text, sealed)
         declared = sorted(c for c in (fact_classes or []) if c in CLASSES)
         classes = sorted(set(declared) | {h["class"] for h in found}) or ["none"]
-        row = {"at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "recipient": recipient,
+        row = {"sheet": _active_sheet()[0], "at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "recipient": recipient,
                "kind": k, "purpose": purpose, "bytes": len(raw), "payload_sha256": hashlib.sha256(raw).hexdigest(),
                "fact_classes": classes, "declared_classes": declared or ["none"],
                "sealed_hits": found if k == "store" else [],
@@ -144,10 +148,22 @@ def record(recipient: str, purpose: str, payload=None, fact_classes=None, kind: 
         return {"sealed_hits": [], "error": True}
 
 
-def rows() -> list[dict]:
+def rows(sheet: str | None = None) -> list[dict]:
+    """The saved log (the file is the source of truth, so a restart loses nothing), oldest first. `sheet`: only that sheet's
+    rows (rows written before the sheet field existed belong to sheet1); None: the active sheet; "all": everything."""
     with _lock:
-        _load()
-        return [dict(r) for r in _rows]
+        out = []
+        try:
+            if LEDGER.exists():
+                for line in LEDGER.read_text().splitlines()[-20000:]:
+                    if line.strip():
+                        out.append(json.loads(line))
+        except Exception:  # noqa: BLE001
+            out = list(_rows)
+        if not out:
+            out = list(_rows)
+    want = sheet or _active_sheet()[0]
+    return out if want == "all" else [dict(r) for r in out if r.get("sheet", "sheet1") == want]
 
 
 def summary(rs: list[dict] | None = None) -> dict:

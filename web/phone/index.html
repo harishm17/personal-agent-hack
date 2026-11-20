@@ -355,7 +355,7 @@ async function pump() {
 function handleError(e) {
   if (e.code === "stale_hash") { toast("The sheet changed after you looked. Check it and sign again."); loadState().then(() => { if (tab === "sheet") renderSheet(); }); }
   else if (e.code === "replayed_seq") { /* an older move arrived late; the newest wins */ }
-  else if (e.code === "not_enrolled" || e.code === "unknown_key") { toast(e.message); refreshIssuer().then(render); }
+  else if (e.code === "no_key" || e.code === "unsigned") { toast(e.message); refreshIssuer().then(render); }
   else toast(e.message);
 }
 function issuerLimits() { const out = []; for (const line of state.sheet.lines) for (const l of line.limits) if (l.bound.source === "issuer") out.push({ line, limit: l }); return out; }
@@ -393,7 +393,7 @@ function updateAdjust() {
 }
 
 /* lines: strike the picked product, with a reason */
-const REASONS = ["He cannot use it", "Wrong for the room", "Not what I asked for"];
+const REASONS = ["Not suitable", "Does not fit the plan", "Not what the order asks for"];
 function renderLines() {
   const main = $("#main");
   main.innerHTML = `<div class="sub" style="padding:4px 0 6px">Strike a pick with a reason. A strike holds at every store and the shopper cannot undo it.</div>` + state.lines.map((L) => {

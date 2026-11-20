@@ -74,9 +74,9 @@ def warm(domains: list[str]) -> None:
             pass
 
 
-def _live(domain: str, tool: str, arguments: dict, retries: int, timeout: float = 60) -> dict:
+def _live(domain: str, tool: str, arguments: dict, retries: int, timeout: float = 60, mask: list | None = None) -> dict:
     # the outbound ledger: one row per message; a sealed value (limit, home measurement, person) in it stops the send
-    row = obs.egress(domain, tool, arguments, CLASSES.get(tool), kind="store", block_on_hit=True)
+    row = obs.egress(domain, tool, arguments, CLASSES.get(tool), kind="store", block_on_hit=True, mask=mask)
     if row.get("blocked"):
         raise RuntimeError("blocked: the message to %s contains a sealed value (%s)" % (
             domain, ", ".join(h["match"] for h in row["sealed_hits"])))
@@ -100,14 +100,14 @@ def _live(domain: str, tool: str, arguments: dict, retries: int, timeout: float 
     raise RuntimeError(f"{domain} {tool} failed: {last!r}"[:400])
 
 
-def call(domain: str, tool: str, arguments: dict, retries: int = 2, timeout: float = 60) -> dict:
+def call(domain: str, tool: str, arguments: dict, retries: int = 2, timeout: float = 60, mask: list | None = None) -> dict:
     """One tools/call. Live: the store's MCP endpoint. SIGNOFF_MODE=replay: saved replies, no network, `mode: "replay"`.
     Each call emits one Amplitude tool-call event. Raises RuntimeError on a store error."""
     if tool not in ALLOWED_TOOLS:
         raise RuntimeError("tool not allowed: " + tool)  # no checkout tool, ever
     replay_mode = config.mode() == "replay"
     return obs.timed("store." + tool, {"store": domain, **{k: v for k, v in arguments.items()}},
-                     (lambda: _replay(domain, tool, arguments)) if replay_mode else (lambda: _live(domain, tool, arguments, retries, timeout)),
+                     (lambda: _replay(domain, tool, arguments)) if replay_mode else (lambda: _live(domain, tool, arguments, retries, timeout, mask)),
                      lambda r: _summary(tool, r))
 
 
@@ -115,8 +115,9 @@ def search_catalog(domain: str, query: str) -> dict:
     return call(domain, "search_catalog", {"catalog": {"query": query, "context": {"address_country": "US"}}})
 
 
-def ask_business(domain: str, query: str) -> dict:
-    return call(domain, "ask_business", {"ask": {"query": query}})
+def ask_business(domain: str, query: str, mask: list | None = None) -> dict:
+    """`mask`: the store's own words in the query (a product title), left out of the sealed-value check."""
+    return call(domain, "ask_business", {"ask": {"query": query}}, mask=mask)
 
 
 def create_cart(domain: str, variant_id: str, quantity: int = 1) -> dict:

@@ -14,6 +14,7 @@ from __future__ import annotations
 import concurrent.futures as futures
 import hashlib
 import json
+import re
 import pathlib
 import threading
 import time
@@ -106,11 +107,25 @@ def _save_registry(reg: dict) -> None:
     REGISTRY.write_text(json.dumps(reg, indent=1))
 
 
-def documents() -> list[dict]:
-    """Every document the knowledge base should hold: the order, the handout, one policy text per store."""
-    out = [{"key": "order", "title": "Therapist order (invented)", "text": (DOCS / "order.txt").read_text()},
-           {"key": "handout", "title": "Equipment handout (invented)", "text": (DOCS / "handout.txt").read_text()}]
-    answers = ROOT / "data" / "store_answers"
+def _sheet_of(sheet: dict | str | None) -> dict:
+    """The active sheet as the engine holds it, or a sheet id read from `sheets/<id>.json`."""
+    if isinstance(sheet, dict):
+        return sheet
+    sid = sheet or config.env("SIGNOFF_SHEET") or "sheet1"
+    return json.loads((ROOT / "sheets" / (sid + ".json")).read_text())
+
+
+def documents(sheet: dict | str | None = None) -> list[dict]:
+    """The documents the knowledge base should hold for the active sheet: its order, and (sheet 1 only) the handout,
+    plus one policy text per store when the store answers are cached. Sheet 1 keeps its original document keys."""
+    sh = _sheet_of(sheet)
+    sid = sh["id"]
+    order_file = ROOT / sh["order_doc"] if sh.get("order_doc") else DOCS / "order.txt"
+    out = [{"key": "order" if sid == "sheet1" else "order:" + sid, "title": "%s order (invented)" % ("Therapist" if sid == "sheet1" else sh.get("title", sid)),
+            "text": order_file.read_text()}]
+    if sid == "sheet1":
+        out.append({"key": "handout", "title": "Equipment handout (invented)", "text": (DOCS / "handout.txt").read_text()})
+    answers = ROOT / "data" / ("store_answers" if sid == "sheet1" else "%s/store_answers" % sid)
     for path in sorted(answers.glob("*.json")) if answers.exists() else []:
         for a in json.loads(path.read_text()):
             text = "Terms of %s, as the store's own agent stated them on %s.\nQuestion asked: %s\nThe store's answer: %s\n" % (
@@ -119,12 +134,12 @@ def documents() -> list[dict]:
     return out
 
 
-def load_documents() -> dict:
-    """Adds what is missing or changed (a changed text becomes a new version under a new title suffix); the
-    registry keeps each document's ids and the sha of the text that was sent."""
+def load_documents(sheet: dict | str | None = None) -> dict:
+    """Adds what is missing or changed for the active sheet; the registry keeps each document's ids and the sha of
+    the text that was sent. Other sheets' documents are left as they are."""
     reg, added = _registry(), []
     with httpx.Client(headers=_headers(), timeout=30) as client:
-        for d in documents():
+        for d in documents(sheet):
             sha = hashlib.sha256(d["text"].encode()).hexdigest()[:12]
             if reg.get(d["key"], {}).get("sha") == sha:
                 continue
@@ -169,10 +184,18 @@ def _num(v) -> str:
     return "%g" % v
 
 
+UNIT_WORDS = {"gpf": "gallons per flush", "gpm": "gallons per minute", "in": "inches", "lb": "lb"}
+OPS = {">=": "at least", "<=": "at most", "==": "equal to"}
+
+
+def _article(word: str) -> str:
+    return "an" if word[:1].lower() in "aeiou" else "a"
+
+
 def sentences_for(state: dict) -> list[dict]:
-    """Sentences for the lines that will be bought or picked up. Written as terms (see the module note)."""
+    """Sentences for the active sheet's lines that will be bought or picked up, built from the sheet itself
+    (line need and room, limit name, operator, value and unit) and written as terms (see the module note)."""
     sheet = {l["id"]: l for l in state["sheet"]["lines"]}
-    order_values = _order_values()
     out = []
     for line in state["lines"]:
         if line["status"] not in ("ready", "next_candidate", "pick_up") or not line.get("pick"):
@@ -184,18 +207,20 @@ def sentences_for(state: dict) -> list[dict]:
             b = limit["bound"]
             if b["source"] != "issuer":
                 continue
-            sentence = _limit_sentence(line["need"], limit, b["value"])
-            moved = order_values.get(limit["id"]) is not None and order_values[limit["id"]] != b["value"]
-            out.append({**base, "kind": "limit", "blocks": False, "moved_from_order": moved,
-                        "sentence": sentence})
+            fo = limit.get("from_order")
+            out.append({**base, "kind": "limit", "blocks": False, "moved_from_order": bool(fo and fo.get("matches") is False),
+                        "sentence": _limit_sentence(line["need"], limit, b["value"])})
+        need = ORDER_NAME.get(line["need"], line["need"])
         if line["status"] == "pick_up":
+            how = re.match(r"must be (.+?);", sheet[line["line_id"]].get("fulfilment_note") or "")
             out.append({**base, "kind": "order", "blocks": True,
-                        "sentence": "Our order requires a %s to be screw-mounted and fitted, so it is picked up locally and not bought through a cart." % line["need"]})
+                        "sentence": "Our order requires %s %s%s, so it is picked up locally and not bought through a cart." % (
+                            _article(need), need, " to be " + how.group(1) if how else "")})
         else:
             out.append({**base, "kind": "order", "blocks": True,
-                        "sentence": "Our order requires a %s for the %s." % (ORDER_NAME.get(line["need"], line["need"]), line["room"])})
+                        "sentence": "Our order requires %s %s for the %s." % (_article(need), need, line["room"])})
         # The store's own words, verbatim and without its name (a claim that names another brand gets no verdict).
-        # Shown with the verdict, not blocking by default: the judge is not steady on policy text from three stores.
+        # Shown with the verdict, not blocking by default: the judge is not steady on policy text from several stores.
         if not STORE_SENTENCES:
             continue
         a = cand.get("arrival") or {}
@@ -207,25 +232,20 @@ def sentences_for(state: dict) -> list[dict]:
     return out
 
 
-def _order_values() -> dict:
-    """What the order file says for each issuer limit, so a moved limit is labelled as moved."""
-    return {"L1.capacity": 300, "L2.capacity": 300, "L3.capacity": 300, "L4.capacity": 300, "L5.capacity": 300,
-            "L6.capacity": 300, "L2.height": 19.0, "L3.seat": 19.0, "L5.length": 16.0}
-
-
 def _limit_sentence(need: str, limit: dict, value: float) -> str:
     """"Our order requires ..." reads as the organisation's own terms, so the judge checks it against the order
-    (5 of 5 verdicts in a trial; the same sentence without it got no verdict 2 times in 5)."""
-    n = _num(value)
-    if limit["name"] == "weight capacity":
-        return "Our order requires the %s to hold at least %s %s." % (need, n, limit["unit"])
-    if limit["name"] == "finished seat height":
+    (5 of 5 verdicts in a trial; the same sentence without it got no verdict 2 times in 5). Sheet 1's wording is
+    kept as its order document has it; every other limit is built from the sheet's own words."""
+    n, name, unit = _num(value), limit["name"], limit["unit"]
+    if name == "weight capacity":
+        return "Our order requires the %s to hold at least %s %s." % (need, n, unit)
+    if name == "finished seat height":
         return "Our order requires the toilet rim height plus the height the %s adds to be at least %s inches." % (need, n)
-    if limit["name"] == "seat height":
+    if name == "seat height":
         return "Our order requires the %s seat height to reach at least %s inches." % (need, n)
-    if limit["name"] == "bar length":
+    if name == "bar length":
         return "Our order requires the %s to be at least %s inches long." % (need, n)
-    return "Our order requires the %s %s %s %s %s." % (need, limit["label"], "at least" if limit["op"] == ">=" else "at most", n, limit["unit"])
+    return "Our order requires the %s's %s to be %s %s %s." % (need, name, OPS.get(limit["op"], "within"), n, UNIT_WORDS.get(unit, unit))
 
 
 # ---- judging --------------------------------------------------------------------------------------------
@@ -295,5 +315,6 @@ def run_checks(state: dict, current_hash: str | None = None) -> dict:
 
 
 if __name__ == "__main__":
-    print(json.dumps(load_documents(), indent=1))
+    import sys
+    print(json.dumps(load_documents(sys.argv[1] if len(sys.argv) > 1 else None), indent=1))
     print(wait_processed())

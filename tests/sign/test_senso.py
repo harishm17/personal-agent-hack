@@ -36,6 +36,7 @@ def test_moved_limit_is_labelled(monkeypatch):
         for limit in line["limits"]:
             if limit["id"] == "L2.height":
                 limit["bound"]["value"] = 21.0
+                limit["from_order"] = {"value": 19.0, "matches": False, "quote": "q"}
     rows = {r["sentence"]: r for r in senso.sentences_for(st) if r["kind"] == "limit"}
     moved = [r for r in rows.values() if r["moved_from_order"]]
     assert len(moved) == 1 and "21 inches" in moved[0]["sentence"]

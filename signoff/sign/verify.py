@@ -10,6 +10,7 @@ import base64
 import hashlib
 import json
 import pathlib
+import re
 import secrets
 import threading
 import time
@@ -164,18 +165,28 @@ class KeyStore:
 def verify_request(store: KeyStore, body: dict, sheet_id: str | None = None, current_hash: str | None = None) -> dict:
     """Checks one signed request and returns the parsed payload. On success `last_seq` is advanced, so the same
     request can never be applied twice. Raises `Refused` with a stable code otherwise."""
-    if not isinstance(body, dict) or not body.get("payload") or not body.get("sig") or not body.get("key_id"):
-        raise Refused("unsigned", "a request needs payload, sig and key_id", 401)
+    unsigned = Refused("unsigned", "not signed by the approver's key", 401)   # one answer, whatever the reason
+    if not isinstance(body, dict) or not body.get("payload") or not body.get("sig"):
+        raise unsigned
     with store.lock:
         key = store.key
         if key is None:
-            raise Refused("not_enrolled", "no issuer key is enrolled", 401)
-        if body["key_id"] != key.key_id:
-            raise Refused("unknown_key", "key_id is not the enrolled issuer key", 403)
+            # nothing is enrolled, so nothing can have been signed by the approver. A request that names a key id
+            # in the form of ours is a phone whose key the server no longer has (a reset): say so, once, as no_key.
+            if re.fullmatch(r"[0-9a-f]{16}", str(body.get("key_id") or "")):
+                raise Refused("no_key", "no approver key is enrolled on this server; enrol this phone again", 401)
+            raise unsigned
+        if body.get("key_id") != key.key_id:
+            raise unsigned
         payload_text = body["payload"]
         if not isinstance(payload_text, str):
             raise Refused("bad_payload", "payload must be the signed JSON string", 400)
-        check_signature(key.jwk, payload_text, str(body["sig"]))
+        try:
+            check_signature(key.jwk, payload_text, str(body["sig"]))
+        except Refused as bad:
+            if bad.code == "bad_signature":
+                raise unsigned from bad  # a forged or altered request is not signed by the approver's key either
+            raise
         try:
             payload = json.loads(payload_text)
         except ValueError as error:

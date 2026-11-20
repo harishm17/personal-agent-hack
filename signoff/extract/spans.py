@@ -154,11 +154,15 @@ def finish(proposal, product, extractor, assume_unit=None, target_unit=None):
 AMBIGUOUS = "several numbers in the quote"
 FAMILIES = (("length", r"(?:\"|”|″|''|inch(?:es)?\b|in\b\.?|cm\b|mm\b|ft\b|feet\b|foot\b)"),
             ("weight", r"(?:lbs?\b\.?|pounds?\b|kgs?\b|oz\b|ounces?\b)"),
+            ("volume per flush", r"(?:gpf\b|g\.p\.f\.|lpf\b|gal(?:lons?)?\s*(?:per|/)\s*flush|l(?:iters?|itres?)?\s*(?:per|/)\s*flush)"),
+            ("flow", r"(?:gpm\b|g\.p\.m\.|lpm\b|gal(?:lons?)?\s*(?:per|/)\s*min(?:ute)?|l(?:iters?|itres?)?\s*(?:per|/)\s*min(?:ute)?)"),
             ("volume", r"(?:qts?\b\.?|quarts?\b|liters?\b|litres?\b|l\b)"),
             ("temperature", r"(?:°\s?[fc]\b|degrees\b)"))
-WRITTEN = re.compile(r"(?<![\w./])(?:(?P<whole>\d+)[ -](?P<num>\d+)/(?P<den>\d+)(?![\w/])|(?P<fnum>\d+)/(?P<fden>\d+)(?![\w/])"
-                     r"|(?P<plain>\d+(?:,\d{3})*(?:\.\d+)?|\.\d+)\s?(?P<uni>[%s])?)" % "".join(FRACTIONS))
-JOIN = re.compile(r"^\s*(?:-|–|—|to\b|and\b|or\b)\s*$", re.I)
+WRITTEN = re.compile(r"(?:(?<![\w./])(?:(?P<whole>\d+)[ -](?P<num>\d+)/(?P<den>\d+)(?![\w/])|(?P<fnum>\d+)/(?P<fden>\d+)(?![\w/])"
+                     r"|(?P<plain>\d+(?:,\d{3})*(?:\.\d+)?|\.\d+)\s?(?P<uni>[%s])?)"
+                     r"|(?<=\d/)(?P<slashed>\d+(?:\.\d+)?))" % "".join(FRACTIONS))  # 1.1/1.6 and 20/18/30: each its own number
+NOT_UNITS = {"by", "to", "or", "and", "at", "of", "on", "per", "for", "the", "is", "are", "in", "x", "with", "from"}
+JOIN = re.compile(r"^\s*(?:-|–|—|/|to\b|and\b|or\b)\s*$", re.I)
 LIST_SEPARATORS = (r"\s+[x×]\s+", r"\s*/\s*", r"\s*,\s*", r"\s*\|\s*", r"\s+by\s+")
 
 
@@ -175,6 +179,8 @@ def quote_numbers(quote):
             value = int(m.group("whole")) + int(m.group("num")) / max(int(m.group("den")), 1)
         elif m.group("fnum") is not None:
             value = int(m.group("fnum")) / max(int(m.group("fden")), 1)
+        elif m.group("slashed") is not None:
+            value = float(m.group("slashed"))
         else:
             value = float(m.group("plain").replace(",", "")) + FRACTIONS.get(m.group("uni") or "", 0)
         found.append({"value": value, "start": m.start(), "end": m.end(), "family": None})
@@ -184,6 +190,10 @@ def quote_numbers(quote):
             if re.match(pattern, tail, re.I):
                 n["family"] = name
                 break
+        else:  # a short unit-like word of some other kind ("60 PSI", "120 V") is a unit too, just not one of ours
+            word = re.match(r"([A-Za-z]{2,4})\b(?!\s*[:=])", tail)
+            if word and word.group(1).lower() not in NOT_UNITS:
+                n["family"] = "other unit"
     for i in range(len(found) - 2, -1, -1):  # a number joined to the next one shares its unit
         between = quote[found[i]["end"]:found[i + 1]["start"]]
         if found[i]["family"] is None and JOIN.match(re.sub(r"[\"”″]", "", between) or " "):

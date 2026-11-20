@@ -54,3 +54,31 @@ def test_egress_never_raises():
         def __str__(self):
             raise ValueError("no")
     assert obs.egress("x.com", "p", {"a": Bad()})["sealed_hits"] == []
+
+
+def test_sealed_values_follow_the_active_sheet_and_a_title_is_not_ours_to_seal(monkeypatch):
+    from signoff.store import sheetctx
+    monkeypatch.setattr(sheetctx, "active_id", lambda: "sheet2")
+    hits = {(h["class"], h["match"]) for h in detect("1.28 gpf, 1.2 gpm, 1.8 gallons per minute, a 10-inch rough-in, 30 in alcove, Marco and Priya")}
+    assert {("limit", "1.28 gpf"), ("limit", "1.2 gpm"), ("limit", "1.8 gpm"), ("home_measurement", "10 in"),
+            ("home_measurement", "30 in"), ("person", "Marco"), ("person", "Priya")} <= hits
+    assert detect("300 lb and Dana") == []  # sheet 1's values are not sealed on sheet 2
+    title = "HOROW 8733-10 10-Inch Rough-In One-Piece Toilet"
+    q = "Can an opened %s be returned, and how many business days does standard delivery take?" % title
+    assert record("horow.com", "ask_business", {"ask": {"query": q}}, kind="store", block_on_hit=True)["blocked"]
+    ok = record("horow.com", "ask_business", {"ask": {"query": q}}, kind="store", block_on_hit=True, mask=[title])
+    assert not ok.get("blocked") and ok["sealed_hits"] == []
+    assert record("horow.com", "ask_business", {"ask": {"query": "does it have a 10 in rough-in?"}}, kind="store",
+                  block_on_hit=True, mask=[title])["blocked"]
+
+
+def test_counts_come_from_the_saved_log_for_the_active_sheet(monkeypatch):
+    from signoff.store import sheetctx
+    monkeypatch.setattr(sheetctx, "active_id", lambda: "sheet1")
+    record("carex.com", "search_catalog", {"q": "a"}, kind="store")
+    monkeypatch.setattr(sheetctx, "active_id", lambda: "sheet2")
+    record("horow.com", "search_catalog", {"q": "b"}, kind="store")
+    record("horow.com", "search_catalog", {"q": "c"}, kind="store")
+    import sys
+    sys.modules["signoff.obs.egress"]._rows.clear()  # a restart: memory is gone, the file is not
+    assert summary()["to_stores"] == 2 and summary(rows("sheet1"))["to_stores"] == 1 and len(rows("all")) == 3

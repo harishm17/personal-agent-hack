@@ -32,14 +32,14 @@ def test_forged_signature_is_refused(env):
     body = env.phone.request("set_limit", **LIMIT)
     body["sig"] = env.phone.sign(body["payload"], private=other)
     r = post(env, body)
-    assert r.status_code == 403 and r.json()["error"] == "bad_signature"
+    assert r.status_code == 401 and r.json()["error"] == "unsigned" and r.json()["detail"] == "not signed by the approver's key"
     assert env.engine.calls == []
 
 
 def test_tampered_payload_is_refused(env):
     body = env.phone.request("set_limit", **LIMIT)
     body["payload"] = body["payload"].replace("20.0", "16.0")
-    assert post(env, body).json()["error"] == "bad_signature"
+    assert post(env, body).json()["error"] == "unsigned"
     assert env.engine.calls == []
 
 
@@ -47,7 +47,7 @@ def test_garbage_signature_is_refused(env):
     body = env.phone.request("set_limit", **LIMIT)
     for sig in ("!!!", "AAAA", ""):
         body["sig"] = sig
-        assert post(env, body).status_code in (401, 403)
+        assert post(env, body).json()["error"] == "unsigned"
     assert env.engine.calls == []
 
 
@@ -68,7 +68,7 @@ def test_older_seq_is_refused(env):
 def test_wrong_key_id_is_refused(env):
     body = env.phone.request("set_limit", **LIMIT)
     body["key_id"] = "0" * 16
-    assert post(env, body).json()["error"] == "unknown_key"
+    assert post(env, body).json()["error"] == "unsigned"
 
 
 def test_second_key_cannot_enrol(env):
@@ -203,4 +203,20 @@ def test_moved_limit_conflict_does_not_stop_the_signer(env):
 def test_reset_clears_enrolment(env):
     env.client.post("/api/admin/reset")
     assert env.client.get("/api/issuer/status").json()["enrolled"] is False
-    assert post(env, env.phone.request("set_limit", **LIMIT)).json()["error"] == "not_enrolled"
+    assert post(env, env.phone.request("set_limit", **LIMIT)).json()["error"] == "no_key"
+
+
+def test_an_unsigned_request_gets_one_answer_whether_or_not_a_key_is_enrolled(env):
+    """The laptop's "change this limit without the key" control: random signature bytes, a key id that is not ours."""
+    import base64, os
+    payload = '{"type":"set_limit","sheet_id":"sheet1","seq":5,"at":"x","limit_id":"L2.height","value":16}'
+    forged = {"payload": payload, "sig": base64.urlsafe_b64encode(os.urandom(64)).decode().rstrip("="), "key_id": "this-screen"}
+    with_key = post(env, forged)
+    env.client.post("/api/admin/reset")                        # now nothing is enrolled
+    without_key = post(env, forged)
+    for r in (with_key, without_key):
+        assert r.status_code == 401 and r.json()["error"] == "unsigned" and r.json()["detail"] == "not signed by the approver's key"
+    # a phone that carries its own key id after a reset is told that no key is enrolled, as a different thing
+    phone_after_reset = post(env, env.phone.request("set_limit", **LIMIT))
+    assert phone_after_reset.json()["error"] == "no_key"
+    assert env.engine.calls == []
