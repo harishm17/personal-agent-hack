@@ -152,12 +152,19 @@ function verdict(c, line, pick) {
 }
 
 // ---------- render ----------
+let wasTimer = null;
 function render() {
   const line = theLine(), id = line.line_id, pick = pickOf(line);
   const opening = last.line !== id, pickId = pick ? pick.id : null;
   const before = opening || last.quiet ? null : snapshot();
   const justSigned = last.signed === false && !!state.seal.signed;
   if (!line.candidates.some((c) => c.id === ui.show)) ui.show = null;
+  if (!opening && last.pick && pickId !== last.pick && !last.quiet) {
+    const old = line.candidates.find((c) => c.id === last.pick);
+    ui.was = old ? { id: old.id, price: money(old.product.price_cents) } : null;
+    clearTimeout(wasTimer);
+    wasTimer = setTimeout(() => { ui.was = null; last.quiet = true; render(); }, 3200);
+  }
   renderTop();
   renderSteps(line, pick);
   renderDoc(line);
@@ -169,6 +176,7 @@ function render() {
     else moveChanges(before, last.pick, pickId);
     if (justSigned) signedMotion();
   }
+  if (opening || pickId !== last.pick) q("#rows > .rowx.picked")?.scrollIntoView({ block: "nearest" });    // the pick is never below the fold
   rollChanges(!opening && !last.quiet);
   Object.assign(last, { line: id, pick: pickId, signed: !!state.seal.signed, quiet: false });
 }
@@ -257,7 +265,8 @@ function rowHtml(c, line, pick, limits) {
   const result = v.kind === "pick" ? `<span class="res pickd">✓ picked</span>`
     : v.kind === "also" ? `<span class="res also">✓ ${esc(v.text)}</span>`
     : `<span class="res no" title="${esc(v.why || "")}">✕ ${esc(v.text)}${v.extra ? ` <span class="faint">${esc(v.extra)}</span>` : ""}</span>`;
-  return `<button class="rowx ${c.picked ? "picked" : v.kind === "also" ? "also" : "rej"}${c.id === ui.show ? " shown" : ""}" data-id="${esc(c.id)}" style="--n:${limits.length}">
+  const was = ui.was && ui.was.id === c.id && !c.picked ? `<span class="was">was picked</span>` : "";
+  return `<button class="rowx ${c.picked ? "picked" : v.kind === "also" ? "also" : "rej"}${c.id === ui.show ? " shown" : ""}${was ? " waspick" : ""}" data-id="${esc(c.id)}" style="--n:${limits.length}">${was}
     ${img}<span class="nm"><b>${esc(c.product.title)}</b><i>${esc(c.product.store + option)}</i></span>
     <span class="pr">${money(c.product.price_cents)}</span>${cells}${result}</button>`;
 }
@@ -266,7 +275,8 @@ function renderList(line, pick) {
   const limits = sheetLineOf(line).limits, rows = priced(line), at = pick ? rows.indexOf(pick) : -1;
   const cheaper = at >= 0 ? rows.slice(0, at) : rows, dearer = at >= 0 ? rows.slice(at + 1) : [];
   const also = dearer.filter((c) => c.status === "inside").length;
-  const fold = cheaper.length > 7 && !ui.open.has("above") && at >= 0 ? cheaper.length - 7 : 0;
+  let fold = cheaper.length > 7 && !ui.open.has("above") && at >= 0 ? cheaper.length - 7 : 0;
+  if (fold && ui.was && cheaper.slice(0, fold).some((c) => c.id === ui.was.id)) fold = 0;      // keep the old pick in view while it says so
   const forged = (limit) => limit.bound.source === "issuer" && !state.seal.signed
     ? `<span class="forge" role="button" tabindex="0" data-forge="${esc(limit.id)}" title="Try to change this limit from here, without the approver's key" aria-label="Try to change this limit from here">change</span>` : "";
   const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span>${esc(h.name)} <b data-k="head.${limit.id}">${esc(h.rule)}</b></span>${forged(limit)}</span>`; }).join("");
@@ -279,7 +289,7 @@ function renderList(line, pick) {
       ${cheaper.slice(fold).map((c) => rowHtml(c, line, pick, limits)).join("")}
       ${pick ? rowHtml(pick, line, pick, limits) : `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>`}
       ${dearer.length ? (ui.open.has("below") ? dearer.map((c) => rowHtml(c, line, pick, limits)).join("")
-        : `<button class="more" data-toggle="below">+ ${dearer.length} dearer, not needed</button>`) : ""}
+        : dearer.filter((c) => ui.was && ui.was.id === c.id).map((c) => rowHtml(c, line, pick, limits)).join("") + `<button class="more" data-toggle="below">+ ${dearer.length} dearer, not needed</button>`) : ""}
     </div>`;
 }
 
@@ -578,15 +588,7 @@ function moveChanges(before, oldPick, newPick) {
       .finished.then(() => glide.remove(), () => glide.remove());
     row.animate([{ borderColor: "transparent", backgroundColor: "transparent" }, { borderColor: "transparent", backgroundColor: "transparent", offset: 0.8 }, {}], { duration: 420 });
   }
-  if (old && before.pick) {            // the old pick says so for about three seconds
-    const res = old.querySelector(".res"), tag = document.createElement("span");
-    tag.className = "was";
-    tag.textContent = `was picked · ${before.pick.price}`;
-    res.after(tag);
-    old.classList.add("waspick");
-    tag.animate([{ opacity: 0 }, { opacity: 1, offset: 0.08 }, { opacity: 1, offset: 0.85 }, { opacity: 0 }], { duration: 3200, fill: "forwards" })
-      .finished.then(() => { tag.remove(); old.classList.remove("waspick"); }, () => {});
-  }
+  if (old) fx.appear(old.querySelector(".was"), 100, 260);
   fx.arrive(q("#side .why"), 180, 320, 4);
 }
 
