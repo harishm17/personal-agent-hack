@@ -133,3 +133,33 @@ def test_a_changed_document_becomes_a_new_version_of_the_same_node(monkeypatch, 
     out = senso.load_documents()
     assert calls == [("put", senso.BASE + "/org/kb/nodes/n1/raw")] and out["documents"]["order"]["version_num"] == 2
     assert out["documents"]["order"]["version_id"] == "v2" and out["documents"]["order"]["content_id"] == "c1"
+
+
+def test_every_sentence_is_sent_with_the_question_it_answers():
+    sent = []
+
+    class Client:
+        def post(self, url, json):
+            sent.append(json)
+            class R:
+                status_code = 200
+                def json(s): return {"status": "completed", "eval_run_id": "r", "claims": [{"claim_text": "c", "verdict": "verified", "evidence": []}]}
+            return R()
+    senso.judge(Client(), {"sentence": "Our order requires pencils for writing.", "blocks": False, "kind": "order"})
+    assert sent[0]["question"] == "What does our order require?" and sent[0]["author"] == "organization"
+
+
+def test_unload_removes_documents_from_the_registry_and_the_knowledge_base(monkeypatch, tmp_path):
+    monkeypatch.setattr(senso, "REGISTRY", tmp_path / "docs.json")
+    senso._save_registry({"order": {"kb_node_id": "n1"}, "handout": {"kb_node_id": "n2"}, "order:sheet4": {"kb_node_id": "n4"}})
+    sent = []
+
+    class Client:
+        def __init__(self, *a, **k): pass
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def post(self, url, json): sent.append((url, json)); return type("R", (), {"status_code": 204})()
+    monkeypatch.setattr(senso.httpx, "Client", Client)
+    assert senso.unload(["order", "handout"]) == ["n1", "n2"]
+    assert sent == [(senso.BASE + "/org/kb/nodes/bulk-delete", {"node_ids": ["n1", "n2"]})]
+    assert list(senso._registry()) == ["order:sheet4"]

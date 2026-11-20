@@ -74,7 +74,7 @@
 <main id="main" aria-live="polite" hidden></main>
 <nav id="nav" role="tablist" hidden>
   <button role="tab" data-tab="sheet" aria-selected="true">Sheet</button>
-  <button role="tab" data-tab="lines" aria-selected="false">Lines</button>
+  <button role="tab" data-tab="lines" aria-selected="false">Items</button>
   <button role="tab" data-tab="adjust" aria-selected="false">Adjust a limit</button>
 </nav>
 <div id="toast" role="status"></div>
@@ -101,6 +101,11 @@ async function kvGet(key) { const db = await idb(); return new Promise((res, rej
 async function kvSet(key, value) { const db = await idb(); return new Promise((res, rej) => { const tx = db.transaction(DB.store, "readwrite"); tx.objectStore(DB.store).put(value, key); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
 const b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
+/* Wording the sheet may choose for its own setting (sheet.vocab): the word for a limit, for the order document, the total
+   and the nav's second tab. Names, roles and units are always read from the sheet itself. */
+const V = (k, d) => (state && state.sheet && state.sheet.vocab && state.sheet.vocab[k]) || d;
+const O = () => V("order", "order"), LIM = () => V("limit", "limit");
+const shopperName = () => (state && state.sheet && state.sheet.shopper && state.sheet.shopper.name) || "the shopper";
 let keyRec = null;      // { privateKey, jwk, key_id|null, seq }
 let issuer = null;      // { enrolled, key_id, name, persona, senso }
 let state = null, persona = null, canon = null;
@@ -195,12 +200,13 @@ function head() {
   if (!issuer.enrolled || !mine()) return;
   $("#who").textContent = issuer.name + " · key " + issuer.key_id.slice(0, 6) + (signed ? " · signed" : "");
 }
+function labelNav() { const a = document.querySelector('nav button[data-tab="adjust"]'), l = document.querySelector('nav button[data-tab="lines"]'); if (a) a.textContent = "Adjust a " + LIM(); if (l) l.textContent = V("items", "Items"); }
 function render() {
   const name = state && state.sheet && state.sheet.issuer ? state.sheet.issuer.name : "";
   head();
   if (!issuer.enrolled) return renderEnrol(name);
   if (!mine()) return renderNotMine();
-  $("#nav").hidden = false;
+  $("#nav").hidden = false; labelNav();
   if (tab === "sheet") renderSheet(); else if (tab === "lines") renderLines(); else renderAdjust();
 }
 function renderLive() {
@@ -248,9 +254,9 @@ function limitRowC(l) {
   let src = "from the home", changed = false, quote = "A measurement of the home.";
   if (l.set_by === "issuer") {
     const fo = sl && sl.from_order;
-    if (fo && Math.abs(fo.value - l.bound) > 1e-9) { src = "changed from the order"; changed = true; quote = (fo.quote ? "“" + fo.quote + "” The order says " + fmt(fo.value) + " " + l.unit + "." : "The order says " + fmt(fo.value) + " " + l.unit + "."); }
-    else if (fo) { src = "from the order"; quote = fo.quote ? "“" + fo.quote + "”" : "The order text is not available here."; }
-    else { src = "set before the order"; quote = "No sentence from the order is attached to this limit."; }
+    if (fo && Math.abs(fo.value - l.bound) > 1e-9) { src = "changed from the " + O(); changed = true; quote = (fo.quote ? "“" + fo.quote + "” The " + O() + " says " + fmt(fo.value) + " " + l.unit + "." : "The " + O() + " says " + fmt(fo.value) + " " + l.unit + "."); }
+    else if (fo) { src = "from the " + O(); quote = fo.quote ? "“" + fo.quote + "”" : "The text of the " + O() + " is not available here."; }
+    else { src = "set before the " + O(); quote = "No sentence from the " + O() + " is attached to this " + LIM() + "."; }
   }
   const open = shown.has(l.id);
   return `<button class="lim ${changed ? "changed" : ""}" data-lim="${esc(l.id)}" aria-expanded="${open}">${esc(label)} <b class="num">${fmt(l.bound)} ${esc(l.unit)}</b> <span class="src">· ${esc(src)}</span></button>` +
@@ -284,12 +290,12 @@ function sensoLine() {
   const s = (issuer && issuer.senso) || {};
   if (s.configured === false) return { text: "Senso is not connected", rows: [] };
   const fresh = s.for_hash && s.for_hash === serverHashNow();
-  if (sensoRunning || !fresh) return { text: "Checking the sheet against the order…", rows: [] };
+  if (sensoRunning || !fresh) return { text: "Checking the sheet against the " + O() + "…", rows: [] };
   const rows = s.checks || [], ok = rows.filter((r) => r.verdict === "verified").length;
-  if (!rows.length) return { text: "Nothing to check against the order yet", rows };
+  if (!rows.length) return { text: "Nothing to check against the " + O() + " yet", rows };
   const vs = (s.order_document && s.order_document.versions) || [];
   const ver = vs.length === 1 ? " (version " + (vs[0].version_num || String(vs[0].version_id).slice(0, 8)) + ")" : "";
-  return { text: "Checked against the order" + ver + ": " + ok + " of " + rows.length + " verified" + ((s.blocking || []).length ? ", " + s.blocking.length + " stop the signature" : ""), rows };
+  return { text: "Checked against the " + O() + ver + ": " + ok + " of " + rows.length + " verified" + ((s.blocking || []).length ? ", " + s.blocking.length + " stop the signature" : ""), rows };
 }
 async function ensureSenso() {
   const s = issuer && issuer.senso;
@@ -313,7 +319,7 @@ function renderSheet() {
       <div class="card"><div class="cap">Checks</div>
       <div class="sub">${(() => { const q = (seal.signature && seal.signature.persona) || {}; return q.inquiry_id ? esc(q.label || "") + " · " + esc(q.inquiry_id) + " · " + esc(q.status || "") + " · sandbox" : "identity not checked"; })()}</div>
       ${seal.signature && seal.signature.relay ? `<div class="sub">Live human: ${esc(seal.signature.relay.result)} (sandbox: a sandbox claim passes with nobody present)</div>` : ""}
-      <div class="sub">${seal.signature && seal.signature.senso && seal.signature.senso.status === "pending" ? "Senso check still running" : "Checked against the order"}</div></div>
+      <div class="sub">${seal.signature && seal.signature.senso && seal.signature.senso.status === "pending" ? "Senso check still running" : "Checked against the " + O()}</div></div>
       <div class="sub">To start over, reset from the laptop.</div>`);
     return;
   }
@@ -322,13 +328,13 @@ function renderSheet() {
   const sl = sensoLine(), c = canon.obj;
   const buyable = c.lines.filter((L) => L.status === "ready" || L.status === "next_candidate").length;
   show(c.lines.map((L) => itemCard(L, c)).join("") +
-    `<div class="card"><div class="stack"><div class="cap">Total in carts</div><div class="total">${money(c.total_cents)}</div><div class="sub">${esc(ruleText(c))}</div></div>
+    `<div class="card"><div class="stack"><div class="cap">${esc(V("total", "Total in carts"))}</div><div class="total">${money(c.total_cents)}</div><div class="sub">${esc(ruleText(c))}</div></div>
     <div class="rule"></div>
     <div class="stack"><div class="cap">Checks</div>
     <div class="sub">${esc(per.label || "identity not checked")}${issuer.identity_required && !per.verified ? " · needed to sign" : ""} · <button class="link" id="pstart">${per.inquiry_id ? "refresh" : "check identity"}</button>${per.link ? ` · <a href="${esc(per.link)}" target="_blank" rel="noopener">open</a>` : ""}</div>
     <div class="sub">${issuer.relay ? "Live human: " + esc(issuer.relay.result) + " (sandbox: a sandbox claim passes with nobody present)" : 'Live human check (sandbox) · <a href="/relay/" target="_blank" rel="noopener">open</a>'}</div>
     <div class="sub">${esc(sl.text)}</div>
-    ${sl.rows.length ? `<details><summary>Sentences</summary><ul class="plain">${sl.rows.map((r) => `<li class="stack"><span><span class="tag ${r.verdict === "verified" ? "ok" : r.verdict === "conflict" ? "bad" : ""}">${esc(r.verdict)}</span>${r.blocks ? "" : ' <span class="tag">advisory</span>'}</span><span>${esc(r.sentence)}</span>${r.source && r.source.version_id ? `<span class="sub">against ${esc(r.source.title || "the order")}, version ${esc(r.source.version_num || String(r.source.version_id).slice(0, 8))}${r.source.version_num == null && r.source.latest_version_id ? " (an older version)" : ""}</span>` : ""}${r.moved_from_order ? '<span class="sub">changed from the order</span>' : ""}</li>`).join("")}</ul></details>` : ""}</div>
+    ${sl.rows.length ? `<details><summary>Sentences</summary><ul class="plain">${sl.rows.map((r) => `<li class="stack"><span><span class="tag ${r.verdict === "verified" ? "ok" : r.verdict === "conflict" ? "bad" : ""}">${esc(r.verdict)}</span>${r.blocks ? "" : ' <span class="tag">advisory</span>'}</span><span>${esc(r.sentence)}</span>${r.source && r.source.version_id ? `<span class="sub">against ${esc(r.source.title || "the " + O())}, version ${esc(r.source.version_num || String(r.source.version_id).slice(0, 8))}${r.source.version_num == null && r.source.latest_version_id ? " (an older version)" : ""}</span>` : ""}${r.moved_from_order ? `<span class="sub">changed from the ${esc(O())}</span>` : ""}</li>`).join("")}</ul></details>` : ""}</div>
     <div class="rule"></div>
     <div class="stack"><div class="cap">What you sign</div><div class="hash">${esc(canon.hash)}</div>
     <div class="sub" style="color:${canon.match ? "var(--ok)" : "var(--bad)"}">${canon.match ? "Computed on this phone from the sheet above; the server's hash is the same." : "This phone computed a different hash from the one the server sent. It will not sign."}</div></div></div>
@@ -380,13 +386,13 @@ function handleError(e) {
 }
 function issuerLimits() { const out = []; for (const line of state.sheet.lines) for (const l of line.limits) if (l.bound.source === "issuer") out.push({ line, limit: l }); return out; }
 function renderAdjust() {
-  const main = show(`<div class="sub">Override a limit from the order. The sheet re-picks at once, and the limit is marked as changed.</div>` +
+  const main = show(`<div class="sub">Override a ${LIM()} from the ${O()}. The sheet re-picks at once, and the ${LIM()} is marked as changed.</div>` +
     issuerLimits().map(({ line, limit }) => `<div class="item" data-limit="${esc(limit.id)}">
       <button class="lim" style="color:var(--t1)" data-open="${esc(limit.id)}"><span class="row"><span><span class="need">${esc(line.need)}</span> <span class="sub">${esc(limit.label)}</span></span><span class="num"><span class="v"></span> ${esc(limit.unit)}</span></span></button>
       <div class="body stack" ${openLimit === limit.id ? "" : "hidden"}>
         <input type="range" min="${limit.bound.min}" max="${limit.bound.max}" step="${limit.bound.step}" aria-label="${esc(line.need)}: ${esc(limit.label)}" ${signed ? "disabled" : ""}>
         <div class="sub order-note"></div><div class="sub pickline"></div>
-        <div class="btns"><button class="act" data-back="${esc(limit.id)}" hidden>Back to the order</button></div>
+        <div class="btns"><button class="act" data-back="${esc(limit.id)}" hidden>Back to the ${O()}</button></div>
       </div></div>`).join(""));
   main.querySelectorAll("[data-limit]").forEach((row) => {
     const id = row.dataset.limit, input = $("input", row);
@@ -404,7 +410,7 @@ function updateAdjust() {
     if (!dragging.has(limit.id) && !sendQ.latest.has(limit.id)) { input.value = limit.bound.value; $(".v", row).textContent = fmt(limit.bound.value); }
     input.disabled = signed;
     const differs = fo && fo.matches === false;
-    $(".order-note", row).innerHTML = fo ? (differs ? '<span style="color:var(--t1);font-weight:500;text-decoration:underline;text-underline-offset:3px">changed from the order</span> · the order says ' + fmt(fo.value) + " " + esc(limit.unit) : "from the order: " + fmt(fo.value) + " " + esc(limit.unit)) : "";
+    $(".order-note", row).innerHTML = fo ? (differs ? '<span style="color:var(--t1);font-weight:500;text-decoration:underline;text-underline-offset:3px">changed from the ' + esc(O()) + '</span> · the ' + esc(O()) + ' says ' + fmt(fo.value) + " " + esc(limit.unit) : "from the " + O() + ": " + fmt(fo.value) + " " + esc(limit.unit)) : "";
     const back = $("[data-back]", row); back.hidden = !(differs && !signed);
     const L = lineOf(line.id), p = pickOf(L);
     $(".pickline", row).textContent = p ? "Pick now: " + p.product.title + " · " + p.product.store + " · " + money(p.product.price_cents) : (L ? L.status + (L.reason ? ": " + L.reason : "") : "");
@@ -412,14 +418,14 @@ function updateAdjust() {
 }
 
 /* lines: strike the picked product, with a reason */
-const REASONS = ["Not suitable", "Does not fit the plan", "Not what the order asks for"];
+const REASONS = () => ["Not suitable", "Does not fit the plan", "Not what the " + O() + " asks for"];
 function renderLines() {
-  show(`<div class="sub">Strike a pick with a reason. A strike holds at every store and the shopper cannot undo it.</div>` + state.lines.map((L) => {
+  show(`<div class="sub">Strike a pick with a reason. A strike holds at every store and ${esc(shopperName())} cannot undo it.</div>` + state.lines.map((L) => {
     const p = pickOf(L), struck = L.struck || [];
     return `<div class="item" data-line="${esc(L.line_id)}"><div class="row"><span class="need">${esc(L.need)}</span><span class="num">${p ? money(p.product.price_cents) : ""}</span></div>
       ${p ? `<div class="pick">${esc(p.product.title)}</div><div class="sub">${esc(p.product.store)}</div>` : `<div class="sub">${esc(L.reason || "nothing to pick")}</div>`}
       ${p && !signed ? `<div class="btns"><button class="act danger" data-strike="${esc(L.line_id)}">Strike…</button></div>
-        <div class="strikebox stack" hidden><div class="chips">${REASONS.map((r) => `<button type="button" data-chip="${esc(r)}">${esc(r)}</button>`).join("")}</div>
+        <div class="strikebox stack" hidden><div class="chips">${REASONS().map((r) => `<button type="button" data-chip="${esc(r)}">${esc(r)}</button>`).join("")}</div>
         <input type="text" placeholder="Reason" maxlength="160" aria-label="Reason for the strike"><button class="act danger" data-confirm="${esc(L.line_id)}">Strike this product</button></div>` : ""}
       ${struck.map((x) => `<div class="sub">Struck: ${esc(x.product_key)}, ${esc(x.reason)}${signed ? "" : ` · <button class="link" data-unstrike="${esc(L.line_id)}" data-key="${esc(x.product_key)}">put back</button>`}</div>`).join("")}</div>`;
   }).join(""));
