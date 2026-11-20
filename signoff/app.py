@@ -47,7 +47,7 @@ async def admin_guard(request, call_next):
 # Each stream owns one router module. A module that is missing or broken is skipped and reported at
 # /api/health, so one stream's error never stops the others' pages from loading.
 ROUTERS = ["signoff.engine.api", "signoff.store.api", "signoff.sign.api"]
-OPTIONAL_ROUTERS = ["signoff.airbyte.api", "signoff.relay.api", "signoff.trail.api", "signoff.memory.api", "signoff.talk.api", "signoff.graph.api", "signoff.reviews.api"]  # added tools: missing or broken never fails health
+OPTIONAL_ROUTERS = ["signoff.airbyte.api", "signoff.relay.api", "signoff.trail.api", "signoff.memory.api", "signoff.talk.api", "signoff.graph.api", "signoff.reviews.api", "signoff.seal.api"]  # added tools: missing or broken never fails health
 LOADED, FAILED = [], {}
 for name in ROUTERS:
     try:
