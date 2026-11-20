@@ -173,7 +173,8 @@ def test_the_flow_follows_one_item_from_the_records_and_says_nothing_it_has_no_r
     assert f["said"]["page"]["excerpt"] == [{"text": "30 in wide", "quote": [0, 10]}] and f["model"]["quoted"] == ["30 in wide"]
     assert f["model"]["source"] == "prompt builder" and f["model"]["outside"] is None   # no ledger rows for the reads
     assert f["refused"] is None and f["talk"] is None and f["memory"] is None and f["signature"]["signed"] is False
-    assert [s["id"] for s in f["rail"]] == list(feed.STEP_IDS)
+    assert [s["id"] for s in f["rail"]] == list(feed.STEP_IDS[:5]) + ["asked", "remembered"]
+    assert [s["label"] for s in f["rail"][5:]] == ["Asked the store", "Remembered"] and not f["rail"][5]["done"]
     assert feed.build({})["flow"] is None
 
 

@@ -4,7 +4,7 @@ checked (right), then the message to the store's own agent and what is remembere
 `build(state, steps, summary, talk, memory)` is pure and returns only what a record supports. A part with no
 record is None, and the page shows it as a quiet card that says so; nothing is invented.
 
-One item of the sheet is followed (`focus`: the first item that has a pick, else the first). The store's page goes
+One item of the sheet is followed (`focus`: the first item, as every other page opens on it). The store's page goes
 into the model call. The issuer's limit and the home's measurement do not: they are compared with the quoted
 figure in code (`bypass`), which is what the engine's check records say (`checks[].terms` and `checks[].bound`).
 
@@ -70,7 +70,8 @@ def _shelf(shelf, sheet=None):
     who = (sheet.get("shopper") or {}).get("name")
 
     def words(item):
-        f = facts.get(item.get("key"))
+        named = "%s %s" % (item.get("key") or "", item.get("text") or "")
+        f = facts.get(item.get("key")) or next((v for k, v in facts.items() if k and k in named), None)
         if not f:
             return item.get("text") or ""
         label = str(f.get("label") or _plain(f.get("id")))
@@ -107,14 +108,11 @@ def _read_record(events, extractors):
 
 
 def _never_enters(events) -> str:
-    """What the limit and the measurement never enter, as far as the ledger's rows go. "a model call" only when
-    the ledger has model calls and none of them was given, or was found to hold, a limit or a home measurement.
-    Otherwise the claim is about the page-reading call alone (the call the frame shows), which is how its prompt is
-    built: another call, such as the one that reads the order, does receive the limit."""
-    calls = [e["context"] for e in events or [] if e.get("context") and e.get("to_lane") == "reader"]
-    sealed = {"limit", "home_measurement"}
-    held = any(g.get("id") in sealed for c in calls for g in (c.get("given") or []) + (c.get("found") or []))
-    return "a model call" if calls and not held else "the page-reading call"
+    """What the limit and the measurement never enter. Always the page-reading call, the one the frame shows: that
+    is how its prompt is built. Other model calls do receive them (the order reader is given the limit, the
+    embedding of memories a home measurement), and a ledger that lacks their rows is no proof that they do not,
+    so the figure never says "a model call"."""
+    return "the page-reading call"
 
 
 def build(state: dict, steps: list, events: list, talk=None, memory=None) -> dict:
@@ -123,7 +121,7 @@ def build(state: dict, steps: list, events: list, talk=None, memory=None) -> dic
     lines = state.get("lines") or []
     if not lines:
         return None
-    focus = next((l for l in lines if l.get("pick")), lines[0])
+    focus = lines[0]      # the first item of the sheet, as every other page opens
     spec = next((l for l in sheet.get("lines") or [] if l.get("id") == focus.get("line_id")), {})
     cands = focus.get("candidates") or []
     pick = next((c for c in cands if c.get("id") and c.get("id") == focus.get("pick")), None)
@@ -171,7 +169,8 @@ def build(state: dict, steps: list, events: list, talk=None, memory=None) -> dic
                        "op": OPS.get(c.get("op"), str(c.get("op") or "")),
                        "right": {"owner": bound.get("owner"), "text": _num(bound.get("value"), unit)},
                        "ok": c.get("pass"), "name": c.get("name") or "",
-                       "margin": ("%s to spare" % _num(abs(margin), unit)) if c.get("pass") and isinstance(margin, (int, float)) else ""})
+                       "margin": (("%s to spare" % _num(abs(margin), unit)) if margin else "exactly at the limit")
+                       if c.get("pass") and isinstance(margin, (int, float)) else ""})
         words = OP_WORDS.get(c.get("op"), "") if bound.get("owner") == "issuer" else ""
         bypass.append({"owner": bound.get("owner"), "text": " ".join(x for x in (words, _num(bound.get("value"), unit)) if x)})
 
@@ -182,6 +181,7 @@ def build(state: dict, steps: list, events: list, talk=None, memory=None) -> dic
     nearest = max(cheaper, key=lambda c: c["product"]["price_cents"]) if cheaper else None
     refused = {"price": _money(nearest["product"]["price_cents"]), "title": nearest["product"].get("title"),
                "reason": str(nearest.get("reason") or _plain(nearest.get("status"))).split(": ")[-1],
+               "status": _plain(nearest.get("status")),
                "more": len(cheaper) - 1} if nearest else None
     picked = {"price": _money(price), "title": product.get("title"),
               "rule": _plain((focus.get("why") or {}).get("rule")) or ""} if pick else None
@@ -196,11 +196,18 @@ def build(state: dict, steps: list, events: list, talk=None, memory=None) -> dic
     said = {"store": product.get("store"), "question": asked.get("question"), "at": str(asked.get("asked_at") or "")[11:16],
             "reply": asked.get("quote") or asked.get("reply") or ""} if asked else None
 
+    guard = _guard(talk, product.get("product_id"))
     return {
-        "title": " · ".join(x for x in (sheet.get("title"), focus.get("need")) if x),
+        "title": " · ".join(x for x in (sheet.get("title"), str(focus.get("need") or "")[:1].upper() + str(focus.get("need") or "")[1:]) if x),
         "focus": {"line_id": focus.get("line_id"), "need": focus.get("need"), "others": max(0, len(lines) - 1)},
-        "rail": [{"id": s["id"], "label": s["label"], "sub": s["sub"], "done": s["done"]} for s in steps],
+        # the rail names what the replay draws: its last two steps are the question to the store and what is remembered
+        # (the signature and the carts are not replayed here; they are rows of the timeline below)
+        "rail": [{"id": s["id"], "label": s["label"], "sub": s["sub"], "done": s["done"]} for s in steps[:5]] + [
+            {"id": "asked", "label": "Asked the store", "done": bool(guard or said),
+             "sub": ("%d stopped" % len(guard["removed"])) if guard else ""},
+            {"id": "remembered", "label": "Remembered", "done": any(sl["count"] for sl in shelf or []),
+             "sub": ("%d kept" % sum(sl["count"] for sl in shelf)) if shelf else ""}],
         "said": {"order": order if order["sentences"] else None, "home": home, "page": page},
         "model": model, "bypass": bypass, "checks": checks, "refused": refused, "pick": picked, "signature": signature,
-        "asked": said, "talk": _guard(talk, product.get("product_id")), "memory": shelf,
+        "asked": said, "talk": guard, "memory": shelf,
     }
