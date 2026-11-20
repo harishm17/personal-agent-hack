@@ -1013,3 +1013,36 @@ runs it on the direct table, and returns `rows`, `direct_rows`, `same`, `only_in
 app_pool_rows, note}. Today on sheet 1: L1 8 against 8, L2 7 against 7, L4 13 against 13, `same: true`. `source=airbyte` is honest about staleness: the table holds 256 rows from two jobs
 (20:02 and 20:49 UTC); since then the pool was rebuilt (options, the new relevance rule), so for products added or dropped since the answers can differ until the next Airbyte sync
 (`python -m signoff.airbyte.sync`, which also now exports the active sheet). Say "the app's own query ran on rows Airbyte delivered at <time>", and re-sync before the demo if the pool changes.
+
+## 13:20 from SCREEN: C1 to C8 (stream/SCREEN, main merged at 3582cd5; my port 8003 now runs SIGNOFF_SHEET=sheet2)
+Screenshots are local files (demo/shots is not committed). Checked on live sheet 2 (179 pages, 4 picks) and live sheet 1.
+- DONE C1: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-T1.png (toilet, live sheet 2), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-T4.png (vanity, one limit).
+- DONE C2: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/ladder-step.png. Seven steps from the state; a step opens a sheet over the right column with what the state
+  holds for it plus the Trail's own records for that step (`events` with `step === id`, `own_step !== false`) and a link
+  to `/trail/#<step id>`. Step ids are the Trail's.
+- DONE C3, with two parts not watched: opening checked frame by frame on live sheet 2 (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-open.png: rows fill
+  cheapest first, the highlight lands, the right column fills). A limit change checked only in the in-page simulation on
+  the placeholder sheet 2 fixture (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-move.png: header value rolls, cells re-evaluate in place, highlight moves,
+  old pick says "was picked" for 3 s). NOT watched: a limit moved from the real phone, and the signing motion on this screen.
+- DONE C4 except images: outside is a red value, unclear a solid grey chip with what the page states ("5 or 5.5 in",
+  "13.5 no unit"), not stated a dashed chip; clicking a row puts the page's own words in the right column
+  (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/ladder-unclear.png live sheet 1, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-rej.png live sheet 2). The engine does not send status `unclear` yet; I
+  detect it from `missing_why` "stated, but not clearly" and the candidate's `unsure` figure, and also handle the status.
+  Option name sits under the product name before the store. Images: `product.image_url` is drawn when present with a
+  neutral placeholder otherwise; no product carries it yet, so I have only seen the placeholder.
+- DONE C5: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-960.png (1440 x 810 at 150%: thumbnails drop, every column stays, columns scroll) and
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-1920.png (fills 1920 x 1080; rem sizes on a root of clamp(16px, 1.1vw, 22px)).
+- DONE C6, signed state from the placeholder fixture only: QR of the enrol route's `url` with "Scan to enrol the phone"
+  and the code, one line "<issuer> must sign · no cart exists", receipts as ticks with the count on the same line
+  (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-T1.png); signed: signer, time, "self-declared" or "identity checked (sandbox)", short hash, what the hash
+  covers, cart links (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/ladder-signed.png). NOT done: scanning the QR with a phone; a real signature on this screen.
+- DONE C7 except the reader chip: "change" under a limit's column header sends an unsigned change and the answer comes
+  in a toast beside it, seen against the real server: "Refused · not signed 401" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s2-live-forge.png). Tabs Decision and
+  Trail sit after the sheet title as TRAIL asked. WONTDO the reader chip in the top bar: your 12:50 note keeps one status
+  pill there; the reader and "the small model was switched back" are in the "Pages read" step's sheet.
+- DONE C8: app.js, plot.js, flow.js, flow.css and the Detail link are deleted; `web/screen` is index.html, style.css
+  (shared system), ladder.css, ladder.js, model.js, motion.js, vendor/qrcode.js and three fixture files.
+- Not mine, seen in the gate: `tests/engine/test_sheet2.py` fails on main (instruction scan 145 pages against 179 found);
+  noted in NOTES/ENGINE.md.
+- On live sheet 2 the vanity's pick shows the store agent's return sentence about "an opened toilet" (scope "store-wide").
+  The screen prints the scope; whether to show a store-wide reply on another product kind is ENGINE's call.

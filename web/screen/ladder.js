@@ -291,13 +291,14 @@ function renderList(line, pick) {
   const limits = sheetLineOf(line).limits, rows = priced(line), at = pick ? rows.indexOf(pick) : -1;
   const cheaper = at >= 0 ? rows.slice(0, at) : rows, dearer = at >= 0 ? rows.slice(at + 1) : [];
   const also = dearer.filter((c) => c.status === "inside").length;
-  let fold = cheaper.length > 6 && !ui.open.has("above") && at >= 0 ? cheaper.length - 6 : 0;
+  let fold = cheaper.length > 5 && !ui.open.has("above") && at >= 0 ? cheaper.length - 5 : 0;      // five rejections, the pick and both fold lines fit without scrolling
   if (fold && ui.was && cheaper.slice(0, fold).some((c) => c.id === ui.was.id)) fold = 0;      // keep the old pick in view while it says so
   const forged = (limit) => limit.bound.source === "issuer" && !state.seal.signed
     ? `<span class="forge" role="button" tabindex="0" data-forge="${esc(limit.id)}" title="Try to change this limit from here, without the approver's key" aria-label="Try to change this limit from here">change</span>` : "";
   const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span>${esc(h.name)} <b data-k="head.${limit.id}">${esc(h.rule)}</b></span>${forged(limit)}</span>`; }).join("");
   const sub = at >= 0 ? `Cheapest first. ${rows.length} read · <span data-k="sub.rej">${cheaper.length}</span> cheaper ones rejected · <span data-k="sub.also">${also}</span> dearer ones also pass`
     : `Cheapest first. ${rows.length} read · nothing passes`;
+  const keep = q("#rows") && last.line === line.line_id ? q("#rows").scrollTop : 0;      // a redraw never moves the list under the viewer
   q("#list").innerHTML = `<div class="lhd"><h1>${esc(cap(line.need))}</h1><p class="sub">${sub}</p></div>
     <div class="hd" style="--n:${limits.length}"><span></span><span>Product</span><span>Price</span>${heads}<span>Result</span></div>
     <div class="rows" id="rows">
@@ -307,6 +308,7 @@ function renderList(line, pick) {
       ${dearer.length ? (ui.open.has("below") ? dearer.map((c) => rowHtml(c, line, pick, limits)).join("")
         : dearer.filter((c) => ui.was && ui.was.id === c.id).map((c) => rowHtml(c, line, pick, limits)).join("") + `<button class="more" data-toggle="below">+ ${dearer.length} dearer, not needed</button>`) : ""}
     </div>`;
+  q("#rows").scrollTop = keep;
 }
 
 // ---------- right: why this one, in the list's words and the store's words ----------
