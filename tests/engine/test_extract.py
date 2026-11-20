@@ -171,9 +171,29 @@ def test_the_comparison_lists_disagreements_extras_and_wrong_positions(tmp_path)
         (folder / "s.json").write_text(json.dumps(rows))
         (folder / "s.log").write_text(json.dumps([{"store": "s", "product_id": "p", "extractor": rows[0]["extractor"],
                                                    "asked": ["overall_width", "length"], "seconds": 1.0, "usage": {}}]))
-    small = next(r for r in score.compare(tmp_path)["readers"] if r["extractor"] == "small")
-    assert small["statement"] == ("same number on 0 of 1 figures both readers found; the reference alone found 0, "
+    made = score.compare(tmp_path)
+    small = next(r for r in made["readers"] if r["extractor"] == "small")
+    # as read, the small reader disagrees on the width; with the rule on, code has marked its figure unsure
+    assert small["position_rule"]["before"]["statement"] == (
+        "same number on 0 of 1 figures both readers found; the reference alone found 0, this reader alone found 1")
+    assert small["statement"] == ("same number on 0 of 0 figures both readers found; the reference alone found 1, "
                                   "this reader alone found 1")
-    assert small["disagreements"][0]["value"] == "14.75" and small["disagreements"][0]["reference_value"] == "31"
-    assert small["disagreements"][0]["dimension"]["label"] == "d" and small["disagreements"][0]["dimension"]["ok"] is False
-    assert [e["figure"] for e in small["extra"]] == ["length"] and len(small["wrong_dimension_position"]) == 1
+    caught = small["position_rule"]["caught"]
+    assert len(caught) == 1 and caught[0]["value"] == "14.75" and caught[0]["dimension"]["label"] == "d"
+    assert made["position_rule"]["reference_figures_caught"] == 0 and list(made["position_rule"]["caught"]) == ["small"]
+    assert [e["figure"] for e in small["extra"]] == ["length"]
+
+
+def test_the_position_rule_marks_a_depth_reported_as_a_width_unsure_for_any_reader():
+    text = 'Bench.\nProduct Dims (h x w x d): 1.63" x 31" x 14.75" Weight Capacity: 300 lbs.'
+    page = {"store": "s", "product_id": "p", "text": text}
+    quote = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
+    wrong = spans.finish({"figure": "overall_width", "kind": "single", "value": 14.75, "unit": "in", "quote": quote}, page, "any")
+    assert wrong["span_found_in_text"] and wrong["unsure"] and wrong["unsure_reason"] == spans.POSITION_REASON
+    assert wrong["dimension"] == {"position": 3, "of": 3, "label": "d", "expected": "w", "ok": False}
+    right = spans.finish({"figure": "overall_width", "kind": "single", "value": 31, "unit": "in", "quote": quote}, page, "any")
+    assert "unsure" not in right and right["dimension"]["ok"] is True
+    plain = spans.finish({"figure": "weight_capacity", "kind": "single", "value": 300, "unit": "lbs",
+                          "quote": "Weight Capacity: 300 lbs."}, page, "any")
+    assert "dimension" not in plain and "unsure" not in plain
+    assert spans.expected_label("seat_height") == "h" and spans.expected_label("weight_capacity") is None

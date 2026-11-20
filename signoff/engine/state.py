@@ -16,6 +16,7 @@ import time
 
 from signoff import config
 from signoff.engine import obs, planted, receipts, rules
+from signoff.extract import spans
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 DATA, FIXTURES, SHEETS = ROOT / "data", ROOT / "fixtures", ROOT / "sheets"
@@ -91,6 +92,8 @@ def _load_figures(pool, from_data):
     for f in figures:
         page = text.get((f["store"], f["product_id"]))
         f["span_found_in_text"] = rules.span_found(f, page)
+        if f["span_found_in_text"] and config.env("SIGNOFF_POSITION_RULE") != "off":
+            spans.apply_position_rule(f)  # for every reader: a depth is not a width, whatever the model said
         if f["span_found_in_text"]:  # the store's whole sentence, for the screen to show around the quote
             sentence, a, b = rules.sentence_around(page, f["start"], f["end"])
             f.update(sentence=sentence, quote_in_sentence=[a, b])
@@ -105,6 +108,7 @@ def _load_readers(from_data):
     try:
         made = _read(path)
         return {"reference": made["reference"], "measure": made["measure"], "note": made["note"],
+                "position_rule": made.get("position_rule"),
                 "products": made["products"], "made_at": made["made_at"],
                 "readers": [{k: v for k, v in r.items() if k not in ("differences", "missing")} for r in made["readers"]]}
     except (ValueError, KeyError):

@@ -136,6 +136,8 @@ def finish(proposal, product, extractor, assume_unit=None, target_unit=None):
                           low=rules.convert(low, stated_unit, base), high=rules.convert(high, stated_unit, base))
     if unsure:
         record.update(unsure=True, unsure_reason=reason)
+    if record["span_found_in_text"]:
+        apply_position_rule(record)
     return record
 
 
@@ -175,3 +177,44 @@ def dimension_position(quote, numbers):
     _, i, part = sorted(holds)[0]
     return {"position": i + 1, "of": len(parts), "label": labels[i] if i < len(labels) else None,
             "labels": labels, "part": part.strip()}
+
+
+POSITION_REASON = "position in a dimension string does not match the label"
+
+
+def expected_label(figure):
+    """The dimension a figure name asks for: w for a width, h for a height, l for a length, d for a depth."""
+    name = (figure or "").lower()
+    for word, letter in (("width", "w"), ("height", "h"), ("length", "l"), ("depth", "d")):
+        if word in name:
+            return letter
+    return None
+
+
+def position_check(row):
+    """For a figure quoted from a labelled list of dimensions: `{position, of, label, expected, ok}`; None for
+    any other quote. `ok` is False when the store labels the position the number was taken from as a different
+    dimension than the figure asks for (a depth reported as a width)."""
+    stated = row.get("stated_unit")
+    numbers = [row.get("stated_value")] if stated and row.get("kind") == "single" else \
+        [row.get("stated_low"), row.get("stated_high")] if stated else \
+        [row.get("value")] if row.get("kind") == "single" else [row.get("low"), row.get("high")]
+    at = dimension_position(row.get("quote"), numbers)
+    if not at:
+        return None
+    want = expected_label(row.get("figure"))
+    return {"position": at["position"], "of": at["of"], "label": at["label"], "expected": want,
+            "ok": None if at["label"] is None or want is None else at["label"] == want}
+
+
+def apply_position_rule(row):
+    """The rule, for every reader: a figure taken from the wrong labelled position is marked unsure, so it does
+    not count. Returns True when this call marked it. A figure already unsure keeps its own reason."""
+    at = position_check(row)
+    if at is None:
+        return False
+    row["dimension"] = at
+    if at["ok"] is False and not row.get("unsure"):
+        row.update(unsure=True, unsure_reason=POSITION_REASON, caught_by="code: position in a dimension string")
+        return True
+    return False

@@ -68,3 +68,26 @@ def test_no_real_page_in_the_pool_carries_an_instruction():
         pytest.skip("the scan has not been run in this checkout")
     rows = [r for f in sorted(folder.glob("*.json")) for r in json.loads(f.read_text())]
     assert len(rows) >= 100 and [r for r in rows if r["instructions"]] == []
+
+
+def test_the_position_rule_changes_nothing_for_the_reference_and_stops_the_small_readers_misread(real_pool, monkeypatch):
+    monkeypatch.setenv("SIGNOFF_POSITION_RULE", "off")
+    off = state.reset()
+    monkeypatch.delenv("SIGNOFF_POSITION_RULE")
+    on = state.reset()
+    assert facts(on) == facts(off)  # the reference reader: same picks, hash, total, counts, with the rule on or off
+
+    def bench(s):
+        return next(c for l in s["lines"] for c in l["candidates"] if c["product"]["title"] == "Carex Portable Shower Bench")
+    assert bench(on)["status"] == "outside" and "31 <= 21.5" in bench(on)["reason"]  # the reference reads the width, 31
+    if not (ROOT / "data" / "figures" / "_runs" / "sie-Qwen-Qwen3.8-27B-FP8").is_dir():
+        pytest.skip("no run of the small reader in this checkout")
+    monkeypatch.setenv("SIGNOFF_POSITION_RULE", "off")
+    state.reset()
+    before = bench(state.set_reader("sie:Qwen/Qwen3.8-27B-FP8"))
+    assert before["status"] == "inside" and [c["expr"] for c in before["checks"]][1] == "14.75 <= 21.5"  # the misread
+    monkeypatch.delenv("SIGNOFF_POSITION_RULE")
+    state.reset()
+    after = bench(state.set_reader("sie:Qwen/Qwen3.8-27B-FP8"))
+    assert after["status"] == "not_stated" and "position in a dimension string does not match the label" in after["reason"]
+    state.set_reader(None)

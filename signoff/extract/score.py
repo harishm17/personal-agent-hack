@@ -53,24 +53,8 @@ def cost(log):
     return out or None
 
 
-EXPECTED_LABEL = {"overall_width": "w", "seat_height": "h", "length": "l"}
-
-
-def numbers_of(row):
-    return [row["value"]] if row["kind"] == "single" else [row["low"], row["high"]]
-
-
 def dimension_check(row):
-    """For a figure quoted from a list of dimensions: the position used, the store's label for it, and whether
-    that label is the one this figure needs (width for overall width). None for an ordinary quote."""
-    at = spans.dimension_position(row.get("stated_quote") or row["quote"], numbers_of(row) if not row.get("stated_unit")
-                                  else [row.get("stated_value") or row.get("stated_low"), row.get("stated_high")])
-    if not at:
-        return None
-    want = EXPECTED_LABEL.get(row["figure"])
-    at["expected"] = want
-    at["ok"] = None if at["label"] is None or want is None else at["label"] == want
-    return at
+    return spans.position_check(row)
 
 
 def item(key, row, titles):
@@ -178,23 +162,81 @@ def compare(figures=FIGURES, reference=None):
                 titles[(p["store"], p["product_id"])] = p.get("title")
     except Exception:  # noqa: BLE001
         pass
-    picks, status = picks_by_reader(runs, sheet_id)
+    def one_pass(these, reference_index):
+        """Every reader measured against the reference: once on the figures as read, once with the rule on."""
+        picks, status = picks_by_reader(these, sheet_id)
+        out = {}
+        for name, index, log in these:
+            changed, inside, inside_ref = None, None, None
+            if picks and name != ref[0]:
+                changed = [{"line_id": line, "with_reference": picks[ref[0]][line], "with_this_reader": mine}
+                           for line, mine in picks[name].items()
+                           if (mine or {}).get("title") != (picks[ref[0]][line] or {}).get("title")]
+                inside = [dict(mine, with_reference=status[ref[0]][cid]["status"],
+                               reference_reason=status[ref[0]][cid]["reason"])
+                          for cid, mine in status[name].items()
+                          if mine["status"] == "inside" and status[ref[0]][cid]["status"] != "inside"]
+                inside_ref = [dict(theirs, with_this_reader=status[name][cid]["status"],
+                                   this_reader_reason=status[name][cid]["reason"])
+                              for cid, theirs in status[ref[0]].items()
+                              if theirs["status"] == "inside" and status[name][cid]["status"] != "inside"]
+            made = measure(name, index, log, reference_index, titles, changed)
+            made["inside_only_with_this_reader"] = inside
+            made["inside_only_with_reference"] = inside_ref
+            out[name] = made
+        return out
+
+    def with_rule(index):
+        fresh, caught = {}, []
+        for key, row in index.items():
+            row = dict(row)
+            row.pop("dimension", None)
+            if row.get("caught_by"):  # a record saved after the rule existed: undo it for the "before" pass
+                row = dict(row)
+            if spans.apply_position_rule(row):
+                caught.append(key)
+            fresh[key] = row
+        return fresh, caught
+
+    def as_read(index):
+        out = {}
+        for key, row in index.items():
+            row = dict(row)
+            if row.get("caught_by"):
+                for k in ("unsure", "unsure_reason", "caught_by"):
+                    row.pop(k, None)
+            out[key] = row
+        return out
+
+    raw = [(name, as_read(index), log) for name, index, log in runs]
+    ruled, caught = [], {}
+    for name, index, log in raw:
+        fresh, hit = with_rule(index)
+        ruled.append((name, fresh, log))
+        caught[name] = [item(k, index[k], titles) for k in hit]
+    before = one_pass(raw, next(i for n, i, _ in raw if n == ref[0]))
+    after = one_pass(ruled, next(i for n, i, _ in ruled if n == ref[0]))
+    brief = lambda m: {  # noqa: E731
+        "figures_counted": m["figures_counted"], "statement": m["statement"],
+        "picks_changed": [p["line_id"] for p in m["picks_changed"] or []],
+        "inside_only_with_this_reader": len(m["inside_only_with_this_reader"] or []),
+        "inside_only_with_reference": len(m["inside_only_with_reference"] or []),
+        "inside_only_with_this_reader_titles": [x["title"] for x in m["inside_only_with_this_reader"] or []]}
     readers = []
-    for name, index, log in runs:
-        changed, inside = None, None
-        if picks and name != ref[0]:
-            changed = [{"line_id": line, "with_reference": picks[ref[0]][line], "with_this_reader": mine}
-                       for line, mine in picks[name].items()
-                       if (mine or {}).get("title") != (picks[ref[0]][line] or {}).get("title")]
-            inside = [dict(mine, with_reference=status[ref[0]][cid]["status"],
-                           reference_reason=status[ref[0]][cid]["reason"])
-                      for cid, mine in status[name].items()
-                      if mine["status"] == "inside" and status[ref[0]][cid]["status"] != "inside"]
-        made = measure(name, index, log, ref[1], titles, changed)
-        made["inside_only_with_this_reader"] = inside
+    for name, _, _ in runs:
+        made = after[name]
+        made["position_rule"] = {"rule": spans.POSITION_REASON, "caught": caught[name],
+                                 "before": brief(before[name]), "after": brief(after[name])}
+        made["wrong_dimension_position"] = caught[name]
         readers.append(made)
     readers.sort(key=lambda r: (r["extractor"] != ref[0], -(r["agreement"] or 0)))
     return {"made_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
+            "position_rule": {
+                "rule": "when a figure's quote is a labelled list of dimensions, its number must sit at the position "
+                        "the store labels as that dimension; otherwise the figure is marked unsure and does not count",
+                "reason_given": spans.POSITION_REASON, "applies_to": "every reader, in code",
+                "caught": {r["extractor"]: r["position_rule"]["caught"] for r in readers if r["position_rule"]["caught"]},
+                "reference_figures_caught": len(caught[ref[0]])},
             "reference": ref[0], "measure": "same number, on the figures both readers found, on the same products",
             "note": "Agreement, not accuracy: no person read these pages. A figure counts when its quote is "
                     "found in the store's text and the reader did not mark it unsure. Figures only one reader "
@@ -221,6 +263,11 @@ def main(argv=None):
             r["extractor"], r["statement"], r["span_found"], r["figures_reported"],
             [p["line_id"] for p in r["picks_changed"]] if r["picks_changed"] is not None else "n/a",
             len(r["wrong_dimension_position"]), r["seconds_per_product_median"], json.dumps(r["cost"])))
+        if r["extractor"] != result["reference"]:
+            rule = r["position_rule"]
+            print("      position rule: caught %s · inside only with this reader %d -> %d · picks changed %s -> %s" % (
+                [(c["title"], c["value"]) for c in rule["caught"]], rule["before"]["inside_only_with_this_reader"],
+                rule["after"]["inside_only_with_this_reader"], rule["before"]["picks_changed"], rule["after"]["picks_changed"]))
         if args.detail and r["extractor"] != result["reference"]:
             for d in r["disagreements"]:
                 print("    differs  %s | %s | %s | reference %s %r | reader %s %r %s" % (
