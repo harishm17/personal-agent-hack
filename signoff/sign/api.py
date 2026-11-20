@@ -152,7 +152,8 @@ async def issuer_request(request: Request):
                 raise Refused("cart_failed", "the stores did not create the carts (%s); nothing is signed" % type(error).__name__, 502) from error
             if not carts:
                 raise Refused("cart_failed", "no cart came back; nothing is signed", 502)
-            signature = {"signer": signer, "at": _now(), "sheet_hash": payload["sheet_hash"], "sig": body["sig"],
+            at = _now()
+            signature = {"name": signer["name"], "signer": signer, "at": at, "signed_at": at, "sheet_hash": payload["sheet_hash"], "sig": body["sig"],
                          "payload": body["payload"], "seq": payload["seq"], "persona": persona.record(),
                          "senso": senso.checks()["checks"]}
             result = engine.mark_signed(signature, carts)
@@ -161,6 +162,10 @@ async def issuer_request(request: Request):
             return _fail(error)
         except ModuleNotFoundError as error:
             return _fail(Refused("engine_unavailable", "the engine is not loaded (%s)" % error.name, 503))
+        except ValueError as error:  # the engine's own refusal (EngineError carries an HTTP status)
+            if hasattr(error, "status"):
+                return _fail(Refused("engine_refused", str(error), error.status))
+            raise
 
 
 def _version(result, engine):
