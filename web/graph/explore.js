@@ -4,13 +4,13 @@
 const NS = "http://www.w3.org/2000/svg";
 const REM = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16;
 const px = (n) => n * REM;
-const CW = px(136), CH = px(36), SP = px(25), R = px(8), RS = px(5), RB = px(13);
+const CW = px(160), CH = px(40), SP = px(29), R = px(13), RS = px(9), RB = px(22);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const ownerClass = (o) => (o === "issuer" || o === "shopper" ? o : o === "system" || o === "web" ? "" : "store");
 const short = (s, n) => (String(s || "").length > n ? String(s).slice(0, n - 1).trimEnd() + "…" : String(s || ""));
 const clock = (at) => (at ? String(at).slice(11, 16) : "");
-const FW = px(176);                                                // a fact quoted from a message is a wider card
-const GW = px(214);                                                // the one node that stands for everything recalled
+const FW = px(180);                                                // a fact quoted from a message is a wider card
+const GW = px(244);                                                // the one node that stands for everything recalled
 const boxW = (n) => (n.group ? GW : n.kind === "context_fact" || n.kind === "event" ? FW : CW);
 const REASONS = ["outside", "unclear", "not stated", "struck", "struck before"];
 
@@ -37,7 +37,7 @@ function plan(k) {
   const P = new Map(), lines = [], texts = [];
   let leftBottom = 2 * (CH + px(22));
   const put = (id, x, y, more = {}) => P.set(id, { x, y, ...more, o: (added.get(id) ?? 0) <= k ? more.o ?? 1 : 0 });
-  const GAP = px(60), XI = CW + GAP, XS = XI + CW + GAP, PX0 = XS + CW + px(28), YROW = H * 0.56, YB = H * 0.77;
+  const GAP = px(22), XI = CW + GAP, XS = XI + CW + GAP, PX0 = XS + CW + px(22), YROW = H * 0.57, YB = H * 0.77;
 
   // the order: who, the item, the measurement
   const people = data.nodes.filter((n) => n.kind === "person");
@@ -56,7 +56,7 @@ function plan(k) {
     notes.forEach((n, i) => put(n.id, XI, i * (CH + px(10))));
     const fy = new Map();
     known.forEach((n, i) => { fy.set(n.id, i * (CH + px(6))); put(n.id, XS, fy.get(n.id), { w: FW, o: k >= iOrder && !n.used ? 0.4 : 1 }); });
-    const XD = XS + FW + px(166), XE = XD + CW + px(24);
+    const XD = XS + FW + px(150), XE = XD + CW + px(18);
     const want = (id) => { const ys = data.edges.filter((e) => e.feeds && e.to === id).map((e) => fy.get(e.from)); return ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : null; };
     const issuer = people.find((n) => n.id === "person:issuer"), shopper = people.find((n) => n.id === "person:shopper");
     [item, ...limits].forEach((n, i) => put(n.id, XE, i * (CH + px(8))));          // prescribed: the order and its rules
@@ -121,22 +121,22 @@ function plan(k) {
     groups.get(key).ids.push(p.id);
   }
   const ordered = [...groups.values()].sort((a, b) => a.stage - b.stage || REASONS.indexOf(a.reason) - REASONS.indexOf(b.reason));
-  const gcols = 9, gsp = px(13), RQ = px(2.5);
+  const gcols = 8, gsp = px(20), RQ = px(5);
   let gx = ranked ? 0 : XS;
   const asidePos = new Map();
   for (const g of ordered) {
     if (ranked) {                                                   // one quiet row: a count, a reason, its dots
-      const label = `${g.ids.length} ${g.reason}`, lw = label.length * px(5.4) + px(8);
-      texts.push({ x: gx, y: H - px(4), cls: "gs", html: esc(label) });
-      g.ids.forEach((id, i) => asidePos.set(id, { x: gx + lw + i * px(7), y: H - px(7), quiet: true }));
-      gx += lw + g.ids.length * px(7) + px(18);
+      const label = `${g.ids.length} ${g.reason}`, lw = label.length * px(6.6) + px(10);
+      texts.push({ x: gx, y: H - px(3), cls: "gs", html: esc(label) });
+      g.ids.forEach((id, i) => asidePos.set(id, { x: gx + lw + i * px(11) + RQ, y: H - px(7), quiet: true }));
+      gx += lw + g.ids.length * px(11) + px(16);
       continue;
     }
-    const w = Math.max(px(112), Math.min(gcols, g.ids.length) * gsp + px(10));
+    const w = Math.max(px(104), Math.min(gcols, g.ids.length) * gsp + px(6));
     texts.push({ x: gx, y: YB + px(4), cls: "gh", html: `<tspan class="gc">${g.ids.length}</tspan> ${esc(g.reason)}` });
-    texts.push({ x: gx, y: YB + px(18), cls: "gs", html: esc(S[g.stage].rule || S[g.stage].title) });
-    g.ids.forEach((id, i) => asidePos.set(id, { x: gx + (i % gcols) * gsp + RS, y: YB + px(34) + Math.floor(i / gcols) * (gsp + px(3)) }));
-    gx += w + px(14);
+    texts.push({ x: gx, y: YB + px(20), cls: "gs", html: esc(S[g.stage].rule || S[g.stage].title) });
+    g.ids.forEach((id, i) => asidePos.set(id, { x: gx + (i % gcols) * gsp + RS, y: YB + px(38) + Math.floor(i / gcols) * (gsp + px(1)) }));
+    gx += w + px(8);
   }
 
   // the web row and the ranked line
@@ -145,27 +145,28 @@ function plan(k) {
   const searched = reviews.map((r) => r.product);
   const order = iRank >= 0 ? S[iRank].order : [];
   const webbed = iWeb >= 0 && k >= iWeb;
-  const TOP = 5, BIGSTEP = px(84), RBIG = px(26), GS = 1.3, CY = H * 0.46;
-  const gateX = W - CW * GS - px(2), leftEdge = XI + CW + px(64);
+  const RBIG = px(36), GS = 1.15, CY = H * 0.47;
+  const gateX = W - CW * GS - px(2), leftEdge = XI + CW + px(26), head = gateX - px(40) - RBIG;
+  let TOP = Math.min(5, order.length);
+  while (TOP > 2 && (head - leftEdge - RBIG) / (TOP - 1) < px(104)) TOP -= 1;
   const big = new Set(ranked ? order.slice(0, TOP) : webbed ? searched : []);
   const linePos = new Map();
   if (ranked) {
-    const head = gateX - px(44) - RBIG, n = Math.min(TOP, order.length);
-    const step = n > 1 ? Math.min(px(170), (head - leftEdge - RBIG) / (n - 1)) : 0;
+    const n = TOP, step = n > 1 ? Math.min(px(170), (head - leftEdge - RBIG) / (n - 1)) : 0;
     order.slice(0, TOP).forEach((id, i) => linePos.set(id, { x: head - i * step, y: CY }));
     // the rest that pass, in order, in a quiet block under them
-    const tail = order.slice(TOP), trows = 2, tsp = px(10), ty = CY + RBIG + px(96);
-    tail.forEach((id, i) => linePos.set(id, { x: leftEdge + Math.floor(i / trows) * tsp, y: ty + (i % trows) * tsp }));
-    if (tail.length) texts.push({ x: leftEdge + Math.ceil(tail.length / trows) * tsp + px(8), y: ty + px(8), cls: "gs", html: `${tail.length} more that pass` });
+    const tail = order.slice(TOP), trows = 2, tsp = px(18), ty = CY + RBIG + px(100);
+    tail.forEach((id, i) => linePos.set(id, { x: leftEdge + px(8) + Math.floor(i / trows) * tsp, y: ty + (i % trows) * tsp }));
+    if (tail.length) texts.push({ x: leftEdge + px(8) + Math.ceil(tail.length / trows) * tsp + px(6), y: ty + px(13), cls: "gs", html: `${tail.length} more that pass` });
   } else if (webbed) {
     const step = Math.min(px(120), (W - PX0 - px(6)) / Math.max(1, searched.length));   // all of them inside the canvas
     searched.forEach((id, i) => linePos.set(id, { x: PX0 + step / 2 + i * step, y: YROW }));
   }
 
   if (asking) {
-    const LANE = px(24), MW = px(84), RW = px(64), xp = PX0 + px(18), spine = xp + RB + px(12), xm = spine + px(10);
+    const LANE = px(24), MW = px(84), RW = px(64), xp = PX0 + RB, spine = xp + RB + px(10), xm = spine + px(10);
     const storeX = W - CW, xr2 = storeX - RW - px(36), xg = (xm + MW + xr2) / 2;
-    const room = xg - (xm + MW), shown = Math.max(1, Math.floor((2 * room - px(30)) / px(62)));   // how many withheld parts fit on the line
+    const room = xg - (xm + MW), shown = Math.max(1, Math.floor((2 * room - px(34)) / px(70)));   // how many withheld parts fit on the line
     let ly = YROW - px(46), kept = 0;
     const top = ly;
     for (const pid of S[iAsk].row || []) {
@@ -180,7 +181,7 @@ function plan(k) {
         P.set(m.id, { x: xm, y: ly, o: 1, w: MW, h: px(18) });
         lines.push({ raw: [spine, y9, xm, y9], cls: "" }, { raw: [xm + MW, y9, xg, y9], cls: m.stopped ? "fails" : "lit" });
         // what the guard withheld sits on the guard line, struck
-        if (chips.length) texts.push({ x: xg, y: y9 + px(3.5), cls: "chip on mid", html: chips.slice(0, shown).map((c) => esc(short(c.text, 10))).join(" · ") + (chips.length > shown ? ` +${chips.length - shown}` : "") });
+        if (chips.length) texts.push({ x: xg, y: y9 + px(3.5), cls: "chip on mid", html: chips.slice(0, shown).map((c) => esc(short(c.text, 9))).join(" · ") + (chips.length > shown ? ` +${chips.length - shown}` : "") });
         const r = data.nodes.find((n) => n.kind === "reply" && n.message === m.id);
         if (r) {
           P.set(r.id, { x: xr2, y: ly, o: 1, w: RW, h: px(18) });
@@ -202,7 +203,7 @@ function plan(k) {
     const h = home.get(p.id), born = k >= iSearch, gone = asidePos.get(p.id), line = linePos.get(p.id);
     const src = P.get(h.store);
     const where = !born ? { x: src.x + CW / 2, y: src.y + CH / 2 } : gone || line || h;
-    P.set(p.id, { ...where, o: born ? (gone ? 0.75 : 1) : 0, r: gone ? (gone.quiet ? RQ : RS) : big.has(p.id) ? (ranked ? RBIG : RB) : ranked ? px(3.6) : R,
+    P.set(p.id, { ...where, o: born ? (gone ? 0.75 : 1) : 0, r: gone ? (gone.quiet ? RQ : RS) : big.has(p.id) ? (ranked ? RBIG : RB) : ranked ? px(8) : R,
       big: big.has(p.id) && !gone, aside: !!gone, dashed: k >= iRead && (S[iRead]?.not_stated || []).includes(p.id),
       read: k >= iRead, pick: ranked && p.picked, checked: limits.filter((l) => { const i = S.findIndex((x) => x.limit === l.id); return i >= 0 && i <= k; }).map((l) => l.id) });
   }
@@ -220,11 +221,11 @@ function plan(k) {
   const card = (a, b, cls = "", label = "") => { if (vis(a) && vis(b)) lines.push({ a, b, cls, label, card: true }); };
   for (const e of data.edges) {
     if (e.feeds) { if (k >= iOrder && vis(e.from) && vis(e.to)) lines.push({ a: e.from, b: e.to, card: true, cls: e.matches === false ? "fails" : "lit",
-      label: e.verb + (e.matches === true ? " · matches" : e.matches === false ? " · differs" : ""), lt: nodes.get(e.to)?.kind === "person" ? 0.5 : 0.27 }); }
+      label: short(e.verb, 22) + (e.matches === true ? " ✓" : e.matches === false ? " ✕" : ""), lt: nodes.get(e.to)?.kind === "person" ? 0.5 : 0.25 }); }
     else if (e.verb === "says") card(e.from, e.to, "", "");
     else if (e.verb === "wrote" && nodes.get(e.to)?.kind === "context_message") { if (nodes.get(e.from)?.kind === "context_person") card(e.from, e.to, "", ""); }
     else if (e.prescribed) { if (eventPhase) card(e.from, e.to, "", ""); }
-    else if (e.verb === "wrote" || e.verb === "measured") card(e.from, e.to, "", eventPhase ? "" : e.verb);
+    else if (e.verb === "wrote" || e.verb === "measured") card(e.from, e.to, "", "");
     else if (e.verb === "searches" && nodes.get(e.to)?.kind === "store" && k >= iSearch && !ranked && !asking) card(e.from, e.to, k === iSearch ? "lit" : "", "");
     else if (e.verb === "waits for" && k >= iSign && iSign >= 0) lines.push({ a: e.from, b: e.to, cls: "lit", toCard: true });
     else if (e.verb === "releases") card(e.from, e.to, "lit", "");
@@ -251,11 +252,11 @@ function plan(k) {
     order.slice(0, TOP).forEach((id) => {
       const n = nodes.get(id), p = P.get(id);
       const room = order.length > 1 ? Math.abs(P.get(order[0]).x - P.get(order[1]).x) : px(170);
-      texts.push({ x: p.x, y: p.y - p.r - px(24), cls: "pn big mid", html: esc(short(n.label, Math.max(8, Math.min(18, Math.floor(room / px(8.2)))))) });
-      texts.push({ x: p.x, y: p.y - p.r - px(9), cls: "pp big mid", html: esc((n.sub || "").split(" · ")[0]) + (n.picked ? " · the pick" : "") });
+      texts.push({ x: p.x, y: p.y - p.r - px(24), cls: "pn big mid", html: esc(short(n.label, Math.max(8, Math.min(20, Math.floor(room / px(8.8)))))) });
+      texts.push({ x: p.x, y: p.y - p.r - px(8), cls: "pp big mid", html: esc((n.sub || "").split(" · ")[0]) + (n.picked ? " · the pick" : "") });
     });
   } else if (webbed) {
-    const fit = Math.max(8, Math.floor(Math.min(px(120), (W - PX0 - px(6)) / Math.max(1, searched.length)) / px(6.6)));
+    const fit = Math.max(6, Math.floor(Math.min(px(120), (W - PX0 - px(6)) / Math.max(1, searched.length)) / px(7.4)));
     searched.forEach((id) => { const p = P.get(id); if (p.big) texts.push({ x: p.x, y: p.y - RB - px(7), cls: "pn mid", html: esc(short(nodes.get(id).label, fit)) }); });
   }
   if (asking) (S[iAsk].row || []).forEach((id) => { const p = P.get(id); texts.push({ x: p.x + RB, y: p.y + RB + px(14), cls: "pn end", html: esc(short(nodes.get(id).label, 16)) }); });
@@ -263,19 +264,26 @@ function plan(k) {
 }
 
 // ---------- drawing ----------
+function thumb(url) {
+  // ask the image host for a small copy; a host that does not know the parameter ignores it
+  try { const u = new URL(url); u.searchParams.set("width", "240"); return u.href; } catch (e) { return url; }
+}
+
 function glyph(n) {
   if (n.kind === "product") {
-    const img = n.image_url ? `<image class="ph" href="${esc(n.image_url)}" preserveAspectRatio="xMidYMid slice"/>` : "";
-    return `<title>${esc(n.label)} · ${esc(n.sub || "")}</title><circle class="c"/>${img}<circle class="ring"/><circle class="q q0"/><circle class="q q1"/>`;
+    // a product is its photo; with no photo, a plain tile carrying the first word of its name
+    const img = n.image_url ? `<image class="ph" href="${esc(thumb(n.image_url))}" preserveAspectRatio="xMidYMid slice"/>` : "";
+    return `<title>${esc(n.label)} · ${esc(n.sub || "")}</title><rect class="c"/><text class="tw mid">${esc(short(String(n.label || "").split(/\s+/)[0], 4))}</text>${img}<rect class="bd"/><rect class="ring"/><circle class="q q0"/><circle class="q q1"/>`;
   }
-  const dot = n.kind === "web" || n.kind === "review" ? "" : `<circle class="od ${ownerClass(n.owner)}" cx="${px(10)}" cy="${px(12.5)}" r="${px(3)}"/>`;
-  const tx = dot ? px(18) : px(9);
+  const one = n.kind === "store" || !n.sub;                           // a store's card needs no second line
+  const dot = n.kind === "web" || n.kind === "review" ? "" : `<circle class="od ${ownerClass(n.owner)}" cx="${px(11)}" cy="${one ? CH / 2 : px(13.5)}" r="${px(3)}"/>`;
+  const tx = dot ? px(20) : px(10);
   if (n.kind === "message") return `<title>${esc(n.sub || "")}</title><rect class="b pill${n.stopped ? " stopped" : ""}" width="${px(84)}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${px(42)}" y="${px(12.5)}">${esc(n.label)}</text>`;
   if (n.kind === "reply") return `<title>${esc(n.sub || "")}</title><rect class="b pill" width="${px(64)}" height="${px(18)}" rx="${px(9)}"/><circle class="od store" cx="${px(12)}" cy="${px(9)}" r="${px(3)}"/><text class="l" x="${px(21)}" y="${px(12.5)}">reply</text>`;
-  if (n.kind === "review") return `<rect class="b pill" width="${px(72)}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${px(36)}" y="${px(12.5)}">${esc(short(n.label, 11))}</text><text class="s mid" x="${px(36)}" y="${px(30)}">${esc(short(n.sub, 14))}</text>`;
-  const w = boxW(n), room = (w - tx - px(6)) / px(6.1);
+  if (n.kind === "review") return `<rect class="b pill" width="${px(72)}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${px(36)}" y="${px(12.5)}">${esc(short(n.label, 11))}</text><text class="s mid" x="${px(36)}" y="${px(32)}">${esc(short(n.sub, 15))}</text>`;
+  const w = boxW(n), room = (w - tx - px(6)) / px(6.9);
   return `<title>${esc(n.label)}</title><rect class="b" width="${w}" height="${CH}" rx="${px(6)}"/>${dot}
-    <text class="l" x="${tx}" y="${px(15.5)}">${esc(short(n.label, Math.floor(room)))}</text><text class="s" x="${tx}" y="${px(28.5)}">${esc(short(n.sub, Math.floor(room * 1.2)))}</text>
+    <text class="l" x="${tx}" y="${one ? CH / 2 + px(4.5) : px(17)}">${esc(short(n.label, Math.floor(room)))}</text>${one ? "" : `<text class="s" x="${tx}" y="${px(32)}">${esc(short(n.sub, Math.floor((w - tx - px(6)) / px(6.0))))}</text>`}
     ${n.kind === "gate" ? `<path class="bar" d="M${-px(12)} ${-px(14)}V${CH + px(14)}"/>` : ""}`;
 }
 
@@ -288,6 +296,10 @@ function build() {
   for (const n of data.nodes) {
     if (n.kind === "statement") continue;                           // a quote is drawn on its product
     const g = el("g", { class: `xn k-${n.kind}`, "data-id": n.id, tabindex: n.kind === "product" ? -1 : 0 }, glyph(n));
+    if (n.kind === "product") {
+      const img = g.querySelector(".ph");
+      if (!img) g.classList.add("noimg"); else img.addEventListener("error", () => { g.classList.add("noimg"); img.remove(); });
+    }
     gn.appendChild(g);
     X.els.set(n.id, g);
   }
@@ -301,10 +313,13 @@ function paint(P) {
     g.setAttribute("opacity", p.o);
     g.setAttribute("transform", `translate(${p.x} ${p.y})${p.s ? ` scale(${p.s})` : ""}`);
     if (p.r != null) {
-      const [c, img, ring, q0, q1] = [g.querySelector(".c"), g.querySelector(".ph"), g.querySelector(".ring"), g.querySelector(".q0"), g.querySelector(".q1")];
-      c.setAttribute("r", p.r); ring.setAttribute("r", p.r + px(3));
-      if (img) { img.setAttribute("x", -p.r); img.setAttribute("y", -p.r); img.setAttribute("width", 2 * p.r); img.setAttribute("height", 2 * p.r); img.style.clipPath = `circle(${p.r}px at ${p.r}px ${p.r}px)`; }
-      [q0, q1].forEach((q, i) => { q.setAttribute("cx", (i ? 1 : -1) * p.r * 0.5); q.setAttribute("cy", -p.r - px(3.5)); q.setAttribute("r", Math.max(px(1.6), p.r * 0.24)); });
+      const [c, bd, img, ring, q0, q1, tw] = [".c", ".bd", ".ph", ".ring", ".q0", ".q1", ".tw"].map((q) => g.querySelector(q));
+      const box = (e, r, round) => { e.setAttribute("x", -r); e.setAttribute("y", -r); e.setAttribute("width", 2 * r); e.setAttribute("height", 2 * r); e.setAttribute("rx", round); };
+      const round = Math.max(px(2), p.r * 0.2);
+      box(c, p.r, round); box(bd, p.r, round); box(ring, p.r + px(3.5), round + px(3));
+      if (img) { box(img, p.r, 0); img.style.clipPath = `inset(0 round ${round}px)`; }
+      tw.setAttribute("y", px(4)); tw.style.visibility = p.r >= px(12) ? "" : "hidden";
+      [q0, q1].forEach((q, i) => { q.setAttribute("cx", (i ? 1 : -1) * p.r * 0.45); q.setAttribute("cy", -p.r - px(4)); q.setAttribute("r", px(2.2)); });
     }
   }
   const at = (id, l, end) => {
@@ -333,7 +348,7 @@ function dress(k, target) {
     if (n.kind === "context_fact") g.classList.toggle("lit", k === data.stages.findIndex((s) => s.id === "order") && !!n.feeds_here);
     if (n.kind !== "product") continue;
     g.classList.toggle("aside", p.aside); g.classList.toggle("dashed", p.dashed); g.classList.toggle("pick", !!p.pick);
-    g.classList.toggle("big", p.big); g.classList.toggle("read", p.read && p.r > px(3.8) && p.r < px(20));
+    g.classList.toggle("big", p.big); g.classList.toggle("read", p.read && p.r >= px(12) && p.r < px(20));
     const limits = data.nodes.filter((x) => x.kind === "limit");
     g.querySelectorAll(".q").forEach((q, i) => {
       const lim = limits[i], v = lim ? n.checks[lim.id.replace(/^limit:/, "")] : null;
@@ -380,9 +395,10 @@ function go(k, instant = false) {
 export function mount(host, data, hooks, opts = {}) {
   if (X) { clearInterval(X.timer); cancelAnimationFrame(X.raf); }   // one canvas, one clock
   host.innerHTML = "";
-  const svg = el("svg", { class: "xp", width: host.clientWidth, height: host.clientHeight });
+  const cw = host.clientWidth, ch = host.clientHeight, DW = Math.max(cw, px(1036)), DH = Math.max(ch, px(580));
+  const svg = el("svg", { class: "xp", width: cw, height: ch, viewBox: `0 0 ${DW} ${DH}`, preserveAspectRatio: "xMinYMin meet" });
   host.appendChild(svg);
-  X = { host, svg, data, hooks, W: host.clientWidth - px(4), H: host.clientHeight - px(24), sel: null, motion: opts.motion !== false, lineEls: [] };
+  X = { host, svg, data, hooks, W: DW - px(4), H: DH - px(24), sel: null, motion: opts.motion !== false, lineEls: [] };
   build();
   go(Math.min(opts.stage ?? 0, data.stages.length - 1), true);
   svg.addEventListener("click", (e) => {

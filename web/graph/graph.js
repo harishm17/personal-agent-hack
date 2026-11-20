@@ -136,10 +136,11 @@ function drawExplore() {
   xkey = key;
   // a new item opens at the start and plays; fresh records for the same item keep the stage on screen
   const asked = params.get("stage"), last = xdata.stages.length - 1;
-  const at = same ? XP.stage() : asked != null ? Number(asked) : MOTION ? 0 : last;
+  // the page opens on the finished picture, paused (Play replays it); the frame over the decision screen plays it
+  const at = same ? XP.stage() : asked != null ? Number(asked) : EMBED ? 0 : last;
   XP.mount($("#stage"), xdata, { onSelect: (id) => { sel = id; renderSide(); }, onStage: renderStage }, { stage: at, motion: MOTION });
   // in a frame the whole run takes about half a minute; on the page a stage is shorter
-  if (!same && asked == null && MOTION && (!EMBED || params.get("autoplay") !== "0")) XP.play(true, EMBED ? Math.round(27000 / xdata.stages.length) : undefined);
+  if (!same && asked == null && EMBED && params.get("autoplay") !== "0") XP.play(true, Math.round(27000 / xdata.stages.length));
 }
 
 function draw() {
@@ -205,12 +206,12 @@ function draw() {
 function renderTop() {
   const s = data.sheet || {}, b = data.bar || {};
   const mode = b.mode === "fixture" ? "fixture data" : b.mode === "replay" ? "replay of cached store data" : "";
-  const meta = [b.items ? `${b.items} items` : "", s.invented ? "invented people, real stores" : "", mode].filter(Boolean).join(" · ");
+  const meta = [s.invented ? "invented people, real stores" : "", mode].filter(Boolean).join(" · ");
   $("#top").innerHTML = `<span class="brand">Sign-Off</span><span class="sheet">${esc(s.title || "")}</span>
     <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/" aria-current="page">Memory</a><a href="/talk/">Conversations</a><a href="/seal/">Signature</a></nav>
     <span class="meta">${esc(meta)}</span><span class="grow"></span>
-    <span class="pill ${b.signed ? "signed" : ""}">${b.signed ? "Signed " + clock(b.signed_at) : "Not signed"}</span>
-    ${typeof b.total_cents === "number" ? `<span class="total">$${(b.total_cents / 100).toFixed(2)}</span>` : ""}`;
+    <span class="pill ${b.signed ? "signed" : ""}">${b.signed ? "Signed" + (b.signer ? " by " + esc(b.signer) : "") : "Not signed"}</span>
+    ${typeof b.total_cents === "number" ? `<span class="total"><span class="tl">Total</span> <span data-k="total">$${(b.total_cents / 100).toFixed(2)}</span></span>` : ""}`;
 }
 
 function renderBand() {
@@ -303,8 +304,8 @@ function render() { if (EMBED) { view = "explore"; draw(); return; } renderTop()
 async function load() {
   const q = line ? `?line_id=${encodeURIComponent(line)}` : "";
   let body = await (await fetch("/api/graph" + q)).json();
-  if (!body.nodes && body.lines?.length) {                           // no item named: the one with the most found
-    line = [...body.lines].sort((a, b) => (b.products || 0) - (a.products || 0))[0].line_id;
+  if (!body.nodes && body.lines?.length) {                           // no item named
+    line = body.lines[0].line_id;                                    // the first item on the sheet, as on every page
     body = await (await fetch(`/api/graph?line_id=${encodeURIComponent(line)}`)).json();
   }
   const [a, c, x] = await Promise.all([
