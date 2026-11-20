@@ -49,10 +49,16 @@ def test_the_toilet_is_decided_by_an_equality_against_the_house_and_by_the_full_
     assert rough["op"] == "==" and rough["expr"] == "10 == 10" and rough["margin"] == 0 and rough["bound"]["owner"] == "shopper"
     assert flush["op"] == "<=" and flush["pass"] and t1["tightest"]["text"] == "matches exactly"
     assert any(c["reason"] == "rough-in: 12 == 10 is false" for c in t1["candidates"])
-    # a dual-flush page is one spread, and the full flush is the end that could fail
-    spreads = [t for c in t1["candidates"] for k in c["checks"] for t in k["terms"]
-               if t.get("figure") == "flush_volume" and t.get("kind") == "spread"]
-    assert spreads and all(t["value"] == t["high"] for t in spreads)
+    # a dual-flush page states two volumes. Both are tested (rule 1): if the sheet's limit says the largest
+    # counts, the full flush decides; if it does not say, a page whose two volumes differ in outcome is unclear.
+    flush_limit = next(l for l in s["sheet"]["lines"][0]["limits"] if l["id"] == "T1.flush")
+    dual = [k for c in t1["candidates"] for k in c["checks"] if k["limit_id"] == "T1.flush"
+            and any(t.get("kind") == "spread" and t["low"] <= 1.28 < t["high"] for t in k["terms"])]
+    assert dual
+    if flush_limit.get("several") == "largest":
+        assert all(k["state"] == "fail" for k in dual)
+    else:
+        assert all(k["state"] == "unclear" and k["unclear_why"].startswith("page states both") for k in dual)
     # the house's measurement decides: at 12 in the picks are 12 in toilets
     moved = state.set_shopper_fact("rough_in_measured", 12.0)
     pick12 = next(c for c in line(moved, "T1")["candidates"] if c["picked"])
