@@ -1,7 +1,10 @@
 // Motion helpers. Every animation here is started by a real change in /api/state (or a line being opened);
 // prefers-reduced-motion or ?motion=0 turns all of it off.
 const params = new URLSearchParams(location.search);
-export const MOTION = params.get("motion") !== "0" && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Off for reduced motion, for ?motion=0, and for automated browsers (so a scripted screenshot never catches a half-way frame);
+// ?motion=1 forces it on for recording.
+export const MOTION = params.get("motion") === "1"
+  || (params.get("motion") !== "0" && !matchMedia("(prefers-reduced-motion: reduce)").matches && !navigator.webdriver);
 export const EASE = "cubic-bezier(.3, .1, .2, 1)";
 
 const stage = () => document.getElementById("stage");
