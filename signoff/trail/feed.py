@@ -158,7 +158,8 @@ def _atoms(src: dict) -> list:
             return
         out.append({"t": t, "step": step, "kind": kind, "mark": mark, "lane": lane, "to_lane": to_lane,
                     "one": one, "many": many, "detail": "", "ref": None, "duration_ms": None, "verified": None,
-                    "stopped": False, "facts": [], "source": "", "group": None, "units": 1, "item": {}, **more})
+                    "stopped": False, "facts": [], "source": "", "group": None, "units": 1, "item": {}, "proof": None,
+                    **more})
 
     state = src.get("state") or {}
     sheet = state.get("sheet") or {}
@@ -172,12 +173,12 @@ def _atoms(src: dict) -> list:
                 continue
             add(o.get("derived_at"), "list_read", "evidence", "order", "approver", "agent", "order sentence",
                 "order sentences", detail=o.get("title") or "", ref=f.get("doc"), source="order", facts=["order"],
-                group=("order_sentence",), verified=_yes(f.get("span_found_in_text")),
+                group=("order_sentence",), verified=_yes(f.get("span_found_in_text")), proof="quoted in the order",
                 item={"title": line.get("need") or "", "quote": f.get("quote") or "", "source": f.get("doc")})
             value = _span(None, None, f.get("value")) or ((f.get("measurement") or {}).get("label") or "")
             add(o.get("derived_at"), "list_read", "reading", "limit", "reader", "agent", "limit read", "limits read",
                 detail=str(f.get("extractor") or "").split(":")[-1], source="order", group=("order_limit",),
-                verified=_yes(f.get("matches")),
+                verified=_yes(f.get("matches")), proof="match the sheet",
                 item={"title": " ".join(x for x in (lim.get("label") or lim.get("name") or "", value,
                                                     f.get("unit") or lim.get("unit") or "") if x),
                       "quote": f.get("quote") or "", "about": line.get("need") or "", "by": f.get("extractor")})
@@ -228,7 +229,7 @@ def _atoms(src: dict) -> list:
         found = bool(a.get("answered")) and a.get("start") is not None
         add(a["asked_at"], "pages_read", "evidence", "answer", "stores", "agent", "answer", "answers",
             detail=store or "", source="asked", facts=["store_text"], group=("answer", store),
-            verified=True if found else None,
+            verified=True if found else None, proof="stated, quote found",
             item={"title": a.get("question") or "", "quote": a.get("quote") or a.get("reply") or "",
                   "about": p.get("title") or "", "source": store})
     for a in state.get("store_answers") or []:
@@ -241,7 +242,7 @@ def _atoms(src: dict) -> list:
         found = _yes(f.get("span_found_in_text"))
         add(f.get("read_at"), "pages_read", "reading", "figure", "reader", "agent", "figure read", "figures read",
             detail=need, source="figures", group=("figure", need),
-            verified=None if f.get("unsure") else found,
+            verified=None if f.get("unsure") else found, proof="quotes found in the text",
             item={"title": " ".join(x for x in (_plain(f.get("figure")) + ":", _span(f.get("low"), f.get("high"), f.get("value")),
                                                 f.get("unit") or "") if x),
                   "quote": f.get("quote") or "", "about": p.get("title") or "", "source": store, "link": p.get("url"),
@@ -257,7 +258,7 @@ def _atoms(src: dict) -> list:
             "messages sent" if not r.get("blocked") else "messages blocked", source="ledger", facts=facts,
             detail="%s · %s" % (r.get("recipient") or "", r.get("purpose") or ""), ref="ledger %s" % r.get("n"),
             group=("message", r.get("recipient"), r.get("purpose"), bool(r.get("blocked"))),
-            stopped=bool(r.get("blocked")), verified=(not hits) if lane == "stores" else None,
+            stopped=bool(r.get("blocked")), verified=(not hits) if lane == "stores" else None, proof="carry no limit",
             item={"title": r.get("purpose") or "", "source": r.get("recipient"), "hash": r.get("payload_sha256"),
                   "bytes": r.get("bytes"), "ledger": r.get("n"), "facts": facts,
                   "found": r.get("sealed_found_in_payload") or []})
@@ -278,7 +279,7 @@ def _atoms(src: dict) -> list:
         add(r.get("at"), step if _epoch(r.get("at")) is not None else None, kind, mark, lane, to_lane,
             words.capitalize(), "", source="receipt", units=len(carts) if carts else 1, stopped=refused,
             ref="receipt %s" % r.get("n"), detail=str(d.get("refused_because") or _scalars(d)),
-            verified=(bad is None or r.get("n", 0) < bad) if check else None,
+            verified=(bad is None or r.get("n", 0) < bad) if check else None, proof="hash and link hold",
             item={"title": words, "receipt": r.get("n"), "hash": r.get("hash"), "prev_hash": r.get("prev_hash"),
                   "body_hash": r.get("body_hash"), "actor": r.get("actor"), "key_id": r.get("key_id")})
 
@@ -294,7 +295,7 @@ def _atoms(src: dict) -> list:
     if checks:
         ok = sum(1 for c in checks if c.get("verdict") == "verified")
         add(s.get("ran_at"), "checked", "check", "verdict", "checks", "agent", "verdict", "verdicts", units=len(checks),
-            source="senso", detail="Senso · %d of %d verified" % (ok, len(checks)), verified=not s.get("blocking"),
+            source="senso", detail="Senso · %d of %d verified" % (ok, len(checks)),
             ref=("sheet %s" % s["for_hash"][:8]) if s.get("for_hash") else None, facts=["order"],
             items=[{"title": c.get("sentence") or "", "quote": c.get("quote") or "", "status": c.get("verdict"),
                     "source": "Senso", "run": c.get("run_id")} for c in checks])
@@ -304,7 +305,7 @@ def _atoms(src: dict) -> list:
     if p.get("inquiry_id"):
         at = next((p[k] for k in ("checked_at", "completed_at", "at", "created_at") if p.get(k)), None)
         add(at, "signs", "check", "identity", "checks", "agent", "Identity check", "", detail=p.get("label") or "",
-            ref=p.get("inquiry_id"), source="persona", verified=_yes(p.get("verified")),
+            ref=p.get("inquiry_id"), source="persona", verified=_yes(p.get("verified")), proof="identity checked",
             item={"title": p.get("label") or "", "status": p.get("status"), "source": "Persona"})
     rl = src.get("relay") or {}
     if rl.get("claim_type"):
@@ -358,7 +359,7 @@ def _events(atoms: list) -> list:
             g["_verified"].append(a["verified"])
             continue
         e = {k: a[k] for k in ("t", "step", "kind", "mark", "lane", "to_lane", "detail", "ref", "duration_ms",
-                               "stopped", "facts", "source")}
+                               "stopped", "facts", "source", "proof")}
         e["own_step"] = a.get("own_step", True)
         e.update(count=a["units"], _one=a["one"], _many=a["many"], _last=a["t"], _items=list(items),
                  _verified=[a["verified"]])
@@ -381,7 +382,7 @@ def _events(atoms: list) -> list:
                     "detail": e["detail"][:200], "ref": e["ref"], "duration_ms": e["duration_ms"], "count": e["count"],
                     "verified": False if False in seen else (True if seen and all(v is True for v in seen) else None),
                     "verified_count": sum(1 for v in seen if v is True) if any(v is not None for v in seen) else None,
-                    "stopped": e["stopped"], "facts": e["facts"], "source": e["source"],
+                    "proof": e["proof"], "stopped": e["stopped"], "facts": e["facts"], "source": e["source"],
                     "receipt": first.get("receipt") if e["source"] == "receipt" else None,
                     "hash": first.get("hash") if e["source"] == "receipt" else None,
                     "items": items[:ITEMS], "more": max(0, len(items) - ITEMS)})
