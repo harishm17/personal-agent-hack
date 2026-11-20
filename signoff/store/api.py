@@ -51,7 +51,10 @@ def _do_refresh(live: bool) -> None:
             sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
             out["answers"] = [a["store"] for a in ask.refresh(sheet["stores"])]
         try:
-            importlib.import_module("signoff.engine.state").reload_data()
+            if live:  # reads only the products whose text changed, then reloads the engine
+                out["figures"] = importlib.import_module("signoff.extract.run").refresh()
+            else:
+                importlib.import_module("signoff.engine.state").reload_data()
         except Exception as e:  # noqa: BLE001
             out["engine_reload"] = "skipped: " + type(e).__name__
         _refresh.update(result=out, error=None)
@@ -103,3 +106,23 @@ def gate_override(body: dict):
 
 if "pytest" not in sys.modules:
     gate.start()
+
+
+@router.get("/api/egress")
+def egress_ledger(limit: int = 500):
+    """The outbound ledger: one row per message that left the process (hashes and sizes only, never payloads)."""
+    from signoff.obs.egress import rows, summary
+    rs = rows()
+    return {"rows": rs[-max(1, min(limit, 5000)):], "summary": summary(rs)}
+
+
+def _warm() -> None:
+    try:
+        from signoff.store import ucp
+        ucp.warm(json.loads((ROOT / "sheets" / "sheet1.json").read_text())["stores"])
+    except Exception:  # noqa: BLE001
+        pass
+
+
+if "pytest" not in sys.modules and config.mode() != "replay":
+    threading.Thread(target=_warm, name="store-warm", daemon=True).start()

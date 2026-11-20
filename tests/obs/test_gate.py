@@ -18,6 +18,7 @@ class FakeEngine:
 def _fresh(monkeypatch, eng):
     monkeypatch.setattr(gate, "_engine", lambda: eng)
     monkeypatch.setattr(gate, "_override", None)
+    monkeypatch.setattr(gate, "_save_history", lambda: None)
     gate._s.update(value=False, arm="sonnet", changed_at=None, history=[], refused=None, error=None)
     events, exps = [], []
     monkeypatch.setattr(obs, "tool_call", lambda *a, **k: events.append(a))
@@ -51,3 +52,17 @@ def test_engine_refusal_never_raises(monkeypatch):
     events, exps = _fresh(monkeypatch, eng)
     gate.set_override(True)
     assert gate._s["refused"] and gate._s["arm"] == "sonnet"
+
+
+def test_a_reader_that_states_more_products_is_not_kept_for_that_reason(monkeypatch):
+    monkeypatch.setitem(gate._s, "history", [{"at": "t", "value": True, "arm": "sie-qwen"}])
+    evid = {"products_accepted": {"sonnet": 67, "sie-qwen": 81, "of": 111}, "small_accepts_more": 14,
+            "disagreements": {"different_value": 3, "small_only": 15, "reference_only": 0}}
+    assert gate.verdict_from(evid) == "switch back"
+    assert gate.decision(evid, False)["decision"] == "switched back"
+    assert gate.decision(evid, True)["decision"] == "switch back advised (the gate is on)"
+    assert "3 figure(s) differently" in gate.decision(evid, False)["text"]
+    same = dict(evid, disagreements={"different_value": 0, "small_only": 0, "reference_only": 0}, small_accepts_more=0)
+    assert gate.verdict_from(same) == "kept" and gate.decision(same, True)["decision"] == "kept"
+    only_more = dict(evid, disagreements={"different_value": 0, "small_only": 2, "reference_only": 0})
+    assert gate.verdict_from(only_more) == "switch back"

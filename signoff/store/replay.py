@@ -35,6 +35,11 @@ def search_catalog(store: str, query: str) -> dict:
 
 
 def ask_business(store: str, query: str) -> dict:
+    cached = ROOT / "data" / "store_answers" / "asked" / f"{store}.json"
+    if cached.exists():  # a question asked before (signoff.store.asked) is answered with its saved reply
+        hit = next((r for r in json.loads(cached.read_text()) if r["question"] == query), None)
+        if hit:
+            return {"answer": {"plain": hit["reply"]}, "mode": "replay", "saved_question": hit["question"]}
     f = ANSWERS / f"{store}.json"
     if not f.exists():
         raise RuntimeError(f"replay: no saved answer for {store}")

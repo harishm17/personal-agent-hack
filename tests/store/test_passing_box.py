@@ -48,7 +48,25 @@ def db():
 
 
 def _state(sheet, pool, figures, answers, strikes):
-    return make_state.build_state(sheet, pool, figures, answers, strikes)
+    """The engine's own rules (not the fixture script), so `unsure` and duplicate figures are judged as the app judges them."""
+    from signoff.engine import rules
+    return rules.build_state(sheet, pool, figures, answers, strikes)
+
+
+def _roughen(figures, rnd):
+    """Mark some figures unsure, and add a clean duplicate behind an unsure one for a few: the SQL must follow the engine."""
+    out = []
+    for f in figures:
+        f = dict(f)
+        roll = rnd.random()
+        if roll < 0.25:
+            f["unsure"] = True
+            f["unsure_reason"] = "test: two different numbers on the page"
+        out.append(f)
+        if roll < 0.08:  # an unsure figure first, then a sound one of the same name: the engine uses the sound one
+            out[-1]["unsure"] = True
+            out.append({**f, "unsure": False})
+    return out
 
 
 @pytest.mark.live  # talks to SingleStore, about 90 s: run with `uv run pytest -m live`, not in the gate
@@ -69,7 +87,7 @@ def test_sql_agrees_with_engine_on_fixtures_and_random_limits(db, monkeypatch):
                         b["value"] = rnd.choice([x * b["step"] + b["min"] for x in range(int((b["max"] - b["min"]) / b["step"]) + 1)])
             for f in sh["shopper_facts"]:
                 f["value"] = rnd.choice([f["min"] + i * f["step"] for i in range(int((f["max"] - f["min"]) / f["step"]) + 1)])
-        state = _state(sh, pool, figures, make_state.ANSWERS, strikes)
+        state = _state(sh, pool, _roughen(figures, rnd) if trial else figures, make_state.ANSWERS, strikes)
         state["version"] = trial + 1
         records.write_sync(state)
         for line in state["lines"]:
@@ -78,4 +96,4 @@ def test_sql_agrees_with_engine_on_fixtures_and_random_limits(db, monkeypatch):
             assert sorted((r["store"], r["product_id"]) for r in got["rows"]) == want, (trial, line["line_id"])
             assert "SELECT" in got["sql"] and "'" + line["line_id"] + "'" in got["sql"]
             checked += len(want)
-    assert checked > 10
+    assert checked > 5

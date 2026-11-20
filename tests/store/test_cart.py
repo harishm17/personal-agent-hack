@@ -4,7 +4,7 @@ from signoff.store import cart, ucp
 def test_create_carts_one_per_store_and_never_checkout(monkeypatch):
     calls = []
 
-    def fake(store, tool, args):
+    def fake(store, tool, args, **kw):
         calls.append((store, tool))
         return {"id": "gid://cart/" + store, "totals": [{"type": "subtotal", "amount": 5}, {"type": "total", "amount": 7}],
                 "continue_url": "https://" + store + "/cart/c/x"}
@@ -26,3 +26,21 @@ def test_checkout_tools_are_refused():
             assert "not allowed" in str(e)
         else:
             raise AssertionError(tool)
+
+
+def test_a_store_that_does_not_answer_is_pending_not_an_exception(monkeypatch):
+    seen = {}
+
+    def fake(store, tool, args, retries=2, timeout=60):
+        seen[store] = (retries, timeout)
+        if store == "slow.com":
+            raise RuntimeError("timed out")
+        return {"id": "c", "totals": [{"type": "total", "amount": 9}], "continue_url": "https://" + store + "/c"}
+
+    monkeypatch.setattr(ucp, "call", fake)
+    out = cart.create_carts([{"store": "ok.com", "variant_id": "v", "quantity": 1},
+                             {"store": "slow.com", "variant_id": "w", "quantity": 1}], timeout_s=3, tries=1)
+    assert [o["store"] for o in out] == ["ok.com", "slow.com"]
+    assert out[0]["mode"] == "live" or out[0]["mode"] == cart.config.mode()
+    assert out[1]["mode"] == "pending" and out[1]["cart_url"] is None and "timed out" in out[1]["error"]
+    assert seen == {"ok.com": (0, 3), "slow.com": (0, 3)}

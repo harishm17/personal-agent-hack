@@ -16,3 +16,23 @@
 - [x] `/api/shopper/say` always answers 200 (11:36, details in NOTES/SCREEN.md).
 - [x] `sentence` and `quote_in_sentence` on every found figure and store term (11:36).
 - [x] The L2 difference: the extra SQL row is the seat whose figure is `unsure`; the fix is in the SQL (NOTES/STORE.md).
+
+## 12:20 from STORE — asked replies exist (item 1, "ask, don't tell")
+`data/store_answers/asked/<store>.json` (carex.com, parentgiving.com, vivehealth.com) is on branch stream/STORE: a list of
+`{store, product_id, figure, question, reply, asked_at, variant_id, title, line_id, role}`; `figure` is a figure name for the
+not_stated questions and `returns_and_delivery` for the pick and runner-up ones; `role` is pick, runner_up or not_stated.
+25 replies: 10 pick/runner-up (returns and delivery), 15 not_stated. Replies are verbatim (`reply`); I do not parse them.
+Today the 15 not_stated replies all say the store's information does not specify the figure, so `answered` will be false for
+them: that is the honest result (the store agent has no more than the page). Load with `signoff.store.asked.load()` (all) or
+`load(store)`; `signoff.store.asked.cached(store, product_id, question)` finds one. Re-running `uv run python -m signoff.store.asked`
+asks only what is missing for the engine's current picks (about 1 call a second); in replay mode nothing is asked.
+Example: {"store": "carex.com", "product_id": "gid://shopify/Product/...", "figure": "overall_width",
+"question": "What does Carex Shower Chair state for its overall width, in inches?", "reply": "The store’s available information
+does not specify the Carex Shower Chair’s overall width.", "asked_at": "2026-11-20T12:0x:xx-08:00"}.
+
+## 12:45 from STORE — the outbound ledger is on stream/STORE: call it wherever the engine sends something out
+`from signoff import obs; obs.egress("anthropic:claude-sonnet-5-5", "read figures of one product", text, ["store_text"])` (one call per
+model request: recipient `anthropic:<model>` or `sie:<model>`, purpose, the payload as sent (string or dict), and the classes you know it
+carries: limit, home_measurement, person, order, store_text, product, price, none). It never raises or blocks and returns the row;
+code adds any sealed value it finds (`sealed_found_in_payload`). The chat model call carries Elena's text and tool results: declare
+["person","home_measurement","product"] if they go. Rows: `GET /api/egress`. Also: `signoff.store.asked.load()` has the asked replies (my 12:20 note).

@@ -5,6 +5,7 @@ a queue and one background thread talks to Amplitude. `flush()` waits (bounded);
 Without AMPLITUDE_AI_API_KEY every call is a no-op that only counts.
 """
 import atexit
+import json
 import datetime
 import logging
 import queue
@@ -13,6 +14,7 @@ import time
 import uuid
 
 from signoff import config
+from signoff.obs import egress as _egress_module  # noqa: E402  (the ledger; `egress` below is its entry point)
 
 log = logging.getLogger("signoff.obs")
 AGENT_ID = "signoff-shopper"
@@ -128,7 +130,7 @@ def _init():
     if not key:
         raise RuntimeError("AMPLITUDE_AI_API_KEY missing")
     from amplitude_ai import AIConfig, AmplitudeAI, ContentMode
-    mode = (config.env("SIGNOFF_AMPLITUDE_CONTENT", "full") or "full").lower()
+    mode = "full" if _content_full() else "metadata_only"
     def delivered(event, code, message=None):
         stats["last_status"] = code
         if code == 200:
@@ -140,6 +142,10 @@ def _init():
     _ai = AmplitudeAI(api_key=key, config=cfg)
     _agent = _ai.agent(AGENT_ID, user_id="signoff-demo", description="Shopping agent that buys under someone else's limits",
                        env=config.env("SIGNOFF_ENV", "hackathon"))
+
+
+def _content_full() -> bool:
+    return (config.env("SIGNOFF_AMPLITUDE_CONTENT", "metadata_only") or "metadata_only").lower() == "full"
 
 
 def _end_session():
@@ -168,6 +174,7 @@ def _handle(item: tuple) -> None:
             return
         _init()
     if kind == "session":
+        egress("amplitude", "session start", {"session_id": item[1], "sheet_id": item[2], "experiments": item[3]}, ["none"])
         _end_session()
         _sess = _agent.session(session_id=item[1], user_id="signoff-demo", experiments=item[3],
                                context={"sheet_id": item[2]}, auto_flush=False)
@@ -179,6 +186,15 @@ def _handle(item: tuple) -> None:
             _sess = _agent.session(session_id=_state["session_id"] or "sheet1", user_id="signoff-demo",
                                    experiments=_state["experiments"], auto_flush=False)
         _, name, inp, out, ok, ms, err = item
+        meta = {"tool": name, "success": ok, "latency_ms": ms, "error": err}
+        if _content_full():  # content mode "full": inputs and outputs travel, unless code finds a sealed value in them
+            found = _egress_module.detect(json.dumps({"input": inp, "output": out}, default=str))
+            if found:
+                inp, out = {"redacted_by_code": sorted({h["class"] for h in found})}, None
+            egress("amplitude", "agent tool-call event: " + name, {**meta, "input": inp, "output": out}, None)
+        else:  # metadata_only (the default): the SDK drops input and output, so only the metadata is sent and recorded
+            inp = out = None
+            egress("amplitude", "agent tool-call event (metadata only): " + name, meta, ["none"])
         kw = {"input": inp, "output": out}
         if err:
             kw["error_message"] = err
@@ -233,3 +249,10 @@ def shutdown() -> None:
 
 
 atexit.register(shutdown)
+
+
+def egress(recipient: str, purpose: str, payload=None, fact_classes=None, kind: str | None = None,
+           block_on_hit: bool = False) -> dict:
+    """Record one outbound message in the ledger (signoff/obs/egress.py). Never raises, never blocks; returns the row,
+    whose `sealed_hits` lists any sealed value found in a payload to a store."""
+    return _egress_module.record(recipient, purpose, payload, fact_classes, kind, block_on_hit)
