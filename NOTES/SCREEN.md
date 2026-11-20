@@ -82,3 +82,9 @@ version, so the trail page also polls every 5 s).
 - `web/screen/ladder.js:233` (and TRAIL's `web/trail/trail.js:54`): please add a third tab to the top bar,
   `<a href="/talk/">Conversations</a>`. The page is `web/talk/index.html` on `stream/TALK`; it uses `/screen/style.css`
   and the same top bar, with the tabs Decision, Trail, Conversations.
+
+## 14:25 from STORE — `GET /api/tools` rows: what each field means (S18), for the "Tools at work" drawer
+Reply: `{tools: [row], absent: [{tool, why}], sheet, line_id, at}`; `?line_id=L4` picks the item the SQL rows are about (default: the first line with a pick). A row: `{tool, job (five words), number, unit, detail (one sentence),
+source (route or file), ok, live, agrees, basis}`. `ok` = the source answered; it is **not** "the check passed". `live` = true when this app made the call just now or since it started, false for a saved run (SIE's pages, Firedrill's campaigns): show "saved run"
+in plain words from `basis`, not a red mark. `agrees` is for the two SQL rows only (SingleStore, Airbyte): the statement's rows equal the engine's inside set / the direct answer; null elsewhere. Draw `number` + `unit` large and `detail` small. The first call after a restart
+takes about ten seconds (remote database); later calls are cached for 20 s and a stale answer is returned at once and refreshed in the background.
