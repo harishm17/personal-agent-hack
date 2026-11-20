@@ -180,15 +180,16 @@ def test_the_shopper_sets_the_ordering_and_the_approver_signs_it(live):
     r = client.post("/api/shopper/pick_rule", json={"id": "best_reviewed"}).json()
     s = state.get_state()
     assert r["ok"] and r["version"] == s["version"] > v and r["pick_rule"]["id"] == "best_reviewed"
-    assert r["pick_rule"]["set_by"] == s["sheet"]["shopper"]["name"] and r["total_cents"] == s["total_cents"]
+    assert r["pick_rule"]["set_by"] == "shopper" and r["total_cents"] == s["total_cents"]
     assert picked(s)["id"] == D and line(s)["picked_by"] == "rule"
     assert line(s)["why"]["rule"] == "best reviewed: 3 of 5 that pass have a quoted rating"
     reviewed = state.sheet_hash()
-    assert reviewed != before and '"pick_rule":{"id":"best_reviewed"' in state.canonical_sheet()
+    assert reviewed != before and json.loads(state.canonical_sheet())["pick_rule"] == {
+        "id": "best_reviewed", "label": "best reviewed among those that pass", "set_by": "shopper"}
     assert '"rating":{"out_of":5,"rating":4.8,"review_count":212}' in state.canonical_sheet()
     state.set_pick_rule("most_popular")
     assert picked(state.get_state())["id"] == D and '"review_count":212' in state.canonical_sheet()
-    assert '"pick_rule":{"id":"most_popular"' in state.canonical_sheet() and state.sheet_hash() not in (before, reviewed)
+    assert json.loads(state.canonical_sheet())["pick_rule"]["id"] == "most_popular" and state.sheet_hash() not in (before, reviewed)
     # best value: the distance is under the hash
     state.set_pick_rule("best_value")
     assert picked(state.get_state())["id"] == B and '"within":0.3' in state.canonical_sheet()
@@ -248,7 +249,7 @@ def test_a_preference_is_signed_with_its_bound(live):
     assert picked(s)["id"] == D                                             # sheet 1 wants a delivery time; C states none
     sheet = json.loads(state.canonical_sheet())
     l2 = next(l for l in sheet["lines"] if l["line_id"] == "L2")
-    assert l2["preferences"] == [{"id": "L2.capacity_wished", "name": "holds 450 lb if they have one", "op": ">=",
+    assert l2["preferences"] == [{"id": "L2.capacity_wished", "name": "holds 450 lb if they have one", "label": None, "op": ">=",
                                   "unit": "lb", "set_by": "issuer", "bound": 450,
                                   "terms": ["weight_capacity"]}]
     assert l2["pick"]["preferences"] == [{"id": "L2.capacity_wished", "status": "met", "expr": "450 >= 450"}]

@@ -580,7 +580,7 @@ def _canonical_obj(state):
         line = by_id[sheet_line["id"]]
         def with_bound(l):
             b = l["bound"]
-            return {"id": l["id"], "name": l.get("name"), "op": l["op"], "unit": l["unit"], "set_by": b["source"],
+            return {"id": l["id"], "name": l.get("name"), "label": l.get("label"), "op": l["op"], "unit": l["unit"], "set_by": b["source"],
                     "bound": b["value"] if b["source"] == "issuer" else facts[b["fact"]],
                     "terms": [t.get("figure") or "%s=%g" % (t["fact"], facts[t["fact"]]) for t in l["terms"]]}
         limits = [with_bound(l) for l in sheet_line["limits"]]
@@ -614,7 +614,7 @@ def _canonical_obj(state):
                 if rule["id"] == "most_popular":
                     out["pick"]["review_count"] = pick.get("review_count")
         lines.append(out)
-    covered = {"id": rule["id"], "label": rule["label"]}
+    covered = {"id": rule["id"], "label": rule["label"], "set_by": rule.get("set_by")}  # who chose the ordering is shown, so signed
     if rule["id"] == "best_value":
         covered["within"] = rules.within_of(state["sheet"])
     return _one_form({"sheet_id": state["sheet"]["id"], "pick_rule": covered,
@@ -1015,7 +1015,7 @@ def set_pick_rule(rule_id) -> dict:
         if rule_id == on_disk.get("id"):
             new = dict(on_disk)  # the sheet's own rule, in the sheet's own words
         else:
-            new = {"id": rule_id, "label": known[rule_id]["label"], "set_by": sheet["shopper"]["name"]}
+            new = {"id": rule_id, "label": known[rule_id]["label"], "set_by": "shopper"}  # the role, as the sheet files write it
             if "within" in was:
                 new["within"] = was["within"]
         sheet["pick_rule"] = new

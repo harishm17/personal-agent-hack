@@ -216,7 +216,8 @@ def test_signed_picks_are_those_of_exactly_the_signed_hash_and_hold_the_sheet_un
 
 def test_the_hash_covers_the_pick_rule_and_each_picks_delivery_quote():
     canonical = json.loads(state.canonical_sheet())
-    assert canonical["pick_rule"] == {"id": "cheapest_with_delivery_time", "label": "cheapest that states a delivery time"}
+    assert canonical["pick_rule"] == {"id": "cheapest_with_delivery_time", "label": "cheapest that states a delivery time",
+                                      "set_by": "shopper"}
     l2 = next(l for l in canonical["lines"] if l["line_id"] == "L2")
     assert l2["pick"]["delivery"]["quote"] == "standard shipping takes 3 to 5 days" and l2["pick"]["delivery"]["status"] == "stated"
     assert state.get_state()["seal"]["covers"] == state.COVERS and "delivery quotes" in state.COVERS \
@@ -341,6 +342,13 @@ def test_the_name_the_approver_reads_is_under_the_hash():
     assert "product name" in state.COVERS
     # the words of each limit and the reason for a strike are shown at signing too, so they are signed too
     assert next(l for l in sheet["lines"] if l["line_id"] == "L2")["limits"][0]["name"]
+    limit = state._s["sheet"]["lines"][1]["limits"][0]
+    now, limit["label"] = state.sheet_hash(), "at most"                 # the word shown beside the number
+    state._recompute(why="test")
+    assert state.sheet_hash() != now and json.loads(state.canonical_sheet())["lines"][1]["limits"][0]["label"] == "at most"
+    now, state._s["sheet"]["pick_rule"]["set_by"] = state.sheet_hash(), "somebody else"   # who chose the ordering
+    state._recompute(why="test")
+    assert state.sheet_hash() != now
     struck = next(l for l in s["lines"] if l["struck"])
     signed = next(l for l in json.loads(state.canonical_sheet())["lines"] if l["line_id"] == struck["line_id"])
     assert signed["strike_reasons"] == {x["product_key"]: x["reason"] for x in struck["struck"]}
