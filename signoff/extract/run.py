@@ -21,6 +21,7 @@ import sys
 import time
 
 from signoff import config
+from signoff.engine import obs
 from signoff.extract import combine, gliner, reader, spans
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -58,6 +59,12 @@ def read_one(product, sheet, model, assume_unit):
     else:
         proposals, extractor, usage, asked = reader.read(product, sheet, model)
     figures = [spans.finish(p, product, extractor, assume_unit) for p in proposals]
+    obs.tool_call("figure_read", {"store": product["store"], "product_id": product["product_id"], "reader": extractor,
+                                  "asked": asked},
+                  {"figures": [{"figure": f["figure"], "kind": f["kind"], "value": f["value"], "low": f["low"],
+                                "high": f["high"], "span_found_in_text": f["span_found_in_text"],
+                                "unsure": bool(f.get("unsure"))} for f in figures]},
+                  True, int((time.time() - started) * 1000))
     return {"store": product["store"], "product_id": product["product_id"], "title": product.get("title"),
             "key": text_key(product, model), "asked": asked, "extractor": extractor, "proposals": proposals,
             "figures": figures, "usage": usage, "seconds": round(time.time() - started, 2),

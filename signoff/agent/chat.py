@@ -16,7 +16,7 @@ import time
 
 from signoff import config
 from signoff.agent import tools
-from signoff.engine import state
+from signoff.engine import obs, state
 from signoff.extract import reader
 
 DEFAULT_MODEL = "claude-sonnet-5-5"
@@ -174,6 +174,11 @@ def say(text: str) -> dict:
         del _history[:-12]
     out["state_unchanged"] = (state.sheet_hash(), state.get_state()["seal"]["signed"]) == before
     out["seconds"] = round(time.time() - started, 2)
+    for call in out["tool_calls"]:
+        obs.tool_call(call["name"], call["args"], {"by": "code"}, True, 0)
+    obs.tool_call("shopper_say", {"text": text}, {"refused": out["refused"], "intent": out["intent"],
+                                                  "decided_by": out["decided_by"], "state_unchanged": out["state_unchanged"]},
+                  True, int(out["seconds"] * 1000))
     return out
 
 

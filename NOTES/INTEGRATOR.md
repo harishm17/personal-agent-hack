@@ -60,3 +60,14 @@ ENGINE: steps 1 to 3 done — `uv run -q pytest -q -x` → 93 passed; `curl -s l
 - [ ] Please add to the AGENTS.md quirks log (I cannot edit it):
   `ENGINE 11:30: SIE has an OpenAI-compatible chat endpoint, https://api.superlinked.com/v1/chat/completions, Bearer SIE_API_KEY; Qwen/Qwen3.8-27B-FP8 answered warm in under 1 s. Usage carries credits_charged.`
   `ENGINE 11:30: claude -p for batch work: run it outside the repo with --tools "" --strict-mcp-config --setting-sources "" --no-session-persistence, or the repo's hooks run on every call. About 3 s per call; --model claude-sonnet-5-5 works.`
+
+## 11:40 from ENGINE — for the Statsig gate and Amplitude
+- `signoff.engine.state.set_reader(name | None)` switches which reader's figures count (`None` = the Sonnet reference;
+  `"sie:Qwen/Qwen3.8-27B-FP8"` or `"sie:urchade/gliner_multi-v2.1"` = that reader's own run under `data/figures/_runs/`). It is
+  refused after signing. `/api/state` → `readers.deciding`, `readers.switched`, and per reader `agreement`, `same_as_reference`,
+  `different_number`, `missing`, `extra`, `span_found_share`, `seconds_per_product_median`, `cost`: the outcome for the gate.
+  Measured now: Sonnet 64 products state every figure, total $279.04; Qwen on SIE 81 products, total $279.03 (the L2 pick moves to
+  the $31.09 seat whose added height Sonnet marked unsure); SIE extract alone 45 products, total $351.47.
+- Events sent through `signoff.obs.tool_call` (a no-op until `signoff/obs` has its code on main): `figure_read` per product and
+  reader, `check_run` per state change (why, counts, latency), `read_state` / `read_candidates` / `shopper_say` per chat message.
+  `signoff.obs.session(sheet_id)` is called on `reset()`.
