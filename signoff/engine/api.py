@@ -83,6 +83,38 @@ def shopper_say(body: Say):
                          "could change it." % type(error).__name__, "refused": False, "tool_calls": [], "error": True}
 
 
+class UseSheet(BaseModel):
+    sheet_id: str
+
+
+@router.get("/api/sheets")
+def list_sheets():
+    """The sheets meant to be shown (`"show": true` in the sheet file), with the one that is running."""
+    sheets = []
+    for path in sorted(state.SHEETS.glob("*.json")):
+        try:
+            sheet = json.loads(path.read_text())
+        except ValueError:
+            continue
+        sheets.append({"id": sheet.get("id", path.stem), "title": sheet.get("title"), "items": len(sheet.get("lines") or []),
+                       "show": bool(sheet.get("show")), "issuer": (sheet.get("issuer") or {}).get("name"),
+                       "shopper": (sheet.get("shopper") or {}).get("name")})
+    return {"active": state.get_state()["sheet"]["id"], "sheets": [s for s in sheets if s["show"]],
+            "not_shown": [s["id"] for s in sheets if not s["show"]]}
+
+
+@router.post("/api/admin/use-sheet")
+def use_sheet(body: UseSheet):
+    """Puts another sheet on the table: the run is reset (limits, measurements, strikes, seal, key) and a new
+    receipt chain starts, naming the one before it. Laptop only: the app's guard list decides who may call it."""
+    try:
+        new = state.use_sheet(body.sheet_id)
+    except state.EngineError as error:
+        return _refuse(error)
+    return {"ok": True, "sheet_id": new["sheet"]["id"], "title": new["sheet"]["title"], "version": new["version"],
+            "receipts": new["receipts"]}
+
+
 @router.get("/api/receipts")
 def get_receipts():
     """The receipt chain, oldest first (the newest is last): every change applied and every signed request."""

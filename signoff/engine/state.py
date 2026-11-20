@@ -61,18 +61,10 @@ def _has_data_pool():
 
 
 def _load_pool():
-    """Pool and store answers: through the STORE stream's loader for a sheet kept in the top-level folders, read
-    from the sheet's own folder otherwise. Every option on sale becomes its own row (rule 2)."""
+    """Pool and store answers of the running sheet, from the folders the path rule names (a sheet with
+    `data_from` reads the other sheet's). Every option on sale becomes its own row (rule 2).
+    Without any pool on disk the placeholder products in fixtures/ are used and `mode` says "fixture"."""
     pool_dir, answers_dir, _ = _dirs()
-    if pool_dir == DATA / "pool":
-        try:
-            from signoff.store import pool as store_pool
-            pool, answers = store_pool.load()
-            health.clear("pool loader")
-            return options.expand(list(pool)), list(answers)
-        except Exception as error:  # noqa: BLE001  (it failed: read the files directly, and say so)
-            health.note("pool loader", "signoff.store.pool.load() failed (%s); the pool and store answers were read "
-                        "straight from the files" % type(error).__name__)
     if _has_data_pool():
         return options.expand(_read_dir(pool_dir)), _read_dir(answers_dir) if answers_dir.is_dir() else []
     return _read(FIXTURES / "pool.json"), _read(FIXTURES / "store_answers.json")
@@ -90,9 +82,10 @@ def _load_figures(pool, from_data, variants=None):
         figures = _read(FIXTURES / "figures.json")
     text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
     variants = variants or {}
+    number_rule_off = os.environ.get("SIGNOFF_NUMBER_RULE") == "off"  # read once: config.env re-reads the keys file on a miss
     for f in figures:
         page = text.get((f["store"], f["product_id"]))
-        if config.env("SIGNOFF_NUMBER_RULE") == "off":
+        if number_rule_off:
             f["span_found_in_text"] = rules.span_found(f, page)
         else:
             spans.ready(f, page)
@@ -180,6 +173,9 @@ def _with_order(sheet):
     return dict(sheet, lines=lines), summary
 
 
+_raw_cache = {}
+
+
 def _load_variants(pool, from_data):
     """What the store says about each candidate's option: `{(store, product_id, variant_id): {...}}`. The option's
     title, how many options are on sale and the other options' names come from the pool row; the currency from
@@ -188,14 +184,20 @@ def _load_variants(pool, from_data):
         return {}
     currency, raw = {}, _dirs()[0] / "raw"
     if raw.is_dir():
-        for path in sorted(raw.glob("*/*.json")):
-            try:
-                for product in _read(path).get("products") or []:
-                    for v in product.get("variants") or []:
-                        if (v.get("price") or {}).get("currency"):
-                            currency[(path.parent.name, product.get("id"), v.get("id"))] = v["price"]["currency"]
-            except (ValueError, AttributeError, OSError):
-                continue
+        files = sorted(raw.glob("*/*.json"))
+        stamp = (str(raw), tuple((f.name, f.stat().st_mtime_ns, f.stat().st_size) for f in files))
+        if _raw_cache.get("stamp") != stamp:  # the stores' raw replies are large: read once per change on disk
+            found = {}
+            for path in files:
+                try:
+                    for product in _read(path).get("products") or []:
+                        for v in product.get("variants") or []:
+                            if (v.get("price") or {}).get("currency"):
+                                found[(path.parent.name, product.get("id"), v.get("id"))] = v["price"]["currency"]
+                except (ValueError, AttributeError, OSError):
+                    continue
+            _raw_cache.update(stamp=stamp, currency=found)
+        currency = _raw_cache["currency"]
     out, unknown = {}, 0
     for p in pool:
         key = (p["store"], p["product_id"], p.get("variant_id"))
@@ -259,7 +261,7 @@ def _load_extras(pool, from_data):
                            scanned, len(examples), "" if len(examples) == 1 else "s")}
     # The invented test page is off unless asked for: SIGNOFF_PLANTED=1 (sheet 1 only). What the state shows by
     # default is the scan of the real pages above.
-    if config.env("SIGNOFF_PLANTED") == "1" and _s.get("sheet_id") == planted.SHEET_ID and \
+    if os.environ.get("SIGNOFF_PLANTED") == "1" and _s.get("sheet_id") == planted.SHEET_ID and \
             (folder / "_planted" / "figures.json").exists():
         found = _read(folder / "_planted" / "instructions.json") if (folder / "_planted" / "instructions.json").exists() else []
         out["planted"] = {"figures": _read(folder / "_planted" / "figures.json"),

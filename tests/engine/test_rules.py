@@ -253,3 +253,13 @@ def test_a_count_needs_no_unit_when_the_sheet_says_so_and_a_measure_still_does()
     sheet["lines"][0]["limits"][0]["unit_required"] = False  # the limit counts things: a bare number is the count
     line, check = only_check(sheet, pool, figures)
     assert check["state"] == "pass" and check["expr"] == "10 >= 10"
+
+
+def test_the_words_shown_beside_a_value_are_those_of_the_statement_it_came_from():
+    sheet, pool, figures = sheet_with("<=", 21.5)
+    figures[0].update(value=17.0, low=17.0, high=17.0, quote="Width (outside legs): 17\"", start=0, end=25)
+    figures.append(dict(figures[0], value=20.0, low=20.0, high=20.0, quote="Overall width: 20\"", start=30, end=48))
+    _, check = only_check(sheet, pool, figures)
+    term = check["terms"][0]
+    assert check["expr"] == "20 <= 21.5" and term["value"] == 20.0 and term["quote"] == "Overall width: 20\""
+    assert "_source" not in term and json.dumps(check)  # nothing internal is left in the record

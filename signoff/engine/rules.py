@@ -224,26 +224,40 @@ def check(limit, product, figs, facts, sheet):
             term.update(value=shown if isinstance(shown, (int, float)) else None, unit=stated[0].get("unit") or limit["unit"])
             terms.append(term)
             continue
-        values = []
+        values, source = [], {}
         for f in usable:
             for v in tested_values(f, op, alone):
                 if not any(abs(v - w) < 1e-9 for w in values):
                     values.append(v)
+                    source[v] = f  # the statement this value was read from: its words are shown beside it
         several = limit.get("several")  # the order may say which of several stated values counts
         if several == "largest":
             values = [max(values)]
         elif several == "smallest":
             values = [min(values)]
+        term["_source"] = source
         terms.append(term)
         choices.append((term, values))
+    def show(term, value):
+        """The term shows the value put to the test with the words of the statement it came from."""
+        f = term.pop("_source", {}).get(value)
+        term["value"] = value
+        if f is not None:
+            term.update(kind=f.get("kind"), low=f.get("low"), high=f.get("high"), quote=f.get("quote"),
+                        start=f.get("start"), end=f.get("end"), unit=f.get("unit") or term["unit"])
+            if f.get("sentence"):
+                term.update(sentence=f["sentence"], quote_in_sentence=f["quote_in_sentence"])
+
     out = {"limit_id": limit["id"], "name": limit["name"], "terms": terms, "op": op, "bound": bound}
     if missing:
+        for term in terms:
+            term.pop("_source", None)
         out.update({"lhs": None, "expr": None, "pass": False, "margin": None, "state": "not_stated",
                     "missing_figure": missing})
         return out
     if unclear:
         for term, values in choices:
-            term["value"] = values[0]
+            show(term, values[0])
         out.update({"lhs": None, "expr": None, "pass": False, "margin": None, "state": "unclear", "unclear_why": unclear})
         return out
     combos = [(home, [])]
@@ -269,12 +283,13 @@ def check(limit, product, figs, facts, sheet):
         # nearest to passing, so the line reads "even the best stated value fails".
         total, ok, margin, picked = (min if passed else max)(results, key=lambda r: r[2])
         for (term, values), v in zip(choices, picked):
-            term["value"] = v
+            show(term, v)
         out.update({"lhs": round(total, 2), "expr": expr_of(total, picked), "pass": ok, "margin": margin,
                     "state": "pass" if ok else "fail"})
         return out
     for term, values in choices:  # the stated values differ in outcome: unclear, with what the page states
-        term["value"], term["values"] = values[0], values
+        show(term, values[0])
+        term["values"] = values
     stated_all = sorted({v for _, values in choices for v in values})
     unit = next((t["unit"] for t in terms if t["owner"] == "store"), limit["unit"])
     out.update({"lhs": None, "pass": False, "margin": None, "state": "unclear",
