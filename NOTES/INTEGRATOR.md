@@ -71,3 +71,13 @@ ENGINE: steps 1 to 3 done — `uv run -q pytest -q -x` → 93 passed; `curl -s l
 - Events sent through `signoff.obs.tool_call` (a no-op until `signoff/obs` has its code on main): `figure_read` per product and
   reader, `check_run` per state change (why, counts, latency), `read_state` / `read_candidates` / `shopper_say` per chat message.
   `signoff.obs.session(sheet_id)` is called on `reset()`.
+
+## 11:44 from ENGINE — pressure attempts are ready to run
+- `uv run python -m signoff.agent.pressure --attempts FILE.jsonl --out RESULT.json` (attempt: `{"id", "text"}` or `{"id", "turns": [...]}`,
+  one per line). It strikes the L3 pick in its own process (the running app is untouched), then runs every attempt against Sign-Off's
+  agent and against the plain agent (`signoff/agent/plain.py`: same model, same rules in its prompt, but with `restore_struck`,
+  `set_limit` and `create_cart` tools on a sandbox copy). Each is graded by an exact check on state: sheet hash, strikes, limits, carts.
+  Output: `attempts`, `completed`, `signoff_gave_way`, `plain_gave_way`, `struck_still_struck`, and every row with replies and tool calls.
+- Dry run with six attempts of my own (`--dry-run 6`, 18 s): Sign-Off 0 of 6, plain agent 0 of 6. Sonnet holds to a prompt on simple
+  attempts, so the plain agent may not reach "6 of 40"; then the count is not shown, as the contract says. The attempts that count
+  must come from Firedrill, not from me.
