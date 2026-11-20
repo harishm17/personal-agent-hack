@@ -504,7 +504,7 @@ def _step_subs(state: dict) -> dict:
             "carts": n(len(carts), "cart", "carts") if carts else ("none exist" if state else "")}
 
 
-def _steps(events: list, state: dict, classes=()) -> list:
+def _steps(events: list, state: dict, classes=(), run_started=None) -> list:
     labels, subs = _step_labels(state), _step_subs(state)
     seal = state.get("seal") or {}
     done = {"signs": bool(seal.get("signed")), "carts": any(c.get("cart_url") for c in seal.get("carts") or [])}
@@ -520,6 +520,9 @@ def _steps(events: list, state: dict, classes=()) -> list:
                     "receipts": sum(1 for e in mine if e["receipt"] is not None),
                     "refused": sum(1 for e in mine if e["stopped"]),
                     "first_at": timed[0]["at"] if timed else None,
+                    # false when the step's records are from before this run began (cached evidence, read earlier):
+                    # its clock time then says nothing about the order of the run
+                    "in_run": bool(timed) and run_started is not None and timed[0]["t"] >= run_started * 1000,
                     "last_at": (timed[-1]["end_at"] or timed[-1]["at"]) if timed else None,
                     "duration_ms": sum(spans) if spans else None,
                     # what this step's model calls were given, all of them together
@@ -532,8 +535,7 @@ def _flow(state, steps, events, src, chain, check, bad) -> dict:
     """The replay's cards (signoff/trail/flow.py). A failure there leaves the timeline whole and names itself."""
     try:
         from signoff.trail import flow
-        calls = {"model_calls": {"calls": sum((s.get("context") or {}).get("calls") or 0 for s in steps)}}
-        return flow.build(state, steps, calls, src.get("talk"), src.get("memory"))
+        return flow.build(state, steps, events, src.get("talk"), src.get("memory"))
     except Exception as error:  # noqa: BLE001
         src.setdefault("sources", []).append({"id": "flow", "ok": False, "note": type(error).__name__})
         return None
@@ -546,7 +548,7 @@ def build(src: dict) -> dict:
     chain = src.get("receipts") or []
     classes = src.get("egress_classes") or ()
     events, earlier = _events(_atoms(src), _epoch(chain[0].get("at")) if chain else None, classes)
-    steps = _steps(events, state, classes)
+    steps = _steps(events, state, classes, _epoch(chain[0].get("at")) if chain else None)
     calls = [r for e in events if e["to_lane"] == "reader" for r in e["_rows"] or []]
     for e in events:
         e.pop("_rows")
@@ -656,6 +658,14 @@ def collect() -> dict:
         from signoff.sign import senso
         return senso.checks()
 
+    def _talk():
+        from signoff.talk import api
+        return api.threads().get("messages") or []
+
+    def _memory():
+        from signoff.memory import api
+        return api.memory().get("shelf") or []
+
     def _relay():
         from signoff.relay import core
         return core.status()
@@ -666,7 +676,8 @@ def collect() -> dict:
 
     for name, fn in (("state", _state), ("receipts", _receipts), ("egress", _egress), ("tools", _tools), ("gate", _gate),
                      ("senso", _senso), ("relay", _relay),
-                     ("airbyte", lambda: _held("airbyte", _airbyte))):
+                     ("airbyte", lambda: _held("airbyte", _airbyte)), ("talk", _talk),
+                     ("memory", lambda: _held("memory", _memory))):
         src[name] = read(name, fn)
     src["sources"] = sources
     return src

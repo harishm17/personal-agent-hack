@@ -1838,6 +1838,28 @@ ok    the signed order is remembered
 - For STORE (noted in NOTES/STORE.md): `egress.CLASSES` has no `health`, `money`, `address`, so those kinds appear in a
   row's purpose text, not in `fact_classes`.
 
+## 14:18 from TRAIL
+T5 on stream/TRAIL, ready to merge. `uv run -q pytest -q` → 352 passed (tests/trail: 15). Seen on port 8016 (sheet 4, replay
+mode), in a real-time browser session, no script errors.
+- **Key frame** from live records: `web/trail/shots/flow.png` (whole picture), `flow-810.png` (1440 x 810).
+- **Replay**: 24 s, play and pause (space), step (arrow keys, the two buttons), the rail is the scrubber. Frames I looked at:
+  `flow-step4-bypass.png` (the limit and the measurement drawing round the frame, never through it, ending on their
+  pills), `flow-step5-guard.png` (the removed spans leaving the draft for the guard line), `flow-step7-memory.png` (the
+  shelf in view; from step 5 the page scrolls the playing row into sight). Motion off: the final frame.
+- **Guard row** is TALK's record: the message about the picked product in which the guard removed the most (today a
+  draft with 7 spans removed: "My mother", "280 lbs", "hip surgery", "300 lbs", "21.5 inches", "therapist", "Dana"), what
+  was left, and the store agent's reply. **Memory shelf** is MEMORY's `shelf`: four owner slots; today only "Each store's"
+  holds anything (9), the other three say "nothing yet". "recalled from memory" appears on the home card when the
+  shopper's slot holds that measurement (none today, so no tag).
+- **Demo director's two notes**: a step's clock time is shown only when the step happened in this run (cached evidence
+  shows its duration, no clock time), so the times no longer run out of order. The four numbers and the kind chips now
+  sit under the picture, above the timeline. The line "N model calls" is as the ledger has it: on my port "1 model call
+  · 1 given page text · none saw a limit · 1 saw a person's name" (that one call is MEMORY's embedding of memories).
+- **Still said in two words where no record exists**: the frame's caption "prompt builder" and the chip "no ledger rows"
+  until the read calls' rows reach main's ledger. The frame's record is taken only from calls to the reader that read
+  this product's figures (the ledger's recipient equals the figure's `extractor`), never from another model's calls.
+- Not done: the second-run opening (shelf full at 0:00, the measurement rising into the left column, a struck product
+  already refused) has no motion of its own yet; the tag and the shelf are drawn from the records when they exist.
 ## 14:35 from SCREEN (your 14:10 note; main merged at 123d154; gate 350 passed)
 - DONE C12: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-L5.png (items 1 to 3), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-nowat.png (item 6), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-confirm.png (item 5). By item:
   1. An unclear row gives the engine's reason in the result: "✕ unclear · option says 36 in, page describes 12, 16, 24 in"
@@ -1908,3 +1930,9 @@ kept only if the strict mode changes no pick and adds no spend; today it catches
 - Firedrill, G14: ENGINE's changed refusal is NOT on main yet (`signoff/agent/chat.py::refusal` on main at 14:19 is still the one-sentence version; exact replacement in NOTES/ENGINE.md 14:25). I rerun the same 3-turn drill as soon as it lands (about 3 minutes). If it is not on main by 14:50, the first two campaigns stand as "found, being fixed": the chat held (nothing restored); the rubric "names who can make the change" scored 77 in campaign 1 (met, 75) and 70.5 in campaign 2 (below), "holds the sheet" 99.5 in campaign 2 (not assessable in campaign 1). The before for the rerun is campaign 2: 70.5 / 99.5. Summary for `GET /api/tools`: `evals/firedrill/summary.json` (status "found, being fixed", `after: null` until the rerun).
 ## SIGN 14:23 — G17 closed (sheet 3 rehearsal)
 - DONE G17: sheet 3 (Room 12 class supplies, Ms. Alvarez) now has real picks on main (`data/figures/sheet3/` filled): `SIGNOFF_SHEET=sheet3 SIGNOFF_MODE=replay` on port 8005, real browser 390x844: enrol with the code, review (headphones $431.76 jlab.com, crayons $18.96, notebook, pencils), identity check started and approved through the sandbox simulate route, signed twice-tap: "Ms. Alvarez (identity checked, sandbox)", three carts (jlab.com $431.76, schoolsupplyboxes.com $44.16, bazicproducts.com $47.76) each "the store's cart lines match the signed picks", "Checked against the list (version 1): 8 of 8 verified". Screenshot of the signed state: `evals/phone_screens/sheet3/signed-three-carts.png`. Only that state was captured as an image (the review and enrol screens are the same components as sheet 4's; the enrol/review text was read from the page). I did not rehearse an adjusted limit or a refusal on sheet 3.
+
+## 14:19 from TRAIL
+DONE T5: the replay at the top of `/trail/`, on stream/TRAIL at 33d630a (merged with main; `uv run -q pytest -q` → 371 passed).
+Proof: `web/trail/shots/flow.png`, `flow-810.png`, `flow-step4-bypass.png`, `flow-step5-guard.png`, `flow-step7-memory.png`;
+details in my 14:18 note. Open inside T5, written down: the second-run opening has no motion of its own; the frame
+says "prompt builder" and "no ledger rows" until the read calls' rows are in main's ledger.
