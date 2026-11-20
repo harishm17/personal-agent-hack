@@ -9,12 +9,21 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const params = new URLSearchParams(location.search);
 const SIM = params.get("sim") === "1";
-const FIXTURE = params.get("fixture") === "1";   // draw the committed fixture run, whatever the engine holds
+// ?fixture=1 draws the committed fixture run whatever the engine holds; ?fixture=signed the same run after a signature
+const FIXTURE = { 1: "/screen/fixture-state.json", signed: "/screen/fixture-signed.json" }[params.get("fixture")];
 
 let server = null;            // the last /api/state
 let state = null;             // what is drawn: server, or the sim's recompute of it
 let raw = "";
 const ui = { inspect: null, panel: params.get("panel") || (SIM ? "sim" : "words"), sim: { limits: {}, facts: {} }, chat: [], busy: false, note: "" };
+
+// ?sim=1&set=L2.capacity:325,toilet_rim_height:14 starts the sim with moved values (for screenshots)
+if (SIM) {
+  for (const pair of (params.get("set") || "").split(",").filter(Boolean)) {
+    const [id, v] = pair.split(":");
+    (id.includes(".") ? ui.sim.limits : ui.sim.facts)[id] = parseFloat(v);
+  }
+}
 
 // ---------- fitting the 960 x 540 canvas to the window ----------
 function fit() {
@@ -28,7 +37,7 @@ fit();
 // ---------- data ----------
 async function load() {
   try {
-    const res = await fetch(FIXTURE ? "/screen/fixture-state.json" : "/api/state", { cache: "no-store" });
+    const res = await fetch(FIXTURE || "/api/state", { cache: "no-store" });
     if (!res.ok) throw new Error(res.status);
     const text = await res.text();
     if (text === raw) return;
@@ -92,14 +101,14 @@ function renderHead({ line, index }) {
   const mode = state.mode === "fixture" ? "FIXTURE DATA" : state.mode === "replay" ? "REPLAY OF CACHED STORE DATA" : "";
   $("head").innerHTML = `
     <h1>${esc(cap(line.need))}</h1>
-    <span class="sub">line ${index + 1} of ${state.lines.length}</span>
+    <span class="sub">line ${index + 1} of ${state.lines.length}${state.sheet.invented ? " · invented people" : ""}</span>
     <span class="grow"></span>
     <span class="key issuer">${esc(issuer.name)} set</span>
     <span class="key shopper">${esc(shopper.name)} stated</span>
-    <span class="key store">a store's own words</span>
+    <span class="key store">store's words</span>
     <span class="key unknown">not stated</span>
-    <button id="elena" aria-pressed="${ui.panel === "shopper"}" title="Key: E">${esc(shopper.name)}'s controls</button>
-    ${SIM ? `<button id="simbtn" aria-pressed="${ui.panel === "sim"}">Sim</button><span class="badge sim">SIMULATION</span>` : ""}
+    <button id="elena" aria-pressed="${ui.panel === "shopper"}" title="${esc(shopper.name)}'s measurements and her chat with the agent. Key: E">${esc(shopper.name)}</button>
+    ${SIM ? `<button id="simbtn" class="simbtn" aria-pressed="${ui.panel === "sim"}">SIMULATION</button>` : ""}
     ${mode ? `<span class="badge">${mode}</span>` : ""}`;
   $("elena").onclick = () => togglePanel("shopper");
   if (SIM) $("simbtn").onclick = () => togglePanel("sim");
@@ -202,8 +211,9 @@ function factsOfLine(sheetLine) {
 }
 
 function slider(owner, id, label, value, unit, min, max, step) {
-  return `<div class="slider ${owner}"><label for="s_${id}">${esc(label)}</label><output>${num(value, unit)} ${esc(unit)}</output>
-    <input id="s_${id}" data-id="${esc(id)}" data-owner="${owner}" type="range" min="${min}" max="${max}" step="${step}" value="${value}"></div>`;
+  return `<div class="slider ${owner}"><label for="s_${id}">${esc(label)}</label>
+    <input id="s_${id}" data-id="${esc(id)}" data-owner="${owner}" data-unit="${esc(unit)}" type="range" min="${min}" max="${max}" step="${step}" value="${value}">
+    <output>${num(value, unit)} ${esc(unit)}</output></div>`;
 }
 
 function renderShopperPanel({ sheetLine }) {
@@ -230,7 +240,7 @@ function chatHtml(turn) {
 function refreshOutputs() {
   for (const input of document.querySelectorAll(".slider input")) {
     const fact = state.sheet.shopper_facts.find((f) => f.id === input.dataset.id);
-    if (fact && input.dataset.owner === "shopper") input.previousElementSibling.textContent = `${num(fact.value, fact.unit)} ${fact.unit}`;
+    if (fact && input.dataset.owner === "shopper") input.nextElementSibling.textContent = `${num(fact.value, fact.unit)} ${fact.unit}`;
   }
   if ($("reply") && ui.chat.length && !ui.busy) $("reply").innerHTML = chatHtml(ui.chat[ui.chat.length - 1]);
 }
@@ -240,7 +250,8 @@ function wireSliders() {
   for (const input of document.querySelectorAll(".slider input")) {
     input.oninput = () => {
       const value = parseFloat(input.value), id = input.dataset.id;
-      if (input.dataset.owner === "issuer") { ui.sim.limits[id] = value; input.previousElementSibling.textContent = input.value; return apply(); }
+      input.nextElementSibling.textContent = `${num(value, input.dataset.unit)} ${input.dataset.unit}`;
+      if (input.dataset.owner === "issuer") { ui.sim.limits[id] = value; return apply(); }
       if (SIM) { ui.sim.facts[id] = value; return apply(); }
       clearTimeout(factTimer);
       factTimer = setTimeout(() => postFact(id, value), 50);
@@ -284,7 +295,7 @@ function renderSimPanel({ sheetLine }) {
   if ((active || "").startsWith("s_")) return refreshOutputs();
   const limits = state.sheet.lines.find((l) => l.id === sheetLine.id).limits.filter((l) => l.bound.source === "issuer");
   $("side").innerHTML = `<div class="panel">
-    <h2 style="color:var(--bad)">SIMULATION, in this page only. Not ${esc(state.sheet.issuer.name)}'s phone; nothing is signed.</h2>
+    <h2 style="color:var(--bad)">SIMULATION in this page. Not ${esc(state.sheet.issuer.name)}'s phone; nothing is signed.</h2>
     ${limits.map((l) => slider("issuer", l.id, l.label, l.bound.value, l.unit, l.bound.min, l.bound.max, l.bound.step)).join("")}
     ${factsOfLine(sheetLine).map((f) => slider("shopper", f.id, f.label, f.value, f.unit, f.min, f.max, f.step)).join("")}
     <button id="simreset">Back to the server's state</button></div>`;
@@ -312,28 +323,28 @@ function renderTiles({ line }) {
 // ---------- the seal ----------
 function renderSeal() {
   const { seal, issuer_key: key, sheet } = state;
-  const invented = sheet.invented ? `<span class="invented">${esc(sheet.issuer.name)} and ${esc(sheet.shopper.name)} are invented people.</span>` : "";
   const el = $("seal");
   el.classList.toggle("signed", !!seal.signed);
   if (!seal.signed) {
     el.innerHTML = `<span class="state">${esc(seal.text || "Not signed. No cart exists at any store.")}</span>
       <span class="issuer"><b>Only ${esc(sheet.issuer.name)}'s signature creates the carts.</b></span>
-      <span class="grow"></span>${invented}`;
+      <span class="grow"></span><span class="total">${state.counts.lines_ready} of ${state.counts.lines_total} lines ready${state.total_cents ? " · " + money(state.total_cents) : ""}</span>`;
     return;
   }
   const sig = seal.signature || {};
-  const persona = (key && key.persona) || sig.persona || {};
-  const who = sig.name || sig.signer || sig.signer_name || sheet.issuer.name;
-  const at = sig.at || sig.signed_at || seal.signed_at;
-  const time = at ? new Date(at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+  const persona = sig.persona || (key && key.persona) || {};
+  const who = seal.signer || (sig.signer && sig.signer.name) || sig.name || sheet.issuer.name;
+  const at = seal.signed_at || sig.at || sig.signed_at;
+  const time = at ? new Date(at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "";
   const hash = seal.sheet_hash || sig.sheet_hash || "";
-  const inquiry = persona.inquiry_id || persona.id || sig.persona_inquiry_id;
-  const carts = (seal.carts || []).map((c) => `<a href="${esc(c.cart_url)}" target="_blank" rel="noopener">${esc(c.store)} cart${c.total_cents ? " " + money(c.total_cents) : ""} ↗</a>${c.mode && c.mode !== "real" && c.mode !== "live" ? ` (${esc(c.mode)})` : ""}`);
+  const identity = persona.inquiry_id
+    ? `Persona <code>${esc(persona.inquiry_id)}</code> ${esc(persona.label || persona.status || "")}`
+    : `Persona: ${esc(persona.label || "identity not checked")}`;
+  const carts = (seal.carts || []).map((c) => `<a href="${esc(c.cart_url)}" target="_blank" rel="noopener">${esc(c.store)}${c.total_cents ? " " + money(c.total_cents) : ""} ↗</a>${c.mode && c.mode !== "real" && c.mode !== "live" ? ` (${esc(c.mode)})` : ""}`);
   el.innerHTML = `<span class="state">Signed by ${esc(who)}${time ? " at " + time : ""}.</span>
-    ${hash ? `<span>sheet hash <code title="${esc(hash)}">${esc(hash.slice(0, 12))}…</code></span>` : ""}
-    ${inquiry ? `<span>Persona inquiry <code>${esc(inquiry)}</code>${persona.status ? " " + esc(persona.status) : ""}${persona.sandbox || persona.mode === "sandbox" || persona.environment === "sandbox" ? " (sandbox: always passes)" : ""}</span>` : ""}
-    <span class="grow"></span>${invented}
-    <span style="flex-basis:100%">${carts.length ? "Carts now exist, not checked out: " + carts.join(" · ") : "No cart link came back."}</span>`;
+    ${hash ? `<span>sheet hash <code title="${esc(hash)}">${esc(hash.slice(0, 8))}…</code></span>` : ""}
+    <span>${identity}</span>
+    <span class="carts">${carts.length ? "<b>Carts now exist; nothing is checked out or paid:</b> " + carts.join(" · ") : "No cart link came back."}</span>`;
 }
 
 // ---------- a short flash on every number that changed ----------

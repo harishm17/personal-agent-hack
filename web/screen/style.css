@@ -28,15 +28,15 @@ body { font: 16px/1.2 var(--text); color: var(--ink); }
 
 /* header */
 #head { display: flex; align-items: center; gap: 8px; height: 28px; flex: none; white-space: nowrap; }
-#head h1 { font: 700 23px/28px var(--text); margin: 0; }
-#head .sub { font: 500 17px/28px var(--narrow); color: var(--mute); }
+#head h1 { font: 700 23px/28px var(--text); margin: 0; flex: none; }
+#head .sub { font: 500 17px/28px var(--narrow); color: var(--mute); overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 #head .grow { flex: 1; }
 .key { font: 600 16px/22px var(--narrow); padding: 0 8px; border-radius: 11px; }
 .key.issuer { background: var(--issuer-bg); }  .key.shopper { background: var(--shopper-bg); }
 .key.store { background: var(--store-bg); }
 .key.unknown { color: var(--mute); border: 1.5px dashed var(--unknown); line-height: 19px; }
 .badge { font: 700 16px/22px var(--narrow); letter-spacing: .05em; padding: 0 8px; border-radius: 4px; background: var(--ink); color: #fff; }
-.badge.sim { background: var(--bad); }
+button.simbtn, button.simbtn[aria-pressed="true"] { background: var(--bad); border-color: var(--bad); color: #fff; letter-spacing: .05em; }
 button { font: 600 16px/22px var(--narrow); color: var(--ink); background: #fff; border: 1.5px solid var(--rule); border-radius: 6px; padding: 0 8px; cursor: pointer; }
 button:hover { border-color: var(--mute); }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--shopper); outline-offset: 1px; }
@@ -66,7 +66,7 @@ button[aria-pressed="true"] { background: var(--shopper-bg); border-color: var(-
 @keyframes changed { from { background-color: #ffe08a; } }
 
 /* plot and side column */
-#mid { flex: 1; min-height: 0; display: flex; gap: 12px; }
+#mid { flex: 1; min-height: 150px; display: flex; gap: 12px; }
 #plot { flex: 1; min-width: 0; position: relative; }
 #box { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 #side { width: 412px; flex: none; display: flex; flex-direction: column; gap: 5px; min-height: 0; overflow: hidden; }
@@ -109,12 +109,13 @@ button[aria-pressed="true"] { background: var(--shopper-bg); border-color: var(-
 /* Elena's controls and the sim panel (they take the side column) */
 .panel { display: flex; flex-direction: column; gap: 5px; min-height: 0; flex: 1; }
 .panel h2 { font: 700 17px/20px var(--narrow); margin: 0; }
-.slider { display: grid; grid-template-columns: 1fr auto; column-gap: 8px; align-items: baseline; border-left: 5px solid; border-radius: 0 8px 8px 0; padding: 2px 10px 4px; }
+.slider { display: grid; grid-template-columns: auto 1fr auto; column-gap: 10px; align-items: center; border-left: 5px solid; border-radius: 0 8px 8px 0; padding: 2px 10px 4px; }
 .slider.shopper { border-color: var(--shopper); background: var(--shopper-bg); }
 .slider.issuer { border-color: var(--issuer); background: var(--issuer-bg); }
 .slider label { font: 600 16px/20px var(--narrow); }
 .slider output { font: 700 20px/22px var(--num); font-variant-numeric: tabular-nums; }
-.slider input { grid-column: 1 / -1; width: 100%; height: 22px; margin: 0; }
+.slider input { width: 100%; min-width: 80px; height: 24px; margin: 0; }
+.slider output { min-width: 70px; text-align: right; }
 .slider.shopper input { accent-color: var(--shopper); }  .slider.issuer input { accent-color: var(--issuer); }
 #say { display: flex; gap: 6px; }
 #say input { flex: 1; min-width: 0; font: 500 17px/26px var(--text); border: 1.5px solid var(--shopper); border-radius: 6px; padding: 0 8px; }
@@ -144,8 +145,10 @@ button[aria-pressed="true"] { background: var(--shopper-bg); border-color: var(-
 #seal.signed { border-color: var(--issuer); background: var(--issuer-bg); }
 #seal.signed .state { color: var(--issuer); }
 #seal a { color: var(--issuer); font-weight: 700; }
-#seal code { font: 600 16px/24px ui-monospace, Menlo, monospace; }
+#seal code { font: 700 16px/24px var(--narrow); letter-spacing: .02em; }
+#seal .total { font-weight: 600; }
 #seal .invented { color: var(--mute); }
+#seal .carts { flex-basis: 100%; }
 
 @media (prefers-reduced-motion: reduce) {
   #box .passing, #box .wall, #box .dot, #box .ring, #box .dot .body { transition: none; }
