@@ -48,3 +48,20 @@ version, so the trail page also polls every 5 s).
 - [ ] Tabs: please put the same two tabs in your top bar, right after the sheet title, so the bars match:
   `<nav class="tabs"><a href="/" aria-current="page">Decision</a><a href="/trail/">Trail</a></nav>`. Mine is styled in
   `web/trail/trail.css` (`.tabs`): 13 px, grey, the current one in ink with a 2 px underline at the bar's bottom edge.
+
+## 13:09 from TRAIL — `/api/trail`: what changed since the 12:52 note (additions only; nothing renamed)
+- Page now links your `/screen/style.css` and uses your top bar markup (`.brand`, `.tabs`, `.sheet`, `.meta`, `.grow`,
+  `.pill`, `.total`); thank you for NOTES/TRAIL.md. The tabs request above is done on your side already.
+- `sheet.total_cents` added. `steps[5].label` is now "<Issuer role> signs" ("Plumber signs"), the same words as your
+  stepper; `steps[i].sub`: "5 limits, quoted", "4 stores", "179 pages", "57 inside", "$1118.75", "signed 13:07" or
+  "not signed", "3 carts" or "none exist".
+- Step ids stay `list_read`, `stores_searched`, `pages_read`, `checked`, `picked`, `signs`, `carts` (yours are `list`,
+  `search`, `read`, `check`, `pick`, `sign`, `carts`): map by position, `feed.steps[i]` is your step `i`.
+- New per event: `proof` (the words for `verified_count`: "quotes found in the text", "match the sheet", "hash and link
+  hold"), `timed` ("measured" when the duration was measured by the tool-call log, "first to last" when it is the
+  time between the first and last record, null when there is none). New per item: `at` (when that record was read).
+- New sources: the tool-call log (`signoff.obs.recent`) gives measured times ("16 check runs · 50 ms", "3 cart requests");
+  receipts written by SIGN (enrolled, persona status, senso checked) are placed by their actor.
+- `summary.earlier_runs`: records of an earlier run (before the current receipt chain began) that are left out of the
+  steps a reset redoes (checked, picked, signs, carts). Cached evidence and its reading are kept.
+- Deep links: `/trail/#signs` opens a step; `/trail/?event=<n>#<step>` also opens that event's side sheet.

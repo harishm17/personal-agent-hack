@@ -118,7 +118,8 @@ function marked(text, quote) {
 
 function itemHtml(it, e) {
   const src = it.link ? `<a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.source || "source")}</a>` : esc(it.source || "");
-  const meta = [it.about ? esc(it.about) : "", src, esc(it.price || ""), it.by ? "read by " + esc(String(it.by).split(":").pop()) : "",
+  const read = it.at ? "read " + clock(it.at) : it.page_at ? "page read " + clock(it.page_at) : "";
+  const meta = [it.about ? esc(it.about) : "", src, esc(it.price || ""), read, it.by ? "by " + esc(String(it.by).split(":").pop()) : "",
     it.bytes != null ? `${it.bytes} bytes` : "", (it.facts || []).map((f) => esc(f.replace(/_/g, " "))).join(", ")].filter(Boolean).join(" · ");
   const status = it.status ? ` <span class="g">· ${esc(it.status)}</span>` : "";
   const title = it.title && it.title.toLowerCase() !== e.label.toLowerCase() ? `<div class="ti">${esc(it.title)}${status}</div>` : "";
@@ -142,7 +143,7 @@ function nearHtml(e) {
   } else return "";
   const row = (word, r, self) => (r ? `<${self ? 'div class="now"' : `button data-receipt="${r.n}"`}><span>${word}</span><span>${r.n} · ${esc(String(r.type).replace(/_/g, " "))}</span><code>${esc(short(r.hash))}</code></${self ? "div" : "button"}>` : "");
   const body = row("before", before) + row("this", now, true) + row("after", after);
-  return body ? `<div class="lab">Receipts</div><div class="near">${body}</div>` : "";
+  return body ? `<div class="cap">Receipts</div><div class="near">${body}</div>` : "";
 }
 
 function renderSheet() {

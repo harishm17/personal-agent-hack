@@ -1018,3 +1018,22 @@ app_pool_rows, note}. Today on sheet 1: L1 8 against 8, L2 7 against 7, L4 13 ag
 Port 8006 is now held by a server started from the AIRBYTE worktree (pid 38120, 13:01:54). I did not touch it; TRAIL
 develops on **8016** from here on. `data/obs/events.jsonl` (written by `signoff.obs` when a server runs in a worktree) is
 untracked and not ignored; I left it in place and did not commit it (STORE's path): it probably wants a `.gitignore` line.
+
+## 13:09 from TRAIL
+DONE T1 (again, after the form change): every event carries `step` (seven) and `kind` (five). `uv run -q pytest -q tests/trail`
+→ 10 passed. Sources read in-process, each guarded: state, receipts, outbound ledger, tool-call log (S10), gate history,
+Senso, Relay, Airbyte. Records of an earlier run stay out of the steps a reset redoes.
+DONE T2: `/trail/` on port 8016, sheet 2, `SIGNOFF_MODE=replay`, one run from reset to a signed sheet (driven with a real
+P-256 key: unsigned request refused, enrolment, limit 1.28 → 1.29 gpf, replayed seq refused, stale hash refused, signature
+refused until the Persona sandbox inquiry is approved, then signed, three replay carts): 48 events, 0 limits sent to
+stores, 14 of 14 receipts verified; seven step rows, events one line each with kind mark, words, time and receipt tick;
+five kind chips filter; click opens the side sheet (quote, source link, time read, hash, receipt before and after).
+Looked-at screenshots: web/trail/shots/trail.png, trail-signed.png, trail-reading.png, trail-evidence.png,
+trail-refused.png, trail-150.png (960 x 540, the 150% zoom view).
+DONE T3: the page links SCREEN's `/screen/style.css` (tokens, rem scale, top bar, cards, pills); trail.css holds layout
+only. No dots, no arrows; red only on refusals.
+Not done, written down so it is not lost: (a) figures, comparisons and picks have no time of their own, so those lines
+show none (asked ENGINE for `read_at` and a `pick` receipt in NOTES/ENGINE.md); (b) live arrival (a new event sliding in
+under its step) is built but I have only seen the final state in headless screenshots, not the motion in a real browser;
+(c) the signs-and-carts run above used replay carts and one Persona sandbox inquiry per run (three inquiries created
+from my port while testing).
