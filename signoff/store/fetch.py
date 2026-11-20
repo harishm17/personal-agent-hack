@@ -15,14 +15,14 @@ def raw_path(store: str, query: str) -> pathlib.Path:
     return RAW / store / (re.sub(r"[^a-z0-9]+", "_", query.lower()).strip("_") + ".json")
 
 
-def fetch_raw(sheet_path: str = "sheets/sheet1.json") -> dict:
+def fetch_raw(sheet_path: str = "sheets/sheet1.json", force: bool = False) -> dict:
     sheet = json.loads((ROOT / sheet_path).read_text())
     jobs = [(s, q) for s in sheet["stores"] for line in sheet["lines"] for q in line["queries"]]
 
     def one(job):
         store, q = job
         p = raw_path(store, q)
-        if p.exists():
+        if p.exists() and not force:
             return job, "cached"
         try:
             r = ucp.search_catalog(store, q)
