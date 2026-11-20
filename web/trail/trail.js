@@ -2,6 +2,7 @@
 // A step is one row when closed; opened, it lists its events, one line each. Click an event: the side sheet.
 // ?motion=0 (or reduced motion) draws the final state at once; ?live=0 opens no event stream (for screenshots).
 import * as flow from "/trail/flow.js";
+import * as left from "/trail/left.js";
 
 const params = new URLSearchParams(location.search);
 const MOTION = params.get("motion") === "1"
@@ -53,7 +54,7 @@ function renderTop() {
   const mode = feed.mode === "fixture" ? "fixture data" : feed.mode === "replay" ? "replay of cached store data" : "";
   const meta = [s.items ? `${s.items} items` : "", s.invented ? "invented" : "", mode].filter(Boolean).join(" · ");
   $("#top").innerHTML = `<span class="brand">Sign-Off</span>
-    <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/" aria-current="page">Trail</a></nav>
+    <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/" aria-current="page">Trail</a><a href="/graph/">Memory</a><a href="/talk/">Conversations</a><a href="/seal/">Signature</a></nav>
     <span class="sheet">${esc(s.title || "")}</span><span class="meta">${esc(meta)}</span>
     <span class="grow"></span>
     <span class="pill ${feed.signed ? "signed" : ""}">${feed.signed ? "Signed " + clock(feed.signed_at, 5) : "Not signed"}</span>
@@ -221,6 +222,8 @@ function render(fresh) {
 
 // ---------- data ----------
 async function load() {
+  fetch("/api/trail/left", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+    .then((body) => left.update($("#left"), body));     // what left and what never did: its own records, its own panel
   let next = null;
   try {
     const res = await fetch("/api/trail", { cache: "no-store" });

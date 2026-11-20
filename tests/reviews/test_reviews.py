@@ -187,3 +187,59 @@ def test_one_search_goes_through_the_ledger_with_only_the_title(monkeypatch):
     row = ledger.rows("all")[-1]
     assert row["recipient"] == "exa.ai" and row["sealed_found_in_payload"] == []
     assert got["sent"]["query"] == "Carex Folding Walker review" and got["reply"]["results"]
+
+
+def test_a_rounded_rating_is_replaced_by_the_number_the_page_writes():
+    text = "Acme Folding Walker\nSyndicated rating, 4.5915494 out of 5 stars with 71 reviews on acme.example.\n"
+    quote = "Syndicated rating, 4.5915494 out of 5 stars with 71 reviews on acme.example."
+    kept, _ = reviews.check({"rating": {"quote": quote, "value": 4.6, "out_of": 5}}, text)
+    assert (kept["rating"]["value"], kept["rating"]["out_of"], kept["rating"]["value_as_reported"]) == (4.5915494, 5, 4.6)
+    kept, dropped = reviews.check({"rating": {"quote": quote, "value": 4.9, "out_of": 5}}, text)
+    assert kept == {} and dropped[0]["reason"] == "the reported rating is not in the quoted words"
+
+
+def test_the_second_quote_is_used_only_when_it_states_the_scale():
+    text = "Acme Folding Walker\n4.6(71 reviews)\nRated 4.6 out of 5 stars\n"
+    said = {"proposal": {"about": {"quote": "Acme Folding Walker"}, "rating": {"quote": "4.6(71 reviews)", "value": 4.6, "out_of": 5}}}
+    assert reviews.lacks_scale(said, {"text": text})
+    assert reviews.effective(dict(said, rating_second={"quote": "Rated 4.6 out of 5 stars", "value": 4.6, "out_of": 5}), text)["rating"]["quote"] == "Rated 4.6 out of 5 stars"
+    for second in (None, {"quote": "4.6 out of 5, they say", "value": 4.6, "out_of": 5}, {"quote": "4.6(71 reviews)", "value": 4.6, "out_of": 5}):
+        assert reviews.effective(dict(said, rating_second=second), text)["rating"]["quote"] == "4.6(71 reviews)"
+
+
+def test_ratings_reads_the_cache_only_and_states_its_minimum():
+    import signoff.reviews as package
+
+    def page(title, quote, value, count, site):
+        text = "%s\n%s\nBased on %d reviews\n" % (title, quote, count)
+        said = {"about": {"quote": title}, "rating": {"quote": quote, "value": value, "out_of": 5},
+                "review_count": {"quote": "Based on %d reviews" % count, "value": count}}
+        url = "https://%s/p" % site
+        reviews._save(title, entry(title, [{"title": title, "url": url, "text": text}], {url: said}))
+    line = {"line_id": "L4", "need": "walker", "candidates": [
+        candidate("L4:a", "Acme Folding Walker", 4000, picked=True), candidate("L4:b", "Bolt Folding Walker", 4500),
+        candidate("L4:c", "Crest Folding Walker", 6000), candidate("L4:d", "Dune Folding Walker", 3000, status="outside"),
+        candidate("L4:e", "Elm Folding Walker", 7000)]}
+    assert package.ratings("L4", line) == {}                      # nothing cached: empty, and replay mode proves no network
+    page("Acme Folding Walker", "4.2 out of 5 stars", 4.2, 300, "a.example")
+    page("Bolt Folding Walker", "5.0 out of 5 stars", 5.0, 4, "b.example")   # below the minimum of reviews
+    page("Crest Folding Walker", "Rated 4.9", 4.9, 80, "c.example")          # the page writes no scale
+    page("Dune Folding Walker", "4.9 out of 5 stars", 4.9, 900, "d.example")  # does not pass the order
+    assert package.ratings("L4", line) == {"L4:a": {"rating": 4.2, "out_of": 5, "review_count": 300}}
+    assert package.MINIMUM_REVIEWS == reviews.MINIMUM_REVIEWS == 5 and "MINIMUM_REVIEWS (5)" in package.ratings.__doc__
+    assert package.ratings("no such line") == {}
+    assert reviews.for_line(line)["best_reviewed"]["candidate_id"] == "L4:a"
+
+
+def test_a_second_quote_with_the_scale_reaches_the_reply():
+    text = "Acme Folding Walker\nSyndicated rating, 4.5915494 out of 5 stars with 71 reviews.\n4.6(71 reviews)\n"
+    url = "https://a.example/p"
+    said = {"about": {"quote": "Acme Folding Walker"}, "rating": {"quote": "4.6(71 reviews)", "value": 4.6, "out_of": 5},
+            "review_count": {"quote": "4.6(71 reviews)", "value": 71}}
+    saved = entry(TITLE, [{"title": TITLE, "url": url, "text": text}], {url: said})
+    reviews._save(TITLE, saved)
+    assert reviews.product_reviews(TITLE)["out_of"] is None
+    saved["proposals"][url]["rating_second"] = {"quote": "Syndicated rating, 4.5915494 out of 5 stars with 71 reviews.", "value": 4.6, "out_of": 5}
+    reviews._save(TITLE, saved)
+    got = reviews.product_reviews(TITLE)
+    assert (got["rating"], got["out_of"], got["review_count"]) == (4.5915494, 5, 71)
