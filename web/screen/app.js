@@ -76,6 +76,10 @@ addEventListener("hashchange", () => { ui.inspect = null; render(); });
 function render() {
   if (!state) return;
   $("stage").classList.add("ready");
+  const sheetView = location.hash === "#sheet";
+  $("stage").classList.toggle("sheet", sheetView);
+  if (sheetView) { renderSheet(); renderSeal(); flashChanges(); return; }
+  if (!$("box")) $("mid").innerHTML = '<div id="plot"><svg id="box" role="img" aria-label="Every candidate of this line against its limits"></svg></div><div id="side"></div>';
   const id = lineId();
   const line = state.lines.find((l) => l.line_id === id);
   const sheetLine = state.sheet.lines.find((l) => l.id === id);
@@ -99,23 +103,28 @@ function render() {
 function renderHead({ line, index }) {
   const { issuer, shopper } = state.sheet;
   const mode = state.mode === "fixture" ? "FIXTURE DATA" : state.mode === "replay" ? "REPLAY OF CACHED STORE DATA" : "";
+  const title = line ? cap(line.need) : state.sheet.title;
+  const sub = line ? `line ${index + 1} of ${state.lines.length}` : `${state.lines.length} lines`;
   $("head").innerHTML = `
-    <h1>${esc(cap(line.need))}</h1>
-    <span class="sub">line ${index + 1} of ${state.lines.length}${state.sheet.invented ? " · invented people" : ""}</span>
+    <h1>${esc(title)}</h1>
+    <span class="sub">${sub}${state.sheet.invented ? " · invented people" : ""}</span>
     <span class="grow"></span>
     <span class="key issuer">${esc(issuer.name)} set</span>
     <span class="key shopper">${esc(shopper.name)} stated</span>
     <span class="key store">store's words</span>
     <span class="key unknown">not stated</span>
-    <button id="elena" aria-pressed="${ui.panel === "shopper"}" title="${esc(shopper.name)}'s measurements and her chat with the agent. Key: E">${esc(shopper.name)}</button>
+    <button id="sheetbtn" aria-pressed="${!line}" title="The whole sheet. Key: 0">Sheet</button>
+    <button id="elena" aria-pressed="${!!line && ui.panel === "shopper"}" title="${esc(shopper.name)}'s measurements and her chat with the agent. Key: E">${esc(shopper.name)}</button>
     ${SIM ? `<button id="simbtn" class="simbtn" aria-pressed="${ui.panel === "sim"}">SIMULATION</button>` : ""}
     ${mode ? `<span class="badge">${mode}</span>` : ""}`;
   $("elena").onclick = () => togglePanel("shopper");
+  $("sheetbtn").onclick = () => { location.hash = line ? "sheet" : lineId(); };
   if (SIM) $("simbtn").onclick = () => togglePanel("sim");
 }
 
 function togglePanel(name) {
   ui.panel = ui.panel === name ? "words" : name;
+  if (location.hash === "#sheet") { ui.panel = name; location.hash = lineId(); return; }
   render();
   if (ui.panel === "shopper") $("sayText")?.focus();
 }
@@ -320,6 +329,34 @@ function renderTiles({ line }) {
   for (const tile of document.querySelectorAll(".tile")) tile.onclick = () => { location.hash = tile.dataset.line; };
 }
 
+// ---------- the whole sheet: the counts and six large tiles ----------
+function renderSheet() {
+  renderHead({ line: null });
+  const c = state.counts, stores = state.sheet.stores.length;
+  const step = (n, words, k) => `<div class="count"><span class="n" data-k="count.${k}">${n}</span><span>${words}</span></div>`;
+  $("sums").innerHTML = `<div class="counts">
+    ${step(c.products_found, `products found<br>at ${stores} stores`, "found")}<span class="op">→</span>
+    ${step(c.state_every_figure, `state every deciding figure<br>${c.hand_checked ? "(hand-checked)" : "(read by the model, not hand-checked)"}`, "every")}<span class="op">→</span>
+    ${step(c.inside_limits, `are inside<br>the limits`, "inside")}
+    <span class="grow"></span>
+    ${step(`${c.lines_ready} of ${c.lines_total}`, `lines ready<br>(lines, not products)`, "ready")}
+  </div>`;
+  const dots = { inside: "inside", outside: "outside", not_stated: "never state a figure", struck: "struck" };
+  $("mid").innerHTML = `<div class="big">${state.lines.map((l) => {
+    const p = pickOf(l);
+    const tally = Object.keys(dots).map((k) => [k, l.candidates.filter((x) => x.status === k).length]).filter(([, n]) => n)
+      .map(([k, n]) => `<span class="tally"><i class="d ${k}"></i>${n} ${dots[k]}</span>`).join("");
+    return `<button class="tile bigtile ${l.status}" data-line="${l.line_id}">
+      <span class="need">${esc(l.need)}</span>
+      <span class="status">${esc(STATUS[l.status] || l.status)}${p && l.status !== "pick_up" ? `<i>${money(p.product.price_cents)}</i>` : ""}</span>
+      <span class="wrap" data-k="big.${l.line_id}">${l.tightest ? `✓ ${esc(l.tightest.text)} on ${esc(l.tightest.name)}` : esc(cap(l.reason || "nothing proposed"))}</span>
+      <span class="store">${p ? esc(p.product.store) : "&nbsp;"}</span>
+      <span class="wrap tallies">${tally || "no product found yet"}</span>
+    </button>`;
+  }).join("")}</div>`;
+  for (const tile of document.querySelectorAll(".bigtile")) tile.onclick = () => { location.hash = tile.dataset.line; };
+}
+
 // ---------- the seal ----------
 function renderSeal() {
   const { seal, issuer_key: key, sheet } = state;
@@ -361,9 +398,10 @@ addEventListener("keydown", (e) => {
   if (e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey || !state) return;
   const n = parseInt(e.key, 10);
   if (n >= 1 && n <= state.lines.length) location.hash = state.lines[n - 1].line_id;
+  if (e.key === "0" || e.key === "Escape") location.hash = "sheet";
   if (e.key === "e") { e.preventDefault(); togglePanel("shopper"); }
 });
 
-new ResizeObserver(() => state && render()).observe($("plot"));
+new ResizeObserver(() => state && render()).observe($("mid"));
 load();
 listen();
