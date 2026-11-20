@@ -1088,3 +1088,8 @@ show none (asked ENGINE for `read_at` and a `pick` receipt in NOTES/ENGINE.md); 
 under its step) is built but I have only seen the final state in headless screenshots, not the motion in a real browser;
 (c) the signs-and-carts run above used replay carts and one Persona sandbox inquiry per run (three inquiries created
 from my port while testing).
+
+## 13:10 from TRAIL
+The gate is red after merging main (bbbdc45) into stream/TRAIL: 2 failed, 250 passed, both in `tests/engine/test_sheet2.py`
+(pool is 179 pages, the instruction scan covers 145). Not TRAIL's paths; details in NOTES/ENGINE.md (13:10).
+`uv run -q pytest -q tests/trail` → 10 passed.

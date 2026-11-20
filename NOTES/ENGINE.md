@@ -89,3 +89,10 @@ multi-value figure appear in /api/state (candidate id, variant id, `unclear`): p
 - [ ] `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on main as merged
   into stream/SCREEN (3582cd5): `instruction_scan.pages_scanned` is 145 and `counts.products_found` is 179 for sheet 2.
   Not a screen file; the gate reports it on every stream until it is fixed or the scan catches up.
+
+## 13:10 from TRAIL — the gate is red on main's own tests (not from TRAIL's paths; seen after `git merge main` at bbbdc45)
+- [ ] `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched`:
+  `instruction_scan.pages_scanned` is 145 and `counts.products_found` is 179. The sheet 2 pool grew when STORE's pool
+  builder merged (3c50120); the instruction scan (and probably the figures) were read from the 145-page pool.
+- [ ] `tests/engine/test_sheet2.py::test_the_toilet_is_decided_by_an_equality_against_the_house_and_by_the_full_flush`
+  fails in the same run. `uv run -q pytest -q` → 2 failed, 250 passed. I changed nothing in these paths.
