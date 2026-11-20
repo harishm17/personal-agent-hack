@@ -4,29 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sign-Off</title>
+<link rel="stylesheet" href="/screen/style.css">
+<link rel="stylesheet" href="/screen/flow.css">
 </head>
 <body>
-<!-- Main view: the flow of one order line (flow.js). The earlier line view is at ?view=detail (app.js). Both draw /api/state. -->
-<script type="module">
-  const detail = new URLSearchParams(location.search).get("view") === "detail";
-  const css = document.createElement("link");
-  css.rel = "stylesheet";
-  css.href = detail ? "/screen/style.css" : "/screen/flow.css";
-  const ready = new Promise((done) => { css.onload = done; css.onerror = done; });
-  document.head.appendChild(css);
-  await ready;
-  if (detail) {
-    document.body.innerHTML = `<main id="stage">
-      <header id="head"></header>
-      <div id="trail" aria-label="The steps the agent took on this line"></div>
-      <section id="main"></section>
-      <nav id="tiles" aria-label="The sheet: every line"></nav>
-      <footer id="seal" aria-live="polite"></footer>
-      <div id="fly" aria-hidden="true"></div>
-      <p id="wait">Waiting for <a href="/api/state">/api/state</a></p>
-    </main>`;
-  }
-  await import(detail ? "/screen/app.js" : "/screen/flow.js");
-</script>
+<!-- The decision screen. style.css is the shared visual system (the Trail page uses it too); flow.js draws /api/state. -->
+<script src="/screen/vendor/qrcode.js"></script>
+<script type="module" src="/screen/flow.js"></script>
 </body>
 </html>

@@ -98,3 +98,26 @@ test("sim: a strike removes the pick and the next candidate takes its place", ()
   assert.equal(m.pickOf(l2).product.product_id, "fx-D");
   assert.equal(l2.status, "next_candidate");
 });
+
+test("an equals limit is a point to hit: no margin, and the sim checks it as equality", () => {
+  assert.equal(m.opSymbol("=="), "=");
+  assert.equal(m.marginText({ op: "==", pass: true, lhs: 10, bound: { value: 10, unit: "in" }, state: "pass" }), "matches 10.0 in");
+  assert.equal(m.marginText({ op: "==", pass: false, lhs: 12, bound: { value: 10, unit: "in" }, state: "fail" }), "12.0 in, not 10.0");
+  assert.equal(m.holds("==", 12, 10), false);
+  assert.equal(m.num(1.28, "gpf"), "1.28");
+  const cut = (quote, term) => quote.slice(...m.figureSpan(quote, term));
+  assert.equal(cut("Dual flush: 1.1 to 1.6 GPF.", { low: 1.1, high: 1.6 }), "1.1 to 1.6 GPF");
+});
+
+test("the sheet 2 fixture: equality, a spread decided by its high end, and the cheapest rule", () => {
+  const s2 = JSON.parse(readFileSync(new URL("../../web/screen/fixture-sheet2.json", import.meta.url)));
+  const t1 = s2.lines.find((l) => l.line_id === "T1");
+  assert.equal(s2.lines.length, 4);
+  const twelve = t1.candidates.find((c) => c.checks[0].lhs === 12);
+  assert.equal(twelve.status, "outside");                       // a 12 in rough-in does not equal the measured 10 in
+  const dual = t1.candidates.find((c) => c.checks[1].terms[0].kind === "spread" && c.checks[1].terms[0].high === 1.6);
+  assert.equal(dual.checks[1].lhs, 1.6);                         // the full flush decides
+  assert.equal(dual.status, "outside");
+  const pick = m.pickOf(t1), inside = t1.candidates.filter((c) => c.status === "inside");
+  assert.equal(pick.product.price_cents, Math.min(...inside.map((c) => c.product.price_cents)));   // cheapest inside, delivery time or not
+});

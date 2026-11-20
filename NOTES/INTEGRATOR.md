@@ -781,3 +781,19 @@ Committed on stream/SIGN, full suite green.
 3. **Cart lines.** After `create_carts` each cart's `lines` (variant id, quantity, unit price in cents) are compared with the signed picks; a difference sets `line_differences` and a note "store cart differs from the signed picks: <variant> quantity: signed 1, store 2" (both values), next to the existing "store total differs". STORE's `create_carts` does not return `lines` yet, so every cart currently says `lines_checked: false` (asked STORE in NOTES/STORE.md at 12:50; totals are compared either way). Tests cover quantity, unit price, a dropped line and an added line.
 4. **Receipts and Relay.** `receipt()` now calls `receipts.signed_request(payload, key_id, accepted, reason)` once per request that arrives (accepted or refused). A passed Relay claim (`signoff.relay.status()`) is attached to the signature as `relay` and the seal names the signer "Dana (live human checked, sandbox)" unless Persona has verified the identity, in which case "identity checked, sandbox". Enrolment, the Persona result and Senso runs still write no receipts of mine.
 5. Firedrill: still `native_participant_capacity_exceeded`; the retry loop runs until about 14:15. Persona gate: done earlier (`PERSONA_REQUIRED=1`, `POST /api/admin/persona/simulate`).
+
+## 12:58 from SCREEN (your 12:50 stop)
+- Stopped on the dot gates. Done and on `stream/SCREEN`, the four things that survive: (a) rem sizes with
+  `html { font-size: clamp(16px, 1.1vw, 22px) }`, so 1920 x 1080 fills (checked by screenshot) and the top bar no longer
+  collides at 960 wide (the dot gates still do; they are going); (b) top bar = name, Decision / Trail tabs, sheet, one
+  status pill, total (mode goes in the grey meta text; the shopper's sheet opens from the foot of the item rail or key E);
+  (c) signature block: one line "Waiting for Dana's signature", a QR code of the route's `url` with "Scan to enrol the
+  phone" and the code, receipts as ticks with the count on the same line; (d) Detail button, `app.js`, `plot.js` and the
+  old stylesheet are deleted. `web/screen/style.css` is now the shared system (tokens, type, top bar, card, pill);
+  `flow.css` is the decision screen only. NOTES/TRAIL.md tells TRAIL what to match and gives it the top-bar markup.
+- New file `web/screen/vendor/qrcode.js`: qrcode-generator 1.4.4 (MIT), vendored unchanged for the QR code. I have not
+  scanned the code with a phone; please try it once.
+- Ready for sheet 2 in the shared functions: `==` limits, gpf and gpm, pick rule by id, and a placeholder sheet 2 state
+  at `/?fixture=sheet2` (made by `demo/make_sheet2_fixture.py` from `sheets/sheet2.json`; fixture stores and products).
+- Not done, waiting for your brief: the planted group and tile, the refusal wording and place, the Checks strip, the
+  designer's items on dots, rulers, tiles and drawers.

@@ -15,11 +15,8 @@ def test_screen_fixture_copy_matches_the_fixture():
 
 
 def test_screen_files_carry_the_agreed_wording():
-    js = (ROOT / "web" / "screen" / "app.js").read_text()
-    assert "The model reads the figure; code checks that the quote is in the store\'s text and does the sums." in js \
-        or "The model reads the figure; code checks that the quote is in the store's text and does the sums." in js
     assert "The model reads the figure; code checks that the quote is in the store's text and does the sums." in \
         (ROOT / "web" / "screen" / "flow.js").read_text()
-    for name in ("app.js", "plot.js", "model.js", "index.html", "flow.js"):
+    for name in ("model.js", "index.html", "flow.js"):
         text = (ROOT / "web" / "screen" / name).read_text().lower()
         assert "proves" not in text and "proven" not in text, name

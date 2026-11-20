@@ -244,7 +244,7 @@ function moveChanges(before) {
       if (rk !== k || id === "tick" || id === "ring" || here.has(id)) continue;
       const ghost = document.createElementNS("http://www.w3.org/2000/svg", "g");
       const struck = state.lines.flatMap((l) => l.candidates).some((c) => c.id === id && c.status === "struck");
-      ghost.innerHTML = `<circle class="${old.cls.replace("pick", "")}" cx="${old.x}" cy="${old.y}" r="4"/>` +
+      ghost.innerHTML = `<circle class="${old.cls.replace("pick", "")}" cx="${old.x}" cy="${old.y}" r="${0.25 * parseFloat(getComputedStyle(document.documentElement).fontSize)}"/>` +
         (struck ? `<line class="tick" x1="${old.x - 6}" y1="${old.y - 6}" x2="${old.x + 6}" y2="${old.y + 6}"/>` : "");
       svg.appendChild(ghost);
       ghost.animate([{ opacity: 1 }, { opacity: 1, offset: struck ? 0.6 : 0.2 }, { opacity: 0 }], { duration: struck ? 700 : 380, fill: "forwards" })
@@ -273,17 +273,16 @@ function rollChanges(animate) {
 
 function renderTop() {
   const { sheet, seal } = state;
-  const mode = state.mode === "fixture" ? "Fixture data" : state.mode === "replay" ? "Replay, cached" : "";
+  const mode = [state.mode === "fixture" ? "fixture data" : state.mode === "replay" ? "replay of cached store data" : "", SIM ? "simulation" : ""].filter(Boolean);
   const at = seal.signed_at || (seal.signature && seal.signature.at);
   const time = at ? new Date(at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "";
-  q("#top").innerHTML = `<span class="brand">Sign-Off</span><span class="sep">/</span>
-    <span>${esc(sheet.title)}</span><span class="faint">${state.lines.length} items${sheet.invented ? " · invented" : ""}</span>
+  q("#top").innerHTML = `<span class="brand">Sign-Off</span>
+    <nav class="tabs" aria-label="Views"><a href="/${location.search}${location.hash}" aria-current="page">Decision</a><a href="/trail/">Trail</a></nav>
+    <span class="sheet">${esc(sheet.title)}</span>
+    <span class="meta">${[`${state.lines.length} items`, sheet.invented ? "invented" : "", ...mode].filter(Boolean).join(" · ")}</span>
     <span class="grow"></span>
-    ${mode ? `<span class="pill">${mode}</span>` : ""}${SIM ? `<span class="pill">Simulation</span>` : ""}${readerChip()}
     <span class="pill ${seal.signed ? "signed" : ""}">${seal.signed ? "Signed " + time : "Not signed"}</span>
-    <span class="total" data-k="total">${money(state.total_cents)}</span>
-    <button class="ghost" data-open="shopper" title="${esc(sheet.shopper.name)}'s measurements and her chat with the agent">${esc(sheet.shopper.name)}</button>
-    <a class="ghost" href="/?view=detail${location.hash}">Detail</a>`;
+    <span class="total" data-k="total">${money(state.total_cents)}</span>`;
 }
 
 /** Which reader decides the figures now, from the gate's own status. The numbers are behind the click. */
@@ -304,12 +303,11 @@ function readerChip() {
 
 function renderRail(current) {
   q("#rail").innerHTML = `<div class="cap">Items</div>` + state.lines.map((l) => {
-    const p = pickOf(l), s = stages(l);
-    const right = l.status === "open" ? "open" : l.status === "pick_up" ? "pick up" : money(p.product.price_cents);
+    const p = pickOf(l);
+    const right = l.status === "open" ? "open" : l.status === "pick_up" ? "pick up" : p ? money(p.product.price_cents) : "";
     return `<a class="item" href="#${l.line_id}" aria-current="${l.line_id === current}">
-      <i class="st ${l.status}"></i><span class="name">${esc(cap(l.need))}</span><span class="amt" data-k="amt.${l.line_id}">${right}</span>
-      <span class="sub">${s.all.length} › ${s.stated.length} › ${s.inside.length} › ${p ? 1 : 0}</span></a>`;
-  }).join("");
+      <i class="st ${l.status}"></i><span class="name" title="${esc(cap(l.need))}">${esc(cap(l.need))}</span><span class="amt" data-k="amt.${l.line_id}">${right}</span></a>`;
+  }).join("") + `<button class="item asker" data-open="shopper">${esc(state.sheet.shopper.name)}: measurements, chat</button>`;
 }
 
 const dot = (c, cls = "") => `<i class="dot ${cls}${c.picked ? " pick" : ""}" data-id="${esc(c.id)}" tabindex="-1"></i>`;
@@ -363,7 +361,7 @@ function renderFlow(line, s) {
       <section class="gate"><div class="gh"><span class="label">Read</span><span class="n" data-k="n.read">${s.all.length}</span></div>${meter(s.all.length)}
         <div class="by">${stores.length} stores</div>${read}${planted}</section>
       <section class="gate"><div class="gh"><span class="label">State the figures</span><span class="n" data-k="n.stated">${s.stated.length}</span></div>${meter(s.stated.length)}
-        <div class="by"><i class="od store"></i>the store states</div>
+        <div class="by"><i class="od store"></i>${readerInfo() ? `<button class="src-btn" data-open="reader">the store states</button>` : "the store states"}</div>
         <div class="dots">${s.stated.map((c) => dot(c)).join("")}</div>${tray}</section>
       <section class="gate"><div class="gh"><span class="label">Inside limits</span><span class="n" data-k="n.inside">${s.inside.length}</span></div>${meter(s.inside.length)}
         <div class="by">${sheetLine.limits.length} limits</div>${s.stated.length ? rulers : ""}
@@ -405,7 +403,8 @@ function workBand(line, pl) {
 /** A thin horizontal axis; each dot sits at its value, equal values stack upward; the limit is a tick. */
 const domains = new Map();   // a ruler keeps its range while a limit moves; it only grows
 function drawRuler(svg, items, tick, fmt) {
-  const W = svg.clientWidth || 240, pad = 8, step = 9, r = 4;
+  const U = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16;      // sizes follow the root, like the rest
+  const W = svg.clientWidth || 240, pad = 8 * U, step = 9 * U, r = 4 * U;
   const key = lineId() + "|" + svg.dataset.ruler;
   const dom = niceDomain(items.map((d) => d.v).concat(tick ? [tick.v] : []), domains.get(key));
   domains.set(key, dom);
@@ -417,22 +416,22 @@ function drawRuler(svg, items, tick, fmt) {
     columns.set(k, n + 1);
     return { ...d, x: k * step, n };
   });
-  const tallest = Math.max(1, ...columns.values()), top = tick ? 18 : 6, base = top + tallest * step + 4, H = base + 18;
+  const tallest = Math.max(1, ...columns.values()), top = (tick ? 18 : 6) * U, base = top + tallest * step + 4 * U, H = base + 18 * U;
   svg.setAttribute("height", H);
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   let out = "";
   if (tick) {
     const tx = px(tick.v), right = tick.op === ">=";
     out += `<rect class="pass" x="${right ? tx : pad}" y="${top}" width="${Math.max(0, right ? W - pad - tx : tx - pad)}" height="${base - top}"/>`;
-    const anchor = tx > W - 50 ? "end" : tx < 50 ? "start" : "middle";
-    out += `<g class="tk" data-x="${tx}"><line class="tick" x1="${tx}" x2="${tx}" y1="${top - 2}" y2="${base}"/>
-      <text class="ticklabel" x="${tx}" y="${top - 6}" text-anchor="${anchor}">${esc(tick.label)}</text></g>`;
+    const anchor = tx > W - 50 * U ? "end" : tx < 50 * U ? "start" : "middle";
+    out += `<g class="tk" data-x="${tx}"><line class="tick" x1="${tx}" x2="${tx}" y1="${top - 2 * U}" y2="${base}"/>
+      <text class="ticklabel" x="${tx}" y="${top - 6 * U}" text-anchor="${anchor}">${esc(tick.label)}</text></g>`;
   }
   out += `<line class="axis" x1="${pad}" x2="${W - pad}" y1="${base}" y2="${base}"/>`;
-  out += `<text x="${pad}" y="${base + 14}">${esc(fmt(dom.lo))}</text><text x="${W - pad}" y="${base + 14}" text-anchor="end">${esc(fmt(dom.hi))}</text>`;
+  out += `<text x="${pad}" y="${base + 14 * U}">${esc(fmt(dom.lo))}</text><text x="${W - pad}" y="${base + 14 * U}" text-anchor="end">${esc(fmt(dom.hi))}</text>`;
   for (const d of placed.reverse()) {
-    const cy = base - r - 2 - d.n * step;
-    if (d.c.picked) out += `<circle class="ring" cx="${d.x}" cy="${cy}" r="${r + 2.5}"/>`;
+    const cy = base - r - 2 * U - d.n * step;
+    if (d.c.picked) out += `<circle class="ring" cx="${d.x}" cy="${cy}" r="${r + 2.5 * U}"/>`;
     out += `<circle class="${d.cls}${d.c.picked ? " pick" : ""}" data-id="${esc(d.c.id)}" cx="${d.x}" cy="${cy}" r="${r}"/>`;
   }
   svg.innerHTML = out;
@@ -456,14 +455,26 @@ function fragment(term, max = 30) {
   return `${from > 0 ? "…" : ""}${esc(before)}<mark>${esc(text.slice(s, e))}</mark>`;
 }
 
-/** The receipt chain, when the engine reports it: a thin strip of links and "14 of 14 receipts verified". */
+/** The receipt chain, when the engine reports it: one tick per receipt and the count, on one line. */
 function receiptsRow() {
   const r = state.receipts;
   if (!r || !r.count) return "";
-  const ok = r.verified === true || r.verified === r.count, n = Math.min(r.count, 24);
-  const good = typeof r.verified === "number" ? r.verified : ok ? r.count : (r.first_bad ? r.first_bad - 1 : 0);
-  return `<div class="chain" title="Tamper-evident: each receipt carries the hash of the one before">${Array.from({ length: n }, (_, i) => `<i class="${i < Math.round((good / r.count) * n) ? "" : "bad"}"></i>`).join("")}</div>
-    <div class="muted small">${good} of ${r.count} receipts verified</div>`;
+  const good = typeof r.verified === "number" ? r.verified : r.verified ? r.count : (r.first_bad ? r.first_bad - 1 : 0);
+  const n = Math.min(r.count, 48);
+  return `<div class="rcpt" title="Tamper-evident: each receipt carries the hash of the one before"><span class="ticks">${Array.from({ length: n }, (_, i) => `<i class="${i < Math.round((good / r.count) * n) ? "" : "bad"}"></i>`).join("")}</span>
+    <span class="muted small">${good === r.count ? `${r.count} ${r.count === 1 ? "receipt" : "receipts"} verified` : `${good} of ${r.count} receipts verified`}</span></div>`;
+}
+
+/** The phone link as a code to scan (drawn by the vendored qrcode-generator), or nothing if the library is missing. */
+function qrSvg(text) {
+  try {
+    const code = window.qrcode(0, "M");
+    code.addData(text);
+    code.make();
+    return code.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+  } catch (error) {
+    return "";
+  }
 }
 
 const clip = (t, n) => (t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t);
@@ -513,23 +524,24 @@ function renderSide(line, s) {
     // how the signer is known, from the state: the engine's own label when it gives one, else from the identity check
     const identity = seal.signer_label || seal.identity || sig.identity || (sig.signer && (sig.signer.label || sig.signer.identity))
       || (persona.verified ? "identity checked (sandbox)" : "self-declared");
+    const covers = Array.isArray(seal.covers) && seal.covers.length ? seal.covers.map(words) : ["limits", "quotes", "picks", "total"];
     const differs = (c) => c.signed_total_cents != null && c.total_cents != null && c.signed_total_cents !== c.total_cents;
     sign = `<section class="card sign signed"><div class="cap">Signature</div>
       <div class="row"><span class="who"><span class="tickmark">\u2713</span> Signed by ${esc(who)}</span><span>${time}</span></div>
       <div class="muted small">${esc(identity)}</div>
       ${hash ? `<div class="row"><span class="muted">Sheet hash</span><code title="${esc(hash)}">${esc(hash.slice(0, 12))}</code></div>` : ""}
-      <div class="muted small">Covers ${esc(Array.isArray(seal.covers) && seal.covers.length ? seal.covers.map(words).join(", ") : "limits, quotes, picks, total")}</div>
+      <div class="muted small" title="${esc(covers.join(", "))}">Hash covers ${esc(covers.slice(0, 3).join(", "))}${covers.length > 3 ? ` +${covers.length - 3}` : ""}</div>
       <div class="row"><span class="muted">Persona</span><span title="${esc(persona.inquiry_id || "")}">${esc(status)} \u00b7 sandbox</span></div>
       ${receiptsRow()}
       ${(seal.carts || []).map((c) => `<div class="row cart"><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">${esc(c.store)} cart \u2197</a><span>${c.total_cents ? money(c.total_cents) : ""}</span></div>${differs(c) ? `<div class="refusal bad">store total differs · signed ${money(c.signed_total_cents)} · store ${money(c.total_cents)}</div>` : ""}`).join("") || `<div class="muted">No cart link</div>`}</section>`;
   } else {
     const en = aux.enroll, enrolled = state.issuer_key && state.issuer_key.enrolled;
-    const link = en && (en.link || en.url || en.phone_url || en.phone);
+    const link = en && (en.url || en.link || en.phone_url || en.phone), qr = !enrolled && link ? qrSvg(link) : "";
     sign = `<section class="card sign"><div class="cap">Signature</div>
-      <div class="who">${esc(sheet.issuer.name)} must sign</div><div class="muted">No cart exists</div>
-      ${!enrolled && en && en.code ? `<div class="row"><span class="muted">Enrol code</span><code class="code">${esc(en.code)}</code></div>
-        ${link ? `<div class="row"><span class="muted">On the phone</span><a href="${esc(link)}" target="_blank" rel="noopener">${esc(String(link).replace(/^https?:\/\//, ""))}</a></div>` : ""}`
-        : enrolled ? `<div class="muted small">Approver's key enrolled</div>` : ""}
+      <div class="who"><i class="pending"></i>Waiting for ${esc(sheet.issuer.name)}'s signature</div>
+      ${!enrolled && en && en.code ? `<div class="enrol">${qr ? `<a class="qr" href="${esc(link)}" target="_blank" rel="noopener" aria-label="Open the phone page">${qr}</a>` : ""}
+        <div><div>Scan to enrol the phone</div><div class="muted">code <span class="code">${esc(en.code)}</span></div></div></div>`
+        : enrolled ? `<div class="muted small">Phone enrolled</div>` : ""}
       ${receiptsRow()}</section>`;
   }
   q("#side").innerHTML = card + sign;
@@ -651,8 +663,7 @@ function renderDrawer(line) {
     ${c.arrival ? `<h3>Delivery, stated not guaranteed</h3><p>${c.arrival.quote ? "“" + esc(c.arrival.quote) + "”" : "Not stated"}</p>` : ""}
     ${c.undo && c.undo.quote ? `<h3>Returns, in the store agent's words</h3><p>“${esc(c.undo.quote)}”</p>` : ""}
     ${(c.asked || []).map((a) => `<h3>Asked the store's agent · ${esc(words(a.figure))}</h3><p><b>${esc(a.question || "")}</b></p><p>“${esc(a.reply || "")}”</p>`).join("")}
-    <h3>Method</h3><p>The model reads the figure; code checks that the quote is in the store's text and does the sums.</p>
-    <p><a class="link" href="/?view=detail&panel=sql#${line.line_id}">SQL for this line</a></p>`;
+    <h3>Method</h3><p>The model reads the figure; code checks that the quote is in the store's text and does the sums.</p>`;
 }
 
 // ---------- the shopper's controls ----------
