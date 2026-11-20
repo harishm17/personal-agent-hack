@@ -56,7 +56,8 @@ def _dirs(sheet_id=None):
     sheet_id = sheet_id or _s.get("sheet_id") or "sheet1"
     if sheet_id == "sheet1":
         return DATA / "pool", DATA / "store_answers", DATA / "figures"
-    return DATA / sheet_id / "pool", DATA / sheet_id / "store_answers", DATA / "figures" / sheet_id
+    pool = pathlib.Path(os.environ["SIGNOFF_POOL_DIR"]) if os.environ.get("SIGNOFF_POOL_DIR") else DATA / sheet_id / "pool"
+    return pool, pool.parent / "store_answers", DATA / "figures" / sheet_id
 
 
 def _has_data_pool():
@@ -206,6 +207,12 @@ def _load_variants(pool, from_data):
     for p in pool:
         product = seen.get((p["store"], p["product_id"]))
         if not product:
+            if p.get("variant_title") is not None:  # the pool row says it itself
+                listed = p.get("variants") if isinstance(p.get("variants"), int) else len(p.get("variants") or []) or 1
+                out[(p["store"], p["product_id"])] = {
+                    "variant_title": p.get("variant_title"), "currency": p.get("currency") or "USD",
+                    "variant_price_cents": p.get("price_cents"), "variants": listed, "variants_listed": listed,
+                    "option_labels": [], "other_option_labels": []}
             continue
         variants = product.get("variants") or []
         chosen = next((v for v in variants if v.get("id") == p["variant_id"]), None)

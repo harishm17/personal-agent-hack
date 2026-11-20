@@ -782,6 +782,66 @@ Committed on stream/SIGN, full suite green.
 4. **Receipts and Relay.** `receipt()` now calls `receipts.signed_request(payload, key_id, accepted, reason)` once per request that arrives (accepted or refused). A passed Relay claim (`signoff.relay.status()`) is attached to the signature as `relay` and the seal names the signer "Dana (live human checked, sandbox)" unless Persona has verified the identity, in which case "identity checked, sandbox". Enrolment, the Persona result and Senso runs still write no receipts of mine.
 5. Firedrill: still `native_participant_capacity_exceeded`; the retry loop runs until about 14:15. Persona gate: done earlier (`PERSONA_REQUIRED=1`, `POST /api/admin/persona/simulate`).
 
+## 12:47 from ENGINE — sheet 2 gives a sane /api/state on my side (`SIGNOFF_SHEET=sheet2`), with what it shows
+Steps 1 to 4 are committed on stream/ENGINE: `==` as a real comparison (an unknown comparison or pick rule is an error when the
+sheet loads), `gpf` and `gpm` (and Lpf, Lpm converted), pick rule by id (`cheapest`; sheet 1's rule untouched), order, replies and
+instruction scan per sheet, names instead of pronouns in the chat, the cookware draft removed, the planted page off by default
+(`SIGNOFF_PLANTED=1`, sheet 1 only) with `instruction_scan` in the state. Sheet 1's tests are green (203 passed).
+**The pool I read is STORE's branch copy** (145 products; main still has cookware in `data/sheet2/pool/`): I pointed the reader and
+the engine at it with `SIGNOFF_POOL_DIR`. Readings are cached by page text in `data/figures/sheet2/`, so once STORE's pool is on main
+nothing is read again and `SIGNOFF_SHEET=sheet2` alone works.
+
+**State:** 145 products found, 99 state every figure, 57 inside, **4 of 4 lines ready, total $1,118.75**. Order: "the agent's reading
+of the order matches the sheet on 5 of 5 limits" (`T1.rough_in` derived as `==` against the home measurement, from "Its rough-in must
+match the rough-in measured at the house."). Instruction scan: "145 pages scanned, 0 instructions to an agent found". `degraded`: none.
+Reading took 79 s for all three readers; every quote found (159 of 159).
+| line | read | state every figure | inside | pick |
+|---|---|---|---|---|
+| T1 toilet | 52 | 35 | 3 | swissmadison.com, St. Tropez One-Piece 10" Rough-in 1.28 GPF, $259.96: `10 == 10` ("Rough-In: 10" Rough-In Standard"), `1.28 <= 1.28` ("Single Flush 1.28 GPF") |
+| T2 sink faucet | 27 | 27 | 27 | swissmadison.com, Sublime Single Hole faucet in Brushed Gold, $96.82: `1.2 <= 1.2` ("Faucet Flow Rate: 1.2 GPM") |
+| T3 shower head | 18 | 18 | 15 | kingstonbrass.com, Tulare KX250 5-function, $62.97: `1.8 <= 1.8` ("1.8 GPM/6.8 LPM showerhead flow rate at 80 PSI"); 3 are out at `2.5 <= 1.8` |
+| T4 vanity | 48 | 19 | 12 | deervalleybath.com, 30" Rectangular Vanity wall-mounting, $699.00: `30 <= 30` ("Overall: 20.47" H X 30" W X 18.35" D") |
+T1 reasons: 19 are `rough-in: 12 == 10 is false`, 11 are `flush volume: 1.6 <= 1.28 is false`, 7 never state a flush volume, 6 never
+state a rough-in.
+
+**The Horow pair does not come out as the story says, and the reason is the store's text, not the reading.** The rough-in half
+holds: T0338W reads 12 ("12-inch rough-in one-piece toilet") → `12 == 10` false; T0338W-10 reads 10 ("a 10-inch rough-in one-piece
+toilet") → `10 == 10` true. But **neither page states a flush volume**: the text STORE got for each is two sentences saying "dual
+flush" with no number. So T0338W-10 ($349) is "flush volume never stated on the page" and cannot be picked; the pick is the Swiss
+Madison at $259.96 (cheaper anyway). 8 of Horow's 16 toilets state a gpf number, these two are not among them.
+- [ ] For STORE: if a product lookup returns Horow's full description (it likely states 1.1/1.6 or 0.8/1.28), the pair can be decided;
+  if it says 1.1/1.6 the -10 is out on the full flush, which is also a true story. Or ask Horow's agent (display only).
+- [ ] Decide (a rule, so I did not touch it): a candidate that **fails a stated limit and also lacks another figure** shows as "not
+  stated" today (the reference code checks "missing" first). T0338W therefore reads "flush volume never stated", not "rough-in: 12 ==
+  10 is false". Showing a stated failure first would flip 9 candidates on sheet 2 from not stated to outside (no pick, count of
+  inside or total changes on either sheet; the fixture state stays equal). One branch in `rules.build_state`; say yes and I do it.
+
+**Dual-flush pages read as the sheet's words ask:** 32 of 41 flush readings are spreads with both numbers quoted ("Flush Volume:
+1.1/1.6 GPF", "1.0 / 1.28 GPF dual flush", "a low 1.1 gpf light flush or a high 1.6 gpf full flush", "Dual-Flush Efficiency:
+0.92/1.25 GPF"); the sum uses the full flush (`1.6 <= 1.28` false, `1.28 <= 1.28` and `1.25 <= 1.28` true). Code will not let a
+reader take the light flush alone: a single number from "1.1/1.6 GPF" is unsure without a label ("several numbers in the quote").
+Two are marked unsure by the reader (title and description disagree).
+
+**The vanity: one wrong reading among the inside ones, and the words that fix it.** Where a page says "30 in. W x 34.4 in. H x 22 in.
+D" the stated width matches or corrects the title (title 30.5 → read 30.5 → out; 20 against a title of 20.5 → unsure). But
+deervalleybath.com labels the long side **L** and the front-to-back side **W** on some pages ("Overall 60" L X 22" W X 34" H"). With
+today's meaning the reader took the store's "W": **a 60-inch vanity ($1,499) reads 22 and counts as inside** (not the pick), and 4
+similar pages were marked unsure. The number rule cannot catch this: the text really does pair "W" with 22. This needs the sheet's
+words, as you said. I tried these on the 48 vanity pages (in scratch, not committed) and they read right: 60 "L" → 60 (out), 30 "L" →
+30 (inside), 26 of 27 figures counted, the 20-against-20.5 page still unsure:
+> "overall_width": "the vanity's side-to-side size along the wall, in inches: the longer of the two horizontal dimensions the page
+> states for the cabinet with its top. Stores label it W, or L on pages that call the front-to-back size W; the height and the
+> front-to-back depth are other measures. Quote the page's dimension line. A size class in a product name is a nominal size, not the
+> overall width: if the page states no dimension line it is not stated, and if the dimension line and the product name disagree about
+> that size, mark it unsure."
+With those words **the T4 pick becomes a $399.99 deervalleybath.com vanity** ("Overall 30"L x 18.30" W x 17.75"H", `30 <= 30`) and the
+total drops by $299.01. A sheet's figure wording is now part of the reading cache key: when you change the words in
+`sheets/sheet2.json`, `python -m signoff.extract.run --sheet sheet2` re-reads only the 48 vanity pages (about 20 s). Tell me when it is in.
+
+**Readers on sheet 2** (`readers`): Qwen on SIE reads the same number on 145 of 145 figures both found (reference alone 2, Qwen alone
+10; its T4 pick differs; 4.2 s per page); SIE extract alone 31 of 32 both found, the reference alone 115 (it finds few of these).
+**Not done yet for sheet 2:** the store agents' replies (none exist for sheet 2 yet), a second pass of the reference, the chat and
+drills were not exercised on it.
 ## STORE 13:25 — items 1 to 4 of your 12:50 note are on stream/STORE
 1. **Pool moved** (committed 12:47, ENGINE told in NOTES/ENGINE.md): `data/sheet2/pool/<store>.json` (+ `raw/`), `data/sheet2/store_answers/`;
    cookware deleted. `tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone` fails until ENGINE replaces it (only failure left: 203 pass).
@@ -815,3 +875,44 @@ Committed on stream/SIGN, full suite green.
 **For TRAIL:** every tool-call event is also written to `data/obs/events.jsonl` ({name, at, ended_at, duration_ms, success, session_id,
 sheet_id, error?}); `signoff.obs.recent(n, session_id=None, sheet_id=None)` and `GET /api/obs/events?n=200&session_id=&sheet_id=`. Not written
 under pytest. The folder is not committed (suggest ignoring `data/obs/` and `data/egress/`).
+
+## 12:53 from ENGINE — 13:10 received: plan, risk to 14:00, what I need from you now, and the list
+**DONE** (proof in the notes above and in tests): DONE E1: `tests/engine/test_rules.py::test_equality_is_a_real_comparison…`, `…unknown_comparison_or_pick_rule_is_an_error…`.
+DONE E2: gpf, gpm, Lpf, Lpm in `rules.ALIASES`; `test_gallons_per_flush_and_per_minute…`, `test_a_dual_flush_page_reads_as_two_numbers…`.
+DONE E3: `python -m signoff.extract.order --sheet sheet2` → 5 of 5; cache `data/figures/sheet2/_order/derived.json`. DONE E5: `pick_rule.id`
+in `rules.build_state`; `test_the_pick_rule_cheapest…`. DONE E6: no pronoun left in `agent/chat.py`; reply on sheet 2: "only Marco (…) can
+move one, with a signed request from Marco's phone". DONE E16: `obs.egress` before every model call (`reader.ask`) and every SIE extract
+call (`gliner.entities`). DONE E19, E20: on main. **Partly done:** E4 (replies and scan run per sheet; the path rule still has
+`sheet1` branches, to be unified), E11 (planted page off by default, `instruction_scan` in the state; the planted wording is still in
+the scan prompt and pattern), E12 (`disagreements`, `extra`, `picks_changed` exist; agreement after the new rules is not done), E13
+(sheet 2 read and reported at 13:04 under the old rules).
+
+**Order of work now, and what is at risk.** Rules 1 and 3 change what a check is, so I do them first, **in the engine, on the
+readings already cached**: an unsure figure's value is tested instead of treated as absent, a quote with several candidate numbers
+tests all of them, a number without a unit is unclear, an adjustable range passes "at least" and "at most" when a setting meets the
+bound, statuses become inside / outside / unclear / not_stated. That gives both sheets honest statuses without a re-read: **target
+13:35**, and sheet 2 end to end by 14:00 holds on that alone. Then, in this order: the new reader prompt returning every statement of
+a figure (E10) and the re-read of both sheets; rule 2, every option its own candidate (E8, needs STORE's S1: I will handle either one
+row per option or an `options` list in a row); the comparison after the rules (E12); the path rule and the smaller removals (E4, E11,
+E17). **If time runs short I cut, in this order:** re-measuring the SIE readers after the new prompt (the reference alone decides),
+the second pass of the reference, the per-reader lists beyond `picks_changed`.
+
+**One thing in rule 1 that needs your word, because it decides sheet 2's toilet story.** Rule 1 says a figure with several stated
+values is unclear when they differ. A dual-flush page states 1.1 and 1.6 gpf: under rule 1 alone that is "unclear: page states both",
+not "outside". The order settles it in its own sentence, "for a dual-flush toilet the full flush counts". I am adding one optional,
+general key on a limit, **`"several": "largest"`** (or `"smallest"`; absent means every stated value is tested), read from the
+order's sentence, so the limit compares the full flush. Please add it to `T1.flush` in `sheets/sheet2.json`:
+`"several": "largest"`. Without it the 22 dual-flush pages at 1.1/1.6 show as unclear.
+
+**E18, sheet 1's figure meanings in the order's words** (no number, no limit, no person in them), for `sheets/sheet1.json`:
+```json
+"figures": {
+  "weight_capacity": "how much weight the item holds: the heaviest person it is made to carry, in pounds.",
+  "overall_width": "the item's overall width, side to side at its widest, in inches: the size that has to fit inside the tub or pass through the door.",
+  "added_height": "the height the raised toilet seat adds on top of the toilet, in inches.",
+  "seat_height": "the height of the seat above the floor, in inches. An adjustable seat states the heights it can be set to.",
+  "length": "how long the grab bar is, in inches.",
+  "mattress_thickness_max": "the mattress thickness the bed rail fits, in inches. A rail that fits a range of thicknesses states both ends."
+}
+```
+Until they are in the sheet I read sheet 1 with a scratch copy that has exactly this text, so the cached readings stay valid when you add it.
