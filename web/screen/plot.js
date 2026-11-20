@@ -74,7 +74,11 @@ function placeLabels(dots, W, H, reserved, soft) {
       ];
       // walls are soft: only the pick's label may cross one (it has a white halo)
       d.label = spots.find((s) => !out(s.box) && !over(s.box, taken) && !over(s.box, soft))
-        || (d.rank >= 3 ? spots.find((s) => !out(s.box) && !over(s.box, taken)) || spots.find((s) => !out(s.box)) : null);
+        || (d.rank >= 3 ? spots.find((s) => !out(s.box) && !over(s.box, taken)) : null);
+      if (!d.label && d.rank >= 3 && text === d.texts[d.texts.length - 1]) {   // the pick is always labelled: where it covers least
+        const hits = (b) => taken.filter((t) => b[0] < t[2] && b[2] > t[0] && b[1] < t[3] && b[3] > t[1]).length;
+        d.label = spots.filter((s) => !out(s.box)).reduce((best, s) => !best || hits(s.box) < hits(best.box) ? s : best, null);
+      }
       if (d.label) { d.text = text; taken.push(d.label.box); break; }
     }
   }
@@ -177,12 +181,16 @@ export function drawPlot(svg, line, shownId, onInspect) {
     labelY.textContent = textY;
     // the y wall's label goes where no dot sits: passing side first, right end first
     const up = Y.op === ">=";
-    const spots = [[true, up], [false, up], [true, !up], [false, !up]].map(([right, above]) => ({ right, above,
-      box: [right ? x1 - 8 - widthY : x0 + 6, above ? wy - 24 : wy + 4, right ? x1 - 4 : x0 + 10 + widthY, above ? wy - 3 : wy + 24] }));
-    const free = (b) => b[1] > y0 && b[3] < y1 - 20 && !at.some(([dx, dy]) => dx + R > b[0] && dx - R < b[2] && dy + R > b[1] && dy - R < b[3]);
-    const spot = spots.find((sp) => free(sp.box)) || spots[0];
-    labelY.setAttribute("x", spot.right ? x1 - 8 : x0 + 8); labelY.setAttribute("y", spot.above ? -8 : 20);
-    labelY.setAttribute("text-anchor", spot.right ? "end" : "start");
+    const mid = (x0 + x1) / 2;
+    const spots = [["end", up], ["start", up], ["end", !up], ["start", !up], ["middle", up], ["middle", !up]].map(([anchor, above]) => {
+      const left = anchor === "end" ? x1 - 8 - widthY : anchor === "start" ? x0 + 6 : mid - widthY / 2;
+      return { anchor, above, box: [left, above ? wy - 24 : wy + 4, left + widthY + 4, above ? wy - 3 : wy + 24] };
+    });
+    const cost = (b) => (b[1] < y0 || b[3] > y1 ? 50 : 0) + (b[3] > y1 - 22 && b[2] > x1 - 170 ? 5 : 0) + (b[0] < wx + 4 && b[2] > wx - 4 ? 2 : 0)
+      + at.filter(([dx, dy]) => dx + R > b[0] && dx - R < b[2] && dy + R > b[1] && dy - R < b[3]).length * 10;
+    const spot = spots.reduce((best, sp) => cost(sp.box) < cost(best.box) ? sp : best);
+    labelY.setAttribute("x", spot.anchor === "end" ? x1 - 8 : spot.anchor === "start" ? x0 + 8 : mid); labelY.setAttribute("y", spot.above ? -8 : 20);
+    labelY.setAttribute("text-anchor", spot.anchor);
     move(wallY, 0, wy); move(textGY, 0, wy);
     reserved.push(spot.box);
     soft.push([x0, wy - 3, x1, wy + 3]);
@@ -263,6 +271,8 @@ export function drawPlot(svg, line, shownId, onInspect) {
     if (fresh && was === undefined && mem.status.size && MOTION) node.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300 });
   }
   for (const node of have.values()) node.remove();
+  const top = dotsLayer.querySelector(".picked");
+  if (top) dotsLayer.appendChild(top);      // the pick and its label are drawn over its neighbours
   mem.status = new Map(line.candidates.map((c) => [c.id, c.status]));
   mem.wall = { x: wx, y: wy };
   const picked = dots.find((d) => d.c.picked);

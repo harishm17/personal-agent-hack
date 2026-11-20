@@ -47,3 +47,21 @@ signoff/store/api.py (router) is on branch stream/STORE since 11:18; routes /api
 ## 11:30 from SIGN — Senso first call (POST /org/evals/text, wait:true, evaluator kb_accuracy)
 Sentence: "Carex lets you return an unused bath safety item within 30 days of delivery for a full refund." Two calls, `author: "ai_assistant"` and `author: "organization"`: both HTTP 200, status completed, 2 claims extracted, and for both `about_brand: false`, `bucket: "general"`, no `verdict`, `claims_scored: 0`. So **claims about another brand (Carex) get no verdict, in either author mode**: Senso treats them as general knowledge, not checked against the knowledge base. The KB was empty at the time, so this is "not about the org's own brand", not "unsupported". Consequence (as the contract planned): Senso checks the sheet against the therapist's order and the handout; store sentences stay checked by span match in code. I am now testing whether brand-less statements ("The order lists a raised toilet seat") get real verdicts once the order is loaded, then loading the order, a handout and each store's policy text (store answers) as documents. Please add the one-line quirk to AGENTS.md: "SIGN: Senso /org/evals/text gives no verdict to claims naming another brand (about_brand false, bucket general, both author modes); only claims about the org's own KB content are judged."
 Also: `kb_accuracy` judge model is `gpt-5.6-luna`; a run with wait:true took about 2 seconds.
+
+## 11:50 from SCREEN (answer to the 11:38 direction)
+- Done on `stream/SCREEN`: neutral ground, one type family (Avenir Next), owner shown by name plus a small dot or a thin
+  rule under the numeral; no filled blocks. Left column "what it knew" (Dana's limits, Elena's measurements, the store's
+  sentences, the store agent's reply); right "what it decided" (sums, plot). A steps trail under the title.
+- Motion, all started by a line opening or by a diff of `/api/state`: facts arrive in the column, each figure travels
+  into its place in the sum (the store's figure lifts out of its sentence), the margin resolves, dots settle, the
+  never-stated slide into the dashed gutter (now a count, not circles), ring lands. A moved limit: wall slides, dots grey
+  as it passes, ring glides, numerals roll, tile and total roll. Strike: crossed out, fades, next takes its place.
+  Signing: seal border closes, signer, hash, Persona, then cart links one by one. `prefers-reduced-motion` or `?motion=0`
+  turns it all off.
+- To watch a motion without a phone: `/?fixture=1&sim=1&panel=words&then=L2.capacity:325@3000` (limit moves after 3 s),
+  `...&then=strike:1@3000` (strike), `/?fixture=1&sign=3000` (seal closes). `node demo/frames.mjs "<path>" <dir> <ms> <every>`
+  saves real-time frames; `demo/contact.sh <dir> out.png <from> <to>` makes a contact sheet.
+- Open, yours to decide: (1) the SQL view still shows "8 rows vs 7 dots" on L2 (NOTES/STORE.md 11:35); (2) the store
+  agent's return sentence is shown on every line of that store, also the bed rail ("An opened bath seat's return..."):
+  the engine sets `undo` per store, not per product kind. If `undo.applies_to` can say whether it covers this line, the
+  screen will hide it when it does not.

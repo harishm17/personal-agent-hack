@@ -211,7 +211,7 @@ function storeWords(c) {
       const text = t.sentence || t.quote;
       const offset = t.sentence ? Math.max(0, t.sentence.indexOf(t.quote)) : 0;
       const [s, e] = figureSpan(t.quote, t).map((v) => v + offset);
-      parts.push(`<span class="ci">“${esc(text.slice(0, s))}<mark data-src="q:${esc(t.figure)}">${esc(text.slice(s, e))}</mark>${esc(text.slice(e))}”</span>`);
+      parts.push(`<span class="ci clamp">“${esc(text.slice(0, s))}<mark data-src="q:${esc(t.figure)}">${esc(text.slice(s, e))}</mark>${esc(text.slice(e))}”</span>`);
       if (t.kind === "spread") ends.push(`A stated spread: code uses ${num(t.value, t.unit)} ${esc(t.unit)}, the end that could fail.`);
       if (t.kind === "adjustable") ends.push(`An adjustable range: it passes when the limit lies inside it.`);
     }
@@ -250,9 +250,9 @@ function renderContext(view) {
       ${parts.join("") || '<span class="note ci">no sentence with a figure was found on this page</span>'}
       ${ends.map((e) => `<span class="note ci">${e}</span>`).join("")}</div>`;
     const a = shown.arrival, u = shown.undo, bits = [];
-    if (a && a.quote) bits.push(`<span class="ci">delivery: “${esc(a.quote)}” <span class="note">stated, not guaranteed</span></span>`);
+    if (a && a.quote) bits.push(`<span class="ci clamp2" title="${esc(a.quote)}">delivery, stated not guaranteed: “${esc(a.quote)}”</span>`);
     else if (a) bits.push(`<span class="note ci">delivery time: not stated</span>`);
-    if (u && u.quote) bits.push(`<span class="ci">to undo: “${esc(u.quote)}”${u.fee ? ` <span class="note">${esc(u.fee)}</span>` : ""}</span>`);
+    if (u && u.quote) bits.push(`<span class="ci clamp2" title="${esc(u.quote)}">to undo: “${esc(u.quote)}”</span>`);
     if (bits.length) html += `<div class="grp"><span class="who store ci"><i class="dotk"></i>${esc(shown.product.store)}'s agent, asked</span>${bits.join("")}</div>`;
   } else {
     html += `<div class="none ci">Nothing is proposed: ${esc(line.reason || "no product yet")}. The agent does not guess a figure a page never states.</div>`;
