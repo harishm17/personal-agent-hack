@@ -54,15 +54,17 @@ def test_engine_refusal_never_raises(monkeypatch):
     assert gate._s["refused"] and gate._s["arm"] == "sonnet"
 
 
-def test_a_reader_that_states_more_products_is_not_kept_for_that_reason(monkeypatch):
+def test_the_verdict_comes_from_disagreement_on_the_same_quote_not_from_counts(monkeypatch):
     monkeypatch.setitem(gate._s, "history", [{"at": "t", "value": True, "arm": "sie-qwen"}])
     evid = {"products_accepted": {"sonnet": 67, "sie-qwen": 81, "of": 111}, "small_accepts_more": 14,
+            "inside_only_small_reader": [{"candidate": "c"}] * 3,
             "disagreements": {"different_value": 3, "small_only": 15, "reference_only": 0}}
     assert gate.verdict_from(evid) == "switch back"
     assert gate.decision(evid, False)["decision"] == "switched back"
     assert gate.decision(evid, True)["decision"] == "switch back advised (the gate is on)"
-    assert "3 figure(s) differently" in gate.decision(evid, False)["text"]
-    same = dict(evid, disagreements={"different_value": 0, "small_only": 0, "reference_only": 0}, small_accepts_more=0)
-    assert gate.verdict_from(same) == "kept" and gate.decision(same, True)["decision"] == "kept"
-    only_more = dict(evid, disagreements={"different_value": 0, "small_only": 2, "reference_only": 0})
-    assert gate.verdict_from(only_more) == "switch back"
+    t = gate.decision(evid, False)
+    assert "3 quote(s)" in t["text"] and "Amplitude" not in t["text"] and t["decided_by"].startswith("code")
+    extra_only = dict(evid, disagreements={"different_value": 0, "small_only": 15, "reference_only": 0})
+    assert gate.verdict_from(extra_only) == "kept" and gate.decision(extra_only, True)["decision"] == "kept"
+    assert gate.decision(extra_only, False)["decision"] == "not adopted"
+    assert gate.verdict_from({}) is None
