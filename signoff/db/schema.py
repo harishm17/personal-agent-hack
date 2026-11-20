@@ -1,7 +1,7 @@
 """Tables of database `signoff`. Rowstore: small tables with frequent upserts."""
 from signoff.db import conn
 
-SCHEMA_VERSION = "3"  # 3: one row per candidate (an option is its own candidate), every stated value of a figure is a row
+SCHEMA_VERSION = "4"  # 3: one row per candidate (an option is its own candidate), every stated value of a figure is a row
 
 TABLES = {
     # one row per candidate of the engine's state (a product sold in several options is several candidates)
@@ -18,7 +18,7 @@ TABLES = {
     # one row per limit of the current state: shopper_sum is the sum of the shopper-fact terms, bound is resolved
     "limits": """CREATE ROWSTORE TABLE IF NOT EXISTS limits (
         limit_id VARCHAR(40) NOT NULL PRIMARY KEY, line_id VARCHAR(20), name VARCHAR(80), op VARCHAR(2),
-        figure VARCHAR(60), shopper_sum DOUBLE, bound DOUBLE, unit VARCHAR(20), several VARCHAR(10), state_version INT)""",
+        figure VARCHAR(60), shopper_sum DOUBLE, bound DOUBLE, unit VARCHAR(20), several VARCHAR(10), unit_required TINYINT DEFAULT 1, state_version INT)""",
     "strikes": """CREATE ROWSTORE TABLE IF NOT EXISTS strikes (
         line_id VARCHAR(20) NOT NULL, product_key VARCHAR(300) NOT NULL, reason TEXT,
         PRIMARY KEY (line_id, product_key))""",
