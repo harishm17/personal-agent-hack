@@ -40,6 +40,9 @@
   .quote { margin:4px 0 0; padding-left:8px; border-left:1px solid var(--line); color:var(--t2); overflow-wrap:anywhere; }
   .total { font:500 20px/28px var(--f); }
   .code { font:600 20px/28px ui-monospace, Menlo, monospace; color:var(--t1); letter-spacing:.02em; }
+  .dock { position:sticky; bottom:calc(56px + env(safe-area-inset-bottom)); z-index:4; display:flex; flex-direction:column; gap:8px; padding:8px 0; background:var(--bg); box-shadow:0 -8px 8px var(--bg); }
+  .dock .code { text-align:center; }
+  button.act.big.armed { background:var(--ok); border-color:var(--ok); font-weight:600; font-size:16px; }
   .hash { font:12px/16px ui-monospace, Menlo, monospace; color:var(--t2); overflow-wrap:anywhere; }
   .stack { display:flex; flex-direction:column; gap:4px; }
   .rule { border-top:1px solid var(--line); }
@@ -77,7 +80,7 @@
 </header>
 <main id="main" aria-live="polite" hidden></main>
 <nav id="nav" role="tablist" hidden>
-  <button role="tab" data-tab="sheet" aria-selected="true">Sheet</button>
+  <button role="tab" data-tab="sheet" aria-selected="true">Sign</button>
   <button role="tab" data-tab="lines" aria-selected="false">Items</button>
   <button role="tab" data-tab="adjust" aria-selected="false">Adjust a limit</button>
 </nav>
@@ -238,7 +241,9 @@ function show(html, center = false) { const m = $("#main"); m.innerHTML = (cente
 function head() {
   $("#h1").textContent = state ? state.sheet.title : "Sign-Off";
   if (!issuer.enrolled || !mine()) return;
-  $("#who").textContent = issuer.name + " · key " + issuer.key_id.slice(0, 6) + (signed ? " · signed" : "");
+  const approver = (state && state.sheet.issuer && state.sheet.issuer.name) || issuer.name;
+  $("#h1").textContent = approver + " signs · " + state.sheet.title;
+  $("#who").textContent = signed ? "signed" : "";
 }
 function labelNav() { const a = document.querySelector('nav button[data-tab="adjust"]'), l = document.querySelector('nav button[data-tab="lines"]'); if (a) a.textContent = "Adjust a " + LIM(); if (l) l.textContent = V("items", "Items"); }
 /* A reset or a switch of the sheet on the laptop wipes the enrolment: say so plainly, never a silent broken state. */
@@ -419,10 +424,11 @@ function renderSheet() {
     <div class="sub">${esc(sl.text)}</div>
     ${sl.rows.length ? `<details><summary>Sentences</summary><ul class="plain">${sl.rows.map((r) => `<li class="stack"><span><span class="tag ${r.verdict === "verified" ? "ok" : r.verdict === "conflict" ? "bad" : ""}">${esc(r.verdict)}</span>${r.blocks ? "" : ' <span class="tag">advisory</span>'}</span><span>${esc(r.sentence)}</span>${r.source && r.source.version_id ? `<span class="sub">against ${esc(r.source.title || "the " + O())}, version ${esc(r.source.version_num || String(r.source.version_id).slice(0, 8))}${r.source.version_num == null && r.source.latest_version_id ? " (an older version)" : ""}</span>` : ""}${r.moved_from_order ? `<span class="sub">changed from the ${esc(O())}</span>` : ""}</li>`).join("")}</ul></details>` : ""}</div>
     <div class="rule"></div>
-    <div class="stack"><div class="cap">What you sign</div>${codeBlock(canon.hash)}
+    <div class="stack"><div class="cap">What you sign</div><details><summary>Full code and key</summary><div class="hash">${esc(canon.hash)}</div><div class="sub">Signing key ${esc(issuer.key_id.slice(0, 6))}</div></details>
     <div class="sub" style="color:${canon.match ? "var(--ok)" : "var(--bad)"}">${canon.match ? "✓ Same code as the laptop. This phone worked it out from the sheet above." : "This phone computed a different hash from the one the server sent. It will not sign."}</div></div></div>
-    <button class="act primary big" id="sign" ${canon.match && buyable ? "" : "disabled"}>${armed(Date.now(), armedUntil, armedHash, hashNow()) ? "Tap again to sign" : "Sign"}</button>
-    ${signNote ? `<div class="sub" style="color:var(--bad)">Not signed: ${esc(signNote)}</div>` : ""}`);
+    <div class="dock"><div class="code">${esc(shortCode(canon.hash))}</div>
+    <button class="act primary big ${armed(Date.now(), armedUntil, armedHash, hashNow()) ? "armed" : ""}" id="sign" ${canon.match && buyable ? "" : "disabled"}>${armed(Date.now(), armedUntil, armedHash, hashNow()) ? "Tap again to sign" : "Sign"}</button>
+    ${signNote ? `<div class="sub" style="color:var(--bad)">Not signed: ${esc(signNote)}</div>` : ""}</div>`);
   main.querySelectorAll("details[data-why]").forEach((d) => { d.open = openWhy.has(d.dataset.why); d.addEventListener("toggle", () => (d.open ? openWhy.add(d.dataset.why) : openWhy.delete(d.dataset.why))); });
   ensureSenso();
   $("#pstart").onclick = async () => {
@@ -434,8 +440,8 @@ function renderSheet() {
   $("#sign").onclick = async () => {
     const btn = $("#sign"), seen = hashNow();
     if (!armed(Date.now(), armedUntil, armedHash, seen)) {   // the first tap arms the button; a second tap within four seconds, on the same sheet, signs
-      armedUntil = Date.now() + 4000; armedHash = seen; btn.textContent = "Tap again to sign";
-      setTimeout(() => { if ($("#sign") && !busy && Date.now() >= armedUntil) $("#sign").textContent = "Sign"; }, 4100);
+      armedUntil = Date.now() + 4000; armedHash = seen; btn.textContent = "Tap again to sign"; btn.classList.add("armed");
+      setTimeout(() => { if ($("#sign") && !busy && Date.now() >= armedUntil) { $("#sign").textContent = "Sign"; $("#sign").classList.remove("armed"); } }, 4100);
       return;
     }
     armedUntil = 0; armedHash = null; signNote = "";
