@@ -34,7 +34,7 @@ function html(f) {
         <div class="qr"><span class="cap">quoted</span>${m.quoted.map((q, i) => `<span class="tok q" data-s="2" data-a="pop" data-d="${1500 + i * 500}" id="fl-q-${i}">${esc(q)}</span>`).join("")}</div>
       </div></div>` : none("No model record");
   const pills = f.bypass.map((b, i) => `<span class="tok by" data-s="0" data-a="from" data-from="${b.owner === "issuer" ? "#fl-order" : "#fl-home-0"}" data-d="${1500 + i * 300}" id="fl-by-${i}" style="left:${150 + i * 150}px;top:${28 + i * 18}px">${dot(b.owner)}${esc(b.text)}</span>`).join("");
-  const outside = m && m.outside ? m.outside.map((o) => `<span class="chip">${esc(o)}</span>`).join("") : `<span class="chip">no ledger rows</span>`;
+  const outside = m && m.outside ? m.outside.map((o) => `<span class="fchip">${esc(o)}</span>`).join("") : `<span class="fchip">no ledger rows</span>`;
   const checks = f.checks.map((c, i) => `<span class="tok" data-s="3" data-a="from" data-from="#fl-q-${i}" id="fl-l-${i}">${dot(c.left.owner)}${esc(c.left.text)}</span>
       <span class="op" data-s="3" data-d="600">${esc(c.op)}</span>
       <span class="tok" data-s="3" data-a="from" data-from="#fl-by-${i}" data-d="900" id="fl-r-${i}">${dot(c.right.owner)}${esc(c.right.text)}</span>
@@ -79,14 +79,14 @@ function draftHtml(t) {
 function guardRow(f) {
   const t = f.talk, a = f.asked;
   if (t) {
-    const chips = t.removed.map((r, i) => `<span class="chip x" data-s="4" data-a="from" data-from="#fl-draft" data-d="${1300 + i * 110}" title="${esc(r.mark)}">${esc(r.text)}</span>`).join("");
+    const chips = t.removed.map((r, i) => `<span class="fchip x" data-s="4" data-a="from" data-from="#fl-draft" data-d="${1300 + i * 110}" title="${esc(r.mark)}">${esc(r.text)}</span>`).join("");
     return `<div class="fc" data-s="4" data-d="900" id="fl-draft"><div class="cap">the agent's draft · ${esc(t.at)}</div><p class="dr">${draftHtml(t)}</p></div>
       <div class="gate" data-s="4" data-d="1100"><b class="cap">Guard · ${t.removed.length ? "stopped here" : "nothing stopped"}</b><div class="stopped">${chips}</div>
         ${t.left.length ? `<span class="cap">left: ${esc(t.left.join(" · "))}</span>` : ""}</div>
       <div class="fc" data-s="4" data-d="2300"><div class="cap">${dot("store")}${esc(t.store)}'s agent replied</div><p class="dr">“<mark>${esc(clip(t.reply, 170))}</mark>”</p></div>`;
   }
   return `${a ? `<div class="fc" data-s="4" data-d="900"><div class="cap">our agent wrote</div><p class="dr">${esc(a.question)}</p></div>` : none("No question record")}
-    <div class="gate" data-s="4" data-d="1100"><b class="cap">Guard</b><span class="chip">no guard record</span></div>
+    <div class="gate" data-s="4" data-d="1100"><b class="cap">Guard</b><span class="fchip">no guard record</span></div>
     ${a ? `<div class="fc" data-s="4" data-d="2300"><div class="cap">${dot("store")}${esc(a.store)}'s agent replied</div><p class="dr">“<mark>${esc(clip(a.reply, 170))}</mark>”</p></div>` : none("No reply record")}`;
 }
 

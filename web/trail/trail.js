@@ -241,7 +241,7 @@ async function load() {
   const fresh = new Set(seen ? [...keys].filter((k) => !seen.has(k)) : []);
   seen = keys;
   if (first) {                       // open the step named in the address, or the latest step that has events
-    const named = feed.steps.find((s) => s.id === location.hash.slice(1));
+    const named = feed.steps.find((s) => s.id === location.hash.slice(1) && s.events);
     const latest = [...feed.steps].reverse().find((s) => s.events);
     if (named || latest) open.add((named || latest).id);
     const asked = feed.events.find((e) => String(e.n) === params.get("event"));   // /trail/?event=12 opens that event
