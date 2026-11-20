@@ -47,8 +47,15 @@ The text may end with "Selected option: ...": that is the option this page is fo
 figure per option, report the statement for that option, and say so in "note".
 
 Answer with one JSON object and nothing else:
-{"figures": [{"figure": "<name>", "quote": "...", "kind": "single", "value": 300, "low": null, "high": null,
-"unit": "lb", "label": "...", "note": null}]}"""
+{"figures": [{"figure": "<name>", "quote": "...", "kind": "single", "value": 7.25, "low": null, "high": null,
+"unit": "<unit as written>", "label": "...", "note": null}]}"""
+
+
+# The instructions as they were when the committed readings were made: identical except for the example at the
+# end, which showed `"value": 300 ... "unit": "lb"`. An example must not be any sheet's figure or bound, so it now
+# shows a value and a unit no sheet uses. A sample re-read under the new example is reported in the notes.
+SYSTEM_WITH_THE_OLD_EXAMPLE = SYSTEM.replace('"value": 7.25,', '"value": 300,').replace('"unit": "<unit as written>"', '"unit": "lb"')
+assert SYSTEM_WITH_THE_OLD_EXAMPLE != SYSTEM
 
 
 class NoMeaning(ValueError):

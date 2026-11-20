@@ -59,14 +59,14 @@ def rows_of(files):
     return options.expand([row for path in files for row in json.loads(pathlib.Path(path).read_text())])
 
 
-def text_key(product, model, sheet):
+def text_key(product, model, sheet, system=None):
     """Same text, same reader, same instructions (the prompt and the sheet's words for the figures asked)."""
     asked = reader.wanted_figures(product, sheet)
     if model == gliner.EXTRACTOR:
         salt = gliner.MODEL + "|" + ",".join(asked)
     else:
         given, units = sheet.get("figures") or {}, reader.figure_units(sheet)
-        salt = reader.SYSTEM + "".join("%s(%s):%s;" % (n, units.get(n), given.get(n)) for n in asked)
+        salt = (system or reader.SYSTEM) + "".join("%s(%s):%s;" % (n, units.get(n), given.get(n)) for n in asked)
     return hashlib.sha256(("%s\n%s\n%s" % (model, salt, product.get("text") or "")).encode()).hexdigest()[:16]
 
 
@@ -100,7 +100,13 @@ def run_reader(products, sheet, model, out, workers=8, force=False, assume_unit=
     log_path = folder / (store + ".log")
     row_key = lambda r: (r["product_id"], r.get("variant_id"))  # noqa: E731
     log = {} if force or not log_path.exists() else {row_key(r): r for r in json.loads(log_path.read_text())}
-    todo = [p for p in products if log.get(row_key(p), {}).get("key") != text_key(p, model, sheet)]
+    def cached(p):
+        """A reading stands when it was made with today's instructions, or with the instructions that differ
+        only in the example at their end (see `reader.SYSTEM_WITH_THE_OLD_EXAMPLE`)."""
+        key = log.get(row_key(p), {}).get("key")
+        return key is not None and key in (text_key(p, model, sheet), text_key(p, model, sheet, reader.SYSTEM_WITH_THE_OLD_EXAMPLE))
+
+    todo = [p for p in products if not cached(p)]
     errors = []
     with concurrent.futures.ThreadPoolExecutor(workers) as pool:
         jobs = {pool.submit(read_one, p, sheet, model, assume_unit): p for p in todo}
@@ -212,8 +218,9 @@ def main(argv=None):
         gliner.warm()
     summary = run(files, sheet, deciding, args.out, evidence, "first", args.workers, args.limit, args.force)
     if args.out == default_out and not args.limit and not args.sheet_file:
-        from signoff.extract import score
+        from signoff.extract import ledger, score
         summary["comparison"] = str(score.write(args.out))
+        summary["read_ledger"] = "%d rows" % ledger.rebuild(args.sheet)[1]  # what each call was given, committed with the readings
     print(json.dumps(summary))
     return 1 if summary["errors"] and not summary["statements"] else 0
 

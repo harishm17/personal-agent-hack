@@ -103,12 +103,45 @@ function stepRow(s, fresh) {
       <span class="tally">${tally}</span><span class="when">${when}</span>
       <span class="rc" ${s.receipts ? `title="${s.receipts} receipts"` : ""}>${receipts}</span><span class="chev">${mine.length ? CHEV : ""}</span>
     </button>
-    ${isOpen ? `<div class="evs">${rows.map((e) => eventRow(e, fresh)).join("") || `<div class="none">None of this kind</div>`}</div>` : ""}
+    ${isOpen ? `<div class="evs">${s.context ? contextBlock(s.context, "model calls") : ""}${rows.map((e) => eventRow(e, fresh)).join("") || `<div class="none">None of this kind</div>`}</div>` : ""}
   </div>`;
 }
 
+// ---------- context: what each model call was given, and what it was not ----------
+const count = (n, calls) => (n === calls ? "" : `<i>${n}</i>`);   // a number only when it is not every call
+const size = (b) => (b >= 10000 ? (b / 1000).toFixed(0) + " kB" : b.toLocaleString("en-US") + " bytes");
+
+/** Two short rows of marks from the ledger's own record of a set of messages. With the sender's own `parts` and
+ *  `withheld` lists on the rows, those are shown; otherwise the fact classes it declared. A sealed value that the
+ *  ledger's search met in the text sent is its own row, in red: it is a finding, whatever the reason. */
+function contextBlock(c, noun, full = false) {
+  const given = c.parts.length ? c.parts.map((p) => `<span class="cm">${esc(p.name)}${p.chars != null ? `<i>${p.chars.toLocaleString("en-US")}</i>` : ""}</span>`)
+    : c.given.map((g) => `<span class="cm">${esc(g.label)}${count(g.calls, c.calls)}</span>`);
+  const not = c.withheld.length ? c.withheld.map((w) => `<span class="cm no">${esc(w.name)}</span>`) : c.not_given.map((g) => `<span class="cm no">${esc(g.label)}</span>`);
+  const hits = c.found.map((f) => `<span class="cm hit">${esc(f.label)}<i>${f.calls}</i></span>`);
+  const b = c.bytes;
+  const row = (k, v) => (v ? `<span class="k">${k}</span><div class="v">${v}</div>` : "");
+  return `<div class="ctx">${row(`${c.calls} ${c.calls === 1 ? noun.replace(/s$/, "") : noun}`, b ? `<span class="sz">${size(b.median)} each${b.min !== b.max ? `, ${size(b.min)} to ${size(b.max)}` : ""}</span>` : "")}
+    ${row("given", given.join("") || `<span class="cm no">nothing declared</span>`)}${row("also in text", hits.join(""))}${row("not given", not.join(""))}
+    ${full && c.found.length ? `<p class="why">The ledger's search met ${esc(c.found.map((f) => f.matches.join(", ")).join("; "))} in the text that was sent. A page that states the same number as a limit shows here; the ledger cannot tell the two apart.</p>` : ""}</div>`;
+}
+
+/** One line over the steps: how many model calls, how many carried no limit, measurement or person, and the rest. */
+function contextLine() {
+  const c = feed.summary.model_calls;
+  if (!c) return "";
+  const declared = (id) => (c.given.find((g) => g.id === id) || {}).calls || 0, found = (id) => (c.found.find((f) => f.id === id) || {}).calls || 0;
+  const parts = [`<b>${c.calls}</b> model call${c.calls === 1 ? "" : "s"}`];
+  if (c.calls) {
+    parts.push(`<b>${declared("store_text")}</b> given page text`);
+    parts.push(declared("limit") || found("limit") ? [declared("limit") ? `<b>${declared("limit")}</b> given limits` : "", found("limit") ? `<b class="hit">${found("limit")}</b> with a limit's number in the text` : ""].filter(Boolean).join(" · ") : "none saw a limit");
+    parts.push(declared("person") || found("person") ? `<b>${declared("person") + found("person")}</b> saw a person's name` : "none saw a person");
+  } else parts.push("none in the ledger");
+  return `<div class="ctxline">${parts.join('<span class="sep">·</span>')}</div>`;
+}
+
 function renderSteps(fresh = new Set()) {
-  $("#steps").innerHTML = feed.steps.map((s) => stepRow(s, fresh)).join("");
+  $("#steps").innerHTML = contextLine() + feed.steps.map((s) => stepRow(s, fresh)).join("");
   if (!MOTION) return;
   for (const row of document.querySelectorAll(".ev.new")) {       // a new event slides in under its step
     row.animate([{ height: "0px", opacity: 0, transform: "translateY(-4px)" }, { height: row.offsetHeight + "px", opacity: 1, transform: "none" }],
@@ -169,6 +202,7 @@ function renderSheet() {
     <h2 class="${e.stopped ? "stop" : ""}">${esc(e.label)}</h2>
     ${e.detail ? `<p class="detail">${esc(e.detail)}</p>` : ""}
     <div class="facts">${facts}</div>
+    ${e.context && (e.to_lane === "reader" || e.to_lane === "stores") ? contextBlock(e.context, e.to_lane === "reader" ? "model calls" : "messages", true) : ""}
     <div class="items">${e.items.map((it) => itemHtml(it, e)).join("")}</div>
     ${e.more ? `<div class="more">and ${e.more} more</div>` : ""}
     ${nearHtml(e)}`;

@@ -8,7 +8,7 @@ const base = process.env.SCREEN_URL || "http://localhost:8003";
 const port = 9333 + Math.floor(Math.random() * 500);
 const sep = pathq.includes("?") ? "&" : "?";
 const [path, hash = ""] = pathq.split("#");
-const url = `${base}${path}${sep}live=0&motion=1${hash ? "#" + hash : ""}`;
+const url = `${base}${path}${sep}${process.env.LIVE === "1" ? "" : "live=0&"}motion=1${hash ? "#" + hash : ""}`;
 mkdirSync(outdir, { recursive: true });
 const chrome = spawn("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", ["--headless=new", "--disable-gpu",
   "--hide-scrollbars", `--window-size=${process.env.SIZE || "1440,810"}`, `--remote-debugging-port=${port}`, `--user-data-dir=/tmp/signoff-frames-${port}`, "about:blank"],
@@ -30,6 +30,8 @@ try {
   await send("Page.navigate", { url });
   const start = Date.now();
   let n = 0;
+  // EVAL="js" EVAL_AT=ms runs a script in the page part-way through (a click, for example)
+  if (process.env.EVAL) setTimeout(() => send("Runtime.evaluate", { expression: process.env.EVAL }), +(process.env.EVAL_AT || 2500));
   while (Date.now() - start < +total) {
     const at = Date.now() - start;
     const shot = await send("Page.captureScreenshot", { format: "png" });
