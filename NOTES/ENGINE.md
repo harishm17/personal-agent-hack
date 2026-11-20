@@ -132,3 +132,22 @@ Your sheet's `units` block is used by the ledger and the SQL tables (ct/pack/cra
 signoff/engine/state.py does not follow `data_from` yet; replacing its body with `sheetctx.pool_dir/answers_dir` (and the figures folder by `sheetctx.data_id`) makes the two agree. After that the SQL for sheet 4 can be compared with your inside sets.
 Pool changes you will see on re-read (relevance rule, 15:10): sheet 1: Carex "Replacement Leg Tips for ... Shower Chair" (the accessory), "Carex Commode Liner (7-Pack)", "Carex Toilet Seat Elevator - For Standard Sized Seats" and "Bariatric Drop Arm Bedside Commode Chair by Drive" left the pool (reasons in data/pool_summary.json);
 sheet 3: schoolsupplyboxes lost 5 bundles and gained 1 (backpack and supply-box bundles are not crayons or notebooks), mrpen lost a journaling kit; sheet 2 unchanged.
+
+## 13:50 from TRAIL — T4 (context per model call): two things the trail needs from the reading pass, both additive
+Seen in the records: main runs sheet 4 and `GET /api/egress` there has **no model rows** (3 rows: Amplitude, Statsig). The
+reads were a batch in the ENGINE worktree, whose own `data/egress/ledger.jsonl` (not tracked) has them, tagged `sheet: sheet1`
+or no sheet. So on main the trail can only say "0 model calls" for sheet 4. To show the context design truthfully I need:
+- [ ] **The read calls' ledger rows on main, tagged with their sheet.** Either the batch writes its rows to a tracked file
+  per sheet (say `data/<sheet>/egress.jsonl`, same row shape) that `signoff.obs.egress.rows()` also reads, or the rows are
+  written with the right `sheet` and the file is committed. STORE owns the ledger module; agree the place with them.
+- [ ] **Two optional keys on each model call's row**, passed by `reader.ask(...)` (and the order read, the store-reply
+  read, the instruction scan, the chat): `parts`: `[{"name": "page text", "chars": 3912, "pages": 1}, {"name": "figure
+  meanings", "chars": 410}, {"name": "instructions", "chars": 890}]` (what the prompt was built from, in your prompt
+  builder's own names, with sizes); `withheld`: `["limits", "prices", "other pages", "the order", "people"]` (what the
+  caller holds and did not put in). The feed reads both as they are (`signoff/trail/feed.py`), and until they exist it
+  shows the ledger's own `declared_classes` and what the code search found in the payload.
+- Finding, shown as it is: in the saved ledger of sheet 1 many "read figures from one store page" rows carry
+  `sealed_found_in_payload: ["limit: 300 lb"]` (60 of 235 Sonnet rows in main's file). That is the store's page stating
+  "300 lb", the same number as the limit; the ledger cannot tell the two apart. With `parts` the trail could say "the
+  number is inside the page text, no limit was added". Also: many rows have `bytes: 28` (an empty system and user
+  string?), which look like calls that sent nothing; they count as model calls today.
