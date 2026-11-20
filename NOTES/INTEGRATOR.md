@@ -1013,3 +1013,8 @@ runs it on the direct table, and returns `rows`, `direct_rows`, `same`, `only_in
 app_pool_rows, note}. Today on sheet 1: L1 8 against 8, L2 7 against 7, L4 13 against 13, `same: true`. `source=airbyte` is honest about staleness: the table holds 256 rows from two jobs
 (20:02 and 20:49 UTC); since then the pool was rebuilt (options, the new relevance rule), so for products added or dropped since the answers can differ until the next Airbyte sync
 (`python -m signoff.airbyte.sync`, which also now exports the active sheet). Say "the app's own query ran on rows Airbyte delivered at <time>", and re-sync before the demo if the pool changes.
+
+## 13:04 from TRAIL
+Port 8006 is now held by a server started from the AIRBYTE worktree (pid 38120, 13:01:54). I did not touch it; TRAIL
+develops on **8016** from here on. `data/obs/events.jsonl` (written by `signoff.obs` when a server runs in a worktree) is
+untracked and not ignored; I left it in place and did not commit it (STORE's path): it probably wants a `.gitignore` line.

@@ -372,7 +372,8 @@ def _events(atoms: list, run_started=None) -> tuple:
     kept = [a for a in timed if run_started is None or a["t"] >= run_started - GAP_S or a["step"] in KEPT_ACROSS_RESETS]
     earlier = len(timed) - len(kept)
     open_groups, events = {}, []
-    for a in kept + [a for a in atoms if a["t"] is None]:
+    untimed = sorted((a for a in atoms if a["t"] is None), key=lambda a: STEP_IDS.index(a["step"]))   # by step; stable
+    for a in kept + untimed:
         items = a.pop("items", None) or [a["item"]]
         key = (a["group"], a["step"]) if a["group"] else None
         g = open_groups.get(key) if key else None
@@ -418,9 +419,10 @@ def _events(atoms: list, run_started=None) -> tuple:
 
 
 def _step_labels(state: dict) -> dict:
-    name = (((state.get("sheet") or {}).get("issuer") or {}).get("name")) or "Approver"
+    issuer = (state.get("sheet") or {}).get("issuer") or {}
+    who = str(issuer.get("role") or issuer.get("name") or "approver")   # the role, as the decision screen's stepper says it
     return {"list_read": "List read", "stores_searched": "Stores searched", "pages_read": "Pages read",
-            "checked": "Checked", "picked": "Picked", "signs": "%s signs" % name, "carts": "Carts"}
+            "checked": "Checked", "picked": "Picked", "signs": "%s signs" % (who[:1].upper() + who[1:]), "carts": "Carts"}
 
 
 def _step_subs(state: dict) -> dict:
