@@ -11,6 +11,8 @@ from signoff.sign import handcheck
 def hc(tmp_path, monkeypatch):
     monkeypatch.setattr(handcheck, "ANSWERS", tmp_path / "handcheck.jsonl")
     monkeypatch.setattr(handcheck, "SAMPLE", tmp_path / "sample.json")
+    fixture_pool = json.loads((handcheck.ROOT / "fixtures" / "pool.json").read_text())
+    monkeypatch.setattr(handcheck, "load_pool", lambda: (fixture_pool, "fixtures/pool.json (placeholder products)"))
     app = FastAPI()
     app.include_router(handcheck.router)
     return TestClient(app)
@@ -57,5 +59,5 @@ def test_unfinished_or_odd_rows_are_refused(hc):
 def test_page_and_items_are_served(hc):
     assert "Hand-check sheet" in hc.get("/handcheck/").text
     body = hc.get("/api/handcheck/items").json()
-    assert body["total"] in (19, 30)  # 19 from the placeholder pool, 30 once data/pool exists
+    assert body["total"] == 19 and "placeholder" in body["source"]
     assert not handcheck.SAMPLE.exists()  # placeholder products are never pinned
