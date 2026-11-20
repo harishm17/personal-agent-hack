@@ -10,8 +10,11 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 ANSWERS = ROOT / "data" / "store_answers"
 def question_for(need: str) -> str:
     """The delivery and returns question for a line's `need`, the same wording for every sheet."""
-    return ("If I order a %s today to a California address, how many days will delivery take? "
-            "And can an opened %s be returned, and is there any fee?" % (need, need))
+    plural = need.endswith("s") and not need.endswith("ss")
+    order = need if plural else ("an " if need[:1].lower() in "aeiou" else "a ") + need
+    opened = "opened " + need if plural else "an opened " + need
+    return ("If I order %s today to a California address, how many days will delivery take? "
+            "And can %s be returned, and is there any fee?" % (order, opened))
 
 
 QUESTION = question_for("shower chair")  # sheet 1's first line; kept for callers that still import it
@@ -21,7 +24,8 @@ _ONE_DAY = re.compile(r"(?:within|in|about)\s+(\d+)\s*(?:business\s+|working\s+)
 
 
 def _sentences(text: str) -> list[str]:
-    return [s.strip() for s in re.split(r"(?<=[.!?;])\s+|;\s*", text) if s.strip()]
+    """Sentences: a full stop ends one only when a capital letter follows ("U.S. order" does not end it, "U.S. Opened" does); a semicolon ends a clause."""
+    return [s.strip() for s in re.split(r"(?<=[.!?])\s+(?=[A-Z])|;\s*", text) if s.strip()]
 
 
 def _clause(text: str, sent: str) -> str:
@@ -32,7 +36,8 @@ def _clause(text: str, sent: str) -> str:
 _NOT_SAID = re.compile(r"\b(?:does|do|did|is|are)(?: not|n.t)\s+(?:specif|state|say|mention|clear|provid|list|address|cover)|"
                        r"\bnot (?:specified|stated|clear|mentioned|provided)|unclear|no information|cannot tell|can.t tell", re.I)
 _DENIED = re.compile(r"cannot be returned|can.t be returned|not (?:be )?returnable|non-returnable|not eligible|excluded from returns|"
-                     r"no returns|final sale|not accepted|(?:will not|won.t|do not|don.t) accept|unable to be returned", re.I)
+                     r"no returns|final sale|not accepted|(?:will not|won.t|do not|don.t|does not|doesn.t) accept|unable to be returned", re.I)
+_ABOUT_OPENED = re.compile(r"opened|unboxed|\bused\b", re.I)
 _HEDGED = re.compile(r"\bmay\b|\bmight\b|\bcould\b|generally|typically|usually|depends|only if|\bif\b|\bmust\b|unused|unopened|"
                      r"original packaging|resalable|provided|unless|conditions?\b|would not meet|not meet", re.I)
 _AFFIRMED = re.compile(r"can be returned|is returnable|are returnable|accepts? returns?|returns? (?:are |is )?accepted|"
@@ -49,21 +54,22 @@ def returnable_from(sentence: str) -> str:
         return "no"
     if _HEDGED.search(sentence):
         return "unclear"
-    return "yes" if _AFFIRMED.search(sentence) else "unclear"
+    # a plain "returns are accepted" says nothing about an opened item: yes needs the sentence to be about the opened item
+    return "yes" if _AFFIRMED.search(sentence) and _ABOUT_OPENED.search(sentence) else "unclear"
 
 
 def parse_reply(store: str, question: str, answer: str, asked_at: str) -> dict:
     delivery = {"stated": False, "quote": None, "days_low": None, "days_high": None}
     for sent in _sentences(answer):
         m = _DAYS.search(sent)
-        if m and re.search(r"ship|deliver|arriv", sent, re.I):
+        if m and re.search(r"ship|deliver|arriv", sent, re.I) and not re.search(r"return|refund|exchange", sent, re.I):
             delivery = {"stated": True, "quote": sent[: m.end()].strip().rstrip(".;"),
                         "days_low": int(m.group(1)), "days_high": int(m.group(2))}
             break
     if not delivery["stated"]:
         for sent in _sentences(answer):
             m = _ONE_DAY.search(sent)
-            if m and re.search(r"ship|deliver|arriv", sent, re.I):
+            if m and re.search(r"ship|deliver|arriv", sent, re.I) and not re.search(r"return|refund|exchange", sent, re.I):
                 n = int(m.group(1))
                 delivery = {"stated": True, "quote": sent[: m.end()].strip(), "days_low": n, "days_high": n}
                 break
@@ -73,7 +79,8 @@ def parse_reply(store: str, question: str, answer: str, asked_at: str) -> dict:
     returns = {"returnable": "unclear", "fee": None, "quote": None, "applies_to": m.group(1) if m else "opened item"}
     sents = _sentences(answer)
     ret = [s for s in sents if re.search(r"return|refund", s, re.I)]
-    pick = next((s for s in ret if re.search(r"opened|unboxed", s, re.I)), ret[0] if ret else None)
+    opened = next((s for s in sents if re.search(r"opened|unboxed|\bused\b", s, re.I)), None)
+    pick = opened or (ret[0] if ret else None)
     if pick:
         returns["quote"] = _clause(answer, pick)
         returns["returnable"] = returnable_from(pick)

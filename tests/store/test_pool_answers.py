@@ -67,3 +67,21 @@ def test_every_pool_product_carries_every_in_stock_option():
     prod = {"variants": [{"id": "a", "title": "12 Inch", "price": {"amount": 5}, "availability": {"available": True}},
                          {"id": "b", "title": "16 Inch", "price": {"amount": 6}, "availability": {"available": False}}]}
     assert build_pool.options_of(prod) == [{"variant_id": "a", "title": "12 Inch", "price_cents": 5, "available": True}]
+
+
+def test_questions_read_naturally_for_singular_and_plural_needs():
+    assert "order a shower chair today" in ask.question_for("shower chair") and "can an opened shower chair be returned" in ask.question_for("shower chair")
+    assert "order an electric scooter today" in ask.question_for("electric scooter")
+    assert "order headphones today" in ask.question_for("headphones") and "can opened headphones be returned" in ask.question_for("headphones")
+
+
+def test_returns_and_delivery_are_read_from_the_right_sentences():
+    a = ("For a full-priced U.S. order, delivery takes 2\u20137 business days total. Headphones can be returned within 30 days for a refund. "
+         "The policy doesn\u2019t specify whether opened headphones qualify.")
+    r = ask.parse_reply("x", "Can an opened pair be returned?", a, "t")
+    assert r["delivery"]["quote"] == "For a full-priced U.S. order, delivery takes 2\u20137 business days" and r["returns"]["returnable"] == "unclear"
+    r = ask.parse_reply("x", "q", "Delivery timing isn\u2019t specified. Items are eligible for a refund within 14 days of the ship date.", "t")
+    assert r["delivery"]["stated"] is False  # a refund window is not a delivery time
+    r = ask.parse_reply("x", "q", "The store doesn\u2019t accept returns or exchanges, including for opened drinks.", "t")
+    assert r["returns"]["returnable"] == "no"
+    assert ask.returnable_from("Returns are accepted within 30 days.") == "unclear"  # nothing about an opened item
