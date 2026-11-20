@@ -57,5 +57,5 @@ def test_unfinished_or_odd_rows_are_refused(hc):
 def test_page_and_items_are_served(hc):
     assert "Hand-check sheet" in hc.get("/handcheck/").text
     body = hc.get("/api/handcheck/items").json()
-    assert body["total"] == 19 and "placeholder" in body["source"]
+    assert body["total"] in (19, 30)  # 19 from the placeholder pool, 30 once data/pool exists
     assert not handcheck.SAMPLE.exists()  # placeholder products are never pinned
