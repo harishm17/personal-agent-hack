@@ -62,6 +62,7 @@ document.body.innerHTML = `<div id="app">
   <main class="list card" id="list"><p class="muted">Loading…</p></main>
   <aside class="side" id="side" aria-label="Why this one, and the signature"></aside>
   <aside class="drawer card" id="drawer" hidden aria-live="polite"></aside>
+  <div class="replay" id="replay" hidden role="dialog" aria-modal="true" aria-label="How the agent got here"></div>
   <div class="toast" id="toast" hidden role="status"></div>
   <div class="tip" id="tip" hidden></div></div>`;
 
@@ -127,9 +128,15 @@ async function loadAux() {
   const needCode = state && !(state.issuer_key && state.issuer_key.enrolled) && !state.seal.signed;
   const opt = (path, url) => (has(path) ? get(url || path) : null);
   aux.asks = has("/api/asks") ? await get("/api/asks") : null;
+  if (params.get("replay") === "show") aux.embed = true;       // to look at the overlay before the graph page has its embed mode
+  if (aux.embed === undefined && aux.pages["/graph/"]) {
+    const text = (url) => fetch(url, { cache: "no-store" }).then((r) => (r.ok ? r.text() : "")).catch(() => "");
+    const html = await text("/graph/"), scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((m) => new URL(m[1], location.origin + "/graph/").pathname);
+    aux.embed = /\bembed\b/.test(html) || (await Promise.all(scripts.map(text))).some((js) => /[?&'"]embed\b|get\(["']embed["']\)/.test(js));
+  }
   const [egress, gate, enroll, trail, sheets] = await Promise.all([opt("/api/egress", "/api/egress?limit=5000"), opt("/api/gate/status"),
     needCode ? opt("/api/issuer/enroll-code") : null, opt("/api/trail"), opt("/api/sheets")]);
-  const key = JSON.stringify([aux.pages, aux.reviews, aux.asks, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
+  const key = JSON.stringify([aux.pages, aux.embed, aux.reviews, aux.asks, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
   Object.assign(aux, { egress, gate, enroll, trail, sheets });
   if (key !== aux.key && state) {       // redraw quietly, and never in the middle of the opening motion
     aux.key = key;
@@ -337,6 +344,27 @@ function toolsSheet() {
     <p class="small"><i class="tm ok"></i>the tool's own check holds · <i class="tm"></i>read the detail</p>`;
 }
 
+// ---------- how the agent got here: the run replayed (the graph page, embedded), then back to the list ----------
+function openReplay() {
+  const el = q("#replay"), line = theLine();
+  el.innerHTML = `<div class="rpanel"><div class="rhead"><span>How the agent got here · ${esc(cap(line.need))}</span><button class="btn" data-replay-close>Back to the list</button></div>
+    <iframe title="The run, replayed" src="/graph/?embed=1&autoplay=1&line_id=${encodeURIComponent(line.line_id)}"></iframe></div>`;
+  el.hidden = false;
+  if (fx.MOTION) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: "ease-out" });
+  q("[data-replay-close]").focus();
+}
+function closeReplay() {
+  const el = q("#replay");
+  if (el.hidden) return;
+  const done = () => {
+    el.hidden = true; el.innerHTML = "";
+    const pick = q("#rows > .rowx.picked");            // the list is there, with the pick highlighted
+    if (pick) { pick.scrollIntoView({ block: "nearest" }); if (fx.MOTION) pick.animate([{ boxShadow: "0 0 0 0.375rem var(--accent-pale)" }, { boxShadow: "0 0 0 0 transparent" }], { duration: 900, easing: "ease-out" }); }
+  };
+  if (fx.MOTION) el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in" }).finished.then(done, done); else done();
+}
+addEventListener("message", (e) => { if (e.origin === location.origin && e.data && e.data.type === "signoff:replay-done") closeReplay(); });
+
 // ---------- the stepper: the run across the top. Every number is from the state ----------
 function stepList(line, pick) {
   const { sheet, seal, counts } = state, o = state.order;
@@ -357,7 +385,8 @@ function stepList(line, pick) {
 
 function renderSteps(line, pick) {
   const steps = stepList(line, pick), current = steps.findIndex((s) => !s.done);
-  q("#steps").innerHTML = steps.map((s, i) => `<button class="step ${s.done ? "done" : "todo"}${i === current ? " now" : ""}${s.id === "signs" || s.id === "carts" ? " key" : ""}" data-open="step:${s.id}" ${i === current ? 'aria-current="step"' : ""}>
+  const replayBtn = aux.embed ? `<button class="replaybtn" data-replay title="How the agent got here: replay the run">▶ Replay the run</button>` : "";
+  q("#steps").innerHTML = replayBtn + steps.map((s, i) => `<button class="step ${s.done ? "done" : "todo"}${i === current ? " now" : ""}${s.id === "signs" || s.id === "carts" ? " key" : ""}" data-open="step:${s.id}" ${i === current ? 'aria-current="step"' : ""}>
     <span class="n">${s.done ? "✓" : i + 1}</span><span class="t"><span class="l">${esc(s.label)}</span><small ${s.k ? `data-k="${s.k}"` : ""}>${esc(s.small)}</small></span></button>`).join("");
 }
 
@@ -503,19 +532,19 @@ function renderList(line, pick) {
   if (pinned.length) fold += 1;
   // a limit is the approver's: read-only on the laptop. Where the route exists, the shopper can ask for a change.
   const canAsk = aux.routes && aux.routes.has("/api/shopper/ask-change") && !state.seal.signed && !FIXTURE;
-  const owned = (limit) => {
+  const owned = (limit) => {         // one quiet line under the limit: whose it is, and the ask or its outcome
     if (limit.bound.source !== "issuer") return "";
-    const ask = askFor(limit.id), name = esc(state.sheet.issuer.name);
-    const status = !ask ? "" : /pend|wait|open/.test(ask.status || "pending") ? `asked ${name} · waiting`
-      : /declin|refus|reject/.test(ask.status) ? `${name} declined` : `${name} changed it to ${esc(withUnit(g(ask.value ?? ask.applied_value ?? boundOf(limit)), limit.unit))}`;
-    return `<span class="own" title="${name}'s limit: it changes only from ${name}'s phone, with a signature">${name}'s limit · phone only</span>`
-      + (status ? `<span class="askst">${status}</span>` : canAsk ? `<span class="ask" role="button" tabindex="0" data-open="ask:${esc(limit.id)}">Ask ${name}</span>` : "");
+    const ask = askFor(limit.id), name = esc(state.sheet.issuer.name), pending = ask && ask.status === "pending";
+    const tail = ask ? `<span class="askst" title="${esc(ask.text || "")}">${esc(ask.outcome || ask.status)}</span>`
+      : canAsk ? `<span class="ask" role="button" tabindex="0" data-open="ask:${esc(limit.id)}">Ask ${name}</span>` : "";
+    return `<span class="own" title="${name}'s limit: it changes only from ${name}'s phone, with a signature">${ask && !pending ? "" : `${name}'s${tail ? " · " : " limit"}`}${tail}${ask && !pending && canAsk ? ` · <span class="ask" role="button" tabindex="0" data-open="ask:${esc(limit.id)}">ask again</span>` : ""}</span>`;
   };
   const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span>${esc(h.name)} <b data-k="head.${limit.id}">${esc(h.rule)}</b></span>${owned(limit)}</span>`; }).join("");
   const rules = Array.isArray(state.pick_rules) && state.pick_rules.length > 1 ? state.pick_rules : null;
   const cut = (r) => cap(String(r.short || r.label || r.id).replace(/:.*$/, "").replace(/ (that|inside|among) .*$/, "").replace(/_/g, " "));
   const short = (r) => ((rules || []).filter((x) => cut(x) === cut(r)).length > 1 && r.id !== (rules || []).find((x) => cut(x) === cut(r)).id ? cap(String(r.id).replace(/_/g, " ").replace(/ time$/, "")) : cut(r));
-  const seg = rules ? `<div class="seg" role="group" aria-label="Order of the products that pass">${rules.map((r) => `<button data-rule="${esc(r.id)}" aria-pressed="${r.id === ruleId()}" ${state.seal.signed ? "disabled" : ""} title="${esc(r.label || "")}">${esc(short(r))}</button>`).join("")}</div>` : "";
+  const shownRules = (rules || []).filter((r) => r.id === ruleId() || (rules || []).find((x) => cut(x) === cut(r)).id === r.id);
+  const seg = rules ? `<div class="seg" role="group" aria-label="Order of the products that pass">${shownRules.map((r) => `<button data-rule="${esc(r.id)}" aria-pressed="${r.id === ruleId()}" ${state.seal.signed ? "disabled" : ""} title="${esc(r.label || "")}">${esc(short(r))}</button>`).join("")}</div>` : "";
   const lead = ladder ? "Cheapest first" : `${short((rules || []).find((r) => r.id === ruleId()) || { id: ruleId() })} first`;
   const sub = !rows.length ? "No page has been read for this item yet" : at < 0 ? `${lead}. ${rows.length} read · nothing passes`
     : ladder ? `${rows.length} read · <span data-k="sub.rej">${rejectedBefore}</span> cheaper rejected`
@@ -527,7 +556,7 @@ function renderList(line, pick) {
     body = `${fold ? `<button class="more" data-toggle="above" title="Show these rows"><b>${fold - pinned.length} cheaper above:</b> ${esc(foldSummary(before.slice(0, fold).filter((c) => !pinned.includes(c))))}</button>` : ""}
       ${pinned.map(row).join("")}${before.slice(fold).map(row).join("")}
       ${pick ? row(pick) : (rows.length ? `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>` : "")}
-      ${after.length ? (ui.open.has("below") ? after.map(row).join("") : wasRows(after) + `<button class="more" data-toggle="below">+ ${after.length} dearer${also ? ` (${also} ${also === 1 ? "passes" : "pass"})` : ""}, not needed</button>`) : ""}`;
+      ${after.length ? (ui.open.has("below") ? after.map(row).join("") : wasRows(after) + `<button class="more" data-toggle="below">${after.length} dearer not shown${also ? ` · ${also} of them ${also === 1 ? "passes" : "pass"}` : ""}</button>`) : ""}`;
   } else {
     const showN = ui.open.has("below") ? after.length : Math.max(0, fit - 1), hidden = after.slice(showN);
     body = `${pick ? row(pick) : `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>`}
@@ -622,7 +651,7 @@ function renderSide(line, c) {
       <div class="meta2">${esc(option + c.product.store)} · <span data-k="why.price">${money(c.product.price_cents)}</span>${qty(line) > 1 ? `${esc(times(line))} = ${money(c.product.price_cents * qty(line))}` : ""} · <a class="link" href="${esc(c.product.url)}" target="_blank" rel="noopener" title="The store's page">page ↗</a></div>
       ${c.picked && c.picked_because && line.picked_by !== "shopper" ? `<div class="because">${esc(cap(c.picked_because))}</div>` : ""}
       ${c.status === "struck" ? `<div class="pair"><div class="ph2"><span>Struck by ${esc(state.sheet.issuer.name)}</span></div><div class="qt">“${esc(c.reason || "")}”</div></div>` : ""}
-      ${shown.map((ch) => pairHtml(ch, limits.find((l) => l.id === ch.limit_id), c)).join("")}${agent}${extrasHtml(c)}
+      ${shown.map((ch) => pairHtml(ch, limits.find((l) => l.id === ch.limit_id), c)).join("")}${agent}${ui.show === c.id || !byPrice() || prefsMet(c).length ? extrasHtml(c) : ""}
       ${canChoose(line, c) ? `<button class="btn choose" data-choose="${esc(c.id)}">Choose this one</button>` : ""}
       ${c.picked && line.picked_by === "shopper" && !state.seal.signed && aux.routes && aux.routes.has("/api/shopper/choose") ? `<button class="link" data-choose="">Back to the rule's pick</button>` : ""}
       ${!c.picked && pickOf(line) ? `<button class="link" data-show="">Back to the pick</button>` : ""}</section>`;
@@ -666,7 +695,7 @@ function signatureHtml() {
     const link = en && (en.url || en.link || en.phone_url || en.phone), qr = !enrolled && link ? qrSvg(link) : "";
     return `<section class="card sign"><div class="cap">Signature</div>
       <div class="signs"><b>${esc(sheet.issuer.name)} signs:</b> ${whatIsSigned()}</div>
-      <div class="muted small">${enrolled ? "From the enrolled phone" : "From the phone"} · no cart exists until then</div>
+      <div class="muted small">${enrolled ? "Phone enrolled" : "From the phone"} · no cart exists yet</div>
       ${!enrolled && en && en.code ? `<div class="enrol">${qr ? `<a class="qr" href="${esc(link)}" target="_blank" rel="noopener" aria-label="Open the phone page">${qr}</a>` : ""}
         <div class="muted small"><div>Scan to enrol the phone</div><div>code <span class="code">${esc(en.code)}</span></div></div></div>` : ""}
       ${receiptsRow()}</section>`;
@@ -969,8 +998,8 @@ function toast(anchor, html) {
 }
 /** The shopper's asks to the approver (GET /api/asks), newest last; the latest one for a limit. */
 function askFor(limitId) {
-  const raw = aux.asks, list = Array.isArray(raw) ? raw : raw && (raw.asks || raw.items || [...(raw.pending || []), ...(raw.settled || [])]);
-  return (Array.isArray(list) ? list : []).filter((x) => x.limit_id === limitId).slice(-1)[0] || null;
+  const list = (aux.asks && aux.asks.asks) || [];
+  return list.filter((x) => x.limit_id === limitId && x.status !== "replaced").slice(-1)[0] || null;
 }
 function askSheet(limitId, line) {
   const limit = sheetLineOf(line).limits.find((l) => l.id === limitId);
@@ -980,15 +1009,18 @@ function askSheet(limitId, line) {
     <form id="askform" data-limit="${esc(limit.id)}">
       <label class="field"><span>${esc(cap(limit.label || limit.name))}</span><output>${esc(withUnit(g(b.value), limit.unit))}</output>
         <input type="range" data-kind="ask" data-unit="${esc(limit.unit)}" name="value" min="${b.min}" max="${b.max}" step="${b.step}" value="${b.value}"></label>
-      <input id="askNote" name="note" type="text" autocomplete="off" maxlength="140" aria-label="A short note" placeholder="A short note…">
+      <input id="askNote" name="note" type="text" autocomplete="off" maxlength="300" aria-label="A short note" placeholder="A short note…">
       <button class="btn" type="submit">Send to ${name}</button></form><div id="askReply" aria-live="polite"></div>`;
 }
 
 // ---------- interaction ----------
 document.addEventListener("click", (e) => {
-  const t = e.target.closest("[data-rule], [data-choose], [data-sheet], [data-menu], [data-toggle], [data-show], [data-open], [data-close], .rowx");
+  if (e.target.id === "replay") return closeReplay();             // a click on the dimmed page
+  const t = e.target.closest("[data-replay], [data-replay-close], [data-rule], [data-choose], [data-sheet], [data-menu], [data-toggle], [data-show], [data-open], [data-close], .rowx");
   if (ui.menu && !(t && (t.dataset.sheet || t.dataset.menu !== undefined))) { ui.menu = false; ui.confirm = null; if (!t) { last.quiet = true; render(); return; } }
   if (!t || e.target.closest("a, input")) return;
+  if (t.dataset.replay !== undefined) return openReplay();
+  if (t.dataset.replayClose !== undefined) return closeReplay();
   if (t.dataset.rule) return setRule(t.dataset.rule, t);
   if (t.dataset.choose !== undefined) return choose(t.dataset.choose, t);
   if (t.dataset.sheet) return useSheet(t.dataset.sheet, t.dataset.sure === "1");
@@ -1003,6 +1035,7 @@ document.addEventListener("click", (e) => {
   if (ui.drawer === "shopper") q("#sayText")?.focus();
 });
 addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !q("#replay").hidden) return closeReplay();
   if (e.key === "Escape" && (ui.drawer || ui.show || ui.menu)) { ui.drawer = null; ui.show = null; ui.menu = false; last.quiet = true; render(); }
   if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("ask")) { e.preventDefault(); e.target.click(); }
   if (e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey || !state) return;

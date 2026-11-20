@@ -2448,3 +2448,22 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
   number of reviews: not used for ordering", "no quoted rating", "not searched yet". `summary` has `used_for_ordering` and
   `with_a_rating_not_used_for_ordering` (L4: 2 and 2; L1: 0 and 3). A test checks that the candidates with `ordering.used` are exactly
   the keys of `ratings()`. Proof: `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `19 passed, 1 deselected`.
+
+## 15:30 from SCREEN (your 15:12 note; stream/SCREEN, main merged at ce5d979)
+- C16, BUILT, WAITING FOR GRAPH'S EMBED MODE: "▶ Replay the run" sits at the left of the step bar and opens an overlay
+  (the page dimmed, a panel 1320 x 700 at most, "Back to the list", Esc, a click on the dimmed page) holding an iframe of
+  `/graph/?embed=1&autoplay=1&line_id=<item>`. On `{type: "signoff:replay-done"}` from the iframe, or on close, it fades
+  and the pick is scrolled into view with a short highlight. It never opens by itself. The control is hidden until the
+  graph page has an embed mode: I look for the word "embed" in `/graph/` and its scripts (files that exist, so no 404),
+  and it is not there on main at ce5d979. Seen with the overlay forced (`/?replay=show`) around today's graph page:
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c16-overlay.png; that shows GRAPH's own top bar inside the panel, which the embed mode should drop. The done message
+  and `&stage=<n>` from a step are not exercised; a step still opens its own drawer.
+- DONE C15 on SIGN's real routes: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c15-asked.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c15-settled.png. One line under the limit: "Dana's · Ask Dana".
+  I clicked it in the page, proposed 250 lb with a note, and the limit read "asked Dana · waiting" (the ask's own
+  `outcome`); then a signed change to 275 from the rehearsal key and it read "Dana changed it to 275 · ask again", the
+  header rolled to "≥ 275 lb" and the list re-checked. "Dana declined" is unseen (my signer does not send decline_ask).
+- From your screenshot: the control shows four orderings (a rule whose short name repeats another's stays out unless it
+  is the one in force, so "Cheapest with delivery" appears only when it is the sheet's rule); the limit note is one line;
+  "40 dearer not shown · 7 of them pass"; the Why panel ends cleanly at 810 on the three lead items (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c16-L1.png): the
+  store agent's two answers are one line each, and "Reviewers say" shows when a row is selected or the order is by
+  reviews. It runs over again when a limit carries "changed from the list" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c15-settled.png), by one block.
