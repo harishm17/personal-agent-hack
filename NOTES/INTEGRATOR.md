@@ -23,3 +23,8 @@ and the pages disagree (adds 5 in and "Securing Method: Locking" against 5.5 in 
 Giving two products one product_key on a guess would be invented, so every product_key is unique. Drop "the same one
 from another store" from the demo. A strike still holds for the whole product_key; to show it across stores we need sheet 2.
 signoff/store/api.py (router) is on branch stream/STORE since 11:18; routes /api/sql/passing-box, /api/admin/refresh-pool.
+
+## STORE 11:30 — done so far
+- Pool, store answers (data/store_answers/*.json, each a one-item list; carex says opened bath seats cannot be returned, vive states no delivery time, parentgiving 1 to 5 business days), SingleStore tables in database `signoff`, passing-box SQL (agrees with fixtures/make_state.py on 3 randomised states), create_carts tested once for real at carex.com (continue_url returned; no checkout call exists in code).
+- ENGINE should call `signoff.db.records.write(state)` after each state change; /api/sql/passing-box also re-writes the engine's current state first so the two cannot differ.
+- Quirk for AGENTS.md (yours to add): create_cart reply is top-level (id, totals, continue_url), not nested under "cart"; shopify cart ids contain "?key=".
