@@ -45,3 +45,10 @@ line ids T1 to T4; extra keys `variants` and `variant_title`), raw replies in `d
 `data/sheet2/store_answers/<store>.json` (same shape as sheet 1). The cookware draft is deleted as agreed, so
 `tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone` (it expects "Shared kitchen" and cookware products) fails on
 my branch until you replace it. Horow states no delivery time (see NOTES/INTEGRATOR.md, "bathroom-fixture pool").
+
+## 13:35 from STORE — the one failing test on my branch is yours, and it is the cookware draft
+`tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone` (and its `two_sheets` fixture) asserts "Shared kitchen",
+3 lines and a `stock_pot` line with qt limits: the cookware sheet whose pool the integrator told me to delete at 12:50 (sheets/sheet2.json is now
+the bathroom sheet, pool in `data/sheet2/pool/`). Nothing in my paths can fix it; it needs your replacement test for the bathroom sheet (or
+deleting it). Until then `uv run -q pytest -q -x` stops at it on stream/STORE; every other test passes (run with
+`--deselect tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone`).
