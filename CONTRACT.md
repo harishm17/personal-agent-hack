@@ -215,3 +215,39 @@ tool: the therapist is the first issuer, not the product.
 - Fallback sheet test (11:12, pattern match, 78 cookware products at five stores): induction stated on 9,
   an oven temperature on 9, a diameter on 27. All under half: if sheet 2 is built, its limits change to
   ones those pages state (diameter stays; replace the other two after reading the pool).
+
+## Amendment 11:25 — no hand-check sheet; Sonnet is the reference reader
+- The builder's decision: the 30-product hand-check is dropped and `claude-sonnet-5-5` is trusted as the
+  figure reader (through `claude -p` now, the API key later). The span check in code stays the judge of
+  every figure.
+- Nothing on screen, in the README or on stage says "hand-checked" or gives an accuracy against ground
+  truth. `counts.hand_checked` stays false and the counts strip says "read by the model; quote found in
+  the store's text by code".
+- Other readers (Superlinked SIE, an Arcee model) are measured as **agreement with the Sonnet reference**
+  on the same products, plus the share of their figures whose quote is found, cost and latency. Say
+  "agreement", never "accuracy". This is the outcome for the Statsig gate.
+- First-hour tests left: 4 of 6 lines have two candidates stating every deciding figure; a second phone
+  signs over the tunnel. The integrator spot-reads ten figures against the store text before 12:20.
+- Arcee: the key lists models but every completion returns 402 (no credits). Blocked until the builder
+  gets credits. Until then the shopper chat also goes through `claude -p`.
+- Persona: the template is published to Sandbox and a real inquiry was created at 11:21.
+
+## Amendment 11:30 — STORE takes observability; no cross-store strike; Senso scope
+- STORE finished its 13:10 list early and now also owns `signoff/obs/**`, `signoff/airbyte/**`,
+  `data/sheet2/**`, `tests/obs/**`. `signoff.obs.tool_call(name, input, output, success, latency_ms)` and
+  `signoff.obs.session(sheet_id)` send Amplitude Agent Analytics events; they never raise and never block.
+  ENGINE calls `tool_call` for each figure read and each check run; STORE for each store call.
+- No product is sold under the same maker and model at two of the three stores, so "the same one from
+  another store" is cut from the demo. A strike still holds for its `product_key`.
+- Senso gives no verdict on another brand's claims. It checks each sentence of the sheet against the
+  therapist's order and the handout in its knowledge base; store sentences are checked by span match in code.
+- First-hour test, coverage: passed at 11:26. Lines with two or more candidates stating every deciding
+  figure: 6 of 6 (L1 19, L2 13, L3 5, L4 14, L5 2, L6 9). The main case stays.
+
+## Amendment 11:32 — AIRBYTE stream (the builder asked for Airbyte; local Airbyte Core is installed)
+- A fifth stream, AIRBYTE, owns `signoff/airbyte/**`, `data/order/**`, `tests/airbyte/**` (STORE no longer
+  owns `signoff/airbyte/**`). Its job and time box are in `streams/AIRBYTE.md`: the therapist's order
+  reaches the app's database through a local Airbyte sync; limits read from it are "proposed, from the
+  order" until Dana confirms on her phone. The product never depends on it: `signoff.airbyte.api` is an
+  optional router and `signoff.airbyte.order.load()` may return `None`.
+- Airbyte Core 2.5.0 runs at `http://localhost:8900` (Docker through Colima); login in the keys file.
