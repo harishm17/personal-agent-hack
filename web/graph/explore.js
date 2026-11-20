@@ -181,7 +181,7 @@ function plan(k) {
     order.slice(0, TOP).forEach((id, i) => linePos.set(id, { x: head - i * step, y: CY }));
     // the rest that pass, in order, in a quiet block under them
     const tail = order.slice(TOP), trows = 2, tsp = px(18), named0 = order.slice(0, TOP).map((id) => wrap(nodes.get(id).label, 14, 600, (TOP > 1 ? step : px(200)) - px(14)).length);
-    const ty = CY + RBIG + px(32) + Math.max(1, ...named0) * px(17) + px(72);
+    const ty = CY + RBIG + px(32) + Math.max(1, ...named0) * px(17) + px(88);
     tail.forEach((id, i) => linePos.set(id, { x: leftEdge + px(8) + Math.floor(i / trows) * tsp, y: ty + (i % trows) * tsp }));
     if (tail.length) texts.push({ x: leftEdge + px(8) + Math.ceil(tail.length / trows) * tsp + px(6), y: ty + px(13), cls: "gs", html: `${tail.length} more that pass` });
   } else if (webbed) {
@@ -193,7 +193,7 @@ function plan(k) {
     const LANE = px(24), MW = px(84), RW = px(64), xp = PX0 + RB, spine = xp + RB + px(10), xm = spine + px(10);
     const storeX = W - wOf(["store"]), xr2 = storeX - RW - px(36), xg = (xm + MW + xr2) / 2;
     const room = xg - (xm + MW);
-    let ly = YROW - px(46), kept = 0;
+    let ly = YROW - px(46), kept = 0, landed = 0;
     const top = ly;
     for (const pid of S[iAsk].row || []) {
       const mine = data.nodes.filter((n) => n.kind === "message" && n.product === pid);
@@ -209,7 +209,7 @@ function plan(k) {
         P.set(m.id, { x: xm, y: ly, o: 1, w: MW, h: px(18) });
         lines.push({ raw: [spine, y9, xm, y9], cls: "" }, { raw: [xm + MW, y9, xg, y9], cls: m.stopped ? "fails" : "lit" });
         // what the guard withheld sits on the guard line, struck
-        if (chips.length) texts.push({ x: xg, y: y9 + px(3.5), cls: "chip on mid", html: chips.slice(0, shown).map((c) => esc(c.text)).join(" · ") + (chips.length > shown ? ` +${chips.length - shown}` : "") });
+        if (chips.length) texts.push({ x: xg, y: y9 + px(3.5), cls: "chip on mid", at: BEAT.chips + landed++ * BEAT.chip, html: chips.slice(0, shown).map((c) => esc(c.text)).join(" · ") + (chips.length > shown ? ` +${chips.length - shown}` : "") });
         const r = data.nodes.find((n) => n.kind === "reply" && n.message === m.id);
         if (r) {
           P.set(r.id, { x: xr2, y: ly, o: 1, w: RW, h: px(18) });
@@ -238,7 +238,7 @@ function plan(k) {
   if (web) put(web.id, XS, YROW - CH / 2, ranked ? { o: 0 } : {});
   reviews.forEach((r) => {
     const p = P.get(r.product);
-    P.set(r.id, { x: p.x - px(36), y: p.y + p.r + px(10), w: px(72), h: px(18), o: (added.get(r.id) ?? 99) <= k && p.big && !asking ? 1 : 0, pill: true });
+    P.set(r.id, { x: p.x - reviewW(r) / 2, y: p.y + p.r + px(10), w: reviewW(r), h: px(18), o: (added.get(r.id) ?? 99) <= k && p.big && !asking ? 1 : 0, pill: true });
   });
   // the gate, and the cart beyond it
   if (nodes.has("gate")) put("gate", gateX, CY - (CH * GS) / 2, { gate: true, s: GS, w: gateW, h: CH * GS });
@@ -273,7 +273,8 @@ function plan(k) {
       const i = asideAt.get(p.id);
       if (i != null && i < k) continue;
       const v = p.checks[stage.limit.replace(/^limit:/, "")];
-      lines.push({ a: stage.limit, b: p.id, cls: "ray " + (i === k ? (v === "fail" ? "fails" : "none") : "passes"), fromCardBottom: true });
+      const cls = i === k ? (v === "fail" ? "fails" : "none") : "passes";
+      lines.push({ a: stage.limit, b: p.id, cls: "ray " + cls, fromCardBottom: true, at: BEAT.rays, op: cls === "fails" ? 0.7 : cls === "passes" ? 0.3 : 0.55 });
     }
   }
   if (ranked) {
@@ -285,7 +286,7 @@ function plan(k) {
       lines.forEach((t, i) => texts.push({ x: p.x, y: p.y + p.r + px(20) + i * LH, cls: "pn big mid", html: esc(t) }));
       texts.push({ x: p.x, y: p.y + p.r + px(22) + most * LH, cls: "pp big mid", html: esc((n.sub || "").split(" · ")[0]) + (n.picked ? " · the pick" : "") });
       const r = reviews.find((x) => x.product === id);
-      if (r && P.get(r.id)) Object.assign(P.get(r.id), { x: p.x - px(36), y: p.y + p.r + px(32) + most * LH });
+      if (r && P.get(r.id)) Object.assign(P.get(r.id), { x: p.x - reviewW(r) / 2, y: p.y + p.r + px(32) + most * LH });
     });
     X.rankedBottom = CY + RBIG + px(32) + most * LH + px(52);
   }
@@ -294,6 +295,17 @@ function plan(k) {
 }
 
 // ---------- drawing ----------
+function reviewSays(n) {
+  // only the parts the record has: "4.8 ★ · 28 reviews", "4.8 ★", or "a review" when it is one quoted sentence
+  const parts = [n.rating != null ? `${n.rating} ★` : "", n.review_count != null ? `${n.review_count} ${n.review_count === 1 ? "review" : "reviews"}` : ""].filter(Boolean);
+  return parts.length ? parts.join(" · ") : "a review";
+}
+function reviewWhere(n) {
+  const product = X.data.nodes.find((p) => p.id === n.product), site = n.sub || "";
+  return product && site && site === product.owner ? ["on the seller's", "own page"] : site ? ["reviews on", site] : [];
+}
+const reviewW = (n) => Math.max(px(72), wide(reviewSays(n), 12, 500) + px(22));
+
 function thumb(url) {
   // ask the image host for a small copy; a host that does not know the parameter ignores it
   try { const u = new URL(url); u.searchParams.set("width", "240"); return u.href; } catch (e) { return url; }
@@ -310,7 +322,10 @@ function glyph(n) {
   const tx = dot ? px(20) : px(10);
   if (n.kind === "message") return `<title>${esc(n.sub || "")}</title><rect class="b pill${n.stopped ? " stopped" : ""}" width="${px(84)}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${px(42)}" y="${px(12.5)}">${esc(n.label)}</text>`;
   if (n.kind === "reply") return `<title>${esc(n.sub || "")}</title><rect class="b pill" width="${px(64)}" height="${px(18)}" rx="${px(9)}"/><circle class="od store" cx="${px(12)}" cy="${px(9)}" r="${px(3)}"/><text class="l" x="${px(21)}" y="${px(12.5)}">reply</text>`;
-  if (n.kind === "review") return `<rect class="b pill" width="${px(72)}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${px(36)}" y="${px(12.5)}">${esc(n.label)}</text><text class="s mid" x="${px(36)}" y="${px(33)}">${esc(n.sub)}</text>`;
+  if (n.kind === "review") {
+    const w = reviewW(n), where = reviewWhere(n);
+    return `<rect class="b pill" width="${w}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${w / 2}" y="${px(12.5)}">${esc(reviewSays(n))}</text>${where.map((t, i) => `<text class="s mid" x="${w / 2}" y="${px(33) + i * px(14)}">${esc(t)}</text>`).join("")}`;
+  }
   const w = boxW(n), room = (w - tx - px(6)) / px(6.9);
   return `<title>${esc(n.label)}</title><rect class="b" width="${w}" height="${CH}" rx="${px(6)}"/>${dot}
     <text class="l" x="${tx}" y="${one ? CH / 2 + px(4.5) : px(17)}">${esc(n.label)}</text>${one ? "" : `<text class="s" x="${tx}" y="${px(32)}">${esc(n.sub)}</text>`}
@@ -392,7 +407,68 @@ function dress(k, target) {
     return { l, e, t: l.label ? el("text", { class: "lt mid" }, esc(l.label)) : null };
   });
   X.lineEls.forEach(({ t }) => t && X.gl.appendChild(t));
-  target.texts.forEach((t) => X.gt.appendChild(el("text", { class: t.cls, x: t.x, y: t.y }, t.html)));
+  X.textEls = target.texts.map((t) => { const e = el("text", { class: t.cls, x: t.x, y: t.y }, t.html); X.gt.appendChild(e); return { t, e }; });
+}
+
+// ---------- time ----------
+// How long each stage holds at 1x (ms), by what it shows. One table; the last stage holds until the viewer leaves.
+const HOLD = { event: 1500, order: 1500, known: 2000, search: 4000, reading: 2500, rule: 5000, asking: 4000, web: 2500, ranking: 2500, signature: 2500 };
+const hold = (s) => HOLD[s.id.split(":")[0]] ?? 2500;
+// The beats inside a stage (ms at 1x): a store's products arrive in a quick run, one store after another; a rule lights,
+// its lines reach the products, then the failing ones move aside together; the withheld parts land one after another.
+const BEAT = { store: 1000, each: 22, rays: 700, sweep: 2300, sweepFor: 900, chips: 1200, chip: 500, fade: 300 };
+const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+const unit = (v) => Math.max(0, Math.min(1, v));
+
+function choreograph(k) {
+  // when each thing starts to move within the stage, and for how long
+  const s = X.data.stages[k], kind = s.id.split(":")[0], T = new Map();
+  if (kind === "search") {
+    X.data.nodes.filter((n) => n.kind === "store").forEach((st, si) => {
+      T.set(st.id, { delay: si * BEAT.store, dur: 350 });
+      X.data.nodes.filter((n) => n.kind === "product" && n.owner === st.owner)
+        .forEach((p, i) => T.set(p.id, { delay: 250 + si * BEAT.store + i * BEAT.each, dur: 420 }));
+    });
+  }
+  if (kind === "rule") s.node_ids_set_aside.forEach((id) => T.set(id, { delay: BEAT.sweep, dur: BEAT.sweepFor }));
+  return T;
+}
+
+const halt = () => { cancelAnimationFrame(X.raf); clearTimeout(X.to); };
+const again = () => { halt(); X.raf = requestAnimationFrame(tick); X.to = setTimeout(tick, 40); };
+
+function tick() {
+  const A = X.anim, S = X.data.stages;
+  halt();
+  if (!A) return;
+  // the page's own clock; a frame never counts for less than 8 ms, so a stage always finishes
+  const now = performance.now(), dt = Math.max(8, Math.min(100, now - (X.last ?? now)));
+  X.last = now;
+  if (X.playing) A.elapsed += dt * X.speed;
+  const cur = new Map();
+  for (const [id, b] of A.target.P) {
+    const a = A.from.get(id) || b, c = A.T.get(id);
+    const u = A.still ? 1 : ease(unit((A.elapsed - (c?.delay ?? 0)) / (c?.dur ?? 750)));
+    cur.set(id, { ...b, x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u, o: a.o + (b.o - a.o) * u, r: b.r != null ? (a.r ?? b.r) + (b.r - (a.r ?? b.r)) * u : undefined });
+  }
+  paint(cur);
+  X.P = cur;
+  const shown = (at) => (A.still || at == null ? 1 : unit((A.elapsed - at) / BEAT.fade));
+  X.lineEls.forEach(({ l, e }) => { if (l.at != null) e.style.opacity = shown(l.at) * (l.op ?? 1); });
+  X.textEls.forEach(({ t, e }) => { if (t.at != null) e.style.opacity = shown(t.at); });
+  // the caption counts as the group moves aside (the numbers are the stage's own; read from its caption if not given apart)
+  const said = /^(.*): (\d+) set aside, (\d+) left\.$/.exec(S[X.k].caption || "");
+  const c = S[X.k].counting || (S[X.k].limit && said ? { lead: said[1], out: Number(said[2]), left: Number(said[3]) } : null);
+  if (c && X.hooks.onCount) {
+    const n = A.still ? c.out : Math.round(c.out * unit((A.elapsed - BEAT.sweep) / BEAT.sweepFor));
+    if (n !== A.count) { A.count = n; X.hooks.onCount(`${c.lead}: ${n} set aside, ${c.left + c.out - n} left.`); }
+  }
+  if (X.playing && A.elapsed >= A.hold) {
+    if (X.k < S.length - 1) return go(X.k + 1);
+    X.playing = false;                                               // the last stage: it stays
+    X.hooks.onStage(S[X.k], X.k, S.length);
+  }
+  if (X.playing) again();
 }
 
 function go(k, instant = false) {
@@ -400,35 +476,24 @@ function go(k, instant = false) {
   k = Math.max(0, Math.min(S.length - 1, k));
   const target = plan(k), from = X.P || target.P;
   X.k = k;
-  cancelAnimationFrame(X.raf);
+  halt();
+  const still = instant || !X.motion || !X.playing;                  // a step or a scrub lands at once; nothing moves while paused
+  X.anim = { target, from, T: still ? new Map() : choreograph(k), elapsed: 0, hold: hold(S[k]), still, count: -1 };
   dress(k, target);
   X.hooks.onStage(S[k], k, S.length);
-  const t0 = performance.now(), ms = instant || !X.motion ? 0 : X.ms || 750;
-  const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
-  let frames = 0;
-  const frame = () => {
-    // the page's own clock, kept inside 0..1, and never slower than half speed by frame count, so a tween always lands
-    frames += 1;
-    const t = ms ? Math.max(0, Math.min(1, Math.max((performance.now() - t0) / ms, (frames * 8) / ms))) : 1, u = ease(t), cur = new Map();
-    for (const [id, b] of target.P) {
-      const a = from.get(id) || b;
-      cur.set(id, { ...b, x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u, o: a.o + (b.o - a.o) * u, r: b.r != null ? (a.r ?? b.r) + (b.r - (a.r ?? b.r)) * u : undefined });
-    }
-    paint(cur);
-    X.P = cur;
-    if (t < 1) X.raf = requestAnimationFrame(frame);
-  };
-  if (ms) X.raf = requestAnimationFrame(frame); else frame();
+  X.last = undefined;
+  tick();
 }
 
 // ---------- the surface the page uses ----------
 export function mount(host, data, hooks, opts = {}) {
-  if (X) { clearInterval(X.timer); cancelAnimationFrame(X.raf); }   // one canvas, one clock
+  if (X) halt();                                                     // one canvas, one clock
   host.innerHTML = "";
   const cw = host.clientWidth, ch = host.clientHeight, DW = Math.max(cw, px(1036)), DH = Math.max(ch, px(580));
   const svg = el("svg", { class: "xp", width: cw, height: ch, viewBox: `0 0 ${DW} ${DH}`, preserveAspectRatio: "xMinYMin meet" });
   host.appendChild(svg);
-  X = { host, svg, data, hooks, W: DW - px(4), H: DH - px(24), sel: null, motion: opts.motion !== false, lineEls: [] };
+  X = { host, svg, data, hooks, W: DW - px(4), H: DH - px(24), sel: null, motion: opts.motion !== false, lineEls: [], textEls: [],
+    playing: false, speed: opts.speed === "slow" ? 0.5 : 1 };
   build();
   go(Math.min(opts.stage ?? 0, data.stages.length - 1), true);
   svg.addEventListener("click", (e) => {
@@ -439,18 +504,21 @@ export function mount(host, data, hooks, opts = {}) {
   });
 }
 export const stage = () => X?.k ?? 0;
-export const step = (d) => X && go(X.k + d);
-export const jump = (k, instant) => X && go(k, instant);
-export const playing = () => !!X?.timer;
-export function play(on, every = 1700) {
+export const playing = () => !!X?.playing;
+/** Play, or pause: paused, the caption stays and nothing moves; playing again goes on from where it stopped. */
+export function play(on) {
   if (!X) return;
-  clearInterval(X.timer); X.timer = null;
-  if (on) {
-    X.motion = true;                                                // pressing Play asks for motion
-    X.ms = Math.min(1100, Math.round(every * 0.45));
-    if (X.k >= X.data.stages.length - 1) go(0, true);
-    X.timer = setInterval(() => { if (X.k >= X.data.stages.length - 1) { play(false); X.hooks.onStage(X.data.stages[X.k], X.k, X.data.stages.length); } else go(X.k + 1); }, every);
-  }
+  halt();
+  X.playing = !!on;
+  if (!on) return;
+  X.motion = true;                                                  // pressing Play asks for motion
+  const A = X.anim, last = X.data.stages.length - 1;
+  if (X.k >= last && (!A || A.still || A.elapsed >= A.hold)) return go(0, true);   // from the end: once more from the start
+  X.last = undefined;
+  again();
 }
+export const step = (d) => { if (X) { play(false); go(X.k + d, true); } };
+export const jump = (k) => { if (X) go(k, true); };
+export const speed = (v) => { if (X) X.speed = v === "slow" ? 0.5 : 1; };
 export function select(id) { if (X) { X.sel = id; X.els.forEach((x, i) => x.classList.toggle("sel", i === id)); } }
 export { clock };

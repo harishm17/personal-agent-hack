@@ -352,7 +352,9 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
         for pid in out:
             counts[aside[pid]["reason"]] = counts.get(aside[pid]["reason"], 0) + 1
         left -= len(out)
+        lead = str(l["sub"] if l.get("sub") and len(str(l["sub"]).split()) <= 4 else l["label"]).capitalize()
         stages.append({"id": "rule:" + l["id"], "title": "The rules", "at": None, "limit": l["id"], "rule": l["label"],
+                       "counting": {"lead": lead, "out": len(out), "left": left},
                        "caption": "%s: %d set aside, %d left." % (str(l["sub"] if l.get("sub") and len(str(l["sub"]).split()) <= 4 else l["label"]).capitalize(), len(out), left),
                        "node_ids_added": [], "node_ids_set_aside": out, "reason_counts": counts})
     if asked:

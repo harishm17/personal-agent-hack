@@ -99,7 +99,10 @@ function controls() {
   // drawn before the canvas is measured, so the canvas keeps its height
   if ($("#scrub") || $("[data-done]")) return;
   if (EMBED) {
+    const slow = params.get("speed") === "slow";
     $("#ctl").innerHTML = `<span class="cap" id="rlabel">Replay of this run's records</span><span class="grow"></span>
+      <span class="speeds"><button class="link" data-speed="1" aria-pressed="${!slow}">1×</button><button class="link" data-speed="slow" aria-pressed="${slow}">slow</button></span>
+      <button class="chip" data-step="-1" aria-label="Back">‹</button><button class="chip" data-play>Pause</button><button class="chip" data-step="1" aria-label="Next">›</button>
       <button class="chip" data-again hidden>Replay</button><button class="chip" data-done>Skip</button>`;
     return;
   }
@@ -109,11 +112,12 @@ function controls() {
 }
 
 function renderStage(s, k, n) {
-  $("#heads").innerHTML = `<span class="st"><b>${esc(s.title)}</b>${esc(s.caption)}</span>`;
+  $("#heads").innerHTML = `<span class="st"><b>${esc(s.title)}</b><span id="capt">${esc(s.caption)}</span></span>`;
   controls();
   if (EMBED) {
     const span = xdata?.run?.seconds;
-    $("#rlabel").textContent = "Replay of this run's records" + (span ? " · " + dur(span) + " of work" : "") + ` · ${k + 1} of ${n}`;
+    $("#rlabel").textContent = "Replay of this run's records" + (span ? " · " + dur(span) + " of work" : "") + ` · ${k + 1} of ${n} · ${String(s.title || "").toLowerCase()}`;
+    $("[data-play]").textContent = XP.playing() ? "Pause" : "Play";
     const ended = k === n - 1 && !XP.playing();
     $("[data-done]").textContent = ended ? "Back to the list" : "Skip";
     $("[data-again]").hidden = !ended;
@@ -141,9 +145,10 @@ function drawExplore() {
   const asked = params.get("stage"), last = xdata.stages.length - 1;
   // the page opens on the finished picture, paused (Play replays it); the frame over the decision screen plays it
   const at = same ? XP.stage() : asked != null ? Number(asked) : EMBED ? 0 : last;
-  XP.mount($("#stage"), xdata, { onSelect: (id) => { sel = id; renderSide(); }, onStage: renderStage }, { stage: at, motion: MOTION });
+  XP.mount($("#stage"), xdata, { onSelect: (id) => { sel = id; renderSide(); }, onStage: renderStage,
+    onCount: (text) => { const c = $("#capt"); if (c) c.textContent = text; } }, { stage: at, motion: MOTION, speed: params.get("speed") });
   // in a frame the whole run takes about half a minute; on the page a stage is shorter
-  if (!same && asked == null && EMBED && params.get("autoplay") !== "0") XP.play(true, Math.round(27000 / xdata.stages.length));
+  if (!same && asked == null && EMBED && params.get("autoplay") !== "0") XP.play(true);
 }
 
 function draw() {
@@ -329,13 +334,15 @@ async function load() {
 
 document.addEventListener("click", (e) => {
   if (e.target.closest("[data-done]")) { XP.play(false); tell("signoff:replay-done"); return; }
-  if (e.target.closest("[data-again]")) { renderStage.told = false; XP.jump(0, true); XP.play(true, Math.round(27000 / xdata.stages.length)); return; }
+  if (e.target.closest("[data-again]")) { renderStage.told = false; XP.jump(0); XP.play(true); return; }
+  const sp = e.target.closest("[data-speed]");
+  if (sp) { XP.speed(sp.dataset.speed); document.querySelectorAll("[data-speed]").forEach((b) => b.setAttribute("aria-pressed", String(b === sp))); return; }
   const chip = e.target.closest("[data-line]"), node = e.target.closest("[data-id]"), seg = e.target.closest("[data-view]");
   if (e.target.closest("[data-whole]")) { whole = !whole; renderSide(); return; }
   if (e.target.closest("[data-answer]")) { showAnswer = !showAnswer; sel = null; XP.select(null); renderSide(); return; }
   if (seg) { view = seg.dataset.view; sel = null; XP.play(false); render(); return; }
-  if (e.target.closest("[data-play]")) { XP.play(!XP.playing()); e.target.closest("[data-play]").textContent = XP.playing() ? "Pause" : "Play"; return; }
-  if (e.target.closest("[data-step]")) { XP.play(false); XP.step(Number(e.target.closest("[data-step]").dataset.step)); return; }
+  if (e.target.closest("[data-play]")) { XP.play(!XP.playing()); renderStageLabel(); return; }
+  if (e.target.closest("[data-step]")) { XP.step(Number(e.target.closest("[data-step]").dataset.step)); renderStageLabel(); return; }
   if (e.target.closest("#ctl") || (view === "explore" && e.target.closest("#stage"))) return;   // the canvas handles its own clicks
   if (chip) { XP.play(false); line = chip.dataset.line; sel = null; stamp = ""; params.delete("stage"); history.replaceState(null, "", `?line_id=${line}`); load(); return; }
   if (e.target.closest("[data-close]")) { sel = null; showAnswer = false; XP.select(null); }
@@ -346,9 +353,9 @@ document.addEventListener("click", (e) => {
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && sel) { sel = null; XP.select(null); draw(); renderSide(); }
-  if (view === "explore" && e.key === "ArrowRight") { XP.play(false); XP.step(1); }
-  if (view === "explore" && e.key === "ArrowLeft") { XP.play(false); XP.step(-1); }
-  if (view === "explore" && e.key === " " && e.target === document.body) { e.preventDefault(); XP.play(!XP.playing()); renderStageLabel(); }
+  if (view === "explore" && e.key === "ArrowRight") { XP.step(1); renderStageLabel(); }
+  if (view === "explore" && e.key === "ArrowLeft") { XP.step(-1); renderStageLabel(); }
+  if (view === "explore" && e.key === " " && !e.target.closest("input, textarea")) { e.preventDefault(); XP.play(!XP.playing()); renderStageLabel(); }
 });
 const renderStageLabel = () => { const b = $("[data-play]"); if (b) b.textContent = XP.playing() ? "Pause" : "Play"; };
 addEventListener("resize", () => data && draw());
