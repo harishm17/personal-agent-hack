@@ -323,8 +323,11 @@ function go(k, instant = false) {
   X.hooks.onStage(S[k], k, S.length);
   const t0 = performance.now(), ms = instant || !X.motion ? 0 : 750;
   const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
-  const frame = (now) => {
-    const t = ms ? Math.min(1, (now - t0) / ms) : 1, u = ease(t), cur = new Map();
+  let frames = 0;
+  const frame = () => {
+    // the page's own clock, kept inside 0..1, and never slower than half speed by frame count, so a tween always lands
+    frames += 1;
+    const t = ms ? Math.max(0, Math.min(1, Math.max((performance.now() - t0) / ms, (frames * 8) / ms))) : 1, u = ease(t), cur = new Map();
     for (const [id, b] of target.P) {
       const a = from.get(id) || b;
       cur.set(id, { ...b, x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u, o: a.o + (b.o - a.o) * u, r: b.r != null ? (a.r ?? b.r) + (b.r - (a.r ?? b.r)) * u : undefined });
@@ -333,7 +336,7 @@ function go(k, instant = false) {
     X.P = cur;
     if (t < 1) X.raf = requestAnimationFrame(frame);
   };
-  if (ms) X.raf = requestAnimationFrame(frame); else frame(t0);
+  if (ms) X.raf = requestAnimationFrame(frame); else frame();
 }
 
 // ---------- the surface the page uses ----------
