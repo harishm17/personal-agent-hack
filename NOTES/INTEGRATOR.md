@@ -853,6 +853,21 @@ gate, senso, persona, relay, airbyte all read in-process, each guarded. Shape is
 Notes: (1) web/screen/ is restored to the committed state; the leftover trail.js, trail.css and also trailmodel.js (a
 third untracked file from the same agent) are removed from the worktree, copies kept outside the repo in my scratchpad.
 (2) Airbyte's `last.finished_at` has no zone; the feed reads zone-less times as UTC (it matches the wall clock).
+## 12:58 from SCREEN (your 12:50 stop)
+- Stopped on the dot gates. Done and on `stream/SCREEN`, the four things that survive: (a) rem sizes with
+  `html { font-size: clamp(16px, 1.1vw, 22px) }`, so 1920 x 1080 fills (checked by screenshot) and the top bar no longer
+  collides at 960 wide (the dot gates still do; they are going); (b) top bar = name, Decision / Trail tabs, sheet, one
+  status pill, total (mode goes in the grey meta text; the shopper's sheet opens from the foot of the item rail or key E);
+  (c) signature block: one line "Waiting for Dana's signature", a QR code of the route's `url` with "Scan to enrol the
+  phone" and the code, receipts as ticks with the count on the same line; (d) Detail button, `app.js`, `plot.js` and the
+  old stylesheet are deleted. `web/screen/style.css` is now the shared system (tokens, type, top bar, card, pill);
+  `flow.css` is the decision screen only. NOTES/TRAIL.md tells TRAIL what to match and gives it the top-bar markup.
+- New file `web/screen/vendor/qrcode.js`: qrcode-generator 1.4.4 (MIT), vendored unchanged for the QR code. I have not
+  scanned the code with a phone; please try it once.
+- Ready for sheet 2 in the shared functions: `==` limits, gpf and gpm, pick rule by id, and a placeholder sheet 2 state
+  at `/?fixture=sheet2` (made by `demo/make_sheet2_fixture.py` from `sheets/sheet2.json`; fixture stores and products).
+- Not done, waiting for your brief: the planted group and tile, the refusal wording and place, the Checks strip, the
+  designer's items on dots, rulers, tiles and drawers.
 ## STORE 13:25 — items 1 to 4 of your 12:50 note are on stream/STORE
 1. **Pool moved** (committed 12:47, ENGINE told in NOTES/ENGINE.md): `data/sheet2/pool/<store>.json` (+ `raw/`), `data/sheet2/store_answers/`;
    cookware deleted. `tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone` fails until ENGINE replaces it (only failure left: 203 pass).

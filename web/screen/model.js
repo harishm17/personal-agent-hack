@@ -14,11 +14,16 @@ export function money(cents) {
 }
 
 export function opSymbol(op) {
-  return op === ">=" ? "≥" : "≤";
+  return op === ">=" ? "≥" : op === "==" ? "=" : "≤";
 }
 
 export function opWords(op) {
-  return op === ">=" ? "at least" : "at most";
+  return op === ">=" ? "at least" : op === "==" ? "exactly" : "at most";
+}
+
+/** Does `lhs` meet `bound` under `op`? Used only by the in-page simulation and the fixtures; the engine decides. */
+export function holds(op, lhs, bound) {
+  return op === ">=" ? lhs >= bound : op === "==" ? Math.abs(lhs - bound) < 1e-9 : lhs <= bound;
 }
 
 /** Who owns a term or a bound, as the words shown above its number. */
@@ -45,6 +50,9 @@ export function marginText(check) {
   if (check.state === "not_stated") {
     return "the page never states " + (check.missing_figure || "this figure").replace(/_/g, " ");
   }
+  if (check.op === "==") {      // a point to hit, not a side: there is no margin to have
+    return check.pass ? `matches ${num(check.bound.value, unit)} ${unit}` : `${num(check.lhs, unit)} ${unit}, not ${num(check.bound.value, unit)}`;
+  }
   if (check.pass) return check.margin === 0 ? "nothing to spare" : `${num(check.margin, unit)} ${unit} to spare`;
   if (check.margin < 0) return `misses by ${num(-check.margin, unit)} ${unit}`;
   return "the limit is outside its adjustable range";
@@ -59,7 +67,7 @@ export function figureSpan(quote, term) {
   const first = found.find((t) => t.v === low);
   if (!first) return whole;
   const last = high !== low ? found.find((t) => t.s >= first.e && t.v === high) || first : first;
-  const unit = /^\s?-?\s?(?:inches|inch|in\b|”|"|''|lbs?\b|pounds?|cm\b|mm\b|°\s?F\b)/i.exec(quote.slice(last.e));
+  const unit = /^\s?-?\s?(?:inches|inch|in\b|”|"|''|lbs?\b|pounds?|cm\b|mm\b|°\s?F\b|gp[fm]\b|gallons? per (?:flush|minute)|gal\b)/i.exec(quote.slice(last.e));
   return [first.s, last.e + (unit ? unit[0].length : 0)];
 }
 
@@ -149,7 +157,7 @@ export function simulate(state, overrides = {}) {
         ch.bound.value = ch.bound.owner === "issuer" ? limits[ch.limit_id].bound.value : facts[ch.bound.fact].value;
         if (ch.state === "not_stated") continue;
         const lhs = ch.terms.reduce((sum, t) => sum + t.value, 0), b = ch.bound.value;
-        let ok = ch.op === ">=" ? lhs >= b : lhs <= b;
+        let ok = holds(ch.op, lhs, b);
         const adj = ch.terms.find((t) => t.kind === "adjustable");
         if (adj && ok) {
           const others = lhs - adj.value;
@@ -157,7 +165,7 @@ export function simulate(state, overrides = {}) {
         }
         const shown = ch.terms.map((t) => g(t.value)).join(" + ");
         ch.lhs = round2(lhs);
-        ch.margin = round2(ch.op === ">=" ? lhs - b : b - lhs);
+        ch.margin = round2(ch.op === ">=" ? lhs - b : ch.op === "==" ? -Math.abs(lhs - b) : b - lhs);
         ch.pass = ok;
         ch.state = ok ? "pass" : "fail";
         ch.expr = ch.terms.length > 1 ? `${shown} = ${g(lhs)} ${ch.op} ${g(b)}` : `${g(lhs)} ${ch.op} ${g(b)}`;
@@ -176,7 +184,8 @@ export function simulate(state, overrides = {}) {
     }
     const inside = line.candidates.filter((c) => c.status === "inside");
     const local = sheetLine.fulfilment === "pick_up_locally";
-    const eligible = inside.filter((c) => local || c.arrival.status === "stated")
+    const needsDelivery = /delivery/.test(s.sheet.pick_rule.id || "");      // "cheapest" alone does not ask for a stated delivery time
+    const eligible = inside.filter((c) => local || !needsDelivery || c.arrival.status === "stated")
       .sort((a, b) => a.product.price_cents - b.product.price_cents || (a.id < b.id ? -1 : 1));
     const pick = eligible[0] || null;
     insideCount += inside.length;
