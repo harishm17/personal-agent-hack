@@ -146,13 +146,16 @@ def build(state: dict, receipts: list | None = None, order_text: str | None = No
             store = p.get("store")
             page = {"record": "store_page", "url": p.get("url"), "fetched_at": p.get("fetched_at")} if p.get("url") else None
             price = _money(p.get("price_cents"))
+            option = p.get("variant_title") if (c.get("variants") or 0) > 1 else None  # an option's name says something only when there is a choice
             pid = g.node("product:" + c["id"], "product", p.get("title"), store, page,
-                         sub=" · ".join(x for x in (price, p.get("variant_title")) if x),
+                         sub=" · ".join(x for x in (price, option) if x),
                          text=p.get("title"), line_id=line["line_id"], status=c.get("status"),
                          picked=bool(c.get("picked")), reason=c.get("reason"), price_cents=p.get("price_cents"),
                          product_key=p.get("product_key"))
             if not pid:
                 continue
+            if "store:%s" % store not in g.nodes:  # a store the sheet does not list is known from its own page
+                g.node("store:%s" % store, "store", store, store, page, sub="store")
             g.edge(pid, "sold by", "store:%s" % store, store, page)
             for check in c.get("checks") or []:
                 limit = "limit:" + check["limit_id"]
@@ -266,6 +269,9 @@ def view(graph: dict, line_id: str, near: int = 2) -> dict | None:
             if shown[e["from"]].get("picked") or shown[e["from"]].get("status") == "inside" or s.get("state") != "pass":
                 keep.add(s["id"])
     keep &= set(nodes)
+    # nobody floats: a person or store stays only if something shown is tied to them
+    tied = {x for e in graph["edges"] if e["from"] in keep and e["to"] in keep for x in (e["from"], e["to"])}
+    keep = {i for i in keep if nodes[i]["kind"] not in ("person", "store") or i in tied}
     folded = {}
     for p in products:
         if p["id"] not in shown:
