@@ -63,3 +63,16 @@ def test_synced_rows_are_in_singlestore_and_equal_the_pool():
     got = {(p["store"], p["product_id"]): p for p in data["pool"]}
     assert set(got) == set(on_disk)
     assert all(got[k]["text"] == on_disk[k]["text"] and got[k]["price_cents"] == on_disk[k]["price_cents"] for k in got)
+
+
+@pytest.mark.live
+def test_order_limits_synced_match_the_sheet():
+    from signoff.airbyte import order
+    data = order.load()
+    sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+    want = {lim["id"]: lim for line in sheet["lines"] for lim in line["limits"]}
+    assert data and data["rows"] == len(want)
+    for r in data["limits"]:
+        b = want[r["limit_id"]]["bound"]
+        assert r["op"] == want[r["limit_id"]]["op"]
+        assert (r["value"] == b["value"]) if b["source"] == "issuer" else r["value"] is None

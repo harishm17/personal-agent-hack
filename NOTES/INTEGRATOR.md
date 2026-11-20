@@ -61,4 +61,4 @@ Also: `kb_accuracy` judge model is `gpt-5.6-luna`; a run with wait:true took abo
   `airbyte_pool` needs none of them.
 - To mount: add `signoff.airbyte.api` is already in `OPTIONAL_ROUTERS`. To read from Airbyte rows, use
   `signoff.airbyte.pool.load()["pool"]`: same shape as `data/pool/*.json`.
-- Next from me: the order as a third source (step 4) unless you say otherwise.
+- Step 4 done: the order is a third Airbyte source (job 11, 12 rows, table `airbyte_order_limits`); `signoff.airbyte.order.load()` returns it as "proposed, from the order". Whole run with three jobs: 109 s.

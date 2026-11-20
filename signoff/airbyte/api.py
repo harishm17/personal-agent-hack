@@ -40,8 +40,7 @@ def status():
             "ok": last["ok"], "finished_at": last["finished_at"], "seconds": last.get("seconds"),
             "jobs": [{"stream": j["stream"], "job_id": j["job_id"], "connection_id": j["connection_id"],
                       "status": j["status"], "rows": j.get("rows_synced"), "duration": j.get("duration")} for j in jobs],
-            "rows": {"airbyte_pool": (last.get("loaded") or {}).get("airbyte_pool"),
-                     "airbyte_store_answers": (last.get("loaded") or {}).get("airbyte_store_answers")},
+            "rows": last.get("loaded") or {},
             "expected": last.get("expected"), "error": last.get("error"),
             "path": "Airbyte File source -> Airbyte MySQL destination (local staging) -> copied into SingleStore",
         }

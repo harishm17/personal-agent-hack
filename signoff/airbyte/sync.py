@@ -26,6 +26,7 @@ STAGING = {"host": "host.docker.internal", "port": 3307, "database": "staging", 
 STREAMS = [
     {"name": "airbyte_pool", "file": "pool.jsonl", "format": "jsonl", "count_key": "pool"},
     {"name": "airbyte_store_answers", "file": "store_answers.jsonl", "format": "jsonl", "count_key": "store_answers"},
+    {"name": "airbyte_order_limits", "file": "order.csv", "format": "csv", "count_key": "order"},
 ]
 WAIT_SECONDS = 900
 
@@ -112,10 +113,17 @@ DDL = {
         store VARCHAR(80) NOT NULL PRIMARY KEY, asked_at VARCHAR(40), question TEXT, answer TEXT,
         delivery_stated TINYINT, delivery_quote TEXT, days_low INT, days_high INT, returnable VARCHAR(20),
         return_fee TEXT, return_quote TEXT, airbyte_job_id BIGINT, airbyte_synced_at DATETIME)""",
+    "airbyte_order_limits": """CREATE ROWSTORE TABLE IF NOT EXISTS airbyte_order_limits (
+        limit_id VARCHAR(40) NOT NULL PRIMARY KEY, line_id VARCHAR(20), need VARCHAR(80), name VARCHAR(80),
+        op VARCHAR(2), value DOUBLE, unit VARCHAR(10), bound_source VARCHAR(20), bound_fact VARCHAR(60),
+        issuer VARCHAR(120), issued_at VARCHAR(40), order_note TEXT, airbyte_job_id BIGINT,
+        airbyte_synced_at DATETIME)""",
     "airbyte_runs": """CREATE ROWSTORE TABLE IF NOT EXISTS airbyte_runs (
         run_id BIGINT AUTO_INCREMENT PRIMARY KEY, finished_at DATETIME, ok TINYINT, detail JSON)""",
 }
 COLUMNS = {
+    "airbyte_order_limits": ["limit_id", "line_id", "need", "name", "op", "value", "unit", "bound_source",
+                             "bound_fact", "issuer", "issued_at", "order_note"],
     "airbyte_pool": ["store", "product_id", "variant_id", "title", "price_cents", "url", "text", "fetched_at",
                      "product_key", "line_ids"],
     "airbyte_store_answers": ["store", "asked_at", "question", "answer", "delivery_stated", "delivery_quote",
@@ -127,6 +135,9 @@ def _clean(table: str, row: list) -> list:
     row = list(row)
     if table == "airbyte_pool":
         row[COLUMNS[table].index("line_ids")] = json.dumps([x for x in (row[-1] or "").split(",") if x])
+    if table == "airbyte_order_limits":
+        i = COLUMNS[table].index("value")
+        row[i] = None if row[i] in (None, "") or row[i] != row[i] else float(row[i])
     if table == "airbyte_store_answers":
         for k in ("delivery_stated",):
             i = COLUMNS[table].index(k)
@@ -140,7 +151,7 @@ def load_into_singlestore(results: list[dict]) -> dict:
     counts = {}
     try:
         sc, tc = s.cursor(), t.cursor()
-        for name in ("airbyte_pool", "airbyte_store_answers", "airbyte_runs"):
+        for name in (*COLUMNS, "airbyte_runs"):
             tc.execute(DDL[name])
         for r in results:
             if r["status"] != "succeeded":
