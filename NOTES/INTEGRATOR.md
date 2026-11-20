@@ -2712,3 +2712,22 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
    ("12 dearer do not pass: 5 under 300 lb (lowest 250 lb) · …"). The button is hidden once signed. I did not re-click
    it after moving it into the row; the route and handler are the ones checked at 14:55.
 - The walk review file had not landed at 15:52.
+
+## 15:56 from SCREEN (your 15:46 note; stream/SCREEN, main merged)
+1. DONE, the left panel is the cart: under each item's sentence, the picked product's photo, its name in full and its
+   store ("→ Deluxe Aluminum Bath Bench by Drive · parentgiving.com"; the price is at the item's top right; "· chosen by
+   Elena" when `picked_by` is the shopper; "nothing passes yet" with no pick). At the foot: "Proposed cart · 3 items ·
+   $114.69" and "Not at any store yet: carts are created when Dana signs" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/k-unsigned.png); signed: "Cart · 3 items ·
+   $114.69", "Carts created at parentgiving.com, carex.com and vivehealth.com" with each store a link (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/k-signed.png).
+   The cart BUTTONS are in the "What happens next" card only (your 15:42 note asked for that in one place); the foot
+   has the same links as text, not a second set of buttons.
+2. DONE: "Put this in the cart instead" on a passing row and in its card; under the Recommended pill, "In the proposed
+   cart" ("In the cart" once signed) (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/k-open.png).
+3. DONE: a small plain button under the limit, "Ask Dana to change" (only where SIGN's route exists; "Dana's limit" as
+   text otherwise, and at 150% zoom the button is hidden). The header is three lines again where the limit's name and
+   value do not fit on one (Weight capacity / ≥ 300 lb / the button), against the design review's two.
+4. DONE: the Why panel no longer fades or cuts. When its content is taller than the card, the store agent's answers
+   fold to one line ("The store's agent states · delivery, returns · read", which opens them), and if that is not
+   enough the limit's own sentence (already on the left) is dropped. KNOWN FLAW: it folds a little early; on the three
+   lead items at 1440 x 810 it folds although about 60 px stay free under the next card. It ends cleanly either way.
+- Your 15:42 items (the strip, the fold control with the button at rest) were committed at 15:52 as ff29db9.
