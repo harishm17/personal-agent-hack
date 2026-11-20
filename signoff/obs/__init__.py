@@ -65,9 +65,20 @@ def _put(item: tuple) -> None:
         stats["dropped"] += 1
 
 
+GATE_KEY = "sie_reader"
+_variants: dict = {GATE_KEY: "sonnet"}  # the gate's arm now (the reference reader until the gate says otherwise)
+
+
+def current_experiments() -> list[dict]:
+    return [{"key": k, "variant": v} for k, v in _variants.items()]
+
+
 def session(sheet_id: str, experiments: list[dict] | None = None) -> str:
-    """Start a new session for this sheet run (ends the previous one). Returns its id. `experiments` is the Statsig
-    variant list, e.g. [{"key": "reader_model", "variant": "arcee"}]; it is carried by every event of the session."""
+    """Start a new session for this sheet run (ends the previous one). Returns its id. `experiments` is the Statsig variant
+    list, e.g. [{"key": "sie_reader", "variant": "sie-qwen"}]; without it the gate's current arm is attached, so every session
+    carries its variant from its first event, and every event of the session carries it."""
+    if experiments is None:
+        experiments = current_experiments()
     sid = f"{sheet_id}-{datetime.datetime.now().strftime('%H%M%S')}-{uuid.uuid4().hex[:4]}"
     try:
         _state.update(session_id=sid, sheet_id=sheet_id, experiments=experiments)
@@ -80,8 +91,10 @@ def session(sheet_id: str, experiments: list[dict] | None = None) -> str:
 def set_experiments(experiments: list[dict] | None) -> None:
     """Attach (or change) experiment variants on the running session and the events after this call."""
     try:
-        _state["experiments"] = experiments
-        _put(("experiments", experiments))
+        for e in experiments or []:
+            _variants[e["key"]] = e["variant"]
+        _state["experiments"] = current_experiments()
+        _put(("experiments", current_experiments()))
     except Exception:  # noqa: BLE001
         pass
 
@@ -178,6 +191,18 @@ def _init():
         stats["last_status"] = code
         if code == 200:
             stats["delivered"] += 1
+            try:  # what Amplitude was sent: event names and the property names of one sample of each
+                et = getattr(event, "event_type", None) or str(type(event).__name__)
+                stats.setdefault("events_by_name", {})
+                stats["events_by_name"][et] = stats["events_by_name"].get(et, 0) + 1
+                stats.setdefault("sample_properties", {}).setdefault(et, sorted((getattr(event, "event_properties", None) or {}).keys()))
+                ex = (getattr(event, "event_properties", None) or {}).get("[Agent] Experiments")
+                if ex:
+                    stats.setdefault("experiments_seen", [])
+                    if ex not in stats["experiments_seen"]:
+                        stats["experiments_seen"].append(ex)
+            except Exception:  # noqa: BLE001
+                pass
         else:
             stats["last_error"] = f"amplitude status {code}: {str(message)[:120]}"
 

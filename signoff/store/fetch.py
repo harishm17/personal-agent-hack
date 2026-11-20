@@ -1,43 +1,54 @@
-"""Fetch every query of every line of a sheet from every store, once; save raw replies for replay."""
+"""Fetch every query of every line of a sheet from every store of the sheet, once; save the raw replies for replay.
+One thread per store, each store called about once a second. Works for any sheet."""
+import concurrent.futures as cf
 import json
 import pathlib
-import re
 import sys
-import concurrent.futures as cf
+import time
 
 from signoff import config
-from signoff.store import replay, ucp
+from signoff.store import replay, sheetctx, ucp
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
-RAW = ROOT / "data" / "pool" / "raw"
-
-
 raw_path = replay.raw_path
+SPACING = 0.8
 
 
-def fetch_raw(sheet_path: str = "sheets/sheet1.json", force: bool = False) -> dict:
-    sheet = json.loads((ROOT / sheet_path).read_text())
-    jobs = [(s, q) for s in sheet["stores"] for line in sheet["lines"] for q in line["queries"]]
+def fetch_raw(sheet_id: str | None = None, force: bool = False) -> dict:
+    """{(store, query): "ok n" | "cached" | "ERR ..."}. In replay mode nothing is fetched."""
+    sheet_id = sheet_id or sheetctx.active_id()
+    sheet = json.loads((ROOT / "sheets" / f"{sheet_id}.json").read_text())
+    raw_dir = sheetctx.pool_dir(sheet_id) / "raw"
+    queries = [q for line in sheet["lines"] for q in line["queries"]]
 
-    def one(job):
-        if config.mode() == "replay":
-            return job, "replay: not fetched"
-        store, q = job
-        p = raw_path(store, q)
-        if p.exists() and not force:
-            return job, "cached"
-        try:
-            r = ucp.search_catalog(store, q)
-        except Exception as e:  # noqa: BLE001
-            return job, "ERR " + repr(e)[:120]
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps(r, indent=1))
-        return job, "ok %d" % len(r.get("products", []))
+    def one_store(store):
+        res = {}
+        for q in queries:
+            if config.mode() == "replay":
+                res[(store, q)] = "replay: not fetched"
+                continue
+            p = raw_path(store, q, raw_dir)
+            if p.exists() and not force:
+                res[(store, q)] = "cached"
+                continue
+            try:
+                r = ucp.search_catalog(store, q)
+            except Exception as e:  # noqa: BLE001
+                res[(store, q)] = "ERR " + repr(e)[:120]
+                continue
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(json.dumps(r, indent=1))
+            res[(store, q)] = "ok %d" % len(r.get("products", []))
+            time.sleep(SPACING)
+        return res
 
-    with cf.ThreadPoolExecutor(3) as ex:
-        return dict(ex.map(one, jobs))
+    out: dict = {}
+    with cf.ThreadPoolExecutor(max(1, len(sheet["stores"]))) as ex:
+        for r in ex.map(one_store, sheet["stores"]):
+            out.update(r)
+    return out
 
 
 if __name__ == "__main__":
-    for (s, q), st in fetch_raw(*sys.argv[1:]).items():
+    for (s, q), st in fetch_raw(*sys.argv[1:2]).items():
         print(s, q, st)

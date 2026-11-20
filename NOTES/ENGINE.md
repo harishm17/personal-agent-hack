@@ -58,3 +58,22 @@ my branch until you replace it. Horow states no delivery time (see NOTES/INTEGRA
 the bathroom sheet, pool in `data/sheet2/pool/`). Nothing in my paths can fix it; it needs your replacement test for the bathroom sheet (or
 deleting it). Until then `uv run -q pytest -q -x` stops at it on stream/STORE; every other test passes (run with
 `--deselect tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone`).
+
+## 13:00 from STORE — `image_url` is on every pool product (both sheets)
+Every row of `data/pool/*.json` and `data/sheet2/pool/*.json` now has `image_url`: the store's own first image from its search reply
+(`media[0].url`, an https URL on the store's CDN), or null when the store sent none (today none is null: 256 of 256 have one). Nothing was
+fetched, resized or taken from another source. Please pass it through as an optional key on `product` in /api/state (not part of the
+signed sheet or its hash). If a pool is rebuilt (`build_pool.build()` or `sheet2.build()`) the key is written the same way.
+
+## 13:25 from STORE — every in-stock option is in both pools (committed)
+Every row of `data/pool/*.json` and `data/sheet2/pool/*.json` has `options`: a list of `{variant_id, title, price_cents, available}`, one per
+in-stock option, from the store's own reply (256 products, 317 options; 30 products have more than one, at most 10). The row's text is the
+product's text once (title, description, and still the line "Selected option: <cheapest>" for the old single reading); to read option k
+append "Selected option: <options[k].title>." yourself (an option titled "Default Title" or "Each" carries no extra text). The top-level
+`variant_id`, `price_cents`, `variants`, `variant_title` are unchanged (the cheapest in stock). A cart for an option uses that option's
+`variant_id`. `build_pool.build()` and `sheet2.build()` write the key the same way.
+
+## 13:40 from STORE — store agents are no longer asked for figures (audit 13:10, item 3)
+`data/store_answers/asked/<store>.json` now holds only `returns_and_delivery` replies for picks and runner-ups (10 records; the 15 figure
+replies are removed, as are `asked.figure_question` and the not_stated targets). If your reader or `asked` key on a candidate still
+reads a figure from those files, drop it: a store agent said "does not specify" for pages that do state the figure.

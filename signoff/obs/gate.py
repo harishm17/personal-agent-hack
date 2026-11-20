@@ -49,22 +49,23 @@ except Exception:  # noqa: BLE001
 
 
 def decision(evid: dict, value: bool) -> dict:
-    """The screen's words, decided by code from the evidence. 'kept' needs no difference between the readers; stating
-    more products is not a reason."""
+    """The screen's words, decided by code from the evidence (never by Amplitude, which only records the change)."""
     v = verdict_from(evid)
     ever_on = any(h["value"] for h in _s["history"])
     d = (evid or {}).get("disagreements") or {}
     if v is None:
-        return {"decision": None, "text": None}
+        return {"decision": None, "text": None, "decided_by": "code, from the run files"}
+    acc = evid["products_accepted"]
+    extra = "It also read %d figure(s) the reference did not count; they move %d candidate(s) inside the limits and are listed for a check." % (
+        d.get("small_only", 0), len(evid.get("inside_only_small_reader") or []))
     if v == "switch back":
         name = "switch back advised (the gate is on)" if value else ("switched back" if ever_on else "not adopted")
-        text = ("%s: the small reader read %d figure(s) differently from the reference and counted %d the reference did not, "
-                "although it accepted %d more products (%d against %d)." % (
-                    name.capitalize(), d.get("different_value", 0), d.get("small_only", 0), evid["small_accepts_more"],
-                    evid["products_accepted"]["sie-qwen"], evid["products_accepted"]["sonnet"]))
-        return {"decision": name, "text": text}
+        text = "%s: on %d quote(s) the small reader read a different number from the reference. %s It accepted %d more products (%d against %d)." % (
+            name.capitalize(), d.get("different_value", 0), extra, evid["small_accepts_more"], acc["sie-qwen"], acc["sonnet"])
+        return {"decision": name, "text": text, "decided_by": "code, from the two readers' run files"}
     return {"decision": "kept" if value else "not adopted",
-            "text": "The small reader read every figure the same as the reference and counted none extra."}
+            "text": "The small reader never read a quote to a different number than the reference. " + extra,
+            "decided_by": "code, from the two readers' run files"}
 
 
 def _arm(value: bool) -> str:
@@ -103,9 +104,12 @@ def _arm_state(arm: str) -> dict:
                                                    copy.deepcopy(eng._s["strikes"]), eng._s["mode"])
         st = rules.build_state(sheet, pool, _arm_figures(arm), answers, strikes, mode)
         picks = {l["line_id"]: next((c for c in l["candidates"] if c["picked"]), None) for l in st["lines"]}
+        inside = {c["id"]: {"line": l["line_id"], "title": c["product"]["title"], "store": c["product"]["store"]}
+                  for l in st["lines"] for c in l["candidates"] if c["status"] == "inside"}
         _arm_cache.clear()
-        _arm_cache[key] = {"counts": st["counts"], "picks": {k: (v and {"title": v["product"]["title"], "store": v["product"]["store"],
-                           "price_cents": v["product"]["price_cents"]}) for k, v in picks.items()}}
+        _arm_cache[key] = {"counts": st["counts"], "inside": inside,
+                           "picks": {k: (v and {"title": v["product"]["title"], "store": v["product"]["store"],
+                                                "price_cents": v["product"]["price_cents"]}) for k, v in picks.items()}}
     return _arm_cache[key]
 
 
@@ -159,10 +163,17 @@ def evidence() -> dict:
         ref, small = _arm_state("sonnet"), _arm_state("sie-qwen")
         d = disagreements()
         n_ref, n_small = ref["counts"]["state_every_figure"], small["counts"]["state_every_figure"]
+        only_small = [{"candidate": k, **v} for k, v in small["inside"].items() if k not in ref["inside"]]
+        only_ref = [{"candidate": k, **v} for k, v in ref["inside"].items() if k not in small["inside"]]
+        rd = {r["extractor"]: r for r in ((_engine().get_state().get("readers") or {}).get("readers") or [])}
+        per_page = {arm: {"seconds_median": (rd.get(rid) or {}).get("seconds_per_product_median"),
+                          "cost": (rd.get(rid) or {}).get("cost"), "pages": (rd.get(rid) or {}).get("products_read")}
+                    for arm, (_, _, rid) in ARMS.items()}
         ex = next((x for x in d["different_value"] if x["figure"] == "overall_width"), (d["different_value"] or [None])[0])
         out = {"products_accepted": {"sonnet": n_ref, "sie-qwen": n_small, "of": ref["counts"]["products_found"]},
                "small_accepts_more": n_small - n_ref,
                "inside_limits": {"sonnet": ref["counts"]["inside_limits"], "sie-qwen": small["counts"]["inside_limits"]},
+               "inside_only_small_reader": only_small, "inside_only_reference": only_ref, "per_page": per_page,
                "picks_differ_on": [l for l in ref["picks"] if (ref["picks"][l] or {}).get("title") != (small["picks"][l] or {}).get("title")],
                "disagreements": {k: len(v) for k, v in d.items()}, "figures_in_disagreement": d,
                "example": ex and {**ex, "sentence": "On %s the quote %r was read as %s by the reference and %s by the small reader." % (
@@ -173,12 +184,14 @@ def evidence() -> dict:
 
 
 def verdict_from(evid: dict) -> str | None:
-    """Code decides. The small reader is kept only if it never reads a figure differently from the reference and never
-    counts a figure the reference does not. Stating more products is not a reason to keep it."""
+    """Code decides, from the two readers' run files. The small reader is kept unless it ever reads the same quote to a
+    different number than the reference (then which of them is right cannot be settled by code, and the reference stays the
+    default). Extra figures it reads are not held against it (they may be right): they are counted and listed, with the
+    candidates they move inside the limits, for a person to check. Stating more products is not by itself a reason to keep it."""
     dis = (evid or {}).get("disagreements")
     if dis is None:
         return None
-    return "switch back" if (dis["different_value"] or dis["small_only"]) else "kept"
+    return "switch back" if dis["different_value"] else "kept"
 
 
 def outcome() -> dict:
@@ -292,7 +305,8 @@ def status() -> dict:
     evid = evidence()
     dec = decision(evid, _s["value"])
     return {"gate": GATE, "value": _s["value"], "arm": _s["arm"], "deciding_reader": out.get("deciding"),
-            "decision": dec["decision"], "decision_text": dec["text"], "evidence": evid,
+            "decision": dec["decision"], "decision_text": dec["text"], "decided_by": dec["decided_by"],
+            "recorded_in": "Amplitude (event gate.changed, session experiment sie_reader)", "evidence": evid,
             "source": "local override" if _override is not None else "statsig",
             "gate_exists_in_statsig": _s["exists"], "changed_at": _s["changed_at"], "history": _s["history"],
             "polling": bool(_thread and _thread.is_alive()), "poll_seconds": POLL_SECONDS,

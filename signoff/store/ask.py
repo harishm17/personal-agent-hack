@@ -8,8 +8,13 @@ from signoff.store import ucp
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 ANSWERS = ROOT / "data" / "store_answers"
-QUESTION = ("If I order a shower chair today to a California address, how many days will delivery take? "
-            "And can an opened bath seat be returned, and is there any fee?")
+def question_for(need: str) -> str:
+    """The delivery and returns question for a line's `need`, the same wording for every sheet."""
+    return ("If I order a %s today to a California address, how many days will delivery take? "
+            "And can an opened %s be returned, and is there any fee?" % (need, need))
+
+
+QUESTION = question_for("shower chair")  # sheet 1's first line; kept for callers that still import it
 
 _DAYS = re.compile(r"(\d+)\s*(?:[–—-]|to)\s*(\d+)\s*(?:business\s+|working\s+)?days", re.I)
 _ONE_DAY = re.compile(r"(?:within|in|about)\s+(\d+)\s*(?:business\s+|working\s+)?days", re.I)
@@ -82,33 +87,55 @@ def parse_reply(store: str, question: str, answer: str, asked_at: str) -> dict:
             "delivery": delivery, "returns": returns}
 
 
-def ask(store: str, query: str = QUESTION) -> dict:
-    """One real ask_business call; the reply is kept verbatim in `answer`."""
+def _need_for(store: str, sheet_id: str | None = None) -> str:
+    """The `need` of the first line the store has products for in the active sheet (the sheet's own words)."""
+    from signoff.store import sheetctx
+    sheet_id = sheet_id or sheetctx.active_id()
+    sheet = json.loads((ROOT / "sheets" / f"{sheet_id}.json").read_text())
+    f = sheetctx.pool_dir(sheet_id) / f"{store}.json"
+    lines = sorted({lid for r in (json.loads(f.read_text()) if f.exists() else []) for lid in r["line_ids"]})
+    needs = {l["id"]: l["need"] for l in sheet["lines"]}
+    return needs.get(lines[0]) if lines else sheet["lines"][0]["need"]
+
+
+def ask(store: str, query: str | None = None) -> dict:
+    """One real ask_business call; the reply is kept verbatim in `answer`. Without a query: the delivery and returns question
+    for the first line the store has products for in the active sheet."""
+    from signoff.store import sheetctx
+    query = query or question_for(_need_for(store))
     r = ucp.ask_business(store, query)
     answer = ((r.get("answer") or {}).get("plain")) or json.dumps(r.get("answer"))
     now = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
     rec = parse_reply(store, query, answer, now)
     if r.get("mode") == "replay":
         rec["mode"] = "replay"
-        saved = ANSWERS / f"{store}.json"
-        if saved.exists():  # the saved record keeps its own question and time
-            old = json.loads(saved.read_text())
-            old = old[0] if isinstance(old, list) else old
-            rec.update(question=old.get("question", query), asked_at=old.get("asked_at", now))
+        for d in [sheetctx.answers_dir(), *sheetctx.all_answer_dirs()]:
+            saved = d / f"{store}.json"
+            if saved.exists():  # the saved record keeps its own question and time
+                old = json.loads(saved.read_text())
+                old = old[0] if isinstance(old, list) else old
+                rec.update(question=old.get("question", query), asked_at=old.get("asked_at", now))
+                break
     return rec
 
 
-def refresh(stores: list[str]) -> list[dict]:
-    ANSWERS.mkdir(parents=True, exist_ok=True)
+def refresh(stores: list[str] | None = None, sheet_id: str | None = None) -> list[dict]:
+    """One delivery and returns question to each store's agent about the first line it has products for; saved verbatim in the
+    active sheet's store_answers folder."""
+    from signoff.store import sheetctx
+    sheet_id = sheet_id or sheetctx.active_id()
+    sheet = json.loads((ROOT / "sheets" / f"{sheet_id}.json").read_text())
+    pool_dir, ans_dir = sheetctx.pool_dir(sheet_id), sheetctx.answers_dir(sheet_id)
+    ans_dir.mkdir(parents=True, exist_ok=True)
+    needs = {l["id"]: l["need"] for l in sheet["lines"]}
     out = []
-    for s in stores:
-        rec = ask(s)
-        (ANSWERS / f"{s}.json").write_text(json.dumps([rec], indent=1, ensure_ascii=False))
+    for s in stores or sheet["stores"]:
+        rec = ask(s, question_for(_need_for(s, sheet_id)))
+        (ans_dir / f"{s}.json").write_text(json.dumps([rec], indent=1, ensure_ascii=False))
         out.append(rec)
     return out
 
 
 if __name__ == "__main__":
-    sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
-    for rec in refresh(sheet["stores"]):
+    for rec in refresh():
         print(json.dumps({k: rec[k] for k in ("store", "delivery", "returns")}, ensure_ascii=False))
