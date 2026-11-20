@@ -35,6 +35,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | E24 | `data_from`: a sheet may name the sheet whose fetched data it uses (one path rule); sheet 4 read end to end from sheet 1's data with its own order document; report per item | ok |
 | E25 | `POST /api/admin/use-sheet` (laptop only): switch the running sheet, reset the run, start a new receipt chain; `GET /api/sheets` lists them | ok |
 | E26 | an option row must not be given a statement about a different option (Vive Textured Grab Bars: the 18 Inch and 36 Inch options read as 12 in); such a row is `unclear`; all option rows on sheets 4 and 3 re-checked | open |
+| E27 | a figure counts only when two independent readers report the same value (reference and Qwen on SIE); otherwise `unclear` ("readers disagree", "only one reader found it"); a switch the gate drives; effect on sheets 4 and 3 reported before it is the default; cut at 14:05 if not feasible | open |
 | E19 | receipts for every state change; `GET /api/receipts/verify` | ok |
 | E20 | seal race, hash covers pick rule, delivery quotes, quantity, currency, variant; scope; `degraded` | ok |
 
@@ -92,6 +93,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | C6 | signature block: QR and one line; receipts as ticks with a count; signed state with "self-declared" or "identity checked (sandbox)" | open |
 | C7 | the unsigned-change control answering in a toast; tabs Decision and Trail; reader chip "switched back" | open |
 | C9 | a quiet sheet switcher in the top bar (from `GET /api/sheets`), laptop only | main |
+| C10 | evidence shows the shortest statement that carries the value for this option, with the reason it was matched; the "Method" line replaced by what guards the right number (two readers agree, the number sits with its label, every stated value passes), only as far as it is true in the state | open |
 | C8 | Detail view, dots, rulers, trays and tiles removed | open |
 
 ## TRAIL
@@ -99,6 +101,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 |---|---|---|
 | T1 | `GET /api/trail`: real records only, each with `step` and `kind` (evidence, reading, check, approval, action) | ok |
 | T2 | `/trail/`: the seven steps as a timeline, events one line each, side sheet with quote and hash | open |
+| T4 | context per model call made visible from the ledger: given (one page, figure meanings) and not given (limits, prices, other pages, the order, people); one summary line with real counts | open |
 | T3 | the decision screen's visual system; no dots, no arrows | open |
 
 ## AIRBYTE / RELAY thread
