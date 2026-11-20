@@ -37,6 +37,7 @@ class Phone:
 
 
 def _make_env(monkeypatch, engine, sheet_id):
+    monkeypatch.setenv("PERSONA_REQUIRED", "0")   # the gate is on by default; most tests are about something else
     cart = FakeCart()
     monkeypatch.setattr(api, "get_engine", lambda: engine)
     monkeypatch.setattr(api, "get_cart", lambda: cart)

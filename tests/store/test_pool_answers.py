@@ -35,20 +35,35 @@ def test_parse_reply_unclear_and_no():
     assert not r["delivery"]["stated"] and r["returns"]["returnable"] == "unclear"
 
 
-def test_product_key_moves_maker_first():
-    assert build_pool.product_key("parentgiving.com", "Wonder EZ Adjust Bed Rail by Stander") == "stander wonder ez adjust bed rail"
-    assert build_pool.product_key("carex.com", "Carex Shower Chair") == "carex shower chair"
-    assert build_pool.product_key("vivehealth.com", "Shower Chair") == "vive shower chair"
+def test_product_key_is_the_stores_own_fields_or_the_title_and_never_a_brand_list():
+    assert build_pool.product_key({"title": "Wonder EZ Adjust Bed Rail by Stander"}) == "wonder ez adjust bed rail by stander"
+    assert build_pool.product_key({"title": "Shower Chair", "vendor": "Vive"}) == "vive shower chair"
+    assert build_pool.product_key({"title": "Vive Shower Chair", "vendor": "Vive"}) == "vive shower chair"
+    assert build_pool.product_key({"title": "T0338W", "vendor": "HOROW", "model": "T0338W-10"}) == "horow t0338w 10"
+    assert not hasattr(build_pool, "BRANDS") and not hasattr(build_pool, "RULES")
 
 
-def test_returnable_needs_the_sentence_to_affirm_it():
-    f = ask.returnable_from
-    assert f("The store\u2019s information doesn't specify whether this bath bench can be returned once opened") == "unclear"
-    assert f("The store does not say whether an opened toilet can be returned.") == "unclear"
-    assert f("Opened bath seats cannot be returned") == "no"
-    assert f("Opened items are not returnable.") == "no"
-    assert f("An opened toilet can be returned within 30 days.") == "yes"
-    assert f("An opened toilet may be returned if it is unused") == "unclear"
-    assert f("Returns are generally limited to unused items in their original packaging") == "unclear"
-    assert f("An opened toilet would not meet the stated return conditions: it must be uninstalled") == "unclear"
-    assert f("We ship on Tuesdays and return calls on Fridays") == "unclear"
+def test_every_product_carries_the_stores_first_image_or_none():
+    import glob
+    rows = [r for f in glob.glob(str(ROOT / "data" / "pool" / "*.json")) + glob.glob(str(ROOT / "data" / "sheet2" / "pool" / "*.json"))
+            for r in json.loads(open(f).read())]
+    assert rows and all("image_url" in r for r in rows)
+    assert all(r["image_url"] is None or r["image_url"].startswith("https://") for r in rows)
+    assert build_pool.image_url({"media": []}) is None and build_pool.image_url({}) is None
+    assert build_pool.image_url({"media": [{"url": "https://x/a.jpg"}, {"url": "https://x/b.jpg"}]}) == "https://x/a.jpg"
+
+
+def test_every_pool_product_carries_every_in_stock_option():
+    import glob
+    rows = [r for f in glob.glob(str(ROOT / "data" / "pool" / "*.json")) + glob.glob(str(ROOT / "data" / "sheet2" / "pool" / "*.json"))
+            for r in json.loads(open(f).read())]
+    for r in rows:
+        o = r["options"]
+        assert o and all(set(x) == {"variant_id", "title", "price_cents", "available"} and x["available"] for x in o)
+        cheapest = min(o, key=lambda x: x["price_cents"])
+        assert r["variant_id"] == cheapest["variant_id"] or r["price_cents"] == cheapest["price_cents"]  # the old top-level fields
+        assert any(x["variant_id"] == r["variant_id"] for x in o)
+    assert any(len(r["options"]) > 1 for r in rows)
+    prod = {"variants": [{"id": "a", "title": "12 Inch", "price": {"amount": 5}, "availability": {"available": True}},
+                         {"id": "b", "title": "16 Inch", "price": {"amount": 6}, "availability": {"available": False}}]}
+    assert build_pool.options_of(prod) == [{"variant_id": "a", "title": "12 Inch", "price_cents": 5, "available": True}]

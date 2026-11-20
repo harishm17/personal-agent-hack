@@ -26,43 +26,33 @@ def _engine_state() -> dict | None:
 
 
 @router.get("/api/sql/passing-box")
-def passing_box(line_id: str):
+def passing_box(line_id: str, source: str = "direct"):
     from signoff.store import sheetctx
     sheet_lines = {l["id"] for l in sheetctx.sheet()["lines"]}
     if line_id not in sheet_lines:
         raise HTTPException(404, "unknown line_id")
+    if source not in ("direct", "airbyte"):
+        raise HTTPException(422, "source is direct or airbyte")
     state = _engine_state()
     try:
         if state:  # make the tables match what the engine shows now, so the two sets cannot differ
             records.write_sync(state)
-        return passing.passing_box(line_id)
+        return passing.passing_box(line_id, source)
     except Exception as e:  # noqa: BLE001
         raise HTTPException(503, "SingleStore unavailable: " + type(e).__name__)
 
 
 def _do_refresh(live: bool) -> None:
-    from signoff.store import ask, build_pool, fetch, sheet2, sheetctx
+    from signoff.store import ask, build_pool, fetch, sheetctx
     try:
         sid = sheetctx.active_id()
         out = {"mode": "live" if live else "replay", "sheet": sid}
-        if sid == "sheet1":
-            if live:
-                out["fetched"] = {f"{s}|{q}": r for (s, q), r in fetch.fetch_raw(force=True).items()}
-            rows = build_pool.build()
-        else:  # the other sheets keep their pool under data/<sheet>/ and are built by signoff.store.sheet2
-            if live:
-                out["fetched"] = {f"{s}|{q}": r for (s, q), r in sheet2.fetch(force=True).items()}
-            rows = sheet2.build()
+        if live:
+            out["fetched"] = {f"{s}|{q}": r for (s, q), r in fetch.fetch_raw(sid, force=True).items()}
+        rows = build_pool.build(sid)
         out["products"] = {s: len(r) for s, r in rows.items()}
         if live:
-            if sid == "sheet1":
-                sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
-                out["answers"] = [a["store"] for a in ask.refresh(sheet["stores"])]
-            else:
-                (sheet2.ANSWERS / "x").parent.mkdir(parents=True, exist_ok=True)
-                for f in sheet2.ANSWERS.glob("*.json"):
-                    f.unlink()
-                out["answers"] = [a["store"] for a in sheet2.ask_stores()]
+            out["answers"] = [a["store"] for a in ask.refresh(sheet_id=sid)]
         try:
             if live:  # reads only the products whose text changed, then reloads the engine
                 out["figures"] = importlib.import_module("signoff.extract.run").refresh()
@@ -133,7 +123,8 @@ def egress_ledger(limit: int = 500, sheet: str | None = None):
 def _warm() -> None:
     try:
         from signoff.store import ucp
-        ucp.warm(json.loads((ROOT / "sheets" / "sheet1.json").read_text())["stores"])
+        from signoff.store import sheetctx
+        ucp.warm(sheetctx.sheet()["stores"])
     except Exception:  # noqa: BLE001
         pass
 

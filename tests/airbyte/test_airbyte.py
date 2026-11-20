@@ -12,24 +12,33 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
 def test_export_rows_match_the_cached_pool_and_answers():
+    sheet = export.load_sheet("sheet1")
     on_disk = sum(len(json.load(open(f))) for f in glob.glob(str(ROOT / "data" / "pool" / "*.json")))
-    rows = export.pool_rows()
+    rows = export.pool_rows(sheet)
     assert len(rows) == on_disk
-    assert all(r["text"] and r["store"] and r["price_cents"] is not None for r in rows)
-    answers = export.answer_rows()
-    assert {a["store"] for a in answers} == {"carex.com", "vivehealth.com", "parentgiving.com"}
+    assert all(r["text"] and r["store"] and r["price_cents"] is not None and r["sheet_id"] == "sheet1" for r in rows)
+    assert {a["store"] for a in export.answer_rows(sheet)} == {"carex.com", "vivehealth.com", "parentgiving.com"}
+
+
+def test_sheet2_data_is_found_by_its_own_store_list():
+    sheet = export.load_sheet("sheet2")
+    rows = export.pool_rows(sheet)
+    assert rows and {r["store"] for r in rows} <= set(sheet["stores"]) and {r["sheet_id"] for r in rows} == {"sheet2"}
+    assert len(export.answer_rows(sheet)) == len(sheet["stores"])
+    assert export.order_doc_rows(sheet)[0]["text"].startswith("Owner-supplied")
 
 
 def test_export_order_has_one_row_per_limit_and_says_invented():
-    sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
-    rows = export.order_rows(sheet)
-    assert len(rows) == sum(len(line["limits"]) for line in sheet["lines"])
-    assert all("invented" in r["order_note"] for r in rows)
+    for sid in ("sheet1", "sheet2"):
+        sheet = export.load_sheet(sid)
+        rows = export.order_rows(sheet)
+        assert len(rows) == sum(len(line["limits"]) for line in sheet["lines"])
+        assert all("invented" in r["order_note"] for r in rows)
 
 
 def test_line_ids_become_a_json_array_on_the_way_in():
     cols = sync.COLUMNS["airbyte_pool"]
-    row = ["s", "p", "v", "t", 1, "u", "x", "now", "k", "L1,L4"]
+    row = ["sheet1", "s", "p", "v", "t", 1, "u", "x", "now", "k", "L1,L4"]
     assert len(row) == len(cols)
     assert json.loads(sync._clean("airbyte_pool", row)[-1]) == ["L1", "L4"]
 
@@ -59,7 +68,7 @@ def test_status_route_reports_the_last_run(monkeypatch):
 
 @pytest.mark.live
 def test_synced_rows_are_in_singlestore_and_equal_the_pool():
-    data = pool.load()
+    data = pool.load("sheet1")
     assert data and data["via"] == "airbyte"
     on_disk = {(p["store"], p["product_id"]): p for f in glob.glob(str(ROOT / "data" / "pool" / "*.json"))
                for p in json.load(open(f))}
@@ -71,7 +80,7 @@ def test_synced_rows_are_in_singlestore_and_equal_the_pool():
 @pytest.mark.live
 def test_order_limits_synced_match_the_sheet():
     from signoff.airbyte import order
-    data = order.load()
+    data = order.load("sheet1")
     sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
     want = {lim["id"]: lim for line in sheet["lines"] for lim in line["limits"]}
     assert data and data["rows"] == len(want)
@@ -79,3 +88,15 @@ def test_order_limits_synced_match_the_sheet():
         b = want[r["limit_id"]]["bound"]
         assert r["op"] == want[r["limit_id"]]["op"]
         assert (r["value"] == b["value"]) if b["source"] == "issuer" else r["value"] is None
+
+
+@pytest.mark.live
+def test_sheet2_rows_are_in_singlestore_and_equal_the_export():
+    from signoff.airbyte import order
+    sheet = export.load_sheet("sheet2")
+    data = pool.load("sheet2")
+    want = {(r["store"], r["product_id"]): r for r in export.pool_rows(sheet)}
+    assert data and {(p["store"], p["product_id"]) for p in data["pool"]} == set(want)
+    assert all(p["text"] == want[(p["store"], p["product_id"])]["text"] for p in data["pool"])
+    assert len(data["store_answers"]) == len(sheet["stores"])
+    assert order.load("sheet2")["rows"] == len(export.order_rows(sheet))

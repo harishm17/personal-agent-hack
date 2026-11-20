@@ -1,5 +1,7 @@
-"""Ask, don't tell: questions to a store's own agent about one product, built by a code template from the product title
-and the figure name only. A question never carries a limit, a shopper measurement, a person or a reason.
+"""Ask, don't tell: one question to a store's own agent about a picked product (the pick and the runner-up of each line): can an
+opened item be returned and how many business days does standard delivery take. Built by a code template from the product title
+only. A question never carries a limit, a shopper measurement, a person or a reason. Store agents are not asked for figures: they
+answered "does not specify" for pages that do state the figure, so that proves nothing (audit 13:10).
 
 Replies are cached verbatim in data/store_answers/asked/<store>.json, a list of
 {store, product_id, figure, question, reply, asked_at, ...}. The same question is never asked twice, and in replay mode
@@ -21,10 +23,7 @@ CACHE = None  # None: the active sheet's folder (sheetctx.asked_dir); tests may 
 SPACING_SECONDS = 0.8
 _lock = threading.Lock()
 
-FIGURE_WORDS = {"weight_capacity": "weight capacity", "added_height": "added height", "seat_height": "seat height",
-                "overall_width": "overall width", "length": "length", "mattress_thickness_max": "maximum mattress thickness",
-                "rough_in": "rough-in", "flush_volume": "flush volume", "flow_rate": "water flow rate"}
-UNIT_WORDS = {"lb": "pounds", "in": "inches", "gpf": "gallons per flush", "gpm": "gallons per minute"}
+RETURNS_FIGURE = "returns_and_delivery"
 
 
 def _cache_dir() -> pathlib.Path:
@@ -34,10 +33,6 @@ RETURNS_FIGURE = "returns_and_delivery"
 
 def clean_title(title: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"&(trade|reg);", "", title or ""))).strip()
-
-
-def figure_question(title: str, figure: str, unit: str) -> str:
-    return f"What does {clean_title(title)} state for its {FIGURE_WORDS.get(figure, figure.replace('_', ' '))}, in {UNIT_WORDS.get(unit, unit)}?"
 
 
 def returns_question(title: str) -> str:
@@ -66,10 +61,9 @@ def leaks(question: str, sheet: dict, title: str | None = None) -> list[float]:
     return found
 
 
-def plan(state: dict, sheet: dict, per_line_not_stated: int = 3) -> list[dict]:
-    """Targets per line: the pick and the runner-up (returns and delivery), and up to three not_stated candidates whose one
-    missing figure is the only thing keeping them out (one question per missing figure). Titles that contain a number equal
-    to a sheet value are skipped, so no question can repeat a limit or a measurement."""
+def plan(state: dict, sheet: dict) -> list[dict]:
+    """Targets per line: the pick and the runner-up (returns and delivery). The template carries only the product title; the check
+    refuses a question whose own words repeat a limit or a measurement."""
     out = []
     for line in state["lines"]:
         local = next((l for l in sheet["lines"] if l["id"] == line["line_id"]), {}).get("fulfilment") == "pick_up_locally"
@@ -78,31 +72,16 @@ def plan(state: dict, sheet: dict, per_line_not_stated: int = 3) -> list[dict]:
         eligible = sorted((c for c in cands if c["status"] == "inside"
                            and (local or not need_delivery or c["arrival"]["status"] == "stated")),
                           key=lambda c: (c["product"]["price_cents"], c["id"]))
-        targets = []
         for role, c in zip(("pick", "runner_up"), eligible[:2]):
-            targets.append((role, c, [(RETURNS_FIGURE, None)]))
-        sole = []
-        for c in cands:
-            if c["status"] != "not_stated":
+            p = c["product"]
+            q = returns_question(p["title"])
+            if leaks(q, sheet, p["title"]):
+                out.append({"skipped": "the question template contains a sheet value", "store": p["store"],
+                            "product_id": p["product_id"], "line_id": line["line_id"], "role": role, "title": p["title"]})
                 continue
-            bad = [k for k in c["checks"] if k["state"] != "pass"]
-            if len(bad) == 1 and bad[0]["state"] == "not_stated":
-                lim = next(l for l in sheet["lines"] if l["id"] == line["line_id"])["limits"]
-                unit = next((l["unit"] for l in lim if l["id"] == bad[0]["limit_id"]), "")
-                sole.append(("not_stated", c, [(bad[0]["missing_figure"], unit)]))
-        sole.sort(key=lambda t: (t[1]["product"]["price_cents"], t[1]["id"]))
-        targets += sole[:per_line_not_stated]
-        for role, c, items in targets:
-            for figure, unit in items:
-                p = c["product"]
-                q = returns_question(p["title"]) if figure == RETURNS_FIGURE else figure_question(p["title"], figure, unit or "")
-                if leaks(q, sheet, p["title"]):
-                    out.append({"skipped": "the question template contains a sheet value", "store": p["store"], "product_id": p["product_id"],
-                                "line_id": line["line_id"], "role": role, "title": p["title"]})
-                    continue
-                out.append({"line_id": line["line_id"], "role": role, "store": p["store"], "product_id": p["product_id"],
-                            "variant_id": p.get("variant_id"), "title": clean_title(p["title"]), "figure": figure,
-                            "question": q})
+            out.append({"line_id": line["line_id"], "role": role, "store": p["store"], "product_id": p["product_id"],
+                        "variant_id": p.get("variant_id"), "title": clean_title(p["title"]), "figure": RETURNS_FIGURE,
+                        "question": q})
     return out
 
 

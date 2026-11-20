@@ -11,10 +11,6 @@ PEOPLE = re.compile(r"dana|elena|therapist|daughter|father|surgery|doctor|patien
 
 
 def test_template_has_no_digit_person_or_limit_word():
-    for fig in asked.FIGURE_WORDS:
-        for unit in ("lb", "in"):
-            q = asked.figure_question("Product", fig, unit)
-            assert not re.search(r"\d", q) and not PEOPLE.search(q), q
     assert not re.search(r"\d", asked.returns_question("Product")) and not PEOPLE.search(asked.returns_question("Product"))
 
 
@@ -52,8 +48,8 @@ def test_cached_question_is_not_asked_twice_and_replay_never_asks(monkeypatch, t
     monkeypatch.setattr(asked, "CACHE", tmp_path)
     calls = []
     monkeypatch.setattr(ucp, "ask_business", lambda s, q, **kw: calls.append(q) or {"answer": {"plain": "It states 20 inches."}})
-    t = {"store": "a.com", "product_id": "p1", "title": "Thing", "line_id": "L1", "role": "pick", "figure": "overall_width",
-         "question": asked.figure_question("Thing", "overall_width", "in")}
+    t = {"store": "a.com", "product_id": "p1", "title": "Thing", "line_id": "L1", "role": "pick",
+         "figure": asked.RETURNS_FIGURE, "question": asked.returns_question("Thing")}
     r1, r2 = asked.ask_one(t), asked.ask_one(t)
     assert len(calls) == 1 and r1 == r2 and r1["reply"] == "It states 20 inches."
     monkeypatch.setenv("SIGNOFF_MODE", "replay")
@@ -61,12 +57,12 @@ def test_cached_question_is_not_asked_twice_and_replay_never_asks(monkeypatch, t
     assert asked.ask_one(t2) is None and len(calls) == 1
 
 
-def test_sheet2_templates_carry_no_sheet_value():
+def test_only_picks_and_runner_ups_are_asked_and_only_about_returns_and_delivery():
+    planned = [t for t in asked.plan(STATE, SHEET) if "question" in t]
+    assert planned and {t["role"] for t in planned} <= {"pick", "runner_up"}
+    assert all(t["figure"] == asked.RETURNS_FIGURE and "be returned" in t["question"] for t in planned)
+    assert not hasattr(asked, "figure_question")  # no figure is asked of a store agent
     sheet2 = json.loads((ROOT / "sheets" / "sheet2.json").read_text())
-    for fig in ("rough_in", "flush_volume", "flow_rate", "overall_width"):
-        for unit in ("in", "gpf", "gpm"):
-            q = asked.figure_question("Product", fig, unit)
-            assert asked.leaks(q, sheet2) == [] and not re.search(r"\d", q), q
     assert asked.leaks("Does it flush at 1.28 gallons per flush?", sheet2) == [1.28]
     assert asked.leaks("Does it fit a 30 inch alcove?", sheet2) == [30.0]
-    assert "gallons per flush" in asked.figure_question("T", "flush_volume", "gpf")
+    assert asked.leaks(asked.returns_question("Toilet"), sheet2) == []

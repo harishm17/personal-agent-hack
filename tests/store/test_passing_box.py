@@ -127,3 +127,13 @@ def test_sql_handles_equals_and_units_on_sheet2(db, monkeypatch):
     # p0: 10 == 10 and 1.28 <= 1.28; p1: 12 != 10; p2: spread 10..12 holds 10 but full flush 1.6 > 1.28; p3: cm is not in;
     # p4: 10 == 10 and the full flush 1.28 <= 1.28; p5: 1.6 > 1.28
     assert got == ["p0", "p4"]
+
+
+def test_the_same_statement_runs_on_the_airbyte_table_and_the_source_is_checked():
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from signoff.store import api
+    assert "FROM {pool_table} p" in passing.PASSING_BOX_SQL and passing.AIRBYTE == "signoff.airbyte_pool"
+    app = FastAPI()
+    app.include_router(api.router)
+    assert TestClient(app).get("/api/sql/passing-box?line_id=L1&source=nonsense").status_code == 422

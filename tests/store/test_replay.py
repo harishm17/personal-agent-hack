@@ -30,3 +30,17 @@ def test_replay_search_ask_cart_without_network(monkeypatch):
 def test_replay_unknown_query_is_empty_not_an_error(monkeypatch):
     _no_network(monkeypatch)
     assert ucp.search_catalog("carex.com", "no such thing")["products"] == []
+
+
+def test_replay_serves_sheet2_search_ask_and_cart_without_network(monkeypatch):
+    _no_network(monkeypatch)
+    sheet = json.loads((ROOT / "sheets" / "sheet2.json").read_text())
+    for store in sheet["stores"]:
+        r = ucp.search_catalog(store, "toilet" if store != "kingstonbrass.com" else "shower head")
+        assert r["mode"] == "replay" and r["products"], store
+        a = ask.ask(store)
+        assert a["mode"] == "replay" and a["answer"] and "toilet" in a["question"]
+    pool = json.loads((ROOT / "data" / "sheet2" / "pool" / "horow.com.json").read_text())
+    opt = next(p for p in pool if len(p["options"]) >= 1)["options"][0]
+    out = cart.create_carts([{"store": "horow.com", "variant_id": opt["variant_id"], "quantity": 1}])
+    assert out[0]["mode"] == "replay" and out[0]["total_cents"] is not None and out[0]["cart_url"].startswith("https://")

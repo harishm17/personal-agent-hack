@@ -58,8 +58,10 @@ def text_key(product, model, sheet=None, system=None):
     """Same text, same reader, same instructions: the cached reading stands ("read once, cached")."""
     salt = gliner.MODEL if model == gliner.EXTRACTOR else (system or reader.SYSTEM)
     if sheet is not None and model != gliner.EXTRACTOR:
-        salt += "".join("%s=%d;" % (n, reader.GLOSSARY_REVISION[n]) for n in reader.wanted_figures(product, sheet)
-                        if n in reader.GLOSSARY_REVISION)
+        asked = reader.wanted_figures(product, sheet)
+        salt += "".join("%s=%d;" % (n, reader.GLOSSARY_REVISION[n]) for n in asked if n in reader.GLOSSARY_REVISION)
+        # a sheet that words a figure's meaning itself: when the words change, the pages asked for it are read again
+        salt += "".join("%s:%s;" % (n, (sheet.get("figures") or {})[n]) for n in asked if n in (sheet.get("figures") or {}))
     return hashlib.sha256(("%s\n%s\n%s" % (model, salt, product.get("text") or "")).encode()).hexdigest()[:16]
 
 

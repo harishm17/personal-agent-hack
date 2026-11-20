@@ -86,3 +86,15 @@ def test_production_key_is_never_read():
     import pathlib
     for f in pathlib.Path("signoff/sign").glob("*.py"):
         assert "PERSONA_PRODUCTION" not in f.read_text()
+
+
+def test_the_identity_gate_is_on_unless_explicitly_switched_off(env, monkeypatch):
+    monkeypatch.delenv("PERSONA_REQUIRED", raising=False)
+    monkeypatch.setattr(persona.config, "env", lambda name, default=None: None)
+    from signoff.sign import api
+    assert api.identity_required() is True
+    assert env.client.get("/api/issuer/status").json()["identity_required"] is True
+    r = env.client.post("/api/issuer/request", json=env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash()))
+    assert r.status_code == 403 and r.json()["detail"] == "identity not verified"
+    monkeypatch.setattr(api.config, "env", lambda name, default=None: "0" if name == "PERSONA_REQUIRED" else None)
+    assert api.identity_required() is False

@@ -39,6 +39,12 @@ code adds any sealed value it finds (`sealed_found_in_payload`). The chat model 
 ## 12:25 from SIGN — carts in the seal can now be `pending` or `failed`
 `mark_signed(signature, carts)` is called with cart entries that may have `mode: "pending"` (the store had not answered within 5 s; `cart_url` is None; SIGN calls `mark_signed` again with the same signature when the store answers) or `mode: "failed"` (`note` says why). Seal text "N carts created" should count only entries with a `cart_url`, and `c["action"]` on a candidate should only be `cart_created` for those. `signature["senso"]` is now `{status: "complete" | "pending" | "not_connected", for_hash, checks, label}` (was a list). A second `mark_signed` with the same signature must keep the same `signed_at`.
 
+## 12:52 from TRAIL — two optional times, so the trail can place readings and picks in time (no rush; null today)
+- [ ] A figure has no time of its own. If the reading pass can write `read_at` (ISO, with zone) on each figure in
+  `data/figures/*.json` and pass it through on `candidates[].figures[]`, the feed uses it as is (`signoff/trail/feed.py`
+  already reads `f.get("read_at")`). Until then figure events carry `at: null`.
+- [ ] A pick has no time and no receipt. A receipt of type `pick` (detail `{line_id, candidate_id, price_cents}`) when a
+  line's pick changes would let the trail show "pick moved" with its hash, in order, under the signed limit change.
 ## 12:55 from STORE — the sheet 2 pool is in place (reading pass can start)
 Committed on stream/STORE: `data/sheet2/pool/<store>.json` (swissmadison.com 60, horow.com 18, deervalleybath.com 23, kingstonbrass.com 44;
 line ids T1 to T4; extra keys `variants` and `variant_title`), raw replies in `data/sheet2/pool/raw/`, store answers in
@@ -52,3 +58,22 @@ my branch until you replace it. Horow states no delivery time (see NOTES/INTEGRA
 the bathroom sheet, pool in `data/sheet2/pool/`). Nothing in my paths can fix it; it needs your replacement test for the bathroom sheet (or
 deleting it). Until then `uv run -q pytest -q -x` stops at it on stream/STORE; every other test passes (run with
 `--deselect tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone`).
+
+## 13:00 from STORE — `image_url` is on every pool product (both sheets)
+Every row of `data/pool/*.json` and `data/sheet2/pool/*.json` now has `image_url`: the store's own first image from its search reply
+(`media[0].url`, an https URL on the store's CDN), or null when the store sent none (today none is null: 256 of 256 have one). Nothing was
+fetched, resized or taken from another source. Please pass it through as an optional key on `product` in /api/state (not part of the
+signed sheet or its hash). If a pool is rebuilt (`build_pool.build()` or `sheet2.build()`) the key is written the same way.
+
+## 13:25 from STORE — every in-stock option is in both pools (committed)
+Every row of `data/pool/*.json` and `data/sheet2/pool/*.json` has `options`: a list of `{variant_id, title, price_cents, available}`, one per
+in-stock option, from the store's own reply (256 products, 317 options; 30 products have more than one, at most 10). The row's text is the
+product's text once (title, description, and still the line "Selected option: <cheapest>" for the old single reading); to read option k
+append "Selected option: <options[k].title>." yourself (an option titled "Default Title" or "Each" carries no extra text). The top-level
+`variant_id`, `price_cents`, `variants`, `variant_title` are unchanged (the cheapest in stock). A cart for an option uses that option's
+`variant_id`. `build_pool.build()` and `sheet2.build()` write the key the same way.
+
+## 13:40 from STORE — store agents are no longer asked for figures (audit 13:10, item 3)
+`data/store_answers/asked/<store>.json` now holds only `returns_and_delivery` replies for picks and runner-ups (10 records; the 15 figure
+replies are removed, as are `asked.figure_question` and the not_stated targets). If your reader or `asked` key on a candidate still
+reads a figure from those files, drop it: a store agent said "does not specify" for pages that do state the figure.
