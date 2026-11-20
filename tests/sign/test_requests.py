@@ -178,11 +178,23 @@ def test_cart_failure_signs_nothing(env):
 
 
 def test_senso_conflict_blocks_signing(env):
-    senso.set_checks([{"sentence": "Returns in 90 days", "verdict": "conflict"}])
+    senso.set_checks([{"sentence": "A grab bar must be bought through a cart.", "verdict": "conflict", "blocks": True}])
     r = sign(env)
     assert r.status_code == 409 and r.json()["error"] == "senso_blocked"
     assert env.cart.calls == []
-    senso.set_checks([{"sentence": "Returns in 30 days", "verdict": "supported"}])
+
+
+def test_unsupported_blocks_unless_relaxed(env, monkeypatch):
+    rows = [{"sentence": "Our order requires a stair lift for the hall.", "verdict": "unsupported", "blocks": True}]
+    senso.set_checks(rows)
+    assert sign(env).json()["error"] == "senso_blocked"
+    monkeypatch.setenv("SENSO_BLOCK_UNSUPPORTED", "0")
+    assert sign(env).status_code == 200
+
+
+def test_moved_limit_conflict_does_not_stop_the_signer(env):
+    # a moved limit or a store sentence is shown with its verdict but does not stop the signature
+    senso.set_checks([{"sentence": "The raised toilet seat must hold at least 350 lb.", "verdict": "conflict", "blocks": False}])
     assert sign(env).status_code == 200
 
 
