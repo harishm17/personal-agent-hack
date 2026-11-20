@@ -27,6 +27,9 @@ def words(text: str) -> list[str]:
     return [stem(w) for w in re.findall(r"[a-z0-9]+", html.unescape(text or "").lower())]
 
 
+_QUANTITY_WORDS = {"pack", "pk", "pc", "piece", "count", "ct", "set", "each", "ea"}  # how many, not what
+
+
 def _is_count(w: str) -> bool:
     """A size or count token: "24", "48pk", "12ct". It is a quantity, not the name of the thing."""
     return bool(re.fullmatch(r"\d+[a-z]{0,3}", w))
@@ -38,7 +41,7 @@ def phrases(label: str) -> list[list[str]]:
     for p in parts:
         w = words(p)
         while w:  # a trailing size or count ("5-1/2", "48pk", "7 pack", "set of 4") is not the thing's name
-            if _is_count(w[-1]) or w[-1] == "of" or (len(w) > 1 and _is_count(w[-2]) and w[-2].isdigit()):
+            if _is_count(w[-1]) or w[-1] == "of" or (w[-1] in _QUANTITY_WORDS and len(w) > 1 and w[-2].isdigit()):
                 w.pop()
             else:
                 break
