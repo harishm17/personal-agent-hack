@@ -111,3 +111,78 @@ def test_a_sheet_that_moves_while_signing_is_not_signed(env, monkeypatch):
     r = env.client.post("/api/issuer/request", json=body)
     assert r.status_code == 409 and r.json()["error"] == "sheet_moved"
     assert not env.engine.state["seal"]["signed"]
+
+
+def test_carts_are_made_from_the_engines_signed_picks_and_the_sheet_is_released_on_failure(env):
+    env.cart.fail = True
+    body = env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash())
+    r = env.client.post("/api/issuer/request", json=body)
+    assert r.status_code == 502 and env.engine.held is False       # the hold ends when no store made a cart
+    assert any(c[0] == "release_signing" for c in env.engine.calls)
+    env.cart.fail = False
+    ok = env.client.post("/api/issuer/request", json=body)         # the same request goes through
+    assert ok.status_code == 200 and env.engine.held is False
+    sent = {p["variant_id"] for call in env.cart.calls for p in call}
+    assert sent == {p["variant_id"] for p in env.engine.signed_picks(env.engine.sheet_hash())}
+
+
+def test_a_stale_hash_at_signed_picks_is_the_sheet_moved_refusal(env, monkeypatch):
+    real = env.engine.signed_picks
+    def moves(h):
+        env.engine.state["total_cents"] += 1
+        return real(h)
+    monkeypatch.setattr(env.engine, "signed_picks", moves)
+    body = env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash())
+    r = env.client.post("/api/issuer/request", json=body)
+    assert r.status_code == 409 and r.json()["error"] == "sheet_moved" and env.cart.calls == []
+
+
+class LinesCart:
+    calls = []
+    def __init__(self, change=None):
+        self.change = change or {}
+    def create_carts(self, picks):
+        lines = [{"variant_id": p["variant_id"], "quantity": p["quantity"], "unit_price_cents": p["price_cents"]} for p in picks]
+        for l in lines:
+            l.update(self.change)
+        return [{"store": picks[0]["store"], "cart_id": "c", "cart_url": "https://x/c", "created_at": "t", "mode": "live",
+                 "total_cents": sum(l["unit_price_cents"] * l["quantity"] for l in lines), "lines": lines}]
+
+
+def test_matching_cart_lines_are_checked_and_clean(env, monkeypatch):
+    monkeypatch.setattr(api, "get_cart", lambda: LinesCart())
+    r = env.client.post("/api/issuer/request", json=env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash())).json()
+    assert r["ok"] and all(c["lines_checked"] and not c.get("line_differences") for c in r["carts"])
+
+
+def test_a_changed_unit_price_or_quantity_is_shown_with_both_values(env, monkeypatch):
+    monkeypatch.setattr(api, "get_cart", lambda: LinesCart({"quantity": 2}))
+    r = env.client.post("/api/issuer/request", json=env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash())).json()
+    c = r["carts"][0]
+    assert c["line_differences"][0]["field"] == "quantity" and c["line_differences"][0]["signed"] == 1 and c["line_differences"][0]["store"] == 2
+    assert "store cart differs" in c["note"] and "signed 1, store 2" in c["note"]
+
+
+def test_a_line_the_store_added_or_dropped_is_shown(env, monkeypatch):
+    class Wrong(LinesCart):
+        def create_carts(self, picks):
+            out = super().create_carts(picks)
+            out[0]["lines"] = out[0]["lines"][1:] + [{"variant_id": "gid://x/OTHER", "quantity": 1, "unit_price_cents": 5}]
+            return out
+    monkeypatch.setattr(api, "get_cart", lambda: Wrong())
+    r = env.client.post("/api/issuer/request", json=env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash())).json()
+    fields = {(d["field"], d["signed"], d["store"]) for c in r["carts"] for d in c.get("line_differences", [])}
+    assert ("line", "present", "missing") in fields and ("line", "absent", "present") in fields
+
+
+def test_a_store_client_that_returns_no_lines_is_said_not_to_be_checked(env):
+    r = env.client.post("/api/issuer/request", json=env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash())).json()
+    assert all(c["lines_checked"] is False for c in r["carts"])
+
+
+def test_a_relay_claim_is_attached_and_named(env, monkeypatch):
+    from signoff import relay
+    monkeypatch.setattr(relay, "status", lambda: {"claim_type": "live_human_presence", "result": "passed", "sandbox": True})
+    env.client.post("/api/issuer/request", json=env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash()))
+    sig = env.engine.state["seal"]["signature"]
+    assert sig["relay"]["result"] == "passed" and sig["name"] == "Dana (live human checked, sandbox)"

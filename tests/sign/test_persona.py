@@ -74,7 +74,7 @@ def test_identity_gate_refuses_then_approves_the_same_signature(env, monkeypatch
     sig = env.engine.state["seal"]["signature"]
     assert sig["persona"]["inquiry_id"] == "inq_9" and sig["persona"]["status"] == "approved" and sig["persona"]["sandbox"] is True
     assert "sandbox" in sig["persona"]["label"]
-    assert [a[1] for a in seen].count("refused") == 3 and seen[-1][1] == "accepted"   # every refusal and the signature left a receipt
+    assert [a[1] for a in seen].count(False) == 3 and seen[-1][1] is True   # every refusal and the signature left a receipt
 
 
 def test_simulate_needs_a_started_inquiry(env):

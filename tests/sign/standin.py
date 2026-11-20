@@ -14,6 +14,7 @@ class FakeEngine:
 
     def reset(self):
         self.state = json.loads((ROOT / "fixtures" / "state.json").read_text())
+        self.held = False
         self.calls = []
         self.issuer_key = None
         return {"version": 1}
@@ -40,11 +41,33 @@ class FakeEngine:
         self.state["version"] += 1
         return {"version": self.state["version"]}
 
-    def mark_signed(self, signature, carts, signed_hash=None):
-        if signed_hash is not None and signed_hash != self.state.get("sheet_hash", self.sheet_hash()) and signed_hash != self.sheet_hash():
-            err = ValueError("the sheet moved since this hash was signed")
+    def signed_picks(self, sheet_hash):
+        """Like the engine's: the picks of exactly that hash, refused if it is not the current one; holds the sheet."""
+        if sheet_hash != self.sheet_hash():
+            err = ValueError("the sheet changed since this hash was made")
             err.status = 409
             raise err
+        self.held = True
+        picks = []
+        for line in self.state["lines"]:
+            if line["status"] in ("ready", "next_candidate"):
+                c = next(c for c in line["candidates"] if c["picked"])
+                picks.append({"store": c["product"]["store"], "variant_id": c["product"]["variant_id"], "quantity": 1,
+                              "line_id": line["line_id"], "candidate_id": c["id"], "product_id": c["product"]["product_id"],
+                              "title": c["product"]["title"], "price_cents": c["product"]["price_cents"]})
+        return picks
+
+    def release_signing(self):
+        self.held = False
+        self.calls.append(("release_signing",))
+        return {"version": self.state["version"]}
+
+    def mark_signed(self, signature, carts):
+        if signature.get("sheet_hash") != self.sheet_hash():
+            err = ValueError("the sheet changed after it was signed")
+            err.status = 409
+            raise err
+        self.held = False
         self.calls.append(("mark_signed", signature, carts))
         self.state["seal"] = {"signed": True, "text": "Signed", "sheet_hash": signature["sheet_hash"],
                               "signature": signature, "carts": carts}
