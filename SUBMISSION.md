@@ -1,23 +1,22 @@
 # Submission draft
 
-<!-- The form's fields, copied at kickoff with their real limits, so the answers live in the repo and not in
-     a browser tab. Flags go in the brackets after each heading: required or optional, max N (characters),
-     url. `./hk submit` checks this file and the repo. Replace every <placeholder>. -->
+<!-- The form at tokensand.com/personalagenthack/submit keeps its draft only in the browser tab, so the
+     answers live here. `./hk submit` checks this file and the repo. It can be edited after the first submit. -->
 
 ## Project name (required, max 140)
-<name>
+Sign-Off
 
 ## One-sentence description (required, max 300)
-<what it does, and for whom>
+A shopping agent that buys under someone else's limits and signature: the person who knows sets limits the shopper cannot edit, the store's own words decide each line, and the cart exists only when that person signs.
 
 ## Project description (required, max 1500)
-<what we built, how it works, what each tool does in it, one measured number>
+<written at 15:30 from what runs: what it does, how it works, what each tool does, the measured numbers>
 
 ## Tools and sponsors used (required)
-<one per line, the main one first>
+<one per line, the primary one first; only tools with a real call in the demo path. Up to 12.>
 
 ## Repository URL (required, url)
-<https://github.com/...>
+https://github.com/harishm17/personal-agent-hack
 
 ## Demo video URL (required, url)
 <a link that opens while logged out>
@@ -25,6 +24,15 @@
 ## Live app URL (optional, url)
 
 ## Team (required)
-<name and email for each member>
+<team size; full name and email for each member>
 
-## Judge access notes (optional)
+## Judge access notes (optional, max 6000)
+
+## Technical architecture (optional, max 1200)
+
+## Setup instructions (optional, max 1200)
+
+## Lessons learned (optional, max 1200)
+
+## Project screenshot (optional)
+<file path, under 5 MB>

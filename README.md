@@ -1,6 +1,6 @@
-# <Project name>
+# Sign-Off
 
-**<One line: what it does, for whom.>**
+**A shopping agent that buys under someone else's limits and signature.**
 
 ▶ **[Demo video](<link>)** · [Live app](<link, if any>)
 
