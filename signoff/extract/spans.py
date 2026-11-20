@@ -136,85 +136,186 @@ def finish(proposal, product, extractor, assume_unit=None, target_unit=None):
                           low=rules.convert(low, stated_unit, base), high=rules.convert(high, stated_unit, base))
     if unsure:
         record.update(unsure=True, unsure_reason=reason)
+    label = proposal.get("label")
+    if isinstance(label, str) and label.strip():
+        record["label"] = label.strip()
     if record["span_found_in_text"]:
-        apply_position_rule(record)
+        apply_unambiguous_rule(record)
     return record
 
 
-DIMS_HEADER = re.compile(r"\(?\b([hwdl])\s*x\s*([hwdl])(?:\s*x\s*([hwdl]))?\b\)?", re.I)
-DIM_LABEL = re.compile(r"\d\s*(?:[\"”″]|in\.?|inch(?:es)?)?\s*\(?\s*(h|w|d|l|height|width|depth|length|high|wide|deep|long)\b",
-                       re.I)
-LETTER = {"height": "h", "high": "h", "width": "w", "wide": "w", "depth": "d", "deep": "d", "length": "l", "long": "l"}
+
+# --- one number, or a number the text itself labels ---------------------------------------------------------
+# A figure counts only if its number is unambiguous in its quote. When the quote holds other numbers of the
+# same kind of unit, the reader must name the label the text attaches to the number it chose, and code checks
+# that pairing from the quote alone: by the order of a list of labels against the order of the values, or by
+# the label standing next to the number. No format is named anywhere: any separated list and any label work
+# the same way. If the text does not settle it, the figure is unsure.
+AMBIGUOUS = "several numbers in the quote"
+FAMILIES = (("length", r"(?:\"|”|″|''|inch(?:es)?\b|in\b\.?|cm\b|mm\b|ft\b|feet\b|foot\b)"),
+            ("weight", r"(?:lbs?\b\.?|pounds?\b|kgs?\b|oz\b|ounces?\b)"),
+            ("volume", r"(?:qts?\b\.?|quarts?\b|liters?\b|litres?\b|l\b)"),
+            ("temperature", r"(?:°\s?[fc]\b|degrees\b)"))
+WRITTEN = re.compile(r"(?<![\w./])(?:(?P<whole>\d+)[ -](?P<num>\d+)/(?P<den>\d+)(?![\w/])|(?P<fnum>\d+)/(?P<fden>\d+)(?![\w/])"
+                     r"|(?P<plain>\d+(?:,\d{3})*(?:\.\d+)?|\.\d+)\s?(?P<uni>[%s])?)" % "".join(FRACTIONS))
+JOIN = re.compile(r"^\s*(?:-|–|—|to\b|and\b|or\b)\s*$", re.I)
+LIST_SEPARATORS = (r"\s+[x×]\s+", r"\s*/\s*", r"\s*,\s*", r"\s*\|\s*", r"\s+by\s+")
 
 
-def dimension_position(quote, numbers):
-    """For a quote that lists several dimensions ("Product Dims (h x w x d): 1.63" x 31" x 14.75"", or
-    "19.6" H x 30.3" W x 4.1" D"): which position the reported number sits in and what the store labels that
-    position. None when the quote is not such a list. Code, so a reader that takes the depth for the width
-    can be seen without a second model."""
-    if not quote or " x " not in quote.lower().replace("×", "x"):
-        return None
-    text = quote.replace("×", "x")
-    header = DIMS_HEADER.search(text)
-    body = text[header.end():] if header else text
-    parts = [p for p in re.split(r"\s+x\s+|(?<=[\"”″])\s*x\s*(?=\d)", body) if p.strip()]
-    if len(parts) < 2:
-        return None
-    parts[0] = parts[0].rsplit(":", 1)[-1]  # words and a size name before the first dimension are not a dimension
-    labels = [g.lower() for g in header.groups() if g] if header else []
-    if not labels:  # a label after each number: 28.5"W x 17.5"D
-        for part in parts:
-            found = DIM_LABEL.findall(part)
-            labels.append(LETTER.get(found[-1].lower(), found[-1].lower()) if found else None)
-    wanted = [n for n in numbers if isinstance(n, (int, float))]
-    holds = []
-    for i, part in enumerate(parts):
-        here = numbers_in(part)
-        if wanted and all(any(abs(n - h) < 1e-6 for h in here) for n in wanted):
-            holds.append((len(here) != len(wanted), i, part))  # a part that is exactly these numbers comes first
-    if not holds:
-        return {"position": None, "of": len(parts), "label": None, "labels": labels, "part": None}
-    _, i, part = sorted(holds)[0]
-    return {"position": i + 1, "of": len(parts), "label": labels[i] if i < len(labels) else None,
-            "labels": labels, "part": part.strip()}
+def family_of(unit):
+    return rules.FAMILY.get(rules.unit_name(unit))
 
 
-POSITION_REASON = "position in a dimension string does not match the label"
+def quote_numbers(quote):
+    """Every number written in the quote with where it is and the kind of unit written after it (or after the
+    number it is joined to: "30 - 37\"" are both lengths)."""
+    found, quote = [], quote or ""
+    for m in WRITTEN.finditer(quote):  # "4 1/2" and "3/4" and "4½" are one number each, not three
+        if m.group("whole") is not None:
+            value = int(m.group("whole")) + int(m.group("num")) / max(int(m.group("den")), 1)
+        elif m.group("fnum") is not None:
+            value = int(m.group("fnum")) / max(int(m.group("fden")), 1)
+        else:
+            value = float(m.group("plain").replace(",", "")) + FRACTIONS.get(m.group("uni") or "", 0)
+        found.append({"value": value, "start": m.start(), "end": m.end(), "family": None})
+    for n in found:
+        tail = quote[n["end"]:n["end"] + 12].lstrip(" \t")
+        for name, pattern in FAMILIES:
+            if re.match(pattern, tail, re.I):
+                n["family"] = name
+                break
+    for i in range(len(found) - 2, -1, -1):  # a number joined to the next one shares its unit
+        between = quote[found[i]["end"]:found[i + 1]["start"]]
+        if found[i]["family"] is None and JOIN.match(re.sub(r"[\"”″]", "", between) or " "):
+            found[i]["family"] = found[i + 1]["family"]
+    return found
 
 
-def expected_label(figure):
-    """The dimension a figure name asks for: w for a width, h for a height, l for a length, d for a depth."""
-    name = (figure or "").lower()
-    for word, letter in (("width", "w"), ("height", "h"), ("length", "l"), ("depth", "d")):
-        if word in name:
-            return letter
+def chosen_numbers(row):
+    """The numbers the reader reported, as they are written in the quote (before any unit conversion)."""
+    if row.get("stated_unit"):
+        return [row.get("stated_value")] if row.get("kind") == "single" else [row.get("stated_low"), row.get("stated_high")]
+    return [row.get("value")] if row.get("kind") == "single" else [row.get("low"), row.get("high")]
+
+
+def other_numbers(row):
+    """Numbers in the quote that the reader did not choose and that could be the same kind of measure: the same
+    kind of unit, or no unit written. A capacity in pounds beside a width in inches is not a rival."""
+    chosen = [n for n in chosen_numbers(row) if isinstance(n, (int, float))]
+    want = family_of(row.get("stated_unit") or row.get("unit"))
+    return [n for n in quote_numbers(row.get("quote"))
+            if not any(abs(n["value"] - c) < 1e-6 for c in chosen) and (n["family"] is None or n["family"] == want)]
+
+
+def _find_label(quote, label):
+    """Where the label stands in the quote: [(start, end)], whole words, any letter case."""
+    words = [re.escape(w) for w in str(label).split()]
+    if not words:
+        return []
+    return [(m.start(), m.end()) for m in re.finditer(r"(?<![A-Za-z0-9])" + r"\s+".join(words) + r"(?![A-Za-z0-9])", quote, re.I)]
+
+
+def _by_order(quote, label, chosen):
+    """The label is one of a separated list of labels, and the values are a list of the same length with the
+    same separator: the label's place in its list says which value is meant. True, False, or None (no such lists)."""
+    for sep in LIST_SEPARATORS:
+        for m in re.finditer(r"(?<![A-Za-z0-9])[A-Za-z]{1,20}(?:%s[A-Za-z]{1,20}){1,7}(?![A-Za-z0-9])" % sep, quote):
+            labels = [t.strip().lower() for t in re.split(sep, m.group(0))]
+            if str(label).strip().lower() not in labels:
+                continue
+            place = labels.index(str(label).strip().lower())
+            for region in (quote[m.end():], quote[:m.start()]):
+                region = region.strip(" ():;=-–—")
+                parts = [p for p in re.split(sep.replace(r"\s+", r"\s*"), region) if p.strip()]
+                if len(parts) != len(labels) or not all(NUMBER.search(p) for p in parts):
+                    continue
+                here = [float(x.replace(",", "")) for x in NUMBER.findall(parts[place].rsplit(":", 1)[-1])]
+                return all(any(abs(c - h) < 1e-6 for h in here) for c in chosen)
     return None
 
 
-def position_check(row):
-    """For a figure quoted from a labelled list of dimensions: `{position, of, label, expected, ok}`; None for
-    any other quote. `ok` is False when the store labels the position the number was taken from as a different
-    dimension than the figure asks for (a depth reported as a width)."""
-    stated = row.get("stated_unit")
-    numbers = [row.get("stated_value")] if stated and row.get("kind") == "single" else \
-        [row.get("stated_low"), row.get("stated_high")] if stated else \
-        [row.get("value")] if row.get("kind") == "single" else [row.get("low"), row.get("high")]
-    at = dimension_position(row.get("quote"), numbers)
-    if not at:
+def _by_adjacency(quote, label, chosen):
+    """The label stands next to a number: right after it (unit marks and a bracket may sit between), or before
+    it with a colon or equals sign, or as the only number within a few words. True, False, or None (not settled)."""
+    numbers = quote_numbers(quote)
+    paired = []
+    for start, end in _find_label(quote, label):
+        before = [n for n in numbers if n["end"] <= start]
+        after = [n for n in numbers if n["start"] >= end]
+        gap_before = quote[before[-1]["end"]:start] if before else None
+        gap_after = quote[end:after[0]["start"]] if after else None
+        if gap_after is not None and re.fullmatch(r"\s*\)?\s*[:=]\s*", gap_after):
+            paired.append(after[0]["value"])
+        elif gap_before is not None and re.fullmatch(r"\s*(?:\"|”|″|''|[A-Za-z]{1,6}\.?)?\s*\(?\s*", gap_before):
+            paired.append(before[-1]["value"])
+        else:
+            near = [v for gap, v in ((gap_before, before[-1]["value"] if before else None),
+                                     (gap_after, after[0]["value"] if after else None))
+                    if gap is not None and len(gap) <= 25 and not re.search(r"[.;!?]\s", gap)]
+            if len(near) == 1:
+                paired.append(near[0])
+    if not paired:
         return None
-    want = expected_label(row.get("figure"))
-    return {"position": at["position"], "of": at["of"], "label": at["label"], "expected": want,
-            "ok": None if at["label"] is None or want is None else at["label"] == want}
+    return all(any(abs(c - v) < 1e-6 for v in paired) for c in chosen) and \
+        all(any(abs(c - v) < 1e-6 for c in chosen) for v in paired)
 
 
-def apply_position_rule(row):
-    """The rule, for every reader: a figure taken from the wrong labelled position is marked unsure, so it does
-    not count. Returns True when this call marked it. A figure already unsure keeps its own reason."""
-    at = position_check(row)
-    if at is None:
+def pairing(quote, label, chosen):
+    """Whether the text itself attaches `label` to the chosen number(s): (True | False | None, how)."""
+    if not label or not _find_label(quote, label):
+        return None, "the label is not in the quote"
+    ordered = _by_order(quote, label, chosen)
+    if ordered is not None:
+        return ordered, "order of the labels against the order of the values"
+    adjacent = _by_adjacency(quote, label, chosen)
+    if adjacent is not None:
+        return adjacent, "the label stands next to the number"
+    return None, "the text does not settle which number the label belongs to"
+
+
+def apply_unambiguous_rule(row):
+    """The rule, for every reader. Returns True when this call marked the figure unsure.
+    A figure that is already unsure, or whose span was not found, keeps its own reason."""
+    for key in ("number_check",):
+        row.pop(key, None)
+    if not row.get("span_found_in_text") or row.get("unsure"):
         return False
-    row["dimension"] = at
-    if at["ok"] is False and not row.get("unsure"):
-        row.update(unsure=True, unsure_reason=POSITION_REASON, caught_by="code: position in a dimension string")
-        return True
-    return False
+    chosen = [n for n in chosen_numbers(row) if isinstance(n, (int, float))]
+    others = other_numbers(row)
+    if not chosen or not others:
+        return False
+    label = row.get("label")
+    ok, how = pairing(row["quote"], label, chosen) if label else (None, "the reader gave no label for the number it chose")
+    row["number_check"] = {"other_numbers": [("%g" % n["value"]) for n in others][:8], "label": label, "paired": ok, "how": how}
+    if ok is True:
+        return False
+    row.update(unsure=True, caught_by="code: one number, or a number the text labels",
+               unsure_reason="%s (%s) and %s" % (AMBIGUOUS, ", ".join(row["number_check"]["other_numbers"]),
+                                                 "the text pairs the label %r with another number" % label if ok is False else how))
+    return True
+
+
+def _fold_label(text):
+    """Option names as stores write them, made comparable: 12", 12” and 12 inch are the same option."""
+    text = "".join(FOLD.get(ch, ch) for ch in str(text)).lower()
+    text = re.sub(r"\s*(?:inch(?:es)?|in\.)(?![a-z])", '"', text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def apply_option_rule(row, variant):
+    """A product sold in several options: when the quote itself names an option that is not the one in the pool
+    and does not name the one that is, the text ties the figure to another option, so it is unsure. Nothing is
+    marked merely because a product has several options. Returns True when this call marked the figure."""
+    if row.get("unsure") or not variant.get("other_option_labels"):
+        return False
+    quote = _fold_label(row.get("quote") or "")
+    def named(label):
+        label = _fold_label(label)
+        return len(label) >= 2 and re.search(r"(?<![a-z0-9.])%s(?![a-z0-9])" % re.escape(label), quote) is not None
+    others = [l for l in variant["other_option_labels"] if named(l)]
+    if not others or any(named(l) for l in variant.get("option_labels") or []):
+        return False
+    row.update(unsure=True, caught_by="code: the quote names another option",
+               unsure_reason="the text ties this figure to the option %s; the option in the pool is %s" % (
+                   ", ".join(others[:3]), variant.get("variant_title")))
+    return True

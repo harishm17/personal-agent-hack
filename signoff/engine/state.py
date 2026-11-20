@@ -15,7 +15,7 @@ import threading
 import time
 
 from signoff import config
-from signoff.engine import obs, planted, receipts, rules
+from signoff.engine import health, obs, planted, receipts, rules
 from signoff.extract import spans
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -70,15 +70,17 @@ def _load_pool():
         try:
             from signoff.store import pool as store_pool
             pool, answers = store_pool.load()
+            health.clear("pool loader")
             return list(pool), list(answers)
-        except Exception:  # noqa: BLE001  (module not merged yet, or it failed: read the files directly)
-            pass
+        except Exception as error:  # noqa: BLE001  (it failed: read the files directly, and say so)
+            health.note("pool loader", "signoff.store.pool.load() failed (%s); the pool and store answers were read "
+                        "straight from the files" % type(error).__name__)
     if _has_data_pool():
         return _read_dir(pool_dir), _read_dir(answers_dir) if answers_dir.is_dir() else []
     return _read(FIXTURES / "pool.json"), _read(FIXTURES / "store_answers.json")
 
 
-def _load_figures(pool, from_data):
+def _load_figures(pool, from_data, variants=None):
     """Figures from data/figures (fixtures for the fixture pool). The span is checked again here, in code."""
     folder = _dirs()[2]
     run = folder / "_runs" / str(_s.get("reader")) if _s.get("reader") else None
@@ -89,11 +91,15 @@ def _load_figures(pool, from_data):
     else:
         figures = _read(FIXTURES / "figures.json")
     text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
+    variants = variants or {}
     for f in figures:
         page = text.get((f["store"], f["product_id"]))
         f["span_found_in_text"] = rules.span_found(f, page)
-        if f["span_found_in_text"] and config.env("SIGNOFF_POSITION_RULE") != "off":
-            spans.apply_position_rule(f)  # for every reader: a depth is not a width, whatever the model said
+        if f["span_found_in_text"] and config.env("SIGNOFF_NUMBER_RULE") != "off":
+            # for every reader: one number in the quote, or a number the text itself labels; else unsure
+            spans.apply_unambiguous_rule(f)
+        if f["span_found_in_text"] and variants.get((f["store"], f["product_id"])):
+            spans.apply_option_rule(f, variants[(f["store"], f["product_id"])])
         if f["span_found_in_text"]:  # the store's whole sentence, for the screen to show around the quote
             sentence, a, b = rules.sentence_around(page, f["start"], f["end"])
             f.update(sentence=sentence, quote_in_sentence=[a, b])
@@ -108,7 +114,7 @@ def _load_readers(from_data):
     try:
         made = _read(path)
         return {"reference": made["reference"], "measure": made["measure"], "note": made["note"],
-                "position_rule": made.get("position_rule"),
+                "number_rule": made.get("number_rule"),
                 "products": made["products"], "made_at": made["made_at"],
                 "readers": [{k: v for k, v in r.items() if k not in ("differences", "missing")} for r in made["readers"]]}
     except (ValueError, KeyError):
@@ -129,7 +135,9 @@ def _load_order(sheet_id, from_data):
         for row in made["limits"] + made.get("fulfilment", []):
             row["span_found_in_text"] = rules.span_found(row, text)
         return made
-    except (ValueError, KeyError, OSError):
+    except (ValueError, KeyError, OSError) as error:
+        health.note("order", "the limits read from the order could not be loaded (%s); limits show without their "
+                    "sentence from the order" % type(error).__name__)
         return None
 
 
@@ -170,10 +178,49 @@ def _with_order(sheet):
     return dict(sheet, lines=lines), summary
 
 
+def _load_variants(pool, from_data):
+    """What each product's store said about its options, from the store's own reply as STORE cached it
+    (data/<pool>/raw/): the title of the variant in the pool (the one a cart would hold), the currency, and
+    how many variants are on sale. `{(store, product_id): {...}}`; empty when the raw replies are not there."""
+    raw = _dirs()[0] / "raw"
+    if from_data and not raw.is_dir():
+        health.note("variants", "the stores' raw replies are not in this checkout; variant title, currency and the "
+                    "number of variants are not shown, and the signed pick names the variant by id only")
+    if not from_data or not raw.is_dir():
+        return {}
+    health.clear("variants")
+    seen = {}
+    for path in sorted(raw.glob("*/*.json")):
+        try:
+            for product in _read(path).get("products") or []:
+                seen.setdefault((path.parent.name, product.get("id")), product)
+        except (ValueError, AttributeError, OSError):
+            continue
+    out = {}
+    for p in pool:
+        product = seen.get((p["store"], p["product_id"]))
+        if not product:
+            continue
+        variants = product.get("variants") or []
+        chosen = next((v for v in variants if v.get("id") == p["variant_id"]), None)
+        if chosen is None:
+            continue
+        on_sale = [v for v in variants if (v.get("availability") or {}).get("available", True)]
+        mine = [o.get("label") for o in chosen.get("options") or [] if o.get("label")]
+        others = sorted({o.get("label") for v in variants if v is not chosen for o in v.get("options") or []
+                         if o.get("label") and o.get("label") not in mine})
+        out[(p["store"], p["product_id"])] = {
+            "variant_title": chosen.get("title"), "currency": (chosen.get("price") or {}).get("currency"),
+            "variant_price_cents": (chosen.get("price") or {}).get("amount"),
+            "variants": len(on_sale), "variants_listed": len(variants),
+            "option_labels": mine, "other_option_labels": others}
+    return out
+
+
 def _load_extras(pool, from_data):
     """Display-only material beside the figures: instruction-like passages found on pages (each a span of the
     page's text, checked again here) and the planted test page's own reading. None of it reaches the pick rule."""
-    out = {"instructions": {}, "planted": None, "asked": {}}
+    out = {"instructions": {}, "planted": None, "asked": {}, "delivery_replies": {}}
     folder = _dirs()[2]
     if not from_data:
         return out
@@ -186,6 +233,16 @@ def _load_extras(pool, from_data):
             if row.get("answered") and not found:
                 shown["answered"] = False
             out["asked"].setdefault((row["store"], row["product_id"]), []).append(shown)
+            if row.get("answered") is None and row.get("reply"):  # a reply about this product's delivery and returns
+                try:
+                    from signoff.store import ask as store_ask
+                    parsed = store_ask.parse_reply(row["store"], row.get("question"), row["reply"], row.get("asked_at"))
+                    out["delivery_replies"][(row["store"], row["product_id"])] = {
+                        "delivery": parsed["delivery"], "returns": parsed["returns"], "asked_at": row.get("asked_at"),
+                        "question": row.get("question")}
+                except Exception as error:  # noqa: BLE001  (shown in the state under `degraded`, never silent)
+                    health.note("product replies", "replies about a product's delivery and returns could not be parsed "
+                                "(%s); the store's general answer is shown instead" % type(error).__name__)
     text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
     if (folder / "_instructions").is_dir():
         for row in _read_dir(folder / "_instructions"):
@@ -207,9 +264,10 @@ def _load(keep_changes=False):
     pool, answers = _load_pool()
     from_data = _has_data_pool() and not any(str(p["store"]).endswith(".example") for p in pool)
     mode = "fixture" if not from_data else ("replay" if config.mode() == "replay" else "live")
-    _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data), mode=mode, loaded=True,
+    variants = _load_variants(pool, from_data)
+    _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data, variants), mode=mode, loaded=True,
               readers=_load_readers(from_data), extras=_load_extras(pool, from_data),
-              order=_load_order(sheet_id, from_data))
+              order=_load_order(sheet_id, from_data), variants=variants)
     if keep_changes and (_s.get("sheet") or {}).get("id") == sheet_id:
         return
     strikes_file = (DATA if from_data else FIXTURES) / "strikes.json"
@@ -255,10 +313,12 @@ def _canonical_obj(state):
             p = pick["product"]
             out["pick"] = {"id": pick["id"], "store": p["store"], "product_id": p["product_id"],
                            "variant_id": p["variant_id"], "product_key": p["product_key"],
-                           "price_cents": p["price_cents"],
+                           "price_cents": p["price_cents"], "quantity": p.get("quantity", 1),
+                           "currency": p.get("currency"), "variant_title": p.get("variant_title"),
                            "checks": [{"limit_id": c["limit_id"], "expr": c["expr"]} for c in pick["checks"]],
                            "quotes": [t["quote"] for c in pick["checks"] for t in c["terms"] if t.get("quote")],
                            "delivery": {"status": pick["arrival"]["status"], "quote": pick["arrival"]["quote"],
+                                        "scope": pick["arrival"].get("scope"),
                                         "days_low": pick["arrival"]["days_low"], "days_high": pick["arrival"]["days_high"],
                                         "need_by": pick["arrival"]["need_by"]}}
         lines.append(out)
@@ -272,7 +332,8 @@ def _canonical(state):
 
 
 # What the signed hash is computed over, in words for the seal. Kept beside `_canonical_obj`: change both together.
-COVERS = ["limits", "strikes", "picks", "prices", "sums", "store quotes", "delivery quotes", "pick rule", "total"]
+COVERS = ["limits", "strikes", "picks", "variant and quantity", "prices and currency", "sums", "store quotes",
+          "delivery quotes", "pick rule", "total"]
 
 
 def _seal(state, current_hash):
@@ -284,7 +345,38 @@ def _seal(state, current_hash):
 
 def _attach(state):
     """Adds what is not a rule: who signed, the carts, the issuer's key and the text checks."""
-    carts = {c.get("store"): c for c in (_s.get("seal") or {}).get("carts", [])}
+    carts = {c.get("store"): c for c in (_s.get("seal") or {}).get("carts", []) if c.get("cart_url")}
+    variants, replies = _s.get("variants") or {}, (_s.get("extras") or {}).get("delivery_replies") or {}
+    for line in state["lines"]:
+        for c in line["candidates"]:
+            key = (c["product"]["store"], c["product"]["product_id"])
+            facts = variants.get(key)
+            c["product"]["quantity"] = 1
+            if facts:
+                c["product"].update(variant_title=facts["variant_title"], currency=facts["currency"])
+                c["variants"] = facts["variants"]
+                c["variant"] = {"title": facts["variant_title"], "options": facts["option_labels"],
+                                "on_sale": facts["variants"], "listed": facts["variants_listed"],
+                                "figures_read_from": "the product's text" if facts["variants_listed"] > 1 else "the product's text (one variant)"}
+            # whose answer this is: the store's general one, or its reply to a question about this very product
+            c["arrival"]["scope"] = "store-wide"
+            if c["undo"]:
+                c["undo"] = dict(c["undo"], scope="store-wide")
+            own = replies.get(key)
+            if own:
+                d, r = own["delivery"], own["returns"]
+                if d.get("stated") and c["arrival"]["status"] == "stated":  # same status, the product's own words
+                    c["arrival"].update(quote=d["quote"], days_low=d["days_low"], days_high=d["days_high"],
+                                        scope="this product", asked_at=own["asked_at"], question=own["question"])
+                elif d.get("stated"):
+                    c["arrival"]["product_reply"] = dict(d, scope="this product", note="the store's general answer "
+                                                         "states no delivery time; this reply about the product does")
+                if r.get("quote"):
+                    # a sentence that says the store does not say is "unclear", whatever word it happens to contain
+                    unsaid = re.search(r"(?i)does\s*n[o’']t\s+specify|not\s+specif|unclear|doesn[’']t\s+say|does not say", r["quote"])
+                    c["undo"] = {"returnable": "unclear" if unsaid else r["returnable"], "fee": r.get("fee"), "quote": r["quote"],
+                                 "applies_to": c["product"]["title"], "scope": "this product",
+                                 "asked_at": own["asked_at"], "question": own["question"]}
     state["sheet_hash"] = hashlib.sha256(_canonical(state).encode()).hexdigest()
     # Text checks belong to the sheet they were run on: show the ones for this hash; failing that the last
     # ones pushed, marked as not current.
@@ -324,14 +416,24 @@ def _attach(state):
                 made["candidate"]["product"]["price_cents"] < line["why"]["pick_price_cents"]
             state["planted"] = made
     if extras.get("asked"):
+        rows = [a for group in extras["asked"].values() for a in group]
+        about_figures = [a for a in rows if a.get("answered") is not None]
+        replies = extras.get("delivery_replies") or {}
         state["counts"]["store_agent_asked"] = len(extras["asked"])
         state["counts"]["store_agent_stated_beyond_page"] = len(beyond)
+        state["counts"]["store_agent"] = {  # what the stores' own agents did say, for the tile
+            "questions": len(rows), "about_a_figure": len(about_figures),
+            "figures_stated": sum(1 for a in about_figures if a.get("answered")),
+            "about_delivery_and_returns": len(rows) - len(about_figures),
+            "delivery_time_stated": sum(1 for r in replies.values() if r["delivery"].get("stated")),
+            "returns_answered": sum(1 for r in replies.values() if r["returns"].get("quote"))}
     state["sheet"], order = _with_order(state["sheet"])
     if order:
         state["order"] = order
     held = _s.get("signing")
     if held and time.time() < held["until"]:
         state["signing"] = {"in_progress": True, "sheet_hash": held["sheet_hash"], "since": held["since"]}
+    state["degraded"] = health.all()  # every fallback in use is named here; empty when all is well
     try:
         state["receipts"] = receipts.summary()
     except Exception:  # noqa: BLE001  (the chain is a record; it never stops a change)
@@ -403,8 +505,9 @@ def _record_loop():
         try:
             from signoff.db import records
             records.write(state)
-        except Exception:  # noqa: BLE001  (not merged yet, or the database is down)
-            pass
+            health.clear("decision records")
+        except Exception as error:  # noqa: BLE001  (the database writer is missing or failed: the app goes on)
+            health.note("decision records", "decision records are not reaching the database (%s)" % type(error).__name__)
 
 
 # --- the contract's in-process calls ---
@@ -506,9 +609,11 @@ def signed_picks(sheet_hash: str) -> list:
         if sheet_hash != _s["state"]["sheet_hash"]:
             raise EngineError("the sheet changed since this hash was made: signed %s, now %s" % (
                 str(sheet_hash)[:12], _s["state"]["sheet_hash"][:12]), 409)
-        picks = [{"store": c["product"]["store"], "variant_id": c["product"]["variant_id"], "quantity": 1,
-                  "line_id": line["line_id"], "candidate_id": c["id"], "product_id": c["product"]["product_id"],
-                  "title": c["product"]["title"], "price_cents": c["product"]["price_cents"]}
+        picks = [{"store": c["product"]["store"], "variant_id": c["product"]["variant_id"],
+                  "quantity": c["product"].get("quantity", 1), "line_id": line["line_id"], "candidate_id": c["id"],
+                  "product_id": c["product"]["product_id"], "title": c["product"]["title"],
+                  "variant_title": c["product"].get("variant_title"), "currency": c["product"].get("currency"),
+                  "price_cents": c["product"]["price_cents"]}
                  for line in _s["state"]["lines"] if line["status"] in ("ready", "next_candidate")
                  for c in line["candidates"] if c["picked"]]
         _s["signing"] = {"sheet_hash": sheet_hash, "picks": picks, "since": _now(), "until": time.time() + 90}
@@ -539,18 +644,30 @@ def mark_signed(signature: dict, carts: list) -> dict:
                               "Any cart just created belongs to the signed sheet, not to this one." % (
                                   str(signed)[:12], _s["state"]["sheet_hash"][:12]), 409)
         _s["signing"] = None
+        again = _s.get("seal") if (_s.get("seal") or {}).get("sheet_hash") == signed else None
         name = signature.get("name") or signature.get("signer") or _s["sheet"]["issuer"]["name"]
         at = signature.get("at") or signature.get("signed_at") or _now()
-        n = len(carts)
+        if again:  # the same signature again, when a store that had not answered now has: the time of signing stands
+            at = again["signed_at"]
+        made = [c for c in carts if c.get("cart_url")]
+        waiting = [c for c in carts if c.get("mode") == "pending"]
+        failed = [c for c in carts if c.get("mode") == "failed"]
+        n = len(made)
         text = "Signed by %s at %s. %d cart%s created." % (name, str(at)[11:16] or at, n, "" if n == 1 else "s")
+        if waiting:
+            text += " %d store%s not answered yet." % (len(waiting), " has" if len(waiting) == 1 else "s have")
+        if failed:
+            text += " %d cart%s failed." % (len(failed), "" if len(failed) == 1 else "s")
         _s["seal"] = {"signed": True, "text": text, "sheet_hash": signed,
-                      "signature": signature, "carts": carts, "signed_at": at, "signer": name}
-        receipts.append("signed", "issuer", _key_id(signature), signature,
-                        {"sheet_hash": _s["state"]["sheet_hash"], "signer": name, "total_cents": _s["state"]["total_cents"]})
-        receipts.append("carts_created", "system", _key_id(signature), carts,
-                        {"sheet_hash": _s["state"]["sheet_hash"],
+                      "signature": signature, "carts": carts, "signed_at": at, "signer": name,
+                      "carts_created": n, "carts_pending": len(waiting), "carts_failed": len(failed)}
+        if not again:
+            receipts.append("signed", "issuer", _key_id(signature), signature,
+                            {"sheet_hash": signed, "signer": name, "total_cents": _s["state"]["total_cents"]})
+        receipts.append("carts_created" if not again else "carts_updated", "system", _key_id(signature), carts,
+                        {"sheet_hash": signed,
                          "carts": [{k: c.get(k) for k in ("store", "cart_id", "total_cents", "mode")} for c in carts]})
-        return _recompute()
+        return _recompute(why="signed" if not again else "carts_updated")
 
 
 def set_issuer_key(info: dict) -> dict:

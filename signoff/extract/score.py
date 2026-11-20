@@ -53,17 +53,13 @@ def cost(log):
     return out or None
 
 
-def dimension_check(row):
-    return spans.position_check(row)
-
-
 def item(key, row, titles):
     out = {"store": key[0], "product_id": key[1], "title": titles.get(key[:2]), "figure": key[2],
            "value": combine.shown(row), "quote": row["quote"]}
-    position = dimension_check(row)
-    if position:
-        out["dimension"] = {"position": position["position"], "of": position["of"], "label": position["label"],
-                            "expected": position["expected"], "ok": position["ok"]}
+    if row.get("number_check"):
+        out["number_check"] = row["number_check"]
+    if row.get("unsure_reason"):
+        out["unsure_reason"] = row["unsure_reason"]
     return out
 
 
@@ -78,8 +74,6 @@ def measure(name, index, log, reference, titles, picks=None):
     products = {(r["store"], r["product_id"]) for r in log if r.get("asked")}
     clean = products - {k[:2] for k in different + missing + extra}
     seconds = [r["seconds"] for r in log if r.get("seconds") is not None and r.get("asked")]
-    wrong_position = [item(k, r, titles) for k, r in sorted(counted.items())
-                      if (dimension_check(r) or {}).get("ok") is False]
     out = {
         "extractor": name, "products_read": len(products),
         "figures_reported": len(index),
@@ -101,7 +95,6 @@ def measure(name, index, log, reference, titles, picks=None):
         "missing": [dict(item(k, ref[k], titles),
                          reader_says=(index[k].get("unsure_reason") or "unsure") if k in index else "not stated")
                     for k in sorted(missing)],
-        "wrong_dimension_position": wrong_position,
         "picks_changed": picks,
         "products_fully_agreeing": len(clean),
         "seconds_per_product_median": round(statistics.median(seconds), 2) if seconds else None,
@@ -190,10 +183,7 @@ def compare(figures=FIGURES, reference=None):
         fresh, caught = {}, []
         for key, row in index.items():
             row = dict(row)
-            row.pop("dimension", None)
-            if row.get("caught_by"):  # a record saved after the rule existed: undo it for the "before" pass
-                row = dict(row)
-            if spans.apply_position_rule(row):
+            if spans.apply_unambiguous_rule(row):
                 caught.append(key)
             fresh[key] = row
         return fresh, caught
@@ -202,8 +192,8 @@ def compare(figures=FIGURES, reference=None):
         out = {}
         for key, row in index.items():
             row = dict(row)
-            if row.get("caught_by"):
-                for k in ("unsure", "unsure_reason", "caught_by"):
+            if row.get("caught_by"):  # marked by the rule when it was read: take the mark off for the "before" pass
+                for k in ("unsure", "unsure_reason", "caught_by", "number_check"):
                     row.pop(k, None)
             out[key] = row
         return out
@@ -213,7 +203,7 @@ def compare(figures=FIGURES, reference=None):
     for name, index, log in raw:
         fresh, hit = with_rule(index)
         ruled.append((name, fresh, log))
-        caught[name] = [item(k, index[k], titles) for k in hit]
+        caught[name] = [item(k, fresh[k], titles) for k in hit]
     before = one_pass(raw, next(i for n, i, _ in raw if n == ref[0]))
     after = one_pass(ruled, next(i for n, i, _ in ruled if n == ref[0]))
     brief = lambda m: {  # noqa: E731
@@ -225,17 +215,21 @@ def compare(figures=FIGURES, reference=None):
     readers = []
     for name, _, _ in runs:
         made = after[name]
-        made["position_rule"] = {"rule": spans.POSITION_REASON, "caught": caught[name],
-                                 "before": brief(before[name]), "after": brief(after[name])}
-        made["wrong_dimension_position"] = caught[name]
+        index = next(i for n, i, _ in ruled if n == name)
+        needing = [r for r in index.values() if r.get("number_check")]
+        made["number_rule"] = {"quotes_with_several_numbers": len(needing),
+                               "label_paired_by_the_text": sum(1 for r in needing if r["number_check"]["paired"] is True),
+                               "caught": caught[name], "before": brief(before[name]), "after": brief(after[name])}
         readers.append(made)
     readers.sort(key=lambda r: (r["extractor"] != ref[0], -(r["agreement"] or 0)))
     return {"made_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
-            "position_rule": {
-                "rule": "when a figure's quote is a labelled list of dimensions, its number must sit at the position "
-                        "the store labels as that dimension; otherwise the figure is marked unsure and does not count",
-                "reason_given": spans.POSITION_REASON, "applies_to": "every reader, in code",
-                "caught": {r["extractor"]: r["position_rule"]["caught"] for r in readers if r["position_rule"]["caught"]},
+            "number_rule": {
+                "rule": "a figure counts only if its number is unambiguous in its quote: either the quote holds no other "
+                        "number of the same kind of unit, or the reader named the label the text puts on the number and "
+                        "code found that pairing in the quote (the label's place in a list of labels against the values' "
+                        "places, or the label standing next to the number); otherwise the figure is unsure",
+                "applies_to": "every reader, in code; no format is named",
+                "caught": {r["extractor"]: r["number_rule"]["caught"] for r in readers if r["number_rule"]["caught"]},
                 "reference_figures_caught": len(caught[ref[0]])},
             "reference": ref[0], "measure": "same number, on the figures both readers found, on the same products",
             "note": "Agreement, not accuracy: no person read these pages. A figure counts when its quote is "
@@ -259,20 +253,22 @@ def main(argv=None):
     result = json.loads(write(args.figures, args.reference).read_text())
     print("reference: %s · %d products · %s" % (result["reference"], result["products"], result["measure"]))
     for r in result["readers"]:
-        print("%-42s %s · spans found %d of %d · picks changed on %s · wrong dimension position %d · %ss per product · cost %s" % (
+        rule = r["number_rule"]
+        print("%-42s %s · spans found %d of %d · picks changed on %s · %ss per product · cost %s" % (
             r["extractor"], r["statement"], r["span_found"], r["figures_reported"],
             [p["line_id"] for p in r["picks_changed"]] if r["picks_changed"] is not None else "n/a",
-            len(r["wrong_dimension_position"]), r["seconds_per_product_median"], json.dumps(r["cost"])))
-        if r["extractor"] != result["reference"]:
-            rule = r["position_rule"]
-            print("      position rule: caught %s · inside only with this reader %d -> %d · picks changed %s -> %s" % (
-                [(c["title"], c["value"]) for c in rule["caught"]], rule["before"]["inside_only_with_this_reader"],
-                rule["after"]["inside_only_with_this_reader"], rule["before"]["picks_changed"], rule["after"]["picks_changed"]))
+            r["seconds_per_product_median"], json.dumps(r["cost"])))
+        print("      number rule: %d quotes hold several numbers, %d paired by the text, %d caught %s · counted %d -> %d · "
+              "inside only with this reader %d -> %d · picks changed %s -> %s" % (
+                  rule["quotes_with_several_numbers"], rule["label_paired_by_the_text"], len(rule["caught"]),
+                  [(c["title"], c["figure"], c["value"]) for c in rule["caught"]][:6], rule["before"]["figures_counted"],
+                  rule["after"]["figures_counted"], rule["before"]["inside_only_with_this_reader"],
+                  rule["after"]["inside_only_with_this_reader"], rule["before"]["picks_changed"], rule["after"]["picks_changed"]))
         if args.detail and r["extractor"] != result["reference"]:
             for d in r["disagreements"]:
                 print("    differs  %s | %s | %s | reference %s %r | reader %s %r %s" % (
                     d["store"], (d["title"] or "")[:34], d["figure"], d["reference_value"], d["reference_quote"][:50],
-                    d["value"], d["quote"][:50], d.get("dimension") or ""))
+                    d["value"], d["quote"][:50], d.get("number_check") or ""))
             for d in r["extra"]:
                 print("    extra    %s | %s | %s | %s %r | reference: %s" % (
                     d["store"], (d["title"] or "")[:34], d["figure"], d["value"], d["quote"][:50], d["reference_says"][:70]))

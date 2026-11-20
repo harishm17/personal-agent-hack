@@ -146,26 +146,67 @@ def test_units_come_from_the_sheets_limit_so_another_sheet_needs_no_code():
     assert wrong["unsure"] and "cannot be compared" in wrong["unsure_reason"]
 
 
-def test_code_can_tell_which_labelled_dimension_a_number_was_taken_from():
-    at = spans.dimension_position
-    bench = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
-    assert (at(bench, [31])["label"], at(bench, [14.75])["label"]) == ("w", "d")  # the depth is not the width
-    assert at('Product Dims (h x w x d): 16" - 21" x 21" x 18"', [21])["label"] == "w"  # 21 is also in the height range
-    assert at('Product Dims (h x w x d): 12": 1.5" x 12" x 1.25"', [12])["position"] == 2  # the size name is not a dimension
-    assert at('Overall Footprint: 28.5"W x 17.5"D', [28.5])["label"] == "w"
-    assert at('Dimensions: 23.5”W x 20”L x 32” - 40”H', [23.5])["label"] == "w"
-    assert at("Weight Capacity: 300 lbs.", [300]) is None
+def numbered(figure, quote, value, label=None, unit="in"):
+    return {"figure": figure, "quote": quote, "kind": "single", "value": value, "low": value, "high": value,
+            "unit": unit, "label": label, "span_found_in_text": True}
 
 
-def test_the_comparison_lists_disagreements_extras_and_wrong_positions(tmp_path):
+def test_a_number_counts_only_if_it_is_the_only_one_or_the_text_labels_it():
+    rule = spans.apply_unambiguous_rule
+    several = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
+    assert rule(numbered("overall_width", several, 31, "w")) is False            # the list of labels pairs w with 31
+    wrong = numbered("overall_width", several, 14.75, "w")
+    assert rule(wrong) is True and wrong["unsure_reason"].startswith(spans.AMBIGUOUS)
+    assert "pairs the label 'w' with another number" in wrong["unsure_reason"]
+    silent = numbered("overall_width", several, 31)
+    assert rule(silent) is True and "gave no label" in silent["unsure_reason"]    # several numbers and no label: unsure
+    assert rule(numbered("overall_width", "Overall Width: 21.5 inches", 21.5)) is False   # one number: nothing to settle
+    # a number in another kind of unit is not a rival
+    assert rule(numbered("weight_capacity", "Supports 300 lbs with a seat width of 16 inches", 300, unit="lb")) is False
+    # a range the reader reported whole has no rival either
+    whole = dict(numbered("seat_height", 'Seat height adjusts from 16" to 21"', None), kind="adjustable", low=16, high=21)
+    assert rule(whole) is False
+
+
+def test_the_pairing_is_read_from_the_text_alone_whatever_the_separator_or_the_words():
+    ok = lambda *a, **k: spans.apply_unambiguous_rule(numbered(*a, **k)) is False  # noqa: E731
+    assert ok("overall_width", 'Product Dims (h x w x d): 16" - 21" x 21" x 18"', 21, "w")       # 21 is also in the height range
+    assert ok("overall_width", 'Outside Legs: 17.5" (W) x 17.25" (D)', 17.5, "W")                 # the label beside the number
+    assert ok("overall_width", "Dimensions: 23.5”W x 20”L x 32” - 40”H", 23.5, "W")
+    assert ok("overall_width", "W/D/H: 20/18/30 in", 20, "W")                                     # another separator
+    assert not ok("overall_width", "Width, Depth, Height: 20, 18, 30 inches", 18, "Width")        # words, and the wrong place
+    assert ok("capacity", "Capacity: 300 lbs. Product Weight: 4.5 lbs", 300, "Capacity", unit="lb")
+    assert not ok("capacity", "Capacity: 300 lbs. Product Weight: 4.5 lbs", 4.5, "Capacity", unit="lb")
+    assert ok("length", 'Length: 12" or 16"', 12, "Length")
+    assert not ok("length", 'Available in 12", 16", 18", 24", and 32" length.', 12, "length")     # the text does not say 12
+    assert not ok("overall_width", 'Product Dims (h x w x d): 1.63" x 31" x 14.75"', 31, "width") # a label that is not in the quote
+
+
+def test_the_rule_runs_on_every_new_read_and_keeps_the_readers_label():
+    text = 'Bench.\nProduct Dims (h x w x d): 1.63" x 31" x 14.75" Weight Capacity: 300 lbs.'
+    page = {"store": "s", "product_id": "p", "text": text}
+    quote = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
+    wrong = spans.finish({"figure": "overall_width", "kind": "single", "value": 14.75, "unit": "in", "quote": quote,
+                          "label": "w"}, page, "any")
+    assert wrong["span_found_in_text"] and wrong["unsure"] and wrong["caught_by"].startswith("code:")
+    right = spans.finish({"figure": "overall_width", "kind": "single", "value": 31, "unit": "in", "quote": quote,
+                          "label": "w"}, page, "any")
+    assert "unsure" not in right and right["label"] == "w" and right["number_check"]["paired"] is True
+    plain = spans.finish({"figure": "weight_capacity", "kind": "single", "value": 300, "unit": "lbs",
+                          "quote": "Weight Capacity: 300 lbs."}, page, "any")
+    assert "number_check" not in plain and "unsure" not in plain
+    assert "label" in reader.SYSTEM and "h x w" not in reader.SYSTEM.lower()  # the instruction names no format
+
+
+def test_the_comparison_lists_disagreements_extras_and_what_the_rule_caught(tmp_path):
     from signoff.extract import score
     quote = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
-    def fig(extractor, figure, value, q=quote):
+    def fig(extractor, figure, value, q=quote, label=None):
         return {"store": "s", "product_id": "p", "figure": figure, "kind": "single", "value": value, "low": value,
                 "high": value, "unit": "in", "quote": q, "start": 0, "end": len(q), "extractor": extractor,
-                "span_found_in_text": True}
-    for name, rows in (("claude-sonnet-5-5", [fig("anthropic:claude-sonnet-5-5", "overall_width", 31)]),
-                       ("small", [fig("small", "overall_width", 14.75), fig("small", "length", 12, "12 in long")])):
+                "span_found_in_text": True, "label": label}
+    for name, rows in (("claude-sonnet-5-5", [fig("anthropic:claude-sonnet-5-5", "overall_width", 31, label="w")]),
+                       ("small", [fig("small", "overall_width", 14.75, label="w"), fig("small", "length", 12, "12 in long")])):
         folder = tmp_path / "_runs" / name
         folder.mkdir(parents=True)
         (folder / "s.json").write_text(json.dumps(rows))
@@ -174,26 +215,24 @@ def test_the_comparison_lists_disagreements_extras_and_wrong_positions(tmp_path)
     made = score.compare(tmp_path)
     small = next(r for r in made["readers"] if r["extractor"] == "small")
     # as read, the small reader disagrees on the width; with the rule on, code has marked its figure unsure
-    assert small["position_rule"]["before"]["statement"] == (
+    assert small["number_rule"]["before"]["statement"] == (
         "same number on 0 of 1 figures both readers found; the reference alone found 0, this reader alone found 1")
     assert small["statement"] == ("same number on 0 of 0 figures both readers found; the reference alone found 1, "
                                   "this reader alone found 1")
-    caught = small["position_rule"]["caught"]
-    assert len(caught) == 1 and caught[0]["value"] == "14.75" and caught[0]["dimension"]["label"] == "d"
-    assert made["position_rule"]["reference_figures_caught"] == 0 and list(made["position_rule"]["caught"]) == ["small"]
+    caught = small["number_rule"]["caught"]
+    assert len(caught) == 1 and caught[0]["value"] == "14.75" and caught[0]["number_check"]["paired"] is False
+    assert made["number_rule"]["reference_figures_caught"] == 0 and list(made["number_rule"]["caught"]) == ["small"]
     assert [e["figure"] for e in small["extra"]] == ["length"]
 
 
-def test_the_position_rule_marks_a_depth_reported_as_a_width_unsure_for_any_reader():
-    text = 'Bench.\nProduct Dims (h x w x d): 1.63" x 31" x 14.75" Weight Capacity: 300 lbs.'
-    page = {"store": "s", "product_id": "p", "text": text}
-    quote = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
-    wrong = spans.finish({"figure": "overall_width", "kind": "single", "value": 14.75, "unit": "in", "quote": quote}, page, "any")
-    assert wrong["span_found_in_text"] and wrong["unsure"] and wrong["unsure_reason"] == spans.POSITION_REASON
-    assert wrong["dimension"] == {"position": 3, "of": 3, "label": "d", "expected": "w", "ok": False}
-    right = spans.finish({"figure": "overall_width", "kind": "single", "value": 31, "unit": "in", "quote": quote}, page, "any")
-    assert "unsure" not in right and right["dimension"]["ok"] is True
-    plain = spans.finish({"figure": "weight_capacity", "kind": "single", "value": 300, "unit": "lbs",
-                          "quote": "Weight Capacity: 300 lbs."}, page, "any")
-    assert "dimension" not in plain and "unsure" not in plain
-    assert spans.expected_label("seat_height") == "h" and spans.expected_label("weight_capacity") is None
+def test_a_figure_the_text_ties_to_another_option_is_unsure_and_several_options_alone_change_nothing():
+    variant = {"variant_title": '12"', "option_labels": ['12"'], "other_option_labels": ['16"', '24"']}
+    tied = {"figure": "weight_capacity", "quote": "Supports 500 pounds (24” bar)", "value": 500}
+    assert spans.apply_option_rule(tied, variant) is True
+    assert tied["unsure_reason"] == 'the text ties this figure to the option 24"; the option in the pool is 12"'
+    both = {"figure": "length", "quote": 'Length: 12" or 16"', "value": 12}
+    assert spans.apply_option_rule(both, variant) is False  # the quote names the option in the pool too
+    plain = {"figure": "weight_capacity", "quote": "Weight Capacity: 250 lb.", "value": 250}
+    assert spans.apply_option_rule(plain, variant) is False and "unsure" not in plain
+    words = {"variant_title": "18 Inch", "option_labels": ["18 Inch"], "other_option_labels": ["12 Inch", "24 Inch"]}
+    assert spans.apply_option_rule({"figure": "weight_capacity", "quote": "500 Pounds (24”)", "value": 500}, words) is True

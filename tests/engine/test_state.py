@@ -217,10 +217,40 @@ def test_the_hash_covers_the_pick_rule_and_each_picks_delivery_quote():
     assert canonical["pick_rule"] == {"id": "cheapest_with_delivery_time", "label": "cheapest that states a delivery time"}
     l2 = next(l for l in canonical["lines"] if l["line_id"] == "L2")
     assert l2["pick"]["delivery"]["quote"] == "standard shipping takes 3 to 5 days" and l2["pick"]["delivery"]["status"] == "stated"
-    assert state.get_state()["seal"]["covers"] == ["limits", "strikes", "picks", "prices", "sums", "store quotes",
-                                                    "delivery quotes", "pick rule", "total"]
+    assert state.get_state()["seal"]["covers"] == state.COVERS and "delivery quotes" in state.COVERS \
+        and "pick rule" in state.COVERS and "variant and quantity" in state.COVERS
+    assert l2["pick"]["quantity"] == 1 and "currency" in l2["pick"] and "variant_title" in l2["pick"]
     before = state.sheet_hash()
     state._s["answers"][0]["delivery"]["quote"] = "standard shipping takes 2 to 9 days"  # the store's words change
     assert state._recompute(record=False)["sheet_hash"] != before
     state._s["sheet"]["pick_rule"]["label"] = "dearest first"
     assert state._recompute(record=False)["sheet_hash"] != before
+
+
+def test_a_cart_that_is_pending_or_failed_is_not_counted_as_created_and_a_second_call_keeps_the_signing_time():
+    h = state.sheet_hash()
+    signature = {"name": "Dana", "sheet_hash": h, "at": "2026-11-20T14:00:00-08:00"}
+    carts = [{"store": "fixture-store-a.example", "cart_id": "c1", "cart_url": "https://a/cart/c1", "mode": "real"},
+             {"store": "fixture-store-c.example", "cart_id": None, "cart_url": None, "mode": "pending"}]
+    s = state.mark_signed(signature, carts)
+    assert s["seal"]["text"] == "Signed by Dana at 14:00. 1 cart created. 1 store has not answered yet."
+    acted = {c["product"]["store"] for l in s["lines"] for c in l["candidates"] if c["action"]}
+    assert acted == {"fixture-store-a.example"}  # only a cart with a link counts as created
+    carts[1] = {"store": "fixture-store-c.example", "cart_id": "c2", "cart_url": "https://c/cart/c2", "mode": "real"}
+    s = state.mark_signed(dict(signature, at="2026-11-20T14:00:09-08:00"), carts)  # the store answered
+    assert s["seal"]["signed_at"] == "2026-11-20T14:00:00-08:00" and s["seal"]["text"] == "Signed by Dana at 14:00. 2 carts created."
+    from signoff.engine import receipts
+    assert [r["type"] for r in receipts.chain()["receipts"]][-3:] == ["signed", "carts_created", "carts_updated"]
+
+
+def test_a_fallback_in_use_is_named_in_the_state_never_silent(monkeypatch):
+    from signoff.engine import health
+    assert state.get_state()["degraded"] == []
+    health.note("pool loader", "signoff.store.pool.load() failed (ValueError); the pool was read straight from the files")
+    try:
+        s = state.set_shopper_fact("toilet_rim_height", 15.5)
+        assert s["degraded"] == [{"what": "pool loader", "note": "signoff.store.pool.load() failed (ValueError); "
+                                  "the pool was read straight from the files"}]
+    finally:
+        health.clear("pool loader")
+    assert state.set_shopper_fact("toilet_rim_height", 15.0)["degraded"] == []

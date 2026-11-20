@@ -54,9 +54,9 @@ def pool_files(folder=None, sheet_id="sheet1"):
     return []
 
 
-def text_key(product, model, sheet=None):
+def text_key(product, model, sheet=None, system=None):
     """Same text, same reader, same instructions: the cached reading stands ("read once, cached")."""
-    salt = gliner.MODEL if model == gliner.EXTRACTOR else reader.SYSTEM
+    salt = gliner.MODEL if model == gliner.EXTRACTOR else (system or reader.SYSTEM)
     if sheet is not None and model != gliner.EXTRACTOR:
         salt += "".join("%s=%d;" % (n, reader.GLOSSARY_REVISION[n]) for n in reader.wanted_figures(product, sheet)
                         if n in reader.GLOSSARY_REVISION)
@@ -90,7 +90,20 @@ def run_reader(products, sheet, model, out, workers=8, force=False, assume_unit=
     store = products[0]["store"]
     log_path = folder / (store + ".log")
     log = {} if force or not log_path.exists() else {r["product_id"]: r for r in json.loads(log_path.read_text())}
-    todo = [p for p in products if log.get(p["product_id"], {}).get("key") != text_key(p, model, sheet)]
+    def cached(p):
+        """A reading stands if it was made with today's instructions, or with the instructions as they were
+        before the label line and every one of its quotes holds a single candidate number (the label line only
+        asks something of a quote with several, so it could not have changed that reading)."""
+        held = log.get(p["product_id"])
+        if not held:
+            return False
+        if held.get("key") == text_key(p, model, sheet):
+            return True
+        if held.get("key") != text_key(p, model, sheet, reader.SYSTEM_BEFORE_LABEL):
+            return False
+        return not any(f.get("span_found_in_text") and spans.other_numbers(f) for f in held["figures"])
+
+    todo = [p for p in products if not cached(p)]
     errors = []
     with concurrent.futures.ThreadPoolExecutor(workers) as pool:
         jobs = {pool.submit(read_one, p, sheet, model, assume_unit): p for p in todo}
