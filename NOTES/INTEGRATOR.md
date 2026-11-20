@@ -613,3 +613,51 @@ Order done as you asked: sign-tap cap, 1, 2, 3, then phone (review-and-sign, don
   state has one, else "identity checked (sandbox)" when Persona verified, else "self-declared"; `seal.covers` is listed
   when present. "store total differs" shows when a cart has `signed_total_cents` different from `total_cents`.
   SIGN: tell me the real key names if they differ.
+
+## 12:29 from ENGINE — answer to your 12:45 question: a second sheet (plumber, four fixtures), from the code
+**(1) Second sheet by environment variable: yes, most of it exists and has a test.** `SIGNOFF_SHEET=sheet2` (or
+`state.use_sheet("sheet2")` at run time) loads `sheets/sheet2.json`, the pool from `data/sheet2/pool/`, store answers from
+`data/sheet2/store_answers/`, figures from `data/figures/sheet2/` (`python -m signoff.extract.run --sheet sheet2`), with its own reader
+comparison. Sheet1 and all its data stay where they are; unset the variable and it is back. `tests/engine/test_sheet2.py` runs a
+second sheet end to end today (on the cut cookware draft). What is **not** per-sheet yet, with my minutes:
+| change | where | minutes |
+|---|---|---|
+| units: gallons and gallons per minute are unknown today (only lb, in, qt, L, °F, °C, oz, cm, mm, ft, kg) | `rules.ALIASES`, unit kinds in `spans` | 5 |
+| order document and `derived.json` per sheet (today fixed to `order.txt` and `data/order/derived.json`; the engine ignores a derived file of another sheet) | `extract/order.py`, `state._load_order` | 7 |
+| store agents' replies and the instruction scan per sheet (both hard-code sheet1) | `extract/asked.py`, `extract/instructions.py` | 5 |
+| planted page: tied to line id `L1` and a shower chair text. If sheet2 has no `L1` it simply does not appear; **if sheet2 reuses the id `L1`, the shower chair page would attach to it**, so I must make it sheet-aware | `engine/planted.py` | 3 to switch it off for sheet2, 10 with a new invented page and its read |
+| chat wording says "her phone", "she" for both people | `agent/chat.py` | 5 |
+| replace my cookware draft, its test and its cached figures (`data/figures/sheet2/` holds cookware readings now) | tests, data | 3 |
+About **30 to 40 minutes of my work** once the sheet file, the pool and the order text exist, plus the reading passes in (6).
+Not mine and not counted: SQL tables (STORE), Senso documents and phone text (SIGN), the screen.
+
+**(2) Equality is not supported, and it fails silently:** `rules.check` treats any `op` that is not `">="` as `"<="`
+(rules.py:139). Write rough-in as **two limits** against the home measurement, `rough_in >= rough_in_measured` and `rough_in <=
+rough_in_measured`; both work today (a bound can be a shopper fact). One thing I must then fix: the order reader matches a derived
+limit to a sheet limit by line and terms, so two limits with the same term on one line need the comparison in the match too
+(2 minutes). An `"=="` op in the rule itself is about 10 minutes with tests and touches the rule code; I advise the two limits.
+
+**(3) Figure names are entries in the sheet.** The rules know no figure name. The reader takes the names from the sheet's limits and
+their meanings from an optional `figures: {name: meaning}` map in the sheet (a built-in glossary covers only today's six; an unknown
+name without a meaning is sent as the bare words, so **write the meanings in the sheet**). `rough_in`, `flush_volume`, `flow_rate`,
+`overall_width` need no code. Dual flush "1.1/1.6": the kind `spread` with `<=` already uses the end that could fail (1.6); say in
+the meaning that two stated volumes are one spread. Only the units in (1) are code.
+
+**(4) The pick rule is fixed in code** (`rules.build_state`): cheapest among those inside the limits whose store states a delivery
+time; `sheet.pick_rule` is only a label (it is in the hash). A line with `fulfilment: "pick_up_locally"` skips the delivery
+condition but is then not carted or totalled. Letting a sheet choose plain "cheapest inside the limits" is a small additive branch
+on `pick_rule.id` (the existing id unchanged) with a test: 5 minutes.
+
+**(5) What assumes sheet1 in the state the screen reads.** Nothing in the engine names a room, a role or a line id: `room`, `need`,
+`fulfilment`, names and role labels come from the sheet (each line must have `room`, `need`, `fulfilment`; each fact `short`,
+`label`, `unit`, `min`, `max`). Exceptions: the planted page (line `L1`, see above); defaults `L3` for the pressure runner and
+`/api/drill/session` (arguments, not state); the chat's pronouns. `order`, `from_order`, `readers`, `receipts`, `seal.covers`
+are generic. `counts.store_agent_*` appear only when replies exist for that sheet.
+
+**(6) Reading time, measured today on 111 products:** Sonnet through `claude -p` 39 to 52 s wall with 10 parallel workers (3.0 s
+median per product, about $0.63 of the command line's own account, not the API key). It runs in parallel (`--workers`), and the
+SIE reader and SIE extract run alongside in the same command: all three took 93 s. For about 130 products: **about one minute for
+the reference, under two for everything**, then about 10 s for the order, 45 s for the instruction scan, a minute for a second pass.
+
+**My view:** feasible by 13:45 from my side if the sheet file and pool land by 13:15, and sheet1 stays intact as the fallback
+throughout. The risk is not the engine; it is the three other streams changing text and tables at the same time.
