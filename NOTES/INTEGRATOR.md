@@ -875,3 +875,44 @@ drills were not exercised on it.
 **For TRAIL:** every tool-call event is also written to `data/obs/events.jsonl` ({name, at, ended_at, duration_ms, success, session_id,
 sheet_id, error?}); `signoff.obs.recent(n, session_id=None, sheet_id=None)` and `GET /api/obs/events?n=200&session_id=&sheet_id=`. Not written
 under pytest. The folder is not committed (suggest ignoring `data/obs/` and `data/egress/`).
+
+## 12:53 from ENGINE — 13:10 received: plan, risk to 14:00, what I need from you now, and the list
+**DONE** (proof in the notes above and in tests): DONE E1: `tests/engine/test_rules.py::test_equality_is_a_real_comparison…`, `…unknown_comparison_or_pick_rule_is_an_error…`.
+DONE E2: gpf, gpm, Lpf, Lpm in `rules.ALIASES`; `test_gallons_per_flush_and_per_minute…`, `test_a_dual_flush_page_reads_as_two_numbers…`.
+DONE E3: `python -m signoff.extract.order --sheet sheet2` → 5 of 5; cache `data/figures/sheet2/_order/derived.json`. DONE E5: `pick_rule.id`
+in `rules.build_state`; `test_the_pick_rule_cheapest…`. DONE E6: no pronoun left in `agent/chat.py`; reply on sheet 2: "only Marco (…) can
+move one, with a signed request from Marco's phone". DONE E16: `obs.egress` before every model call (`reader.ask`) and every SIE extract
+call (`gliner.entities`). DONE E19, E20: on main. **Partly done:** E4 (replies and scan run per sheet; the path rule still has
+`sheet1` branches, to be unified), E11 (planted page off by default, `instruction_scan` in the state; the planted wording is still in
+the scan prompt and pattern), E12 (`disagreements`, `extra`, `picks_changed` exist; agreement after the new rules is not done), E13
+(sheet 2 read and reported at 13:04 under the old rules).
+
+**Order of work now, and what is at risk.** Rules 1 and 3 change what a check is, so I do them first, **in the engine, on the
+readings already cached**: an unsure figure's value is tested instead of treated as absent, a quote with several candidate numbers
+tests all of them, a number without a unit is unclear, an adjustable range passes "at least" and "at most" when a setting meets the
+bound, statuses become inside / outside / unclear / not_stated. That gives both sheets honest statuses without a re-read: **target
+13:35**, and sheet 2 end to end by 14:00 holds on that alone. Then, in this order: the new reader prompt returning every statement of
+a figure (E10) and the re-read of both sheets; rule 2, every option its own candidate (E8, needs STORE's S1: I will handle either one
+row per option or an `options` list in a row); the comparison after the rules (E12); the path rule and the smaller removals (E4, E11,
+E17). **If time runs short I cut, in this order:** re-measuring the SIE readers after the new prompt (the reference alone decides),
+the second pass of the reference, the per-reader lists beyond `picks_changed`.
+
+**One thing in rule 1 that needs your word, because it decides sheet 2's toilet story.** Rule 1 says a figure with several stated
+values is unclear when they differ. A dual-flush page states 1.1 and 1.6 gpf: under rule 1 alone that is "unclear: page states both",
+not "outside". The order settles it in its own sentence, "for a dual-flush toilet the full flush counts". I am adding one optional,
+general key on a limit, **`"several": "largest"`** (or `"smallest"`; absent means every stated value is tested), read from the
+order's sentence, so the limit compares the full flush. Please add it to `T1.flush` in `sheets/sheet2.json`:
+`"several": "largest"`. Without it the 22 dual-flush pages at 1.1/1.6 show as unclear.
+
+**E18, sheet 1's figure meanings in the order's words** (no number, no limit, no person in them), for `sheets/sheet1.json`:
+```json
+"figures": {
+  "weight_capacity": "how much weight the item holds: the heaviest person it is made to carry, in pounds.",
+  "overall_width": "the item's overall width, side to side at its widest, in inches: the size that has to fit inside the tub or pass through the door.",
+  "added_height": "the height the raised toilet seat adds on top of the toilet, in inches.",
+  "seat_height": "the height of the seat above the floor, in inches. An adjustable seat states the heights it can be set to.",
+  "length": "how long the grab bar is, in inches.",
+  "mattress_thickness_max": "the mattress thickness the bed rail fits, in inches. A rail that fits a range of thicknesses states both ends."
+}
+```
+Until they are in the sheet I read sheet 1 with a scratch copy that has exactly this text, so the cached readings stay valid when you add it.
