@@ -1962,3 +1962,37 @@ Afterwards main keeps both memories for every later run, which is the point, and
 Seen on 8007 at 14:13 with this exact command (`no-sign`): 6 of 6 checks it can pass today pass; the reason fails as said. Saved states of the full run with a signature: `data/memory/second_run/run1.json`, `run2.json`.
 Also since my last note: a store's own agent's reply in TALK's saved conversations (`data/talk/threads/`) is now a `store_answer` memory owned by that store (key `talk:<product>:<thread>:<turn>`, `source.turn`);
 what our agent drafted or sent is never in a memory (`test_what_a_stores_own_agent_replied_is_the_stores_memory_and_what_we_wrote_is_not`). `./hk check` → PASS.
+
+## TALK 14:15 — K3: what the record shows, and the calls for main at 15:15
+Your ten were the first merge. The record on `stream/TALK` now holds five real shopper asks; main already has the first
+three. In every one the shopper's own words carried sealed facts and the model's draft repeated them: no draft was clean.
+| thread | at | store | removed from the draft | result |
+|---|---|---|---|---|
+| `f9faad4b5aed` | 14:00 | parentgiving.com | mother, 280 lb, hip surgery, 300 lb, 21.5-inch | refused, nothing sent (the span model marked "I" in the rewrite) |
+| `1553b09d0333` | 14:01 | parentgiving.com | mother, 280 pounds, hip surgery, 300-pound, 21.5-inch | refused, nothing sent (the writer returned the gaps) |
+| `cbd3c7f37f4f` | 14:02 | parentgiving.com | My mother, 280 lbs, hip surgery, 300 lbs, 21.5 inches, therapist, Dana | **sent**; real reply "Nothing has been arranged, …"; follow-up refused |
+| `9b79a4f63b5c` | 14:12 | carex.com | Rosa, 280 lb, hip replacement | refused, nothing sent (the span model missed "my mother" beside "Rosa", the second check caught it) |
+| `98b830ce0828` | 14:13 | vivehealth.com | Rosa, 280 lbs, hip surgery, therapist, 300 lbs, 16 inches | **sent**: "Hi Vive, please confirm if the Textured Grab Bars can arrive by December 2, 2026. Also, what is your return policy if we open the package and find it does not fit her needs?"; real reply; the follow-up had 3 more parts cut and was sent |
+Each refusal became a general rule in code, not a case: a marked span under three letters or digits states no fact; a
+message with a gap mark is not sent; the check sweeps what remains until a pass finds nothing new. With today's code all
+four earlier drafts come out cut, rewritten and clean (checked with the models only; no store was called again).
+- New, as you asked: the guard also reads the shopper's own words. A shopper thread saved from 14:12 on has
+  `purpose_removed` (in `messages` too, offsets in `purpose`; null for older threads and for the agent's own questions).
+  For `98b830ce0828`: Mum, Rosa, 280 pounds, hip surgery, Vive, therapist, 300 lb, 16 inches.
+- Said plainly: the span model is not exact. It marked the store's own name "Vive" as a person (over-blocking), and it
+  marked "my mother" in three drafts and missed it in the fifth; the rewrite dropped those words anyway. A name on the
+  sheet, a limit and a home measurement are found by code, every time, in digits or words. Of five real asks: two sent,
+  three refused, nothing sealed sent in any.
+
+Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs the sweeping check; main must be on sheet 4):
+1. The record, no call to anyone:
+   `curl -s localhost:8800/api/talk/threads | python3 -c "import json,sys; [print(m['id'], m['decision'], [r['text'] for r in m['removed']], '->', m['sent']) for m in json.load(sys.stdin)['messages'] if m['origin']=='shopper']"`
+   expect seven lines, among them `98b830ce0828:1 rewritten ['Rosa', '280 lbs', 'hip surgery', 'therapist', '300 lbs', '16 inches'] -> Hi Vive, …`.
+2. The same ask again; it answers from the saved record with `"from_cache": true` and calls nobody:
+   `curl -s -X POST localhost:8800/api/talk/ask -H 'content-type: application/json' -d '{"store":"vivehealth.com","product_id":"gid://shopify/Product/4843257987172","text":"Mum (Rosa) is 280 pounds and just had hip surgery. Please tell Vive that, and that the therapist wrote the bar must hold 300 lb and be at least 16 inches long, so they ship it this week. Ask what happens if we open it and it is wrong."}'`
+3. A new one, live (two models, then at most two real calls to carex.com, about 15 s). The words are new, so the outcome
+   is not fixed: `decision` is `rewritten` (sent, with `removed` filled) or `refused` (nothing sent, `removed` filled).
+   `curl -s -X POST localhost:8800/api/talk/ask -H 'content-type: application/json' -d '{"store":"carex.com","product_id":"gid://shopify/Product/4121093898345","text":"Please tell Carex my mother weighs 280 pounds and is just out of hip surgery, and that her therapist Dana wrote the walker must hold 300 lb and pass a 28 inch door. Ask them to send it quickly and what a return costs."}'`
+   The page `/talk/` shows it within five seconds.
+- Shots retaken at 14:14 with the fifth ask: `web/talk/shots/talk-withheld.png`, `talk-thread.png`.
+- `uv run pytest tests/talk -q` → `54 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`.
