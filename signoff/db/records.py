@@ -60,7 +60,7 @@ def limit_rows(state: dict) -> list[tuple]:
             b = lim["bound"]
             bound = b["value"] if b["source"] == "issuer" else facts[b["fact"]]
             rows.append((lim["id"], line["id"], lim["name"], lim["op"], store[0] if store else None, shopper, bound,
-                         _unit(lim.get("unit")), state["version"]))
+                         _unit(lim.get("unit")), lim.get("several"), state["version"]))
     return rows
 
 
@@ -76,17 +76,32 @@ def _bulk(cur, head: str, rows: list, chunk: int = 100) -> None:
         cur.execute(head + " VALUES " + ",".join([ph] * len(part)), [v for r in part for v in r])
 
 
-def sync_pool(cur, pool: list) -> None:
-    cur.execute("SELECT v FROM meta WHERE k = 'pool_fp'")
-    row = cur.fetchone()
-    fp = _pool_fingerprint(pool)
-    if row and row[0] == fp:
-        return
-    cur.execute("DELETE FROM pool")
-    _bulk(cur, "INSERT INTO pool (store, product_id, variant_id, title, price_cents, url, text, fetched_at, product_key, line_ids)",
-          [(p["store"], p["product_id"], p["variant_id"], p["title"], p["price_cents"], p["url"], p["text"],
-          p["fetched_at"], p["product_key"], json.dumps(p["line_ids"])) for p in pool])
-    cur.execute("REPLACE INTO meta (k, v) VALUES ('pool_fp', %s)", (fp,))
+def _figure_rows(state: dict) -> tuple[list, list]:
+    """(pool rows, figure rows): one pool row per candidate; one figure row per statement the engine holds for the candidate,
+    plus one single-value row for each other number the engine says the quote may state (`possible`)."""
+    pool_rows, fig_rows = [], []
+    for line in state["lines"]:
+        for cand in line["candidates"]:
+            pr = cand["product"]
+            pool_rows.append((cand["id"], line["line_id"], pr["store"], pr["product_id"], pr.get("variant_id"), pr["title"],
+                              pr["price_cents"], pr["product_key"], pr.get("url")))
+            seen: dict = {}
+            for f in cand["figures"]:
+                idx = seen[f["figure"]] = seen.get(f["figure"], -1) + 1
+                fig_rows.append((cand["id"], f["figure"], idx, f["kind"], f.get("value"), f.get("low"), f.get("high"),
+                                 _unit(f.get("unit")), f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
+                                 1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0,
+                                 None if f.get("number_in_quote") is None else (1 if f.get("number_in_quote") else 0),
+                                 f.get("for_other_option")))
+                for other in f.get("possible") or []:
+                    if isinstance(other, (int, float)) and not isinstance(other, bool):
+                        idx = seen[f["figure"]] = seen[f["figure"]] + 1
+                        fig_rows.append((cand["id"], f["figure"], idx, "single", other, other, other, _unit(f.get("unit")),
+                                         f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
+                                         1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0,
+                                         None if f.get("number_in_quote") is None else (1 if f.get("number_in_quote") else 0),
+                                         f.get("for_other_option")))
+    return pool_rows, fig_rows
 
 
 _write_lock = threading.Lock()
@@ -101,38 +116,30 @@ def _write_now(state: dict) -> None:
 def _write_now_locked(state: dict) -> None:
     _learn_units(state)
     schema.ensure()
-    from signoff.store import pool as pool_mod
     c = conn.connect()
     try:
         cur = c.cursor()
-        sync_pool(cur, pool_mod.load()[0])
-        figs, decisions, strikes = {}, [], {}
+        pool_rows, fig_rows = _figure_rows(state)
+        decisions, strikes = [], {}
         for line in state["lines"]:
-            for s in line.get("struck", []):
-                strikes[(line["line_id"], s["product_key"])] = s.get("reason")
+            for st in line.get("struck", []):
+                strikes[(line["line_id"], st["product_key"])] = st.get("reason")
             for cand in line["candidates"]:
-                for f in cand["figures"]:
-                    key = (f["store"], f["product_id"], f["figure"])
-                    rank = (0 if f.get("span_found_in_text") else 2) + (1 if f.get("unsure") else 0)
-                    if key in figs and figs[key][0] <= rank:  # the engine keeps the first usable figure per name
-                        continue
-                    figs[key] = (rank, (
-                        f["store"], f["product_id"], f["figure"], f["kind"], f.get("value"), f.get("low"), f.get("high"),
-                        _unit(f.get("unit")), f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
-                        1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0))
                 pr = cand["product"]
                 decisions.append((state["version"], cand["id"], line["line_id"], pr["store"], pr["product_id"],
                                   pr["product_key"], cand["status"], cand.get("reason"), 1 if cand.get("picked") else 0,
                                   pr["price_cents"], json.dumps(cand)))
         from signoff import obs  # the ledger: this write leaves the process for SingleStore
-        obs.egress("singlestore", "write pool, figures, limits, strikes and decision records", {
-            "figures": [v[1] for v in figs.values()], "limits": limit_rows(state), "strikes": list(strikes.items()),
+        obs.egress("singlestore", "write candidates, figures, limits, strikes and decision records", {
+            "pool": pool_rows, "figures": fig_rows, "limits": limit_rows(state), "strikes": list(strikes.items()),
             "decisions": decisions}, ["limit", "home_measurement", "store_text", "product", "price", "order"])
+        cur.execute("DELETE FROM pool")
+        _bulk(cur, "INSERT INTO pool (cand_id, line_id, store, product_id, variant_id, title, price_cents, product_key, url)", pool_rows)
         cur.execute("DELETE FROM figures")
-        _bulk(cur, "INSERT INTO figures (store, product_id, figure, kind, value, low, high, unit, quote,"
-                   " start_pos, end_pos, extractor, span_found_in_text, unsure)", [v[1] for v in figs.values()])
+        _bulk(cur, "INSERT INTO figures (cand_id, figure, idx, kind, value, low, high, unit, quote, start_pos, end_pos,"
+                   " extractor, span_found_in_text, unsure, number_in_quote, for_other_option)", fig_rows)
         cur.execute("DELETE FROM limits")
-        _bulk(cur, "INSERT INTO limits (limit_id, line_id, name, op, figure, shopper_sum, bound, unit, state_version)",
+        _bulk(cur, "INSERT INTO limits (limit_id, line_id, name, op, figure, shopper_sum, bound, unit, several, state_version)",
               limit_rows(state))
         cur.execute("DELETE FROM strikes")
         _bulk(cur, "INSERT INTO strikes (line_id, product_key, reason)", [(k[0], k[1], v) for k, v in strikes.items()])

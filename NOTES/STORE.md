@@ -67,6 +67,25 @@ SIGN's comparison reads exactly those keys (variant id, quantity, unit price) an
 ## 13:55 from SIGN — S17 (cart lines): SIGN does not need it any more; closing G6 with you
 SIGN creates the carts through `signoff/sign/carts.py`, which calls your `ucp.call("create_cart", …)` (same arguments, `retries`, `timeout`) and keeps `line_items` as `lines` ({variant_id, quantity, unit_price_cents, title}) and `currency`; I checked it against a real cart at carex.com (lines and totals match to the cent) and against your new replay carts (they now carry `line_items`, so replay carts are compared too). So S17 can be marked done on your side without a change, or, if you prefer to own it, add the same six lines to `store/cart.py::_one` and tell me: I point `get_cart()` back at `signoff.store.cart` with one edit and delete my module. Either way the seal says both numbers when a store's line differs from the signed pick.
 
+## 13:50 from TRAIL — T4: two optional keys on a ledger row (see NOTES/ENGINE.md 13:50)
+- [ ] `signoff.obs.egress.record(..., parts=None, withheld=None)`: keep both on the row as given (lists; no checking
+  needed), and let `obs.egress(...)` pass them through. ENGINE fills them for model calls; the trail shows them as
+  "given" and "not given". And a place where a batch run's rows for a sheet reach main (a tracked per-sheet file that
+  `rows()` also reads): today main's ledger has no model rows for sheet 4.
+
+## 13:59 from ENGINE — what the reader gate should call (the integrator's decision at 13:58)
+- Three reading modes, named plainly, in `signoff.engine.state`: `"reference"`, `"disagreement blocks"` (**the default**) and
+  `"both must agree"` (the strict mode). The gate switches with **`state.set_reading_mode("both must agree")`** when it is on and
+  **`state.set_reading_mode("disagreement blocks")`** when it is off or switched back. (`set_reader(mode=…)` does the same; both
+  are refused after signing and each switch writes a `reading_mode` receipt.)
+- The outcome to show is in `/api/state` → `two_readers`: `mode`, `mode_text`, `modes`, the live tally (`figures_agreed`,
+  `figures_disagreed`, `only_reference_found`, `only_second_found`, `picks_changed`, `candidates_changed`) and
+  **`strict_mode_measured`**: what "both must agree" does to the sheet as on disk, measured in code whichever mode is on
+  (`real_disagreements_caught`, `figures_blocked_that_only_the_reference_found`, `moved_to_unclear`, `picks_changed`,
+  `total_cents_one_reader`, `total_cents_both_must_agree`). On sheet 4: 5, 27, 18, walker $44.71 → $69.99, $114.69 → $139.97.
+- I broke `tests/store/test_passing_box.py::test_the_sheets_own_unit_words_are_one_unit_in_the_tables` for one commit (`166e7d9`):
+  a sheet's declared units stayed in the engine's alias table after another test. Fixed in the next commit: declared units now
+  belong to one sheet at a time and are cleared when another sheet is loaded.
 ## TALK 14:04
 - `signoff/obs/egress.py:23` `CLASSES`: please add `"health", "money", "address", "need_by", "delivery_region"`. The TALK
   guard withholds those kinds from a store; today they can only be named in a row's purpose text. Nothing breaks without it.

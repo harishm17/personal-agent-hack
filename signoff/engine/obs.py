@@ -1,5 +1,6 @@
 """Events for `signoff.obs` (the STORE stream's Amplitude sender). Never raises, never waits; a no-op
 until that module is merged or when it has no key."""
+import os
 import time
 
 
@@ -26,6 +27,8 @@ def session(sheet_id):
 def egress(recipient, purpose, payload, fact_classes):
     """The outbound ledger (`signoff.obs.egress`, the STORE stream's): what was sent to whom, and which kinds
     of fact it held. Called at every place ENGINE code sends anything out. A no-op until that function exists."""
+    if os.environ.get("SIGNOFF_EGRESS") == "off":  # tests: a faked call must not leave a row in the real ledger
+        return
     try:
         from signoff import obs
         record = getattr(obs, "egress", None)

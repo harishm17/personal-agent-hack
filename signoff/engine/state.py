@@ -4,6 +4,7 @@ Signatures are fixed by CONTRACT.md "In-process calls". The dict returned by the
 read it, do not change it. Limits and strikes change only through `apply_issuer`, which `signoff.sign`
 calls after it has verified a signed request. Nothing here is reachable from a model.
 """
+import copy
 import datetime
 import gzip
 import hashlib
@@ -92,7 +93,7 @@ def _load_figures(pool, from_data, variants=None):
         option = variants.get((f["store"], f["product_id"], f.get("variant_id")))
         if f["span_found_in_text"] and option:
             spans.apply_option_rule(f, option)
-        if f["span_found_in_text"]:  # the store's whole sentence, for the screen to show around the quote
+        if f["span_found_in_text"] and page is not None:  # the store's whole sentence, for the screen to show around the quote
             sentence, a, b = rules.sentence_around(page, f["start"], f["end"])
             f.update(sentence=sentence, quote_in_sentence=[a, b])
     return figures
@@ -217,6 +218,146 @@ def _load_variants(pool, from_data):
     return out
 
 
+SECOND_READER = "sie:Qwen/Qwen3.8-27B-FP8"  # the second, independent reader: another model, on Superlinked SIE
+# How the second reader is used. The default blocks a figure only on a real disagreement; requiring agreement on
+# everything is the strict mode a gate can switch on, and its measured outcome is kept in the state.
+MODES = {"reference": "the reference reader decides alone",
+         "disagreement blocks": "a figure the two readers read differently is unclear; one only the reference reports counts",
+         "both must agree": "a figure counts only when both readers report the same value"}
+MODE_ALIASES = {"both": "both must agree", "both_must_agree": "both must agree", "strict": "both must agree",
+                "disagreement_blocks": "disagreement blocks", "default": "disagreement blocks"}
+DEFAULT_MODE = "disagreement blocks"
+
+
+def _numbers(f):
+    values = [f.get("value")] if f.get("kind") == "single" else [f.get("low"), f.get("high")]
+    return {round(v, 2) for v in values if isinstance(v, (int, float)) and not isinstance(v, bool)}
+
+
+def _load_second(pool, from_data):
+    """The second reader's own statements for the same pages, made ready the same way: `{(store, product,
+    variant, figure): [statements]}`; None when its run is not on disk."""
+    folder = _dirs()[2] / "_runs" / re.sub(r"[^A-Za-z0-9.]+", "-", SECOND_READER).strip("-")
+    if not from_data or not folder.is_dir():
+        return None
+    text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
+    out = {}
+    for f in _read_dir(folder):
+        spans.ready(f, text.get((f["store"], f["product_id"])))
+        if f.get("span_found_in_text") and f.get("number_in_quote") is not False and _numbers(f):
+            out.setdefault((f["store"], f["product_id"], f.get("variant_id"), f["figure"]), []).append(f)
+    return out
+
+
+def _require_agreement(figures, second, strict=True):
+    """Both readers must agree (E27): a statement of the reference counts only when the second reader, on its
+    own, reports the same number(s) for that figure on that page. Where they report different numbers, or only
+    one of them reports the figure, the statement is kept and shown but cannot be compared: the check is
+    unclear, with the reason. A found quote shows where a number came from; two readers agreeing is what
+    guards that it is the right number. Returns (figures, tally)."""
+    seen, tally = {}, {"agreed": 0, "disagreed": 0, "only_reference": 0, "only_second": 0}
+    for f in figures:
+        if not f.get("span_found_in_text") or f.get("number_in_quote") is False or not _numbers(f):
+            continue
+        key = (f["store"], f["product_id"], f.get("variant_id"), f["figure"])
+        seen.setdefault(key, []).append(f)
+    for key, mine in seen.items():
+        theirs = set().union(*[_numbers(o) for o in second.get(key, [])]) if second.get(key) else None
+        agreed = [f for f in mine if theirs is not None and _numbers(f) <= theirs]
+        if theirs is None:
+            tally["only_reference"] += 1
+            for f in mine:
+                if strict:  # the default lets a figure only the reference reports count; the strict mode does not
+                    f["disagree"] = "only one reader found it"
+        elif not agreed:
+            tally["disagreed"] += 1
+            unit = mine[0].get("unit") or ""
+            ours = sorted(set().union(*[_numbers(f) for f in mine]))
+            for f in mine:
+                f["disagree"] = "readers disagree: %s and %s %s" % (" / ".join("%g" % v for v in ours),
+                                                                  " / ".join("%g" % v for v in sorted(theirs)), unit)
+        else:
+            tally["agreed"] += 1
+            for f in mine:
+                if f not in agreed and strict:  # not confirmed; in the strict mode the figure rests on the ones that were
+                    f["disagree"] = "only one reader found this statement"
+    for key, theirs in second.items():
+        if key not in seen:  # only the second reader reports it
+            tally["only_second"] += 1
+            if strict:  # shown, and unclear rather than absent; the default leaves it not stated, as the reference read it
+                figures.append(dict(theirs[0], disagree="only one reader found it"))
+    return figures, tally
+
+
+def _option_names(pool, figures, sheet):
+    """An option's own name is a statement about it, and a statement about another size is not (the E26 rule).
+
+    For a candidate that is one option of a product whose name states a figure ("18 Inch"): the name becomes a
+    statement of that figure with its span in the candidate's text; page statements that give the same value,
+    or whose passage names this option's value, are about this option; every other page statement of that
+    figure describes another size and is not put to this candidate's test. If no page statement is about this
+    option, the name stands alone and the check is unclear, with both shown: "option says 18 in; the page
+    describes 12, 16 and 24 in". Returns the figures with the name statements added."""
+    by_row = {}
+    for f in figures:
+        by_row.setdefault((f["store"], f["product_id"], f.get("variant_id")), []).append(f)
+    added = []
+    for row in pool:
+        key = (row["store"], row["product_id"], row.get("variant_id"))
+        for named in options.named_figures(row, sheet, spans.quote_numbers, rules.unit_name, spans.family_of):
+            mine = [f for f in by_row.get(key, []) if f["figure"] == named["figure"] and f.get("span_found_in_text")
+                    and f.get("number_in_quote") is not False and not f.get("disagree")]
+            value, about_this, others = named["value"], [], []
+            for f in mine:
+                numbers = [f.get("value")] if f.get("kind") == "single" else [f.get("low"), f.get("high")]
+                numbers = [n for n in numbers if isinstance(n, (int, float))]
+                same = (len(numbers) == 1 and abs(numbers[0] - value) < 1e-6) or \
+                    (len(numbers) == 2 and numbers[0] - 1e-6 <= value <= numbers[1] + 1e-6)
+                names_it = any(abs(n["value"] - value) < 1e-6 for n in spans.quote_numbers(f.get("quote") or ""))
+                (about_this if same or names_it else others).append(f)
+            text = row.get("text") or ""
+            other_sizes = {n["value"] for o in row.get("options") or [] if o.get("title") != named["quote"]
+                           for n in spans.quote_numbers(str(o.get("title") or ""))}
+            other_sizes |= {v for f in others for v in ([f.get("value")] if f.get("kind") == "single" else [f.get("low"), f.get("high")])
+                            if isinstance(v, (int, float))}
+            for f in about_this:
+                # the page's line for this option: from the matched statement to where the text turns to another
+                # size (the next number that names a different option), not the passage that lists every size
+                begin, end = f["start"], f["end"]
+                after = text[end:end + 140]
+                turn = next((n["start"] for n in spans.quote_numbers(after)
+                             if any(abs(n["value"] - v) < 1e-6 for v in other_sizes)), len(after))
+                # ... or where the list starts its next entry: a number followed by the same words as this one
+                shape = re.match(r"\s*\d[\d.,/]*\s*(?:\"|”|″)?\s*((?:[A-Za-z]+\s?){1,2})", text[begin:end])
+                if shape and shape.group(1).strip():
+                    again = re.search(r"\d[\d.,/]*\s*(?:\"|”|″)?\s*" + re.escape(shape.group(1).strip()), after)
+                    if again:
+                        turn = min(turn, again.start())
+                stop = after.find("\n", 0, turn)
+                line = (text[begin:end] + after[:stop if stop >= 0 else turn]).rstrip(" -–,;")
+                f.update(sentence=line, quote_in_sentence=[0, end - begin])
+                f["option_match"] = {"option": named["quote"], "line": line,
+                                     "why": "the option you would buy is %s; the page's line for it: %s" % (named["quote"], line)}
+            for f in others:
+                shown = "%g" % f["value"] if f.get("kind") == "single" else "%g to %g" % (f["low"], f["high"])
+                f["for_other_option"] = "describes another size (%s %s); this option is %s" % (shown, f.get("unit") or "", named["quote"])
+            statement = {"store": row["store"], "product_id": row["product_id"], "variant_id": row.get("variant_id"),
+                         "figure": named["figure"], "kind": "single", "value": value, "low": value, "high": value,
+                         "unit": named["unit"], "quote": named["quote"], "start": named["start"], "end": named["end"],
+                         "extractor": "code: the option's own name", "label": "Selected option",
+                         "span_found_in_text": rules.span_found(named, row.get("text")), "option_name": True}
+            if not about_this:
+                described = sorted({n for f in others for n in ([f.get("value")] if f.get("kind") == "single" else [f.get("low"), f.get("high")])
+                                    if isinstance(n, (int, float))})
+                statement["for_other_option"] = "option says %g %s; the page %s" % (
+                    value, named["unit"], ("describes " + ", ".join("%g" % n for n in described[:-1]) + (" and " if len(described) > 1 else "") +
+                                           "%g %s" % (described[-1], named["unit"])) if described else "does not describe it")
+            added.append((key, statement))
+    for key, statement in added:  # the name's statement comes first: its words explain an unclear check
+        figures.insert(0, statement)
+    return figures
+
+
 def _load_extras(pool, from_data):
     """Display-only material beside the figures: instruction-like passages found on pages (each a span of the
     page's text, checked again here) and the planted test page's own reading. None of it reaches the pick rule."""
@@ -269,9 +410,57 @@ def _load_extras(pool, from_data):
     return out
 
 
+def _apply_memory(sheet, strikes, pool):
+    """On a fresh start of a sheet (reset, use_sheet) the engine asks `signoff.memory.recall(sheet)`, if that
+    module is there, for what is remembered, and applies exactly two things:
+    - home measurements for the sheet's own shopper facts: the fact takes the remembered value and gains
+      `remembered: true`, `measured_by`, `measured_at` (a value outside the fact's range is not applied);
+    - earlier strikes by product key with their reasons, loaded as strikes with `from_memory: true`: they are
+      under the hash like any strike and are undone only by a signed unstrike.
+    Nothing else in the pick path reads memory. Memory never raises into the engine: a failure is named in
+    `degraded`. Returns what was applied and what was ignored, for the state."""
+    try:
+        from signoff import memory
+        recall = getattr(memory, "recall", None)
+        if recall is None:
+            return None
+        recalled = recall(copy.deepcopy(sheet)) or {}
+    except Exception as error:  # noqa: BLE001
+        health.note("memory", "what was remembered could not be read (%s); the sheet starts as on disk" % type(error).__name__)
+        return None
+    health.clear("memory")
+    out = {"facts": [], "strikes": [], "ignored": []}
+    facts = {f["id"]: f for f in sheet.get("shopper_facts") or []}
+    for item in recalled.get("facts") or []:
+        fact, value = facts.get(item.get("fact_id")), item.get("value")
+        if fact is None or isinstance(value, bool) or not isinstance(value, (int, float)) or \
+                not (fact.get("min", value) <= value <= fact.get("max", value)):
+            out["ignored"].append({"fact_id": item.get("fact_id"), "why": "not a measurement of this sheet, or outside its range"})
+            continue
+        fact.update(value=value, remembered=True, measured_by=item.get("measured_by"), measured_at=item.get("measured_at"))
+        out["facts"].append({"fact_id": fact["id"], "value": value, "measured_by": item.get("measured_by"),
+                             "measured_at": item.get("measured_at")})
+    lines = {line["id"] for line in sheet["lines"]}
+    for item in recalled.get("strikes") or []:
+        line_id, key = item.get("line_id"), item.get("product_key")
+        on_line = [l for l in ([line_id] if line_id in lines else sorted(lines))
+                   if any(p.get("product_key") == key and l in (p.get("line_ids") or []) for p in pool)]
+        if not key or not on_line:
+            out["ignored"].append({"product_key": key, "why": "no such product on this sheet's lines"})
+            continue
+        for l in on_line:
+            if not any(k["line_id"] == l and k["product_key"] == key for k in strikes):
+                strikes.append({"line_id": l, "product_key": key, "by": item.get("by") or "issuer",
+                                "reason": str(item.get("reason") or "").strip() or "struck earlier",
+                                "at": item.get("at") or _now(), "from_memory": True})
+                out["strikes"].append({"line_id": l, "product_key": key, "reason": item.get("reason")})
+    return out
+
+
 def _load(keep_changes=False):
     sheet_id = _s.get("sheet_id") or os.environ.get("SIGNOFF_SHEET") or "sheet1"
     _s["sheet_id"] = sheet_id
+    rules.declare_units(_read(SHEETS / (sheet_id + ".json")))  # before anything is prepared: units decide what a rival number is
     pool, answers = _load_pool()
     from_data = _has_data_pool() and not any(str(p["store"]).endswith(".example") for p in pool)
     wanted = {line["id"] for line in _read(SHEETS / (sheet_id + ".json"))["lines"]}
@@ -285,7 +474,57 @@ def _load(keep_changes=False):
         pool = mine if from_data else pool
     mode = "fixture" if not from_data else ("replay" if config.mode() == "replay" else "live")
     variants = _load_variants(pool, from_data)
-    _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data, variants), mode=mode, loaded=True,
+    figures = _load_figures(pool, from_data, variants)
+    sheet_now = _read(SHEETS / (sheet_id + ".json"))
+    names_on = from_data and os.environ.get("SIGNOFF_OPTION_NAMES") != "off"
+    second = _load_second(pool, from_data)
+    single = _option_names(pool, copy.deepcopy(figures), sheet_now) if names_on else copy.deepcopy(figures)
+    ref_index = {}
+    for f in figures:
+        if f.get("span_found_in_text") and f.get("number_in_quote") is not False:
+            ref_index.setdefault((f["store"], f["product_id"], f.get("variant_id"), f["figure"]), set()).update(_numbers(f))
+    wanted = os.environ.get("SIGNOFF_READERS") or DEFAULT_MODE
+    _s.setdefault("reading_mode", MODE_ALIASES.get(wanted, wanted) if MODE_ALIASES.get(wanted, wanted) in MODES else DEFAULT_MODE)
+    tally, strict_outcome = None, None
+
+    def under(strict):
+        made, counted = _require_agreement(copy.deepcopy(figures), second, strict)
+        return (_option_names(pool, made, sheet_now) if names_on else made), counted
+
+    if second is None:
+        if from_data and _s["reading_mode"] != "reference":
+            health.note("second reader", "the second reader's run is not on disk for this sheet; the reference reader decides alone")
+        figures = single
+    else:
+        health.clear("second reader")
+        strict_figures, strict_tally = under(True)
+        # what requiring agreement on everything does to this sheet, measured once on the sheet as on disk
+        a = rules.build_state(sheet_now, pool, single, answers, [], mode)
+        b = rules.build_state(sheet_now, pool, strict_figures, answers, [], mode)
+        pick = lambda st: {l["line_id"]: next(((c["id"], c["product"]["title"], c["product"]["price_cents"])  # noqa: E731
+                                              for c in l["candidates"] if c["picked"]), None) for l in st["lines"]}
+        status = lambda st: {c["id"]: c["status"] for l in st["lines"] for c in l["candidates"]}  # noqa: E731
+        pa, pb, sa, sb = pick(a), pick(b), status(a), status(b)
+        strict_outcome = {
+            "mode": "both must agree", "measured_on": "the sheet as on disk",
+            "real_disagreements_caught": strict_tally["disagreed"],
+            "figures_blocked_that_only_the_reference_found": strict_tally["only_reference"],
+            "figures_only_the_second_reader_found": strict_tally["only_second"], "figures_agreed": strict_tally["agreed"],
+            "candidates_changed": sum(1 for k in sb if sa.get(k) != sb[k]),
+            "moved_to_unclear": sum(1 for k in sb if sb[k] == "unclear" and sa.get(k) != "unclear"),
+            "picks_changed": [{"line_id": l, "one_reader": pa[l] and {"title": pa[l][1], "price_cents": pa[l][2]},
+                               "both_must_agree": pb[l] and {"title": pb[l][1], "price_cents": pb[l][2]}}
+                              for l in pb if (pa[l] or (None,))[0] != (pb[l] or (None,))[0]],
+            "total_cents_one_reader": a["total_cents"], "total_cents_both_must_agree": b["total_cents"]}
+        if _s["reading_mode"] == "both must agree":
+            figures, tally = strict_figures, strict_tally
+        elif _s["reading_mode"] == "disagreement blocks":
+            figures, tally = under(False)
+        else:
+            figures = single
+    _s["strict_outcome"] = strict_outcome
+    _s.update(figures_single=single, second=second, ref_index=ref_index, agreement=tally)
+    _s.update(pool=pool, answers=answers, figures=figures, mode=mode, loaded=True,
               readers=_load_readers(from_data), extras=_load_extras(pool, from_data),
               order=_load_order(sheet_id, from_data), variants=variants)
     if keep_changes and (_s.get("sheet") or {}).get("id") == sheet_id:
@@ -300,6 +539,8 @@ def _load(keep_changes=False):
     _s.update(sheet=sheet,
               strikes=_read(strikes_file) if strikes_file.exists() else [],
               seal=None, issuer_key={"enrolled": False, "key_id": None, "persona": None})
+    _s["memory"] = _apply_memory(sheet, _s["strikes"], _s["pool"])
+    _s["choices"] = {}  # a fresh run starts with the rule's picks
 
 
 def _limit(limit_id):
@@ -333,7 +574,8 @@ def _canonical_obj(state):
                            "terms": [t.get("figure") or "%s=%g" % (t["fact"], facts[t["fact"]]) for t in l["terms"]]})
         out = {"line_id": line["line_id"], "need": line["need"], "status": line["status"],
                "fulfilment": sheet_line.get("fulfilment"), "limits": limits,
-               "struck": sorted(s["product_key"] for s in line["struck"]), "pick": None}
+               "struck": sorted(s["product_key"] for s in line["struck"]), "pick": None,
+               "picked_by": line.get("picked_by")}
         pick = next((c for c in line["candidates"] if c["picked"]), None)
         if pick:
             p = pick["product"]
@@ -457,6 +699,36 @@ def _attach(state):
     held = _s.get("signing")
     if held and time.time() < held["until"]:
         state["signing"] = {"in_progress": True, "sheet_hash": held["sheet_hash"], "since": held["since"]}
+    second, ref_index = _s.get("second"), _s.get("ref_index") or {}
+    if second is not None:
+        ref_name = (_s.get("readers") or {}).get("reference") or "reference"
+        for line in state["lines"]:
+            for c in line["candidates"]:
+                p = c["product"]
+                for k in c["checks"]:
+                    for t in k["terms"]:
+                        if t.get("owner") == "store":
+                            key = (p["store"], p["product_id"], p["variant_id"], t["figure"])
+                            theirs = sorted(set().union(*[_numbers(o) for o in second[key]])) if second.get(key) else None
+                            k.setdefault("readers", {})[t["figure"]] = {
+                                ref_name: sorted(ref_index[key]) if key in ref_index else None, SECOND_READER: theirs}
+        summary = {"mode": _s.get("reading_mode"), "mode_text": MODES[_s.get("reading_mode", "reference")],
+                   "modes": MODES, "reference": ref_name, "second": SECOND_READER,
+                   "strict_mode_measured": _s.get("strict_outcome")}
+        if _s.get("reading_mode") != "reference" and _s.get("agreement"):
+            alone = rules.build_state(_s["sheet"], _s["pool"], _s["figures_single"], _s["answers"], _s["strikes"], _s["mode"])
+            was = {l["line_id"]: next((c for c in l["candidates"] if c["picked"]), None) for l in alone["lines"]}
+            now = {l["line_id"]: next((c for c in l["candidates"] if c["picked"]), None) for l in state["lines"]}
+            brief = lambda c: c and {"title": c["product"]["title"], "store": c["product"]["store"],  # noqa: E731
+                                     "price_cents": c["product"]["price_cents"]}
+            status_was = {c["id"]: c["status"] for l in alone["lines"] for c in l["candidates"]}
+            summary.update(figures_agreed=_s["agreement"]["agreed"], figures_disagreed=_s["agreement"]["disagreed"],
+                           only_reference_found=_s["agreement"]["only_reference"], only_second_found=_s["agreement"]["only_second"],
+                           picks_changed=[{"line_id": l, "one_reader": brief(was[l]), "this_mode": brief(now[l])}
+                                          for l in now if (was[l] or {}).get("id") != (now[l] or {}).get("id")],
+                           candidates_changed=sum(1 for l in state["lines"] for c in l["candidates"]
+                                                  if status_was.get(c["id"]) != c["status"]))
+        state["two_readers"] = summary
     tally = {"inside": 0, "outside": 0, "unclear": 0, "not_stated": 0, "struck": 0}
     for line in state["lines"]:
         mine = {k: 0 for k in tally}
@@ -466,6 +738,8 @@ def _attach(state):
         line["why"].update(outside=mine["outside"], unclear=mine["unclear"], not_stated=mine["not_stated"])
     state["counts"].update(candidates=sum(tally.values()), outside=tally["outside"], unclear=tally["unclear"],
                            not_stated=tally["not_stated"])
+    if _s.get("memory"):
+        state["memory"] = _s["memory"]  # what was applied from memory at the start of this run, and what was ignored
     state["degraded"] = health.all()  # every fallback in use is named here; empty when all is well
     try:
         state["receipts"] = receipts.summary()
@@ -482,9 +756,47 @@ def _attach(state):
     return state
 
 
+def _apply_choices(state):
+    """The shopper may choose any candidate that passes; taste is hers, the limits are not. The sheet's pick rule
+    stays the default (`picked_by: "rule"`). A choice holds only while its product is inside every limit and not
+    struck: when a change puts it outside, the choice is dropped, the rule's pick stands again, and the line says so."""
+    choices = _s.setdefault("choices", {})
+    wanted = {l["id"]: l.get("quantity", 1) for l in _s["sheet"]["lines"]}
+    for line in state["lines"]:
+        line["picked_by"] = "rule" if line["pick"] else None
+        chosen_id = choices.get(line["line_id"])
+        if not chosen_id:
+            continue
+        chosen = next((c for c in line["candidates"] if c["id"] == chosen_id), None)
+        if chosen is None or chosen["status"] != "inside":
+            was = chosen["product"]["title"] if chosen else chosen_id
+            why = (chosen["reason"] or chosen["status"]) if chosen else "it is no longer among the candidates"
+            choices.pop(line["line_id"], None)
+            line["choice_dropped"] = {"candidate_id": chosen_id, "title": was,
+                                      "why": "the product chosen is no longer inside the limits (%s); the rule's pick stands" % why}
+            receipts.append("shopper_choice_dropped", "system", None, {"line_id": line["line_id"], "candidate_id": chosen_id},
+                            {"line_id": line["line_id"], "why": why})
+            continue
+        for c in line["candidates"]:
+            c["picked"] = c["id"] == chosen_id
+        t = sorted(chosen["checks"], key=lambda k: k["margin"])[0]
+        line.update(pick=chosen_id, picked_by="shopper", tightest={
+            "limit_id": t["limit_id"], "name": t["name"], "margin": t["margin"], "unit": t["bound"]["unit"],
+            "text": "matches exactly" if t["op"] == "==" else "nothing to spare" if t["margin"] == 0
+            else "%g %s to spare" % (t["margin"], t["bound"]["unit"])})
+        line["why"]["pick_price_cents"] = chosen["product"]["price_cents"]
+        if line["status"] == "open":  # the rule found nothing it could pick; the shopper chose one that passes
+            line.update(status="next_candidate" if line["struck"] else "ready", reason=None)
+    state["total_cents"] = sum(c["product"]["price_cents"] * wanted[l["line_id"]] for l in state["lines"] for c in l["candidates"]
+                               if c["picked"] and l["status"] in ("ready", "next_candidate"))
+    state["counts"]["lines_ready"] = sum(1 for l in state["lines"] if l["status"] in ("ready", "next_candidate"))
+    return state
+
+
 def _recompute(record=True, why="load"):
     started = time.perf_counter()
     state = rules.build_state(_s["sheet"], _s["pool"], _s["figures"], _s["answers"], _s["strikes"], _s["mode"])
+    state = _apply_choices(state)
     _s["version"] += 1
     state["version"] = _s["version"]
     _s["state"] = _attach(state)
@@ -618,6 +930,34 @@ def set_shopper_fact(fact_id, value) -> dict:
         return _recompute(why="shopper_fact")
 
 
+def set_shopper_choice(line_id, candidate_id) -> dict:
+    """Not in the contract's list: the shopper chooses a candidate that passes, or (`None`) returns to the rule.
+    Unsigned, hers. Refused for a candidate that is outside, unclear, not stated or struck: she cannot choose
+    past a limit. The canonical sheet says who picked, so the approver signs her choice knowingly."""
+    with _lock:
+        _ensure()
+        _open_for_changes()
+        line = next((l for l in _s["state"]["lines"] if l["line_id"] == line_id), None)
+        if line is None:
+            raise EngineError("no line %r on this sheet" % (line_id,), 404)
+        choices = _s.setdefault("choices", {})
+        if candidate_id is None:
+            was = choices.pop(line_id, None)
+            receipts.append("shopper_choice", "shopper", None, {"line_id": line_id, "candidate_id": None},
+                            {"line_id": line_id, "from": was, "to": "the rule's pick"})
+            return _recompute(why="shopper_choice")
+        chosen = next((c for c in line["candidates"] if c["id"] == candidate_id), None)
+        if chosen is None:
+            raise EngineError("no candidate %r on line %s" % (candidate_id, line_id), 404)
+        if chosen["status"] != "inside":
+            raise EngineError("that product cannot be chosen: it is %s%s" % (
+                chosen["status"].replace("_", " "), (" (%s)" % chosen["reason"]) if chosen["reason"] else ""), 409)
+        choices[line_id] = candidate_id
+        receipts.append("shopper_choice", "shopper", None, {"line_id": line_id, "candidate_id": candidate_id},
+                        {"line_id": line_id, "title": chosen["product"]["title"], "price_cents": chosen["product"]["price_cents"]})
+        return _recompute(why="shopper_choice")
+
+
 def canonical_sheet() -> str:
     with _lock:
         _ensure()
@@ -719,10 +1059,28 @@ def set_senso(checks: list) -> dict:
         return _recompute(record=False, why="set_senso")
 
 
-def set_reader(name=None) -> dict:
+def set_reading_mode(mode: str) -> dict:
+    """Not in the contract's list: how the second reader is used. One of `reference`, `disagreement blocks`
+    (the default) and `both must agree` (the strict mode a gate switches on). The state's `two_readers` says
+    which is on, what it blocks now, and what the strict mode was measured to do."""
+    with _lock:
+        _ensure()
+        _open_for_changes()
+        mode = MODE_ALIASES.get(str(mode), str(mode))
+        if mode not in MODES:
+            raise EngineError("reading mode %r is not one of: %s" % (mode, ", ".join(MODES)))
+        was, _s["reading_mode"] = _s.get("reading_mode"), mode
+        _load(keep_changes=True)
+        receipts.append("reading_mode", "system", None, {"mode": mode}, {"from": was, "to": mode})
+        return _recompute(why="reading_mode")
+
+
+def set_reader(name=None, mode=None) -> dict:
     """Not in the contract's list: which reader's figures count. `None` is the default (the reference reader's,
     as combined in data/figures/); a name such as "sie:Qwen/Qwen3.8-27B-FP8" uses that reader's own run. For the
     reader gate: the outcome to compare is `readers` in the state (agreement with the reference)."""
+    if mode is not None:
+        return set_reading_mode(mode)
     with _lock:
         _ensure()
         _open_for_changes()

@@ -30,14 +30,23 @@ DECLARED = {}  # units a sheet declares itself: {name: [spellings]}; each is its
 
 def declare_units(sheet):
     """A sheet may name its own units and how stores spell them (`"units": {"dB": ["db", "decibels"], ...}`), so a
-    new sheet needs no change here. The table above stays as the default for units a sheet does not declare."""
+    new sheet needs no change here. The table above stays as the default for units a sheet does not declare.
+    The units of the sheet declared before are taken out first: one sheet's units never linger into another's."""
+    for name, spellings in list(DECLARED.items()):
+        for spelling in spellings:
+            if ALIASES.get(spelling) == name and spelling not in _BUILT_IN:
+                ALIASES.pop(spelling, None)
+        if name not in _BUILT_IN_FAMILY:
+            FAMILY.pop(name, None)
+        DECLARED.pop(name, None)
     for name, spellings in (sheet.get("units") or {}).items():
         DECLARED[name] = sorted({str(x).lower() for x in list(spellings) + [name]}, key=len, reverse=True)
         for spelling in DECLARED[name]:
-            ALIASES[spelling] = name
+            ALIASES.setdefault(spelling, name) if spelling in _BUILT_IN else ALIASES.__setitem__(spelling, name)
         FAMILY.setdefault(name, name)
 
 
+_BUILT_IN, _BUILT_IN_FAMILY = frozenset(ALIASES), frozenset(FAMILY)
 OPS = (">=", "<=", "==")
 PICK_RULES = ("cheapest_with_delivery_time", "cheapest")
 
@@ -152,6 +161,8 @@ def comparable(fig, limit_unit, unit_required=True):
     if fig.get("kind") not in ("single", "spread", "adjustable") or \
             any(not isinstance(v, (int, float)) or isinstance(v, bool) for v in numbers):
         return "stated without a number code can compare"
+    if fig.get("disagree"):
+        return fig["disagree"]  # the two readers do not report the same value for it
     if fig.get("for_other_option"):
         return fig["for_other_option"]
     if unit_name(fig.get("unit")) is None:
@@ -225,6 +236,10 @@ def check(limit, product, figs, facts, sheet):
             terms.append(term)
             continue
         values, source = [], {}
+        usable.sort(key=lambda f: bool(f.get("option_name")))  # where the page and the option's name agree, the page's words are shown
+        first = usable[0]
+        term.update(kind=first.get("kind"), low=first.get("low"), high=first.get("high"), quote=first.get("quote"),
+                    start=first.get("start"), end=first.get("end"))
         for f in usable:
             for v in tested_values(f, op, alone):
                 if not any(abs(v - w) < 1e-9 for w in values):
@@ -247,6 +262,8 @@ def check(limit, product, figs, facts, sheet):
                         start=f.get("start"), end=f.get("end"), unit=f.get("unit") or term["unit"])
             if f.get("sentence"):
                 term.update(sentence=f["sentence"], quote_in_sentence=f["quote_in_sentence"])
+            if f.get("option_match"):
+                term["option_match"] = f["option_match"]  # which of the page's statements was matched to this option, and why
 
     out = {"limit_id": limit["id"], "name": limit["name"], "terms": terms, "op": op, "bound": bound}
     if missing:

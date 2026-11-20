@@ -32,3 +32,39 @@ def expand(rows):
                             text=base + ("\nSelected option: %s." % title if named else ""),
                             options_on_sale=len(options)))
     return out
+
+
+def named_figures(row, sheet, quote_numbers, unit_name, family_of):
+    """What an option's own name states: `[{figure, value, unit, quote, start, end}]`.
+
+    An option is named by the store ("18 Inch", "12\" / Polished", "24 Pack"). A number in that name with a unit
+    states a figure when exactly one figure asked of the candidate's lines is measured in that kind of unit;
+    with none or several, the name is not read as a figure. The quote is the option's name as it stands in the
+    candidate's own text (its last line), so it has a span like any other statement."""
+    title = str(row.get("variant_title") or "")
+    text = row.get("text") or ""
+    if row.get("options_on_sale", 1) <= 1 or not title or not text.rstrip(".").endswith(title):
+        return []
+    at = text.rstrip(".").rfind(title)
+    asked = {}
+    for line in sheet["lines"]:
+        if line["id"] in (row.get("line_ids") or []):
+            for limit in line["limits"]:
+                for term in limit["terms"]:
+                    if term["source"] == "store":
+                        asked.setdefault(family_of(limit["unit"]), {})[term["figure"]] = limit["unit"]
+    out = []
+    for n in quote_numbers(title):
+        figures = asked.get(n["family"]) if n["family"] not in (None, "other unit") else None
+        if not figures or len(figures) != 1:
+            continue
+        figure, unit = next(iter(figures.items()))
+        written = title[n["end"]:].lstrip(" -")
+        stated_unit = unit_name(written.split()[0].strip(".,/")) if written.split() else None
+        if stated_unit is None:
+            stated_unit = unit_name(written[:1])  # a mark such as "
+        if stated_unit != unit_name(unit):
+            continue  # stated in another unit of the same kind: left to the page's own statements
+        out.append({"figure": figure, "value": n["value"], "unit": unit_name(unit), "quote": title,
+                    "start": at, "end": at + len(title)})
+    return out
