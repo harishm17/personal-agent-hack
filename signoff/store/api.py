@@ -26,16 +26,18 @@ def _engine_state() -> dict | None:
 
 
 @router.get("/api/sql/passing-box")
-def passing_box(line_id: str):
+def passing_box(line_id: str, source: str = "direct"):
     from signoff.store import sheetctx
     sheet_lines = {l["id"] for l in sheetctx.sheet()["lines"]}
     if line_id not in sheet_lines:
         raise HTTPException(404, "unknown line_id")
+    if source not in ("direct", "airbyte"):
+        raise HTTPException(422, "source is direct or airbyte")
     state = _engine_state()
     try:
         if state:  # make the tables match what the engine shows now, so the two sets cannot differ
             records.write_sync(state)
-        return passing.passing_box(line_id)
+        return passing.passing_box(line_id, source)
     except Exception as e:  # noqa: BLE001
         raise HTTPException(503, "SingleStore unavailable: " + type(e).__name__)
 
