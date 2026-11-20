@@ -47,7 +47,7 @@ def memory():
         group["owner_name"] = group["owner_name"] or row.get("owner_name")
         group["rows"].append(row)
         kinds[row["kind"]] = kinds.get(row["kind"], 0) + 1
-    return {"read_from": held["read_from"], "database": held["database"], "mirror": held["mirror"],
+    return {"read_from": held["read_from"], "read_at": held["read_at"], "database": held["database"], "mirror": held["mirror"],
             "counts": {"rows": len(held["rows"]), "proved": sum(1 for r in held["rows"] if r["proved"]),
                        "not_proved": sum(1 for r in held["rows"] if not r["proved"]), "by_kind": kinds,
                        "on_shelf": len(on_shelf), "records_refused": len(held["not_memories"])},

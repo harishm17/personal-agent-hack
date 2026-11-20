@@ -4,10 +4,12 @@ A row is `{id, owner, kind, key, value, text, source, created_at, sheet_id}` (+ 
 `write()` is the only way in, and it accepts a row only when the record its `source` names proves exactly that
 row. A row that reached a table some other way is never recalled: every read is checked against the records again.
 """
+import datetime
 import json
 import os
 import pathlib
 import threading
+import time
 
 from signoff.memory import sources
 from signoff.memory.sources import Refused
@@ -169,17 +171,30 @@ def sync(database=False) -> dict:
     return dict(derived, kept=keep(derived["memories"], database=database))
 
 
+_read = {"key": None, "at": 0.0, "rows": None, "read_from": None}
+FRESH_S = 10.0
+
+
 def read() -> dict:
     """Every stored row, each marked `proved` (a record on disk still proves it). Rows come from SingleStore; if it
-    cannot be reached they come from the mirror, and `read_from` says so."""
-    derived = sync(database=True)
+    cannot be reached they come from the mirror, and `read_from` says so. The database is asked again when the
+    records prove something new, and otherwise at most every ten seconds (`read_at` is the time of the last asking)."""
+    derived = sources.derive()
     proved = {m["id"]: m for m in derived["memories"]}
-    try:
-        rows, read_from = db_rows(), "singlestore"
-    except Exception:  # noqa: BLE001
-        rows, read_from = mirror_rows(), "mirror (database not reached: %s)" % _db["error"]
+    key = (table(), str(mirror_file()), db_off(), frozenset(proved))
+    with _lock:
+        if _read["key"] != key or time.time() - _read["at"] > FRESH_S:
+            keep(derived["memories"], database=True)
+            try:
+                rows, read_from = db_rows(), "singlestore"
+            except Exception:  # noqa: BLE001
+                rows, read_from = mirror_rows(), "mirror (database not reached: %s)" % _db["error"]
+            _read.update(key=key, at=time.time(), rows=rows, read_from=read_from)
+        rows = [dict(r) for r in _read["rows"]]
+        read_from, read_at = _read["read_from"], _read["at"]
     for row in rows:
         mine = proved.get(row.get("id"))
         row["proved"] = bool(mine) and all(mine[k] == row.get(k) for k in OWNED)
-    return {"rows": rows, "read_from": read_from, "database": db_status(), "mirror": {"file": sources._rel(mirror_file()),
-            "rows": len(mirror_rows())}, "not_memories": derived["not_memories"]}
+    return {"rows": rows, "read_from": read_from, "read_at": datetime.datetime.fromtimestamp(read_at).astimezone().isoformat(timespec="seconds"),
+            "database": db_status(), "mirror": {"file": sources._rel(mirror_file()), "rows": len(mirror_rows())},
+            "not_memories": derived["not_memories"]}
