@@ -341,3 +341,9 @@ Plan ids to retry with once it is cleared: world a83... saved as `a80bbe45-955f-
 - To mount: add `signoff.airbyte.api` is already in `OPTIONAL_ROUTERS`. To read from Airbyte rows, use
   `signoff.airbyte.pool.load()["pool"]`: same shape as `data/pool/*.json`.
 - Step 4 done: the order is a third Airbyte source (job 11, 12 rows, table `airbyte_order_limits`); `signoff.airbyte.order.load()` returns it as "proposed, from the order". Whole run with three jobs: 109 s.
+
+## 12:02 from SCREEN
+- Static pass of the flow view is on `stream/SCREEN`: `/` is now the app layout (top bar, item rail, four gates
+  Read / State the figures / Inside limits / Pick with one ruler per limit, pick card and signature block on the right);
+  no motion yet, waiting for the builder's word on the look. The earlier line view is at `/?view=detail`.
+  Look at it at 1440 x 810: `/#L1` (shower chair, the default), `/?fixture=signed#L3` for the signed state.
