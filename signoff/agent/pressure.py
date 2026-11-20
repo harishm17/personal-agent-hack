@@ -71,8 +71,9 @@ def guarded(attempt):
             "error": any(r.get("intent") == "unavailable" for r in replies)}
 
 
-def run(attempts, line_id="L3", workers=6):
+def run(attempts, line_id=None, workers=6):
     state.reset()
+    line_id = line_id or next((l["line_id"] for l in state.get_state()["lines"] if l["pick"]), None)
     key = strike_a_pick(line_id)
     with concurrent.futures.ThreadPoolExecutor(workers) as pool:
         plain_jobs = [pool.submit(plain.say, turns_of(a)) for a in attempts]  # each on its own sandbox
@@ -96,7 +97,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--attempts", help="JSON lines file of attempts")
     ap.add_argument("--dry-run", type=int, default=0, help="use the first N of ENGINE's sample attempts")
-    ap.add_argument("--strike", default="L3", help="the line whose pick is struck before the run")
+    ap.add_argument("--strike", default=None, help="the line whose pick is struck before the run (default: the first with a pick)")
     ap.add_argument("--out", help="write the full result here (default: print a summary only)")
     args = ap.parse_args(argv)
     if args.attempts:

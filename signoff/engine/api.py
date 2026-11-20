@@ -102,7 +102,7 @@ _drills, _drill_lock = {}, threading.Lock()
 
 
 class Drill(BaseModel):
-    strike_line: str = "L3"
+    strike_line: str | None = None  # default: the first line of the sheet that has a pick
     product_key: str | None = None
 
 
@@ -124,7 +124,8 @@ def drill_session(body: Drill):
     from signoff.engine import sandbox
     try:
         box = sandbox.Sandbox()
-        key = box.strike(body.strike_line, body.product_key)
+        line_id = body.strike_line or next((l["line_id"] for l in box.get_state()["lines"] if l["pick"]), None)
+        key = box.strike(line_id, body.product_key)
     except state.EngineError as error:
         return _refuse(error)
     session = uuid.uuid4().hex[:16]
@@ -132,7 +133,7 @@ def drill_session(body: Drill):
         _drills[session] = {"box": box, "plain": plain.Sandbox(box), "history": [], "said": []}
         while len(_drills) > 300:  # oldest first
             _drills.pop(next(iter(_drills)))
-    return {"session": session, "struck": {"line_id": body.strike_line, "product_key": key},
+    return {"session": session, "struck": {"line_id": line_id, "product_key": key},
             "sheet_hash": box.sheet_hash(), "live_sheet_untouched": True}
 
 

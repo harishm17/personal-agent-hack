@@ -16,6 +16,7 @@ import concurrent.futures
 import datetime
 import hashlib
 import json
+import os
 import pathlib
 import sys
 
@@ -58,8 +59,16 @@ def read_reply(row, sheet, model):
     return out
 
 
-def run(model, replies=REPLIES, out=OUT, workers=8, force=False):
-    sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+def dirs(sheet_id):
+    """(replies, output) of a sheet: the STORE stream's replies and where their readings are cached."""
+    if sheet_id == "sheet1":
+        return REPLIES, OUT
+    return ROOT / "data" / sheet_id / "store_answers" / "asked", ROOT / "data" / "figures" / sheet_id / "_asked"
+
+
+def run(model, replies=None, out=None, workers=8, force=False, sheet_id="sheet1"):
+    sheet = json.loads((ROOT / "sheets" / (sheet_id + ".json")).read_text())
+    replies, out = replies or dirs(sheet_id)[0], out or dirs(sheet_id)[1]
     out = pathlib.Path(out)
     out.mkdir(parents=True, exist_ok=True)
     summary = {"replies": 0, "read_now": 0, "about_a_figure": 0, "answered": 0, "errors": []}
@@ -90,12 +99,13 @@ def run(model, replies=REPLIES, out=OUT, workers=8, force=False):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--replies", default=str(REPLIES))
-    ap.add_argument("--out", default=str(OUT))
+    ap.add_argument("--sheet", default=os.environ.get("SIGNOFF_SHEET") or "sheet1")
+    ap.add_argument("--replies", default=None)
+    ap.add_argument("--out", default=None)
     ap.add_argument("--model", default=config.env("SIGNOFF_READER_MODEL") or reader.DEFAULT_MODEL)
     ap.add_argument("--force", action="store_true")
     args = ap.parse_args(argv)
-    summary = run(args.model, args.replies, args.out, force=args.force)
+    summary = run(args.model, args.replies, args.out, force=args.force, sheet_id=args.sheet)
     print(json.dumps(summary))
     return 0
 

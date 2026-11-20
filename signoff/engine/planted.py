@@ -7,7 +7,9 @@ is structure, not a filter on wording:
   the pick rule: `candidate()` works it out on the side, and the lines, picks, hash and total are computed
   from the pool without it (tests/engine/test_planted.py proves they are identical with and without);
 - a cart is created only from a signed sheet's picks, and this page is never a pick.
-Turn it off with SIGNOFF_PLANTED=off.
+Off by default: a staged page proves less than a scan of the real ones, which is what the state shows
+(`instruction_scan`). SIGNOFF_PLANTED=1 puts this page into sheet 1's state; the test that picks, hash and
+total are identical with and without it is the evidence that matters.
 """
 import pathlib
 
@@ -40,7 +42,8 @@ PRODUCT = {
 def candidate(sheet, figures, instructions, answers):
     """The page's decision record, made by the same check code as every candidate, plus the `planted` summary.
     It is built from a one-page pool of its own, so nothing here can reach a line's candidates or its pick."""
-    if not any(line["id"] == LINE_ID for line in sheet["lines"]) or PRODUCT["store"] in sheet.get("stores", []):
+    if sheet.get("id") != "sheet1" or not any(line["id"] == LINE_ID for line in sheet["lines"]) or \
+            PRODUCT["store"] in sheet.get("stores", []):
         return None
     for f in figures:
         f["span_found_in_text"] = rules.span_found(f, PRODUCT["text"])

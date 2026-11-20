@@ -1,6 +1,6 @@
-"""Candidate pool of bathroom fixtures, fetched once: data/sheet2/bathroom/pool/<store>.json (same shape as data/pool, plus
-`variants` and `variant_title`), raw replies in data/sheet2/bathroom/pool/raw/, each store agent's delivery and returns answer in
-data/sheet2/bathroom/store_answers/. The cookware pool (the engine's sheet2 test reads it) stays in data/sheet2/pool/.
+"""Sheet 2 pool (the plumber's fixture list: toilets, sink faucets, shower heads, vanities), fetched once:
+data/sheet2/pool/<store>.json (same shape as data/pool, plus `variants` and `variant_title`), raw replies in
+data/sheet2/pool/raw/, each store agent's delivery and returns answer in data/sheet2/store_answers/.
 Never calls a cart or checkout tool.
 
 Run: uv run python -m signoff.store.sheet2 [fetch|build|ask]   (no argument: all three)
@@ -16,9 +16,9 @@ import time
 from signoff.store import ask, build_pool, replay, ucp
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
-OUT = ROOT / "data" / "sheet2" / "bathroom" / "pool"
+OUT = ROOT / "data" / "sheet2" / "pool"
 RAW = OUT / "raw"
-ANSWERS = ROOT / "data" / "sheet2" / "bathroom" / "store_answers"
+ANSWERS = ROOT / "data" / "sheet2" / "store_answers"
 STORES = ["swissmadison.com", "horow.com", "deervalleybath.com", "kingstonbrass.com"]
 LINES = {  # line id -> (queries, title must match, title must not match)
     "T1": (["toilet", "one piece toilet", "10 inch rough in toilet"], r"toilet|commode|water closet",

@@ -2,6 +2,8 @@
 import json
 import pathlib
 
+from signoff.store import sheetctx
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 
 
@@ -13,9 +15,11 @@ def _read_all(folder: pathlib.Path) -> list:
     return out
 
 
-def load() -> tuple[list, list]:
-    pool = _read_all(ROOT / "data" / "pool")
-    answers = _read_all(ROOT / "data" / "store_answers") if (ROOT / "data" / "store_answers").exists() else []
+def load(sheet_id: str | None = None) -> tuple[list, list]:
+    """(pool, store answers) of the active sheet from data/, falling back to fixtures/."""
+    pool_dir, ans_dir = sheetctx.pool_dir(sheet_id), sheetctx.answers_dir(sheet_id)
+    pool = _read_all(pool_dir) if pool_dir.exists() else []
+    answers = _read_all(ans_dir) if ans_dir.exists() else []
     if not pool:
         pool = json.loads((ROOT / "fixtures" / "pool.json").read_text())
     if not answers:

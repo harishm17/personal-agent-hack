@@ -26,6 +26,15 @@ def _shopper_values(state: dict) -> dict:
     return {f["id"]: f["value"] for f in state["sheet"].get("shopper_facts", [])}
 
 
+def _unit(u):
+    """The engine's own unit name (so "inch" and "in" are one unit in the tables), else the unit as written."""
+    try:
+        from signoff.engine import rules
+        return rules.unit_name(u) or u
+    except Exception:  # noqa: BLE001
+        return u
+
+
 def limit_rows(state: dict) -> list[tuple]:
     facts, rows = _shopper_values(state), []
     for line in state["sheet"]["lines"]:
@@ -35,7 +44,7 @@ def limit_rows(state: dict) -> list[tuple]:
             b = lim["bound"]
             bound = b["value"] if b["source"] == "issuer" else facts[b["fact"]]
             rows.append((lim["id"], line["id"], lim["name"], lim["op"], store[0] if store else None, shopper, bound,
-                         lim.get("unit"), state["version"]))
+                         _unit(lim.get("unit")), state["version"]))
     return rows
 
 
@@ -92,7 +101,7 @@ def _write_now_locked(state: dict) -> None:
                         continue
                     figs[key] = (rank, (
                         f["store"], f["product_id"], f["figure"], f["kind"], f.get("value"), f.get("low"), f.get("high"),
-                        f.get("unit"), f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
+                        _unit(f.get("unit")), f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
                         1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0))
                 pr = cand["product"]
                 decisions.append((state["version"], cand["id"], line["line_id"], pr["store"], pr["product_id"],

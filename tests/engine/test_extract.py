@@ -236,3 +236,20 @@ def test_a_figure_the_text_ties_to_another_option_is_unsure_and_several_options_
     assert spans.apply_option_rule(plain, variant) is False and "unsure" not in plain
     words = {"variant_title": "18 Inch", "option_labels": ["18 Inch"], "other_option_labels": ["12 Inch", "24 Inch"]}
     assert spans.apply_option_rule({"figure": "weight_capacity", "quote": "500 Pounds (24”)", "value": 500}, words) is True
+
+
+def test_a_dual_flush_page_reads_as_two_numbers_and_the_full_flush_cannot_be_dropped():
+    text = "Toilet. Dual Flush 1.1/1.6 GPF. 12\" rough-in. Flow 1.2 GPM at 60 PSI."
+    page = {"store": "s", "product_id": "p", "text": text}
+    both = spans.finish({"figure": "flush_volume", "kind": "spread", "low": 1.1, "high": 1.6, "unit": "GPF",
+                         "quote": "Dual Flush 1.1/1.6 GPF"}, page, "any", target_unit="gpf")
+    assert (both["kind"], both["low"], both["high"], both["unit"]) == ("spread", 1.1, 1.6, "gpf") and "unsure" not in both
+    light = spans.finish({"figure": "flush_volume", "kind": "single", "value": 1.1, "unit": "gpf",
+                          "quote": "Dual Flush 1.1/1.6 GPF"}, page, "any", target_unit="gpf")
+    assert light["unsure"] and "several numbers" in light["unsure_reason"]  # the 1.6 is a rival: no label, no count
+    flow = spans.finish({"figure": "flow_rate", "kind": "single", "value": 1.2, "unit": "GPM",
+                         "quote": "Flow 1.2 GPM at 60 PSI"}, page, "any", target_unit="gpm")
+    assert flow["unit"] == "gpm" and "unsure" not in flow  # 60 PSI is another kind of unit, not a rival
+    litres = spans.finish({"figure": "flush_volume", "kind": "single", "value": 4.8, "unit": "Lpf", "quote": "4.8 Lpf"},
+                          {"store": "s", "product_id": "p", "text": "Uses 4.8 Lpf."}, "any", target_unit="gpf")
+    assert litres["value"] == 1.27 and litres["stated_unit"] == "Lpf"
