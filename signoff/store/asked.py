@@ -14,17 +14,21 @@ import threading
 import time
 
 from signoff import config
-from signoff.store import ucp
+from signoff.store import sheetctx, ucp
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
-CACHE = ROOT / "data" / "store_answers" / "asked"
+CACHE = None  # None: the active sheet's folder (sheetctx.asked_dir); tests may set a folder
 SPACING_SECONDS = 0.8
 _lock = threading.Lock()
 
 FIGURE_WORDS = {"weight_capacity": "weight capacity", "added_height": "added height", "seat_height": "seat height",
-                "overall_width": "overall width", "length": "length",
-                "mattress_thickness_max": "maximum mattress thickness"}
-UNIT_WORDS = {"lb": "pounds", "in": "inches"}
+                "overall_width": "overall width", "length": "length", "mattress_thickness_max": "maximum mattress thickness",
+                "rough_in": "rough-in", "flush_volume": "flush volume", "flow_rate": "water flow rate"}
+UNIT_WORDS = {"lb": "pounds", "in": "inches", "gpf": "gallons per flush", "gpm": "gallons per minute"}
+
+
+def _cache_dir() -> pathlib.Path:
+    return CACHE if CACHE is not None else sheetctx.asked_dir()
 RETURNS_FIGURE = "returns_and_delivery"
 
 
@@ -50,8 +54,11 @@ def sheet_values(sheet: dict) -> set[float]:
     return vals
 
 
-def leaks(question: str, sheet: dict) -> list[float]:
-    """The sheet values that appear as a number in `question` (empty list = clean)."""
+def leaks(question: str, sheet: dict, title: str | None = None) -> list[float]:
+    """The sheet values that appear as a number in `question` (empty list = clean). The product's own title is the store's
+    words, not ours, so it is left out of the check (a page named "10-Inch Rough-In" tells the store nothing new)."""
+    if title:
+        question = question.replace(clean_title(title), "")
     found = []
     for tok in re.findall(r"(?<![\w.])\d+(?:\.\d+)?(?![\w])", question):
         if float(tok) in sheet_values(sheet):
@@ -67,7 +74,9 @@ def plan(state: dict, sheet: dict, per_line_not_stated: int = 3) -> list[dict]:
     for line in state["lines"]:
         local = next((l for l in sheet["lines"] if l["id"] == line["line_id"]), {}).get("fulfilment") == "pick_up_locally"
         cands = line["candidates"]
-        eligible = sorted((c for c in cands if c["status"] == "inside" and (local or c["arrival"]["status"] == "stated")),
+        need_delivery = "delivery" in (sheet.get("pick_rule") or {}).get("id", "delivery")  # sheet 2's rule is plain "cheapest"
+        eligible = sorted((c for c in cands if c["status"] == "inside"
+                           and (local or not need_delivery or c["arrival"]["status"] == "stated")),
                           key=lambda c: (c["product"]["price_cents"], c["id"]))
         targets = []
         for role, c in zip(("pick", "runner_up"), eligible[:2]):
@@ -87,8 +96,8 @@ def plan(state: dict, sheet: dict, per_line_not_stated: int = 3) -> list[dict]:
             for figure, unit in items:
                 p = c["product"]
                 q = returns_question(p["title"]) if figure == RETURNS_FIGURE else figure_question(p["title"], figure, unit or "")
-                if leaks(q, sheet):
-                    out.append({"skipped": "title contains a sheet value", "store": p["store"], "product_id": p["product_id"],
+                if leaks(q, sheet, p["title"]):
+                    out.append({"skipped": "the question template contains a sheet value", "store": p["store"], "product_id": p["product_id"],
                                 "line_id": line["line_id"], "role": role, "title": p["title"]})
                     continue
                 out.append({"line_id": line["line_id"], "role": role, "store": p["store"], "product_id": p["product_id"],
@@ -98,11 +107,11 @@ def plan(state: dict, sheet: dict, per_line_not_stated: int = 3) -> list[dict]:
 
 
 def _file(store: str) -> pathlib.Path:
-    return CACHE / f"{store}.json"
+    return _cache_dir() / f"{store}.json"
 
 
 def load(store: str | None = None) -> list[dict]:
-    files = [_file(store)] if store else sorted(CACHE.glob("*.json"))
+    files = [_file(store)] if store else sorted(_cache_dir().glob("*.json"))
     out: list = []
     for f in files:
         if f.exists():
@@ -116,7 +125,7 @@ def cached(store: str, product_id: str, question: str) -> dict | None:
 
 def _save(rec: dict) -> None:
     with _lock:
-        CACHE.mkdir(parents=True, exist_ok=True)
+        _cache_dir().mkdir(parents=True, exist_ok=True)
         rows = load(rec["store"])
         rows.append(rec)
         _file(rec["store"]).write_text(json.dumps(rows, indent=1, ensure_ascii=False))
@@ -127,7 +136,7 @@ def ask_one(target: dict) -> dict | None:
     hit = cached(target["store"], target["product_id"], target["question"])
     if hit or config.mode() == "replay":
         return hit
-    r = ucp.ask_business(target["store"], target["question"])
+    r = ucp.ask_business(target["store"], target["question"], mask=[clean_title(target["title"])])
     reply = (r.get("answer") or {}).get("plain")
     if not reply:
         return None
@@ -143,7 +152,7 @@ def ask_one(target: dict) -> dict | None:
 def run(lines: list[str] | None = None, dry: bool = False) -> dict:
     """Plan from the engine's current state and ask what is not cached yet, one call at a time, spaced out."""
     from signoff.engine import state as engine
-    sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+    sheet = sheetctx.sheet()
     st = engine.get_state()
     targets = [t for t in plan(st, sheet) if not lines or t["line_id"] in lines]
     asked = skipped = failed = cached_n = 0

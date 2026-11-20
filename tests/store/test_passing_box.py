@@ -97,3 +97,33 @@ def test_sql_agrees_with_engine_on_fixtures_and_random_limits(db, monkeypatch):
             assert "SELECT" in got["sql"] and "'" + line["line_id"] + "'" in got["sql"]
             checked += len(want)
     assert checked > 5
+
+
+@pytest.mark.live
+def test_sql_handles_equals_and_units_on_sheet2(db, monkeypatch):
+    """T1.rough_in `==` the measured 10 in, flush `<=` 1.28 gpf (a dual flush is a spread: the full flush decides), faucet gpm,
+    and a figure in another unit never counts. Reference: the rules written out here (the engine's `==` is ENGINE's)."""
+    sheet = json.loads((ROOT / "sheets" / "sheet2.json").read_text())
+    pool = [{"store": "s.com", "product_id": "p%d" % i, "variant_id": "v%d" % i, "title": "t%d" % i, "price_cents": 100 + i,
+             "url": "u", "text": "x", "fetched_at": "t", "product_key": "k%d" % i, "line_ids": ["T1"]} for i in range(6)]
+    # (rough-in kind, low, high, rough unit, flush kind, low, high)
+    spec = [("single", 10, 10, "in", "single", 1.28, 1.28), ("single", 12, 12, "in", "single", 1.0, 1.0),
+            ("spread", 10, 12, "in", "spread", 1.1, 1.6), ("single", 10, 10, "cm", "single", 1.0, 1.0),
+            ("single", 10, 10, "in", "spread", 1.1, 1.28), ("single", 10, 10, "in", "single", 1.6, 1.6)]
+    figures = []
+    for p, (k1, lo1, hi1, u1, k2, lo2, hi2) in zip(pool, spec):
+        for name, kind, lo, hi, unit in (("rough_in", k1, lo1, hi1, u1), ("flush_volume", k2, lo2, hi2, "gpf")):
+            figures.append({"store": p["store"], "product_id": p["product_id"], "figure": name, "kind": kind,
+                            "value": lo if kind == "single" else None, "low": lo, "high": hi, "unit": unit, "quote": "q",
+                            "start": 0, "end": 1, "extractor": "t", "span_found_in_text": True})
+    monkeypatch.setattr(pool_mod, "load", lambda: (pool, []))
+    lines = [l for l in sheet["lines"] if l["id"] == "T1"]
+    state = {"version": 1, "sheet": {**sheet, "lines": lines},
+             "lines": [{"line_id": "T1", "struck": [], "candidates": [
+                 {"id": "T1:s.com:" + p["product_id"], "product": p, "figures": [f for f in figures if f["product_id"] == p["product_id"]],
+                  "status": "x", "picked": False} for p in pool]}]}
+    records.write_sync(state)
+    got = sorted(r["product_id"] for r in passing.passing_box("T1")["rows"])
+    # p0: 10 == 10 and 1.28 <= 1.28; p1: 12 != 10; p2: spread 10..12 holds 10 but full flush 1.6 > 1.28; p3: cm is not in;
+    # p4: 10 == 10 and the full flush 1.28 <= 1.28; p5: 1.6 > 1.28
+    assert got == ["p0", "p4"]
