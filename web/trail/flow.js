@@ -191,6 +191,10 @@ function show(move) {
   });
   const play = root.querySelector("[data-play]");
   if (play) play.textContent = playing ? "❚❚ Pause" : "▶ Play";
+  if (move) {     // keep the part that is playing in view: the lower rows from step 5 on, the top before that
+    const part = pos >= 6 ? root.querySelector(".fl-mem") : pos >= 4 ? root.querySelector(".fl-guard") : root;
+    part.scrollIntoView({ block: pos >= 4 ? "nearest" : "start", behavior: MOTION ? "smooth" : "auto" });
+  }
   clock();
 }
 

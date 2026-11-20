@@ -1811,3 +1811,26 @@ order. The only call that carries memory is the embedding of the memories' own s
   itself sends. The saved threads carry their own record (draft, removed, sent, reply) and the page reads those.
 - For STORE (noted in NOTES/STORE.md): `egress.CLASSES` has no `health`, `money`, `address`, so those kinds appear in a
   row's purpose text, not in `fact_classes`.
+
+## 14:18 from TRAIL
+T5 on stream/TRAIL, ready to merge. `uv run -q pytest -q` → 352 passed (tests/trail: 15). Seen on port 8016 (sheet 4, replay
+mode), in a real-time browser session, no script errors.
+- **Key frame** from live records: `web/trail/shots/flow.png` (whole picture), `flow-810.png` (1440 x 810).
+- **Replay**: 24 s, play and pause (space), step (arrow keys, the two buttons), the rail is the scrubber. Frames I looked at:
+  `flow-step4-bypass.png` (the limit and the measurement drawing round the frame, never through it, ending on their
+  pills), `flow-step5-guard.png` (the removed spans leaving the draft for the guard line), `flow-step7-memory.png` (the
+  shelf in view; from step 5 the page scrolls the playing row into sight). Motion off: the final frame.
+- **Guard row** is TALK's record: the message about the picked product in which the guard removed the most (today a
+  draft with 7 spans removed: "My mother", "280 lbs", "hip surgery", "300 lbs", "21.5 inches", "therapist", "Dana"), what
+  was left, and the store agent's reply. **Memory shelf** is MEMORY's `shelf`: four owner slots; today only "Each store's"
+  holds anything (9), the other three say "nothing yet". "recalled from memory" appears on the home card when the
+  shopper's slot holds that measurement (none today, so no tag).
+- **Demo director's two notes**: a step's clock time is shown only when the step happened in this run (cached evidence
+  shows its duration, no clock time), so the times no longer run out of order. The four numbers and the kind chips now
+  sit under the picture, above the timeline. The line "N model calls" is as the ledger has it: on my port "1 model call
+  · 1 given page text · none saw a limit · 1 saw a person's name" (that one call is MEMORY's embedding of memories).
+- **Still said in two words where no record exists**: the frame's caption "prompt builder" and the chip "no ledger rows"
+  until the read calls' rows reach main's ledger. The frame's record is taken only from calls to the reader that read
+  this product's figures (the ledger's recipient equals the figure's `extractor`), never from another model's calls.
+- Not done: the second-run opening (shelf full at 0:00, the measurement rising into the left column, a struck product
+  already refused) has no motion of its own yet; the tag and the shelf are drawn from the records when they exist.
