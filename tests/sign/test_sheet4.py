@@ -20,7 +20,7 @@ def test_sentences_are_the_order_documents_own_words_with_the_value_set_now():
             if l["id"] == "L1.capacity":
                 l["bound"]["value"] = 350
                 l["from_order"] = {"value": 300, "matches": False, "quote": "q"}
-    moved = [r for r in senso.sentences_for(st) if r["moved_from_order"]]
+    moved = [r for r in senso.sentences_for(st) if r.get("moved_from_order")]
     assert [r["sentence"] for r in moved] == ["Our order requires the shower chair to hold at least 350 lb."]
 
 
