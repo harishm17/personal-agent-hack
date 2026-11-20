@@ -540,6 +540,7 @@ def _load(keep_changes=False):
               strikes=_read(strikes_file) if strikes_file.exists() else [],
               seal=None, issuer_key={"enrolled": False, "key_id": None, "persona": None})
     _s["memory"] = _apply_memory(sheet, _s["strikes"], _s["pool"])
+    _s["choices"] = {}  # a fresh run starts with the rule's picks
 
 
 def _limit(limit_id):
@@ -573,7 +574,8 @@ def _canonical_obj(state):
                            "terms": [t.get("figure") or "%s=%g" % (t["fact"], facts[t["fact"]]) for t in l["terms"]]})
         out = {"line_id": line["line_id"], "need": line["need"], "status": line["status"],
                "fulfilment": sheet_line.get("fulfilment"), "limits": limits,
-               "struck": sorted(s["product_key"] for s in line["struck"]), "pick": None}
+               "struck": sorted(s["product_key"] for s in line["struck"]), "pick": None,
+               "picked_by": line.get("picked_by")}
         pick = next((c for c in line["candidates"] if c["picked"]), None)
         if pick:
             p = pick["product"]
@@ -754,9 +756,47 @@ def _attach(state):
     return state
 
 
+def _apply_choices(state):
+    """The shopper may choose any candidate that passes; taste is hers, the limits are not. The sheet's pick rule
+    stays the default (`picked_by: "rule"`). A choice holds only while its product is inside every limit and not
+    struck: when a change puts it outside, the choice is dropped, the rule's pick stands again, and the line says so."""
+    choices = _s.setdefault("choices", {})
+    wanted = {l["id"]: l.get("quantity", 1) for l in _s["sheet"]["lines"]}
+    for line in state["lines"]:
+        line["picked_by"] = "rule" if line["pick"] else None
+        chosen_id = choices.get(line["line_id"])
+        if not chosen_id:
+            continue
+        chosen = next((c for c in line["candidates"] if c["id"] == chosen_id), None)
+        if chosen is None or chosen["status"] != "inside":
+            was = chosen["product"]["title"] if chosen else chosen_id
+            why = (chosen["reason"] or chosen["status"]) if chosen else "it is no longer among the candidates"
+            choices.pop(line["line_id"], None)
+            line["choice_dropped"] = {"candidate_id": chosen_id, "title": was,
+                                      "why": "the product chosen is no longer inside the limits (%s); the rule's pick stands" % why}
+            receipts.append("shopper_choice_dropped", "system", None, {"line_id": line["line_id"], "candidate_id": chosen_id},
+                            {"line_id": line["line_id"], "why": why})
+            continue
+        for c in line["candidates"]:
+            c["picked"] = c["id"] == chosen_id
+        t = sorted(chosen["checks"], key=lambda k: k["margin"])[0]
+        line.update(pick=chosen_id, picked_by="shopper", tightest={
+            "limit_id": t["limit_id"], "name": t["name"], "margin": t["margin"], "unit": t["bound"]["unit"],
+            "text": "matches exactly" if t["op"] == "==" else "nothing to spare" if t["margin"] == 0
+            else "%g %s to spare" % (t["margin"], t["bound"]["unit"])})
+        line["why"]["pick_price_cents"] = chosen["product"]["price_cents"]
+        if line["status"] == "open":  # the rule found nothing it could pick; the shopper chose one that passes
+            line.update(status="next_candidate" if line["struck"] else "ready", reason=None)
+    state["total_cents"] = sum(c["product"]["price_cents"] * wanted[l["line_id"]] for l in state["lines"] for c in l["candidates"]
+                               if c["picked"] and l["status"] in ("ready", "next_candidate"))
+    state["counts"]["lines_ready"] = sum(1 for l in state["lines"] if l["status"] in ("ready", "next_candidate"))
+    return state
+
+
 def _recompute(record=True, why="load"):
     started = time.perf_counter()
     state = rules.build_state(_s["sheet"], _s["pool"], _s["figures"], _s["answers"], _s["strikes"], _s["mode"])
+    state = _apply_choices(state)
     _s["version"] += 1
     state["version"] = _s["version"]
     _s["state"] = _attach(state)
@@ -888,6 +928,34 @@ def set_shopper_fact(fact_id, value) -> dict:
         receipts.append("shopper_fact", "shopper", None, {"fact_id": fact_id, "value": value},
                         {"fact_id": fact_id, "from": was, "to": fact["value"], "unit": fact["unit"]})
         return _recompute(why="shopper_fact")
+
+
+def set_shopper_choice(line_id, candidate_id) -> dict:
+    """Not in the contract's list: the shopper chooses a candidate that passes, or (`None`) returns to the rule.
+    Unsigned, hers. Refused for a candidate that is outside, unclear, not stated or struck: she cannot choose
+    past a limit. The canonical sheet says who picked, so the approver signs her choice knowingly."""
+    with _lock:
+        _ensure()
+        _open_for_changes()
+        line = next((l for l in _s["state"]["lines"] if l["line_id"] == line_id), None)
+        if line is None:
+            raise EngineError("no line %r on this sheet" % (line_id,), 404)
+        choices = _s.setdefault("choices", {})
+        if candidate_id is None:
+            was = choices.pop(line_id, None)
+            receipts.append("shopper_choice", "shopper", None, {"line_id": line_id, "candidate_id": None},
+                            {"line_id": line_id, "from": was, "to": "the rule's pick"})
+            return _recompute(why="shopper_choice")
+        chosen = next((c for c in line["candidates"] if c["id"] == candidate_id), None)
+        if chosen is None:
+            raise EngineError("no candidate %r on line %s" % (candidate_id, line_id), 404)
+        if chosen["status"] != "inside":
+            raise EngineError("that product cannot be chosen: it is %s%s" % (
+                chosen["status"].replace("_", " "), (" (%s)" % chosen["reason"]) if chosen["reason"] else ""), 409)
+        choices[line_id] = candidate_id
+        receipts.append("shopper_choice", "shopper", None, {"line_id": line_id, "candidate_id": candidate_id},
+                        {"line_id": line_id, "title": chosen["product"]["title"], "price_cents": chosen["product"]["price_cents"]})
+        return _recompute(why="shopper_choice")
 
 
 def canonical_sheet() -> str:

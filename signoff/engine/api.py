@@ -67,6 +67,24 @@ def shopper_fact(body: Fact):
     return {"ok": True, "version": new["version"]}
 
 
+class Choose(BaseModel):
+    line_id: str
+    candidate_id: str | None = None
+
+
+@router.post("/api/shopper/choose")
+def shopper_choose(body: Choose):
+    """The shopper chooses a candidate that passes (or, with `candidate_id: null`, returns to the sheet's rule).
+    Unsigned, hers; refused for anything that is not inside every limit. Laptop only by the app's guard list."""
+    try:
+        new = state.set_shopper_choice(body.line_id, body.candidate_id)
+    except state.EngineError as error:
+        return _refuse(error)
+    line = next(l for l in new["lines"] if l["line_id"] == body.line_id)
+    return {"ok": True, "version": new["version"], "pick": line["pick"], "picked_by": line.get("picked_by"),
+            "total_cents": new["total_cents"]}
+
+
 @router.get("/api/sheet/canonical")
 def canonical():
     return {"canonical": state.canonical_sheet(), "sheet_hash": state.sheet_hash()}
