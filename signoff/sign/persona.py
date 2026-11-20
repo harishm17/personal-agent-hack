@@ -10,6 +10,7 @@ import threading
 import httpx
 
 from signoff import config
+from signoff.sign import audit
 
 API = "https://api.withpersona.com/api/v1"
 VERSION = "2025-10-27"
@@ -56,8 +57,12 @@ def _apply(inquiry_id: str, status: str, detail: str | None = None) -> dict:
     if detail:
         out["detail"] = detail
     with _lock:
+        changed = _record.get("status") != status or _record.get("inquiry_id") != inquiry_id
         _record.clear()
         _record.update(out)
+    if changed:  # one receipt for each new result Persona's backend gives us
+        audit.receipt("persona_status", "persona", None, {"inquiry_id": inquiry_id, "status": status},
+                      {"inquiry_id": inquiry_id, "status": status, "verified": verified, "sandbox": True})
     return out
 
 
@@ -67,6 +72,7 @@ def start(reference_id: str | None = None) -> dict:
     body = {"data": {"attributes": {"inquiry-template-id": config.env("PERSONA_TEMPLATE_ID")}}}
     if reference_id:
         body["data"]["attributes"]["reference-id"] = reference_id
+    audit.egress("persona", "create an identity inquiry for the signer (sandbox)", {"template": "set", "reference-id": reference_id or ""}, ["none"])
     try:
         response = httpx.post(API + "/inquiries", headers=_headers(), json=body, timeout=6)
         if response.status_code >= 400:
@@ -89,6 +95,7 @@ def status() -> dict:
     inquiry_id = current.get("inquiry_id")
     if not inquiry_id or not configured():
         return current
+    audit.egress("persona", "read the status of the signer's inquiry (sandbox)", {"inquiry": inquiry_id}, ["none"])
     try:
         response = httpx.get("%s/inquiries/%s" % (API, inquiry_id), headers=_headers(), timeout=6)
         if response.status_code >= 400:
@@ -106,6 +113,7 @@ def simulate(action: str) -> dict:
     current = record()
     if kind is None or not current.get("inquiry_id") or not configured():
         return {**current, "simulated": False, "reason": "needs a started inquiry and action approve or decline"}
+    audit.egress("persona", "sandbox rehearsal: %s the current inquiry" % action, {"inquiry": current["inquiry_id"], "action": kind}, ["none"])
     try:
         r = httpx.post("%s/inquiries/%s/perform-simulate-actions" % (API, current["inquiry_id"]), headers=_headers(),
                        json={"meta": {"simulate-actions": [{"type": kind}]}}, timeout=10)

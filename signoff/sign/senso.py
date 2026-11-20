@@ -23,6 +23,7 @@ from datetime import datetime, timezone
 import httpx
 
 from signoff import config
+from signoff.sign import audit
 
 BASE = "https://apiv2.senso.ai/api/v1"
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -72,7 +73,18 @@ def checks() -> dict:
             "checks": rows, "blocking": [c for c in rows if c.get("blocks") and c.get("verdict") in blocking_verdicts()],
             "blocks_on": list(blocking_verdicts()),
             "for_hash": meta["for_hash"], "ran_at": meta["ran_at"], "error": meta["error"],
-            "running": meta["running_for"] is not None, "running_for": meta["running_for"]}
+            "running": meta["running_for"] is not None, "running_for": meta["running_for"],
+            "order_document": _order_for_checks(rows)}
+
+
+def _order_for_checks(rows: list[dict]) -> dict | None:
+    """The documents the current verdicts rest on, deduplicated: which version of the order each sentence was checked against."""
+    seen = {}
+    for r in rows:
+        src = r.get("source") or {}
+        if src.get("version_id"):
+            seen[(src.get("content_id"), src["version_id"])] = {k: src.get(k) for k in ("title", "content_id", "version_id", "version_num", "latest_version_id")}
+    return {"versions": list(seen.values())} if seen else None
 
 
 def running_for() -> str | None:
@@ -143,12 +155,19 @@ def load_documents(sheet: dict | str | None = None) -> dict:
             sha = hashlib.sha256(d["text"].encode()).hexdigest()[:12]
             if reg.get(d["key"], {}).get("sha") == sha:
                 continue
-            r = client.post(BASE + "/org/kb/raw", json={"title": d["title"], "text": d["text"]})
+            audit.egress("senso", "load a document into the knowledge base: " + d["title"], d["text"], ["store_text"] if d["key"].startswith("store:") else ["order", "limit"])
+            known = reg.get(d["key"], {})
+            if known.get("kb_node_id") and not known.get("error"):
+                # a changed text becomes a new version of the same document, so a sentence can say which version it was checked against
+                r = client.put(BASE + "/org/kb/nodes/%s/raw" % known["kb_node_id"], json={"title": d["title"], "text": d["text"]})
+            else:
+                r = client.post(BASE + "/org/kb/raw", json={"title": d["title"], "text": d["text"]})
             if r.status_code == 409:
                 reg[d["key"]] = {**reg.get(d["key"], {}), "sha": sha, "title": d["title"], "note": "already in the knowledge base"}
             elif r.status_code in (200, 201, 202):
                 body = r.json()
-                reg[d["key"]] = {"sha": sha, "title": d["title"], "content_id": body.get("id"), "kb_node_id": body.get("kb_node_id"),
+                reg[d["key"]] = {"sha": sha, "title": d["title"], "content_id": body.get("id") or known.get("content_id"),
+                                 "kb_node_id": body.get("kb_node_id") or known.get("kb_node_id"),
                                  "version_id": body.get("latest_content_version_id"), "version_num": body.get("version_num")}
                 added.append(d["key"])
             else:
@@ -171,11 +190,39 @@ def wait_processed(timeout: float = 90.0) -> dict:
             time.sleep(3)
 
 
-def doc_info(content_id: str) -> dict:
+def doc_info(content_id: str, version_id: str | None = None) -> dict:
+    """Which document and which version a verdict rests on. The version id is the one Senso reports for the passage it
+    judged against (`content_version_id`); the number is known when that is the document's latest version."""
     for key, d in _registry().items():
         if d.get("content_id") == content_id:
-            return {"key": key, "title": d.get("title"), "content_id": content_id, "version_id": d.get("version_id")}
-    return {"content_id": content_id}
+            vid = version_id or d.get("version_id")
+            return {"key": key, "title": d.get("title"), "content_id": content_id, "version_id": vid,
+                    "version_num": d.get("version_num") if vid == d.get("version_id") else None,
+                    "latest_version_id": d.get("version_id")}
+    return {"content_id": content_id, "version_id": version_id}
+
+
+def order_document(sheet: dict | None = None) -> dict | None:
+    """The active sheet's order document as the knowledge base holds it now (for the screen: "checked against order v3")."""
+    key = "order" if (sheet or {}).get("id", "sheet1") == "sheet1" else "order:" + sheet["id"]
+    d = _registry().get(key)
+    return {"key": key, **{k: d.get(k) for k in ("title", "content_id", "version_id", "version_num")}} if d else None
+
+
+def prune_stale() -> list[str]:
+    """Deletes copies of our own documents that are not the registered ones (left by earlier loads), so a verdict can
+    only rest on the current version. Only nodes whose title is one of ours are touched."""
+    reg = _registry()
+    keep = {d.get("kb_node_id") for d in reg.values()}
+    titles = {d.get("title") for d in reg.values()}
+    with httpx.Client(headers=_headers(), timeout=30) as client:
+        root = client.get(BASE + "/org/kb/root").json()["kb_node_id"]
+        nodes = client.get(BASE + "/org/kb/nodes/%s/children" % root).json().get("nodes", [])
+        stale = [n["kb_node_id"] for n in nodes if n.get("type") == "content" and n.get("kb_node_id") not in keep
+                 and (n.get("name") in titles)]
+        if stale:
+            client.post(BASE + "/org/kb/nodes/bulk-delete", json={"node_ids": stale})
+    return stale
 
 
 # ---- the sentences of the sheet ----------------------------------------------------------------------------
@@ -269,6 +316,7 @@ def judge(client: httpx.Client, s: dict) -> dict:
 
 def _judge_once(client: httpx.Client, s: dict) -> dict:
     row = {k: s.get(k) for k in ("kind", "blocks", "sentence", "line_id", "candidate_id", "store", "product_id", "moved_from_order")}
+    audit.egress("senso", "check one sentence of the sheet against the order", s["sentence"], ["order", "limit"] if s.get("kind") == "limit" else ["order"])
     try:
         r = client.post(BASE + "/org/evals/text", json={"text": s["sentence"], "evaluator": "kb_accuracy", "author": "organization",
                                                          "wait": True, "label": "signoff-" + (s.get("line_id") or "sheet")})
@@ -289,7 +337,8 @@ def _judge_once(client: httpx.Client, s: dict) -> dict:
         verdict = pick.get("verdict") or "not_verifiable"
         ev = (pick.get("evidence") or [{}])[0]
         row.update(verdict=verdict, quote=pick.get("quote"), reasoning=pick.get("reasoning"), claim=pick.get("claim_text"),
-                   run_id=run.get("eval_run_id"), source=doc_info(ev.get("content_id", "")) if ev.get("content_id") else None,
+                   run_id=run.get("eval_run_id"),
+                   source=doc_info(ev.get("content_id", ""), ev.get("content_version_id")) if ev.get("content_id") else None,
                    chunk_index=ev.get("chunk_index"), claims_total=len(claims))
     except httpx.HTTPError as error:
         row.update(verdict="error", reasoning=type(error).__name__)
@@ -308,6 +357,10 @@ def run_checks(state: dict, current_hash: str | None = None) -> dict:
         with httpx.Client(headers=_headers(), timeout=120) as client, futures.ThreadPoolExecutor(6) as pool:
             rows = list(pool.map(lambda s: judge(client, s), sentences))
         set_checks(rows, current_hash)
+        tally = {v: sum(1 for r in rows if r["verdict"] == v) for v in {r["verdict"] for r in rows}}
+        audit.receipt("senso_checked", "senso", None, [r["sentence"] for r in rows],
+                      {"for_hash": current_hash, "sentences": len(rows), "verdicts": tally,
+                       "blocking": [r["sentence"] for r in rows if r.get("blocks") and r["verdict"] in blocking_verdicts()]})
     finally:
         with _lock:
             _meta["running_for"] = None
@@ -317,4 +370,5 @@ def run_checks(state: dict, current_hash: str | None = None) -> dict:
 if __name__ == "__main__":
     import sys
     print(json.dumps(load_documents(sys.argv[1] if len(sys.argv) > 1 else None), indent=1))
+    print("pruned", prune_stale())
     print(wait_processed())

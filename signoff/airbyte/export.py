@@ -1,51 +1,77 @@
-"""Writes the files Airbyte syncs, into data/order/ (the "export" a source system would publish).
+"""Writes the files Airbyte syncs for one sheet, into data/order/<sheet_id>/ (the "export" a source system would publish).
 
-  pool.jsonl           one row per product of the active sheet's cached pool (data/pool/*.json for sheet1, data/<sheet>/pool/)
-  store_answers.jsonl  one row per store answer of the active sheet
-  order.csv            the issuer's order, one row per limit, from the active sheet's file (invented)
+  pool.jsonl           one row per product of the sheet's stores (the cached pool)
+  store_answers.jsonl  one row per store answer
+  order.csv            the issuer's limits, one row per limit, from the sheet (invented)
+  order_doc.jsonl      the order document (the text the issuer wrote), when the sheet names one
 
-Run: uv run python -m signoff.airbyte.export
+Where a sheet's pool lives is found by its own store list (see `_dir`), so a move of the folder by STORE needs no
+change here. Run: uv run python -m signoff.airbyte.export [sheet_id]
 """
 import csv
-import glob
 import json
 import pathlib
-
-from signoff.store import sheetctx
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / "data" / "order"
-NOTE = "invented order: invented issuer and shopper, written from the sheet file"
-ORDER_FIELDS = ["line_id", "need", "limit_id", "name", "op", "value", "unit", "bound_source", "bound_fact",
+NOTE = "invented order: invented issuer and household, written from the sheet"
+ORDER_FIELDS = ["sheet_id", "line_id", "need", "limit_id", "name", "op", "value", "unit", "bound_source", "bound_fact",
                 "issuer", "issued_at", "order_note"]
 
 
-def _dir(root: pathlib.Path, kind: str, sheet_id: str | None) -> pathlib.Path:
-    """The active sheet's pool or store_answers folder under `root` (the one path rule: sheetctx)."""
-    sid = sheet_id or sheetctx.active_id()
-    return root / "data" / kind if sid == "sheet1" else root / "data" / sid / kind
+def active_sheet() -> str:
+    """The sheet the app is running; never raises."""
+    import os
+    try:
+        from signoff.engine import state
+        return state.get_state()["sheet"]["id"]
+    except Exception:  # noqa: BLE001
+        return os.environ.get("SIGNOFF_SHEET") or "sheet1"
 
 
-def pool_rows(root: pathlib.Path = ROOT, sheet_id: str | None = None) -> list[dict]:
+def load_sheet(sheet_id: str, root: pathlib.Path = ROOT) -> dict:
+    return json.loads((root / "sheets" / f"{sheet_id}.json").read_text())
+
+
+def _dir(kind: str, sheet_id: str, stores: list[str], root: pathlib.Path = ROOT) -> pathlib.Path | None:
+    """The first folder that holds a file for the sheet's stores. `kind` is "pool" or "store_answers"."""
+    candidates = [root / "data" / sheet_id / kind, root / "data" / sheet_id / "bathroom" / kind, root / "data" / kind]
+    for d in candidates:
+        if d.is_dir() and any((d / f"{s}.json").exists() for s in stores):
+            return d
+    return None
+
+
+def pool_rows(sheet: dict, root: pathlib.Path = ROOT) -> list[dict]:
+    d = _dir("pool", sheet["id"], sheet["stores"], root)
     rows = []
-    for f in sorted(glob.glob(str(_dir(root, "pool", sheet_id) / "*.json"))):
+    for store in sheet["stores"]:
+        f = d / f"{store}.json" if d else None
+        if not f or not f.exists():
+            continue
         for p in json.load(open(f)):
-            rows.append({"store": p["store"], "product_id": p["product_id"], "variant_id": p.get("variant_id"),
-                         "title": p["title"], "price_cents": p["price_cents"], "url": p["url"], "text": p["text"],
-                         "fetched_at": p["fetched_at"], "product_key": p.get("product_key"),
-                         "line_ids": ",".join(p.get("line_ids") or [])})
+            rows.append({"sheet_id": sheet["id"], "store": p["store"], "product_id": p["product_id"],
+                         "variant_id": p.get("variant_id"), "title": p["title"], "price_cents": p["price_cents"],
+                         "url": p["url"], "text": p["text"], "fetched_at": p["fetched_at"],
+                         "product_key": p.get("product_key"), "line_ids": ",".join(p.get("line_ids") or [])})
     return rows
 
 
-def answer_rows(root: pathlib.Path = ROOT, sheet_id: str | None = None) -> list[dict]:
+def answer_rows(sheet: dict, root: pathlib.Path = ROOT) -> list[dict]:
+    d = _dir("store_answers", sheet["id"], sheet["stores"], root)
     rows = []
-    for f in sorted(glob.glob(str(_dir(root, "store_answers", sheet_id) / "*.json"))):
+    for store in sheet["stores"]:
+        f = d / f"{store}.json" if d else None
+        if not f or not f.exists():
+            continue
         for a in json.load(open(f)):
-            d, r = a.get("delivery") or {}, a.get("returns") or {}
-            rows.append({"store": a["store"], "asked_at": a.get("asked_at"), "question": a.get("question"),
-                         "answer": a.get("answer"), "delivery_stated": d.get("stated"), "delivery_quote": d.get("quote"),
-                         "days_low": d.get("days_low"), "days_high": d.get("days_high"),
-                         "returnable": r.get("returnable"), "return_fee": r.get("fee"), "return_quote": r.get("quote")})
+            dl, r = a.get("delivery") or {}, a.get("returns") or {}
+            rows.append({"sheet_id": sheet["id"], "store": a["store"], "asked_at": a.get("asked_at"),
+                         "question": a.get("question"), "answer": a.get("answer"), "delivery_stated": dl.get("stated"),
+                         "delivery_quote": dl.get("quote"), "days_low": dl.get("days_low"),
+                         "days_high": dl.get("days_high"), "returnable": r.get("returnable"),
+                         "return_fee": r.get("fee"), "return_quote": r.get("quote")})
     return rows
 
 
@@ -54,24 +80,37 @@ def order_rows(sheet: dict) -> list[dict]:
     for line in sheet["lines"]:
         for lim in line["limits"]:
             b = lim["bound"]
-            out.append({"line_id": line["id"], "need": line["need"], "limit_id": lim["id"], "name": lim["name"],
-                        "op": lim["op"], "value": b.get("value", "") if b["source"] == "issuer" else "",
-                        "unit": lim["unit"], "bound_source": b["source"], "bound_fact": b.get("fact", ""),
-                        "issuer": sheet["issuer"]["name"] + (", " + sheet["issuer"]["role_label"] if sheet["issuer"].get("role_label") else ""),
-                        "issued_at": lim.get("set_at", ""), "order_note": NOTE})
+            out.append({"sheet_id": sheet["id"], "line_id": line["id"], "need": line["need"], "limit_id": lim["id"],
+                        "name": lim["name"], "op": lim["op"],
+                        "value": b.get("value", "") if b["source"] == "issuer" else "", "unit": lim["unit"],
+                        "bound_source": b["source"], "bound_fact": b.get("fact", ""),
+                        "issuer": sheet["issuer"]["name"] + ", " + sheet["issuer"]["role_label"],
+                        "issued_at": lim["set_at"], "order_note": NOTE})
     return out
 
 
-def write_all(root: pathlib.Path = ROOT, out: pathlib.Path = OUT) -> dict:
-    out.mkdir(parents=True, exist_ok=True)
+def order_doc_rows(sheet: dict, root: pathlib.Path = ROOT) -> list[dict]:
+    name = sheet.get("order_doc")
+    f = root / name if name else None
+    if not f or not f.exists():
+        return []
+    return [{"sheet_id": sheet["id"], "name": name, "text": f.read_text()}]
+
+
+def write_all(sheet_id: str = "sheet1", root: pathlib.Path = ROOT, out: pathlib.Path = OUT) -> dict:
+    """Writes the sheet's files; returns row counts by `count_key`."""
+    sheet = load_sheet(sheet_id, root)
+    d = out / sheet_id
+    d.mkdir(parents=True, exist_ok=True)
     counts = {}
-    for name, rows in (("pool", pool_rows(root)), ("store_answers", answer_rows(root))):
-        with (out / f"{name}.jsonl").open("w") as f:
+    for name, rows in (("pool", pool_rows(sheet, root)), ("store_answers", answer_rows(sheet, root)),
+                       ("order_doc", order_doc_rows(sheet, root))):
+        with (d / f"{name}.jsonl").open("w") as f:
             for r in rows:
                 f.write(json.dumps(r, ensure_ascii=False) + "\n")
         counts[name] = len(rows)
-    orows = order_rows(json.loads((root / "sheets" / f"{sheetctx.active_id()}.json").read_text()))
-    with (out / "order.csv").open("w", newline="") as f:
+    orows = order_rows(sheet)
+    with (d / "order.csv").open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=ORDER_FIELDS)
         w.writeheader()
         w.writerows(orows)
@@ -80,4 +119,5 @@ def write_all(root: pathlib.Path = ROOT, out: pathlib.Path = OUT) -> dict:
 
 
 if __name__ == "__main__":
-    print(write_all())
+    sid = sys.argv[1] if len(sys.argv) > 1 else "sheet1"
+    print(sid, write_all(sid))
