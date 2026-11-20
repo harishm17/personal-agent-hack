@@ -72,24 +72,21 @@ def test_no_real_page_in_the_pool_carries_an_instruction():
     assert len(rows) >= 100 and [r for r in rows if r["instructions"]] == []
 
 
-def test_the_cached_figures_of_the_reference_all_pass_the_number_rule_or_say_why_not(real_pool):
-    """The rule is on for every reader. Whatever it marks in the reference's readings is visible, with its reason."""
+def test_every_pick_rests_on_checks_where_every_stated_value_passes(real_pool):
+    """Rule 1 on the real pool: a pick is inside on every limit for every value its page states."""
     s = state.reset()
-    figures = [f for l in s["lines"] for c in l["candidates"] for f in c["figures"]]
-    several = [f for f in figures if f.get("number_check")]
-    assert several, "some quotes hold several numbers"
-    for f in several:
-        paired = f["number_check"]["paired"]
-        assert (paired is True and not f.get("unsure")) or (f.get("unsure") and f["unsure_reason"].startswith("several numbers"))
-    # every pick rests on figures that are one number, or a number the text itself labels
+    statuses = {c["status"] for l in s["lines"] for c in l["candidates"]}
+    assert statuses <= {"inside", "outside", "unclear", "not_stated", "struck"}
     for line in s["lines"]:
         for c in line["candidates"]:
+            if c["status"] == "unclear":
+                assert any(k["state"] == "unclear" and k["unclear_why"] for k in c["checks"]) and not c["picked"]
+            if c["status"] == "not_stated":  # truly absent: no statement of that figure with a found quote
+                missing = next(k["missing_figure"] for k in c["checks"] if k["state"] == "not_stated")
+                assert not any(f["figure"] == missing and f["span_found_in_text"] and f.get("number_in_quote") is not False
+                               for f in c["figures"])
             if c["picked"]:
-                for check in c["checks"]:
-                    for term in check["terms"]:
-                        if term["owner"] == "store":
-                            fig = next(f for f in c["figures"] if f["figure"] == term["figure"] and f["quote"] == term["quote"])
-                            assert not fig.get("unsure") and fig.get("number_check", {"paired": True})["paired"] is True
+                assert all(k["state"] == "pass" for k in c["checks"])
 
 
 def test_each_pick_names_its_variant_quantity_and_currency_and_says_whose_answer_delivery_is(real_pool):

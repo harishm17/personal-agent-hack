@@ -91,41 +91,76 @@ def sentence_around(text, start, end, most=260):
 
 
 def deciding(fig, op, bound=None):
-    """A spread uses the end that could fail. An adjustable range uses the end that reaches furthest.
-    For an equality the end that could fail is the one further from the value to be matched; an adjustable
-    range that takes in that value is set to it."""
+    """The one value of a statement that is put to the test when only one can be shown: for a single number,
+    itself; for a range of settings, the setting that best meets the comparison (rule 3); for a spread, the
+    end that could fail."""
     if fig["kind"] == "single":
         return fig["value"]
+    if fig["kind"] == "adjustable":
+        if op == "==":
+            if bound is not None and fig["low"] <= bound <= fig["high"]:
+                return bound
+            if bound is None:
+                return fig["high"]
+            return fig["low"] if abs(fig["low"] - bound) <= abs(fig["high"] - bound) else fig["high"]
+        return fig["high"] if op == ">=" else fig["low"]
     if op == "==":
-        if fig["kind"] == "adjustable" and bound is not None and fig["low"] <= bound <= fig["high"]:
-            return bound
         if bound is None:
             return fig["high"]
         return fig["low"] if abs(fig["low"] - bound) >= abs(fig["high"] - bound) else fig["high"]
-    if fig["kind"] == "spread":
-        return fig["low"] if op == ">=" else fig["high"]
-    return fig["high"] if op == ">=" else fig["low"]
+    return fig["low"] if op == ">=" else fig["high"]
 
 
-def usable(fig, limit_unit):
-    """Why a figure cannot be used in a sum, or None when it can."""
-    if not fig:
-        return "never stated on the page"
-    if not fig.get("span_found_in_text"):
-        return "quote not found in the store's text"
-    if fig.get("unsure"):
-        return "stated, but not clearly for this product: %s" % (fig.get("unsure_reason") or "unclear")
-    if fig.get("kind") not in ("single", "spread", "adjustable"):
-        return "stated in a form code cannot compare"
-    ends = [fig.get("value")] if fig["kind"] == "single" else [fig.get("low"), fig.get("high")]
-    if any(not isinstance(v, (int, float)) or isinstance(v, bool) for v in ends):
-        return "stated without a number"
-    if unit_name(fig.get("unit")) != unit_name(limit_unit) or unit_name(limit_unit) is None:
+def tested_values(fig, op, bound):
+    """Every value one statement puts to the test (rule 1), in the statement's own unit.
+    - a single number: that number, and any other number in its quote that the text does not rule out;
+    - a spread (one size given loosely, or several values given together): both ends;
+    - a range the user can set (rule 3): the setting that meets the comparison if one does, so "at least"
+      and "at most" pass when the product can be set to meet them, and an equality needs the value in range."""
+    if fig["kind"] == "adjustable":
+        values = [deciding(fig, op, bound)]
+    elif fig["kind"] == "spread":
+        values = [fig["low"], fig["high"]]
+    else:
+        values = [fig["value"]]
+    for other in fig.get("possible") or []:
+        if isinstance(other, (int, float)) and not any(abs(other - v) < 1e-9 for v in values):
+            values.append(other)
+    return values
+
+
+def comparable(fig, limit_unit):
+    """Why a statement's number cannot be put beside the limit, or None when it can. A statement that cannot
+    be compared is still a statement: the check is unclear, the figure is not absent."""
+    numbers = [fig.get("value")] if fig.get("kind") == "single" else [fig.get("low"), fig.get("high")]
+    if fig.get("kind") not in ("single", "spread", "adjustable") or \
+            any(not isinstance(v, (int, float)) or isinstance(v, bool) for v in numbers):
+        return "stated without a number code can compare"
+    if fig.get("for_other_option"):
+        return fig["for_other_option"]
+    if unit_name(fig.get("unit")) is None:
+        return "no unit stated"
+    if unit_name(fig.get("unit")) != unit_name(limit_unit):
         return "stated in %s, not %s" % (fig.get("unit"), limit_unit)
     return None
 
 
+def holds(lhs, op, bound):
+    if op == "==":
+        return abs(lhs - bound) < 1e-9
+    return lhs >= bound if op == ">=" else lhs <= bound
+
+
+def margin_of(lhs, op, bound):
+    if op == "==":
+        return 0.0 if abs(lhs - bound) < 1e-9 else round(-abs(lhs - bound), 2)
+    return round(lhs - bound if op == ">=" else bound - lhs, 2)
+
+
 def check(limit, product, figs, facts, sheet):
+    """One limit against one candidate. Every value the page states for the figure is tested: all pass, the
+    check passes; all fail, it fails; they differ, or a statement cannot be compared, it is unclear. Only a
+    figure with no statement at all is not stated."""
     op = limit["op"]
     if op not in OPS:
         raise ValueError("limit %s has the comparison %r; the rules know %s" % (limit.get("id"), op, ", ".join(OPS)))
@@ -136,67 +171,112 @@ def check(limit, product, figs, facts, sheet):
         f = facts[b["fact"]]
         bound = {"owner": "shopper", "owner_name": sheet["shopper"]["name"], "fact": f["id"], "label": f["short"],
                  "value": f["value"], "unit": f["unit"]}
-    terms, lhs, missing, why_missing, adjustable = [], 0.0, None, None, None
+    home = 0.0 + sum(facts[t["fact"]]["value"] for t in limit["terms"] if t["source"] == "shopper")
+    store_terms = [t for t in limit["terms"] if t["source"] == "store"]
+    alone = bound["value"] - home if len(store_terms) == 1 else None  # what one store figure is compared with
+    terms, missing, unclear, choices = [], None, None, []
     for t in limit["terms"]:
         if t["source"] == "shopper":
             f = facts[t["fact"]]
             terms.append({"owner": "shopper", "owner_name": sheet["shopper"]["name"], "label": f["short"],
                           "fact": f["id"], "value": f["value"], "unit": f["unit"]})
-            lhs += f["value"]
             continue
-        fig = figs.get((product["store"], product["product_id"], t["figure"]))
-        problem = usable(fig, limit["unit"])
-        if problem:
-            missing, why_missing = missing or t["figure"], why_missing or problem
-            terms.append({"owner": "store", "owner_name": product["store"], "label": t["figure"].replace("_", " "),
+        label = t["figure"].replace("_", " ")
+        stated = [f for f in figs.get((product["store"], product["product_id"], product.get("variant_id"), t["figure"]), [])
+                  if f.get("span_found_in_text") and f.get("number_in_quote") is not False]
+        if not stated:
+            missing = missing or t["figure"]
+            terms.append({"owner": "store", "owner_name": product["store"], "label": label,
                           "figure": t["figure"], "value": None, "unit": limit["unit"]})
             continue
-        v = deciding(fig, op, bound["value"] if len(limit["terms"]) == 1 else None)
-        if fig["kind"] == "adjustable":
-            adjustable = fig
-        terms.append({"owner": "store", "owner_name": product["store"], "label": t["figure"].replace("_", " "),
-                      "figure": t["figure"], "value": v, "unit": fig["unit"], "kind": fig["kind"],
-                      "low": fig["low"], "high": fig["high"], "quote": fig["quote"],
-                      "start": fig["start"], "end": fig["end"]})
-        if fig.get("sentence"):
-            terms[-1].update(sentence=fig["sentence"], quote_in_sentence=fig["quote_in_sentence"])
-        lhs += v
+        usable = [f for f in stated if comparable(f, limit["unit"]) is None]
+        first = (usable or stated)[0]
+        term = {"owner": "store", "owner_name": product["store"], "label": label, "figure": t["figure"],
+                "value": None, "unit": first.get("unit") or limit["unit"], "kind": first.get("kind"),
+                "low": first.get("low"), "high": first.get("high"), "quote": first.get("quote"),
+                "start": first.get("start"), "end": first.get("end")}
+        if first.get("sentence"):
+            term.update(sentence=first["sentence"], quote_in_sentence=first["quote_in_sentence"])
+        if len(stated) > 1:
+            term["statements"] = len(stated)
+        if not usable:
+            unclear = unclear or comparable(stated[0], limit["unit"])
+            shown = stated[0].get("value") if stated[0].get("kind") == "single" else stated[0].get("low")
+            term.update(value=shown if isinstance(shown, (int, float)) else None, unit=stated[0].get("unit") or limit["unit"])
+            terms.append(term)
+            continue
+        values = []
+        for f in usable:
+            for v in tested_values(f, op, alone):
+                if not any(abs(v - w) < 1e-9 for w in values):
+                    values.append(v)
+        several = limit.get("several")  # the order may say which of several stated values counts
+        if several == "largest":
+            values = [max(values)]
+        elif several == "smallest":
+            values = [min(values)]
+        terms.append(term)
+        choices.append((term, values))
     out = {"limit_id": limit["id"], "name": limit["name"], "terms": terms, "op": op, "bound": bound}
     if missing:
         out.update({"lhs": None, "expr": None, "pass": False, "margin": None, "state": "not_stated",
                     "missing_figure": missing})
-        if why_missing != "never stated on the page":
-            out["missing_why"] = why_missing
         return out
-    shown = " + ".join("%g" % t["value"] for t in terms)
-    expr = ("%s = %g %s %g" % (shown, lhs, op, bound["value"])) if len(terms) > 1 else \
-        "%g %s %g" % (lhs, op, bound["value"])
-    if op == "==":  # a point on the ruler, not a side: 0 when it matches, otherwise how far off, as a negative
-        ok = abs(lhs - bound["value"]) < 1e-9
-        margin = 0.0 if ok else round(-abs(lhs - bound["value"]), 2)
-        out.update({"lhs": round(lhs, 2), "expr": expr, "pass": ok, "margin": margin, "state": "pass" if ok else "fail"})
+    if unclear:
+        for term, values in choices:
+            term["value"] = values[0]
+        out.update({"lhs": None, "expr": None, "pass": False, "margin": None, "state": "unclear", "unclear_why": unclear})
         return out
-    ok = lhs >= bound["value"] if op == ">=" else lhs <= bound["value"]
-    margin = round(lhs - bound["value"] if op == ">=" else bound["value"] - lhs, 2)
-    if adjustable and ok:  # an adjustable range passes only when the limit lies inside it
-        others = lhs - deciding(adjustable, op)
-        low, high = adjustable["low"] + others, adjustable["high"] + others
-        ok = low <= bound["value"] <= high
-        if not ok:  # the range reaches past the limit but cannot be set to it
-            expr = "%g within %g to %g" % (bound["value"], low, high)
-            margin = round(-abs(low - bound["value"] if op == ">=" else bound["value"] - high), 2)
-    out.update({"lhs": round(lhs, 2), "expr": expr, "pass": ok, "margin": margin, "state": "pass" if ok else "fail"})
+    combos = [(home, [])]
+    for term, values in choices:
+        combos = [(total + v, picked + [v]) for total, picked in combos for v in values][:64]
+    results = [(total, holds(total, op, bound["value"]), margin_of(total, op, bound["value"]), picked)
+               for total, picked in combos]
+    passed = [r for r in results if r[1]]
+
+    def expr_of(total, picked):
+        position, shown = 0, []
+        for t in terms:
+            if t["owner"] == "shopper":
+                shown.append("%g" % t["value"])
+            else:
+                shown.append("%g" % picked[position])
+                position += 1
+        return ("%s = %g %s %g" % (" + ".join(shown), total, op, bound["value"])) if len(terms) > 1 else \
+            "%g %s %g" % (total, op, bound["value"])
+
+    if len(passed) in (0, len(results)):
+        # every stated value agrees. A pass is shown on the value nearest to failing; a failure on the value
+        # nearest to passing, so the line reads "even the best stated value fails".
+        total, ok, margin, picked = (min if passed else max)(results, key=lambda r: r[2])
+        for (term, values), v in zip(choices, picked):
+            term["value"] = v
+        out.update({"lhs": round(total, 2), "expr": expr_of(total, picked), "pass": ok, "margin": margin,
+                    "state": "pass" if ok else "fail"})
+        return out
+    for term, values in choices:  # the stated values differ in outcome: unclear, with what the page states
+        term["value"], term["values"] = values[0], values
+    stated_all = sorted({v for _, values in choices for v in values})
+    unit = next((t["unit"] for t in terms if t["owner"] == "store"), limit["unit"])
+    out.update({"lhs": None, "pass": False, "margin": None, "state": "unclear",
+                "expr": "%s %s %g" % (" or ".join("%g" % r[0] for r in results), op, bound["value"]),
+                "unclear_why": "page states both %s %s" % (" and ".join("%g" % v for v in stated_all), unit),
+                "values": [{"lhs": round(r[0], 2), "pass": r[1]} for r in results]})
     return out
 
 
-def figure_index(figures):
-    """One figure per (store, product, name): the first whose span is found and that is not marked unsure."""
+def figure_index(figures, pool=()):
+    """{(store, product_id, variant_id, figure): [statements]}: every statement of a figure for each candidate.
+    A statement read for one option belongs to that option; one read for the product belongs to all its rows."""
+    rows = {}
+    for p in pool:
+        rows.setdefault((p["store"], p["product_id"]), []).append(p.get("variant_id"))
     figs = {}
     for f in figures:
-        key = (f["store"], f["product_id"], f["figure"])
-        held = figs.get(key)
-        if held is None or (usable_rank(f) < usable_rank(held)):
-            figs[key] = f
+        own = f.get("variant_id")
+        every = rows.get((f["store"], f["product_id"]), [own])
+        for variant in ([own] if own is not None and own in every else every):
+            figs.setdefault((f["store"], f["product_id"], variant, f["figure"]), []).append(f)
     return figs
 
 
@@ -206,7 +286,10 @@ def usable_rank(f):
 
 def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
     facts = {f["id"]: f for f in sheet["shopper_facts"]}
-    figs = figure_index(figures)
+    figs = figure_index(figures, pool)
+    several_rows = {}
+    for p in pool:
+        several_rows[(p["store"], p["product_id"])] = several_rows.get((p["store"], p["product_id"]), 0) + 1
     by_product = {}
     for f in figures:
         by_product.setdefault((f["store"], f["product_id"]), []).append(f)
@@ -223,25 +306,29 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
             a = ans.get(p["store"], {})
             d = a.get("delivery") or {"stated": False}
             missing = [c for c in checks if c["state"] == "not_stated"]
+            failed = [c for c in checks if c["state"] == "fail"]
+            unclear = [c for c in checks if c["state"] == "unclear"]
             strike = struck_by_key.get(p["product_key"])
             if strike:
                 status, reason = "struck", strike["reason"]
+            elif failed:  # a stated value that fails decides, whatever else the page leaves out
+                status, reason = "outside", "%s: %s is false" % (failed[0]["name"], failed[0]["expr"])
             elif missing:
                 status = "not_stated"
-                reason = "%s %s" % (missing[0]["missing_figure"].replace("_", " "),
-                                    missing[0].get("missing_why", "never stated on the page"))
-            elif all(c["pass"] for c in checks):
-                status, reason = "inside", None
+                reason = "%s never stated on the page" % missing[0]["missing_figure"].replace("_", " ")
+            elif unclear:
+                status, reason = "unclear", "%s: %s" % (unclear[0]["name"], unclear[0]["unclear_why"])
             else:
-                bad = next(c for c in checks if not c["pass"])
-                status, reason = "outside", "%s: %s is false" % (bad["name"], bad["expr"])
+                status, reason = "inside", None
             every += 0 if missing else 1
             cands.append({
-                "id": "%s:%s:%s" % (line["id"], p["store"], p["product_id"]),
+                "id": "%s:%s:%s" % (line["id"], p["store"], p["product_id"]) + (
+                    ":%s" % p.get("variant_id") if several_rows[(p["store"], p["product_id"])] > 1 else ""),
                 "order_line": {"id": line["id"], "need": line["need"], "room": line["room"]},
                 "product": {k: p[k] for k in ("store", "product_id", "variant_id", "title", "price_cents", "url",
                                               "fetched_at", "product_key")},
-                "figures": by_product.get((p["store"], p["product_id"]), []),
+                "figures": [f for f in by_product.get((p["store"], p["product_id"]), [])
+                            if f.get("variant_id") in (None, p.get("variant_id")) or several_rows[(p["store"], p["product_id"])] == 1],
                 "checks": checks,
                 "arrival": {"need_by": sheet["need_by"], "status": "stated" if d.get("stated") else "not stated",
                             "quote": d.get("quote"), "days_low": d.get("days_low"), "days_high": d.get("days_high")},
@@ -272,6 +359,8 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
                 reason = "nothing inside the limits states a delivery time"
             elif any(c["status"] == "outside" for c in cands):  # pages that state every figure exist, and all fail
                 reason = "nothing inside the limits"
+            elif any(c["status"] == "unclear" for c in cands):
+                reason = "no page states every figure clearly"
             elif any(c["status"] == "not_stated" for c in cands):
                 reason = "no page states every figure"
             else:
