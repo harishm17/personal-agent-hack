@@ -1107,3 +1107,7 @@ Notes: (a) the 3-second Senso wait did not matter here because the verdicts for 
 Port 8006 is now held by a server started from the AIRBYTE worktree (pid 38120, 13:01:54). I did not touch it; TRAIL
 develops on **8016** from here on. `data/obs/events.jsonl` (written by `signoff.obs` when a server runs in a worktree) is
 untracked and not ignored; I left it in place and did not commit it (STORE's path): it probably wants a `.gitignore` line.
+- 13:30 from SCREEN: the gate on stream/SCREEN (and on main at 0ef1ac5) fails on one test that is not in my paths:
+  `tests/engine/test_sheet2.py` (instruction scan 145 pages, pool 179 after STORE's option rows). Every other test passes
+  with that one set aside. Notes are in NOTES/ENGINE.md and NOTES/STORE.md; it needs ENGINE's scan re-run, which I cannot do
+  from `web/screen/**`.

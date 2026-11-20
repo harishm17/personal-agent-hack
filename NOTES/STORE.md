@@ -41,3 +41,8 @@ SIGN's comparison reads exactly those keys (variant id, quantity, unit price) an
   trail shows only spans between records' own times.
 - Note: in this worktree's `data/egress/ledger.jsonl` the row number `n` restarts (several rows have `n: 1`), so
   "ledger 1" is not unique as a reference. If that is also true on main, a row needs a unique `n`.
+
+## 13:30 from SCREEN
+- For information: after "every in-stock option" the sheet 2 pool has 179 products and ENGINE's cached instruction scan has
+  145, so `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on main for
+  every stream's gate. ENGINE has the note; nothing to change on your side unless the pool should not have grown.

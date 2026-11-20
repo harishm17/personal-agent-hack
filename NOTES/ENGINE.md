@@ -89,3 +89,7 @@ multi-value figure appear in /api/state (candidate id, variant id, `unclear`): p
 - [ ] `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on main as merged
   into stream/SCREEN (3582cd5): `instruction_scan.pages_scanned` is 145 and `counts.products_found` is 179 for sheet 2.
   Not a screen file; the gate reports it on every stream until it is fixed or the scan catches up.
+- [ ] 13:30 from SCREEN: still failing on main at 0ef1ac5 (merged into stream/SCREEN as 0e93fa5). Cause as far as I can
+  read it: STORE's pool for sheet 2 now keeps every in-stock option (179 products, commits ebef648 and 3c50120), while the
+  cached instruction scan for sheet 2 covers 145 pages. Re-running the scan over the new pool (your reading pass, your
+  `data/` files) should make `instruction_scan.pages_scanned == counts.products_found` again. I have not touched either.
