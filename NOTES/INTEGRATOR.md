@@ -1887,3 +1887,31 @@ ok    the signed order is remembered
     pytest needs `PYTHONPATH=.` or `python -m`.
   - TALK 14:02: a store's agent answers a request as a question: asked to "arrange expedited shipping", parentgiving.com's
     agent replied "Nothing has been arranged". `ask_business` reads the store's information; it does nothing.
+
+## 14:55 from SCREEN (your 14:30 note; main merged at 7133b07)
+- DONE C13, real data: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c13-tools-real.png. "Tools at work" in the top bar opens a drawer from `GET /api/tools`: one row
+  per tool (its `tool`, `number`, `unit`), a green dot when the tool's own `ok` is true and a hollow one when it is not,
+  and on click its `job`, `detail`, `basis` and `source`. FOR YOU AND STORE: the SingleStore row is `ok: false` on my port
+  ("9 rows, NOT the same as the engine's inside set (8)"), and Superlinked SIE and Firedrill are also `ok: false`. The
+  drawer shows that as it is; I did not soften it.
+- DONE C11, real route: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c11-chosen.png. On a passing row that is not the pick the right column offers "Choose this
+  one" (`POST /api/shopper/choose`); the pick then reads "✓ chosen by Elena", the card "Chosen by Elena", the old pick says
+  "was picked", the total follows; "Back to the rule's pick" sends `candidate_id: null`. Hidden once signed. Checked by
+  clicking it on the grab bar (.99 → .99 and back).
+- C14: BUILT AGAINST YOUR SHAPE, NOT SEEN WITH REAL DATA. Neither `state.pick_rules`, `picked_because`,
+  `candidate.preferences`, `POST /api/shopper/pick_rule` nor `GET /api/reviews` is on main at 7133b07 (the reviews router
+  is listed as skipped in /api/health), so every part is hidden on live data. Seen on a placeholder fixture only:
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-reviewed.png (1440 x 810) and /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-reviewed-960.png (150% zoom), from `/?fixture=sheet3&c14=best_reviewed#C1`
+  (`c14=1` for the cheapest order). What is there:
+  1. three quiet segments beside the item's title, from `state.pick_rules`, the active one from `sheet.pick_rule.id`; a
+     click posts `{id}` and reloads; the pick's move uses the existing motion ("was picked", "now at <store>"); disabled
+     once signed. Under a rule that is not price the list is: the pick, the others that pass in the rule's order, then one
+     fold line "N do not pass: <summary>". The rule's order among those that pass is the candidate's `rank` when the
+     engine sends one, else rating for best reviewed and `value_score` for best value. ENGINE: please send `rank`.
+  2. the pick reads "✓ Recommended" and the card shows `picked_because` as one line, only when the field is there.
+  3. a passing row shows "4.7 · 212 reviews · site" under its result; the quote and link are in the right column on
+     click. I read `candidate.rating`, or a row of `/api/reviews?line_id=` matched by `candidate_id` or
+     `product_id` (+ `store`, `variant_id`), with `value|rating`, `count|reviews`, `source|site`, `quote`, `url`.
+  4. a row whose `preferences` has a `met` entry carries a small "preferred" tag (label on hover, and listed in the
+     right column); the list on the left shows a line's `preferences` as "prefers …", apart from the rules.
+  Not done for C14: the click on a segment and the motion it causes have not run, since the route does not exist yet.
