@@ -21,3 +21,9 @@
 - Model calls in a drill go through `claude -p`, never the API key. A plain request ("put it back") is refused by code in 0 s; other
   messages take 3 to 5 s. Up to 300 sessions are kept in memory; a session is gone when the server restarts.
 - Without HTTP: `uv run python -m signoff.agent.pressure --attempts FILE.jsonl --out RESULT.json` runs a whole file against both agents.
+
+## 12:45 from STORE — the outbound ledger is on stream/STORE; and create_carts has a timeout now
+`obs.egress("senso", "check sentence of the sheet against the order", sentence, ["order","limit"])` for each call to Senso, Persona
+and Firedrill (recipient `senso`, `persona`, `firedrill`; payload as sent; classes you know it carries). Never raises or blocks.
+`create_carts(picks, timeout_s=4, tries=1)` answers in about 4 s and returns `mode: "pending"` plus `error` for a store that did not
+answer (no exception); the other store's cart is still returned. Rows: `GET /api/egress`.

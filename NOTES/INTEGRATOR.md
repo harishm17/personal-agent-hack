@@ -355,3 +355,46 @@ SQL rows equal the engine's `inside` set (8, 7, 5, 12, 0, 9). **One trap:** ever
 `signoff`, so two servers running at once (main on 8800 and a stream's dev server) overwrite each other's tables and the box
 shows a wrong set (I saw L2 return 0 rows that way). Only main should use `signoff`; a dev server must start with
 `SIGNOFF_DB=signoff_<name>`. The tables are also written under one lock per process now.
+
+## STORE 12:45 — items 1 to 3 of your 12:20 note are on stream/STORE; the outbound ledger is on it too
+**1. Gate evidence** (`GET /api/gate/status`). New fields: `decision` ("switched back" when the gate is off after having been on;
+"switch back advised (the gate is on)" while it is on; "not adopted" if it was never on; "kept" only if nothing differs),
+`decision_text` (one sentence, built by code), `verdict` ("switch back" or "kept"), and `evidence`:
+`products_accepted` {sonnet 67, sie-qwen 81, of 111}, `small_accepts_more` 14, `inside_limits` {41, 53}, `picks_differ_on` ["L2"],
+`disagreements` {different_value 3, small_only 15, reference_only 0}, `figures_in_disagreement` (every item with product, figure,
+quote, what each read, and the reference's reason when it declined), and `example` (the Carex Portable Shower Bench: quote
+`Product Dims (h x w x d): 1.63" x 31" x 14.75"`, read as 31 in by the reference and 14.75 in by the small reader, with a sentence).
+The two arms' product counts come from the engine's own `rules.build_state` run with each arm's figures, so they equal what
+/api/state shows when that arm decides (67 and 81 here). The rule is code: "kept" requires zero figures read differently and zero
+counted that the reference did not; stating more products never counts. History of gate changes is saved in
+`data/egress/gate_history.json` so "switched back" survives a restart. I did not need ENGINE's list: I compare the two readers'
+run files myself. Gate currently on at Statsig (the builder's rule is at 100%): the poller will switch back by itself within about
+13 s once the rule is 0%.
+**2. Passing-box SQL.** The `unsure` filter was already in my branch from 12:15 (main did not have it yet: the 13 rows were that).
+Two more fixes: when a product has two figures of one name the engine keeps the first usable one, and the table now does the same.
+Checked live on all six lines with each reader deciding: SQL rows equal the engine's inside set (reference 8, 7, 5, 12, 0, 9; small
+reader 12, 10, 7, 15, 0, 9). The live test now uses the engine's own rules, marks about a quarter of the figures unsure and adds
+duplicates; removing the `unsure = 0` condition makes it fail (I checked).
+**3. create_carts(picks, timeout_s=30.0, tries=2)**: stores are called at the same time; a store that does not answer returns
+`{store, cart_id: None, cart_url: None, total_cents: None, created_at, mode: "pending", error}` and no exception. SIGN: use
+`create_carts(picks, timeout_s=4, tries=1)` for about 8 s. The stores' endpoints are looked up at startup (`ucp.warm`) so the
+first signing does not pay for it.
+**Outbound ledger.** `obs.egress(recipient, purpose, payload, fact_classes=None)` (never raises, never blocks, returns the row; rows
+in memory and `data/egress/ledger.jsonl`, hashes and sizes only). `GET /api/egress` -> {rows, summary: {messages, by_recipient, by_kind,
+to_stores, limits_in_store_messages, home_measurements_in_store_messages, people_in_store_messages, blocked, checked_by}}. For a
+store the guard looks for each issuer limit value with its unit, each home measurement with its unit and each person's name in the
+serialised payload (current engine sheet and sheet on disk); a hit is listed in `sealed_hits` and the store client **refuses to send**
+the message (`blocked: true`). `fact_classes` is what the caller declares; code adds what it finds (`sealed_found_in_payload`). Wired
+now: store search, ask and cart (the asked questions too), SingleStore writes, Amplitude events (one row per event, plus session
+starts), Statsig (init and each gate change). No `egress` key in /api/state: SCREEN reads the route. Rows from earlier runs are in
+`data/egress/` (not committed; I suggest ignoring that folder). ENGINE, SIGN and AIRBYTE: see the notes I left for them.
+**Your Amplitude question, from the code.** Events carry `tool_call` inputs and outputs in content mode "full". What they hold:
+`check_run` (counts, total_cents, 12 characters of the sheet hash), `figure_read` (store, product id, reader, the figures it read
+from the store's text), `store.*` (the store question and reply, product titles), `gate.changed` (reader numbers),
+`read_state`/`read_candidates` (names only), and **`shopper_say`, whose input is Elena's typed text**. So no limit value, no
+order text and no home measurement is put in an event by the code, except what Elena types: that text can contain a home
+measurement, a limit value or a name. I switched the default to `metadata_only` (verified with the SDK's own event object: in that mode
+`[Agent] Tool Input` and `[Agent] Tool Output` are dropped and only the tool name, success, latency and the experiment arm
+remain), and the ledger records exactly what is sent in each mode. `SIGNOFF_AMPLITUDE_CONTENT=full` brings input and output back
+with one safeguard: an event whose input or output contains a sealed value is sent with `redacted_by_code` instead. Cost of the
+default: Amplitude's Live Events show tool names, latency and arms, not the figure values.

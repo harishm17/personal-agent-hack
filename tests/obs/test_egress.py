@@ -18,7 +18,7 @@ def clean(monkeypatch, tmp_path):
 
 def test_sealed_values_are_found_with_their_units():
     hits = {(h["class"], h["match"]) for h in detect("Holds 300 lb, seat at 19 inches, tub 21.5 in wide; Dana said so")}
-    assert ("limit", "300 lb") in hits and ("limit", "19 inches") in hits
+    assert ("limit", "300 lb") in hits and ("limit", "19 in") in hits
     assert ("home_measurement", "21.5 in") in hits and ("person", "Dana") in hits
     assert detect("shower chair, 30 lb bag, 190 in, 1300 lbs") == []  # other numbers and longer numbers are not ours
 

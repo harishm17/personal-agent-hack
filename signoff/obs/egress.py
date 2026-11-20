@@ -71,8 +71,8 @@ def detect(text: str, sealed: dict | None = None) -> list[dict]:
             u = UNITS.get(unit)
             if not u:
                 continue
-            for m in re.finditer(_num_pattern(v) + r"\s*-?\s*" + u, text, re.I):
-                hits.append({"class": cls, "match": m.group(0).strip().rstrip(".")})
+            if re.search(_num_pattern(v) + r"\s*-?\s*" + u, text, re.I):
+                hits.append({"class": cls, "match": ("%g %s" % (v, unit))})  # one canonical hit per value, however it is spelled
 
     scan(sealed["limits"], "limit")
     scan(sealed["facts"], "home_measurement")

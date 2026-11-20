@@ -29,3 +29,10 @@ asks only what is missing for the engine's current picks (about 1 call a second)
 Example: {"store": "carex.com", "product_id": "gid://shopify/Product/...", "figure": "overall_width",
 "question": "What does Carex Shower Chair state for its overall width, in inches?", "reply": "The store’s available information
 does not specify the Carex Shower Chair’s overall width.", "asked_at": "2026-11-20T12:0x:xx-08:00"}.
+
+## 12:45 from STORE — the outbound ledger is on stream/STORE: call it wherever the engine sends something out
+`from signoff import obs; obs.egress("anthropic:claude-sonnet-5-5", "read figures of one product", text, ["store_text"])` (one call per
+model request: recipient `anthropic:<model>` or `sie:<model>`, purpose, the payload as sent (string or dict), and the classes you know it
+carries: limit, home_measurement, person, order, store_text, product, price, none). It never raises or blocks and returns the row;
+code adds any sealed value it finds (`sealed_found_in_payload`). The chat model call carries Elena's text and tool results: declare
+["person","home_measurement","product"] if they go. Rows: `GET /api/egress`. Also: `signoff.store.asked.load()` has the asked replies (my 12:20 note).
