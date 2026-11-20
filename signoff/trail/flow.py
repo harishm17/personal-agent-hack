@@ -108,14 +108,11 @@ def _read_record(events, extractors):
 
 
 def _never_enters(events) -> str:
-    """What the limit and the measurement never enter, as far as the ledger's rows go. "a model call" only when
-    the ledger has model calls and none of them was given, or was found to hold, a limit or a home measurement.
-    Otherwise the claim is about the page-reading call alone (the call the frame shows), which is how its prompt is
-    built: another call, such as the one that reads the order, does receive the limit."""
-    calls = [e["context"] for e in events or [] if e.get("context") and e.get("to_lane") == "reader"]
-    sealed = {"limit", "home_measurement"}
-    held = any(g.get("id") in sealed for c in calls for g in (c.get("given") or []) + (c.get("found") or []))
-    return "a model call" if calls and not held else "the page-reading call"
+    """What the limit and the measurement never enter. Always the page-reading call, the one the frame shows: that
+    is how its prompt is built. Other model calls do receive them (the order reader is given the limit, the
+    embedding of memories a home measurement), and a ledger that lacks their rows is no proof that they do not,
+    so the figure never says "a model call"."""
+    return "the page-reading call"
 
 
 def build(state: dict, steps: list, events: list, talk=None, memory=None) -> dict:
