@@ -333,7 +333,7 @@ function renderSheet() {
   const step = (n, words, k) => `<div class="count"><span class="n" data-k="count.${k}">${n}</span><span>${words}</span></div>`;
   $("sums").innerHTML = `<div class="counts">
     ${step(c.products_found, `products found<br>at ${stores} stores`, "found")}<span class="op">→</span>
-    ${step(c.state_every_figure, `state every deciding figure<br>${c.hand_checked ? "(hand-checked)" : "(read by the model, not hand-checked)"}`, "every")}<span class="op">→</span>
+    ${step(c.state_every_figure, `state every deciding figure (read by the model;<br>quote found in the store's text by code)`, "every")}<span class="op">→</span>
     ${step(c.inside_limits, `are inside<br>the limits`, "inside")}
     <span class="grow"></span>
     ${step(`${c.lines_ready} of ${c.lines_total}`, `lines ready<br>(lines, not products)`, "ready")}
