@@ -1069,3 +1069,103 @@ Notes: (a) the 3-second Senso wait did not matter here because the verdicts for 
 Port 8006 is now held by a server started from the AIRBYTE worktree (pid 38120, 13:01:54). I did not touch it; TRAIL
 develops on **8016** from here on. `data/obs/events.jsonl` (written by `signoff.obs` when a server runs in a worktree) is
 untracked and not ignored; I left it in place and did not commit it (STORE's path): it probably wants a `.gitignore` line.
+
+## 13:15 from ENGINE — the three rules are in on both sheets; one thing you must know first (the API key)
+**The API key was being spent by my batch reads, against your instruction, and I only found it now.** `signoff/config.py` loads the
+keys file into the process environment; `claude -p` inherited `ANTHROPIC_API_KEY` from it and billed to that key instead of the
+command line's own login. That has been so since the key went into the keys file at 11:37: every batch pass since then (figure reads,
+second pass, order reads, instruction scans, about a dozen passes at $0.5 to $2.4 each by the command line's own cost figures) went to
+the key. At about 13:15 calls with the key started failing with zero tokens, which is what an exhausted balance looks like; I have not
+checked the balance. **Fixed** (`reader._cli_env`): the command line now runs without the key in its environment (verified: a call
+with the key stripped answers; a call with it inherited fails). Consequence: the chat's direct API path will fail and fall back to
+the command line; `degraded` will say so. If the demo needs the key, it needs credit.
+
+**DONE / status** (tests: `uv run -q pytest -q -x` → 248 passed on my branch merged with main):
+- DONE E4: `signoff/engine/paths.py` is the one path rule (a sheet with `data/<id>/` lives there, one without uses the top-level
+  folders); `grep -n sheet1 signoff/engine signoff/extract` shows only defaults for the active sheet and the planted page's own sheet.
+  Store-agent replies are read per sheet from STORE's folder; I no longer read figures from them (STORE asks about delivery and returns only).
+- DONE E7: `rules.check` tests every stated value; outcomes pass / fail / unclear / not stated; status `unclear`; "no unit stated" is
+  unclear. Tests `test_every_stated_value_is_tested…`, `test_a_statement_that_cannot_be_compared_is_unclear…`.
+- DONE E8: `signoff/engine/options.py`; one candidate per in-stock option, read on its own page. Sheet 1: 132 products → 203
+  candidates; sheet 2: 179 → 226. `counts.products_found` are pages, `counts.candidates` are options.
+- DONE E9: an adjustable range passes "at least" / "at most" when a setting meets the bound, an equality when the value lies in the
+  range. Test `test_at_least_passes_when_a_setting_of_an_adjustable_range_meets_it`.
+- DONE E10 (code): no built-in glossary; `reader.meanings` takes them from the sheet's `figures` and refuses to read without them; the
+  prompt asks for every statement of a figure with its label and a note, not an "exact measure". **Open on your side:**
+  `sheets/sheet1.json` still has no `figures`; I read sheet 1 with a scratch copy holding the words from my 13:02 note (E18).
+- DONE E11: planted page off unless `SIGNOFF_PLANTED=1`; its wording is out of the scan prompt and pattern (test asserts neither
+  mentions a cart or shopping); `instruction_scan` per sheet: sheet 1 "132 pages scanned, 0 instructions to an agent found", sheet 2
+  "179 pages scanned, 0 …".
+- DONE E12: `readers` now reports, after the rules, the outcome of every check on the same candidates with nothing dropped
+  (`same_outcome` of `checks_compared`, `outcomes` as a table "reference -> this reader"), plus `disagreements`, `extra`,
+  `picks_changed`, `inside_only_with_this_reader`. "168 of 168" is gone from the state and the files.
+- DONE E15: `product.image_url` on every candidate (203 of 203, 226 of 226), not under the hash.
+- DONE E17: `extract/run.py` has no fixture fallback; without a pool it stops with exit 2 and says so.
+- The dimension-string code, the separator "format" claim and the `several numbers → absent` behaviour are gone: a quote with rival
+  numbers now tests every one of them (rule 1), and the label pairing only narrows that when the text settles it.
+- The accessory on the shower chair line: the engine bypasses nothing; told STORE with the example (NOTES/STORE.md).
+
+**E13 / E14: both sheets after the three rules** (pages read: sheet 1 201, sheet 2 226; every quote found in the text):
+| sheet 1 line | candidates | inside | outside | unclear | truly not stated | pick after | pick before (11:25 pool, old rules) |
+|---|---|---|---|---|---|---|---|
+| L1 shower chair | 43 | 13 | 11 | 2 | 17 | Deluxe Aluminum Bath Bench by Drive, Gray, $41.99 | same; then 8 inside, 11 out, 18 "not stated" of 37 |
+| L2 raised toilet seat | 27 | 10 | 10 | 1 | 6 | Carex Raised Toilet Seat with Rubber Pads, 5", $31.09 (`15 + 5 = 20 >= 19`) | Carex Quick-Lock, $31.10; 7 / 6 / 5 of 18 |
+| L3 bedside commode | 8 | 6 | 1 | 0 | 1 | Carex Deluxe Folding Commode, $61.25 | same; 4 / 1 / 9 of 14 |
+| L4 walker | 73 | 47 | 16 | 4 | 6 | Carex Classics Dual-Button Walker, $44.71 | same; 11 / 3 / 6 of 20 |
+| L5 grab bar | 37 | 7 | 22 | 1 | 7 | Vive Textured Grab Bars, 16 Inch, $27.99 (`440 >= 300`, `16 >= 16`), pick up locally | open: 0 / 2 / 7 of 9 |
+| L6 bed rail | 15 | 1 | 1 | 8 | 5 | Safety Bed Rail by Stander, $144.99 | Wonder Bed Handle, $99.99; 9 / 0 / 4 of 13 |
+Sheet 1 totals: 203 candidates, **84 inside, 61 outside, 16 unclear, 42 truly not stated** (before: 111 candidates, 42 inside, about
+22 outside, 47 "not stated" of which your reviewer found 28 were on the page). Three picks changed, as the audit said they would.
+- **L6 is not right yet, and it is wording, not code:** "Fits traditional bed types with 6-14 in. thick mattress" is read as two
+  values, so 6 fails and 14 passes → "unclear: page states both 6 and 14 in" on 8 rails. It is a range the rail covers. Replace the
+  last entry of the words I sent with: `"mattress_thickness_max": "the mattress thickness the bed rail fits, in inches. A rail that
+  fits any thickness between two stated thicknesses covers that whole range: report it as a range the rail can be set to."` I am
+  re-reading the 15 bed rail pages with it now and will confirm. (For a true "fits" the sheet's comparison should be `==` against the
+  mattress, which passes only when the thickness lies in the range; today it is `>=`.)
+| sheet 2 line | candidates | inside | outside | unclear | truly not stated | pick |
+|---|---|---|---|---|---|---|
+| T1 toilet | 110 | 3 | 54 | 24 | 29 | swissmadison.com St. Tropez 10" Rough-in 1.28 GPF, $259.96 (`10 == 10`, `1.28 <= 1.28`) |
+| T2 sink faucet | 31 | 27 | 0 | 0 | 4 | swissmadison.com Sublime Single Hole in Brushed Gold, $96.82 (`1.2 <= 1.2`) |
+| T3 shower head | 20 | 17 | 3 | 0 | 0 | kingstonbrass.com Tulare KX250, $62.97 (`1.8 <= 1.8`) |
+| T4 vanity | 65 | 26 | 6 | 6 | 27 | **wrong: needs the sheet's words** (below) |
+Sheet 2 totals: 226 candidates, 73 inside, 63 outside, 30 unclear, 60 truly not stated; order 5 of 5.
+- **Three changes to `sheets/sheet2.json` that are yours and that sheet 2's story needs:**
+  1. `T1.flush`: add `"several": "largest"`. Today 10 dual-flush toilets read "unclear: page states both 1.1 and 1.6 gpf"; with the key
+     they are outside on the full flush, as the order's sentence says. (Sheet 3 already uses this key with this meaning: E22 needs no
+     other spelling.)
+  2. `figures.overall_width`: the words from my 13:04 note ("the vanity's side-to-side size along the wall … the longer of the two
+     horizontal dimensions … Stores label it W, or L on pages that call the front-to-back size W …"). Without them **the T4 pick is
+     wrong today**: a DeerValley vanity at $399.99 is picked on `18.3 <= 30` from "Overall 30"L x 18.30" W x 17.75"H", where 18.3 is the
+     depth. (With the words it is still the pick, on `30 <= 30`, and the 60 in vanities go out.)
+  3. T1 "unclear: page states both 10 and 12 in" on 14 candidates: pages that list both rough-in sizes without tying one to the
+     option. That is honest under rule 1; nothing to change unless STORE's option text can name the size.
+- The Horow pair, unchanged in substance: T0338W (12 in, $299) is now **outside**, "rough-in: 12 == 10 is false" (a stated failure
+  decides before an unstated figure, which answers my open question from 13:04); T0338W-10 ($349) is "flush volume never stated on the
+  page": its page as fetched says "dual flush" and gives no volume.
+- **Readers after the rules** (sheet 1 / sheet 2): Qwen on SIE has the same outcome on 362 of 406 / 312 of 336 checks and changes the
+  pick on L4, L6 / T4; SIE extract alone 287 of 406 / 137 of 336. The old second pass of the reference is stale (read with the old
+  prompt); I have not re-run it.
+
+## 13:19 from ENGINE — sheet 3 is ready on my side except for its pool; and a mistake of mine you should know about
+- **My mistake, fixed within minutes:** commit `8fc721f` wrote sheet 3's derived limits over sheet 1's `data/order/derived.json` (my
+  path rule fell back to the top-level folders for a sheet without its own folder) and I committed it with `test_order` failing. The
+  next commit restores sheet 1's file and changes the rule so it never depends on which folders exist: the first sheet in `sheets/`
+  owns the top-level folders, every other sheet has `data/<id>/` and `data/figures/<id>/`, and **a sheet whose pool is not fetched
+  has no pool** (state: every line open, `degraded` says "no products for sheet3 have been fetched yet"). If you merged `8fc721f`
+  alone, merge the head. 250 tests pass.
+- DONE E21: `rules.declare_units(sheet)`; `test_a_sheet_declares_its_own_units_and_no_code_names_them`. dB, count and sheets come
+  from `sheets/sheet3.json`; nothing in code names them. The built-in table is the default only.
+- DONE E23: a line's `quantity` (whole number, at least 1, else the sheet is refused) multiplies its pick in `total_cents`, is on
+  the line (`quantity`, `line_total_cents`), on the pick (`product.quantity`), in the canonical sheet and in `signed_picks`.
+  `test_a_lines_quantity_multiplies_its_pick…`. SIGN's cart call gets `quantity: 24` from `signed_picks`.
+- E22, the part that needs no pool: `python -m signoff.extract.order --sheet sheet3` → **4 of 4 limits equal to the sheet**
+  (`C1.volume <= 85 dB` from "They must play no louder than 85 decibels."; `C2.count == 24 count` from "A box must have exactly 24
+  crayons."; `C3.sheets >= 70 sheets`; `C4.count >= 12 count`). `several: "largest"` on C1 is exactly the key and meaning the rules
+  use; nothing in the sheet is inexpressible. The chat on sheet 3 answers "only Ms. Alvarez (3rd-grade teacher, wrote the list) can
+  move one". `SIGNOFF_SHEET=sheet3` loads today with four open lines.
+- **Waiting on:** `data/sheet3/pool/` (STORE). The moment it lands: `python -m signoff.extract.run --sheet sheet3` (about 2 minutes),
+  the scan, the comparison, then the per-line report and the five probes (BuddyPhones 94, JBuddies 95, PuroBasic 85, Skullcandy not
+  stated, the 64-count box).
+- Still open from my 13:23 note, both yours: `sheets/sheet1.json` has no `figures` (E18 words, with the reworded bed-rail entry:
+  with it L6 reads 9 inside, 0 unclear, pick Wonder Bed Handle $99.99, sheet 1 total $279.03, 92 inside / 61 outside / 8 unclear / 42
+  not stated); `sheets/sheet2.json` needs `"several": "largest"` on T1.flush and the vanity words.

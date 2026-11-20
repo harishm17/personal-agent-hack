@@ -25,7 +25,7 @@ import re
 import sys
 
 from signoff import config
-from signoff.engine import rules
+from signoff.engine import paths, rules
 from signoff.extract import reader, spans
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -65,13 +65,13 @@ def doc_of(sheet):
 
 
 def out_of(sheet_id):
-    return OUT if sheet_id == "sheet1" else ROOT / "data" / "figures" / sheet_id / "_order" / "derived.json"
+    return paths.of(sheet_id)["order"]
 
 
 def vocabulary(sheet):
     figures = sorted({t["figure"] for line in sheet["lines"] for l in line["limits"] for t in l["terms"]
                       if t["source"] == "store"})
-    meanings = dict(reader.GLOSSARY, **(sheet.get("figures") or {}))
+    meanings = sheet.get("figures") or {}  # the sheet's own words; a figure without them is given by name
     return ("Figures a store page can state:\n%s\n\nMeasurements of the home (the shopper holds the values; you "
             "only need the names):\n%s" % (
                 "\n".join("- %s: %s" % (n, meanings.get(n, n.replace("_", " "))) for n in figures),
@@ -131,6 +131,7 @@ def same_as_sheet(derived, limit):
 def derive(text, sheet, model=None):
     """The order read once: (document dict for derived.json)."""
     model = model or config.env("SIGNOFF_READER_MODEL") or reader.DEFAULT_MODEL
+    rules.declare_units(sheet)
     user = "%s\n\nThe order, between the markers:\n<<<ORDER\n%s\nORDER>>>" % (vocabulary(sheet), text)
     reply, usage, extractor = reader.ask(model, SYSTEM, user, purpose="read the limits from the written order",
                                          fact_classes=["order", "limit", "person"])

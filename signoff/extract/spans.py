@@ -187,12 +187,14 @@ def quote_numbers(quote):
         found.append({"value": value, "start": m.start(), "end": m.end(), "family": None})
     for n in found:
         tail = quote[n["end"]:n["end"] + 12].lstrip(" \t")
-        for name, pattern in FAMILIES:
+        declared = [(rules.FAMILY.get(name, name), "(?:%s)(?![A-Za-z])" % "|".join(re.escape(x) for x in spellings))
+                    for name, spellings in rules.DECLARED.items()]
+        for name, pattern in declared + list(FAMILIES):
             if re.match(pattern, tail, re.I):
                 n["family"] = name
                 break
         else:  # a short unit-like word of some other kind ("60 PSI", "120 V") is a unit too, just not one of ours
-            word = re.match(r"([A-Za-z]{2,4})\b(?!\s*[:=])", tail)
+            word = re.match(r"([A-Za-z]{2,4}|[a-z]{5,8})\b(?!\s*[:=])", tail)  # short, or a lower-case word: "hours"
             if word and word.group(1).lower() not in NOT_UNITS:
                 n["family"] = "other unit"
     for i in range(len(found) - 2, -1, -1):  # a number joined to the next one shares its unit

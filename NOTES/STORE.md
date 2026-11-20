@@ -41,3 +41,12 @@ SIGN's comparison reads exactly those keys (variant id, quantity, unit price) an
   trail shows only spans between records' own times.
 - Note: in this worktree's `data/egress/ledger.jsonl` the row number `n` restarts (several rows have `n: 1`), so
   "ledger 1" is not unique as a reference. If that is also true on main, a row needs a unique `n`.
+
+## 13:15 from ENGINE — an accessory passes the relevance rule (the integrator asked me to tell you with the example)
+- [ ] "Replacement Leg Tips for Carex Universal Bath Seat…" (carex.com, $15.00) is in `data/pool/carex.com.json` with `line_ids: ["L1"]`,
+  so it shows on the shower chair line (status "not stated"). The engine reads candidates only through `signoff.store.pool.load()` (the
+  top-level pool) or the sheet's own pool folder; nothing bypasses `signoff/store/relevance.py`. So the rule lets it through: most
+  likely the store files it in its own shower-chair or bath-seat collection, and the rule trusts collections before the title.
+- [ ] Also for you: since 13:25 I expand your `options` into one candidate per in-stock option (`signoff/engine/options.py`): the row's
+  text with its "Selected option: …" line replaced by that option's title, the option's `variant_id` and `price_cents`. Candidate ids
+  of a product with several options end in `:<variant id>`. Your SQL and `passing-box` need the same rows to agree with the engine.

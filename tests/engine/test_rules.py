@@ -232,3 +232,14 @@ def test_gallons_per_flush_and_per_minute_are_units_and_litres_convert():
     assert rules.unit_name("GPF") == "gpf" and rules.unit_name("gallons per minute") == "gpm"
     assert rules.convert(4.8, "Lpf", "gpf") == 1.27 and rules.convert(1.28, "gpf", "gpf") == 1.28
     assert rules.convert(1.2, "gpm", "gpf") is None  # a flow is not a flush volume
+
+
+def test_a_lines_quantity_multiplies_its_pick_in_the_total_and_a_bad_one_is_an_error():
+    import pytest
+    sheet, pool, figures, answers, strikes = inputs()
+    one = rules.build_state(sheet, pool, figures, answers, strikes)["total_cents"]
+    sheet["lines"][1]["quantity"] = 24  # L2's pick, fx-A at 2752, twenty-four times
+    assert rules.build_state(sheet, pool, figures, answers, strikes)["total_cents"] == one + 23 * 2752
+    sheet["lines"][1]["quantity"] = 0
+    with pytest.raises(ValueError, match="quantity"):
+        rules.validate_sheet(sheet)
