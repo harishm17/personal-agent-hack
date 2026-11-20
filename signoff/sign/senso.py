@@ -33,7 +33,8 @@ STORE_SENTENCES = config.env("SENSO_STORE_SENTENCES") == "1"  # off: a quote nam
 STORE_BLOCKS = config.env("SENSO_BLOCK_STORE") == "1"
 _lock = threading.RLock()
 _checks: list[dict] = []
-_meta: dict = {"for_hash": None, "ran_at": None, "error": None}
+_meta: dict = {"for_hash": None, "ran_at": None, "error": None, "running_for": None}
+_kick = threading.Event()  # set: start the next run now, without the debounce
 
 
 def blocking_verdicts() -> tuple:
@@ -54,6 +55,7 @@ def reset() -> None:
     with _lock:
         _checks.clear()
         _meta.update(for_hash=None, ran_at=None, error=None)
+    _kick.set()  # a reset starts a fresh run in the background
 
 
 def set_checks(checks: list[dict], for_hash: str | None = None) -> None:
@@ -68,7 +70,22 @@ def checks() -> dict:
     return {"configured": configured(), "label": None if configured() else "Senso not connected: no verdicts yet",
             "checks": rows, "blocking": [c for c in rows if c.get("blocks") and c.get("verdict") in blocking_verdicts()],
             "blocks_on": list(blocking_verdicts()),
-            "for_hash": meta["for_hash"], "ran_at": meta["ran_at"], "error": meta["error"]}
+            "for_hash": meta["for_hash"], "ran_at": meta["ran_at"], "error": meta["error"],
+            "running": meta["running_for"] is not None, "running_for": meta["running_for"]}
+
+
+def running_for() -> str | None:
+    with _lock:
+        return _meta["running_for"]
+
+
+def kick() -> None:
+    """Ask for a run now (the Sign view opened, or a reset); the background watcher starts it, never a request."""
+    _kick.set()
+
+
+def kicked() -> bool:
+    return _kick.is_set()
 
 
 def blocking() -> list[dict]:
@@ -263,10 +280,17 @@ def run_checks(state: dict, current_hash: str | None = None) -> dict:
     """Judges every sentence (a few in parallel) and keeps the rows for `GET /api/senso/checks`."""
     if not configured():
         return checks()
-    sentences = sentences_for(state)
-    with httpx.Client(headers=_headers(), timeout=120) as client, futures.ThreadPoolExecutor(6) as pool:
-        rows = list(pool.map(lambda s: judge(client, s), sentences))
-    set_checks(rows, current_hash)
+    _kick.clear()
+    with _lock:
+        _meta["running_for"] = current_hash or "?"
+    try:
+        sentences = sentences_for(state)
+        with httpx.Client(headers=_headers(), timeout=120) as client, futures.ThreadPoolExecutor(6) as pool:
+            rows = list(pool.map(lambda s: judge(client, s), sentences))
+        set_checks(rows, current_hash)
+    finally:
+        with _lock:
+            _meta["running_for"] = None
     return checks()
 
 

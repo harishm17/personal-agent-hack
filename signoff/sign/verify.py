@@ -10,7 +10,9 @@ import base64
 import hashlib
 import json
 import pathlib
+import secrets
 import threading
+import time
 from dataclasses import dataclass, field
 
 from cryptography.exceptions import InvalidSignature
@@ -25,9 +27,9 @@ RUNTIME = pathlib.Path(__file__).resolve().parent / "_runtime"
 class Refused(Exception):
     """A request the server will not act on. `code` is stable and shown to the phone; `status` is HTTP."""
 
-    def __init__(self, code: str, detail: str, status: int = 403):
+    def __init__(self, code: str, detail: str, status: int = 403, retry_ok: bool = False):
         super().__init__(detail)
-        self.code, self.detail, self.status = code, detail, status
+        self.code, self.detail, self.status, self.retry_ok = code, detail, status, retry_ok
 
 
 def b64u_decode(text: str) -> bytes:
@@ -87,39 +89,59 @@ class IssuerKey:
 
 
 class KeyStore:
-    """One issuer key per run. Kept in memory and in `_runtime/keystore.json` so a server restart during a
-    rehearsal does not lose the enrolment; `POST /api/admin/reset` clears both."""
+    """One issuer key per run, and the one-time code that enrolling it needs. Kept in memory and in
+    `_runtime/keystore.json` so a server restart during a rehearsal keeps both; `POST /api/admin/reset` clears the
+    key and makes a new code. The code is shown only on the laptop (`GET /api/issuer/enroll-code`)."""
+
+    MAX_WRONG, LOCK_S = 5, 60
 
     def __init__(self, path: pathlib.Path | None = RUNTIME / "keystore.json"):
         self.path = path
         self.lock = threading.RLock()
         self.key: IssuerKey | None = None
+        self.code: str = ""
+        self.wrong, self.locked_until = 0, 0.0
         self._load()
+        if not self.code:
+            self.code = self._new_code()
+            self._save()
+
+    @staticmethod
+    def _new_code() -> str:
+        return secrets.token_hex(3)  # six hex characters, typed or read from a link
 
     def _load(self) -> None:
         try:
             if self.path and self.path.exists():
-                self.key = IssuerKey(**json.loads(self.path.read_text()))
+                raw = json.loads(self.path.read_text())
+                self.code = raw.get("code", "")
+                if raw.get("key"):
+                    self.key = IssuerKey(**raw["key"])
         except Exception:  # noqa: BLE001
-            self.key = None
+            self.key, self.code = None, ""
 
     def _save(self) -> None:
         if not self.path:
             return
         try:
             self.path.parent.mkdir(parents=True, exist_ok=True)
-            if self.key:
-                self.path.write_text(json.dumps(self.key.__dict__))
-            elif self.path.exists():
-                self.path.unlink()
+            self.path.write_text(json.dumps({"code": self.code, "key": self.key.__dict__ if self.key else None}))
         except OSError:
             pass  # the in-memory copy still works
 
-    def enroll(self, jwk: dict, name: str, now: str) -> IssuerKey:
+    def enroll(self, jwk: dict, name: str, now: str, code: str = "") -> IssuerKey:
         with self.lock:
+            if time.time() < self.locked_until:
+                raise Refused("code_locked", "too many wrong codes; wait a minute or use the laptop", 429)
+            if not code or not secrets.compare_digest(str(code), self.code):
+                self.wrong += 1
+                if self.wrong >= self.MAX_WRONG:
+                    self.wrong, self.locked_until = 0, time.time() + self.LOCK_S
+                raise Refused("bad_code", "the enrolment code is missing or wrong (it is shown on the laptop)", 403)
             if self.key:
                 raise Refused("already_enrolled", "an issuer key is already enrolled; reset first", 409)
             public_key_from_jwk(jwk)
+            self.wrong = 0
             self.key = IssuerKey(key_id_for(jwk), (name or "Issuer").strip()[:60] or "Issuer", clean_jwk(jwk), now)
             self._save()
             return self.key
@@ -127,6 +149,8 @@ class KeyStore:
     def reset(self) -> None:
         with self.lock:
             self.key = None
+            self.code = self._new_code()
+            self.wrong, self.locked_until = 0, 0.0
             self._save()
 
     def update(self, **fields) -> None:

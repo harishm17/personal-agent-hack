@@ -6,10 +6,15 @@ for them."""
 from __future__ import annotations
 
 import importlib
+import inspect
+import json
+import secrets
 import threading
+import time
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Request
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse
 
 from signoff import config
@@ -33,6 +38,27 @@ def get_cart():
 
 def _now() -> str:
     return datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
+
+
+def receipt(kind: str, outcome: str, detail: str = "", payload: dict | None = None) -> None:
+    """Writes a receipt for a signed request, accepted or refused, if the engine's receipt chain is on main.
+    Never raises, never waits."""
+    try:
+        mod = importlib.import_module("signoff.engine.receipts")
+        fn = getattr(mod, "add", None) or getattr(mod, "record", None) or getattr(mod, "append", None)
+        if fn:
+            key = keystore.key
+            fn(type=kind, actor=key.name if key else None, key_id=key.key_id if key else None,
+               body={"outcome": outcome, "reason": detail, **(payload or {})})
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def _kind_of(body: dict) -> str:
+    try:
+        return str(json.loads(body["payload"]).get("type") or "request")
+    except Exception:  # noqa: BLE001
+        return "request"
 
 
 def _fail(error: Refused) -> JSONResponse:
@@ -67,7 +93,7 @@ def _push_issuer_key(engine) -> None:
 async def enroll(request: Request):
     body = await _json(request)
     try:
-        key = keystore.enroll(body.get("public_key_jwk"), str(body.get("name") or ""), _now())
+        key = keystore.enroll(body.get("public_key_jwk"), str(body.get("name") or ""), _now(), str(body.get("code") or ""))
     except Refused as error:
         return _fail(error)
     try:
@@ -77,8 +103,34 @@ async def enroll(request: Request):
     return {"ok": True, "key_id": key.key_id}
 
 
+def _laptop_only(request: Request) -> bool:
+    """True for a request from the laptop running the app, or one carrying X-Admin-Token. A request that came through
+    the public tunnel (proxy headers, or a client address that is not loopback) is refused. GET routes are not covered
+    by the app's admin guard, so this route checks for itself."""
+    h = request.headers
+    token = config.env("SIGNOFF_ADMIN_TOKEN") or ""
+    given = h.get("x-admin-token") or ""
+    if token and given and secrets.compare_digest(given, token):
+        return True
+    if h.get("cf-connecting-ip") or h.get("cf-ray") or h.get("x-forwarded-for"):
+        return False
+    host = request.client.host if request.client else ""
+    return host in ("127.0.0.1", "::1", "localhost", "testclient")
+
+
+@router.get("/api/issuer/enroll-code")
+def enroll_code(request: Request):
+    """The one-time code that enrolling the approver's phone needs, and the link that carries it. Laptop only:
+    through the tunnel this answers 403 `local_only`. A new code after every reset."""
+    if not _laptop_only(request):
+        return JSONResponse({"error": "local_only", "detail": "The enrolment code is shown on the laptop."}, status_code=403)
+    url = config.public_url() or "http://localhost:8800"
+    return {"code": keystore.code, "enrolled": bool(keystore.key), "url": "%s/phone/?code=%s" % (url, keystore.code)}
+
+
 @router.get("/api/issuer/status")
 def issuer_status():
+    ensure_watcher()
     return {**_issuer_info(), "senso": senso.checks()}
 
 
@@ -127,14 +179,106 @@ def _picks(state: dict) -> list[dict]:
     return out
 
 
+_late: dict = {}  # the signed record, so a cart that answers after the seal can still be added to it
+
+
+def _check_totals(carts: list[dict], picks: list[dict], state: dict) -> list[dict]:
+    """The store's cart total against the signed total, per store. A difference is shown on the cart ("store total
+    differs", both numbers), never hidden and never re-priced."""
+    price = {}
+    for line in state["lines"]:
+        for c in line["candidates"]:
+            price[(c["product"]["store"], c["product"]["variant_id"])] = c["product"]["price_cents"]
+    signed = {}
+    for p in picks:
+        signed[p["store"]] = signed.get(p["store"], 0) + price.get((p["store"], p["variant_id"]), 0) * int(p.get("quantity", 1))
+    out = []
+    for c in carts:
+        c = dict(c, signed_total_cents=signed.get(c["store"]))
+        if c.get("total_cents") is not None and c["signed_total_cents"] is not None and c["total_cents"] != c["signed_total_cents"]:
+            c["total_differs"] = True
+            c["note"] = "store total differs: signed $%.2f, store $%.2f" % (c["signed_total_cents"] / 100, c["total_cents"] / 100)
+        out.append(c)
+    return out
+
+
+def _carts_within(picks: list[dict], budget: float) -> list[dict]:
+    """One thread per store, one try each, answers within `budget` seconds in all. A store that has not answered gets
+    a `pending` entry (its thread goes on and the entry is filled in when it answers); a store that errors gets a
+    `failed` entry. Never a hang."""
+    by_store: dict[str, list[dict]] = {}
+    for p in picks:
+        by_store.setdefault(p["store"], []).append(p)
+    box: dict[str, dict] = {}
+
+    def work(store: str, items: list[dict]) -> None:
+        try:
+            create = get_cart().create_carts
+            extra = {k: v for k, v in (("timeout_s", 20), ("tries", 1)) if k in inspect.signature(create).parameters}
+            made = create(items, **extra)
+            box[store] = {"carts": made}
+        except Exception as error:  # noqa: BLE001
+            box[store] = {"error": type(error).__name__}
+        if store in _late.get("pending", set()):
+            _late_fill(store, box[store])
+
+    _late["pending"] = set()
+    threads = {store: threading.Thread(target=work, args=(store, items), daemon=True) for store, items in by_store.items()}
+    for t in threads.values():
+        t.start()
+    deadline = time.time() + budget
+    for t in threads.values():
+        t.join(max(0.0, deadline - time.time()))
+    out = []
+    for store in by_store:
+        got = box.get(store)
+        now = _now()
+        if got and got.get("carts"):
+            out += got["carts"]
+        elif got:
+            out.append({"store": store, "cart_id": None, "cart_url": None, "total_cents": None, "created_at": now,
+                        "mode": "failed", "note": "the store answered with an error (%s); no cart was created" % got["error"]})
+        else:
+            _late["pending"].add(store)
+            out.append({"store": store, "cart_id": None, "cart_url": None, "total_cents": None, "created_at": now,
+                        "mode": "pending", "note": "the store had not answered in %g s; the cart is still being created" % budget})
+    return out
+
+
+def _late_fill(store: str, got: dict) -> None:
+    """A store answered after the seal: put its cart in the signed record."""
+    ctx = _late.get("ctx")
+    if not ctx:
+        return
+    with ctx["lock"]:
+        carts = [c for c in ctx["carts"] if not (c["store"] == store and c["mode"] == "pending")]
+        if got.get("carts"):
+            carts += _check_totals(got["carts"], ctx["picks"], ctx["state"])
+        else:
+            carts.append({"store": store, "cart_id": None, "cart_url": None, "total_cents": None, "created_at": _now(),
+                          "mode": "failed", "note": "the store answered with an error (%s)" % got.get("error")})
+        ctx["carts"] = carts
+        try:
+            ctx["engine"].mark_signed(ctx["signature"], carts)
+        except Exception:  # noqa: BLE001
+            pass
+
+
 @router.post("/api/issuer/request")
 async def issuer_request(request: Request):
     body = await _json(request)
+    return await run_in_threadpool(_handle_request, body)  # blocking work stays off the event loop
+
+
+def _handle_request(body: dict):
+    ensure_watcher()
     with _lock:
         try:
             engine = get_engine()
             state = engine.get_state()
-            payload = verify_request(keystore, body, sheet_id=state["sheet"]["id"], current_hash=engine.sheet_hash())
+            prev_seq = keystore.key.last_seq if keystore.key else None
+            snap_hash = state.get("sheet_hash") or engine.sheet_hash()  # the hash of the very state the picks come from
+            payload = verify_request(keystore, body, sheet_id=state["sheet"]["id"], current_hash=snap_hash)
             if state["seal"].get("signed"):
                 raise Refused("already_signed", "the sheet is signed; reset to sign again", 409)
             _check_action(payload, state)
@@ -142,27 +286,42 @@ async def issuer_request(request: Request):
             if payload["type"] != "sign_sheet":
                 result = engine.apply_issuer({**payload, "signer": signer})
                 return {"ok": True, "applied": payload["type"], "version": _version(result, engine)}
-            if config.env("PERSONA_REQUIRED") == "1" and not persona.status().get("verified"):
-                raise Refused("identity_needed", "PERSONA_REQUIRED is on: the signer must pass the identity check first", 403)
-            blocked = _senso_for(engine, state)
-            if blocked:
-                raise Refused("senso_blocked", "Senso found %d sentence(s) in conflict or unsupported" % len(blocked), 409)
+            who = persona.status() if persona.record().get("inquiry_id") else persona.record()  # read from Persona's backend
+            if config.env("PERSONA_REQUIRED") == "1" and not who.get("verified"):
+                raise Refused("identity_not_verified", "identity not verified", 403, retry_ok=True)
+            gate = _senso_gate(engine)
+            if gate["blocking"]:
+                raise Refused("senso_blocked", "Senso found %d sentence(s) in conflict or unsupported" % len(gate["blocking"]), 409, retry_ok=True)
             picks = _picks(state)
             if not picks:
-                raise Refused("nothing_to_buy", "no line has a pick to put in a cart", 409)
-            try:
-                carts = get_cart().create_carts(picks)
-            except Exception as error:  # noqa: BLE001
-                raise Refused("cart_failed", "the stores did not create the carts (%s); nothing is signed" % type(error).__name__, 502) from error
-            if not carts:
-                raise Refused("cart_failed", "no cart came back; nothing is signed", 502)
+                raise Refused("nothing_to_buy", "no line has a pick to put in a cart", 409, retry_ok=True)
+            carts = _carts_within(picks, CART_BUDGET_S)
+            if not any(c["mode"] in ("pending",) or c.get("cart_url") for c in carts):
+                raise Refused("cart_failed", "no store created a cart (%s); nothing is signed" % "; ".join(c.get("note", "") for c in carts), 502, retry_ok=True)
             at = _now()
-            signature = {"name": signer["name"], "signer": signer, "at": at, "signed_at": at, "sheet_hash": payload["sheet_hash"], "sig": body["sig"],
-                         "payload": body["payload"], "seq": payload["seq"], "persona": persona.record(),
-                         "senso": senso.checks()["checks"]}
-            result = engine.mark_signed(signature, carts)
-            return {"ok": True, "applied": "sign_sheet", "carts": carts, "version": _version(result, engine)}
+            basis = "identity checked, sandbox" if who.get("verified") else "self-declared"
+            carts = _check_totals(carts, picks, state)
+            signature = {"name": "%s (%s)" % (signer["name"], basis), "name_basis": basis, "signer": signer, "at": at, "signed_at": at, "sheet_hash": payload["sheet_hash"], "sig": body["sig"],
+                         "payload": body["payload"], "seq": payload["seq"], "persona": who,
+                         "senso": {"status": gate["status"], "for_hash": gate.get("for_hash"), "checks": gate["checks"],
+                                   "label": "Senso check still running" if gate["status"] == "pending" else None}}
+            try:
+                mark = engine.mark_signed
+                result = mark(signature, carts, signed_hash=payload["sheet_hash"]) if "signed_hash" in inspect.signature(mark).parameters \
+                    else mark(signature, carts)
+            except ValueError as error:  # the engine saw the sheet move while the carts were being made
+                if getattr(error, "status", None) == 409:
+                    raise Refused("sheet_moved", "the sheet changed while signing; nothing is signed. Carts made for the old sheet: %s"
+                                  % ", ".join(c["cart_url"] for c in carts if c.get("cart_url")) , 409, retry_ok=True) from error
+                raise
+            _late["ctx"] = {"engine": engine, "signature": signature, "carts": carts, "lock": threading.Lock(), "picks": picks, "state": state}
+            receipt("sign_sheet", "accepted", "", {"sheet_hash": payload["sheet_hash"]})
+            return {"ok": True, "applied": "sign_sheet", "carts": carts, "senso": gate["status"], "version": _version(result, engine)}
         except Refused as error:
+            if error.retry_ok and keystore.key and prev_seq is not None:
+                keystore.update(last_seq=prev_seq)  # nothing happened, so the same signed request may be sent again
+            if error.retry_ok or error.code in ("stale_hash", "replayed_seq", "bad_signature", "unsigned", "not_enrolled", "unknown_key", "wrong_sheet", "already_signed"):
+                receipt(_kind_of(body), "refused", error.code + ": " + error.detail)
             return _fail(error)
         except ModuleNotFoundError as error:
             return _fail(Refused("engine_unavailable", "the engine is not loaded (%s)" % error.name, 503))
@@ -194,36 +353,85 @@ def persona_status():
     return persona.status()
 
 
-def _senso_for(engine, state: dict) -> list[dict]:
-    """Makes sure the verdicts are for the sheet as it is now (runs them if not) and returns the blocking ones.
-    Senso being unreachable does not stop a signature; the row says it was not checked."""
-    if senso.configured() and senso.checks()["for_hash"] != engine.sheet_hash():
+# Senso never runs inside a signing request. A background watcher runs it whenever the sheet hash changes (after a
+# short debounce), when the Sign view opens or after a reset; `sign_sheet` only reads what is there, waits a little
+# for a run in progress, and otherwise signs with the check marked pending.
+DEBOUNCE_S = 1.5
+SENSO_WAIT_S = 3.0
+CART_BUDGET_S = 5.0
+_watcher: dict = {"thread": None}
+
+
+def _senso_run_now(engine) -> None:
+    state = engine.get_state()
+    if state["seal"].get("signed"):
+        return
+    h = engine.sheet_hash()
+    senso.run_checks(state, h)
+    if hasattr(engine, "set_senso"):
+        engine.set_senso(senso.checks()["checks"])
+
+
+def _watch() -> None:
+    last, changed_at = None, 0.0
+    while True:
+        time.sleep(0.4)
         try:
-            senso.run_checks(state, engine.sheet_hash())
-            if hasattr(engine, "set_senso"):
-                engine.set_senso(senso.checks()["checks"])
+            if not senso.configured():
+                continue
+            engine = get_engine()
+            h = engine.sheet_hash()
+            now = time.time()
+            if h != last:
+                last, changed_at = h, now
+            if senso.checks()["for_hash"] == h or senso.running_for() is not None:
+                continue
+            if now - changed_at < DEBOUNCE_S and not senso.kicked():
+                continue
+            _senso_run_now(engine)
         except Exception as error:  # noqa: BLE001
-            senso.set_checks([], None)
             senso._meta["error"] = type(error).__name__
-    return senso.blocking()
+            senso._kick.clear()
+            time.sleep(2)
+
+
+def ensure_watcher() -> None:
+    t = _watcher["thread"]
+    if t is None or not t.is_alive():
+        _watcher["thread"] = threading.Thread(target=_watch, name="senso-watcher", daemon=True)
+        _watcher["thread"].start()
+
+
+def _senso_gate(engine) -> dict:
+    """What `sign_sheet` does about Senso: apply verdicts for the current hash if they exist, wait at most
+    SENSO_WAIT_S for a run in progress, otherwise go on with status "pending". Only a verdict that actually came back
+    as blocking blocks."""
+    if not senso.configured():
+        c = senso.checks()
+        return {"status": "not_connected", "blocking": c["blocking"], "checks": c["checks"]}
+    h = engine.sheet_hash()
+    senso.kick()  # make sure a run is on its way; the watcher starts it, not this request
+    deadline = time.time() + SENSO_WAIT_S
+    while senso.checks()["for_hash"] != h and time.time() < deadline:
+        time.sleep(0.2)
+    c = senso.checks()
+    if c["for_hash"] == h:
+        return {"status": "complete", "blocking": c["blocking"], "checks": c["checks"], "for_hash": h}
+    return {"status": "pending", "blocking": [], "checks": [], "for_hash": h}
 
 
 @router.get("/api/senso/checks")
 def senso_checks():
+    ensure_watcher()
     return senso.checks()
 
 
 @router.post("/api/senso/run")
 def senso_run():
-    """Judge every sentence of the sheet as it stands and hand the rows to the engine for the screen."""
-    with _lock:
-        engine = get_engine()
-        if not senso.configured():
-            return senso.checks()
-        senso.run_checks(engine.get_state(), engine.sheet_hash())
-        if hasattr(engine, "set_senso"):
-            engine.set_senso(senso.checks()["checks"])
-        return senso.checks()
+    """Asks for a run now and returns at once; the phone polls `GET /api/senso/checks` for the answer."""
+    ensure_watcher()
+    senso.kick()
+    return senso.checks()
 
 
 @router.post("/api/senso/load")
@@ -235,8 +443,17 @@ def senso_load():
     return {**result, "processing": senso.wait_processed(timeout=5)}
 
 
+@router.post("/api/admin/persona/simulate")
+async def admin_persona_simulate(request: Request):
+    """Rehearsal control, not on the phone's path: `{"action": "decline"}` or `{"action": "approve"}` on the current
+    sandbox inquiry, so the identity gate can be seen holding and then letting the same signature through."""
+    body = await _json(request)
+    return await run_in_threadpool(persona.simulate, str(body.get("action", "")))
+
+
 @router.post("/api/admin/reset")
 def admin_reset():
+    ensure_watcher()
     with _lock:
         keystore.reset()
         persona.reset()

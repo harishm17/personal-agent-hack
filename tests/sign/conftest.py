@@ -50,7 +50,7 @@ def env(monkeypatch):
     app.include_router(api.router)
     client = TestClient(app)
     phone = Phone()
-    enrolled = client.post("/api/issuer/enroll", json={"public_key_jwk": phone.jwk, "name": "Dana"})
+    enrolled = client.post("/api/issuer/enroll", json={"public_key_jwk": phone.jwk, "name": "Dana", "code": api.keystore.code})
     assert enrolled.status_code == 200, enrolled.text
     phone.key_id = enrolled.json()["key_id"]
     return type("Env", (), {"client": client, "phone": phone, "engine": engine, "cart": cart})
