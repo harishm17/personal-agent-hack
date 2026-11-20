@@ -1,16 +1,16 @@
 """The passing-box SQL must return the same candidates as the engine's `inside` set (fixtures/make_state.py is the
-reference of the rules). Uses database signoff_test on the real SingleStore; skipped if it is unreachable."""
+reference of the rules). Uses a throwaway database signoff_test_<random> on the real SingleStore; skipped if it is unreachable."""
 import copy
 import importlib.util
 import itertools
 import json
 import os
+import uuid
 import pathlib
 import random
 
 import pytest
 
-os.environ["SIGNOFF_DB"] = "signoff_test"
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 
 spec = importlib.util.spec_from_file_location("make_state", ROOT / "fixtures" / "make_state.py")
@@ -23,13 +23,28 @@ from signoff.store import pool as pool_mod  # noqa: E402
 
 @pytest.fixture(scope="module")
 def db():
+    """A throwaway database per run (name carries a random suffix), so the app's tables and a parallel run are never touched."""
+    name = "signoff_test_" + uuid.uuid4().hex[:8]
+    prev = conn.DB
     try:
         c = conn.connect(database=None)
-        c.cursor().execute("CREATE DATABASE IF NOT EXISTS signoff_test")
+        c.cursor().execute("CREATE DATABASE " + name)
         c.close()
-        schema.ensure()
     except Exception as e:  # noqa: BLE001
         pytest.skip("SingleStore unreachable: " + type(e).__name__)
+    conn.DB = name
+    try:
+        schema.ensure()
+        yield name
+    finally:
+        conn.DB = prev
+        schema._done.discard(name)
+        try:
+            c = conn.connect(database=None)
+            c.cursor().execute("DROP DATABASE IF EXISTS " + name)
+            c.close()
+        except Exception:  # noqa: BLE001
+            pass
 
 
 def _state(sheet, pool, figures, answers, strikes):

@@ -251,3 +251,18 @@ tool: the therapist is the first issuer, not the product.
   order" until Dana confirms on her phone. The product never depends on it: `signoff.airbyte.api` is an
   optional router and `signoff.airbyte.order.load()` may return `None`.
 - Airbyte Core 2.5.0 runs at `http://localhost:8900` (Docker through Colima); login in the keys file.
+
+## Amendment 11:40 — what works on main, Senso gate, readers
+- On main at 11:38 (115 tests): real pool, figures, live screen, phone enrol and signed requests, strike,
+  signing with two real carts (carex.com and parentgiving.com), Senso run on the sheet's sentences, Persona
+  sandbox inquiry, replay mode, Amplitude events from store calls, the chat with code-decided refusals.
+- Senso gate as built: `order` sentences (a line is on the order) block the signature on `conflict` or
+  `unsupported`; `limit` sentences are advisory, because Dana may move a limit away from the order ("Dana
+  moved this from the order" is shown, the signature goes through). Store sentences are never sent.
+- Readers: Sonnet is the reference (189 figures, 20 marked unsure and not counted). On the same 111
+  products `sie:Qwen/Qwen3.8-27B-FP8` agrees on 166 of 169 and `sie:urchade/gliner_multi-v2.1` on 118 of
+  169. `signoff.engine.state.set_reader(name)` switches which reader decides; this is the change the
+  Statsig gate controls and Amplitude records. It replaces Arcee, whose key has no credits.
+- vivehealth.com states no delivery time to three differently worded questions, so under the pick rule
+  its products are shown and checked but never picked. Say so if asked; do not invent a time.
+- `ANTHROPIC_API_KEY` is present with about $4.50: live calls only, capped; batch reads use `claude -p`.

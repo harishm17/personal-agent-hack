@@ -1,0 +1,3236 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://fromourplace.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Our Place",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "fromourplace.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "2441379915"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "2441379915"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7643155398850",
+   "title": "Ceramic Nonstick Always Pan 10.5\"",
+   "description": {
+    "html": "A 10-in-1 bestselling cookware system that does it all"
+   },
+   "url": "https://fromourplace.com/products/always-essential-cooking-pan",
+   "handle": "always-essential-cooking-pan",
+   "price_range": {
+    "min": {
+     "amount": 9500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13500,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43075227058370",
+     "sku": "PAN.AP2.ESN.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "A 10-in-1 bestselling cookware system that does it all"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AP_Spice_1.jpg?v=1772474712"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43075227058370:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43075227156674",
+     "sku": "PAN.AP2.ESN.CHR",
+     "title": "Char",
+     "description": {
+      "html": "A 10-in-1 bestselling cookware system that does it all"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/Black_Always_Pan.jpg?v=1771877117"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43075227156674:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43075227189442",
+     "sku": "PAN.AP2.ESN.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "A 10-in-1 bestselling cookware system that does it all"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AP_BlueSalt_1.jpg?v=1771877117"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43075227189442:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43075227222210",
+     "sku": "PAN.AP2.ESN.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "A 10-in-1 bestselling cookware system that does it all"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AP_Sage_1.jpg?v=1771877117"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43075227222210:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43075227091138",
+     "sku": "PAN.AP2.ESN.STM",
+     "title": "Steam",
+     "description": {
+      "html": "A 10-in-1 bestselling cookware system that does it all"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AP_Steam_1.jpg?v=1771877117"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43075227091138:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47723367203010",
+     "sku": "PAN.AP2.LTO.CSP",
+     "title": "Vanilla Bean",
+     "description": {
+      "html": "A 10-in-1 bestselling cookware system that does it all"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Vanilla Bean"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/vanilla-bean-always-pan-thumbnail-01.jpg?v=1780345074"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/47723367203010:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Spice"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Vanilla Bean"
+      },
+      {
+       "label": "Forget-Me-Not Blue"
+      },
+      {
+       "label": "Butter Yellow"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AP_Spice_1.jpg?v=1772474712",
+     "alt_text": "pink non toxic ceramic nonstick always pan"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "3 year warranty",
+    "All",
+    "AP Even Exchange",
+    "AU",
+    "Ceramic Cookware",
+    "envive",
+    "labelrequired",
+    "Mirakl",
+    "product_name_update",
+    "spring_sale",
+    "TikTokPipe17",
+    "warranty: 1 year",
+    "warranty: 3 year",
+    "YGroup_alwayspan"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/140165414987",
+     "handle": "non-pan",
+     "title": "Always Pan",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292869308610",
+     "handle": "always-pans",
+     "title": "Always Pans",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7318769991874",
+   "title": "Cast Iron Always Pan 10.5\"",
+   "description": {
+    "html": "8-in-1 versatility meets heirloom-quality enameled cast iron"
+   },
+   "url": "https://fromourplace.com/products/cast-iron-always-pan",
+   "handle": "cast-iron-always-pan",
+   "price_range": {
+    "min": {
+     "amount": 6900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13500,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41793891041474",
+     "sku": "PAN.CIP.ESN.STM",
+     "title": "Steam",
+     "description": {
+      "html": "8-in-1 versatility meets heirloom-quality enameled cast iron"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Cast_Iron_Always_Pan_-_Steam_2f97e53f-33e9-47cd-8493-f52ad2f8db2a.jpg?v=1704910625"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/41793891041474:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41793891074242",
+     "sku": "PAN.CIP.ESN.CHR",
+     "title": "Char",
+     "description": {
+      "html": "8-in-1 versatility meets heirloom-quality enameled cast iron"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Cast_Iron_Always_Pan_-_Char_106f988d-2118-4386-a5f0-6898bbd1bdb9.jpg?v=1704910591"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/41793891074242:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41793891008706",
+     "sku": "PAN.CIP.ESN.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "8-in-1 versatility meets heirloom-quality enameled cast iron"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Cast_Iron_Always_Pan_-_Spice_61a78ec3-ceed-4a01-af79-b15da85f85d6.jpg?v=1704910608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/41793891008706:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41793891172546",
+     "sku": "PAN.CIP.ESN.LAV",
+     "title": "Lavender",
+     "description": {
+      "html": "8-in-1 versatility meets heirloom-quality enameled cast iron"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Lavender"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Cast_Iron_Always_Pan_-_Lavender_1a9b0e42-139c-42ab-8837-68102a813301.jpg?v=1704910656"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/41793891172546:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42642485051586",
+     "sku": "PAN.CIP.ESN.BLK",
+     "title": "Sear",
+     "description": {
+      "html": "8-in-1 versatility meets heirloom-quality enameled cast iron"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sear"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/MatteBlackCIAP__Collection_66ab35fa-5aae-463e-80da-5448225cd716.jpg?v=1704910678"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42642485051586:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41793891139778",
+     "sku": "PAN.CIP.ESN.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "8-in-1 versatility meets heirloom-quality enameled cast iron"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Cast_Iron_Always_Pan_-_Blue_Salt_49d194be-2fa3-403b-b9db-f3e958ad5944.jpg?v=1704910640"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/41793891139778:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41793891107010",
+     "sku": "PAN.CIP.ESN.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "8-in-1 versatility meets heirloom-quality enameled cast iron"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Cast_Iron_Always_Pan_-_Sage_9ac55e7d-5190-4584-8b0a-8fa34eab75ef.jpg?v=1704910574"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/41793891107010:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Spice"
+      },
+      {
+       "label": "Lavender"
+      },
+      {
+       "label": "Sear"
+      },
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Sage"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Cast_Iron_Always_Pan_-_Char_106f988d-2118-4386-a5f0-6898bbd1bdb9.jpg?v=1704910591",
+     "alt_text": "The Cast Iron Always Pan, finished in black enamel with a wooden handle and transparent glass lid, is displayed against a plain light background."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "AU",
+    "Cast Iron",
+    "labelrequired",
+    "Mirakl",
+    "spring_sale",
+    "warranty: lifetime"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292005773506",
+     "handle": "press-page-collections",
+     "title": "Press Page Collections",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292869308610",
+     "handle": "always-pans",
+     "title": "Always Pans",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7690256187586",
+   "title": "Ceramic Nonstick Always Pan 12.5\"",
+   "description": {
+    "html": "A bigger version of the bestselling 10-in-1 nonstick pan"
+   },
+   "url": "https://fromourplace.com/products/large-always-pan",
+   "handle": "large-always-pan",
+   "price_range": {
+    "min": {
+     "amount": 11500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43413982937282",
+     "sku": "PAN.XLP.ESN.STM",
+     "title": "Steam",
+     "description": {
+      "html": "A bigger version of the bestselling 10-in-1 nonstick pan"
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Beige_Large_Always_Pan.jpg?v=1741123069"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43413982937282:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43413982970050",
+     "sku": "PAN.XLP.ESN.CHR",
+     "title": "Char",
+     "description": {
+      "html": "A bigger version of the bestselling 10-in-1 nonstick pan"
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Black_Large_Always_Pan.jpg?v=1741123069"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43413982970050:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43413982904514",
+     "sku": "PAN.XLP.ESN.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "A bigger version of the bestselling 10-in-1 nonstick pan"
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Blue_Large_Always_Pan.jpg?v=1741123069"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43413982904514:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43413983002818",
+     "sku": "PAN.XLP.ESN.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "A bigger version of the bestselling 10-in-1 nonstick pan"
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Green_Large_Always_Pan.jpg?v=1741123069"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43413983002818:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43413983035586",
+     "sku": "PAN.XLP.ESN.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "A bigger version of the bestselling 10-in-1 nonstick pan"
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Pink_Large_Always_Pan.jpg?v=1733344241"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43413983035586:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Spice"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Beige_Large_Always_Pan.jpg?v=1741123069",
+     "alt_text": "Beige Large non toxic ceramic nonstick always pan"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "1 year warranty",
+    "3 year warranty",
+    "All",
+    "AU",
+    "Ceramic Cookware",
+    "labelrequired",
+    "product_name_update",
+    "TikTokPipe17",
+    "warranty: 1 year",
+    "warranty: 3 year"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292869308610",
+     "handle": "always-pans",
+     "title": "Always Pans",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293325734082",
+     "handle": "gifts-under-200",
+     "title": "Gifts $200 and Under",
+     "description": {
+      "html": "Non-toxic ceramic nonstick cookware bundles & gift sets under $200, up to 45% off in our Black Friday Sale. PFAS-free, chef-approved essentials."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7464076607682",
+   "title": "Ceramic Nonstick Always Pan 8.5\"",
+   "description": {
+    "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+   },
+   "url": "https://fromourplace.com/products/mini-always-pan",
+   "handle": "mini-always-pan",
+   "price_range": {
+    "min": {
+     "amount": 7900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 10900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42249901179074",
+     "sku": "PAN.MA2.ESN.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Green_Mini_Always_Pan.jpg?v=1733872428"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249901179074:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42249901244610",
+     "sku": "PAN.MA2.ESN.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Blue_Mini_Always_Pan.jpg?v=1733872368"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249901244610:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42249901146306",
+     "sku": "PAN.MA2.ESN.STM",
+     "title": "Steam",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Beige_Mini_Always_Pan.jpg?v=1733872395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249901146306:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42249901113538",
+     "sku": "PAN.MA2.ESN.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Pink_Mini_Always_Pan.jpg?v=1733872410"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249901113538:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42249901211842",
+     "sku": "PAN.MA2.ESN.CHR",
+     "title": "Char",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Black_Mini_Always_Pan.jpg?v=1733872445"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249901211842:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43315633127618",
+     "sku": "PAN.MA2.ESN.TAU",
+     "title": "Tierra",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Tierra"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/Brown_Mini_Always_Pan.jpg?v=1733872461"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43315633127618:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43315633094850",
+     "sku": "PAN.MA2.ESN.MIN",
+     "title": "Cielo",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cielo"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/Light_blue_Mini_Always_Pan.jpg?v=1733872478"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/43315633094850:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42249901277378",
+     "sku": "PAN.MA2.ESN.LAV",
+     "title": "Lavender",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Lavender"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Purple_Mini_Always_Pan.jpg?v=1733872499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42249901277378:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48607492047042",
+     "title": "Butter Yellow",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+     },
+     "price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Butter Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/butter-yellow-Ceramic-Nonstick-Always-Pan-8.5_-92x92.jpg?v=1786464643"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/48607492047042:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45059706978498",
+     "sku": "PAN.MA2.TGB.CRM",
+     "title": "Cream",
+     "description": {
+      "html": "An extra-handy, multifunctional, non-toxic nonstick pan"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-MiniAlwaysPan-Cream-ecomm_b21040e7-f63b-4f4b-9a7c-2943eb188df1.jpg?v=1744733276"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45059706978498:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Spice"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Tierra"
+      },
+      {
+       "label": "Cielo"
+      },
+      {
+       "label": "Lavender"
+      },
+      {
+       "label": "Butter Yellow"
+      },
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Vanilla Bean"
+      },
+      {
+       "label": "Forget-Me-Not Blue"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/Black_Mini_Always_Pan.jpg?v=1733872445",
+     "alt_text": "Black Mini non toxic ceramic nonstick always pan"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-13-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "AU",
+    "Ceramic Cookware",
+    "Cookware",
+    "labelrequired",
+    "mAP Even Exchange",
+    "Mirakl",
+    "spring_sale",
+    "TikTokPipe17",
+    "warranty: 1 year",
+    "warranty: 3 year"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292869308610",
+     "handle": "always-pans",
+     "title": "Always Pans",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293325701314",
+     "handle": "gifts-under-100",
+     "title": "Gifts $100 and Under",
+     "description": {
+      "html": "Chef-approved cookware gifts under $100, up to 45% off for Black Friday. Ceramic nonstick pans, PFAS-free kitchen essentials & more. The best gifts for foodies."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15464782954690",
+   "title": "Titanium Always Pan Pro 12.5\"",
+   "description": {
+    "html": "Large non-toxic titanium and stainless steel pan"
+   },
+   "url": "https://fromourplace.com/products/titanium-large-always-pan-pro",
+   "handle": "titanium-large-always-pan-pro",
+   "price_range": {
+    "min": {
+     "amount": 16900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 21900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/67704627036354",
+     "sku": "PAN.TLAP2.PRO.CRM",
+     "title": "Chrome",
+     "description": {
+      "html": "Large non-toxic titanium and stainless steel pan"
+     },
+     "price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/chrome-titanium-large-always-pan-product-thumbnail.jpg?v=1791480422"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/67704627036354:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/67704627069122",
+     "sku": "PAN.TLAP2.PRO.GLD",
+     "title": "Chrome/Gold",
+     "description": {
+      "html": "Large non-toxic titanium and stainless steel pan"
+     },
+     "price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 21900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome/Gold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/gold-titanium-large-always-pan-product-thumbnail.jpg?v=1791480432"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/67704627069122:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/67704627101890",
+     "sku": "PAN.TLAP2.LTO.BRHS",
+     "title": "Brushed",
+     "description": {
+      "html": "Large non-toxic titanium and stainless steel pan"
+     },
+     "price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Brushed"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/brushed-titanium-large-always-pan-product-thumbnail.jpg?v=1791480416"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/67704627101890:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Chrome"
+      },
+      {
+       "label": "Chrome/Gold"
+      },
+      {
+       "label": "Brushed"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/chrome-titanium-large-always-pan-product-thumbnail.jpg?v=1791480422",
+     "alt_text": "A Titanium Always Pan Pro 12.5\u2033 2.0 stainless steel frying pan with a matching lid and a long handle."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "YGroup_TAPLarge"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293325734082",
+     "handle": "gifts-under-200",
+     "title": "Gifts $200 and Under",
+     "description": {
+      "html": "Non-toxic ceramic nonstick cookware bundles & gift sets under $200, up to 45% off in our Black Friday Sale. PFAS-free, chef-approved essentials."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293325766850",
+     "handle": "shizas-picks",
+     "title": "Shiza\u2019s Picks",
+     "description": {
+      "html": "Shop founder Shiza's favorite ceramic nonstick cookware & PFAS-free kitchen essentials, up to 45% off in our Black Friday Sale. The best gifts for foodies."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7484229157058",
+   "title": "Always Pan Duo",
+   "description": {
+    "html": "Two Always Pans, two sizes, endless versatility."
+   },
+   "url": "https://fromourplace.com/products/always-pan-duo",
+   "handle": "always-pan-duo",
+   "price_range": {
+    "min": {
+     "amount": 19900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 29400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29400,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44946432622786",
+     "sku": "CKW.APD.VBDL.CHR",
+     "title": "Char",
+     "description": {
+      "html": "Two Always Pans, two sizes, endless versatility."
+     },
+     "price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-AlwaysPanDuo-char_05f9a8b0-48a8-4dfe-a553-700caddabba3.jpg?v=1741117233"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44946432622786:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44946432590018",
+     "sku": "CKW.APD.VBDL.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "Two Always Pans, two sizes, endless versatility."
+     },
+     "price": {
+      "amount": 20900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-AlwaysPanDuo-BlueSalt_b1fcff34-7be8-45e7-bd01-e44e895d6678.jpg?v=1741117233"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44946432590018:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44946432557250",
+     "sku": "CKW.APD.VBDL.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "Two Always Pans, two sizes, endless versatility."
+     },
+     "price": {
+      "amount": 20900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-AlwaysPanDuo-sage_0865396e-b283-420a-82e1-f98d4b1fdbdf.jpg?v=1741117233"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44946432557250:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44946432688322",
+     "sku": "CKW.APD.VBDL.STM",
+     "title": "Steam",
+     "description": {
+      "html": "Two Always Pans, two sizes, endless versatility."
+     },
+     "price": {
+      "amount": 20900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-AlwaysPanDuo-steam_a4b5ddce-192b-4c98-808e-4bf792ff9c05.jpg?v=1741117233"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44946432688322:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44946432655554",
+     "sku": "CKW.APD.VBDL.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "Two Always Pans, two sizes, endless versatility."
+     },
+     "price": {
+      "amount": 20900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-AlwaysPanDuo-spice_3fd4c7c3-6ec8-452b-8960-9473fe284997.jpg?v=1741117233"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/44946432655554:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Spice"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-AlwaysPanDuo-char_05f9a8b0-48a8-4dfe-a553-700caddabba3.jpg?v=1741117233",
+     "alt_text": "The Always Pan Duo\u2014two black nonstick pans in different sizes, each with a matching lid and wooden handle\u2014are displayed side by side on a light background, offering versatile cookware inspired by the iconic Always Pan."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "AU",
+    "Ceramic Cookware",
+    "Cookware",
+    "legacy",
+    "spring_sale"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/165750112331",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Our thoughtfully curated cookware bundles help you cook more, and spend less."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292868554946",
+     "handle": "cookware-bundles",
+     "title": "Cookware - Bundles",
+     "description": {
+      "html": "From the stovetop to the kitchen table, save with our special sets curated just for your place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292869308610",
+     "handle": "always-pans",
+     "title": "Always Pans",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15464772436162",
+   "title": "Titanium Always Pan Pro 10.5\"",
+   "description": {
+    "html": "Non-toxic titanium and stainless steel pan"
+   },
+   "url": "https://fromourplace.com/products/titanium-always-pan-pro",
+   "handle": "titanium-always-pan-pro",
+   "price_range": {
+    "min": {
+     "amount": 13900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 17900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/67704611176642",
+     "sku": "PAN.TAP2.PRO.CRM",
+     "title": "Chrome",
+     "description": {
+      "html": "Non-toxic titanium and stainless steel pan"
+     },
+     "price": {
+      "amount": 13900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/chrome-titanium-always-pan-pro-product-thumbnail.jpg?v=1791481233"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/67704611176642:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/67704611209410",
+     "sku": "PAN.TAP2.PRO.GLD",
+     "title": "Chrome/Gold",
+     "description": {
+      "html": "Non-toxic titanium and stainless steel pan"
+     },
+     "price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome/Gold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/gold-titanium-always-pan-pro-product-thumbnail.jpg?v=1791481238"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/67704611209410:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/67704611242178",
+     "sku": "PAN.TAP2.LTO.BRHS",
+     "title": "Brushed",
+     "description": {
+      "html": "Non-toxic titanium and stainless steel pan"
+     },
+     "price": {
+      "amount": 13900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Brushed"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/brushed-titanium-always-pan-pro-product-thumbnail.jpg?v=1791481227"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/67704611242178:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Chrome"
+      },
+      {
+       "label": "Chrome/Gold"
+      },
+      {
+       "label": "Brushed"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/chrome-titanium-always-pan-pro-product-thumbnail.jpg?v=1791481233",
+     "alt_text": "A stainless steel Titanium Always Pan Pro 10.5\u2033 2.0 skillet with a matching lid and a long handle."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "igg26_gourmet_food",
+    "YGroup_TAPRegular"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293325734082",
+     "handle": "gifts-under-200",
+     "title": "Gifts $200 and Under",
+     "description": {
+      "html": "Non-toxic ceramic nonstick cookware bundles & gift sets under $200, up to 45% off in our Black Friday Sale. PFAS-free, chef-approved essentials."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293325766850",
+     "handle": "shizas-picks",
+     "title": "Shiza\u2019s Picks",
+     "description": {
+      "html": "Shop founder Shiza's favorite ceramic nonstick cookware & PFAS-free kitchen essentials, up to 45% off in our Black Friday Sale. The best gifts for foodies."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8190560764098",
+   "title": "Essentials Pan Trio",
+   "description": {
+    "html": "Three non-toxic nonstick pans for everyday cooking"
+   },
+   "url": "https://fromourplace.com/products/essentials-pan-trio-8pc",
+   "handle": "essentials-pan-trio-8pc",
+   "price_range": {
+    "min": {
+     "amount": 14900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 24900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 33200,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 33200,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45660769484994",
+     "sku": "CKW.8PC.EPP.TER",
+     "title": "Terracotta",
+     "description": {
+      "html": "Three non-toxic nonstick pans for everyday cooking"
+     },
+     "price": {
+      "amount": 17500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 33200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Terracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialPanTrio-ecomm-Terracotta.jpg?v=1759796348"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660769484994:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660769419458",
+     "sku": "CKW.8PC.EPP.CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Three non-toxic nonstick pans for everyday cooking"
+     },
+     "price": {
+      "amount": 24900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 33200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialPanTrio-ecomm-Cream.jpg?v=1759796347"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660769419458:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660769386690",
+     "sku": "CKW.8PC.EPP.BLK",
+     "title": "Char",
+     "description": {
+      "html": "Three non-toxic nonstick pans for everyday cooking"
+     },
+     "price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 33200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialPanTrio-ecomm-Char.jpg?v=1759796347"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660769386690:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45660769452226",
+     "sku": "CKW.8PC.EPP.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "Three non-toxic nonstick pans for everyday cooking"
+     },
+     "price": {
+      "amount": 24900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 33200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialPanTrio-ecomm-BlueSalt.jpg?v=1759796347"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/45660769452226:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Terracotta"
+      },
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Blue Salt"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/our-place-product-hero-thumbnail-EssentialPanTrio-ecomm-Terracotta.jpg?v=1759796348",
+     "alt_text": "Set of three frying pans with lids and a beige stand on a white background"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Ceramic Cookware",
+    "noreview"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/165750112331",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Our thoughtfully curated cookware bundles help you cook more, and spend less."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292868554946",
+     "handle": "cookware-bundles",
+     "title": "Cookware - Bundles",
+     "description": {
+      "html": "From the stovetop to the kitchen table, save with our special sets curated just for your place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15464834040002",
+   "title": "Titanium Pro Always Pan Duo",
+   "description": {
+    "html": "Two non-toxic titanium and stainless steel pans"
+   },
+   "url": "https://fromourplace.com/products/titanium-pro-always-pan-duo",
+   "handle": "titanium-pro-always-pan-duo",
+   "price_range": {
+    "min": {
+     "amount": 26900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 37800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 41800,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/67704726388930",
+     "sku": "CKW.TAPD2.PRO.GLD",
+     "title": "Chrome/Gold",
+     "description": {
+      "html": "Two non-toxic titanium and stainless steel pans"
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome/Gold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/gold-titanium-pro-always-pan-duo-product-thumbnail.jpg?v=1791533306"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/67704726388930:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/67704730026178",
+     "sku": "CKW.TAPD2.LTO.BRHS",
+     "title": "Brushed",
+     "description": {
+      "html": "Two non-toxic titanium and stainless steel pans"
+     },
+     "price": {
+      "amount": 26900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 37800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Brushed"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/brushed-titanium-pro-always-pan-duo-product-thumbnail.jpg?v=1791533307"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/67704730026178:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/67704726356162",
+     "sku": "CKW.TAPD2.PRO.CRM",
+     "title": "Chrome",
+     "description": {
+      "html": "Two non-toxic titanium and stainless steel pans"
+     },
+     "price": {
+      "amount": 26900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 37800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/chrome-titanium-pro-always-pan-duo-product-thumbnail.jpg?v=1791533307"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/67704726356162:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Chrome/Gold"
+      },
+      {
+       "label": "Brushed"
+      },
+      {
+       "label": "Chrome"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/gold-titanium-pro-always-pan-duo-product-thumbnail.jpg?v=1791533306",
+     "alt_text": "Titanium Pro Always Pan Duo 2.0 set including two light gray non-toxic frying pans with gold-colored handles and one matching lid."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-13-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/165750112331",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Our thoughtfully curated cookware bundles help you cook more, and spend less."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286602100930",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Non-toxic, multifunctional pots and pans for more inspired everyday cooking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292868554946",
+     "handle": "cookware-bundles",
+     "title": "Cookware - Bundles",
+     "description": {
+      "html": "From the stovetop to the kitchen table, save with our special sets curated just for your place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7517850894530",
+   "title": "Griddle Pan",
+   "description": {
+    "html": "A nonstick sheet pan that doubles as a stovetop griddle"
+   },
+   "url": "https://fromourplace.com/products/griddle-pan",
+   "handle": "griddle-pan",
+   "price_range": {
+    "min": {
+     "amount": 7900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 11900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42445872136386",
+     "sku": "OVW.OPN.ESN.LAV",
+     "title": "Lavender",
+     "description": {
+      "html": "A nonstick sheet pan that doubles as a stovetop griddle"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Lavender"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AlwaysPan_OvenPan_Lav_1.jpg?v=1741708922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42445872136386:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42567153123522",
+     "sku": "OVW.OVP.ESN.TUR",
+     "title": "Turmeric",
+     "description": {
+      "html": "A nonstick sheet pan that doubles as a stovetop griddle"
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Turmeric"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/files/TURMERIC_6f906237-4ee2-4396-bafc-66b9fc912585.png?v=1741708922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42567153123522:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42445872201922",
+     "sku": "OVW.OVP2.ESN.STM",
+     "title": "Steam",
+     "description": {
+      "html": "A nonstick sheet pan that doubles as a stovetop griddle"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Steam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AlwaysPan_OvenPan_Steam_1.jpg?v=1690215974"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42445872201922:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42445872070850",
+     "sku": "OVW.OVP2.ESN.CHR",
+     "title": "Char",
+     "description": {
+      "html": "A nonstick sheet pan that doubles as a stovetop griddle"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Char"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AlwaysPan_OvenPan_Char_1.jpg?v=1741708922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42445872070850:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42445872038082",
+     "sku": "OVW.OVP2.ESN.BLU",
+     "title": "Blue Salt",
+     "description": {
+      "html": "A nonstick sheet pan that doubles as a stovetop griddle"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AlwaysPan_OvenPan_Blue_1.jpg?v=1741708922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42445872038082:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42445872169154",
+     "sku": "OVW.OVP2.ESN.SPC",
+     "title": "Spice",
+     "description": {
+      "html": "A nonstick sheet pan that doubles as a stovetop griddle"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Spice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AlwaysPan_OvenPan_Spice_1.jpg?v=1741708922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42445872169154:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42445872103618",
+     "sku": "OVW.OVP.ESN.GRN",
+     "title": "Sage",
+     "description": {
+      "html": "A nonstick sheet pan that doubles as a stovetop griddle"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AlwaysPan_OvenPan_Sage_1.jpg?v=1741708922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://fromourplace-com.myshopify.com/cart/42445872103618:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Lavender"
+      },
+      {
+       "label": "Turmeric"
+      },
+      {
+       "label": "Steam"
+      },
+      {
+       "label": "Char"
+      },
+      {
+       "label": "Blue Salt"
+      },
+      {
+       "label": "Spice"
+      },
+      {
+       "label": "Sage"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0024/4137/9915/products/AlwaysPan_OvenPan_Spice_1.jpg?v=1741708922",
+     "alt_text": "Pink Griddle Pan"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-7",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Bakeware",
+    "envive",
+    "labelrequired",
+    "ovenpanexchange",
+    "spring_sale",
+    "TikTokPipe17",
+    "warranty: 1 year",
+    "warranty: 3 year"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/162313896011",
+     "handle": "traditionware",
+     "title": "Traditionware",
+     "description": {
+      "html": "Collections designed to honor the celebrations we hold close and share around the table."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/240766812354",
+     "handle": "available-in-stock",
+     "title": "Available in stock",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292534124738",
+     "handle": "diwali",
+     "title": "Diwali Collection",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292780998850",
+     "handle": "bakeware",
+     "title": "Non-Toxic Bakeware",
+     "description": {
+      "html": "Ceramic nonstick baking pans, sheets & chef-approved essentials made without PFAS."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293254561986",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": "Safe, non-toxic cookware and tools designed to help you gather at the table more often."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzNOVEUzT0RVd09EazBOVE13TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}
