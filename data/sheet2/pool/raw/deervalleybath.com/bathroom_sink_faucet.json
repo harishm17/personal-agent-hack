@@ -1,0 +1,1801 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.deervalleybath.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "DeerValley Bath",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.deervalleybath.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "52635369660"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "52635369660"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8029138026684",
+   "title": "24\" Rectangular Console Bathroom Sink, Single Faucet Hole",
+   "description": {
+    "html": "Product updates: some items include a logo and are shipped randomly. Crafted from premium ceramic, this console sink boasts exceptional scratch and stain resistance. Its spacious design allows for use by almost two people simultaneously, making it perfect for busy households. The open design adds a sense of space and openness to your bathroom. With 3 elegant color options to match your decor, the stainless steel console legs offer classic styling and convenient integrated front and side bars for towel storage. With an overflow, ergonomic design, and the perfect height for comfortable use, the DeerValley Console Sink effortlessly combines luxury and practicality. Elevate your bathroom experience with DeerValley. Features Spacious & Efficient Design: This console sink features front and side bars for convenient towel hanging, a generously sized countertop for essential storage, and accommodates nearly two users, streamlining your routine. Adaptable for Any Space: This console sink is versatile and fits perfectly in various settings, including bathrooms, laundry rooms, hotels, shopping centers, and more. Modern and Practical: The console bathroom sink offers a stylish and contemporary design. Its leg frame allows for installation without a vanity, making it easier to clean and keeping your bathroom tidy. Durable Ceramic Construction: Crafted from premium ceramic, the bathroom sink boasts low water absorption and high acid resistance, making it easy to maintain. The durable ceramic is also scratch-resistant and stain-resistant for long-lasting beauty. Safe and Sleek Design: Our rectangular console bathroom sink prioritizes safety with smooth, rounded corners. Designed to protect you from accidental bumps, it combines aesthetics with security. The sink dimensions are as follows: Length: 23.82 inches, Width: 16.92 inches, Height: 5.71 inches. 12-Month Warranty: We stand behind our products and aim to provide a quality shopping experience. If you encounter any issues or are unsatisfied, contact us via email through the platform, and we'll promptly address your concerns. What's Included? Pedestal Weights & Dimensions Overall: 24\" L X 16.93\" W X 5.71\" D Basin: 22.44\"?L X 11.81\"?W X 3.54\"?D Overall Product Weight:?23.82 lb. Base/Stand Height - Top to Bottom:?16.93\"?H Faucet Centers:?5.71\" Color of Leg: Black Installation Manual: \"Stylish Living, Savvy Savings\u201d, DeerValley devotes to make the dream of a comfortable home and better living a reality."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1cs0117b",
+   "handle": "dv-1cs0117b",
+   "price_range": {
+    "min": {
+     "amount": 16900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 21970,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 21970,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42922270163132",
+     "sku": "DV-1CS0117B",
+     "title": "Default Title",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Crafted from premium ceramic, this console sink boasts exceptional scratch and stain resistance. Its spacious design allows for use by almost two people simultaneously, making it perfect for busy households. The open design adds a sense of space and openness to your bathroom. With 3 elegant color options to match your decor, the stainless steel console legs offer classic styling and convenient integrated front and side bars for towel storage. With an overflow, ergonomic design, and the perfect height for comfortable use, the DeerValley Console Sink effortlessly combines luxury and practicality. Elevate your bathroom experience with DeerValley. Features Spacious & Efficient Design: This console sink features front and side bars for convenient towel hanging, a generously sized countertop for essential storage, and accommodates nearly two users, streamlining your routine. Adaptable for Any Space: This console sink is versatile and fits perfectly in various settings, including bathrooms, laundry rooms, hotels, shopping centers, and more. Modern and Practical: The console bathroom sink offers a stylish and contemporary design. Its leg frame allows for installation without a vanity, making it easier to clean and keeping your bathroom tidy. Durable Ceramic Construction: Crafted from premium ceramic, the bathroom sink boasts low water absorption and high acid resistance, making it easy to maintain. The durable ceramic is also scratch-resistant and stain-resistant for long-lasting beauty. Safe and Sleek Design: Our rectangular console bathroom sink prioritizes safety with smooth, rounded corners. Designed to protect you from accidental bumps, it combines aesthetics with security. The sink dimensions are as follows: Length: 23.82 inches, Width: 16.92 inches, Height: 5.71 inches. 12-Month Warranty: We stand behind our products and aim to provide a quality shopping experience. If you encounter any issues or are unsatisfied, contact us via email through the platform, and we'll promptly address your concerns. What's Included? Pedestal Weights & Dimensions Overall: 24\" L X 16.93\" W X 5.71\" D Basin: 22.44\"?L X 11.81\"?W X 3.54\"?D Overall Product Weight:?23.82 lb. Base/Stand Height - Top to Bottom:?16.93\"?H Faucet Centers:?5.71\" Color of Leg: Black Installation Manual: \"Stylish Living, Savvy Savings\u201d, DeerValley devotes to make the dream of a comfortable home and better living a reality."
+     },
+     "price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 21970,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1CS0117B-0919_5.jpg?v=1757057405"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42922270163132:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1CS0117B-0919_5.jpg?v=1757057405"
+    }
+   ],
+   "tags": [
+    "Bathroom Sinks",
+    "Canada Warehouse",
+    "Console Bahroom Sinks",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/241263837372",
+     "handle": "bathroom-sinks",
+     "title": "Bathroom Sinks",
+     "description": {
+      "html": "DeerValley bathroom sinks combine elegant design with durable materials, offering versatile styles like vessel, undermount, and pedestal to suit any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294836568252",
+     "handle": "console-sink",
+     "title": "Console Sinks",
+     "description": {
+      "html": "DeerValley console sinks feature durable ceramic construction, scratch and stain resistance, and integrated towel bars, offering a stylish, space-saving solution for modern bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449078460",
+     "handle": "pedestal-sink",
+     "title": "Pedestal Sink",
+     "description": {
+      "html": "DeerValley pedestal sinks blend classic design with space-saving function\u2014perfect for small bathrooms seeking elegance, durability, and easy installation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449176764",
+     "handle": "sink-and-pedestal",
+     "title": "Sink And Pedestal",
+     "description": {
+      "html": "DeerValley sink and pedestal combos offer timeless design, durability, and space-saving efficiency\u2014perfect for adding elegance to small or modern bathrooms."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8029142712508",
+   "title": "30\" Rectangular Console Bathroom Sink, Single Faucet Hole",
+   "description": {
+    "html": "Product updates: some items include a logo and are shipped randomly. Crafted from premium ceramic, our console sink offers outstanding scratch and stain resistance, ensuring lasting beauty. Its spacious design accommodates three users at once, perfect for busy households. Choose from 3 color options for the stainless steel legs to match your decor. Front and side towel bars provide convenient storage. Experience the perfect blend of style, functionality, and convenience with DeerValley console sink. Features Spacious Design: With a length of 30 inches, this console sink offers ample room for three people to wash simultaneously, making it an ideal time-saving solution for larger families. The spacious countertop provides convenient storage for everyday items, keeping them easily accessible. Durable Anti-Rust Legs: Crafted from stainless steel, the console sink's legs are resistant to rust and corrosion, ensuring worry-free installation in your bathroom. With 3 color options, you can freely choose the one that complements your bathroom decor style. Use Anywhere: Suitable for laundry rooms, bathrooms, powder rooms, hotels, shopping centers, and more. Size: 29.72\"L x 16.34\"W x 5.71\"H. Durable Ceramic Build: Constructed from high-quality ceramic, this large console sink is both stain-resistant and scratch-resistant, ensuring easy daily maintenance. It maintains its original appearance over time and won't discolor. Safe & Thoughtful Design: Our console sink features rounded corners and smooth lines for enhanced safety, protecting against bruises when accidentally bumped. Package Contents: The package includes the bathroom sink, frame legs, and installation accessories. For optimal results, we recommend hiring a professional plumber to install the console sink. What's Included? Pedestal Weights & Dimensions Overall: 29.72\"?L X?16.34\"?W X?5.71\"?HBasin:?28.35\"?L X?11.42\"?W X?3.54\"?DFaucet Centers:?5.71\"Base/Stand Height - Top to Bottom:?16.34\"?HOverall Product Weight:?29.72 lb.Color of Leg: Silver Installation Manual: \"Stylish Living, Savvy Savings\u201d, DeerValley devotes to make the dream of a comfortable home and better living a reality."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1cs0118a",
+   "handle": "dv-1cs0118a",
+   "price_range": {
+    "min": {
+     "amount": 23900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 23900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 31070,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 31070,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42922275143868",
+     "sku": "DV-1CS0118A",
+     "title": "Default Title",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Crafted from premium ceramic, our console sink offers outstanding scratch and stain resistance, ensuring lasting beauty. Its spacious design accommodates three users at once, perfect for busy households. Choose from 3 color options for the stainless steel legs to match your decor. Front and side towel bars provide convenient storage. Experience the perfect blend of style, functionality, and convenience with DeerValley console sink. Features Spacious Design: With a length of 30 inches, this console sink offers ample room for three people to wash simultaneously, making it an ideal time-saving solution for larger families. The spacious countertop provides convenient storage for everyday items, keeping them easily accessible. Durable Anti-Rust Legs: Crafted from stainless steel, the console sink's legs are resistant to rust and corrosion, ensuring worry-free installation in your bathroom. With 3 color options, you can freely choose the one that complements your bathroom decor style. Use Anywhere: Suitable for laundry rooms, bathrooms, powder rooms, hotels, shopping centers, and more. Size: 29.72\"L x 16.34\"W x 5.71\"H. Durable Ceramic Build: Constructed from high-quality ceramic, this large console sink is both stain-resistant and scratch-resistant, ensuring easy daily maintenance. It maintains its original appearance over time and won't discolor. Safe & Thoughtful Design: Our console sink features rounded corners and smooth lines for enhanced safety, protecting against bruises when accidentally bumped. Package Contents: The package includes the bathroom sink, frame legs, and installation accessories. For optimal results, we recommend hiring a professional plumber to install the console sink. What's Included? Pedestal Weights & Dimensions Overall: 29.72\"?L X?16.34\"?W X?5.71\"?HBasin:?28.35\"?L X?11.42\"?W X?3.54\"?DFaucet Centers:?5.71\"Base/Stand Height - Top to Bottom:?16.34\"?HOverall Product Weight:?29.72 lb.Color of Leg: Silver Installation Manual: \"Stylish Living, Savvy Savings\u201d, DeerValley devotes to make the dream of a comfortable home and better living a reality."
+     },
+     "price": {
+      "amount": 23900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 31070,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1CS0118A-0919_5.jpg?v=1757057399"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42922275143868:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1CS0118A-0919_5.jpg?v=1757057399"
+    }
+   ],
+   "tags": [
+    "Bathroom Sinks",
+    "Console Bahroom Sinks",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/241263837372",
+     "handle": "bathroom-sinks",
+     "title": "Bathroom Sinks",
+     "description": {
+      "html": "DeerValley bathroom sinks combine elegant design with durable materials, offering versatile styles like vessel, undermount, and pedestal to suit any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294836568252",
+     "handle": "console-sink",
+     "title": "Console Sinks",
+     "description": {
+      "html": "DeerValley console sinks feature durable ceramic construction, scratch and stain resistance, and integrated towel bars, offering a stylish, space-saving solution for modern bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449078460",
+     "handle": "pedestal-sink",
+     "title": "Pedestal Sink",
+     "description": {
+      "html": "DeerValley pedestal sinks blend classic design with space-saving function\u2014perfect for small bathrooms seeking elegance, durability, and easy installation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449176764",
+     "handle": "sink-and-pedestal",
+     "title": "Sink And Pedestal",
+     "description": {
+      "html": "DeerValley sink and pedestal combos offer timeless design, durability, and space-saving efficiency\u2014perfect for adding elegance to small or modern bathrooms."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8636938027196",
+   "title": "23 5/8\" x 18 1/8\" White Rectangular Acrylic Drop-in Bathroom Sink with Overflow and 35mm Faucet Hole",
+   "description": {
+    "html": "Product updates: some items include a logo and are shipped randomly. Upgrade your bathroom with our modern Acrylic Drop-in Bathroom Sink. Made from high-quality acrylic, it features a smooth surface that stays looking clean and flawless over time. Lightweight and durable, it offers effortless installation and easy maintenance with just a soft cloth, making it a practical and stylish choice for any bathroom. Features Simple MaintenanceThis acrylic drop-in bathroom sink features a seamless design with no hard-to-clean crevices, effectively preventing dirt buildup. The smooth surface can be easily wiped with a soft cloth, keeping your sink looking pristine for years. Lightweight and DurableMade from premium acrylic, this bathroom sink is both lightweight and durable, offering a practical and long-lasting choice that resists cracking or damage over time. Stylish Design, Easy InstallationWith its modern style and dimensions (23 5/8\" L x 18 1/8\" W x 7 1/16\" H, depth 5 1/8\"), this sink complements any bathroom d\u00e9cor. Featuring a 35mm faucet hole, it installs effortlessly by simply dropping into the countertop, securing, and sealing. Efficient Drainage SystemThe sink features a wide-mouth front overflow, designed to effectively prevent water from overflowing while maintaining a clean and elegant appearance. Combined with the 35mm drain opening, it ensures smooth and efficient water flow. Easy Care with ConfidenceDesigned for everyday convenience, this acrylic sink requires minimal maintenance\u2014just a quick wipe with a soft cloth to maintain its shine. We back it with a 12-month warranty, so you can purchase with confidence knowing we\u2019ll address any issues promptly. Weights & Dimensions Overall(L * W * H): 23.62\" X 18.11\" X 7.09\" Basin(L * W * H): 17.32\" X 10.94\" X 5.12\" Drain Size (Diameter): 1.75\"Bottom Size(L * W * H): 18.11\" X 12.99\" X 6.73\"Table Size(L * W * H): 23.62\" X 18.11\" X -\"Countertop Edge Width: 4.33\"Countertop Edge Thickness: 0.79\"Faucet Hole Size: 1.37\" Overall Product Weight: 20.39 lb. Installation Manual \"Stylish Living, Savvy Savings\u201d, DeerValley is devoted to making the dream of a comfortable home and better living a reality."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1ds0335",
+   "handle": "dv-1ds0335",
+   "price_range": {
+    "min": {
+     "amount": 12500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 18070,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18070,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44293379522748",
+     "sku": "DV-1DS0335",
+     "title": "Default Title",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Upgrade your bathroom with our modern Acrylic Drop-in Bathroom Sink. Made from high-quality acrylic, it features a smooth surface that stays looking clean and flawless over time. Lightweight and durable, it offers effortless installation and easy maintenance with just a soft cloth, making it a practical and stylish choice for any bathroom. Features Simple MaintenanceThis acrylic drop-in bathroom sink features a seamless design with no hard-to-clean crevices, effectively preventing dirt buildup. The smooth surface can be easily wiped with a soft cloth, keeping your sink looking pristine for years. Lightweight and DurableMade from premium acrylic, this bathroom sink is both lightweight and durable, offering a practical and long-lasting choice that resists cracking or damage over time. Stylish Design, Easy InstallationWith its modern style and dimensions (23 5/8\" L x 18 1/8\" W x 7 1/16\" H, depth 5 1/8\"), this sink complements any bathroom d\u00e9cor. Featuring a 35mm faucet hole, it installs effortlessly by simply dropping into the countertop, securing, and sealing. Efficient Drainage SystemThe sink features a wide-mouth front overflow, designed to effectively prevent water from overflowing while maintaining a clean and elegant appearance. Combined with the 35mm drain opening, it ensures smooth and efficient water flow. Easy Care with ConfidenceDesigned for everyday convenience, this acrylic sink requires minimal maintenance\u2014just a quick wipe with a soft cloth to maintain its shine. We back it with a 12-month warranty, so you can purchase with confidence knowing we\u2019ll address any issues promptly. Weights & Dimensions Overall(L * W * H): 23.62\" X 18.11\" X 7.09\" Basin(L * W * H): 17.32\" X 10.94\" X 5.12\" Drain Size (Diameter): 1.75\"Bottom Size(L * W * H): 18.11\" X 12.99\" X 6.73\"Table Size(L * W * H): 23.62\" X 18.11\" X -\"Countertop Edge Width: 4.33\"Countertop Edge Thickness: 0.79\"Faucet Hole Size: 1.37\" Overall Product Weight: 20.39 lb. Installation Manual \"Stylish Living, Savvy Savings\u201d, DeerValley is devoted to making the dream of a comfortable home and better living a reality."
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 18070,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1ds0335-7110994.jpg?v=1760060228"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44293379522748:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1ds0335-7110994.jpg?v=1760060228"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Sinks",
+    "Drop-in Sinks",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/241263837372",
+     "handle": "bathroom-sinks",
+     "title": "Bathroom Sinks",
+     "description": {
+      "html": "DeerValley bathroom sinks combine elegant design with durable materials, offering versatile styles like vessel, undermount, and pedestal to suit any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295160512700",
+     "handle": "drop-in-sink",
+     "title": "Drop-in Sinks",
+     "description": {
+      "html": "DeerValley drop-in sinks feature durable ceramic construction, built-in overflow, and easy installation, combining classic design with modern convenience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449176764",
+     "handle": "sink-and-pedestal",
+     "title": "Sink And Pedestal",
+     "description": {
+      "html": "DeerValley sink and pedestal combos offer timeless design, durability, and space-saving efficiency\u2014perfect for adding elegance to small or modern bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311515283644",
+     "handle": "bath-sink",
+     "title": "Bath Sink",
+     "description": {
+      "html": "DeerValley Bath Sinks offer elegant designs and durable materials. Perfect for any bathroom style, easy to clean, and crafted for lasting beauty and function."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6673809080508",
+   "title": "DeerValley DV-1V051 Vessel Bathroom Sink Seamless Scratch-Resistant High-Gloss Easy Clean",
+   "description": {
+    "html": "Product updates: some items include a logo and are shipped randomly. The DeerValley Vessel Sink brings minimalist elegance to your bathroom. With its unique shape and exquisite decoration, this ceramic vessel adds distinctive charm to any space. Suitable for both residential and commercial use, it is handcrafted from premium ceramic for a scratch-resistant, stain-resistant texture. Each piece undergoes rigorous water testing at the factory to ensure reliable quality. Features Seamless design with no visible seams or lines Scratch-resistant and stain-resistant Premium glazed ceramic for lasting durability and a smooth surface High-gloss finish that\u2019s easy to maintain and clean Compatible with any wall-mounted faucet Factory water-tested for quality assurance One-year limited warranty DeerValley stands confidently behind our products and is committed to providing excellent service to every customer. Weight and Dimensions? SKU DV-1V051 DV-1V0089 DV-1V0090 Total Product Weight 14 15 15 Basin Dimensions (L \u00d7 W \u00d7 H) 15.16\u00d712.01\u00d74.53 15.35\u00d712.28\u00d74.72 15.35\u00d712.28\u00d74.72 Overall Dimensions (L \u00d7 W \u00d7 H) 15.75\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 Drain Outlet Diameter 1.75 1.75 1.75 Color White Black Gold \uff08DV-1V051\uff09 Included Components Countertop Basin: DV-1V051 Not Included Drain Assembly Faucet Compatible Drain Models DV-1D601 DV-1D801 Installation Manual ? ?"
+   },
+   "url": "https://www.deervalleybath.com/products/deervalley-dv-1v051-white-ceramic-glazed-oval-vessel-bathroom-sink",
+   "handle": "deervalley-dv-1v051-white-ceramic-glazed-oval-vessel-bathroom-sink",
+   "price_range": {
+    "min": {
+     "amount": 4499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8410,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5849,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8320,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42465197162684",
+     "sku": "DV-1V051",
+     "title": "White",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. The DeerValley Vessel Sink brings minimalist elegance to your bathroom. With its unique shape and exquisite decoration, this ceramic vessel adds distinctive charm to any space. Suitable for both residential and commercial use, it is handcrafted from premium ceramic for a scratch-resistant, stain-resistant texture. Each piece undergoes rigorous water testing at the factory to ensure reliable quality. Features Seamless design with no visible seams or lines Scratch-resistant and stain-resistant Premium glazed ceramic for lasting durability and a smooth surface High-gloss finish that\u2019s easy to maintain and clean Compatible with any wall-mounted faucet Factory water-tested for quality assurance One-year limited warranty DeerValley stands confidently behind our products and is committed to providing excellent service to every customer. Weight and Dimensions? SKU DV-1V051 DV-1V0089 DV-1V0090 Total Product Weight 14 15 15 Basin Dimensions (L \u00d7 W \u00d7 H) 15.16\u00d712.01\u00d74.53 15.35\u00d712.28\u00d74.72 15.35\u00d712.28\u00d74.72 Overall Dimensions (L \u00d7 W \u00d7 H) 15.75\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 Drain Outlet Diameter 1.75 1.75 1.75 Color White Black Gold \uff08DV-1V051\uff09 Included Components Countertop Basin: DV-1V051 Not Included Drain Assembly Faucet Compatible Drain Models DV-1D601 DV-1D801 Installation Manual ? ?"
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6629,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1V051-0615_2.jpg?v=1757057842"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42465197162684:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44041942859964",
+     "sku": "DV-1V0011",
+     "title": "Black",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. The DeerValley Vessel Sink brings minimalist elegance to your bathroom. With its unique shape and exquisite decoration, this ceramic vessel adds distinctive charm to any space. Suitable for both residential and commercial use, it is handcrafted from premium ceramic for a scratch-resistant, stain-resistant texture. Each piece undergoes rigorous water testing at the factory to ensure reliable quality. Features Seamless design with no visible seams or lines Scratch-resistant and stain-resistant Premium glazed ceramic for lasting durability and a smooth surface High-gloss finish that\u2019s easy to maintain and clean Compatible with any wall-mounted faucet Factory water-tested for quality assurance One-year limited warranty DeerValley stands confidently behind our products and is committed to providing excellent service to every customer. Weight and Dimensions? SKU DV-1V051 DV-1V0089 DV-1V0090 Total Product Weight 14 15 15 Basin Dimensions (L \u00d7 W \u00d7 H) 15.16\u00d712.01\u00d74.53 15.35\u00d712.28\u00d74.72 15.35\u00d712.28\u00d74.72 Overall Dimensions (L \u00d7 W \u00d7 H) 15.75\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 Drain Outlet Diameter 1.75 1.75 1.75 Color White Black Gold \uff08DV-1V051\uff09 Included Components Countertop Basin: DV-1V051 Not Included Drain Assembly Faucet Compatible Drain Models DV-1D601 DV-1D801 Installation Manual ? ?"
+     },
+     "price": {
+      "amount": 8410,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8320,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1v0011black-7462473.jpg?v=1760060540"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44041942859964:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42905976209596",
+     "sku": "DV-1V0089",
+     "title": "Oval Black",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. The DeerValley Vessel Sink brings minimalist elegance to your bathroom. With its unique shape and exquisite decoration, this ceramic vessel adds distinctive charm to any space. Suitable for both residential and commercial use, it is handcrafted from premium ceramic for a scratch-resistant, stain-resistant texture. Each piece undergoes rigorous water testing at the factory to ensure reliable quality. Features Seamless design with no visible seams or lines Scratch-resistant and stain-resistant Premium glazed ceramic for lasting durability and a smooth surface High-gloss finish that\u2019s easy to maintain and clean Compatible with any wall-mounted faucet Factory water-tested for quality assurance One-year limited warranty DeerValley stands confidently behind our products and is committed to providing excellent service to every customer. Weight and Dimensions? SKU DV-1V051 DV-1V0089 DV-1V0090 Total Product Weight 14 15 15 Basin Dimensions (L \u00d7 W \u00d7 H) 15.16\u00d712.01\u00d74.53 15.35\u00d712.28\u00d74.72 15.35\u00d712.28\u00d74.72 Overall Dimensions (L \u00d7 W \u00d7 H) 15.75\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 Drain Outlet Diameter 1.75 1.75 1.75 Color White Black Gold \uff08DV-1V051\uff09 Included Components Countertop Basin: DV-1V051 Not Included Drain Assembly Faucet Compatible Drain Models DV-1D601 DV-1D801 Installation Manual ? ?"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7625,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Oval Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1V0089-0822_5.jpg?v=1757057843"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42905976209596:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42906040271036",
+     "sku": "DV-1V0090",
+     "title": "Oval Gold",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. The DeerValley Vessel Sink brings minimalist elegance to your bathroom. With its unique shape and exquisite decoration, this ceramic vessel adds distinctive charm to any space. Suitable for both residential and commercial use, it is handcrafted from premium ceramic for a scratch-resistant, stain-resistant texture. Each piece undergoes rigorous water testing at the factory to ensure reliable quality. Features Seamless design with no visible seams or lines Scratch-resistant and stain-resistant Premium glazed ceramic for lasting durability and a smooth surface High-gloss finish that\u2019s easy to maintain and clean Compatible with any wall-mounted faucet Factory water-tested for quality assurance One-year limited warranty DeerValley stands confidently behind our products and is committed to providing excellent service to every customer. Weight and Dimensions? SKU DV-1V051 DV-1V0089 DV-1V0090 Total Product Weight 14 15 15 Basin Dimensions (L \u00d7 W \u00d7 H) 15.16\u00d712.01\u00d74.53 15.35\u00d712.28\u00d74.72 15.35\u00d712.28\u00d74.72 Overall Dimensions (L \u00d7 W \u00d7 H) 15.75\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 Drain Outlet Diameter 1.75 1.75 1.75 Color White Black Gold \uff08DV-1V051\uff09 Included Components Countertop Basin: DV-1V051 Not Included Drain Assembly Faucet Compatible Drain Models DV-1D601 DV-1D801 Installation Manual ? ?"
+     },
+     "price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5849,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Oval Gold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1V0090-0823_5.jpg?v=1757057844"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42906040271036:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44270696825020",
+     "sku": "DV-1V0333",
+     "title": "Black Frame",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. The DeerValley Vessel Sink brings minimalist elegance to your bathroom. With its unique shape and exquisite decoration, this ceramic vessel adds distinctive charm to any space. Suitable for both residential and commercial use, it is handcrafted from premium ceramic for a scratch-resistant, stain-resistant texture. Each piece undergoes rigorous water testing at the factory to ensure reliable quality. Features Seamless design with no visible seams or lines Scratch-resistant and stain-resistant Premium glazed ceramic for lasting durability and a smooth surface High-gloss finish that\u2019s easy to maintain and clean Compatible with any wall-mounted faucet Factory water-tested for quality assurance One-year limited warranty DeerValley stands confidently behind our products and is committed to providing excellent service to every customer. Weight and Dimensions? SKU DV-1V051 DV-1V0089 DV-1V0090 Total Product Weight 14 15 15 Basin Dimensions (L \u00d7 W \u00d7 H) 15.16\u00d712.01\u00d74.53 15.35\u00d712.28\u00d74.72 15.35\u00d712.28\u00d74.72 Overall Dimensions (L \u00d7 W \u00d7 H) 15.75\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 15.98\u00d712.99\u00d75.71 Drain Outlet Diameter 1.75 1.75 1.75 Color White Black Gold \uff08DV-1V051\uff09 Included Components Countertop Basin: DV-1V051 Not Included Drain Assembly Faucet Compatible Drain Models DV-1D601 DV-1D801 Installation Manual ? ?"
+     },
+     "price": {
+      "amount": 7200,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7956,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black Frame"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1v0333black-frame-2093210.jpg?v=1760060543"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44270696825020:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Oval Black"
+      },
+      {
+       "label": "Oval Gold"
+      },
+      {
+       "label": "Black Frame"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1V051-0615_3.jpg?v=1757057842",
+     "alt_text": "DeerValley Bath DeerValley DV-1V051 Horizon White Ceramic Glazed Oval Vessel Bathroom Sink Vessel sink"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Sinks",
+    "Canada Warehouse",
+    "United States Warehouse",
+    "Vessel Sinks"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/241263837372",
+     "handle": "bathroom-sinks",
+     "title": "Bathroom Sinks",
+     "description": {
+      "html": "DeerValley bathroom sinks combine elegant design with durable materials, offering versatile styles like vessel, undermount, and pedestal to suit any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265434235068",
+     "handle": "vessel-sinks",
+     "title": "Vessel Sinks",
+     "description": {
+      "html": "DeerValley vessel sinks feature stylish designs in ceramic and concrete, with smooth, easy-to-clean surfaces, perfect for above-counter installation in any modern bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290730999996",
+     "handle": "horizon",
+     "title": "Horizon",
+     "description": {
+      "html": "Inspired by the arc of light we see during sunrise and sunset, our Horizon Collection contributes wonderfully to any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295426359484",
+     "handle": "black-friday-best-sellers",
+     "title": "Black Friday Best Sellers",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8029144744124",
+   "title": "30\" Rectangular Console Bathroom Sink, Single Faucet Hole",
+   "description": {
+    "html": "Product updates: some items include a logo and are shipped randomly. Crafted from premium ceramic, our console sink offers outstanding scratch and stain resistance, ensuring lasting beauty. Its spacious design accommodates three users at once, perfect for busy households. Choose from 3 color options for the stainless steel legs to match your decor. Front and side towel bars provide convenient storage. Experience the perfect blend of style, functionality, and convenience with the DeerValley console sink. Features Spacious Design: With a length of 30 inches, this console sink offers ample room for three people to wash simultaneously, making it an ideal time-saving solution for larger families. The spacious countertop provides convenient storage for everyday items, keeping them easily accessible. Durable Anti-Rust Legs: Crafted from stainless steel, the console sink's legs are resistant to rust and corrosion, ensuring worry-free installation in your bathroom. With 3 color options, you can freely choose the one that complements your bathroom decor style. Use Anywhere: Suitable for laundry rooms, bathrooms, powder rooms, hotels, shopping centers, and more. Size: 29.72\"L x 16.34\" W x 5.71\"H. Durable Ceramic Build: Constructed from high-quality ceramic, this large console sink is both stain-resistant and scratch-resistant, ensuring easy daily maintenance. It maintains its original appearance over time and won't discolor. Safe & Thoughtful Design: Our console sink features rounded corners and smooth lines for enhanced safety, protecting against bruises when accidentally bumped. Package Contents: The package includes the bathroom sink, frame legs, and installation accessories. For optimal results, we recommend hiring a professional plumber to install the console sink. What's Included? Pedestal Weights & Dimensions Overall: 29.72\" L X 16.34\" W X 5.71\"HBasin: 28.35\" L X 11.42\" W X 3.54\" DFaucet Centers:?5.71\"Base/Stand Height - Top to Bottom:?16.34\"?HOverall Product Weight:?29.72 lb.Color of Leg: Black Installation Manual: \"Stylish Living, Savvy Savings\u201d, DeerValley devotes to make the dream of a comfortable home and better living a reality."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1cs0118b",
+   "handle": "dv-1cs0118b",
+   "price_range": {
+    "min": {
+     "amount": 24900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 24900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 32370,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 32370,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42922277863612",
+     "sku": "DV-1CS0118B",
+     "title": "Default Title",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Crafted from premium ceramic, our console sink offers outstanding scratch and stain resistance, ensuring lasting beauty. Its spacious design accommodates three users at once, perfect for busy households. Choose from 3 color options for the stainless steel legs to match your decor. Front and side towel bars provide convenient storage. Experience the perfect blend of style, functionality, and convenience with the DeerValley console sink. Features Spacious Design: With a length of 30 inches, this console sink offers ample room for three people to wash simultaneously, making it an ideal time-saving solution for larger families. The spacious countertop provides convenient storage for everyday items, keeping them easily accessible. Durable Anti-Rust Legs: Crafted from stainless steel, the console sink's legs are resistant to rust and corrosion, ensuring worry-free installation in your bathroom. With 3 color options, you can freely choose the one that complements your bathroom decor style. Use Anywhere: Suitable for laundry rooms, bathrooms, powder rooms, hotels, shopping centers, and more. Size: 29.72\"L x 16.34\" W x 5.71\"H. Durable Ceramic Build: Constructed from high-quality ceramic, this large console sink is both stain-resistant and scratch-resistant, ensuring easy daily maintenance. It maintains its original appearance over time and won't discolor. Safe & Thoughtful Design: Our console sink features rounded corners and smooth lines for enhanced safety, protecting against bruises when accidentally bumped. Package Contents: The package includes the bathroom sink, frame legs, and installation accessories. For optimal results, we recommend hiring a professional plumber to install the console sink. What's Included? Pedestal Weights & Dimensions Overall: 29.72\" L X 16.34\" W X 5.71\"HBasin: 28.35\" L X 11.42\" W X 3.54\" DFaucet Centers:?5.71\"Base/Stand Height - Top to Bottom:?16.34\"?HOverall Product Weight:?29.72 lb.Color of Leg: Black Installation Manual: \"Stylish Living, Savvy Savings\u201d, DeerValley devotes to make the dream of a comfortable home and better living a reality."
+     },
+     "price": {
+      "amount": 24900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32370,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1CS0118B-0919_5.jpg?v=1757057395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42922277863612:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1CS0118B-0919_5.jpg?v=1757057395"
+    }
+   ],
+   "tags": [
+    "Bathroom Sinks",
+    "Console Bahroom Sinks",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/241263837372",
+     "handle": "bathroom-sinks",
+     "title": "Bathroom Sinks",
+     "description": {
+      "html": "DeerValley bathroom sinks combine elegant design with durable materials, offering versatile styles like vessel, undermount, and pedestal to suit any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294836568252",
+     "handle": "console-sink",
+     "title": "Console Sinks",
+     "description": {
+      "html": "DeerValley console sinks feature durable ceramic construction, scratch and stain resistance, and integrated towel bars, offering a stylish, space-saving solution for modern bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449078460",
+     "handle": "pedestal-sink",
+     "title": "Pedestal Sink",
+     "description": {
+      "html": "DeerValley pedestal sinks blend classic design with space-saving function\u2014perfect for small bathrooms seeking elegance, durability, and easy installation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449176764",
+     "handle": "sink-and-pedestal",
+     "title": "Sink And Pedestal",
+     "description": {
+      "html": "DeerValley sink and pedestal combos offer timeless design, durability, and space-saving efficiency\u2014perfect for adding elegance to small or modern bathrooms."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8287183732924",
+   "title": "DeerValley DV-1P529 Pedestal Sinks Compact Modern Ceramic Overflow",
+   "description": {
+    "html": "Product updates: some items include a logo and are shipped randomly. Elevate Your Bathroom with the DeerValley Compact Pedestal Sink Upgrade your bathroom style with the DeerValley compact pedestal sink. Perfect for bathrooms with limited space, this sink combines modern design with long-lasting durability. Its sleek freestanding design and easy-to-clean surface make it a practical and stylish choice for any bathroom. Features Durable & Stylish: Crafted from multi-layer glazed, non-porous ceramic, this pedestal sink offers a long-lasting, glossy surface that maintains its shine and elegance for years, enhancing the d\u00e9cor of any bathroom. Compact Design: Featuring a modern freestanding design with rounded corners, this sink measures 11.22 in (L) x 12.60 in (W) x 35.04 in (H), making it ideal for small bathrooms or powder rooms. It maximizes space while maintaining style and functionality. Quick Installation: Designed to be compatible with a 1.5-inch single-hole faucet, this pedestal sink is easy and quick to install, saving you time and effort. Efficient Drainage: Equipped with a 1.75-inch drain and an overflow hole to ensure smooth drainage and prevent overflow, keeping your bathroom dry and clean after each use. Clean & Hygienic Experience: With a 6.5-inch splash depth, this compact pedestal sink effectively prevents water splashing, keeping your bathroom neat and comfortable. Easy to Clean: The non-porous surface resists dirt and is effortless to clean, helping the sink stay looking new for longer. Note & After-Sales Support: Please note that the drain pipe, faucet, and plumbing are not included. If you have any questions, please contact us for prompt after-sales support to ensure your satisfaction. Weight & Dimensions Total Product Weight: 52.91 lbs Overall Dimensions: 11.22 in (L) x 12.60 in (W) x 35.04 in (H) Basin Dimensions: 10.2 in (L) x 11.8 in (W) x 6.5 in (D) Drain Size (Diameter): 1.75 in Overflow Hole (Diameter): 0.98 in Pedestal Base Width: 6.89 in DV-1P529/B\uff1a Included Components Bathroom Sink: DV-1P529 Installation Manual"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1p529-b",
+   "handle": "dv-1p529-b",
+   "price_range": {
+    "min": {
+     "amount": 17800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 22800,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 24570,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29640,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43584479854780",
+     "sku": "DV-1P529",
+     "title": "White",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Elevate Your Bathroom with the DeerValley Compact Pedestal Sink Upgrade your bathroom style with the DeerValley compact pedestal sink. Perfect for bathrooms with limited space, this sink combines modern design with long-lasting durability. Its sleek freestanding design and easy-to-clean surface make it a practical and stylish choice for any bathroom. Features Durable & Stylish: Crafted from multi-layer glazed, non-porous ceramic, this pedestal sink offers a long-lasting, glossy surface that maintains its shine and elegance for years, enhancing the d\u00e9cor of any bathroom. Compact Design: Featuring a modern freestanding design with rounded corners, this sink measures 11.22 in (L) x 12.60 in (W) x 35.04 in (H), making it ideal for small bathrooms or powder rooms. It maximizes space while maintaining style and functionality. Quick Installation: Designed to be compatible with a 1.5-inch single-hole faucet, this pedestal sink is easy and quick to install, saving you time and effort. Efficient Drainage: Equipped with a 1.75-inch drain and an overflow hole to ensure smooth drainage and prevent overflow, keeping your bathroom dry and clean after each use. Clean & Hygienic Experience: With a 6.5-inch splash depth, this compact pedestal sink effectively prevents water splashing, keeping your bathroom neat and comfortable. Easy to Clean: The non-porous surface resists dirt and is effortless to clean, helping the sink stay looking new for longer. Note & After-Sales Support: Please note that the drain pipe, faucet, and plumbing are not included. If you have any questions, please contact us for prompt after-sales support to ensure your satisfaction. Weight & Dimensions Total Product Weight: 52.91 lbs Overall Dimensions: 11.22 in (L) x 12.60 in (W) x 35.04 in (H) Basin Dimensions: 10.2 in (L) x 11.8 in (W) x 6.5 in (D) Drain Size (Diameter): 1.75 in Overflow Hole (Diameter): 0.98 in Pedestal Base Width: 6.89 in DV-1P529/B\uff1a Included Components Bathroom Sink: DV-1P529 Installation Manual"
+     },
+     "price": {
+      "amount": 17800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 24570,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1p529white-4869641.jpg?v=1760060352"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43584479854780:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43584479887548",
+     "sku": "DV-1P529B",
+     "title": "Black",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Elevate Your Bathroom with the DeerValley Compact Pedestal Sink Upgrade your bathroom style with the DeerValley compact pedestal sink. Perfect for bathrooms with limited space, this sink combines modern design with long-lasting durability. Its sleek freestanding design and easy-to-clean surface make it a practical and stylish choice for any bathroom. Features Durable & Stylish: Crafted from multi-layer glazed, non-porous ceramic, this pedestal sink offers a long-lasting, glossy surface that maintains its shine and elegance for years, enhancing the d\u00e9cor of any bathroom. Compact Design: Featuring a modern freestanding design with rounded corners, this sink measures 11.22 in (L) x 12.60 in (W) x 35.04 in (H), making it ideal for small bathrooms or powder rooms. It maximizes space while maintaining style and functionality. Quick Installation: Designed to be compatible with a 1.5-inch single-hole faucet, this pedestal sink is easy and quick to install, saving you time and effort. Efficient Drainage: Equipped with a 1.75-inch drain and an overflow hole to ensure smooth drainage and prevent overflow, keeping your bathroom dry and clean after each use. Clean & Hygienic Experience: With a 6.5-inch splash depth, this compact pedestal sink effectively prevents water splashing, keeping your bathroom neat and comfortable. Easy to Clean: The non-porous surface resists dirt and is effortless to clean, helping the sink stay looking new for longer. Note & After-Sales Support: Please note that the drain pipe, faucet, and plumbing are not included. If you have any questions, please contact us for prompt after-sales support to ensure your satisfaction. Weight & Dimensions Total Product Weight: 52.91 lbs Overall Dimensions: 11.22 in (L) x 12.60 in (W) x 35.04 in (H) Basin Dimensions: 10.2 in (L) x 11.8 in (W) x 6.5 in (D) Drain Size (Diameter): 1.75 in Overflow Hole (Diameter): 0.98 in Pedestal Base Width: 6.89 in DV-1P529/B\uff1a Included Components Bathroom Sink: DV-1P529 Installation Manual"
+     },
+     "price": {
+      "amount": 22800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29640,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1p529bblack-9933758.jpg?v=1760060354"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43584479887548:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1p529white-4869641.jpg?v=1760060352",
+     "alt_text": "Pedestal Sinks Bathroom Sinks"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Sinks",
+    "Pedestal Sinks",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/241263837372",
+     "handle": "bathroom-sinks",
+     "title": "Bathroom Sinks",
+     "description": {
+      "html": "DeerValley bathroom sinks combine elegant design with durable materials, offering versatile styles like vessel, undermount, and pedestal to suit any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263340359868",
+     "handle": "sinks-with-overflow-1",
+     "title": "Sinks With Overflow",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767948476",
+     "handle": "pedestal-sinks",
+     "title": "Pedestal Sinks",
+     "description": {
+      "html": "DeerValley pedestal sinks combine classic design with durability, featuring vitreous china construction, smooth surfaces, overflow protection, and pre-drilled faucet holes for convenience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290730999996",
+     "handle": "horizon",
+     "title": "Horizon",
+     "description": {
+      "html": "Inspired by the arc of light we see during sunrise and sunset, our Horizon Collection contributes wonderfully to any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449078460",
+     "handle": "pedestal-sink",
+     "title": "Pedestal Sink",
+     "description": {
+      "html": "DeerValley pedestal sinks blend classic design with space-saving function\u2014perfect for small bathrooms seeking elegance, durability, and easy installation."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8029141893308",
+   "title": "DeerValley DV-1CS0117G Console Bathroom Sinks Gray Modern Ceramic Towel Bar",
+   "description": {
+    "html": "Product updates: some items include a logo and are shipped randomly. Crafted from premium ceramic, this console sink boasts exceptional scratch and stain resistance. Its spacious design allows for use by almost two people simultaneously, making it perfect for busy households. The open design adds a sense of space and openness to your bathroom. With 3 elegant color options to match your decor, the stainless steel console legs offer classic styling and convenient integrated front and side bars for towel storage. With an overflow, ergonomic design, and the perfect height for comfortable use, the DeerValley Console Sink effortlessly combines luxury and practicality. Elevate your bathroom experience with DeerValley. Features Spacious & Efficient Design: This console sink features front and side bars for convenient towel hanging, a generously sized countertop for essential storage, and accommodates nearly two users, streamlining your routine. Adaptable for Any Space: This console sink is versatile and fits perfectly in various settings, including bathrooms, laundry rooms, hotels, shopping centers, and more. Modern and Practical: The console bathroom sink offers a stylish and contemporary design. Its leg frame allows for installation without a vanity, making it easier to clean and keeping your bathroom tidy. Durable Ceramic Construction: Crafted from premium ceramic, the bathroom sink boasts low water absorption and high acid resistance, making it easy to maintain. The durable ceramic is also scratch-resistant and stain-resistant for long-lasting beauty. Safe and Sleek Design: Our rectangular console bathroom sink prioritizes safety with smooth, rounded corners. Designed to protect you from accidental bumps, it combines aesthetics with security. The sink dimensions are as follows: Length: 23.82 inches, Width: 16.92 inches, Height: 5.71 inches. 12-Month Warranty: We stand behind our products and aim to provide a quality shopping experience. If you encounter any issues or are unsatisfied, contact us via email through the platform, and we'll promptly address your concerns. What's Included? Pedestal Weights & Dimensions Overall: 24'' L X 16.93'' W?X 5.71'' H Basin: 22.44'' L X 11.81'' W X 3.54'' D Overall Product Weight: 23.82 lb. Base/Stand Height - Top to Bottom: 16.93'' H Faucet Centers: 5.71\" Color of Leg: Gold Installation Manual: \"Stylish Living, Savvy Savings\u201d, DeerValley devotes to make the dream of a comfortable home and better living a reality."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1cs0117g",
+   "handle": "dv-1cs0117g",
+   "price_range": {
+    "min": {
+     "amount": 21484,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 21484,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 25137,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 25137,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42922274324668",
+     "sku": "DV-1CS0117G",
+     "title": "Default Title",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Crafted from premium ceramic, this console sink boasts exceptional scratch and stain resistance. Its spacious design allows for use by almost two people simultaneously, making it perfect for busy households. The open design adds a sense of space and openness to your bathroom. With 3 elegant color options to match your decor, the stainless steel console legs offer classic styling and convenient integrated front and side bars for towel storage. With an overflow, ergonomic design, and the perfect height for comfortable use, the DeerValley Console Sink effortlessly combines luxury and practicality. Elevate your bathroom experience with DeerValley. Features Spacious & Efficient Design: This console sink features front and side bars for convenient towel hanging, a generously sized countertop for essential storage, and accommodates nearly two users, streamlining your routine. Adaptable for Any Space: This console sink is versatile and fits perfectly in various settings, including bathrooms, laundry rooms, hotels, shopping centers, and more. Modern and Practical: The console bathroom sink offers a stylish and contemporary design. Its leg frame allows for installation without a vanity, making it easier to clean and keeping your bathroom tidy. Durable Ceramic Construction: Crafted from premium ceramic, the bathroom sink boasts low water absorption and high acid resistance, making it easy to maintain. The durable ceramic is also scratch-resistant and stain-resistant for long-lasting beauty. Safe and Sleek Design: Our rectangular console bathroom sink prioritizes safety with smooth, rounded corners. Designed to protect you from accidental bumps, it combines aesthetics with security. The sink dimensions are as follows: Length: 23.82 inches, Width: 16.92 inches, Height: 5.71 inches. 12-Month Warranty: We stand behind our products and aim to provide a quality shopping experience. If you encounter any issues or are unsatisfied, contact us via email through the platform, and we'll promptly address your concerns. What's Included? Pedestal Weights & Dimensions Overall: 24'' L X 16.93'' W?X 5.71'' H Basin: 22.44'' L X 11.81'' W X 3.54'' D Overall Product Weight: 23.82 lb. Base/Stand Height - Top to Bottom: 16.93'' H Faucet Centers: 5.71\" Color of Leg: Gold Installation Manual: \"Stylish Living, Savvy Savings\u201d, DeerValley devotes to make the dream of a comfortable home and better living a reality."
+     },
+     "price": {
+      "amount": 21484,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 25137,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1CS0117G-0919_5.jpg?v=1757057401"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42922274324668:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1CS0117G-0919_5.jpg?v=1757057401",
+     "alt_text": "Console Bathroom Sinks"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Sinks",
+    "Campaigns-Others",
+    "Console Bahroom Sinks",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/241263837372",
+     "handle": "bathroom-sinks",
+     "title": "Bathroom Sinks",
+     "description": {
+      "html": "DeerValley bathroom sinks combine elegant design with durable materials, offering versatile styles like vessel, undermount, and pedestal to suit any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294836568252",
+     "handle": "console-sink",
+     "title": "Console Sinks",
+     "description": {
+      "html": "DeerValley console sinks feature durable ceramic construction, scratch and stain resistance, and integrated towel bars, offering a stylish, space-saving solution for modern bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449078460",
+     "handle": "pedestal-sink",
+     "title": "Pedestal Sink",
+     "description": {
+      "html": "DeerValley pedestal sinks blend classic design with space-saving function\u2014perfect for small bathrooms seeking elegance, durability, and easy installation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449176764",
+     "handle": "sink-and-pedestal",
+     "title": "Sink And Pedestal",
+     "description": {
+      "html": "DeerValley sink and pedestal combos offer timeless design, durability, and space-saving efficiency\u2014perfect for adding elegance to small or modern bathrooms."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9079913021628",
+   "title": "DeerValley DV-1U0477 18 x 13.5 Inch Undermount Bathroom Sink, White Ceramic Under Counter Bathroom Sinks, Modern Lavatory Vanity Bath Wash Bowl Basin with Overflow",
+   "description": {
+    "html": "This white ceramic rectangular undermount bathroom sink combines durability and modern style. Vertical sides maximize interior capacity, providing ample space for daily washing. The smooth, non-porous surface makes cleaning effortless, and the built-in overflow prevents water from spilling onto the countertop. Perfectly suited for bathrooms, vanity areas, or powder rooms, it seamlessly integrates with your countertop for a sleek, contemporary look. Product updates: some items include a logo and are shipped randomly. Features Durable Material: Crafted from high-density premium ceramic, this undermount bathroom sink features a smooth, high-quality glaze for long-lasting durability and refined beauty. The non-porous surface helps prevent residue buildup and ensures easy cleaning. Vertical Sides, More Space: The rectangular undermount design with straight vertical sides maximizes interior capacity, providing more usable space for daily washing. Perfect for home bathrooms, vanity areas, or public washrooms. Overflow Protection: This ceramic bathroom sink features a built-in overflow hole to prevent water from spilling over the countertop, keeping your vanity area dry. Note: Faucet and pop-up drain not included. Undermount Installation: The rectangular basin mounts seamlessly under the countertop, saving space and providing ample washing area. The design keeps the countertop easy to clean and maintains a sleek, modern look. Safe & Efficient Design: This undermount ceramic sink has smooth, rounded corners for easier and safer cleaning, and a large drain that ensures fast water flow while minimizing clogging. Weights & Dimensions Overall Product Weight: 13.23 lb.Basin: 16.3\" L x 11.6\" W x 5.5\" DOverall: 18.31\" L x 13.58\" W x 7.09\" HCut-Out Size: 15.1\"D X 10.40\" WDrain Size (Diameter): 1.75\" Installation Manual:"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1u0477",
+   "handle": "dv-1u0477",
+   "price_range": {
+    "min": {
+     "amount": 5266,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5266,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 6846,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6846,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45517037207740",
+     "sku": "DV-1U0477",
+     "title": "Default Title",
+     "description": {
+      "html": "This white ceramic rectangular undermount bathroom sink combines durability and modern style. Vertical sides maximize interior capacity, providing ample space for daily washing. The smooth, non-porous surface makes cleaning effortless, and the built-in overflow prevents water from spilling onto the countertop. Perfectly suited for bathrooms, vanity areas, or powder rooms, it seamlessly integrates with your countertop for a sleek, contemporary look. Product updates: some items include a logo and are shipped randomly. Features Durable Material: Crafted from high-density premium ceramic, this undermount bathroom sink features a smooth, high-quality glaze for long-lasting durability and refined beauty. The non-porous surface helps prevent residue buildup and ensures easy cleaning. Vertical Sides, More Space: The rectangular undermount design with straight vertical sides maximizes interior capacity, providing more usable space for daily washing. Perfect for home bathrooms, vanity areas, or public washrooms. Overflow Protection: This ceramic bathroom sink features a built-in overflow hole to prevent water from spilling over the countertop, keeping your vanity area dry. Note: Faucet and pop-up drain not included. Undermount Installation: The rectangular basin mounts seamlessly under the countertop, saving space and providing ample washing area. The design keeps the countertop easy to clean and maintains a sleek, modern look. Safe & Efficient Design: This undermount ceramic sink has smooth, rounded corners for easier and safer cleaning, and a large drain that ensures fast water flow while minimizing clogging. Weights & Dimensions Overall Product Weight: 13.23 lb.Basin: 16.3\" L x 11.6\" W x 5.5\" DOverall: 18.31\" L x 13.58\" W x 7.09\" HCut-Out Size: 15.1\"D X 10.40\" WDrain Size (Diameter): 1.75\" Installation Manual:"
+     },
+     "price": {
+      "amount": 5266,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6846,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1U0477-US-Listing-2603_13.jpg?v=1773126415"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45517037207740:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1U0477-US-Listing-2603_13.jpg?v=1773126415"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Sinks",
+    "Undermount Bathroom Sinks",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/241263837372",
+     "handle": "bathroom-sinks",
+     "title": "Bathroom Sinks",
+     "description": {
+      "html": "DeerValley bathroom sinks combine elegant design with durable materials, offering versatile styles like vessel, undermount, and pedestal to suit any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263340294332",
+     "handle": "undermount-sinks-1",
+     "title": "Undermount Bathroom Sinks",
+     "description": {
+      "html": "DeerValley undermount bathroom sinks feature durable vitreous china, a high-gloss finish, overflow protection, and easy-to-clean designs, perfect for modern bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449176764",
+     "handle": "sink-and-pedestal",
+     "title": "Sink And Pedestal",
+     "description": {
+      "html": "DeerValley sink and pedestal combos offer timeless design, durability, and space-saving efficiency\u2014perfect for adding elegance to small or modern bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311515283644",
+     "handle": "bath-sink",
+     "title": "Bath Sink",
+     "description": {
+      "html": "DeerValley Bath Sinks offer elegant designs and durable materials. Perfect for any bathroom style, easy to clean, and crafted for lasting beauty and function."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7742928388284",
+   "title": "SYMMETRY 12.80\" Round Vessel Bathroom Sink, Without Overflow With Multiple Colors",
+   "description": {
+    "html": "Product updates: some items include a logo and are shipped randomly. Product Description This symmetrical white round ceramic countertop basin adds a touch of minimalist elegance to your bathroom. Suitable for both residential and commercial spaces, this versatile basin is crafted from premium ceramic, making it highly scratch-resistant, stain-resistant, durable, and fade-resistant. The flat-bottom design with smooth rounded edges effectively prevents dust accumulation and makes cleaning easy. Accessories Not Included Drain assembly Faucet Features This white ceramic countertop basin features a modern, minimalist, and classic design, making it an ideal addition to any home decor. The round bathroom sink is made of high-quality smooth ceramic, ensuring long-lasting durability and excellent scratch resistance. Its simple style allows the beauty of your new vanity to shine, and the smooth surface is easy to clean. Easy installation: the basin has a standard drain opening (1.75-inch diameter), compatible with any standard non-overflow drain pipe. Made from premium ceramic with low water absorption and acid resistance; the polished surface is highly stain-resistant and easy to maintain. Overall countertop basin dimensions: 13 in (L) \u00d7 13 in (W) \u00d7 6 in (H) Weight & Dimensions Total Product Weight: 10 lbs Basin Dimensions: 12.01 in (L) \u00d7 12.01 in (W) \u00d7 4.53 in (H) Overall Dimensions: 12.80 in (L) \u00d7 12.80 in (W) \u00d7 5.51 in (H) Drain Opening Diameter: 1.75 in Color: White / Black Included Components Bathroom Sink: DV-1V0025 / DV-1V061 Compatible Drain Pipes (Links Below) DV-1D601 DV-1D801 Installation Manual:"
+   },
+   "url": "https://www.deervalleybath.com/products/deervalley-dv-1v0025-symmetry-ceramic-sleek-circular-vessel-bathroom-sink",
+   "handle": "deervalley-dv-1v0025-symmetry-ceramic-sleek-circular-vessel-bathroom-sink",
+   "price_range": {
+    "min": {
+     "amount": 3335,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3704,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4336,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4815,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42465222557884",
+     "sku": "DV-1V061",
+     "title": "White",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Product Description This symmetrical white round ceramic countertop basin adds a touch of minimalist elegance to your bathroom. Suitable for both residential and commercial spaces, this versatile basin is crafted from premium ceramic, making it highly scratch-resistant, stain-resistant, durable, and fade-resistant. The flat-bottom design with smooth rounded edges effectively prevents dust accumulation and makes cleaning easy. Accessories Not Included Drain assembly Faucet Features This white ceramic countertop basin features a modern, minimalist, and classic design, making it an ideal addition to any home decor. The round bathroom sink is made of high-quality smooth ceramic, ensuring long-lasting durability and excellent scratch resistance. Its simple style allows the beauty of your new vanity to shine, and the smooth surface is easy to clean. Easy installation: the basin has a standard drain opening (1.75-inch diameter), compatible with any standard non-overflow drain pipe. Made from premium ceramic with low water absorption and acid resistance; the polished surface is highly stain-resistant and easy to maintain. Overall countertop basin dimensions: 13 in (L) \u00d7 13 in (W) \u00d7 6 in (H) Weight & Dimensions Total Product Weight: 10 lbs Basin Dimensions: 12.01 in (L) \u00d7 12.01 in (W) \u00d7 4.53 in (H) Overall Dimensions: 12.80 in (L) \u00d7 12.80 in (W) \u00d7 5.51 in (H) Drain Opening Diameter: 1.75 in Color: White / Black Included Components Bathroom Sink: DV-1V0025 / DV-1V061 Compatible Drain Pipes (Links Below) DV-1D601 DV-1D801 Installation Manual:"
+     },
+     "price": {
+      "amount": 3704,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4815,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1V061-0605_4_d0231b13-55c4-4c71-b22f-cc193c9a2bf3.jpg?v=1757057585"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42465222557884:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42465222525116",
+     "sku": "DV-1V0025",
+     "title": "Black",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Product Description This symmetrical white round ceramic countertop basin adds a touch of minimalist elegance to your bathroom. Suitable for both residential and commercial spaces, this versatile basin is crafted from premium ceramic, making it highly scratch-resistant, stain-resistant, durable, and fade-resistant. The flat-bottom design with smooth rounded edges effectively prevents dust accumulation and makes cleaning easy. Accessories Not Included Drain assembly Faucet Features This white ceramic countertop basin features a modern, minimalist, and classic design, making it an ideal addition to any home decor. The round bathroom sink is made of high-quality smooth ceramic, ensuring long-lasting durability and excellent scratch resistance. Its simple style allows the beauty of your new vanity to shine, and the smooth surface is easy to clean. Easy installation: the basin has a standard drain opening (1.75-inch diameter), compatible with any standard non-overflow drain pipe. Made from premium ceramic with low water absorption and acid resistance; the polished surface is highly stain-resistant and easy to maintain. Overall countertop basin dimensions: 13 in (L) \u00d7 13 in (W) \u00d7 6 in (H) Weight & Dimensions Total Product Weight: 10 lbs Basin Dimensions: 12.01 in (L) \u00d7 12.01 in (W) \u00d7 4.53 in (H) Overall Dimensions: 12.80 in (L) \u00d7 12.80 in (W) \u00d7 5.51 in (H) Drain Opening Diameter: 1.75 in Color: White / Black Included Components Bathroom Sink: DV-1V0025 / DV-1V061 Compatible Drain Pipes (Links Below) DV-1D601 DV-1D801 Installation Manual:"
+     },
+     "price": {
+      "amount": 3335,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4336,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1V0025-1213_2.jpg?v=1757057586"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42465222525116:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1V061_-0426_EU_3.jpg?v=1757057585"
+    }
+   ],
+   "tags": [
+    "Bathroom Sinks",
+    "Canada Warehouse",
+    "Clearance Sale",
+    "United States Warehouse",
+    "Vessel Sinks"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/241263837372",
+     "handle": "bathroom-sinks",
+     "title": "Bathroom Sinks",
+     "description": {
+      "html": "DeerValley bathroom sinks combine elegant design with durable materials, offering versatile styles like vessel, undermount, and pedestal to suit any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265434235068",
+     "handle": "vessel-sinks",
+     "title": "Vessel Sinks",
+     "description": {
+      "html": "DeerValley vessel sinks feature stylish designs in ceramic and concrete, with smooth, easy-to-clean surfaces, perfect for above-counter installation in any modern bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290730901692",
+     "handle": "symmetry",
+     "title": "Symmetry",
+     "description": {
+      "html": "Achieve a perfectly balanced bathroom with our Symmetry Collection."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/307143147708",
+     "handle": "expired01",
+     "title": "Expired01",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8064399179964",
+   "title": "DeerValley DV-1DS0122 Drop-in Sinks Scratch Resistant Modern White 3-Hole Design",
+   "description": {
+    "html": "Product updates: some items include a logo and are shipped randomly. Elevate your bathroom with the DeerValley premium drop-in bathroom sink. Crafted from high-quality ceramic, this sink is built for long-lasting durability and resists fading, scratches, impacts, and stains, preserving its timeless beauty. The seamless design, smooth non-porous surface, and thoughtfully curved basin ensure efficient drainage and make cleaning quick and effortless. Its versatile modern appeal blends seamlessly with a wide range of d\u00e9cor styles, from contemporary to traditional. Features Exceptional Durability:This drop-in self-rimming bathroom sink is made from premium ceramic, offering long-lasting durability and timeless elegance. It resists fading, scratching, chipping, and staining, ensuring it remains a focal point in your bathroom for years to come. Easy Maintenance:The seamless drop-in design eliminates hard-to-clean gaps and helps prevent dirt buildup. The smooth, non-porous glazed surface wipes clean easily, keeping the sink looking new over time. Refined Style & Easy Installation:With clean, flowing lines and a crisp white finish, this modern sink (21.28\" L x 17.73\" W x 6.66\" H) adds a touch of elegance to any bathroom. Three pre-drilled faucet holes allow for easy installation\u2014simply place the sturdy rectangular sink into the countertop cutout, secure, and seal for an instant style upgrade. Front Overflow:Designed with a concealed front overflow, this sink helps prevent water overflow while maintaining a clean, elegant appearance. The curved basin and standard 1.75\" drain opening ensure optimal drainage performance. 12-Month Warranty:We are committed to providing high-quality kitchen and bathroom products along with an excellent shopping experience. If you are not satisfied with the product or encounter any issues, please contact us via the platform, and we will promptly assist you. Weight & Dimensions Overall Dimensions (L \u00d7 W \u00d7 H): 21.26\" \u00d7 17.72\" \u00d7 6.65\" Basin Dimensions (L \u00d7 W \u00d7 H): 17.32\" \u00d7 11.42\" \u00d7 4.49\" Drain Opening Diameter: 1.75\" Base Dimensions (L \u00d7 W \u00d7 H): 17.72\" \u00d7 13.39\" \u00d7 5.91\" Countertop Dimensions (L \u00d7 W \u00d7 H): 21.26\" \u00d7 17.72\" \u00d7 6.65\" Countertop Rim Width: 4.13\" Faucet Hole Diameter: 1.38\" Faucet Hole Spacing: 4.33\" Total Product Weight: 27.56 lbs Installation Manual"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1ds0122",
+   "handle": "dv-1ds0122",
+   "price_range": {
+    "min": {
+     "amount": 8900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9154,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 10399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10711,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43796660781244",
+     "sku": "DV-1DS0122",
+     "title": "Three",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Elevate your bathroom with the DeerValley premium drop-in bathroom sink. Crafted from high-quality ceramic, this sink is built for long-lasting durability and resists fading, scratches, impacts, and stains, preserving its timeless beauty. The seamless design, smooth non-porous surface, and thoughtfully curved basin ensure efficient drainage and make cleaning quick and effortless. Its versatile modern appeal blends seamlessly with a wide range of d\u00e9cor styles, from contemporary to traditional. Features Exceptional Durability:This drop-in self-rimming bathroom sink is made from premium ceramic, offering long-lasting durability and timeless elegance. It resists fading, scratching, chipping, and staining, ensuring it remains a focal point in your bathroom for years to come. Easy Maintenance:The seamless drop-in design eliminates hard-to-clean gaps and helps prevent dirt buildup. The smooth, non-porous glazed surface wipes clean easily, keeping the sink looking new over time. Refined Style & Easy Installation:With clean, flowing lines and a crisp white finish, this modern sink (21.28\" L x 17.73\" W x 6.66\" H) adds a touch of elegance to any bathroom. Three pre-drilled faucet holes allow for easy installation\u2014simply place the sturdy rectangular sink into the countertop cutout, secure, and seal for an instant style upgrade. Front Overflow:Designed with a concealed front overflow, this sink helps prevent water overflow while maintaining a clean, elegant appearance. The curved basin and standard 1.75\" drain opening ensure optimal drainage performance. 12-Month Warranty:We are committed to providing high-quality kitchen and bathroom products along with an excellent shopping experience. If you are not satisfied with the product or encounter any issues, please contact us via the platform, and we will promptly assist you. Weight & Dimensions Overall Dimensions (L \u00d7 W \u00d7 H): 21.26\" \u00d7 17.72\" \u00d7 6.65\" Basin Dimensions (L \u00d7 W \u00d7 H): 17.32\" \u00d7 11.42\" \u00d7 4.49\" Drain Opening Diameter: 1.75\" Base Dimensions (L \u00d7 W \u00d7 H): 17.72\" \u00d7 13.39\" \u00d7 5.91\" Countertop Dimensions (L \u00d7 W \u00d7 H): 21.26\" \u00d7 17.72\" \u00d7 6.65\" Countertop Rim Width: 4.13\" Faucet Hole Diameter: 1.38\" Faucet Hole Spacing: 4.33\" Total Product Weight: 27.56 lbs Installation Manual"
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10399,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Faucet Hole",
+       "label": "Three"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1DS0122-0522-_6.jpg?v=1786414452"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43796660781244:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43796660814012",
+     "sku": "DV-1DS012201",
+     "title": "One",
+     "description": {
+      "html": "Product updates: some items include a logo and are shipped randomly. Elevate your bathroom with the DeerValley premium drop-in bathroom sink. Crafted from high-quality ceramic, this sink is built for long-lasting durability and resists fading, scratches, impacts, and stains, preserving its timeless beauty. The seamless design, smooth non-porous surface, and thoughtfully curved basin ensure efficient drainage and make cleaning quick and effortless. Its versatile modern appeal blends seamlessly with a wide range of d\u00e9cor styles, from contemporary to traditional. Features Exceptional Durability:This drop-in self-rimming bathroom sink is made from premium ceramic, offering long-lasting durability and timeless elegance. It resists fading, scratching, chipping, and staining, ensuring it remains a focal point in your bathroom for years to come. Easy Maintenance:The seamless drop-in design eliminates hard-to-clean gaps and helps prevent dirt buildup. The smooth, non-porous glazed surface wipes clean easily, keeping the sink looking new over time. Refined Style & Easy Installation:With clean, flowing lines and a crisp white finish, this modern sink (21.28\" L x 17.73\" W x 6.66\" H) adds a touch of elegance to any bathroom. Three pre-drilled faucet holes allow for easy installation\u2014simply place the sturdy rectangular sink into the countertop cutout, secure, and seal for an instant style upgrade. Front Overflow:Designed with a concealed front overflow, this sink helps prevent water overflow while maintaining a clean, elegant appearance. The curved basin and standard 1.75\" drain opening ensure optimal drainage performance. 12-Month Warranty:We are committed to providing high-quality kitchen and bathroom products along with an excellent shopping experience. If you are not satisfied with the product or encounter any issues, please contact us via the platform, and we will promptly assist you. Weight & Dimensions Overall Dimensions (L \u00d7 W \u00d7 H): 21.26\" \u00d7 17.72\" \u00d7 6.65\" Basin Dimensions (L \u00d7 W \u00d7 H): 17.32\" \u00d7 11.42\" \u00d7 4.49\" Drain Opening Diameter: 1.75\" Base Dimensions (L \u00d7 W \u00d7 H): 17.72\" \u00d7 13.39\" \u00d7 5.91\" Countertop Dimensions (L \u00d7 W \u00d7 H): 21.26\" \u00d7 17.72\" \u00d7 6.65\" Countertop Rim Width: 4.13\" Faucet Hole Diameter: 1.38\" Faucet Hole Spacing: 4.33\" Total Product Weight: 27.56 lbs Installation Manual"
+     },
+     "price": {
+      "amount": 9154,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10711,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Faucet Hole",
+       "label": "One"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/74b96dbb2d19db9758ba306fc55ad040_1f397dba-7a7e-42ce-a798-974dcae01b60.jpg?v=1786414368"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43796660814012:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Faucet Hole",
+     "values": [
+      {
+       "label": "Three"
+      },
+      {
+       "label": "One"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1DS0122-10-25-_2.jpg?v=1757057371",
+     "alt_text": "Drop-in Sinks Bathroom Sinks"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Sinks",
+    "Canada Warehouse",
+    "Drop-in Sinks",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/241263837372",
+     "handle": "bathroom-sinks",
+     "title": "Bathroom Sinks",
+     "description": {
+      "html": "DeerValley bathroom sinks combine elegant design with durable materials, offering versatile styles like vessel, undermount, and pedestal to suit any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263340359868",
+     "handle": "sinks-with-overflow-1",
+     "title": "Sinks With Overflow",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295160512700",
+     "handle": "drop-in-sink",
+     "title": "Drop-in Sinks",
+     "description": {
+      "html": "DeerValley drop-in sinks feature durable ceramic construction, built-in overflow, and easy installation, combining classic design with modern convenience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310449176764",
+     "handle": "sink-and-pedestal",
+     "title": "Sink And Pedestal",
+     "description": {
+      "html": "DeerValley sink and pedestal combos offer timeless design, durability, and space-saving efficiency\u2014perfect for adding elegance to small or modern bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311515283644",
+     "handle": "bath-sink",
+     "title": "Bath Sink",
+     "description": {
+      "html": "DeerValley Bath Sinks offer elegant designs and durable materials. Perfect for any bathroom style, easy to clean, and crafted for lasting beauty and function."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNRFkwTXprNU1UYzVPVFkwTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

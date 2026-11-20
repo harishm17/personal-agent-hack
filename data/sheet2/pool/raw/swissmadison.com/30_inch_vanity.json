@@ -1,0 +1,1589 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://swissmadison.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Swiss Madison - well made forever",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "swissmadison.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "15854485"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "15854485"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8828121776340",
+   "title": "Cascade 30\" Freestanding Bathroom Vanity in Black Oak with 3-Hole Widespread Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Widespread Faucet Hole: Widespread faucets features two-handle control that offers precise temperature control and a high flow rate. Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+   },
+   "url": "https://swissmadison.com/products/cascade-30-freestanding-bathroom-vanity-in-black-oak-with-3-hole-widespread-sink-top-sm-bv8631ao",
+   "handle": "cascade-30-freestanding-bathroom-vanity-in-black-oak-with-3-hole-widespread-sink-top-sm-bv8631ao",
+   "price_range": {
+    "min": {
+     "amount": 39036,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39036,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 48795,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 48795,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46281834561748",
+     "sku": "SM-BV8631AO",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Widespread Faucet Hole: Widespread faucets features two-handle control that offers precise temperature control and a high flow rate. Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+     },
+     "price": {
+      "amount": 39036,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 48795,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/40bfdb8dbf53feca304f0448721b083fa113ed83.jpg?v=1794843762"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46281834561748:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/40bfdb8dbf53feca304f0448721b083fa113ed83.jpg?v=1794843762"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Cascade",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8828122398932",
+   "title": "Cascade 30\" Freestanding Bathroom Vanity in Black Oak with Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Single Faucet Hole: Pre-drilled standard 1.38\u201d Single Faucet Hole Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+   },
+   "url": "https://swissmadison.com/products/cascade-30-freestanding-bathroom-vanity-in-black-oak-with-sink-top-sm-bv8630ao",
+   "handle": "cascade-30-freestanding-bathroom-vanity-in-black-oak-with-sink-top-sm-bv8630ao",
+   "price_range": {
+    "min": {
+     "amount": 37476,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 37476,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 46845,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 46845,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46281836232916",
+     "sku": "SM-BV8630AO",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Single Faucet Hole: Pre-drilled standard 1.38\u201d Single Faucet Hole Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+     },
+     "price": {
+      "amount": 37476,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46845,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/fb38bfe403809c0435b0e9f9998ea0694ae73da8.jpg?v=1794843833"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46281836232916:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/fb38bfe403809c0435b0e9f9998ea0694ae73da8.jpg?v=1794843833"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Cascade",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8828121841876",
+   "title": "Cascade 30\" Wall-Mounted Bathroom Vanity in White Oak with 3-Hole Widespread Sink Top",
+   "description": {
+    "html": "Wall-Mount Installation: Wall-mount vanities provide space-saving benefits, adaptability, and versatility, enhancing the overall functionality of any given space. Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Widespread Faucet Hole: Widespread faucets features two-handle control that offers precise temperature control and a high flow rate. Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+   },
+   "url": "https://swissmadison.com/products/cascade-30-wall-mounted-bathroom-vanity-in-white-oak-with-3-hole-widespread-sink-top-sm-bv8623wo",
+   "handle": "cascade-30-wall-mounted-bathroom-vanity-in-white-oak-with-3-hole-widespread-sink-top-sm-bv8623wo",
+   "price_range": {
+    "min": {
+     "amount": 36596,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 36596,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 45745,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 45745,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46281834627284",
+     "sku": "SM-BV8623WO",
+     "title": "Default Title",
+     "description": {
+      "html": "Wall-Mount Installation: Wall-mount vanities provide space-saving benefits, adaptability, and versatility, enhancing the overall functionality of any given space. Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Widespread Faucet Hole: Widespread faucets features two-handle control that offers precise temperature control and a high flow rate. Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+     },
+     "price": {
+      "amount": 36596,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 45745,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/899ac240cba96043136d71dd509078ce6fd4d6c4.jpg?v=1794843762"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46281834627284:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/899ac240cba96043136d71dd509078ce6fd4d6c4.jpg?v=1794843762"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Cascade",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities",
+    "Wall-Mount Bathroom Vanity"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8828119810260",
+   "title": "Cascade 30\" Freestanding Bathroom Vanity in Brown Oak with Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Single Faucet Hole: Pre-drilled standard 1.38\u201d Single Faucet Hole Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+   },
+   "url": "https://swissmadison.com/products/cascade-30-freestanding-bathroom-vanity-in-brown-oak-with-sink-top-sm-bv8628bo",
+   "handle": "cascade-30-freestanding-bathroom-vanity-in-brown-oak-with-sink-top-sm-bv8628bo",
+   "price_range": {
+    "min": {
+     "amount": 37476,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 37476,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 46845,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 46845,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46281829613780",
+     "sku": "SM-BV8628BO",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Single Faucet Hole: Pre-drilled standard 1.38\u201d Single Faucet Hole Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+     },
+     "price": {
+      "amount": 37476,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46845,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/ehnhvsstr3w87bwpavoq.jpg?v=1776569042"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46281829613780:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/ehnhvsstr3w87bwpavoq.jpg?v=1776569042"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Cascade",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8828122038484",
+   "title": "Cascade 30\" Wall-Mounted Bathroom Vanity in Black Oak with 3-Hole Widespread Sink Top",
+   "description": {
+    "html": "Wall-Mount Installation: Wall-mount vanities provide space-saving benefits, adaptability, and versatility, enhancing the overall functionality of any given space. Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Widespread Faucet Hole: Widespread faucets features two-handle control that offers precise temperature control and a high flow rate. Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+   },
+   "url": "https://swissmadison.com/products/cascade-30-wall-mounted-bathroom-vanity-in-black-oak-with-3-hole-widespread-sink-top-sm-bv8629ao",
+   "handle": "cascade-30-wall-mounted-bathroom-vanity-in-black-oak-with-3-hole-widespread-sink-top-sm-bv8629ao",
+   "price_range": {
+    "min": {
+     "amount": 36596,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 36596,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 45745,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 45745,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46281835118804",
+     "sku": "SM-BV8629AO",
+     "title": "Default Title",
+     "description": {
+      "html": "Wall-Mount Installation: Wall-mount vanities provide space-saving benefits, adaptability, and versatility, enhancing the overall functionality of any given space. Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Widespread Faucet Hole: Widespread faucets features two-handle control that offers precise temperature control and a high flow rate. Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+     },
+     "price": {
+      "amount": 36596,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 45745,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/05a2f0286ff2f79db03163013bb49e04cfc585d1.jpg?v=1794843780"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46281835118804:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/05a2f0286ff2f79db03163013bb49e04cfc585d1.jpg?v=1794843780"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Cascade",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities",
+    "Wall-Mount Bathroom Vanity"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8828121383124",
+   "title": "Cascade 30\" Freestanding Bathroom Vanity in Natural Oak with Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Single Faucet Hole: Pre-drilled standard 1.38\u201d Single Faucet Hole Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+   },
+   "url": "https://swissmadison.com/products/cascade-30-freestanding-bathroom-vanity-in-natural-oak-with-sink-top-sm-bv8632no",
+   "handle": "cascade-30-freestanding-bathroom-vanity-in-natural-oak-with-sink-top-sm-bv8632no",
+   "price_range": {
+    "min": {
+     "amount": 37476,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 37476,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 46845,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 46845,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46281834070228",
+     "sku": "SM-BV8632NO",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Single Faucet Hole: Pre-drilled standard 1.38\u201d Single Faucet Hole Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+     },
+     "price": {
+      "amount": 37476,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46845,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/wxrxivqpb6s5a5smdkbo.jpg?v=1776569201"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46281834070228:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/wxrxivqpb6s5a5smdkbo.jpg?v=1776569201"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Cascade",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8828123054292",
+   "title": "Virage 30\" Freestanding Bathroom Vanity in Natural Oak with 3-Hole Widespread Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors and one drawer enhances your space with slam-free technology, additional storage space and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Widespread Faucet Hole: Widespread faucets features two-handle control that offers precise temperature control and a high flow rate. Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+   },
+   "url": "https://swissmadison.com/products/virage-30-freestanding-bathroom-vanity-in-natural-oak-with-3-hole-widespread-sink-top-sm-bv2410no",
+   "handle": "virage-30-freestanding-bathroom-vanity-in-natural-oak-with-3-hole-widespread-sink-top-sm-bv2410no",
+   "price_range": {
+    "min": {
+     "amount": 37036,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 37036,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 46295,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 46295,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46281838657748",
+     "sku": "SM-BV2410NO",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors and one drawer enhances your space with slam-free technology, additional storage space and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Widespread Faucet Hole: Widespread faucets features two-handle control that offers precise temperature control and a high flow rate. Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+     },
+     "price": {
+      "amount": 37036,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46295,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/a3c2c9eabb079a9be4eebfa006010d48cbf7f409.jpg?v=1794843883"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46281838657748:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/a3c2c9eabb079a9be4eebfa006010d48cbf7f409.jpg?v=1794843883"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities",
+    "Virage"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8828121186516",
+   "title": "Virage 30\" Freestanding Bathroom Vanity in Brown Oak with Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors and one drawer enhances your space with slam-free technology, additional storage space and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Single Faucet Hole: Pre-drilled standard 1.38\u201d Single Faucet Hole Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+   },
+   "url": "https://swissmadison.com/products/virage-30-freestanding-bathroom-vanity-in-brown-oak-with-sink-top-sm-bv2404bo",
+   "handle": "virage-30-freestanding-bathroom-vanity-in-brown-oak-with-sink-top-sm-bv2404bo",
+   "price_range": {
+    "min": {
+     "amount": 35476,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 35476,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 44345,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 44345,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46281833021652",
+     "sku": "SM-BV2404BO",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanities offering two soft closing doors and one drawer enhances your space with slam-free technology, additional storage space and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Single Faucet Hole: Pre-drilled standard 1.38\u201d Single Faucet Hole Drain Size: Standard 1.75\u201d Basin Depth: 4.92 Inches."
+     },
+     "price": {
+      "amount": 35476,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44345,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/ei6kzbxejbdr9cigswww.jpg?v=1776569176"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46281833021652:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/ei6kzbxejbdr9cigswww.jpg?v=1776569176"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities",
+    "Virage"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8828122071252",
+   "title": "Virage 30\" Freestanding Bathroom Vanity in Black Oak without Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanity cabinets offering two soft closing doors and one drawer enhances your space with slam-free technology, additional storage space and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Sold Separately: Vanity cabinets pair seamlessly with vanity tops that can be purchased separately."
+   },
+   "url": "https://swissmadison.com/products/virage-30-freestanding-bathroom-vanity-cabinet-without-top-in-black-oak-sm-co2402ao",
+   "handle": "virage-30-freestanding-bathroom-vanity-cabinet-without-top-in-black-oak-sm-co2402ao",
+   "price_range": {
+    "min": {
+     "amount": 24836,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 24836,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 31045,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 31045,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46281835151572",
+     "sku": "SM-CO2402AO",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanity cabinets offering two soft closing doors and one drawer enhances your space with slam-free technology, additional storage space and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Sold Separately: Vanity cabinets pair seamlessly with vanity tops that can be purchased separately."
+     },
+     "price": {
+      "amount": 24836,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 31045,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/eb1qk9jestul4c7iyhgs.jpg?v=1776569264"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46281835151572:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/eb1qk9jestul4c7iyhgs.jpg?v=1776569264"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Cabinets Only",
+    "Freestanding Vanity Cabinet",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities",
+    "Virage"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/451225452756",
+     "handle": "sinks-and-vanities-sale",
+     "title": "Sinks and Vanities - Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8796993650900",
+   "title": "St. Tropez 30\" Wall-Mounted Bathroom Vanity in Natural Oak with Sink Top",
+   "description": {
+    "html": "Wall-Mount Installation: Wall-mount vanities provide space-saving benefits, adaptability, and versatility, enhancing the overall functionality of any given space. Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Faucet hole: Pre-drilled standard 1 3/8\u201d Drain Size: Standard 1.75\u201d Single Faucet Hole: Pre-drilled standard 1.38\u201d Single Faucet Hole Basin Depth: 4.92 Inches."
+   },
+   "url": "https://swissmadison.com/products/st-tropez-30-wall-mounted-bathroom-vanity-in-natural-oak-with-sink-top-sm-bv0825no",
+   "handle": "st-tropez-30-wall-mounted-bathroom-vanity-in-natural-oak-with-sink-top-sm-bv0825no",
+   "price_range": {
+    "min": {
+     "amount": 31356,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 31356,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 39195,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39195,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46170576715988",
+     "sku": "SM-BV0825NO",
+     "title": "Default Title",
+     "description": {
+      "html": "Wall-Mount Installation: Wall-mount vanities provide space-saving benefits, adaptability, and versatility, enhancing the overall functionality of any given space. Assembly Required. Configuration: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance. Open Back Access: Easy plumbing installation with the open back design. Durable Non-Porous Scratch Resistant Ceramic: The glazed ceramic vanity top features a high gloss and scratch-resistant finish designed to withstand routine use Faucet hole: Pre-drilled standard 1 3/8\u201d Drain Size: Standard 1.75\u201d Single Faucet Hole: Pre-drilled standard 1.38\u201d Single Faucet Hole Basin Depth: 4.92 Inches."
+     },
+     "price": {
+      "amount": 31356,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 39195,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/qx9uo6v4tyggbhjeir61.jpg?v=1776569091"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46170576715988:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/qx9uo6v4tyggbhjeir61.jpg?v=1776569091"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "St. Tropez",
+    "Vanities",
+    "Wall-Mount Bathroom Vanity"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzROemsyT1Rrek5qVXdPVEF3TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

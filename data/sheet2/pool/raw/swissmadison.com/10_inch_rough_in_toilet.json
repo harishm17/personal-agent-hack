@@ -1,0 +1,1590 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://swissmadison.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Swiss Madison - well made forever",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "swissmadison.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "15854485"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "15854485"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7589027840212",
+   "title": "Carre One Piece Square Toilet Dual Flush 1.1/1.6 gpf with 10\" Rough-In, Matte Black",
+   "description": {
+    "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Square Bowl: A Square bowl design maximizes space by providing additional seat area with a sleek modern look. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/carre-one-piece-square-toilet-dual-flush-1-1-1-6-gpf-with-10-rough-in-matte-black",
+   "handle": "carre-one-piece-square-toilet-dual-flush-1-1-1-6-gpf-with-10-rough-in-matte-black",
+   "price_range": {
+    "min": {
+     "amount": 31917,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 31917,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 45595,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 45595,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42638205878484",
+     "sku": "SM-1T276MB",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Square Bowl: A Square bowl design maximizes space by providing additional seat area with a sleek modern look. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 31917,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 45595,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/vfdzrilyv2eodr08rfug.jpg?v=1776569189"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/42638205878484:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/vfdzrilyv2eodr08rfug.jpg?v=1776569189",
+     "alt_text": "Elongated one-piece toilet in matte black, dual flush, skirted trapway, 10\" rough-in, compact design."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Carre",
+    "Grouped",
+    "One-Piece",
+    "One-Piece Toilet",
+    "Show All",
+    "Small Parcel Oversize",
+    "Toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416074498260",
+     "handle": "toilets-new",
+     "title": "Toilets New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038597332",
+     "handle": "small-parcel-oversize",
+     "title": "Small Parcel Oversize",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446567350484",
+     "handle": "toilets-bidets-sale",
+     "title": "Toilets & Bidets - Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6939058471085",
+   "title": "Sublime II One-Piece 10\" Rough-in 1.1/1.6 GPF Dual Top Flush Round Compact Toilet in Glossy White",
+   "description": {
+    "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Round Bowl: A Round shape allows freedom of movement for optimal comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/sm-1t257-10-rough-in",
+   "handle": "sm-1t257-10-rough-in",
+   "price_range": {
+    "min": {
+     "amount": 21556,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 21556,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 26945,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26945,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40731417903277",
+     "sku": "SM-1T277",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Round Bowl: A Round shape allows freedom of movement for optimal comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 21556,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 26945,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/gzxn1889lvvqkt5forw0.jpg?v=1776569129"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/40731417903277:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/gzxn1889lvvqkt5forw0.jpg?v=1776569129",
+     "alt_text": "Round one-piece toilet in glossy white with dual flush, compact design."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Canada",
+    "Grouped",
+    "One-Piece",
+    "One-Piece Toilet",
+    "Show All",
+    "Small Parcel",
+    "Sublime II",
+    "Toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416074498260",
+     "handle": "toilets-new",
+     "title": "Toilets New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446567350484",
+     "handle": "toilets-bidets-sale",
+     "title": "Toilets & Bidets - Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9105006985428",
+   "title": "Sublime II One-Piece 10\" Rough-in 1.1/1.6 GPF Dual Top Flush Round Toilet in Glossy Bisque",
+   "description": {
+    "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 GPF light flush or a high 1.6 GPF full flush. Rough-In: 10\" Round Bowl: A Round shape allows freedom of movement for optimal comfort Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely Access Hole: 3\" Diameter access hole for installation Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning"
+   },
+   "url": "https://swissmadison.com/products/sublime-ii-one-piece-10-rough-in-1-1-1-6-gpf-dual-top-flush-round-toilet-in-glossy-bisque-ct-1t0801bq",
+   "handle": "sublime-ii-one-piece-10-rough-in-1-1-1-6-gpf-dual-top-flush-round-toilet-in-glossy-bisque-ct-1t0801bq",
+   "price_range": {
+    "min": {
+     "amount": 23999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 23999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 29999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47652581638356",
+     "sku": "CT-1T0801BQ",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 GPF light flush or a high 1.6 GPF full flush. Rough-In: 10\" Round Bowl: A Round shape allows freedom of movement for optimal comfort Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely Access Hole: 3\" Diameter access hole for installation Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning"
+     },
+     "price": {
+      "amount": 23999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/hvfsuwc8oixmncx8778q.jpg?v=1776569039"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/47652581638356:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/hvfsuwc8oixmncx8778q.jpg?v=1776569039"
+    }
+   ],
+   "tags": [
+    "Category:Toilets",
+    "Collection:Sublime II",
+    "Group Parent",
+    "Show All",
+    "Small Parcel Oversize",
+    "Sub-Category:One-Piece",
+    "Taxonomy:One-Piece Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414776295636",
+     "handle": "c-sublime-ii",
+     "title": "Sublime II",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414778818772",
+     "handle": "one-piece",
+     "title": "One-Piece",
+     "description": {
+      "html": "Designed for modern spaces, one-piece toilets offer a seamless profile, simplified cleaning, and a refined minimalist look."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/442940784852",
+     "handle": "toilets-under-300",
+     "title": "Toilets Under $300",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4730289717337",
+   "title": "Ivy One-Piece Toilet, 10\" Rough-in 1.1/1.6 gpf",
+   "description": {
+    "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/ivy-one-piece-toilet-10-rough-in",
+   "handle": "ivy-one-piece-toilet-10-rough-in",
+   "price_range": {
+    "min": {
+     "amount": 26316,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26316,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 32895,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 32895,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32202181738585",
+     "sku": "SM-1T127",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 26316,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32895,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/pq7x6qzsmqfkguhepudx.jpg?v=1776569278"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/32202181738585:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/pq7x6qzsmqfkguhepudx.jpg?v=1776569278",
+     "alt_text": "Elongated one-piece toilet with skirted trapway and soft-close seat, white ceramic."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Canada",
+    "Grouped",
+    "Ivy",
+    "One-Piece",
+    "One-Piece Toilet",
+    "Show All",
+    "Small Parcel Oversize",
+    "Toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416074498260",
+     "handle": "toilets-new",
+     "title": "Toilets New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038597332",
+     "handle": "small-parcel-oversize",
+     "title": "Small Parcel Oversize",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446411997396",
+     "handle": "eblackfriday30",
+     "title": "EBLACKFRIDAY30",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446567350484",
+     "handle": "toilets-bidets-sale",
+     "title": "Toilets & Bidets - Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8372712308948",
+   "title": "Sublime II One-Piece 10\" Rough-in 1.1/1.6 GPF Dual Top Flush Round Compact Toilet in Matte Black",
+   "description": {
+    "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Round Bowl: A Round shape allows freedom of movement for optimal comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/sublime-ii-one-piece-round-toilet-in-matte-black-10-rough-in-1-1-1-6-gpf",
+   "handle": "sublime-ii-one-piece-round-toilet-in-matte-black-10-rough-in-1-1-1-6-gpf",
+   "price_range": {
+    "min": {
+     "amount": 30636,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 30636,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 38295,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 38295,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45040364749012",
+     "sku": "SM-1T277MB",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Round Bowl: A Round shape allows freedom of movement for optimal comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 30636,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 38295,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/bwuasg6wucbbtknaj9ex.jpg?v=1776569096"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/45040364749012:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/bwuasg6wucbbtknaj9ex.jpg?v=1776569096"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Grouped",
+    "One-Piece",
+    "One-Piece Toilet",
+    "Show All",
+    "Small Parcel",
+    "Sublime II",
+    "Toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416074498260",
+     "handle": "toilets-new",
+     "title": "Toilets New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446567350484",
+     "handle": "toilets-bidets-sale",
+     "title": "Toilets & Bidets - Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6984135344301",
+   "title": "Concorde One Piece Square Toilet Dual Flush 1.1/1.6 gpf with 10\" Rough In",
+   "description": {
+    "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Square Bowl: A Square bowl design maximizes space by providing additional seat area with a sleek modern look. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/concorde-one-piece-square-toilet-dual-flush-1-1-1-6-gpf-with-10-rough-in",
+   "handle": "concorde-one-piece-square-toilet-dual-flush-1-1-1-6-gpf-with-10-rough-in",
+   "price_range": {
+    "min": {
+     "amount": 26676,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26676,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 33345,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 33345,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40861415506093",
+     "sku": "SM-1T278",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Square Bowl: A Square bowl design maximizes space by providing additional seat area with a sleek modern look. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 26676,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 33345,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/pp9lmwvev1vetsmprqaf.jpg?v=1776569210"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/40861415506093:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/pp9lmwvev1vetsmprqaf.jpg?v=1776569210",
+     "alt_text": "Elongated one-piece toilet with dual flush and smooth skirted trapway in white."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Concorde",
+    "Grouped",
+    "One-Piece",
+    "One-Piece Toilet",
+    "Show All",
+    "Small Parcel Oversize",
+    "Toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416074498260",
+     "handle": "toilets-new",
+     "title": "Toilets New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038597332",
+     "handle": "small-parcel-oversize",
+     "title": "Small Parcel Oversize",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446567350484",
+     "handle": "toilets-bidets-sale",
+     "title": "Toilets & Bidets - Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6899431473325",
+   "title": "St. Tropez One Piece Elongated Toilet Dual Vortex Flush 1.1/1.6 gpf with 10\" Rough In",
+   "description": {
+    "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/st-tropez-one-piece-elongated-toilet-dual-vortex-flush-1-1-1-6-gpf-with-10-rough-in",
+   "handle": "st-tropez-one-piece-elongated-toilet-dual-vortex-flush-1-1-1-6-gpf-with-10-rough-in",
+   "price_range": {
+    "min": {
+     "amount": 25996,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 25996,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 32495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 32495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40584772616365",
+     "sku": "SM-1T274",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: 10\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 25996,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/b1ryb9wvj3ehnb2n81dg.jpg?v=1776569184"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/40584772616365:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/b1ryb9wvj3ehnb2n81dg.jpg?v=1776569184",
+     "alt_text": "Elongated one-piece toilet with dual vortex flush and 10\" rough-in, sleek white design."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Grouped",
+    "One-Piece",
+    "One-Piece Toilet",
+    "Show All",
+    "Small Parcel Oversize",
+    "St. Tropez",
+    "Toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416074498260",
+     "handle": "toilets-new",
+     "title": "Toilets New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038597332",
+     "handle": "small-parcel-oversize",
+     "title": "Small Parcel Oversize",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446567350484",
+     "handle": "toilets-bidets-sale",
+     "title": "Toilets & Bidets - Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8792461082836",
+   "title": "St. Tropez One-Piece 10\" Rough-in 1.28 GPF Right-Hand Vortex Flush Elongated Toilet in Matte Black",
+   "description": {
+    "html": "Single Flush 1.28 GPF Rough-In: 10\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/st-tropez-one-piece-10-rough-in-1-6-gpf-right-hand-vortex-flush-elongated-toilet-in-matte-black-sm-1t0809mb",
+   "handle": "st-tropez-one-piece-10-rough-in-1-6-gpf-right-hand-vortex-flush-elongated-toilet-in-matte-black-sm-1t0809mb",
+   "price_range": {
+    "min": {
+     "amount": 30657,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 30657,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 43795,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 43795,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46153964060884",
+     "sku": "SM-1T0809MB",
+     "title": "Default Title",
+     "description": {
+      "html": "Single Flush 1.28 GPF Rough-In: 10\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 30657,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 43795,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/1d450e2f266367569d818839446548494181af97.jpg?v=1794843789"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46153964060884:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/1d450e2f266367569d818839446548494181af97.jpg?v=1794843789"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Grouped",
+    "One-Piece",
+    "One-Piece Toilet",
+    "Show All",
+    "Small Parcel Oversize",
+    "St. Tropez",
+    "Toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416074498260",
+     "handle": "toilets-new",
+     "title": "Toilets New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038597332",
+     "handle": "small-parcel-oversize",
+     "title": "Small Parcel Oversize",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444192751828",
+     "handle": "os30",
+     "title": "OS30",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7928218091732",
+   "title": "Carre One Piece Square Toilet Left Side Flush, 10\" Rough-In 1.28 gpf",
+   "description": {
+    "html": "Single Flush: Single Flush 1.28 GPF Rough-In: 10\" Rough-In Square Bowl: A Square bowl design maximizes space by providing additional seat area with a sleek modern look. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/carre-one-piece-toilet-with-side-flush-in-white",
+   "handle": "carre-one-piece-toilet-with-side-flush-in-white",
+   "price_range": {
+    "min": {
+     "amount": 26116,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26116,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 32645,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 32645,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43817384804564",
+     "sku": "SM-1T272",
+     "title": "Default Title",
+     "description": {
+      "html": "Single Flush: Single Flush 1.28 GPF Rough-In: 10\" Rough-In Square Bowl: A Square bowl design maximizes space by providing additional seat area with a sleek modern look. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 26116,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32645,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/d1x1tcnl6azbkliwxesg.jpg?v=1776569157"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/43817384804564:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/d1x1tcnl6azbkliwxesg.jpg?v=1776569157"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Carre",
+    "Grouped",
+    "One-Piece",
+    "One-Piece Toilet",
+    "Show All",
+    "Small Parcel Oversize",
+    "Toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416074498260",
+     "handle": "toilets-new",
+     "title": "Toilets New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038597332",
+     "handle": "small-parcel-oversize",
+     "title": "Small Parcel Oversize",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446411997396",
+     "handle": "eblackfriday30",
+     "title": "EBLACKFRIDAY30",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7928215306452",
+   "title": "St. Tropez One-Piece 10\" Rough-in 1.28 GPF Left Flush Elongated Toilet in Glossy White",
+   "description": {
+    "html": "Single Flush: Single Flush 1.28 GPF Rough-In: 10\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/st-tropez-one-piece-toilet-with-side-flush-in-white",
+   "handle": "st-tropez-one-piece-toilet-with-side-flush-in-white",
+   "price_range": {
+    "min": {
+     "amount": 25996,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 25996,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 32495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 32495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43817370583252",
+     "sku": "SM-1T273",
+     "title": "Default Title",
+     "description": {
+      "html": "Single Flush: Single Flush 1.28 GPF Rough-In: 10\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 25996,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/op3rewduiizhavgbtyzt.jpg?v=1776569077"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/43817370583252:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/op3rewduiizhavgbtyzt.jpg?v=1776569077"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Grouped",
+    "One-Piece",
+    "One-Piece Toilet",
+    "Show All",
+    "Small Parcel Oversize",
+    "St. Tropez",
+    "Toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416074498260",
+     "handle": "toilets-new",
+     "title": "Toilets New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038597332",
+     "handle": "small-parcel-oversize",
+     "title": "Small Parcel Oversize",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446567350484",
+     "handle": "toilets-bidets-sale",
+     "title": "Toilets & Bidets - Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzNPVEk0TWpFMU16QTJORFV5TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

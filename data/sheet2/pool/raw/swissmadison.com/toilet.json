@@ -1,0 +1,1599 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://swissmadison.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Swiss Madison - well made forever",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "swissmadison.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "15854485"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "15854485"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8799626854612",
+   "title": "Viro V20 Smart Toilet 12\u201d Rough-in ADA Height in Glossy White with Foam Shield, Integrated Tank, Auto Open/Close, Foot Sensor",
+   "description": {
+    "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Integrated Tank: The built-in tank utilizes an electric pump to ensure a consistently powerful flush, regardless of the home\u2019s existing water pressure. Flush Technology: Features multiple flushing options for convenience and hygiene, including a manual side button, automatic flush upon standing, and remote control activation Pre-wash: When seated, a small amount of water automatically rinses the bowl before each use Bidet Features: Offers adjustable front and rear wash, customizable water temperature and pressure, oscillating spray for thorough cleansing, adjustable oscillating warm air dryer, and a self-cleaning detachable nozzle Remote and Side Control Options: Full remote control and an integrated side panel to conveniently operate the flush and manage bidet functions directly from the side of the seat Night Light: Serves as a night light illuminating the bowl Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals Multi-Functional Foam Shield: Provides splash protection, odor isolation, stain resistance, and built-in antibacterial defense Automatic Odor Elimination: A built-in fan silently neutralizes bathroom odors, leaving the air fresh Plasma Sterilization Technology: The vent releases a high volume of plasma into the bowl to neutralize bacteria and odor while residual ions bind to airborne particles to enhance overall air quality Soft-Close Heated Seat: Gently and quietly closes with a soft-close mechanism, features adjustable heat settings for customized comfort and opens automatically when approached for hands-free convenience"
+   },
+   "url": "https://swissmadison.com/products/viro-smart-tankless-12-rough-in-ada-toilet-in-glossy-white-dual-flush-1-1-1-6-gpf-with-integrated-tank-sm-st9502gw",
+   "handle": "viro-smart-tankless-12-rough-in-ada-toilet-in-glossy-white-dual-flush-1-1-1-6-gpf-with-integrated-tank-sm-st9502gw",
+   "price_range": {
+    "min": {
+     "amount": 85520,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 85520,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 106900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 106900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46180670341332",
+     "sku": "SM-ST9502GW",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Integrated Tank: The built-in tank utilizes an electric pump to ensure a consistently powerful flush, regardless of the home\u2019s existing water pressure. Flush Technology: Features multiple flushing options for convenience and hygiene, including a manual side button, automatic flush upon standing, and remote control activation Pre-wash: When seated, a small amount of water automatically rinses the bowl before each use Bidet Features: Offers adjustable front and rear wash, customizable water temperature and pressure, oscillating spray for thorough cleansing, adjustable oscillating warm air dryer, and a self-cleaning detachable nozzle Remote and Side Control Options: Full remote control and an integrated side panel to conveniently operate the flush and manage bidet functions directly from the side of the seat Night Light: Serves as a night light illuminating the bowl Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals Multi-Functional Foam Shield: Provides splash protection, odor isolation, stain resistance, and built-in antibacterial defense Automatic Odor Elimination: A built-in fan silently neutralizes bathroom odors, leaving the air fresh Plasma Sterilization Technology: The vent releases a high volume of plasma into the bowl to neutralize bacteria and odor while residual ions bind to airborne particles to enhance overall air quality Soft-Close Heated Seat: Gently and quietly closes with a soft-close mechanism, features adjustable heat settings for customized comfort and opens automatically when approached for hands-free convenience"
+     },
+     "price": {
+      "amount": 85520,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 106900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/ee483c3d0db165e764104b42af14d1b86dae13f7.jpg?v=1794843718"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/46180670341332:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/ee483c3d0db165e764104b42af14d1b86dae13f7.jpg?v=1794843718"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Toilets",
+    "Collection:Viro",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Smart Toilets",
+    "Taxonomy:One-Piece Smart Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414779310292",
+     "handle": "smart-toilets",
+     "title": "Smart Toilets",
+     "description": {
+      "html": "Smart toilets offering integrated bidet cleansing, automated functions, and elevated comfort."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416207241428",
+     "handle": "bidets",
+     "title": "Bidets",
+     "description": {
+      "html": "Classic bidets, bidet faucets, and smart bidet seats designed to support modern hygiene and everyday comfort."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8556074642",
+   "title": "St. Tropez Comfort Height One-Piece Elongated Toilet, Vortex Dual-Flush 1.1/1.6 GPF, White Hardware",
+   "description": {
+    "html": "Dual Vortex\u2122 Flush: Creating a cyclonic rinsing action that scrubs the bowl to ensure superior waste disposal using a minimum of 1.1 gallons per flush for water efficiency and maximum flush capacity of 1.6 gallons. Rough-In: Standard 12\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals. Many are ADA-compliant. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning. Colored Hardware: White color-matched hardware that seamlessly blends with ceramic for a unified finish"
+   },
+   "url": "https://swissmadison.com/products/st-tropez-one-piece-elongated-toilet-dual-flush-0-8-1-28-gpf",
+   "handle": "st-tropez-one-piece-elongated-toilet-dual-flush-0-8-1-28-gpf",
+   "price_range": {
+    "min": {
+     "amount": 25716,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 25716,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 32145,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 32145,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/28526854098",
+     "sku": "SM-1T254",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Vortex\u2122 Flush: Creating a cyclonic rinsing action that scrubs the bowl to ensure superior waste disposal using a minimum of 1.1 gallons per flush for water efficiency and maximum flush capacity of 1.6 gallons. Rough-In: Standard 12\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals. Many are ADA-compliant. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning. Colored Hardware: White color-matched hardware that seamlessly blends with ceramic for a unified finish"
+     },
+     "price": {
+      "amount": 25716,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32145,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/sdwddvmoi49wxtge43ao.jpg?v=1776891942"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/28526854098:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/sdwddvmoi49wxtge43ao.jpg?v=1776891942",
+     "alt_text": "Elongated one-piece white toilet with comfort height and dual-flush vortex system."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Canada",
+    "Category:Toilets",
+    "Collection:St. Tropez",
+    "Group Parent",
+    "Show All",
+    "Small Parcel Oversize",
+    "Sub-Category:One-Piece",
+    "Taxonomy:One-Piece Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/277375516845",
+     "handle": "st-tropez",
+     "title": "St. Tropez",
+     "description": {
+      "html": "The St. Tropez Collection captures the ease of coastal living with a touch of Parisian chic. Light, clean, and effortlessly stylish, it transforms the bathroom into a serene escape inspired by the Mediterranean."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414778818772",
+     "handle": "one-piece",
+     "title": "One-Piece",
+     "description": {
+      "html": "Designed for modern spaces, one-piece toilets offer a seamless profile, simplified cleaning, and a refined minimalist look."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7887747875028",
+   "title": "St. Tropez Two-Piece 12\" Rough-in 1.1/1.6 GPF Dual Top Flush Elongated Toilet in Glossy White",
+   "description": {
+    "html": "Dual Vortex\u2122 Flush: Creating a cyclonic rinsing action that scrubs the bowl to ensure superior waste disposal using a minimum of 0.8 GPF for water efficiency and maximum flush capacity of 1 GPF Rough-In: Standard 12\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals. Many are ADA-compliant. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/st-tropez-two-piece-elongated-toilet-vortex-dual-flush-1-1-1-6-gpf",
+   "handle": "st-tropez-two-piece-elongated-toilet-vortex-dual-flush-1-1-1-6-gpf",
+   "price_range": {
+    "min": {
+     "amount": 26316,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26316,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 32895,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 32895,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43697647943892",
+     "sku": "SM-2T254",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Vortex\u2122 Flush: Creating a cyclonic rinsing action that scrubs the bowl to ensure superior waste disposal using a minimum of 0.8 GPF for water efficiency and maximum flush capacity of 1 GPF Rough-In: Standard 12\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals. Many are ADA-compliant. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 26316,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32895,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/d1wwpfvmpfbsihrflm9k.jpg?v=1776569142"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/43697647943892:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/d1wwpfvmpfbsihrflm9k.jpg?v=1776569142"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Toilets",
+    "Collection:St. Tropez",
+    "Group Parent",
+    "IsBundle",
+    "Show All",
+    "Small Parcel Oversize",
+    "Sub-Category:Two-Piece",
+    "Taxonomy:Two-Piece Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/277375516845",
+     "handle": "st-tropez",
+     "title": "St. Tropez",
+     "description": {
+      "html": "The St. Tropez Collection captures the ease of coastal living with a touch of Parisian chic. Light, clean, and effortlessly stylish, it transforms the bathroom into a serene escape inspired by the Mediterranean."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414779179220",
+     "handle": "two-piece-toilets",
+     "title": "Two-Piece",
+     "description": {
+      "html": "Classic and reliable, two-piece toilets feature a separate tank and bowl design that offers durability, easy maintenance, and installation flexibility."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8290576695508",
+   "title": "Hugo H Power Flush  Toilet 12\" Rough-in 1 GPF Non-Electric ADA Toilet with Integrated Tank in Glossy White",
+   "description": {
+    "html": "Single Vortex\u2122 Flush: 1.1 GPF Integrated Tank: A built-in tank with pressure assist ensures a consistent, powerful 800g flushing performance. Standard Elongated Bowl: The elongated bowl provides extra room and comfort Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals. This toilet also meets ADA compliance standards Hard Water Resistance: The Hugo has been tested to protect from build up of calcium and minerals for long last use. Upgraded Non-electric Technology: The pressure assisted Hugo H toilet is fully mechanical, allowing for convenient installation and eliminating the need for messy wiring or battery packs Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning and the fully glazed trapway prevents clogs and keeps water flowing freely Soft Close Seat: Provides a silent and gentle closing mechanism for added convenience and safety"
+   },
+   "url": "https://swissmadison.com/products/hugo-h-tankless-toilet-vortex-flush-1-1-gpf",
+   "handle": "hugo-h-tankless-toilet-vortex-flush-1-1-gpf",
+   "price_range": {
+    "min": {
+     "amount": 29396,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29396,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 36745,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 36745,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44864260505812",
+     "sku": "SM-ST030",
+     "title": "Default Title",
+     "description": {
+      "html": "Single Vortex\u2122 Flush: 1.1 GPF Integrated Tank: A built-in tank with pressure assist ensures a consistent, powerful 800g flushing performance. Standard Elongated Bowl: The elongated bowl provides extra room and comfort Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals. This toilet also meets ADA compliance standards Hard Water Resistance: The Hugo has been tested to protect from build up of calcium and minerals for long last use. Upgraded Non-electric Technology: The pressure assisted Hugo H toilet is fully mechanical, allowing for convenient installation and eliminating the need for messy wiring or battery packs Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning and the fully glazed trapway prevents clogs and keeps water flowing freely Soft Close Seat: Provides a silent and gentle closing mechanism for added convenience and safety"
+     },
+     "price": {
+      "amount": 29396,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 36745,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/t72mi7zlff3tf3bqaudc.jpg?v=1776569340"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/44864260505812:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/t72mi7zlff3tf3bqaudc.jpg?v=1776569340"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Toilets",
+    "Collection:Hugo",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:One-Piece",
+    "Taxonomy:One-Piece Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414776131796",
+     "handle": "c-hugo",
+     "title": "Hugo",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414778818772",
+     "handle": "one-piece",
+     "title": "One-Piece",
+     "description": {
+      "html": "Designed for modern spaces, one-piece toilets offer a seamless profile, simplified cleaning, and a refined minimalist look."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/432058826964",
+     "handle": "ada-toilets",
+     "title": "Ada Toilets",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8626117935316",
+   "title": "Avancer One Piece Smart Toilet 1.28 GPF in Matte Black with Heated Bidet, Air Drying, Night Light, Foot Sensor",
+   "description": {
+    "html": "Single Flush: 1.28 GPF Tankless: Connecting directly to the homes waterline without the need for a tank for a more modern aesthetic with a back up battery to assist the mechanical flush during a power outage Flush Technology: Features multiple flushing options for convenience and hygiene, including a manual side button, automatic flush upon standing, remote control activation, and a powerful jet flush Bidet Features: Offers adjustable front and rear wash, customizable water temperature, pulsating massage help encourage and ease bowel movements, adjustable warm air dryer, and a self-cleaning nozzle Remote and Side Control Options: Full remote control and an integrated side panel to conveniently operate the flush and manage bidet functions directly from the side of the seat Night Light: Serves as a night light illuminating the bowl Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals Hard Water Resistance: Protects from build up of calcium and minerals for long last use. Soft-Close Heated Seat: Gently and quietly closes with a soft-close mechanism, features adjustable heat settings for customized comfort, and opens automatically when approached or via a foot sensor for hands-free convenience"
+   },
+   "url": "https://swissmadison.com/products/avancer-one-piece-12-rough-in-1-28-gpf-left-flush-elongated-smart-toilet-in-matte-black-sm-st4901mb",
+   "handle": "avancer-one-piece-12-rough-in-1-28-gpf-left-flush-elongated-smart-toilet-in-matte-black-sm-st4901mb",
+   "price_range": {
+    "min": {
+     "amount": 79920,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 79920,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 99900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 99900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45631607472340",
+     "sku": "SM-ST4901MB",
+     "title": "Default Title",
+     "description": {
+      "html": "Single Flush: 1.28 GPF Tankless: Connecting directly to the homes waterline without the need for a tank for a more modern aesthetic with a back up battery to assist the mechanical flush during a power outage Flush Technology: Features multiple flushing options for convenience and hygiene, including a manual side button, automatic flush upon standing, remote control activation, and a powerful jet flush Bidet Features: Offers adjustable front and rear wash, customizable water temperature, pulsating massage help encourage and ease bowel movements, adjustable warm air dryer, and a self-cleaning nozzle Remote and Side Control Options: Full remote control and an integrated side panel to conveniently operate the flush and manage bidet functions directly from the side of the seat Night Light: Serves as a night light illuminating the bowl Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals Hard Water Resistance: Protects from build up of calcium and minerals for long last use. Soft-Close Heated Seat: Gently and quietly closes with a soft-close mechanism, features adjustable heat settings for customized comfort, and opens automatically when approached or via a foot sensor for hands-free convenience"
+     },
+     "price": {
+      "amount": 79920,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 99900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/e730e09928d14e6ddab4bb603d900f3cc831c36f.jpg?v=1794843749"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/45631607472340:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/e730e09928d14e6ddab4bb603d900f3cc831c36f.jpg?v=1794843749"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Toilets",
+    "Collection:Avancer",
+    "Group Parent",
+    "Show All",
+    "Small Parcel Oversize",
+    "Sub-Category:Smart Toilets",
+    "Taxonomy:One-Piece Smart Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775115988",
+     "handle": "c-avancer",
+     "title": "Avancer",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414779310292",
+     "handle": "smart-toilets",
+     "title": "Smart Toilets",
+     "description": {
+      "html": "Smart toilets offering integrated bidet cleansing, automated functions, and elevated comfort."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6825973743789",
+   "title": "Viro Smart Tankless Elongated Toilet and Bidet, Touchless Vortex Dual-Flush 1.1/1.6 gpf",
+   "description": {
+    "html": "Dual Vortex\u2122 Flush: Creating a cyclonic rinsing action that scrubs the bowl to ensure superior waste disposal using a minimum of 1.1 gallons per flush for water efficiency and maximum flush capacity of 1.6 gallons. Tankless: Modern, space-saving design connects directly to your water line with a backup battery to assist the mechanical flush during a power outage Flush Technology: Features multiple flushing options for convenience and hygiene, including a manual side button, touchless foot sensor, automatic flush upon standing, remote control activation, and a powerful double siphonic flush Pre-wash: When seated, a small amount of water automatically rinses the bowl before each use Bidet Features: Offers adjustable front and rear wash, customizable water temperature and pressure, oscillating spray for thorough cleansing, adjustable warm air dryer, and a self-cleaning detachable nozzle Remote and Side Control Options: Full remote control and an integrated side panel to conveniently operate the flush and manage bidet functions directly from the side of the seat Night Light: Serves as a night light illuminating the bowl Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals. Many are ADA-compliant. Soft Close Heated Seat: Closes quietly and gently with adjustable heat settings for personalized comfort"
+   },
+   "url": "https://swissmadison.com/products/viro-smart-tankless-elongated-toilet-and-bidet-touchless-vortex-dual-flush-1-1-1-6-gpf-sm-st060",
+   "handle": "viro-smart-tankless-elongated-toilet-and-bidet-touchless-vortex-dual-flush-1-1-1-6-gpf-sm-st060",
+   "price_range": {
+    "min": {
+     "amount": 68476,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 68476,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 85595,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 85595,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40318869831853",
+     "sku": "SM-ST060",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Vortex\u2122 Flush: Creating a cyclonic rinsing action that scrubs the bowl to ensure superior waste disposal using a minimum of 1.1 gallons per flush for water efficiency and maximum flush capacity of 1.6 gallons. Tankless: Modern, space-saving design connects directly to your water line with a backup battery to assist the mechanical flush during a power outage Flush Technology: Features multiple flushing options for convenience and hygiene, including a manual side button, touchless foot sensor, automatic flush upon standing, remote control activation, and a powerful double siphonic flush Pre-wash: When seated, a small amount of water automatically rinses the bowl before each use Bidet Features: Offers adjustable front and rear wash, customizable water temperature and pressure, oscillating spray for thorough cleansing, adjustable warm air dryer, and a self-cleaning detachable nozzle Remote and Side Control Options: Full remote control and an integrated side panel to conveniently operate the flush and manage bidet functions directly from the side of the seat Night Light: Serves as a night light illuminating the bowl Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals. Many are ADA-compliant. Soft Close Heated Seat: Closes quietly and gently with adjustable heat settings for personalized comfort"
+     },
+     "price": {
+      "amount": 68476,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 85595,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/90685ec24af7dcfaf73e6242a3cee0dae856e086.jpg?v=1794843803"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/40318869831853:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/90685ec24af7dcfaf73e6242a3cee0dae856e086.jpg?v=1794843803"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Toilets",
+    "Collection:Viro",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Smart Toilets",
+    "Taxonomy:One-Piece Smart Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414779310292",
+     "handle": "smart-toilets",
+     "title": "Smart Toilets",
+     "description": {
+      "html": "Smart toilets offering integrated bidet cleansing, automated functions, and elevated comfort."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416207241428",
+     "handle": "bidets",
+     "title": "Bidets",
+     "description": {
+      "html": "Classic bidets, bidet faucets, and smart bidet seats designed to support modern hygiene and everyday comfort."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8660026898",
+   "title": "Sublime II One-Piece 12\" Rough-in 1.1/1.6 GPF Dual Top Flush Round Compact Toilet in Glossy White",
+   "description": {
+    "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: Standard 12\" Rough-In Round Bowl: A Round shape allows freedom of movement for optimal comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/sublime-ii-one-piece-toilet",
+   "handle": "sublime-ii-one-piece-toilet",
+   "price_range": {
+    "min": {
+     "amount": 21236,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 21236,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 26545,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26545,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/28951627474",
+     "sku": "SM-1T257",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 1.1 gpf light flush or a high 1.6 gpf full flush. Rough-In: Standard 12\" Rough-In Round Bowl: A Round shape allows freedom of movement for optimal comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 21236,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 26545,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/znniofnvl7vsijwbg7iq.jpg?v=1776569219"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/28951627474:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/znniofnvl7vsijwbg7iq.jpg?v=1776569219",
+     "alt_text": "Round one-piece compact toilet in glossy white with dual top flush buttons."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Canada",
+    "Category:Toilets",
+    "Collection:Sublime II",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:One-Piece",
+    "Taxonomy:One-Piece Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414776295636",
+     "handle": "c-sublime-ii",
+     "title": "Sublime II",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414778818772",
+     "handle": "one-piece",
+     "title": "One-Piece",
+     "description": {
+      "html": "Designed for modern spaces, one-piece toilets offer a seamless profile, simplified cleaning, and a refined minimalist look."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/442940784852",
+     "handle": "toilets-under-300",
+     "title": "Toilets Under $300",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8385276937",
+   "title": "Plaisir Wall-Hung Elongated Toilet Bowl",
+   "description": {
+    "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 0.8 GPF light flush or a high 1.6 GPF full flush Access to Plumbing: Pairs with a removable flush plate for easy access to plumbing Space Saving: With the built-in water tank, the wall-hung toilet maximizes bathroom space while offering a sleek and aesthetically pleasing design Weight Capacity: 500 Pounds Adjustable Height: When installed with the in-wall tank carrier system, adjust the carriers legs to achieve the desired height level Standard Elongated Bowl: Elongated bowl provides extra room and comfort Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types Required Components: Combined with the In-Wall Carrier tank system and the Actuator flush button; Sold separately"
+   },
+   "url": "https://swissmadison.com/products/plaisir-wall-hung-toilet-bowl",
+   "handle": "plaisir-wall-hung-toilet-bowl",
+   "price_range": {
+    "min": {
+     "amount": 21876,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 21876,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 27345,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 27345,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/27668430473",
+     "sku": "SM-WT660",
+     "title": "Default Title",
+     "description": {
+      "html": "Dual Flush: The buttons for dual flush allow you to choose between a low 0.8 GPF light flush or a high 1.6 GPF full flush Access to Plumbing: Pairs with a removable flush plate for easy access to plumbing Space Saving: With the built-in water tank, the wall-hung toilet maximizes bathroom space while offering a sleek and aesthetically pleasing design Weight Capacity: 500 Pounds Adjustable Height: When installed with the in-wall tank carrier system, adjust the carriers legs to achieve the desired height level Standard Elongated Bowl: Elongated bowl provides extra room and comfort Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types Required Components: Combined with the In-Wall Carrier tank system and the Actuator flush button; Sold separately"
+     },
+     "price": {
+      "amount": 21876,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27345,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/iwgv2rcbxqt4dkmauc1o.jpg?v=1776569080"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/27668430473:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/iwgv2rcbxqt4dkmauc1o.jpg?v=1776569080",
+     "alt_text": "Elongated wall-hung toilet bowl in white with concealed plumbing and modern round design."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Canada",
+    "Category:Toilets",
+    "Collection:Plaisir",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Wall-Hung Toilets",
+    "Taxonomy:Wall-Hung Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775804116",
+     "handle": "c-plaisir",
+     "title": "Plaisir",
+     "description": {
+      "html": "Plaisir celebrates organic, rounded forms that bring a sense playfulness to the bathroom. Its sculptural, soft silhouettes feel modern and calming, turning everyday routines into moments of delight."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/416170541268",
+     "handle": "wall-hung-1",
+     "title": "Wall-Hung",
+     "description": {
+      "html": "Wall-hung toilets offer a floating design that saves space and makes cleaning easier. Requires an in-wall carrier system, wall-hung bowl, and a wall actuator flush plate."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6047048138925",
+   "title": "Classe Two-Piece Elongated Left Side Flush Handle Toilet 1.28 gpf",
+   "description": {
+    "html": "Single Flush: Single Flush 1.28 GPF Rough-In: Standard 12\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals. Many are ADA-compliant. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/classe-two-piece-elongated-left-side-flush-handle-toilet",
+   "handle": "classe-two-piece-elongated-left-side-flush-handle-toilet",
+   "price_range": {
+    "min": {
+     "amount": 25556,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 25556,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 31945,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 31945,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/37400816091309",
+     "sku": "SM-2T130",
+     "title": "Default Title",
+     "description": {
+      "html": "Single Flush: Single Flush 1.28 GPF Rough-In: Standard 12\" Rough-In Standard Elongated Bowl: The elongated bowl provides extra room and comfort. Comfort Height: Between 17-19 inches, the comfort height toilet makes standing and sitting easier, especially for taller individuals. Many are ADA-compliant. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 25556,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 31945,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/yqlsxlu853qiadlund2d.jpg?v=1776569217"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/37400816091309:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/yqlsxlu853qiadlund2d.jpg?v=1776569217",
+     "alt_text": "Elongated two-piece toilet with left side flush handle, white finish, compact design, 1.28 gallons per flush."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Toilets",
+    "Collection:Classe",
+    "Group Parent",
+    "IsBundle",
+    "Show All",
+    "Small Parcel Oversize",
+    "Sub-Category:Two-Piece",
+    "Taxonomy:Two-Piece Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775673044",
+     "handle": "c-classe",
+     "title": "Classe",
+     "description": {
+      "html": "Classe softens modern minimalism with an inviting material warmth. Ultra-smooth lines and framed contours create gentle silhouettes, shaping a contemporary sanctuary that feels calming to the touch."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414779179220",
+     "handle": "two-piece-toilets",
+     "title": "Two-Piece",
+     "description": {
+      "html": "Classic and reliable, two-piece toilets feature a separate tank and bowl design that offers durability, easy maintenance, and installation flexibility."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7730908332244",
+   "title": "Plaisir II One-Piece Round Toilet Top Flush 1.28 GPF",
+   "description": {
+    "html": "Single Flush: Single Flush 1.28 GPF Rough-In: Standard 12\" Rough-In Round Bowl: A Round shape allows freedom of movement for optimal comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+   },
+   "url": "https://swissmadison.com/products/plaisir-ii-one-piece-elongated-toilet-dual-flush",
+   "handle": "plaisir-ii-one-piece-elongated-toilet-dual-flush",
+   "price_range": {
+    "min": {
+     "amount": 35996,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 35996,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 44995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 44995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43178397565140",
+     "sku": "SM-1T289",
+     "title": "Default Title",
+     "description": {
+      "html": "Single Flush: Single Flush 1.28 GPF Rough-In: Standard 12\" Rough-In Round Bowl: A Round shape allows freedom of movement for optimal comfort. Standard Height: Between 15-17 inches, the standard height toilet is designed with ergonomic considerations, offering optimal comfort to users of all ages and body types. Durable Non-Porous Scratch Resistant Ceramic: Developed from ceramic, that is scratch-resistant and non-porous, providing a durable and reliable option that can withstand routine use. Fully Glazed and Skirted Trapway: The skirted trapway offers hidden plumbing creating an elevated and luxurious design with a smooth finish for easy cleaning. The fully glazed trapway prevents clogs and keeps water flowing freely. Access Hole: 3\" Diameter access holes for installation. Soft Close and Quick Release Seat: Provides a silent and gentle closing mechanism for added convenience and safety. With just the push of a button, the seat detaches completely for a thorough cleaning."
+     },
+     "price": {
+      "amount": 35996,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/srxgdo4sqmeciiv6dchj.jpg?v=1776569317"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/43178397565140:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/srxgdo4sqmeciiv6dchj.jpg?v=1776569317",
+     "alt_text": "Round one-piece toilet with top flush and smooth skirted trapway in white porcelain."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Toilets",
+    "Collection:Plaisir II",
+    "Group Parent",
+    "Show All",
+    "Small Parcel Oversize",
+    "Sub-Category:One-Piece",
+    "Taxonomy:One-Piece Toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775804116",
+     "handle": "c-plaisir",
+     "title": "Plaisir",
+     "description": {
+      "html": "Plaisir celebrates organic, rounded forms that bring a sense playfulness to the bathroom. Its sculptural, soft silhouettes feel modern and calming, turning everyday routines into moments of delight."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414777934036",
+     "handle": "all-toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "A curated selection of one-piece, two-piece, wall-hung toilets and more built for all bathroom designs, balancing modern style with lasting quality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414778818772",
+     "handle": "one-piece",
+     "title": "One-Piece",
+     "description": {
+      "html": "Designed for modern spaces, one-piece toilets offer a seamless profile, simplified cleaning, and a refined minimalist look."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzNOek13T1RBNE16TXlNalEwTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

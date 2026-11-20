@@ -1,96 +1,140 @@
-"""Sheet 2 (shared kitchen): fetch a cookware pool once from five stores into data/sheet2/pool/, same pool shape."""
+"""Sheet 2 pool (bathroom fixtures), fetched once: data/sheet2/pool/<store>.json (same shape as data/pool, plus `variants` and
+`variant_title`), raw replies in data/sheet2/pool/raw/, each store agent's delivery and returns answer in
+data/sheet2/store_answers/. The cookware pool tried earlier is kept in data/sheet2/cookware/.
+Never calls a cart or checkout tool.
+
+Run: uv run python -m signoff.store.sheet2 [fetch|build|ask]   (no argument: all three)
+"""
 import concurrent.futures as cf
 import datetime
 import json
 import pathlib
 import re
 import sys
+import time
 
-from signoff.store import build_pool, replay, ucp
+from signoff.store import ask, build_pool, replay, ucp
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 OUT = ROOT / "data" / "sheet2" / "pool"
 RAW = OUT / "raw"
-STORES = ["madeincookware.com", "carawayhome.com", "greatjonesgoods.com", "fromourplace.com", "materialkitchen.com"]
-# line id (the ids carry the need; the integrator's sheets/sheet2.json decides the final ids) -> queries
-LINES = {
-    "frying_pan": ["frying pan", "skillet", "nonstick pan"],
-    "saucepan": ["saucepan"],
-    "stock_pot": ["stock pot", "dutch oven"],
-    "roasting_pan": ["roasting pan", "baking sheet"],
-    "cookware_set": ["cookware set"],
+ANSWERS = ROOT / "data" / "sheet2" / "store_answers"
+STORES = ["swissmadison.com", "horow.com", "deervalleybath.com", "kingstonbrass.com"]
+LINES = {  # line id -> (queries, title must match, title must not match)
+    "T1": (["toilet", "one piece toilet", "10 inch rough in toilet"], r"toilet|commode|water closet",
+           r"\bseats?\b|bidet|tank only|bowl only|\blid\b|flange|bolt|paper|brush|holder|\bwax\b|supply|bracket|cover|"
+           r"flush valve|fill valve|repair|lever|handle|\bkit\b|cleaner|\bpart\b|tank lid|gasket|rod|trap|safety|riser|stool"),
+    "T2": (["bathroom faucet", "bathroom sink faucet"], r"faucet",
+           r"kitchen|shower|\btub\b|bathtub|bidet|laundry|pot filler|drain only|cartridge|diverter|aerator|escutcheon|"
+           r"replacement|spout only|trim kit|rough|faucet holes?\b|\d+ ?mm faucet|overflow|vessel|pedestal|undermount|"
+           r"drop-in|console|\bsinks?\b(?!.*faucet$)"),
+    "T3": (["shower head"], r"shower ?head|rain(fall)? shower|hand ?held|hand shower",
+           r"arm only|extension|flange|\bhose\b|bracket|holder|diverter|connector|elbow|drain|trim kit|rough|cartridge|"
+           r"filter|cleaner|replacement|kit only|enclosure|\bbase\b|\bpan\b|\bdoor\b|chair|\btub\b|toilet"),
+    "T4": (["bathroom vanity", "30 inch vanity"], r"vanity",
+           r"faucet|mirror|stool|bench|light|sconce|hardware|knob|handle|\bpull\b|tray|organizer|bulb|\bbar\b|"
+           r"top only|sink only|basin only|countertop only|\bvanity top\b|stool|chair|replacement|\bdrawer\b"),
 }
-EXCLUDE = r"\blids?\b|spatula|utensil|towel|apron|brush|cleaner|gift ?card|knife|knives|board|mitt|trivet|spoon|ladle|" \
-          r"whisk|tongs|rack|handle|steamer|insert|sponge|mat\b|organizer|storage|bundle box|sample|shaker|bowl|mug|cup\b"
+SPACING = 0.8
 
 
 def fetch(force: bool = False) -> dict:
-    jobs = [(s, q) for s in STORES for qs in LINES.values() for q in qs]
+    def one_store(store):
+        res = {}
+        for line, (queries, _, _) in LINES.items():
+            for q in queries:
+                p = replay.raw_path(store, q, RAW)
+                if p.exists() and not force:
+                    res[(store, q)] = "cached"
+                    continue
+                try:
+                    r = ucp.call(store, "search_catalog", {"catalog": {"query": q, "context": {"address_country": "US"}}})
+                except Exception as e:  # noqa: BLE001
+                    res[(store, q)] = "ERR " + repr(e)[:100]
+                    continue
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text(json.dumps(r, indent=1))
+                res[(store, q)] = "ok %d" % len(r.get("products", []))
+                time.sleep(SPACING)
+        return res
 
-    def one(job):
-        store, q = job
-        p = replay.raw_path(store, q, RAW)
-        if p.exists() and not force:
-            return job, "cached"
-        try:
-            r = ucp.call(store, "search_catalog", {"catalog": {"query": q, "context": {"address_country": "US"}}})
-        except Exception as e:  # noqa: BLE001
-            return job, "ERR " + repr(e)[:100]
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps(r, indent=1))
-        return job, "ok %d" % len(r.get("products", []))
-
-    with cf.ThreadPoolExecutor(5) as ex:
-        return dict(ex.map(one, jobs))
-
-
-def _key(store: str, title: str) -> str:
-    brand = STORE_BRAND[store]
-    t = re.sub(r"[^a-z0-9.\" ]+", " ", title.lower().replace(brand, ""))
-    return f"{brand} {re.sub(chr(92) + 's+', ' ', t).strip()}"
+    out: dict = {}
+    with cf.ThreadPoolExecutor(len(STORES)) as ex:  # one thread per store: each store is called about once a second
+        for r in ex.map(one_store, STORES):
+            out.update(r)
+    return out
 
 
 def build() -> dict:
     out = {}
+    OUT.mkdir(parents=True, exist_ok=True)
     for store in STORES:
         found: dict = {}
-        for line, qs in LINES.items():
-            for q in qs:
+        for line, (queries, inc, exc) in LINES.items():
+            for q in queries:
                 p = replay.raw_path(store, q, RAW)
                 if not p.exists():
                     continue
+                t = p.stat().st_mtime
                 for prod in json.loads(p.read_text()).get("products", []):
-                    e = found.setdefault(prod["id"], {"prod": prod, "lines": set(), "t": p.stat().st_mtime})
-                    e["lines"].add(line)
+                    e = found.setdefault(prod["id"], {"prod": prod, "lines": set(), "t": t})
+                    title = build_pool.clean_title(prod["title"]).lower()
+                    if re.search(inc, title) and not re.search(exc, title):
+                        e["lines"].add(line)
         rows = []
         for pid, e in found.items():
             prod = e["prod"]
+            avail = [v for v in prod.get("variants", []) if (v.get("availability") or {}).get("available")]
+            if not e["lines"] or not avail:
+                continue
+            v = min(avail, key=lambda v: v["price"]["amount"])
             title = build_pool.clean_title(prod["title"])
-            if re.search(EXCLUDE, title.lower()):
-                continue
-            variants = [v for v in prod.get("variants", []) if (v.get("availability") or {}).get("available")]
-            if not variants:
-                continue
-            v = min(variants, key=lambda v: v["price"]["amount"])
             text = title + ".\n" + ucp.plain((prod.get("description") or {}).get("html", ""))
-            if v.get("title") not in (None, "", "Default Title", "Each"):
-                text += "\nSelected option: " + ucp.plain(v["title"]) + "."
+            vt = v.get("title")
+            if vt not in (None, "", "Default Title", "Each"):
+                text += "\nSelected option: " + ucp.plain(vt) + "."
             rows.append({"store": store, "product_id": pid, "variant_id": v["id"], "title": title,
                          "price_cents": v["price"]["amount"], "url": prod.get("url", ""), "text": text,
                          "fetched_at": datetime.datetime.fromtimestamp(e["t"]).astimezone().isoformat(timespec="seconds"),
-                         "product_key": _key(store, title),
-                         "line_ids": sorted(e["lines"])})
+                         "product_key": build_pool.product_key(store, prod["title"]), "line_ids": sorted(e["lines"]),
+                         "variants": len(avail), "variant_title": vt})
         rows.sort(key=lambda r: (r["line_ids"], r["price_cents"]))
-        OUT.mkdir(parents=True, exist_ok=True)
         (OUT / f"{store}.json").write_text(json.dumps(rows, indent=1, ensure_ascii=False))
         out[store] = rows
     return out
 
 
-STORE_BRAND = {"madeincookware.com": "made in", "carawayhome.com": "caraway", "greatjonesgoods.com": "great jones",
-               "fromourplace.com": "our place", "materialkitchen.com": "material"}
+QUESTION = ("If I order a toilet today to a California address, how many days will delivery take? "
+            "And can an opened toilet be returned, and is there any fee?")
+
+
+def ask_stores() -> list:
+    ANSWERS.mkdir(parents=True, exist_ok=True)
+    out = []
+    for s in STORES:
+        f = ANSWERS / f"{s}.json"
+        if f.exists():
+            out.extend(json.loads(f.read_text()))
+            continue
+        rec = ask.ask(s, QUESTION)
+        f.write_text(json.dumps([rec], indent=1, ensure_ascii=False))
+        out.append(rec)
+        time.sleep(SPACING)
+    return out
+
 
 if __name__ == "__main__":
-    print({f"{s}|{q}": r for (s, q), r in fetch().items() if not r.startswith(("ok", "cached"))} or "fetch ok")
-    for s, rows in build().items():
-        print(s, len(rows))
+    what = sys.argv[1:] or ["fetch", "build", "ask"]
+    if "fetch" in what:
+        res = fetch()
+        print({f"{s}|{q}": r for (s, q), r in res.items() if not r.startswith(("ok", "cached"))} or "fetch ok", len(res), "searches")
+    if "build" in what:
+        for s, rows in build().items():
+            per = {}
+            for r in rows:
+                for l in r["line_ids"]:
+                    per[l] = per.get(l, 0) + 1
+            print(s, len(rows), dict(sorted(per.items())))
+    if "ask" in what:
+        for a in ask_stores():
+            print(a["store"], a["delivery"]["stated"], a["delivery"]["quote"], "|", a["returns"]["returnable"], a["returns"]["quote"])

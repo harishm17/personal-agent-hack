@@ -1,0 +1,1525 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://horow.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "HOROW",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "horow.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "JCB",
+          "AMEX",
+          "DISCOVER"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "85207843129"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "jcb",
+         "american_express",
+         "discover",
+         "diners_club",
+         "maestro"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "85207843129"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/9673925230905",
+   "title": "HOROW T38P Smart Toilet \u2013 ADA Comfort Height, 12-Inch Rough-In",
+   "description": {
+    "html": "Upgrade your bathroom with the HOROW T38P Smart Toilet, designed for a 12-inch rough-in with ADA-compliant comfort height. Featuring a built-in tank and pump, dual-flush technology, heated seat, and advanced bidet cleansing, it combines everyday comfort and modern convenience. For the power outage flush feature to function, a separately purchased battery box is necessary. The built-in tank supports the toilet\u2019s flushing system. Confirm the documented inlet-water requirements for bidet operation and installation before ordering. \u25cf Black Friday & Cyber Monday Sale: Buy 3 Toilets, Get 30% Off Automatically! \u25cf ADA Comfort Height Design for easier sitting and standing\u25cf Built-In Water Tank ensures stable flushing performance\u25cf Powerful Dual Flush System for water-saving efficiency\u25cf Foam Shield Technology reduces splashing and odors\u25cf Battery Backup Power-Outage Flush capability"
+   },
+   "url": "https://horow.com/products/smart-toilet-with-flush-tank-and-ada-compliance-for-12-inch-rough-in-model-t38p",
+   "handle": "smart-toilet-with-flush-tank-and-ada-compliance-for-12-inch-rough-in-model-t38p",
+   "price_range": {
+    "min": {
+     "amount": 129900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 129900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50016825508153",
+     "sku": "T38P",
+     "title": "Default Title",
+     "description": {
+      "html": "Upgrade your bathroom with the HOROW T38P Smart Toilet, designed for a 12-inch rough-in with ADA-compliant comfort height. Featuring a built-in tank and pump, dual-flush technology, heated seat, and advanced bidet cleansing, it combines everyday comfort and modern convenience. For the power outage flush feature to function, a separately purchased battery box is necessary. The built-in tank supports the toilet\u2019s flushing system. Confirm the documented inlet-water requirements for bidet operation and installation before ordering. \u25cf Black Friday & Cyber Monday Sale: Buy 3 Toilets, Get 30% Off Automatically! \u25cf ADA Comfort Height Design for easier sitting and standing\u25cf Built-In Water Tank ensures stable flushing performance\u25cf Powerful Dual Flush System for water-saving efficiency\u25cf Foam Shield Technology reduces splashing and odors\u25cf Battery Backup Power-Outage Flush capability"
+     },
+     "price": {
+      "amount": 129900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/T38P-1_2.webp?v=1754055557"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/50016825508153:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/T38P-1_2.webp?v=1754055557"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ADA toilet",
+    "bathroom hygiene",
+    "bathroom upgrade",
+    "HOROW T38P",
+    "HOROW toilet",
+    "smart bathroom",
+    "smart toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059305785",
+     "handle": "smart-toilets",
+     "title": "Smart toilets",
+     "description": {
+      "html": "Experience the ultimate bathroom luxury with HOROW smart toilets featuring bidet functionalities. Enjoy cleansing, heated seats and more. Prices range from $499.99 to $1799.99."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975343929",
+     "handle": "12-inch-rough-in-toilets",
+     "title": "12 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/474075627833",
+     "handle": "elongated-smart-toilet",
+     "title": "Elongated Smart Toilet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9601118372153",
+   "title": "HOROW T38 Smart Toilet with Bidet, Built-In Tank & Mood Light, 12-Inch Rough-In",
+   "description": {
+    "html": "The HOROW T38 Smart Toilet combines advanced bidet technology, a built-in water tank, heated seat, UV sterilization, warm air drying, and immersive mood lighting. Designed for 12-inch rough-ins, it delivers luxurious comfort, hygiene, and reliable flushing performance. The power outage flush feature requires a battery box, which is available for purchase separately. \u25cf Black Friday & Cyber Monday Special \u2013 Save 25% on 1 Toilet with Code EXCL25! \u25cf Built-in Water Tank for stable flushing performance\u25cf Booster Pump enhances flush power in low-pressure homes\u25cf Automatic Flush for hands-free convenience\u25cf Soft Night Light & Mood Light for nighttime visibility\u25cf Front & Rear Bidet Wash for personalized cleansing"
+   },
+   "url": "https://horow.com/products/bidet-combo-toilet-with-mood-light-for-12-inch-rough-in-model-t38",
+   "handle": "bidet-combo-toilet-with-mood-light-for-12-inch-rough-in-model-t38",
+   "price_range": {
+    "min": {
+     "amount": 99900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 99900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/49774884290873",
+     "sku": "T38",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW T38 Smart Toilet combines advanced bidet technology, a built-in water tank, heated seat, UV sterilization, warm air drying, and immersive mood lighting. Designed for 12-inch rough-ins, it delivers luxurious comfort, hygiene, and reliable flushing performance. The power outage flush feature requires a battery box, which is available for purchase separately. \u25cf Black Friday & Cyber Monday Special \u2013 Save 25% on 1 Toilet with Code EXCL25! \u25cf Built-in Water Tank for stable flushing performance\u25cf Booster Pump enhances flush power in low-pressure homes\u25cf Automatic Flush for hands-free convenience\u25cf Soft Night Light & Mood Light for nighttime visibility\u25cf Front & Rear Bidet Wash for personalized cleansing"
+     },
+     "price": {
+      "amount": 99900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-t38-smart-toilet-best-30.webp?v=1786356369"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/49774884290873:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-t38-smart-toilet-best-30.webp?v=1786356369"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059305785",
+     "handle": "smart-toilets",
+     "title": "Smart toilets",
+     "description": {
+      "html": "Experience the ultimate bathroom luxury with HOROW smart toilets featuring bidet functionalities. Enjoy cleansing, heated seats and more. Prices range from $499.99 to $1799.99."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975343929",
+     "handle": "12-inch-rough-in-toilets",
+     "title": "12 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/474075627833",
+     "handle": "elongated-smart-toilet",
+     "title": "Elongated Smart Toilet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10129262444857",
+   "title": "HOROW X70 Smart Toilet with Built-In Tank and Pump \u2013 12-Inch Rough-In",
+   "description": {
+    "html": "Upgrade your bathroom with the HOROW X70 Smart Toilet, featuring a built-in tank, 100W pump-assisted flushing, and a 12-inch rough-in design. Enjoy dual-flush efficiency, bidet washing, a heated seat, hands-free controls, and modern comfort in one integrated toilet."
+   },
+   "url": "https://horow.com/products/horow-x70-smart-toilet-with-built-in-tank-and-pump-powerful-flush-modern-comfort",
+   "handle": "horow-x70-smart-toilet-with-built-in-tank-and-pump-powerful-flush-modern-comfort",
+   "price_range": {
+    "min": {
+     "amount": 159900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 159900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51970977333561",
+     "sku": "X70",
+     "title": "Default Title",
+     "description": {
+      "html": "Upgrade your bathroom with the HOROW X70 Smart Toilet, featuring a built-in tank, 100W pump-assisted flushing, and a 12-inch rough-in design. Enjoy dual-flush efficiency, bidet washing, a heated seat, hands-free controls, and modern comfort in one integrated toilet."
+     },
+     "price": {
+      "amount": 159900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/x70-smart-toilet-51.webp?v=1772250243"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/51970977333561:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/x70-smart-toilet-51.webp?v=1772250243"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "12 Inch Rough-In Toilet",
+    "ADA Height Toilet",
+    "Built-In Tank Toilet",
+    "Dual Flush Toilet",
+    "Heated Seat Toilet",
+    "HOROW X70",
+    "Modern Bathroom",
+    "Pump-Assisted Flush",
+    "Smart Bidet Toilet",
+    "smart toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059305785",
+     "handle": "smart-toilets",
+     "title": "Smart toilets",
+     "description": {
+      "html": "Experience the ultimate bathroom luxury with HOROW smart toilets featuring bidet functionalities. Enjoy cleansing, heated seats and more. Prices range from $499.99 to $1799.99."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975343929",
+     "handle": "12-inch-rough-in-toilets",
+     "title": "12 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472976884025",
+     "handle": "elongated-toilet",
+     "title": "Elongated toilet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9023184961849",
+   "title": "HOROW T16 Smart Toilet with Heated Bidet, Dual Flush & 12-Inch Rough-In",
+   "description": {
+    "html": "Upgrade your bathroom with the HOROW T16 Smart Toilet, featuring a space-saving tankless design and a 12-inch rough-in. Enjoy a heated elongated seat, instant warm-water bidet cleansing, dual-flush technology, and convenient foot-sensor and remote controls."
+   },
+   "url": "https://horow.com/products/horow-smart-toilet-with-heated-bidet-dual-flush-toilet-model-t16",
+   "handle": "horow-smart-toilet-with-heated-bidet-dual-flush-toilet-model-t16",
+   "price_range": {
+    "min": {
+     "amount": 55900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 55900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47817355755833",
+     "sku": "T16",
+     "title": "Default Title",
+     "description": {
+      "html": "Upgrade your bathroom with the HOROW T16 Smart Toilet, featuring a space-saving tankless design and a 12-inch rough-in. Enjoy a heated elongated seat, instant warm-water bidet cleansing, dual-flush technology, and convenient foot-sensor and remote controls."
+     },
+     "price": {
+      "amount": 55900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/T16_85d11760-c20f-47f8-9e23-37cc8be51f4c.webp?v=1756291600"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/47817355755833:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/T16_85d11760-c20f-47f8-9e23-37cc8be51f4c.webp?v=1756291600"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "12\" rough in",
+    "Dual Flush",
+    "Elongated",
+    "Floor standing",
+    "Standard (less than 17\")"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059305785",
+     "handle": "smart-toilets",
+     "title": "Smart toilets",
+     "description": {
+      "html": "Experience the ultimate bathroom luxury with HOROW smart toilets featuring bidet functionalities. Enjoy cleansing, heated seats and more. Prices range from $499.99 to $1799.99."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975343929",
+     "handle": "12-inch-rough-in-toilets",
+     "title": "12 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472976884025",
+     "handle": "elongated-toilet",
+     "title": "Elongated toilet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9023021121849",
+   "title": "HOROW T0338W-10 10-Inch Rough-In One-Piece ADA Toilet with Dual Flush",
+   "description": {
+    "html": "Upgrade your bathroom with the HOROW T0338W-10, a 10-inch rough-in one-piece toilet featuring ADA-compliant comfort height, an elongated bowl, dual-flush performance, and a quiet soft-close seat. Its seamless design delivers comfort, water efficiency, easy cleaning, and modern style."
+   },
+   "url": "https://horow.com/products/horow-10-inch-rough-toilet-bowl-elongated-one-piece-toilet-model-t0338w-10",
+   "handle": "horow-10-inch-rough-toilet-bowl-elongated-one-piece-toilet-model-t0338w-10",
+   "price_range": {
+    "min": {
+     "amount": 34900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 34900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/49774840447289",
+     "sku": "T0338W-10",
+     "title": "Default Title",
+     "description": {
+      "html": "Upgrade your bathroom with the HOROW T0338W-10, a 10-inch rough-in one-piece toilet featuring ADA-compliant comfort height, an elongated bowl, dual-flush performance, and a quiet soft-close seat. Its seamless design delivers comfort, water efficiency, easy cleaning, and modern style."
+     },
+     "price": {
+      "amount": 34900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-t0338w-10-toilet.webp?v=1761809804"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/49774840447289:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-t0338w-10-toilet.webp?v=1761809804"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "10\" rough-in",
+    "Chair(17\"- 19\u201d)",
+    "Dual Flush",
+    "Elongated",
+    "One piece toilet",
+    "Top"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059240249",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "Upgrade your bathroom with HOROW one piece toilets featuring sleek, seamless designs, powerful water-saving flush systems, and easy-to-clean surfaces. Available in multiple sizes, colors, and ADA-compliant options, HOROW one-piece toilets deliver modern style, comfort, and reliable performance for every home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975081785",
+     "handle": "10-inch-rough-in-toilets",
+     "title": "10 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472976884025",
+     "handle": "elongated-toilet",
+     "title": "Elongated toilet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9169540743481",
+   "title": "HOROW T37 10-Inch Rough-In Tankless Smart Toilet with Bidet Seat",
+   "description": {
+    "html": "Upgrade your bathroom with the HOROW T37 tankless smart toilet, designed for a 10-inch rough-in. Featuring an integrated bidet, heated seat, automatic lid, dual-flush system, warm-air dryer, and hands-free controls, it delivers modern comfort and convenience. Black Friday & Cyber Monday Sale: Save 30% on HOROW T37 \u2013 Discount Applied Automatically at Checkout!"
+   },
+   "url": "https://horow.com/products/horow-smart-toilet-with-bidet-seat-for-10-inch-rough-in-model-t37",
+   "handle": "horow-smart-toilet-with-bidet-seat-for-10-inch-rough-in-model-t37",
+   "price_range": {
+    "min": {
+     "amount": 126900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 126900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/48358104826169",
+     "sku": "T37",
+     "title": "Default Title",
+     "description": {
+      "html": "Upgrade your bathroom with the HOROW T37 tankless smart toilet, designed for a 10-inch rough-in. Featuring an integrated bidet, heated seat, automatic lid, dual-flush system, warm-air dryer, and hands-free controls, it delivers modern comfort and convenience. Black Friday & Cyber Monday Sale: Save 30% on HOROW T37 \u2013 Discount Applied Automatically at Checkout!"
+     },
+     "price": {
+      "amount": 126900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-smart-toilet-t37-11.webp?v=1761118966"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/48358104826169:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-smart-toilet-t37-11.webp?v=1761118966"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "10\" rough-in",
+    "Elongated",
+    "Floor standing",
+    "Standard (less than 17\")"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059305785",
+     "handle": "smart-toilets",
+     "title": "Smart toilets",
+     "description": {
+      "html": "Experience the ultimate bathroom luxury with HOROW smart toilets featuring bidet functionalities. Enjoy cleansing, heated seats and more. Prices range from $499.99 to $1799.99."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975081785",
+     "handle": "10-inch-rough-in-toilets",
+     "title": "10 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472976884025",
+     "handle": "elongated-toilet",
+     "title": "Elongated toilet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9023009358137",
+   "title": "HOROW T0338W 12-Inch Rough-In One-Piece ADA Toilet with Dual Flush",
+   "description": {
+    "html": "The HOROW T0338W is a 12-inch rough-in one-piece toilet with ADA-compliant 17.3-inch comfort height, an elongated bowl, and a powerful dual flush system. Its sleek skirted design, soft-close seat, and easy-clean glazed surface deliver comfort and convenience for modern bathrooms."
+   },
+   "url": "https://horow.com/products/horow-t0338w-elongated-one-piece-toilet-ada-toilet-height-17-3-inch",
+   "handle": "horow-t0338w-elongated-one-piece-toilet-ada-toilet-height-17-3-inch",
+   "price_range": {
+    "min": {
+     "amount": 29900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47816942158137",
+     "sku": "T0338W",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW T0338W is a 12-inch rough-in one-piece toilet with ADA-compliant 17.3-inch comfort height, an elongated bowl, and a powerful dual flush system. Its sleek skirted design, soft-close seat, and easy-clean glazed surface deliver comfort and convenience for modern bathrooms."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-t0338w-white-color.webp?v=1761814441"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/47816942158137:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-t0338w-white-color.webp?v=1761814441"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "12\" rough in",
+    "Chair(17\"- 19\u201d)",
+    "Dual Flush",
+    "Elongated",
+    "Top"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059240249",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "Upgrade your bathroom with HOROW one piece toilets featuring sleek, seamless designs, powerful water-saving flush systems, and easy-to-clean surfaces. Available in multiple sizes, colors, and ADA-compliant options, HOROW one-piece toilets deliver modern style, comfort, and reliable performance for every home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975343929",
+     "handle": "12-inch-rough-in-toilets",
+     "title": "12 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472976884025",
+     "handle": "elongated-toilet",
+     "title": "Elongated toilet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9020956705081",
+   "title": "HOROW 8733U Compact Toilet, Dual-Flush System, Soft-Closing UF Seat",
+   "description": {
+    "html": "The HOROW 8733U compact toilet is designed for small bathrooms, apartments, and powder rooms. Its space-saving one-piece design, efficient dual-flush system, standard 12-inch rough-in, and soft-closing UF seat provide practical performance, quiet operation, easy cleaning, and modern style."
+   },
+   "url": "https://horow.com/products/horow-compact-toilet-for-small-bathroom-dual-flush-toilet-model-8733u",
+   "handle": "horow-compact-toilet-for-small-bathroom-dual-flush-toilet-model-8733u",
+   "price_range": {
+    "min": {
+     "amount": 28900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 28900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47802787987769",
+     "sku": "8733U",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW 8733U compact toilet is designed for small bathrooms, apartments, and powder rooms. Its space-saving one-piece design, efficient dual-flush system, standard 12-inch rough-in, and soft-closing UF seat provide practical performance, quiet operation, easy cleaning, and modern style."
+     },
+     "price": {
+      "amount": 28900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-8733u-premium-material.webp?v=1761813586"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/47802787987769:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-8733u-premium-material.webp?v=1761813586"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "12\" rough in",
+    "Dual Flush",
+    "Round",
+    "Standard (less than 17\")",
+    "Top"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059240249",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "Upgrade your bathroom with HOROW one piece toilets featuring sleek, seamless designs, powerful water-saving flush systems, and easy-to-clean surfaces. Available in multiple sizes, colors, and ADA-compliant options, HOROW one-piece toilets deliver modern style, comfort, and reliable performance for every home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975343929",
+     "handle": "12-inch-rough-in-toilets",
+     "title": "12 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472976949561",
+     "handle": "round-toilets",
+     "title": "Round toilets",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9020950970681",
+   "title": "HOROW 8733S Compact One-Piece Toilet, 12-Inch Rough-In, Siphon Flush",
+   "description": {
+    "html": "The HOROW 8733S is a compact one-piece toilet with a 12-inch rough-in, round bowl, and efficient siphon-flush system. Its space-saving design, dual-flush performance, and slow-close seat make it ideal for small modern bathrooms."
+   },
+   "url": "https://horow.com/products/compact-12-rough-in-toilet-horow-8733s-one-piece-round-design",
+   "handle": "compact-12-rough-in-toilet-horow-8733s-one-piece-round-design",
+   "price_range": {
+    "min": {
+     "amount": 26900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/49774447296825",
+     "sku": "8733S",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW 8733S is a compact one-piece toilet with a 12-inch rough-in, round bowl, and efficient siphon-flush system. Its space-saving design, dual-flush performance, and slow-close seat make it ideal for small modern bathrooms."
+     },
+     "price": {
+      "amount": 26900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/8733S.webp?v=1711699364"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/49774447296825:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/8733S.webp?v=1711699364"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "12\" rough in",
+    "Dual Flush",
+    "One piece toilet",
+    "Round",
+    "Standard (less than 17\")",
+    "Top"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059240249",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "Upgrade your bathroom with HOROW one piece toilets featuring sleek, seamless designs, powerful water-saving flush systems, and easy-to-clean surfaces. Available in multiple sizes, colors, and ADA-compliant options, HOROW one-piece toilets deliver modern style, comfort, and reliable performance for every home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975343929",
+     "handle": "12-inch-rough-in-toilets",
+     "title": "12 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472976949561",
+     "handle": "round-toilets",
+     "title": "Round toilets",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9707309236537",
+   "title": "HOROW T0338WM Matte White One-Piece Toilet, ADA-Compliant",
+   "description": {
+    "html": "The HOROW T0338WM is a modern matte white one-piece toilet with ADA-compliant comfort height, a 12-inch rough-in, water-saving 1.1 GPF flush, and a soft-close seat. Its sleek design offers comfortable use, easy maintenance, and reliable performance for modern bathrooms."
+   },
+   "url": "https://horow.com/products/matte-white-toilet-with-ada-compliant-for-12-inch-rough-in-model-t0338wm",
+   "handle": "matte-white-toilet-with-ada-compliant-for-12-inch-rough-in-model-t0338wm",
+   "price_range": {
+    "min": {
+     "amount": 35900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 35900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50164776862009",
+     "sku": "T0338WM",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW T0338WM is a modern matte white one-piece toilet with ADA-compliant comfort height, a 12-inch rough-in, water-saving 1.1 GPF flush, and a soft-close seat. Its sleek design offers comfortable use, easy maintenance, and reliable performance for modern bathrooms."
+     },
+     "price": {
+      "amount": 35900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/T0338MW-1.webp?v=1731980370"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/50164776862009:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/T0338MW-1.webp?v=1731980370"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "One piece toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059240249",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "Upgrade your bathroom with HOROW one piece toilets featuring sleek, seamless designs, powerful water-saving flush systems, and easy-to-clean surfaces. Available in multiple sizes, colors, and ADA-compliant options, HOROW one-piece toilets deliver modern style, comfort, and reliable performance for every home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975343929",
+     "handle": "12-inch-rough-in-toilets",
+     "title": "12 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472976884025",
+     "handle": "elongated-toilet",
+     "title": "Elongated toilet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzVOekEzTXpBNU1qTTJOVE0zTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

@@ -1,0 +1,1520 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://horow.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "HOROW",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "horow.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "JCB",
+          "AMEX",
+          "DISCOVER"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "85207843129"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "jcb",
+         "american_express",
+         "discover",
+         "diners_club",
+         "maestro"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "85207843129"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/10244930339129",
+   "title": "HOROW VNA Series Freestanding Bathroom Vanity with EVERSTONE Solid Surface Top \u2013 24\", 30\", 36\"",
+   "description": {
+    "html": "The HOROW VNA Series Freestanding Bathroom Vanity blends contemporary style with practical functionality. Available in 24\", 30\", and 36\" sizes, it features a premium EVERSTONE solid surface top, soft-close storage, antibacterial protection, and durable construction for modern bathrooms."
+   },
+   "url": "https://horow.com/products/horow-vna-series-freestanding-bathroom-vanity-solid-surface-top-24-30-36",
+   "handle": "horow-vna-series-freestanding-bathroom-vanity-solid-surface-top-24-30-36",
+   "price_range": {
+    "min": {
+     "amount": 59900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 89900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/53470379344185",
+     "sku": "HR-VNA24ZG",
+     "title": "24 Inch",
+     "description": {
+      "html": "The HOROW VNA Series Freestanding Bathroom Vanity blends contemporary style with practical functionality. Available in 24\", 30\", and 36\" sizes, it features a premium EVERSTONE solid surface top, soft-close storage, antibacterial protection, and durable construction for modern bathrooms."
+     },
+     "price": {
+      "amount": 59900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Model",
+       "label": "24 Inch"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-bathroom-vanity-vna-series-16.webp?v=1781590190"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/53470379344185:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/53470379376953",
+     "sku": "HR-VNA30ZG",
+     "title": "30 Inch",
+     "description": {
+      "html": "The HOROW VNA Series Freestanding Bathroom Vanity blends contemporary style with practical functionality. Available in 24\", 30\", and 36\" sizes, it features a premium EVERSTONE solid surface top, soft-close storage, antibacterial protection, and durable construction for modern bathrooms."
+     },
+     "price": {
+      "amount": 79900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Model",
+       "label": "30 Inch"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-bathroom-vanity-vna-series-16.webp?v=1781590190"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/53470379376953:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/53470379409721",
+     "sku": "HR-VNA36ZG",
+     "title": "36 Inch",
+     "description": {
+      "html": "The HOROW VNA Series Freestanding Bathroom Vanity blends contemporary style with practical functionality. Available in 24\", 30\", and 36\" sizes, it features a premium EVERSTONE solid surface top, soft-close storage, antibacterial protection, and durable construction for modern bathrooms."
+     },
+     "price": {
+      "amount": 89900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Model",
+       "label": "36 Inch"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-bathroom-vanity-vna-series-16.webp?v=1781590190"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/53470379409721:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Model",
+     "values": [
+      {
+       "label": "24 Inch"
+      },
+      {
+       "label": "30 Inch"
+      },
+      {
+       "label": "36 Inch"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-bathroom-vanity-vna-series-16.webp?v=1781590190"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/529040703801",
+     "handle": "horow-bathroom-vanity-sets-soft-close-storage-24-30-36-inch",
+     "title": "Bathroom Vanity Sets",
+     "description": {
+      "html": "Upgrade your bathroom with HOROW vanity sets available in 24\", 30\", and 36\" sizes. Designed with soft-close drawers, tilt-down storage, adjustable feet, and a matching backsplash, these modern vanities offer durability, elegance, and practical organization for everyday convenience."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10245806129465",
+   "title": "HOROW VNB Series Freestanding Bathroom Vanity with Cultured Marble Top | 24\", 30\" & 36\" Sizes",
+   "description": {
+    "html": "The HOROW VNB Series freestanding bathroom vanity is available in 24\", 30\", and 36\" sizes to suit various bathroom layouts. Featuring a durable cultured marble countertop, solid wood structure, and soft-close storage, it delivers modern style, functionality, and long-lasting performance."
+   },
+   "url": "https://horow.com/products/horow-vnb-bathroom-vanity-cultured-marble-top",
+   "handle": "horow-vnb-bathroom-vanity-cultured-marble-top",
+   "price_range": {
+    "min": {
+     "amount": 55900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 79900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/53479036223801",
+     "sku": "HR-VNB24",
+     "title": "24 Inch",
+     "description": {
+      "html": "The HOROW VNB Series freestanding bathroom vanity is available in 24\", 30\", and 36\" sizes to suit various bathroom layouts. Featuring a durable cultured marble countertop, solid wood structure, and soft-close storage, it delivers modern style, functionality, and long-lasting performance."
+     },
+     "price": {
+      "amount": 55900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Model",
+       "label": "24 Inch"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-bathroom-vanity-vnb-01.webp?v=1781691163"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/53479036223801:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/53479036256569",
+     "sku": "HR-VNB30",
+     "title": "30 Inch",
+     "description": {
+      "html": "The HOROW VNB Series freestanding bathroom vanity is available in 24\", 30\", and 36\" sizes to suit various bathroom layouts. Featuring a durable cultured marble countertop, solid wood structure, and soft-close storage, it delivers modern style, functionality, and long-lasting performance."
+     },
+     "price": {
+      "amount": 69900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Model",
+       "label": "30 Inch"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-bathroom-vanity-vnb-01.webp?v=1781691163"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/53479036256569:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/53479036289337",
+     "sku": "HR-VNB36",
+     "title": "36 Inch",
+     "description": {
+      "html": "The HOROW VNB Series freestanding bathroom vanity is available in 24\", 30\", and 36\" sizes to suit various bathroom layouts. Featuring a durable cultured marble countertop, solid wood structure, and soft-close storage, it delivers modern style, functionality, and long-lasting performance."
+     },
+     "price": {
+      "amount": 79900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Model",
+       "label": "36 Inch"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-bathroom-vanity-vnb-01.webp?v=1781691163"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/53479036289337:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Model",
+     "values": [
+      {
+       "label": "24 Inch"
+      },
+      {
+       "label": "30 Inch"
+      },
+      {
+       "label": "36 Inch"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-bathroom-vanity-vnb-01.webp?v=1781691163"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/529040703801",
+     "handle": "horow-bathroom-vanity-sets-soft-close-storage-24-30-36-inch",
+     "title": "Bathroom Vanity Sets",
+     "description": {
+      "html": "Upgrade your bathroom with HOROW vanity sets available in 24\", 30\", and 36\" sizes. Designed with soft-close drawers, tilt-down storage, adjustable feet, and a matching backsplash, these modern vanities offer durability, elegance, and practical organization for everyday convenience."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9039470788921",
+   "title": "HOROW Wall Mounted Bathroom Sink Model HWTP-S4531W",
+   "description": {
+    "html": "This wall mounted bathroom sink is also a small wall mount sink. Stain-resistant ceramic craftsmanship enhances convenience for daily use, and can be connected to a 1.75-inch drain outlet and overflow drain to prevent water overflow. \u25cf Free US Shipping \u25cf 2-Year Limited Warranty \u25cf 90-Day Hassle Free Returns"
+   },
+   "url": "https://horow.com/products/horow-wall-mounted-bathroom-sink-model-hwtp-s4531w",
+   "handle": "horow-wall-mounted-bathroom-sink-model-hwtp-s4531w",
+   "price_range": {
+    "min": {
+     "amount": 7099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7099,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47887503819065",
+     "sku": "HWTP-S4531W",
+     "title": "Default Title",
+     "description": {
+      "html": "This wall mounted bathroom sink is also a small wall mount sink. Stain-resistant ceramic craftsmanship enhances convenience for daily use, and can be connected to a 1.75-inch drain outlet and overflow drain to prevent water overflow. \u25cf Free US Shipping \u25cf 2-Year Limited Warranty \u25cf 90-Day Hassle Free Returns"
+     },
+     "price": {
+      "amount": 7099,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/HR-S4531W.webp?v=1705488987"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/47887503819065:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/HR-S4531W.webp?v=1705488987"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-5-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Rectangular"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059404089",
+     "handle": "bathroom-sink",
+     "title": "Bathroom sink",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469902754105",
+     "handle": "bathroom-wall-mount-sinks",
+     "title": "Bathroom Wall Mount Sinks",
+     "description": {
+      "html": "Discover compact and space-saving solutions with the HOROW bathroom wall-mount sinks\ufeff collection. Crafted for modern living, these versatile designs elevate any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473882820921",
+     "handle": "ceramic-bathroom-sink",
+     "title": "Ceramic Bathroom Sink",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473882886457",
+     "handle": "square-bathroom-sink",
+     "title": "Square Bathroom Sink",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9673925230905",
+   "title": "HOROW T38P Smart Toilet \u2013 ADA Comfort Height, 12-Inch Rough-In",
+   "description": {
+    "html": "Upgrade your bathroom with the HOROW T38P Smart Toilet, designed for a 12-inch rough-in with ADA-compliant comfort height. Featuring a built-in tank and pump, dual-flush technology, heated seat, and advanced bidet cleansing, it combines everyday comfort and modern convenience. For the power outage flush feature to function, a separately purchased battery box is necessary. The built-in tank supports the toilet\u2019s flushing system. Confirm the documented inlet-water requirements for bidet operation and installation before ordering. \u25cf Black Friday & Cyber Monday Sale: Buy 3 Toilets, Get 30% Off Automatically! \u25cf ADA Comfort Height Design for easier sitting and standing\u25cf Built-In Water Tank ensures stable flushing performance\u25cf Powerful Dual Flush System for water-saving efficiency\u25cf Foam Shield Technology reduces splashing and odors\u25cf Battery Backup Power-Outage Flush capability"
+   },
+   "url": "https://horow.com/products/smart-toilet-with-flush-tank-and-ada-compliance-for-12-inch-rough-in-model-t38p",
+   "handle": "smart-toilet-with-flush-tank-and-ada-compliance-for-12-inch-rough-in-model-t38p",
+   "price_range": {
+    "min": {
+     "amount": 129900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 129900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50016825508153",
+     "sku": "T38P",
+     "title": "Default Title",
+     "description": {
+      "html": "Upgrade your bathroom with the HOROW T38P Smart Toilet, designed for a 12-inch rough-in with ADA-compliant comfort height. Featuring a built-in tank and pump, dual-flush technology, heated seat, and advanced bidet cleansing, it combines everyday comfort and modern convenience. For the power outage flush feature to function, a separately purchased battery box is necessary. The built-in tank supports the toilet\u2019s flushing system. Confirm the documented inlet-water requirements for bidet operation and installation before ordering. \u25cf Black Friday & Cyber Monday Sale: Buy 3 Toilets, Get 30% Off Automatically! \u25cf ADA Comfort Height Design for easier sitting and standing\u25cf Built-In Water Tank ensures stable flushing performance\u25cf Powerful Dual Flush System for water-saving efficiency\u25cf Foam Shield Technology reduces splashing and odors\u25cf Battery Backup Power-Outage Flush capability"
+     },
+     "price": {
+      "amount": 129900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/T38P-1_2.webp?v=1754055557"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/50016825508153:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/T38P-1_2.webp?v=1754055557"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ADA toilet",
+    "bathroom hygiene",
+    "bathroom upgrade",
+    "HOROW T38P",
+    "HOROW toilet",
+    "smart bathroom",
+    "smart toilet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059305785",
+     "handle": "smart-toilets",
+     "title": "Smart toilets",
+     "description": {
+      "html": "Experience the ultimate bathroom luxury with HOROW smart toilets featuring bidet functionalities. Enjoy cleansing, heated seats and more. Prices range from $499.99 to $1799.99."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975343929",
+     "handle": "12-inch-rough-in-toilets",
+     "title": "12 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/474075627833",
+     "handle": "elongated-smart-toilet",
+     "title": "Elongated Smart Toilet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10048875299129",
+   "title": "Bisque Under-Counter Bathroom Sink \u2013 Model HWTP-S5138D-BC",
+   "description": {
+    "html": "Upgrade your bathroom with the HOROW bisque colored under-counter sink, designed with a smooth finish and built-in overflow for added safety. Its durable construction, elegant look, and seamless installation make it ideal for modern homes and remodels today, perfect for projects everywhere."
+   },
+   "url": "https://horow.com/products/bisque-under-counter-bathroom-sink-model-hwtp-s5138d-bc",
+   "handle": "bisque-under-counter-bathroom-sink-model-hwtp-s5138d-bc",
+   "price_range": {
+    "min": {
+     "amount": 8999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51384386847033",
+     "sku": "HWTP-S5138D-BC",
+     "title": "Default Title",
+     "description": {
+      "html": "Upgrade your bathroom with the HOROW bisque colored under-counter sink, designed with a smooth finish and built-in overflow for added safety. Its durable construction, elegant look, and seamless installation make it ideal for modern homes and remodels today, perfect for projects everywhere."
+     },
+     "price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/hwtp-s5138d-bc-13.webp?v=1764061709"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/51384386847033:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/hwtp-s5138d-bc-13.webp?v=1764061709"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-5-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Rectangular"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059404089",
+     "handle": "bathroom-sink",
+     "title": "Bathroom sink",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469900198201",
+     "handle": "bathroom-undermount-sinks",
+     "title": "Bathroom Undermount Sinks",
+     "description": {
+      "html": "HOROW undermount bathroom sinks are available in sizes ranging from 20 to 24 inches and in square and oval shapes. With such diverse sizes and shapes, they can meet your preferences."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473882820921",
+     "handle": "ceramic-bathroom-sink",
+     "title": "Ceramic Bathroom Sink",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473882886457",
+     "handle": "square-bathroom-sink",
+     "title": "Square Bathroom Sink",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10048868942137",
+   "title": "Black Undermount Rectangle Bathroom Sink with Overflow \u2013 HWTP-S5138D-B",
+   "description": {
+    "html": "Enhance your bathroom with the HOROW black undermount rectangle sink, featuring a sleek design, built-in overflow, and splash-proof performance. Durable, modern, and easy to clean\u2014perfect for stylish, functional bathroom upgrades."
+   },
+   "url": "https://horow.com/products/black-undermount-rectangle-bathroom-sink-with-overflow-hwtp-s5138d-b",
+   "handle": "black-undermount-rectangle-bathroom-sink-with-overflow-hwtp-s5138d-b",
+   "price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51384271765817",
+     "sku": "HWTP-S5138D-B",
+     "title": "Default Title",
+     "description": {
+      "html": "Enhance your bathroom with the HOROW black undermount rectangle sink, featuring a sleek design, built-in overflow, and splash-proof performance. Durable, modern, and easy to clean\u2014perfect for stylish, functional bathroom upgrades."
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/hwtp-s5138d-b-09.webp?v=1764057128"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/51384271765817:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/hwtp-s5138d-b-09.webp?v=1764057128"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-5-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Rectangular"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059404089",
+     "handle": "bathroom-sink",
+     "title": "Bathroom sink",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469900198201",
+     "handle": "bathroom-undermount-sinks",
+     "title": "Bathroom Undermount Sinks",
+     "description": {
+      "html": "HOROW undermount bathroom sinks are available in sizes ranging from 20 to 24 inches and in square and oval shapes. With such diverse sizes and shapes, they can meet your preferences."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473882820921",
+     "handle": "ceramic-bathroom-sink",
+     "title": "Ceramic Bathroom Sink",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473882886457",
+     "handle": "square-bathroom-sink",
+     "title": "Square Bathroom Sink",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9601118372153",
+   "title": "HOROW T38 Smart Toilet with Bidet, Built-In Tank & Mood Light, 12-Inch Rough-In",
+   "description": {
+    "html": "The HOROW T38 Smart Toilet combines advanced bidet technology, a built-in water tank, heated seat, UV sterilization, warm air drying, and immersive mood lighting. Designed for 12-inch rough-ins, it delivers luxurious comfort, hygiene, and reliable flushing performance. The power outage flush feature requires a battery box, which is available for purchase separately. \u25cf Black Friday & Cyber Monday Special \u2013 Save 25% on 1 Toilet with Code EXCL25! \u25cf Built-in Water Tank for stable flushing performance\u25cf Booster Pump enhances flush power in low-pressure homes\u25cf Automatic Flush for hands-free convenience\u25cf Soft Night Light & Mood Light for nighttime visibility\u25cf Front & Rear Bidet Wash for personalized cleansing"
+   },
+   "url": "https://horow.com/products/bidet-combo-toilet-with-mood-light-for-12-inch-rough-in-model-t38",
+   "handle": "bidet-combo-toilet-with-mood-light-for-12-inch-rough-in-model-t38",
+   "price_range": {
+    "min": {
+     "amount": 99900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 99900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/49774884290873",
+     "sku": "T38",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW T38 Smart Toilet combines advanced bidet technology, a built-in water tank, heated seat, UV sterilization, warm air drying, and immersive mood lighting. Designed for 12-inch rough-ins, it delivers luxurious comfort, hygiene, and reliable flushing performance. The power outage flush feature requires a battery box, which is available for purchase separately. \u25cf Black Friday & Cyber Monday Special \u2013 Save 25% on 1 Toilet with Code EXCL25! \u25cf Built-in Water Tank for stable flushing performance\u25cf Booster Pump enhances flush power in low-pressure homes\u25cf Automatic Flush for hands-free convenience\u25cf Soft Night Light & Mood Light for nighttime visibility\u25cf Front & Rear Bidet Wash for personalized cleansing"
+     },
+     "price": {
+      "amount": 99900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-t38-smart-toilet-best-30.webp?v=1786356369"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/49774884290873:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/horow-t38-smart-toilet-best-30.webp?v=1786356369"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059305785",
+     "handle": "smart-toilets",
+     "title": "Smart toilets",
+     "description": {
+      "html": "Experience the ultimate bathroom luxury with HOROW smart toilets featuring bidet functionalities. Enjoy cleansing, heated seats and more. Prices range from $499.99 to $1799.99."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469948236089",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Experience Horow's extensive bathroom toilet collection. From one-piece toilets, traditional models, and innovative toilet seats with bidet functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472975343929",
+     "handle": "12-inch-rough-in-toilets",
+     "title": "12 inch rough in toilets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/474075627833",
+     "handle": "elongated-smart-toilet",
+     "title": "Elongated Smart Toilet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9711749726521",
+   "title": "Biscuit Color Bathroom Sink with Flush Mount Model HWTP-S6039D-BC",
+   "description": {
+    "html": "The HOROW HWTP-S6039D-BC biscuit-colored sink features a sleek flush mount design, an integrated overflow hole, and a smooth, polished surface. Its durable construction and timeless aesthetic enhance any bathroom with practicality and style. Perfect for modern interiors."
+   },
+   "url": "https://horow.com/products/biscuit-color-bathroom-sink-with-flush-mount-model-hwtp-s6039d-bc",
+   "handle": "biscuit-color-bathroom-sink-with-flush-mount-model-hwtp-s6039d-bc",
+   "price_range": {
+    "min": {
+     "amount": 8900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50179508011321",
+     "sku": "HWTP-S6039D-BC",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW HWTP-S6039D-BC biscuit-colored sink features a sleek flush mount design, an integrated overflow hole, and a smooth, polished surface. Its durable construction and timeless aesthetic enhance any bathroom with practicality and style. Perfect for modern interiors."
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/HWTP-S6039D-BC-1.webp?v=1732325828"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/50179508011321:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/HWTP-S6039D-BC-1.webp?v=1732325828"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-5-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469900198201",
+     "handle": "bathroom-undermount-sinks",
+     "title": "Bathroom Undermount Sinks",
+     "description": {
+      "html": "HOROW undermount bathroom sinks are available in sizes ranging from 20 to 24 inches and in square and oval shapes. With such diverse sizes and shapes, they can meet your preferences."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9040225829177",
+   "title": "HOROW Wall Mounted Sink Bathroom Basin With Overflow Model HWTP-C3232W",
+   "description": {
+    "html": "HOROW HWTP-C3232W sink is a wall mounted bathroom sink. The 12 inch basin with overflow can match most single handle faucets, and the lag bolts match the sink to make the bathroom look more simple and stylish. \u25cf Free US Shipping \u25cf 2-Year Limited Warranty \u25cf 90-Day Hassle Free Returns"
+   },
+   "url": "https://horow.com/products/horow-wall-mounted-sink-bathroom-basin-with-overflow-model-hwtp-c3232w",
+   "handle": "horow-wall-mounted-sink-bathroom-basin-with-overflow-model-hwtp-c3232w",
+   "price_range": {
+    "min": {
+     "amount": 6799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47892905165113",
+     "sku": "HWTP-C3232W",
+     "title": "Default Title",
+     "description": {
+      "html": "HOROW HWTP-C3232W sink is a wall mounted bathroom sink. The 12 inch basin with overflow can match most single handle faucets, and the lag bolts match the sink to make the bathroom look more simple and stylish. \u25cf Free US Shipping \u25cf 2-Year Limited Warranty \u25cf 90-Day Hassle Free Returns"
+     },
+     "price": {
+      "amount": 6799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/HR-C3232W.webp?v=1705549384"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/47892905165113:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/HR-C3232W.webp?v=1705549384"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-5-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "12 inch",
+    "Triangular"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059404089",
+     "handle": "bathroom-sink",
+     "title": "Bathroom sink",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469902754105",
+     "handle": "bathroom-wall-mount-sinks",
+     "title": "Bathroom Wall Mount Sinks",
+     "description": {
+      "html": "Discover compact and space-saving solutions with the HOROW bathroom wall-mount sinks\ufeff collection. Crafted for modern living, these versatile designs elevate any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473882820921",
+     "handle": "ceramic-bathroom-sink",
+     "title": "Ceramic Bathroom Sink",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473883050297",
+     "handle": "triangular-bathroom-sink",
+     "title": "Triangular Bathroom Sink",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9709476020537",
+   "title": "Round Pedestal Sink with Counter Space and Modern Model CBS-R03",
+   "description": {
+    "html": "The HOROW CBS-R03 Round Bathroom Sink features a sleek design with a pedestal, perfect for small bathrooms. It offers versatile installation options, including wall or floor drainage, and includes an overflow for added safety and convenience."
+   },
+   "url": "https://horow.com/products/round-pedestal-sink-with-counter-space-and-modern-model-cbs-r03",
+   "handle": "round-pedestal-sink-with-counter-space-and-modern-model-cbs-r03",
+   "price_range": {
+    "min": {
+     "amount": 20900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50171989164345",
+     "sku": "CBS-R03",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW CBS-R03 Round Bathroom Sink features a sleek design with a pedestal, perfect for small bathrooms. It offers versatile installation options, including wall or floor drainage, and includes an overflow for added safety and convenience."
+     },
+     "price": {
+      "amount": 20900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/CBS-R03-1.webp?v=1732099454"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/50171989164345:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/CBS-R03-1.webp?v=1732099454"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-5-1-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/469059404089",
+     "handle": "bathroom-sink",
+     "title": "Bathroom sink",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473882820921",
+     "handle": "ceramic-bathroom-sink",
+     "title": "Ceramic Bathroom Sink",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/474078937401",
+     "handle": "bathroom-sinks-faucets",
+     "title": "Bathroom Sinks & Faucets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/488739504441",
+     "handle": "pedestal-sinks",
+     "title": "Bathroom Pedestal Sinks",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzVOekE1TkRjMk1ESXdOVE0zTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}
