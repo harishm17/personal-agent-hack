@@ -661,3 +661,69 @@ the reference, under two for everything**, then about 10 s for the order, 45 s f
 
 **My view:** feasible by 13:45 from my side if the sheet file and pool land by 13:15, and sheet1 stays intact as the fallback
 throughout. The risk is not the engine; it is the three other streams changing text and tables at the same time.
+
+## 12:32 from ENGINE — 12:30 items 3 and 4: the general number rule is on for every reader (the dimension check is gone)
+- **The rule** (`spans.apply_unambiguous_rule`, run on every new read and on every figure the engine loads): a figure counts only if
+  its number is unambiguous in its quote. If the quote holds another number of the same kind of unit (or with no unit), the reader
+  must have named the label the text puts on its number, and code checks that pairing from the quote alone, two ways: the label's
+  place in a separated list of labels against the values' places (any labels, any of the separators x, /, comma, |, "by"), or the
+  label standing next to the number. Not settled → unsure, with the reason. No format, product or pattern is named in code or in the
+  prompt; the prompt gained one general line asking for the label. My earlier `h x w x d` code and the pattern-specific wording in
+  the `length` meaning are removed.
+- **Read once still holds where it can:** only pages whose cached quote held several candidate numbers were read again with the label
+  line (34 reference figures on 34 products, plus the 9 grab bars whose meaning text changed); every other cached reading stands.
+- **Item 4, the reference:** 29 of its figures now have a quote with several numbers. 26 are paired by the text (22 by the order of
+  labels, 4 by the label beside the number), 3 are caught and become unsure:
+  | product | figure | why |
+  |---|---|---|
+  | Carex Chrome Ultra Grip Bath Handle and Grab Bar | length 12 | `Length: 12" or 16"`: the text does not settle 12 over 16 |
+  | Carex Textured Wall Grab Bar | length 12 | `Available in 12", 16", 18", 24", and 32" length.`: same |
+  | Vive Angled Metal Grab Bar | length 16 | `16 inches long (two 8” sections bent at a 45 degree angle)`: no label given |
+  **No pick changes; the total is still $279.04; 5 of 6 lines ready.** All three were on L5, which was open already. The walker width
+  the reviewer named (L4 pick, `30" - 37" x 23.5" x 18.5"`) is now right for a reason: the reader named `w` and code paired `w` with
+  23.5 by the order of the list. Counts now: 64 products state every figure, 42 inside (was 67 and 41: three figures became unsure
+  and one re-read page gained a figure).
+- **Both readers, before → after the rule** (same readings, rule off → on; `readers.number_rule` and each reader's `number_rule`):
+  | reader | quotes with several numbers | paired by the text | caught | counted | inside that the reference does not |
+  |---|---|---|---|---|---|
+  | Sonnet reference | 29 | 26 | 3 (the grab bars above) | 171 → 168 | n/a |
+  | `sie:Qwen/Qwen3.8-27B-FP8` | 30 | 27 | 3: **Portable Shower Bench width 14.75** (it named `w`; the text pairs `w` with 31), Tub Transfer Bench 30.5 (no label), Angled bar | 185 → 182 | 10 → 9 |
+  | Sonnet, second pass | 27 | 24 | 3 | 171 → 168 | 2 → 2 |
+  | `sie:urchade/gliner_multi-v2.1` | 2 | 0 | 2 (it gives no labels) | 153 → 151 | 9 → 8 |
+  After the rule Qwen reads the same number on 166 of 166 figures both found; the reference alone found 2, Qwen alone 16; its L2 pick
+  still differs.
+- **A limit of the rule, said plainly:** code checks that the label belongs to the number. It does not judge whether that label means
+  the figure asked for. A reader that named `d` for 14.75 and still called it the width would pass. Today's readers did not do that
+  (the small one named `w` and was caught), and the label is in the record (`label`, `number_check`) for the screen to show.
+
+## 12:32 from ENGINE — 12:40 items 1 to 4, and SIGN's pending carts
+1. **Variant, quantity, currency under the hash.** Each canonical pick now has `quantity` (1), `currency` (USD) and
+   `variant_title`, read from the store's own reply in `data/pool/raw/` (the pool rows do not carry them; all 111 products matched).
+   `signed_picks` returns them too. `seal.covers` adds "variant and quantity" and "prices and currency". Hashes changed again.
+2. **Scope.** Every `arrival` and `undo` has `scope`. "store-wide": the store's general answer (101 candidates). "this product":
+   the store's reply to the question about that product (the 10 picks and runner-ups), preferred when it exists; then the delivery
+   quote under the hash is that reply's sentence. A product's reply never changes whether a time counts as stated (if a store's
+   general answer states none, the product's reply is attached as `arrival.product_reply` and the pick rule is untouched).
+   - [ ] For STORE: `parse_reply` reads "The store’s information doesn’t specify whether this bath bench can be returned once opened"
+     as `returnable: "yes"` (the L1 pick). I show "unclear" when the quoted sentence says the store does not say; the parser should too.
+3. **Variants.** Each candidate has `variants` (how many are on sale: 92 products have 1, 19 have 2 to 10), `variant` `{title,
+   options, on_sale, listed, figures_read_from}` and `product.variant_title`. A figure whose quote names an option that is not the
+   one in the pool, and not the one that is, becomes unsure ("the text ties this figure to the option …"). Today that marks **0**
+   figures; nothing is dropped because a product has options.
+4. **What the stores' agents did say (true result, not a reading problem).** 25 questions:
+   - 15 about a figure (the not-stated candidates): **0 state the figure.** I re-read all 15 replies; only two contain a digit at all,
+     both inside the product's name. Verbatim: "The store’s available information does not specify the Carex Shower Chair’s overall width."
+   - 10 about returns and delivery (5 picks, 5 runner-ups): **10 of 10 state a delivery time and 10 of 10 answer on returns** (3 no,
+     6 unclear, 1 unclear after my guard). Verbatim, carex.com: "No. Toilet seats are listed as unhygienic items that may not be
+     returned, and the seat must also be unused and sellable to qualify for a return. Standard shipping takes 3–5 days; the store does
+     not specify whether those are business days." And parentgiving.com: "Standard delivery generally takes 1–5 business days. The
+     store’s information doesn’t specify whether this bath bench can be returned once opened; returns generally require items to be
+     new, unused, and in resalable condition, so check the product page or call customer service to confirm."
+   `counts.store_agent` = `{questions: 25, about_a_figure: 15, figures_stated: 0, about_delivery_and_returns: 10,
+   delivery_time_stated: 10, returns_answered: 10}`, so the tile can say "10 of 10 answered on delivery and returns; 0 of 15 knew a
+   figure the page did not state".
+- **SIGN's pending carts** (their 12:25 note): the seal counts only carts with a link ("1 cart created. 1 store has not answered
+  yet."), a candidate's `action` is set only for those, and a second `mark_signed` with the same signature keeps the signing time and
+  writes a `carts_updated` receipt instead of a second `signed`.
+- **No silent fallbacks:** `/api/state` → `degraded`, a list of `{what, note}`; empty now. So far it is fed by the product-reply
+  parser failing; I am adding the reader's API-to-command-line fallback, the pool loader's fallback and receipts kept in memory only.
