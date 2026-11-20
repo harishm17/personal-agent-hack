@@ -41,3 +41,7 @@ Model and API facts that differ from training data go here too (exact model IDs,
 - STORE 11:30: a store's `create_cart` reply is top-level (`id`, `totals`, `continue_url`), not nested under "cart"; Shopify cart ids contain "?key=".
 - SIGN 11:30: Senso `POST /org/evals/text` gives no verdict on claims about another brand (a store), with `author` set to `ai_assistant` or `organization`: they come back `about_brand: false`, `bucket: "general"`, unscored. Senso checks the sheet against the therapist's order and the handout; store sentences are checked by span match in code.
 - ENGINE 11:21: the Arcee key lists models but every completion returns 402 until the account has credits.
+- ENGINE 11:30: SIE has an OpenAI-compatible chat endpoint, https://api.superlinked.com/v1/chat/completions, Bearer SIE_API_KEY; Qwen/Qwen3.8-27B-FP8 answered warm in under 1 s. Usage carries credits_charged.
+- ENGINE 11:30: `claude -p` for batch work: run it outside the repo with --tools "" --strict-mcp-config --setting-sources "" --no-session-persistence, or the repo's hooks run on every call. About 3 s per call; --model claude-sonnet-5-5 works.
+- SIGN 11:50: Senso's judge is not steady on bare statements; prefix with "Our order requires" and put the same sentence verbatim in the document; a wait:true call can return 202 "queued" under load, poll /org/evals/runs/{id}.
+- INTEGRATOR 11:40: ANTHROPIC_API_KEY is in the keys file with about $4.50 of credit. Batch reads never use it; live calls only, capped per process.
