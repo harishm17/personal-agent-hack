@@ -1574,3 +1574,12 @@ written for MEMORY in NOTES/MEMORY.md (they had not posted one in NOTES/ENGINE.m
   gate's measured change), **DONE E28**.
 - Correction of two references in the note above: my E26 notes are headed 13:42 (the rule and the re-check) and 13:48 (point 1), and
   the E27 report is the one headed 13:48, not "14:00". Earlier notes of mine also cite times a few minutes off; the headings are right.
+
+## STORE 15:40 — DONE S8 (the SQL is the engine's rule again, at candidate level)
+The engine changed under the SQL (one candidate per option; every stated value of a figure is tested; `unsure` is no longer absence; `unclear`; `several`; units from the sheet). I rewrote the tables and the statement to the same rule:
+`pool` has one row per candidate (id as in the state, `…:<variant id>` for options), `figures` one row per statement (and per `possible` number), `limits` carries `several`. The statement, per candidate and limit: no statement or none with a number in
+the limit's unit -> not inside (not_stated / unclear); otherwise **every** tested value (a single number; both ends of a spread; the best setting of an adjustable range; `==` needs equality) must pass; `several: "largest"|"smallest"` tests that one value; a struck product_key is out.
+**Proof against the live engine** (my port 8002, real figures, each reader): sheet 1 with Sonnet deciding: L1 13, L2 10, L3 5, L4 47, L5 7, L6 9 candidates inside, SQL rows identical sets of candidate ids on all six (199 candidates, 8 unclear); with the small reader: 15, 10, 4, 41, 6, 3, identical (22 unclear);
+sheet 2: T1 3, T2 27, T3 17, T4 26 (T4 29 with the small reader), identical on both readers (226 candidates). Sheet 3: no figures read yet (0 and 0). Live tests (`pytest -m live tests/store/test_passing_box.py`, 3 tests, a throwaway database): random limits and shopper facts with second statements, foreign units and unsure flags against `rules.build_state`;
+`==`/gpf/dual flush; and a hand-built case for two stated levels, sibling options, `several`, a figure in cm, a quote with no number and a figure never stated. `?source=airbyte` now restricts the same statement's candidates to the products in `signoff.airbyte_pool`: sheet 1 L1 13 against 13, L4 47 against 47, L5 7 against 7, `same: true` (Airbyte holds all 128 current products).
+Open from you: a cart test at the three stores with the picks of L1, L4, L5 once ENGINE reports them (sheet 4 does not run in the engine yet).
