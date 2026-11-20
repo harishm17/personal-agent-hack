@@ -404,3 +404,30 @@ design partner; personalagentprotocol.org).
   4. SIGN uses the engine's signed picks for the signed hash (currently unused), so no cart is orphaned.
 - Said aloud as limits, not fixed: a quote proves where a figure came from, not that the store's claim is
   true; signatures have no expiry; no third party verifies.
+
+## Amendment 12:50 — the builder's decision: the main example becomes sheet 2, "the plumber's fixture list"
+- **Why.** The builder found the home-after-surgery example confusing and unconvincing. An ideation pass
+  with 24 real store searches, confirmed by STORE's fetch, found a clearer one: a homeowner (Priya,
+  invented) buys four bathroom fixtures; the plumber who installs and guarantees them (Marco, invented)
+  wrote the list and signs before anything is bought. One or two obvious numbers per item.
+- **Files** (integrator): `sheets/sheet2.json`, `sheets/sheet2_order.txt` (the order document; the sheet
+  names it in `order_doc`). Lines `T1` toilet (rough-in equals the house's measured 10 in; flush volume at
+  most 1.28 gpf, a dual flush read as a spread so the full flush decides), `T2` sink faucet (at most
+  1.2 gpm), `T3` shower head (at most 1.8 gpm), `T4` vanity (overall width at most the 30 in alcove).
+  Stores: swissmadison.com, horow.com, deervalleybath.com, kingstonbrass.com. Pick rule `cheapest`
+  (cheapest inside the limits; delivery time is shown, not required, because Horow states none).
+- **Sheet 1 stays whole as the fallback** (`SIGNOFF_SHEET` unset, or `use_sheet("sheet1")`). The main app
+  runs sheet 2 as soon as it works end to end; if sheet 2 is not rehearsed by 14:30, the demo is sheet 1.
+- **Work.** ENGINE: op `==` (today any op that is not `>=` is silently treated as `<=`: fix that for every
+  sheet), units gpf and gpm, order document and derived limits per sheet, replies and instruction scan per
+  sheet, a planted page for sheet 2, pick rule by id, names instead of pronouns in the chat; then the
+  reading passes. STORE: the bathroom pool moves to `data/sheet2/pool/` with its store answers (the
+  cookware draft is deleted), tables and the SQL for sheet 2, Airbyte and the ledger follow the active
+  sheet. SIGN: the Senso documents for `sheets/sheet2_order.txt`, phone wording from the sheet (no fixed
+  names or roles). SCREEN and TRAIL: nothing may assume sheet 1's ids, names, rooms or six items.
+- **What was found in the real pages** (STORE, pattern count): 52 toilets, rough-in stated on 45 (17 are
+  10 in), flush volume on 41 (33 state two numbers); every faucet states 1.2 gpm; shower heads state 1.8
+  or 2.5 gpm; vanity width is stated explicitly on about half, the size in a title being nominal. Horow
+  sells the same toilet as T0338W (12 in rough-in, $299) and T0338W-10 (10 in, $349).
+- **The audit trail gets its own stream, TRAIL** (`streams/TRAIL.md`): `/trail/`, the run as a sequence
+  diagram drawn from the receipt chain, the outbound ledger and the other real records.
