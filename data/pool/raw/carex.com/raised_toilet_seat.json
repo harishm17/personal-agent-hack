@@ -1,0 +1,1703 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://carex.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Carex",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "carex.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "24065048681"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "24065048681"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4121099960425",
+   "title": "Carex Raised Toilet Seat with Rubber Pads",
+   "description": {
+    "html": "The Raised Toilet Seat adds 5 to 5.5 inches of height to the toilet seat to assist those with bending or sitting difficulties. The contoured seat features anti-slip rubber pads for stability and provides a wider, more comfortable seating area. Fits most standard and elongated toilets. Adds 5\" to 5.5\" of height to the toilet seat. The toilet seat elevator sits on top of the toilet to add an additional 5.5\" of support for standing and sitting. Easy to install with no tools. The toilet elevator sits on the toilet with no tools or assembly required. This is perfect toilet assistance for elderly persons or anyone that wants a quick and easy solution. The contoured seat is wider for added comfort. The wider seat design adds even more comfort and flexibility for a wide range of users. Slip-resistant rubber pads for stability. The padded toilet seat offers more safety and less chance of falling. The elevated toilet seat is perfect for anyone that may struggle sitting up or down and pose a fall risk. 300 lbs of weight capacity. The toilet seas riser can hold up to 300 lbs making it very stable and able to hold large amounts of weight. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Locking: No Arms: No Hinged: No Height: 5.5\" Product Weight: 4.5 lbs. Package Weight: 5.5 lbs. Product Dims (h x w x d): 5.5\" x 15\" x 16\" Materials: Seat: Blow Molded Plastic"
+   },
+   "url": "https://carex.com/products/carex-raised-toilet-seat",
+   "handle": "carex-raised-toilet-seat",
+   "price_range": {
+    "min": {
+     "amount": 2752,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3109,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/33134840807529",
+     "sku": "FGB31000 0000",
+     "title": "5.5\"",
+     "description": {
+      "html": "The Raised Toilet Seat adds 5 to 5.5 inches of height to the toilet seat to assist those with bending or sitting difficulties. The contoured seat features anti-slip rubber pads for stability and provides a wider, more comfortable seating area. Fits most standard and elongated toilets. Adds 5\" to 5.5\" of height to the toilet seat. The toilet seat elevator sits on top of the toilet to add an additional 5.5\" of support for standing and sitting. Easy to install with no tools. The toilet elevator sits on the toilet with no tools or assembly required. This is perfect toilet assistance for elderly persons or anyone that wants a quick and easy solution. The contoured seat is wider for added comfort. The wider seat design adds even more comfort and flexibility for a wide range of users. Slip-resistant rubber pads for stability. The padded toilet seat offers more safety and less chance of falling. The elevated toilet seat is perfect for anyone that may struggle sitting up or down and pose a fall risk. 300 lbs of weight capacity. The toilet seas riser can hold up to 300 lbs making it very stable and able to hold large amounts of weight. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Locking: No Arms: No Hinged: No Height: 5.5\" Product Weight: 4.5 lbs. Package Weight: 5.5 lbs. Product Dims (h x w x d): 5.5\" x 15\" x 16\" Materials: Seat: Blow Molded Plastic"
+     },
+     "price": {
+      "amount": 2752,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/51gBrLeISCL._AC_SL1090.jpg?v=1688751277"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/33134840807529:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/33134840840297",
+     "sku": "FGB302C0 0000",
+     "title": "5\"",
+     "description": {
+      "html": "The Raised Toilet Seat adds 5 to 5.5 inches of height to the toilet seat to assist those with bending or sitting difficulties. The contoured seat features anti-slip rubber pads for stability and provides a wider, more comfortable seating area. Fits most standard and elongated toilets. Adds 5\" to 5.5\" of height to the toilet seat. The toilet seat elevator sits on top of the toilet to add an additional 5.5\" of support for standing and sitting. Easy to install with no tools. The toilet elevator sits on the toilet with no tools or assembly required. This is perfect toilet assistance for elderly persons or anyone that wants a quick and easy solution. The contoured seat is wider for added comfort. The wider seat design adds even more comfort and flexibility for a wide range of users. Slip-resistant rubber pads for stability. The padded toilet seat offers more safety and less chance of falling. The elevated toilet seat is perfect for anyone that may struggle sitting up or down and pose a fall risk. 300 lbs of weight capacity. The toilet seas riser can hold up to 300 lbs making it very stable and able to hold large amounts of weight. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Locking: No Arms: No Hinged: No Height: 5.5\" Product Weight: 4.5 lbs. Package Weight: 5.5 lbs. Product Dims (h x w x d): 5.5\" x 15\" x 16\" Materials: Seat: Blow Molded Plastic"
+     },
+     "price": {
+      "amount": 3109,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/51gBrLeISCL._AC_SL1090.jpg?v=1688751277"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/33134840840297:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "5.5\""
+      },
+      {
+       "label": "5\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/51gBrLeISCL._AC_SL1090.jpg?v=1688751277",
+     "alt_text": "Carex Raised Toilet Seat with Rubber Pads - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Condition_Post Operation",
+    "Handles_No",
+    "Height Added to Seat_5\"",
+    "Height Added to Seat_5.5\"",
+    "Hinge_No",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Non-Locking",
+    "PostOp",
+    "Product Category_Bathroom Safety",
+    "Product Type_Raised Toilet Seat",
+    "Seat Type_Elongated",
+    "Seat Type_Round",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7512611946601",
+   "title": "Carex Safe-Lock 2-inch Raised Toilet Seat",
+   "description": {
+    "html": "Adds extra stability and support by raising any toilet by 2\". Clamps on from two sides for safe and secure installation. Ergonomic design features two hygiene cutouts for convenience and comfort. Supports up to 300 lbs. Enhance Your Bath Safety & Keep Your Independence Elevate your independence, preserve your dignity, and enhance your bath safety with the Carex Safe-Lock 2 inch Toilet Seat Riser. Are you aware that most in-home accidents occur in the bathroom? The risks associated with this space can jeopardize the freedom and self-respect of those vulnerable to falls. Our thoughtfully designed raised toilet seat adds an extra 2.5 inches of height to any toilet, making sitting and standing safer and more manageable. With its effortless installation, ergonomic design, and robust 300 lbs weight capacity, this solution is secure and comfortable. Experience a new level of confidence and ease in your bathroom routine. Adds 2\" of Toilet Height for Safety and Comfort Using the toilet should be a comfortable and secure experience, especially for those concerned about the risk of falls. Our 2-inch raised toilet seat increases toilet height, making it significantly easier to sit down and stand up. This thoughtful design minimizes fall risk and alleviates joint strain for a more pleasant and confident bathroom routine. Ergonomic Design for Added Comfort Our 2-inch elevated toilet seat features an ergonomic design that embraces your body shape for unparalleled comfort. Designed with two hygiene cutouts, this seat enhances your experience and ensures added convenience. The thoughtful contours expertly cradle you while seated, while the extra cutouts provide generous space for even more relaxation. Bracket System Keeps the Seat Stable The seat's innovative bracket mechanism ensures the seat is held firmly in place, providing a stable and dependable solution. With two adjustable brackets on each side, you can easily customize the fit by simply using the convenient knobs to tighten or loosen the seat. Installs Easily in Three Steps Transforming your bathroom experience couldn't be easier! Our innovative seat installs in minutes and requires no tools, making it the ideal toilet seat riser for travel. Position the seat on the toilet, tighten the side knobs until it feels securely flush, and enjoy the peace of mind that comes from knowing it remains stable while you sit. A Universal Raised Toilet Seat - Fits Standard and Elongated Toilets Our thoughtfully designed seat accommodates standard round and elongated toilet shapes, ensuring a perfect fit for nearly every toilet in your home."
+   },
+   "url": "https://carex.com/products/carex-safe-lock-2-inch-raised-toilet-seat",
+   "handle": "carex-safe-lock-2-inch-raised-toilet-seat",
+   "price_range": {
+    "min": {
+     "amount": 3769,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3769,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42226555912297",
+     "sku": "FGB81000 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Adds extra stability and support by raising any toilet by 2\". Clamps on from two sides for safe and secure installation. Ergonomic design features two hygiene cutouts for convenience and comfort. Supports up to 300 lbs. Enhance Your Bath Safety & Keep Your Independence Elevate your independence, preserve your dignity, and enhance your bath safety with the Carex Safe-Lock 2 inch Toilet Seat Riser. Are you aware that most in-home accidents occur in the bathroom? The risks associated with this space can jeopardize the freedom and self-respect of those vulnerable to falls. Our thoughtfully designed raised toilet seat adds an extra 2.5 inches of height to any toilet, making sitting and standing safer and more manageable. With its effortless installation, ergonomic design, and robust 300 lbs weight capacity, this solution is secure and comfortable. Experience a new level of confidence and ease in your bathroom routine. Adds 2\" of Toilet Height for Safety and Comfort Using the toilet should be a comfortable and secure experience, especially for those concerned about the risk of falls. Our 2-inch raised toilet seat increases toilet height, making it significantly easier to sit down and stand up. This thoughtful design minimizes fall risk and alleviates joint strain for a more pleasant and confident bathroom routine. Ergonomic Design for Added Comfort Our 2-inch elevated toilet seat features an ergonomic design that embraces your body shape for unparalleled comfort. Designed with two hygiene cutouts, this seat enhances your experience and ensures added convenience. The thoughtful contours expertly cradle you while seated, while the extra cutouts provide generous space for even more relaxation. Bracket System Keeps the Seat Stable The seat's innovative bracket mechanism ensures the seat is held firmly in place, providing a stable and dependable solution. With two adjustable brackets on each side, you can easily customize the fit by simply using the convenient knobs to tighten or loosen the seat. Installs Easily in Three Steps Transforming your bathroom experience couldn't be easier! Our innovative seat installs in minutes and requires no tools, making it the ideal toilet seat riser for travel. Position the seat on the toilet, tighten the side knobs until it feels securely flush, and enjoy the peace of mind that comes from knowing it remains stable while you sit. A Universal Raised Toilet Seat - Fits Standard and Elongated Toilets Our thoughtfully designed seat accommodates standard round and elongated toilet shapes, ensuring a perfect fit for nearly every toilet in your home."
+     },
+     "price": {
+      "amount": 3769,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/51bQSxEKXvL._AC_SL1500.jpg?v=1744656153"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/42226555912297:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/51bQSxEKXvL._AC_SL1500.jpg?v=1744656153",
+     "alt_text": "A white 2.5\" raised toilet seat on a toilet"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Condition_Bariatric",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Condition_Post Operation",
+    "Handles_No",
+    "Height Added to Seat_2\"",
+    "Hinge_No",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Locking",
+    "PostOp",
+    "Product Category_Bathroom Safety",
+    "Product Type_Raised Toilet Seat",
+    "Seat Type_Elongated",
+    "Seat Type_Round",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150219817065",
+     "handle": "bariatric-obesity-products",
+     "title": "Bariatric/Obesity Products and Equipment",
+     "description": {
+      "html": "Those with bariatric conditions struggle with day-to-day activities such as personal hygiene and walking. Carex Health Brand's bariatric products include specialized equipment with heavy-duty, reinforced frames allowing bariatric patients to gain back their independence. Each bariatric product is designed to withstand higher weights for quality care. Our bariatric products are designed to make activities of daily living easy to perform and with as much independence as possible. Please be sure to check the weight capacity of each product for safety before using."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121101074537",
+   "title": "Carex Quick-Lock Raised Toilet Seat",
+   "description": {
+    "html": "The Carex Quick-Lock Raised Toilet Seat is the perfect solution for anyone needing assistance with bending or sitting. The toilet elevator features an innovative system to secure the toilet seat riser to the toilet safely. It adds an additional 4 inches of height when secured, and it features an extra-wide opening and a large front cutout. The raised seat is simple to remove for cleaning or when not in use without the use of tools. Fits most standard round and elongated toilets. Easy to remove and install. Innovative Quick-Lock system safely secures raised seat to the toilet and allows easy removal when not in use. Adds 4\" of height to the toilet seat. Adds enough height making it a perfect toilet seat life for elderly persons. Fits most elongated and standard round toilets. Trust Carex's toilet elevator with a wide area for sitting. It is 10\" wide at the widest point, making it ideal for the elderly, handicapped, or those coming out of surgery. The toilet seat lift's dimensions are 4\" x 16\" x 16\". A comfortable and portable toilet seat riser. With a weight of just 3.4 pounds, this seat lift is the perfect toilet assist riser for anyone that needs something that's lightweight and portable. It's a slip-resistant elevated toilet seat for added safety and easy maneuvering on and off. 300 lbs weight capacity. Its lightweight and sturdy design makes it a great toilet seat life for elderly, handicapped, or users coming out of surgery. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Arms: No Hinged: No Height: 4\" Locking: Yes Package Dims (h x w x d): 15.75\" x 14.75\" x 5.25\" Package Weight: 3.4 lbs. Product Dims (h x w x d): 4\" x 14.5\" x 15.5\" Product Weight: 2.57 lbs. Instruction Manual (PDF)"
+   },
+   "url": "https://carex.com/products/carex-quick-lock-raised-toilet-seat",
+   "handle": "carex-quick-lock-raised-toilet-seat",
+   "price_range": {
+    "min": {
+     "amount": 3110,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3110,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226852577385",
+     "sku": "FGB32000 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Carex Quick-Lock Raised Toilet Seat is the perfect solution for anyone needing assistance with bending or sitting. The toilet elevator features an innovative system to secure the toilet seat riser to the toilet safely. It adds an additional 4 inches of height when secured, and it features an extra-wide opening and a large front cutout. The raised seat is simple to remove for cleaning or when not in use without the use of tools. Fits most standard round and elongated toilets. Easy to remove and install. Innovative Quick-Lock system safely secures raised seat to the toilet and allows easy removal when not in use. Adds 4\" of height to the toilet seat. Adds enough height making it a perfect toilet seat life for elderly persons. Fits most elongated and standard round toilets. Trust Carex's toilet elevator with a wide area for sitting. It is 10\" wide at the widest point, making it ideal for the elderly, handicapped, or those coming out of surgery. The toilet seat lift's dimensions are 4\" x 16\" x 16\". A comfortable and portable toilet seat riser. With a weight of just 3.4 pounds, this seat lift is the perfect toilet assist riser for anyone that needs something that's lightweight and portable. It's a slip-resistant elevated toilet seat for added safety and easy maneuvering on and off. 300 lbs weight capacity. Its lightweight and sturdy design makes it a great toilet seat life for elderly, handicapped, or users coming out of surgery. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Arms: No Hinged: No Height: 4\" Locking: Yes Package Dims (h x w x d): 15.75\" x 14.75\" x 5.25\" Package Weight: 3.4 lbs. Product Dims (h x w x d): 4\" x 14.5\" x 15.5\" Product Weight: 2.57 lbs. Instruction Manual (PDF)"
+     },
+     "price": {
+      "amount": 3110,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/61tt6I3Z76L._AC_SL1500.jpg?v=1688751192"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226852577385:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/61tt6I3Z76L._AC_SL1500.jpg?v=1688751192",
+     "alt_text": "Carex Quick-Lock Raised Toilet Seat - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Condition_Post Operation",
+    "Handles_No",
+    "Height Added to Seat_4\"",
+    "Hinge_No",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Non-Locking",
+    "PostOp",
+    "Product Category_Bathroom Safety",
+    "Product Type_Raised Toilet Seat",
+    "Seat Type_Elongated",
+    "Seat Type_Round",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121100681321",
+   "title": "Carex Safe Lock Bariatric Raised Toilet Seat",
+   "description": {
+    "html": "Improve your bathroom safety and independence with the Carex Safety Lock Bariatric Raised Toilet Seat. The toilet assist riser features a wider opening and smooth contoured design for added comfort. It adds 4.25\" of height to the toilet seat to make sitting and standing more comfortable, is easy to clean, and fits most standard toilets. The toile elevator features our Safe Lock system to lock the seat in place for security and stability. Its heavy-duty design supports up to 500 lbs Adds 4.25\" of height to the toilet seat. Our toilet elevator significantly reduces the sit to stand height by adding 4.25 inches to the existing toilet seat. This adds safety and makes using the bathroom much more manageable for those that struggle to sit up or down. Extra-wide 10\" x 9.75\" opening. The extra-wide opening adds more comfort to the toilet seat riser. It's been specially designed for those with bariatric needs. Safe Lock system secures the seat to the toilet. Bathroom safety is critical for those with health conditions or injuries. Our patented Safe Lock design easily secures the elevated raised toilet seat to the toilet bowl for safety, security, and comfort. Easy to clean. The toilet elevator is easy to remove and clean within minutes. It's been designed with heavy-duty molded plastic that is convenient to clean. Lightweight and portable. We've designed this portable toilet seat riser to be easy to transport from place to place. This ensures you won't have to worry about going without, or it won't fit onto other toilet bowls. It's a perfect toilet seat for elderly persons, disabled, or anyone that will regularly rely on it. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 500 lbs. Arms: No Hinged: No Locking: Yes Height: 4.25\" Package Dims (h x w x d): 17\" x 16.75\" x 4.5\" Package Weight: 3.49 lbs. Product Dims (h x w x d): 4.25\" x 14.5\" x 16.63\" Product Weight: 2.55 lbs. Materials: Seat: Blow Molded Plastic Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-safe-lock-bariatric-raised-toilet-seat",
+   "handle": "carex-safe-lock-bariatric-raised-toilet-seat",
+   "price_range": {
+    "min": {
+     "amount": 5429,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5429,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226847236201",
+     "sku": "FGB31300 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Improve your bathroom safety and independence with the Carex Safety Lock Bariatric Raised Toilet Seat. The toilet assist riser features a wider opening and smooth contoured design for added comfort. It adds 4.25\" of height to the toilet seat to make sitting and standing more comfortable, is easy to clean, and fits most standard toilets. The toile elevator features our Safe Lock system to lock the seat in place for security and stability. Its heavy-duty design supports up to 500 lbs Adds 4.25\" of height to the toilet seat. Our toilet elevator significantly reduces the sit to stand height by adding 4.25 inches to the existing toilet seat. This adds safety and makes using the bathroom much more manageable for those that struggle to sit up or down. Extra-wide 10\" x 9.75\" opening. The extra-wide opening adds more comfort to the toilet seat riser. It's been specially designed for those with bariatric needs. Safe Lock system secures the seat to the toilet. Bathroom safety is critical for those with health conditions or injuries. Our patented Safe Lock design easily secures the elevated raised toilet seat to the toilet bowl for safety, security, and comfort. Easy to clean. The toilet elevator is easy to remove and clean within minutes. It's been designed with heavy-duty molded plastic that is convenient to clean. Lightweight and portable. We've designed this portable toilet seat riser to be easy to transport from place to place. This ensures you won't have to worry about going without, or it won't fit onto other toilet bowls. It's a perfect toilet seat for elderly persons, disabled, or anyone that will regularly rely on it. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 500 lbs. Arms: No Hinged: No Locking: Yes Height: 4.25\" Package Dims (h x w x d): 17\" x 16.75\" x 4.5\" Package Weight: 3.49 lbs. Product Dims (h x w x d): 4.25\" x 14.5\" x 16.63\" Product Weight: 2.55 lbs. Materials: Seat: Blow Molded Plastic Instruction Manual"
+     },
+     "price": {
+      "amount": 5429,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-raised-toilet-seat-carex-safe-lock-bariatric-raised-toilet-seat-28288314867817.jpg?v=1679944073"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226847236201:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-raised-toilet-seat-carex-safe-lock-bariatric-raised-toilet-seat-28288314867817.jpg?v=1679944073",
+     "alt_text": "Carex Safe Lock Bariatric Raised Toilet Seat - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Condition_Bariatric",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Condition_Post Operation",
+    "Handles_No",
+    "Height Added to Seat_4.25\"",
+    "Hinge_No",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Locking",
+    "PostOp",
+    "Product Category_Bathroom Safety",
+    "Product Type_Raised Toilet Seat",
+    "Seat Type_Elongated",
+    "Seat Type_Round",
+    "Weight Capacity_500 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150219817065",
+     "handle": "bariatric-obesity-products",
+     "title": "Bariatric/Obesity Products and Equipment",
+     "description": {
+      "html": "Those with bariatric conditions struggle with day-to-day activities such as personal hygiene and walking. Carex Health Brand's bariatric products include specialized equipment with heavy-duty, reinforced frames allowing bariatric patients to gain back their independence. Each bariatric product is designed to withstand higher weights for quality care. Our bariatric products are designed to make activities of daily living easy to perform and with as much independence as possible. Please be sure to check the weight capacity of each product for safety before using."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121100517481",
+   "title": "Carex E-Z Lock&trade; Locking Raised Toilet Seat with Armrests",
+   "description": {
+    "html": "Add bathroom safety and independence with our E-Z Lock Locking Raised Toilet Seat with Armrests. The toilet elevator adds 5 inches of height to any standard toilet to assist those with bending or sitting difficulties. The easy-to-use locking mechanism secures the raised toilet seat to the toilet bowl, and the smooth contour seat has built-in hand grips for secure handling. This seat fits most toilets and is lightweight and easy to clean. Adds 5\" of height to the toilet seat. Anyone with sitting or standing difficulties can benefit significantly from a toilet seat extender. It reduces the sit to stand height and prevents slips and falls. Comes with padded armrests for comfort and support. The toilet seat with arms adds a higher level of support for those with significant medical or balance issues. This bathroom aid acts as a handicap toilet seat or a toilet seat for elderly persons. 17.25\" of width between the armrests. An ample amount of width offers flexibility and natural movement for anyone in need. Safely secures to the toilet. The elevated toilet seat secures to the toilet via a locking mechanism for a tight fit. You won't have to worry about the bathroom aid coming loose. Durable, lightweight, and portable. The portable toilet seat riser is constructed of heavy-duty molded plastic for a reliable source of support. Its 300 lbs weight capacity gives it a sturdy build for continuous and long-term use. A lightweight build enables it to be transported to other bathrooms without issue easily. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Package Weight: 8 lb. Hinged: No Locking: Yes Height: 5\" Product Dims (h x w x d): 5\" x 15.5\" x 17\" Arms: Yes Product Weight: 5.6 lb. Package Dims (h x w x d): 17.5\" x 20.25\" x 14.5\""
+   },
+   "url": "https://carex.com/products/carex-e-z-lock-raised-toilet-seat-with-arms",
+   "handle": "carex-e-z-lock-raised-toilet-seat-with-arms",
+   "price_range": {
+    "min": {
+     "amount": 6886,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6886,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226846548073",
+     "sku": "FGB311C0 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Add bathroom safety and independence with our E-Z Lock Locking Raised Toilet Seat with Armrests. The toilet elevator adds 5 inches of height to any standard toilet to assist those with bending or sitting difficulties. The easy-to-use locking mechanism secures the raised toilet seat to the toilet bowl, and the smooth contour seat has built-in hand grips for secure handling. This seat fits most toilets and is lightweight and easy to clean. Adds 5\" of height to the toilet seat. Anyone with sitting or standing difficulties can benefit significantly from a toilet seat extender. It reduces the sit to stand height and prevents slips and falls. Comes with padded armrests for comfort and support. The toilet seat with arms adds a higher level of support for those with significant medical or balance issues. This bathroom aid acts as a handicap toilet seat or a toilet seat for elderly persons. 17.25\" of width between the armrests. An ample amount of width offers flexibility and natural movement for anyone in need. Safely secures to the toilet. The elevated toilet seat secures to the toilet via a locking mechanism for a tight fit. You won't have to worry about the bathroom aid coming loose. Durable, lightweight, and portable. The portable toilet seat riser is constructed of heavy-duty molded plastic for a reliable source of support. Its 300 lbs weight capacity gives it a sturdy build for continuous and long-term use. A lightweight build enables it to be transported to other bathrooms without issue easily. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Package Weight: 8 lb. Hinged: No Locking: Yes Height: 5\" Product Dims (h x w x d): 5\" x 15.5\" x 17\" Arms: Yes Product Weight: 5.6 lb. Package Dims (h x w x d): 17.5\" x 20.25\" x 14.5\""
+     },
+     "price": {
+      "amount": 6886,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/71MIPUhRcsL._AC_SL1500.jpg?v=1688750807"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226846548073:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/71MIPUhRcsL._AC_SL1500.jpg?v=1688750807",
+     "alt_text": "Carex E-Z Lock&trade; Locking Raised Toilet Seat with Armrests - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Condition_Post Operation",
+    "Handles_Yes",
+    "Height Added to Seat_5\"",
+    "Hinge_No",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Locking",
+    "PostOp",
+    "Product Category_Bathroom Safety",
+    "Product Type_Raised Toilet Seat",
+    "Seat Type_Elongated",
+    "Seat Type_Round",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121100058729",
+   "title": "Carex E-Z Lock Raised Toilet Seat with Adjustable Armrests",
+   "description": {
+    "html": "The ideal toilet assist riser for anyone with bending or sitting problems. The Round Toilet Seat Elevator adds 5 inches to the height of the toilet seat for safety and ease of use. It's been designed with comfort in mind to work in conjunction with your existing toilet seat. The seat riser easily locks on to the toilet for added safety. Fits most standard round toilets. Installs under the existing toilet seat. Easily installs in just three easy steps in less than a minute. Adds 5\" to the height of the toilet seat. The elevated toilet seat adds more safety and comfort by reducing the amount the user has to sit and stand. This makes using the toilet much more comfortable and more practical. It works great as a high toilet seat for elderly persons, anyone handicapped, or someone recovering from surgery. Fits most standard round toilets. Fits securely to the toilet. Our patented secure lock design allows the toilet elevator to lock in place to the toilet securely. Adjustable armrests. The adjustable armrests are designed to accommodate users of multiple heights and add firm surface to hold on to when sitting up or down. The removable padded handles offer comfort and serve as a resting spot for the user's arms. Designed for comfort. The portable toilet seat riser is designed to conform to the body. It has a 300 lbs weight capacity to bear the weight of various users. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lb. Hinged: No Locking: Yes Height: 5\" Arms: Yes Package Dims (h x w x d): 18.75\" x 16\" x 9.13\" Package Weight: 8.13 lb. Product Dims (h x w x d): 5\" x 15.5\" - 22\" x 17\" Product Weight: 5.6 lb. Materials: Arms: Aluminum Seat: Blow Molded Plastic Padding: Polyethylene Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-e-z-lock-raised-toilet-seat-w-adjustable-armrests",
+   "handle": "carex-e-z-lock-raised-toilet-seat-w-adjustable-armrests",
+   "price_range": {
+    "min": {
+     "amount": 4240,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4240,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 7799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7799,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226839601257",
+     "sku": "FGB30300 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The ideal toilet assist riser for anyone with bending or sitting problems. The Round Toilet Seat Elevator adds 5 inches to the height of the toilet seat for safety and ease of use. It's been designed with comfort in mind to work in conjunction with your existing toilet seat. The seat riser easily locks on to the toilet for added safety. Fits most standard round toilets. Installs under the existing toilet seat. Easily installs in just three easy steps in less than a minute. Adds 5\" to the height of the toilet seat. The elevated toilet seat adds more safety and comfort by reducing the amount the user has to sit and stand. This makes using the toilet much more comfortable and more practical. It works great as a high toilet seat for elderly persons, anyone handicapped, or someone recovering from surgery. Fits most standard round toilets. Fits securely to the toilet. Our patented secure lock design allows the toilet elevator to lock in place to the toilet securely. Adjustable armrests. The adjustable armrests are designed to accommodate users of multiple heights and add firm surface to hold on to when sitting up or down. The removable padded handles offer comfort and serve as a resting spot for the user's arms. Designed for comfort. The portable toilet seat riser is designed to conform to the body. It has a 300 lbs weight capacity to bear the weight of various users. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lb. Hinged: No Locking: Yes Height: 5\" Arms: Yes Package Dims (h x w x d): 18.75\" x 16\" x 9.13\" Package Weight: 8.13 lb. Product Dims (h x w x d): 5\" x 15.5\" - 22\" x 17\" Product Weight: 5.6 lb. Materials: Arms: Aluminum Seat: Blow Molded Plastic Padding: Polyethylene Instruction Manual"
+     },
+     "price": {
+      "amount": 4240,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-raised-toilet-seat-carex-e-z-lock-raised-toilet-seat-with-adjustable-armrests-28288315031657.png?v=1688675577"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226839601257:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-raised-toilet-seat-carex-e-z-lock-raised-toilet-seat-with-adjustable-armrests-28288315031657.png?v=1688675577",
+     "alt_text": "Carex E-Z Lock Raised Toilet Seat with Adjustable Armrests - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Condition_Post Operation",
+    "Handles_Yes",
+    "Height Added to Seat_5\"",
+    "Hinge_No",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Locking",
+    "PostOp",
+    "Product Category_Bathroom Safety",
+    "Product Type_Raised Toilet Seat",
+    "Seat Type_Elongated",
+    "Seat Type_Round",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121100615785",
+   "title": "Carex E-Z Lock&trade; Locking Raised Toilet Seat",
+   "description": {
+    "html": "Our E-Z Lock Raised Toilet Seat adds 5 inches of height to the toilet seat to assist those with bending or sitting difficulties. The easy-to-use locking mechanism secures the toilet elevator to the toilet bowl, and the smooth contour seat has built-in hand grips for secure handling. This seat fits most toilets and is lightweight and easy to clean. Adds 5\" of height to the toilet seat. Whether it's acting as a handicap toilet seat, a toilet seat for elderly persons, or a toilet seat extender for someone recovering from surgery, this bathroom safety aid dramatically improves the safety and accessibility of any toilet. Built-in hand grips. We've added built-in hand grips to reduce the chance of slips and falls. The grips make getting on and off of the elevated raised toilet seat even more comfortable and convenient. Secure locking mechanism fastens to the existing toilet seat. The locking raised toilet seat tightly grips onto any toilet seat for added safety. A portable toilet seat riser. This elevated toilet seat can easily be attached and removed, making it perfect for transporting to other bathrooms\u2014no need to worry about going without. Durable and lightweight. We've engineered this heavy-duty bathroom aid out of molded plastic with a 300 lbs weight capacity to withstand continuous and long-term use. Its lightweight and portable to be reliable and easy to use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Package Weight: 5.4 lbs. Arms: No Hinged: No Locking: Yes Height: 5\" Product Dims (h x w x d): 5\" x 15.5\" x 17\" Product Weight: 4.5 lbs. Package Dims (h x w x d): 8\" x 14.5\" x 16\""
+   },
+   "url": "https://carex.com/products/carex-e-z-lock-locking-raised-toilet-seat",
+   "handle": "carex-e-z-lock-locking-raised-toilet-seat",
+   "price_range": {
+    "min": {
+     "amount": 4374,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4374,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226847039593",
+     "sku": "FGB312C0 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Our E-Z Lock Raised Toilet Seat adds 5 inches of height to the toilet seat to assist those with bending or sitting difficulties. The easy-to-use locking mechanism secures the toilet elevator to the toilet bowl, and the smooth contour seat has built-in hand grips for secure handling. This seat fits most toilets and is lightweight and easy to clean. Adds 5\" of height to the toilet seat. Whether it's acting as a handicap toilet seat, a toilet seat for elderly persons, or a toilet seat extender for someone recovering from surgery, this bathroom safety aid dramatically improves the safety and accessibility of any toilet. Built-in hand grips. We've added built-in hand grips to reduce the chance of slips and falls. The grips make getting on and off of the elevated raised toilet seat even more comfortable and convenient. Secure locking mechanism fastens to the existing toilet seat. The locking raised toilet seat tightly grips onto any toilet seat for added safety. A portable toilet seat riser. This elevated toilet seat can easily be attached and removed, making it perfect for transporting to other bathrooms\u2014no need to worry about going without. Durable and lightweight. We've engineered this heavy-duty bathroom aid out of molded plastic with a 300 lbs weight capacity to withstand continuous and long-term use. Its lightweight and portable to be reliable and easy to use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Package Weight: 5.4 lbs. Arms: No Hinged: No Locking: Yes Height: 5\" Product Dims (h x w x d): 5\" x 15.5\" x 17\" Product Weight: 4.5 lbs. Package Dims (h x w x d): 8\" x 14.5\" x 16\""
+     },
+     "price": {
+      "amount": 4374,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/toilet-image-NoRed.jpg?v=1686940984"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226847039593:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/toilet-image-NoRed.jpg?v=1686940984",
+     "alt_text": "Carex E-Z Lock&trade; Locking Raised Toilet Seat - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Condition_Post Operation",
+    "Handles_No",
+    "Height Added to Seat_5\"",
+    "Hinge_No",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Locking",
+    "PostOp",
+    "Product Category_Bathroom Safety",
+    "Product Type_Raised Toilet Seat",
+    "Seat Type_Elongated",
+    "Seat Type_Round",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150245015657",
+     "handle": "raised-toilet-seats-and-toilet-seat-elevators",
+     "title": "Raised Toilet Seats and Toilet Seat Elevators",
+     "description": {
+      "html": "Keep your peace of mind with our comfortable, durable, and easy-to-use toilet seat risers. Toilet risers are a must-have for anyone with mobility issues such as: Bending over Sitting and standing Or balancing. Our elevated toilet seats improve safety and independence by extending the height from 3.5\" to 5.5\". The added height from the toilet extender reduces fall risk and makes sitting/standing more manageable. We offer a broad selection of toilet seat risers, including: Raised toilet seats with handles for additional balance support Hinged toilet seat lifts for easier cleaning and a less clinical look Universal, round/standard, and elongated raised toilet seat for a secure fit And various installation methods, including bolted, locking, and non-locking. Each toilet seat extender includes tool-free installation for a painless installation. They are all made with easy-to-clean and durable molded plastic for comfort, effortless cleaning, and to withstand daily use. We back all toilet booster seats with our 100% satisfaction guarantee and a one-year warranty."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121100910697",
+   "title": "Carex Classics Raised Toilet Seat With Armrests",
+   "description": {
+    "html": "Add comfort with ease of use with the Raised Toilet Seat with Armrests. It's been designed to assist those with bending or sitting difficulties by adding 4.5 inches of height to the toilet seat. This seat features an easy-to-use lock and padded armrests for added safety and stability. The installation is quick, secure, and tool-free. Fits most toilets. Easy-to-use lock provides security and safety. Our patented lock tightens the toilet seat riser onto the toilet for added safety and security. It can be switched on or off with just the turn of the dial. Adds 4.5\" of height to the toilet seat. Sitting or standing on the toilet can be difficult for those with weak legs or existing injuries. This bathroom safety aide provides toilet assistance for elderly persons, handicapped, or anyone recovering from surgery. It reduces the distance that users have to go to sit or stand. Padded armrests for extra support. The toilet elevator features padded armrests to provide a stable support surface for added help when sitting or standing. This is great for anyone with balance issues or significant health conditions where they struggle to sit/stand. Secure tool-free assembly. Installation is easy with this toilet assist riser. Because there are no tools required, attaching it to the toilet can be done quickly. This feature makes it a perfect portable toilet seat riser for anyone that travels often. Made of durable and lightweight plastic. We've constructed this elevated toilet seat to be used continuously and long-term. It's made of heavy-duty plastic that can support up to 300 lbs. Its lightweight and portable, so the user will never have to worry about going places without it. Its locking mechanism has been designed to fit most standard toilet bowls. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? \ufeffDISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Hinged: No Locking: Yes Arms: Yes Height: 4.5\" Package Dims (h x w x d): 17.88\" x 20.5\" x 8.5\" Package Weight: 8.6 lbs. Product Dims (h x w x d): 13\" x 17\" x 16.5\" Product Weight: 6.3 lbs. Materials: Arms: Aluminum Seat: Blow Molded Plastic Padding: Polyethylene Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-classics-raised-toilet-seat-with-armrests",
+   "handle": "carex-classics-raised-toilet-seat-with-armrests",
+   "price_range": {
+    "min": {
+     "amount": 3769,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3769,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226849038441",
+     "sku": "FGB31877 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Add comfort with ease of use with the Raised Toilet Seat with Armrests. It's been designed to assist those with bending or sitting difficulties by adding 4.5 inches of height to the toilet seat. This seat features an easy-to-use lock and padded armrests for added safety and stability. The installation is quick, secure, and tool-free. Fits most toilets. Easy-to-use lock provides security and safety. Our patented lock tightens the toilet seat riser onto the toilet for added safety and security. It can be switched on or off with just the turn of the dial. Adds 4.5\" of height to the toilet seat. Sitting or standing on the toilet can be difficult for those with weak legs or existing injuries. This bathroom safety aide provides toilet assistance for elderly persons, handicapped, or anyone recovering from surgery. It reduces the distance that users have to go to sit or stand. Padded armrests for extra support. The toilet elevator features padded armrests to provide a stable support surface for added help when sitting or standing. This is great for anyone with balance issues or significant health conditions where they struggle to sit/stand. Secure tool-free assembly. Installation is easy with this toilet assist riser. Because there are no tools required, attaching it to the toilet can be done quickly. This feature makes it a perfect portable toilet seat riser for anyone that travels often. Made of durable and lightweight plastic. We've constructed this elevated toilet seat to be used continuously and long-term. It's made of heavy-duty plastic that can support up to 300 lbs. Its lightweight and portable, so the user will never have to worry about going places without it. Its locking mechanism has been designed to fit most standard toilet bowls. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? \ufeffDISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Hinged: No Locking: Yes Arms: Yes Height: 4.5\" Package Dims (h x w x d): 17.88\" x 20.5\" x 8.5\" Package Weight: 8.6 lbs. Product Dims (h x w x d): 13\" x 17\" x 16.5\" Product Weight: 6.3 lbs. Materials: Arms: Aluminum Seat: Blow Molded Plastic Padding: Polyethylene Instruction Manual"
+     },
+     "price": {
+      "amount": 3769,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/61uUcJ8HLAL._AC_SL1500.jpg?v=1688750588"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226849038441:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/61uUcJ8HLAL._AC_SL1500.jpg?v=1688750588",
+     "alt_text": "Carex Classics Raised Toilet Seat With Armrests"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Condition_Post Operation",
+    "Handles_Yes",
+    "Height Added to Seat_4.5\"",
+    "Hinge_No",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Locking",
+    "PostOp",
+    "Product Category_Bathroom Safety",
+    "Product Type_Raised Toilet Seat",
+    "Seat Type_Round",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121101107305",
+   "title": "Carex Hinged Toilet Seat Riser (Standard and Elongated)",
+   "description": {
+    "html": "Add convenience and bathroom safety with the Hinged Toilet Seat Riser. The raised toilet seat installs quickly and safely between your toilet bowl and its existing seat. It adds an additional 3.5 inches of height to make it easier to sit and stand. Hinged design for easy cleaning. Hinged toilet seat elevators are simple to clean and mimic the design of the toilet. Their hinge enables them to be lifted and lowered to clean hard to reach areas. By design, they are easy to clean raised toilet seats. Easy to install under the existing toilet seat. Installation is quick, easy, and painless, taking just a few minutes. Adds 3.5\" of height of the toilet seat. This is an affordable way to transform your toilet seat for elderly persons, disabled, or those with limited mobility. Its additional height helps in preventing falls. Available for elongated and standard toilet seats. Easily fits elongated and standard size toilet seats. Heavy-duty and durable. The elevated raised toilet seat is made of heavy-duty molded plastic making it sturdy and dependable. The bathroom aid has a 300 pounds weight capacity to ensure continuous long-term use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lb Package Weight: 4.5 lbs. Height: 3.5\" Locking: No Arms: No Hinged: Yes Package Dims (h x w x d): 20\" x 14.25\" x 4\" Product Dims (h x w x d): 3.5\" x 13.75\" x 17.25\" (standard), 3.5\" x 13.75\" x 19.25\" (elongated) Product Weight: 3.2 lb YOUTUBE VIDEO: The B321 & B322 Carex Toilet Seat Risers Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-hinged-toilet-seat-riser-elongated",
+   "handle": "carex-hinged-toilet-seat-riser-elongated",
+   "price_range": {
+    "min": {
+     "amount": 4240,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4240,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31042541584489",
+     "sku": "FGB32200 0000",
+     "title": "Standard",
+     "description": {
+      "html": "Add convenience and bathroom safety with the Hinged Toilet Seat Riser. The raised toilet seat installs quickly and safely between your toilet bowl and its existing seat. It adds an additional 3.5 inches of height to make it easier to sit and stand. Hinged design for easy cleaning. Hinged toilet seat elevators are simple to clean and mimic the design of the toilet. Their hinge enables them to be lifted and lowered to clean hard to reach areas. By design, they are easy to clean raised toilet seats. Easy to install under the existing toilet seat. Installation is quick, easy, and painless, taking just a few minutes. Adds 3.5\" of height of the toilet seat. This is an affordable way to transform your toilet seat for elderly persons, disabled, or those with limited mobility. Its additional height helps in preventing falls. Available for elongated and standard toilet seats. Easily fits elongated and standard size toilet seats. Heavy-duty and durable. The elevated raised toilet seat is made of heavy-duty molded plastic making it sturdy and dependable. The bathroom aid has a 300 pounds weight capacity to ensure continuous long-term use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lb Package Weight: 4.5 lbs. Height: 3.5\" Locking: No Arms: No Hinged: Yes Package Dims (h x w x d): 20\" x 14.25\" x 4\" Product Dims (h x w x d): 3.5\" x 13.75\" x 17.25\" (standard), 3.5\" x 13.75\" x 19.25\" (elongated) Product Weight: 3.2 lb YOUTUBE VIDEO: The B321 & B322 Carex Toilet Seat Risers Instruction Manual"
+     },
+     "price": {
+      "amount": 4240,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-raised-toilet-seat-standard-carex-hinged-toilet-seat-riser-standard-and-elongated-28288346161257.png?v=1746812848"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/31042541584489:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/31042541617257",
+     "sku": "FGB32100 0000",
+     "title": "Elongated",
+     "description": {
+      "html": "Add convenience and bathroom safety with the Hinged Toilet Seat Riser. The raised toilet seat installs quickly and safely between your toilet bowl and its existing seat. It adds an additional 3.5 inches of height to make it easier to sit and stand. Hinged design for easy cleaning. Hinged toilet seat elevators are simple to clean and mimic the design of the toilet. Their hinge enables them to be lifted and lowered to clean hard to reach areas. By design, they are easy to clean raised toilet seats. Easy to install under the existing toilet seat. Installation is quick, easy, and painless, taking just a few minutes. Adds 3.5\" of height of the toilet seat. This is an affordable way to transform your toilet seat for elderly persons, disabled, or those with limited mobility. Its additional height helps in preventing falls. Available for elongated and standard toilet seats. Easily fits elongated and standard size toilet seats. Heavy-duty and durable. The elevated raised toilet seat is made of heavy-duty molded plastic making it sturdy and dependable. The bathroom aid has a 300 pounds weight capacity to ensure continuous long-term use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lb Package Weight: 4.5 lbs. Height: 3.5\" Locking: No Arms: No Hinged: Yes Package Dims (h x w x d): 20\" x 14.25\" x 4\" Product Dims (h x w x d): 3.5\" x 13.75\" x 17.25\" (standard), 3.5\" x 13.75\" x 19.25\" (elongated) Product Weight: 3.2 lb YOUTUBE VIDEO: The B321 & B322 Carex Toilet Seat Risers Instruction Manual"
+     },
+     "price": {
+      "amount": 4240,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Elongated"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-raised-toilet-seat-elongated-carex-hinged-toilet-seat-riser-standard-and-elongated-28288345407593.png?v=1746812848"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/31042541617257:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Standard"
+      },
+      {
+       "label": "Elongated"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/61-j8GdNO8L._AC_SL1500.jpg?v=1688750972",
+     "alt_text": "Carex Hinged Toilet Seat Riser (Standard and Elongated) - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Condition_Post Operation",
+    "Handles_No",
+    "Height Added to Seat_3.5\"",
+    "Hinge_Yes",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Bolted",
+    "PostOp",
+    "Product Category_Bathroom Safety",
+    "Product Type_Raised Toilet Seat",
+    "Seat Type_Elongated",
+    "Seat Type_Round",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150245015657",
+     "handle": "raised-toilet-seats-and-toilet-seat-elevators",
+     "title": "Raised Toilet Seats and Toilet Seat Elevators",
+     "description": {
+      "html": "Keep your peace of mind with our comfortable, durable, and easy-to-use toilet seat risers. Toilet risers are a must-have for anyone with mobility issues such as: Bending over Sitting and standing Or balancing. Our elevated toilet seats improve safety and independence by extending the height from 3.5\" to 5.5\". The added height from the toilet extender reduces fall risk and makes sitting/standing more manageable. We offer a broad selection of toilet seat risers, including: Raised toilet seats with handles for additional balance support Hinged toilet seat lifts for easier cleaning and a less clinical look Universal, round/standard, and elongated raised toilet seat for a secure fit And various installation methods, including bolted, locking, and non-locking. Each toilet seat extender includes tool-free installation for a painless installation. They are all made with easy-to-clean and durable molded plastic for comfort, effortless cleaning, and to withstand daily use. We back all toilet booster seats with our 100% satisfaction guarantee and a one-year warranty."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121100419177",
+   "title": "Carex Toilet Seat Elevator - For Standard Sized Seats",
+   "description": {
+    "html": "The Round Toilet Seat Elevator assists users with bending or sitting difficulties by adding 3.5 inches to the height of the toilet seat. This toilet assist riser works in conjunction with your existing toilet seat and lid for a more comfortable look and feel. Fits most standard round toilets. Installs under the existing toilet seat. The toilet elevator installs in three easy steps in a minute or less. Adds 3.5\" to the height of the toilet seat. Adds toilet assistance for elderly persons or handicapped that may struggle sitting down or up from the toilet. Fits most standard round toilets. Easy to clean. The toilet seat riser is easy to remove, making it even easier to clean and sanitize. Designed for comfort. The elevated toilet seat fits under the existing toilet seat for personal comfort. It's designed with a weight limit of 300 lbs. Lightweight and portable. This raised toilet seat is lightweight and easily removable, making it the perfect toilet aid for anyone that travels often. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Height: 3.5\" Locking: No Arms: No Hinged: No Package Dims (h x w x d): 4\" x 14.25\" x 19.25\" Package Weight: 4.08 lbs. Product Dims (h x w x d): 3.5\" x 13.5\" x 17.5\" Product Weight: 2.33 lbs. Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-toilet-seat-elevator-standard",
+   "handle": "carex-toilet-seat-elevator-standard",
+   "price_range": {
+    "min": {
+     "amount": 3924,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3924,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226843140201",
+     "sku": "FGB30700 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Round Toilet Seat Elevator assists users with bending or sitting difficulties by adding 3.5 inches to the height of the toilet seat. This toilet assist riser works in conjunction with your existing toilet seat and lid for a more comfortable look and feel. Fits most standard round toilets. Installs under the existing toilet seat. The toilet elevator installs in three easy steps in a minute or less. Adds 3.5\" to the height of the toilet seat. Adds toilet assistance for elderly persons or handicapped that may struggle sitting down or up from the toilet. Fits most standard round toilets. Easy to clean. The toilet seat riser is easy to remove, making it even easier to clean and sanitize. Designed for comfort. The elevated toilet seat fits under the existing toilet seat for personal comfort. It's designed with a weight limit of 300 lbs. Lightweight and portable. This raised toilet seat is lightweight and easily removable, making it the perfect toilet aid for anyone that travels often. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Need help selecting the right bathroom aid? DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Height: 3.5\" Locking: No Arms: No Hinged: No Package Dims (h x w x d): 4\" x 14.25\" x 19.25\" Package Weight: 4.08 lbs. Product Dims (h x w x d): 3.5\" x 13.5\" x 17.5\" Product Weight: 2.33 lbs. Instruction Manual"
+     },
+     "price": {
+      "amount": 3924,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/51LyIvtzSXL._AC_SL1500_265b9dc4-80c8-4486-b7c7-c2b8e3effba8.jpg?v=1688752230"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226843140201:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/51LyIvtzSXL._AC_SL1500_265b9dc4-80c8-4486-b7c7-c2b8e3effba8.jpg?v=1688752230",
+     "alt_text": "Carex Toilet Seat Elevator - For Standard Sized Seats - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Condition_Post Operation",
+    "Handles_No",
+    "Height Added to Seat_3.5\"",
+    "Hinge_No",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Bolted",
+    "PostOp",
+    "Product Category_Bathroom Safety",
+    "Product Type_Raised Toilet Seat",
+    "Seat Type_Round",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzBNVEl4TVRBd05ERTVNVGMzTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

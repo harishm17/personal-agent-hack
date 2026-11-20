@@ -1,0 +1,1623 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.parentgiving.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Parentgiving",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.parentgiving.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "43026907301"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "43026907301"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8045702054053",
+   "title": "Raised Toilet Seat with Lock and Lid",
+   "description": {
+    "html": "This raised toilet seat with lid by Drive Medical is designed to increase the height of your existing toilet seat. For standard toilets not elongated. It easily attaches tool-free to your toilet and locks in place using two rear locks. A pair of hygiene cutouts provide convenience and allows the product to be cleaned. The elevated seat will help individuals who need a boost sitting down or standing up from the toilet. For consumers using a wheelchair this product allows for easy transfer to and from the raised toilet seat. This product is protected by a manufacturers limited lifetime warranty. Sizes: 4 Inch High Seat: (Width): 14\"; Seat (Depth): 16\"; Seat Height: 4\"; Product Weight: 2.2 lbs. Weight Capacity: 350 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/raised-toilet-seat-with-lock-and-lid",
+   "handle": "raised-toilet-seat-with-lock-and-lid",
+   "price_range": {
+    "min": {
+     "amount": 4799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4799,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994465083557",
+     "sku": "12065",
+     "title": "Height 4\"",
+     "description": {
+      "html": "This raised toilet seat with lid by Drive Medical is designed to increase the height of your existing toilet seat. For standard toilets not elongated. It easily attaches tool-free to your toilet and locks in place using two rear locks. A pair of hygiene cutouts provide convenience and allows the product to be cleaned. The elevated seat will help individuals who need a boost sitting down or standing up from the toilet. For consumers using a wheelchair this product allows for easy transfer to and from the raised toilet seat. This product is protected by a manufacturers limited lifetime warranty. Sizes: 4 Inch High Seat: (Width): 14\"; Seat (Depth): 16\"; Seat Height: 4\"; Product Weight: 2.2 lbs. Weight Capacity: 350 lbs."
+     },
+     "price": {
+      "amount": 4799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Thickness",
+       "label": "Height 4\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-raised-toilet-seat-with-lock-and-lid-3905.jpg?v=1675893877"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994465083557:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Thickness",
+     "values": [
+      {
+       "label": "Height 4\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-raised-toilet-seat-with-lock-and-lid-3905.jpg?v=1675893877",
+     "alt_text": "Raised Toilet Seat with Lock and Lid"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Toilet Seat Risers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858715813",
+     "handle": "toilet-seat-risers",
+     "title": "Toilet Seat Risers",
+     "description": {
+      "html": "Bathroom safety equipment can be a vital part of home care and toilet seat risers can dramatically increase a sense of security and confidence for those with limited mobility. Sitting and standing is difficult for many seniors. Toilet seat risers, often called a booster for a toilet seat, make it easier to transition from a standing position onto a toilet and to stand up again. They are generally retrofitted over existing toilets, making it an easy and affordable modification that raises the seat by between 2 and 6 inches, and can dramatically increase mobility and safety. Models are available for both round and elongated toilets, and some are specially molded for additional support. Most models attach to an existing toilet with a minimum of effort and use the existing seat, with no major modifications to the bathroom or toilet required. There are also hinged models that can fold up and out of the way like a traditional seat, to accommodate bathrooms that are shared by many family members. Some toilet seat risers are also equipped with metal arms on either side, providing additional support for safety and a sense of confidence. On many models, the arms are padded for additional comfort. Many also detach easily, so they can be taken on and off to offer maximum flexibility. Bathroom safety equipment is often a vital part of home care, because it can increase mobility, confidence and a sense of independence so substantially. Installing a toilet seat riser can make using a restroom easier and safer, and most models can be installed easily using the existing toilet and seat. Read our buyer's guide for help selecting toilet seat risers. It will walk you through various options and how to make the right choice. Then browse models to find the one that is best suited to your home care needs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045936541861",
+   "title": "Carex Economy Raised Toilet Seat  5-1/2\"",
+   "description": {
+    "html": "Features: Adds 5 Inches of height to the toilet seat Contoured seat is wider for added comfort Slip-resistant rubber pads for stability Dimensions: 15 X 5 X 16 Inch Securing Method: Locking 300 lbs. Weight Capacity"
+   },
+   "url": "https://www.parentgiving.com/products/carex-economy-raised-toilet-seat",
+   "handle": "carex-economy-raised-toilet-seat",
+   "price_range": {
+    "min": {
+     "amount": 3199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994779787429",
+     "sku": "206682_EA",
+     "title": "Each",
+     "description": {
+      "html": "Features: Adds 5 Inches of height to the toilet seat Contoured seat is wider for added comfort Slip-resistant rubber pads for stability Dimensions: 15 X 5 X 16 Inch Securing Method: Locking 300 lbs. Weight Capacity"
+     },
+     "price": {
+      "amount": 3199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-carex-economy-raised-toilet-seat-9594-1308.jpg?v=1675884540"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994779787429:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-carex-economy-raised-toilet-seat-9594-1308.jpg?v=1675884540",
+     "alt_text": "Carex Economy Raised Toilet Seat 5-1/2\""
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Toilet Seat Risers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858715813",
+     "handle": "toilet-seat-risers",
+     "title": "Toilet Seat Risers",
+     "description": {
+      "html": "Bathroom safety equipment can be a vital part of home care and toilet seat risers can dramatically increase a sense of security and confidence for those with limited mobility. Sitting and standing is difficult for many seniors. Toilet seat risers, often called a booster for a toilet seat, make it easier to transition from a standing position onto a toilet and to stand up again. They are generally retrofitted over existing toilets, making it an easy and affordable modification that raises the seat by between 2 and 6 inches, and can dramatically increase mobility and safety. Models are available for both round and elongated toilets, and some are specially molded for additional support. Most models attach to an existing toilet with a minimum of effort and use the existing seat, with no major modifications to the bathroom or toilet required. There are also hinged models that can fold up and out of the way like a traditional seat, to accommodate bathrooms that are shared by many family members. Some toilet seat risers are also equipped with metal arms on either side, providing additional support for safety and a sense of confidence. On many models, the arms are padded for additional comfort. Many also detach easily, so they can be taken on and off to offer maximum flexibility. Bathroom safety equipment is often a vital part of home care, because it can increase mobility, confidence and a sense of independence so substantially. Installing a toilet seat riser can make using a restroom easier and safer, and most models can be installed easily using the existing toilet and seat. Read our buyer's guide for help selecting toilet seat risers. It will walk you through various options and how to make the right choice. Then browse models to find the one that is best suited to your home care needs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045702021285",
+   "title": "Raised Standard Toilet Seat with Lock By Drive",
+   "description": {
+    "html": "This raised white toilet seat by Drive Medical attaches tool-free to your existing toilet bowl. It is easily secured and features two rear locks that ensure the seat won\\'t slip. A pair of hygiene cutouts provide maximum convenience during use. This dependable product is also as easy to clean as it is simple to use. This seat only fits standard toilet seat. The elevated seat will help individuals who need a boost sitting down or standing up from the toilet. For consumers using a wheelchair this product allows for easy transfer to and from the raised toilet seat. To ensure a proper fit, you must measure the toilet bowl from the back to the front\u2014standard is typically 12 inches, while elongated is 15 inches inside the bowl. Sizes: 4 Inch High Seat: (Width): 14\"; Seat (Depth): 16\"; Seat Height: 4\"; Product Weight: 2.2 lbs. 6 Inch Seat (Width): 14\"; Seat (Depth): 16\"; Seat Height: 6\"; Product Weight: 3.3 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/raised-toilet-seat-with-lock-by-drive",
+   "handle": "raised-toilet-seat-with-lock-by-drive",
+   "price_range": {
+    "min": {
+     "amount": 4699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994464985253",
+     "sku": "RTL12064",
+     "title": "Height 4\"",
+     "description": {
+      "html": "This raised white toilet seat by Drive Medical attaches tool-free to your existing toilet bowl. It is easily secured and features two rear locks that ensure the seat won\\'t slip. A pair of hygiene cutouts provide maximum convenience during use. This dependable product is also as easy to clean as it is simple to use. This seat only fits standard toilet seat. The elevated seat will help individuals who need a boost sitting down or standing up from the toilet. For consumers using a wheelchair this product allows for easy transfer to and from the raised toilet seat. To ensure a proper fit, you must measure the toilet bowl from the back to the front\u2014standard is typically 12 inches, while elongated is 15 inches inside the bowl. Sizes: 4 Inch High Seat: (Width): 14\"; Seat (Depth): 16\"; Seat Height: 4\"; Product Weight: 2.2 lbs. 6 Inch Seat (Width): 14\"; Seat (Depth): 16\"; Seat Height: 6\"; Product Weight: 3.3 lbs."
+     },
+     "price": {
+      "amount": 4699,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4699,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Thickness",
+       "label": "Height 4\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Drive_Toilet_Seat-1.jpg?v=1776347797"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994464985253:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994465018021",
+     "sku": "12066",
+     "title": "Height 6\"",
+     "description": {
+      "html": "This raised white toilet seat by Drive Medical attaches tool-free to your existing toilet bowl. It is easily secured and features two rear locks that ensure the seat won\\'t slip. A pair of hygiene cutouts provide maximum convenience during use. This dependable product is also as easy to clean as it is simple to use. This seat only fits standard toilet seat. The elevated seat will help individuals who need a boost sitting down or standing up from the toilet. For consumers using a wheelchair this product allows for easy transfer to and from the raised toilet seat. To ensure a proper fit, you must measure the toilet bowl from the back to the front\u2014standard is typically 12 inches, while elongated is 15 inches inside the bowl. Sizes: 4 Inch High Seat: (Width): 14\"; Seat (Depth): 16\"; Seat Height: 4\"; Product Weight: 2.2 lbs. 6 Inch Seat (Width): 14\"; Seat (Depth): 16\"; Seat Height: 6\"; Product Weight: 3.3 lbs."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Thickness",
+       "label": "Height 6\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Drive_Toilet_Seat-1.jpg?v=1776347797"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994465018021:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Thickness",
+     "values": [
+      {
+       "label": "Height 4\""
+      },
+      {
+       "label": "Height 6\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Drive_Toilet_Seat-1.jpg?v=1776347797"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Toilet Seat Risers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858715813",
+     "handle": "toilet-seat-risers",
+     "title": "Toilet Seat Risers",
+     "description": {
+      "html": "Bathroom safety equipment can be a vital part of home care and toilet seat risers can dramatically increase a sense of security and confidence for those with limited mobility. Sitting and standing is difficult for many seniors. Toilet seat risers, often called a booster for a toilet seat, make it easier to transition from a standing position onto a toilet and to stand up again. They are generally retrofitted over existing toilets, making it an easy and affordable modification that raises the seat by between 2 and 6 inches, and can dramatically increase mobility and safety. Models are available for both round and elongated toilets, and some are specially molded for additional support. Most models attach to an existing toilet with a minimum of effort and use the existing seat, with no major modifications to the bathroom or toilet required. There are also hinged models that can fold up and out of the way like a traditional seat, to accommodate bathrooms that are shared by many family members. Some toilet seat risers are also equipped with metal arms on either side, providing additional support for safety and a sense of confidence. On many models, the arms are padded for additional comfort. Many also detach easily, so they can be taken on and off to offer maximum flexibility. Bathroom safety equipment is often a vital part of home care, because it can increase mobility, confidence and a sense of independence so substantially. Installing a toilet seat riser can make using a restroom easier and safer, and most models can be installed easily using the existing toilet and seat. Read our buyer's guide for help selecting toilet seat risers. It will walk you through various options and how to make the right choice. Then browse models to find the one that is best suited to your home care needs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045696450725",
+   "title": "Drive Elevated Toilet Seat with Removable Padded Arms",
+   "description": {
+    "html": "This elevated toilet seat by Drive Medical ensures you a safer and more secure fit than ever. The newly designed locking device is engineered to fit securely on almost any toilet. Heavy-duty molded plastic construction allows the raised toilet seat to remain lightweight without sacrificing strength and durability. It\\'s comfortable padded arms are versatile, and can be removed without tools making transfer easy. The elevated seat and padded arms will help individuals who need a boost sitting down or standing up from the toilet. The product is protected by a limited lifetime warranty. Specifications: Seat (Width): 17\" Seat (Depth): 16.5\" Seat (Height): 5\" Width Between Arms: 18\" Weight: 5.1 lbs. Weight capacity: 300 lbs"
+   },
+   "url": "https://www.parentgiving.com/products/elevated-toilet-seat-with-removable-padded-arms",
+   "handle": "elevated-toilet-seat-with-removable-padded-arms",
+   "price_range": {
+    "min": {
+     "amount": 6199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 6199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994460266661",
+     "sku": "RTL12027RA",
+     "title": "Each",
+     "description": {
+      "html": "This elevated toilet seat by Drive Medical ensures you a safer and more secure fit than ever. The newly designed locking device is engineered to fit securely on almost any toilet. Heavy-duty molded plastic construction allows the raised toilet seat to remain lightweight without sacrificing strength and durability. It\\'s comfortable padded arms are versatile, and can be removed without tools making transfer easy. The elevated seat and padded arms will help individuals who need a boost sitting down or standing up from the toilet. The product is protected by a limited lifetime warranty. Specifications: Seat (Width): 17\" Seat (Depth): 16.5\" Seat (Height): 5\" Width Between Arms: 18\" Weight: 5.1 lbs. Weight capacity: 300 lbs"
+     },
+     "price": {
+      "amount": 6199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-elevated-toilet-seat-with-removable-padded-arms-3754.jpg?v=1675886544"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994460266661:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-elevated-toilet-seat-with-removable-padded-arms-3754.jpg?v=1675886544",
+     "alt_text": "Elevated Toilet Seat with Removable Padded Arms"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Toilet Seat Risers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858715813",
+     "handle": "toilet-seat-risers",
+     "title": "Toilet Seat Risers",
+     "description": {
+      "html": "Bathroom safety equipment can be a vital part of home care and toilet seat risers can dramatically increase a sense of security and confidence for those with limited mobility. Sitting and standing is difficult for many seniors. Toilet seat risers, often called a booster for a toilet seat, make it easier to transition from a standing position onto a toilet and to stand up again. They are generally retrofitted over existing toilets, making it an easy and affordable modification that raises the seat by between 2 and 6 inches, and can dramatically increase mobility and safety. Models are available for both round and elongated toilets, and some are specially molded for additional support. Most models attach to an existing toilet with a minimum of effort and use the existing seat, with no major modifications to the bathroom or toilet required. There are also hinged models that can fold up and out of the way like a traditional seat, to accommodate bathrooms that are shared by many family members. Some toilet seat risers are also equipped with metal arms on either side, providing additional support for safety and a sense of confidence. On many models, the arms are padded for additional comfort. Many also detach easily, so they can be taken on and off to offer maximum flexibility. Bathroom safety equipment is often a vital part of home care, because it can increase mobility, confidence and a sense of independence so substantially. Installing a toilet seat riser can make using a restroom easier and safer, and most models can be installed easily using the existing toilet and seat. Read our buyer's guide for help selecting toilet seat risers. It will walk you through various options and how to make the right choice. Then browse models to find the one that is best suited to your home care needs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045894959269",
+   "title": "Drive Medical Hinged Toilet Seat Riser",
+   "description": {
+    "html": "Features: Raises the height of the toilet 3.5\" for individuals that require assistance sitting on and standing from the toilet Hinge design allows riser to be moved out of the way when not in use Weight Capacity: 250 lbs. Heavy-duty molded plastic construction provides strength and durability Lightweight, portable, and easily attaches to toilet bowl Easy-to-install on most standard toilets Two models to accommodate either standard or elongated toilet bowls Standard Dimensions: 13.5\" (W) x 17.5\" (D) x 3.5\" (H) Elongated Dimensions: 14\" (W) x 19.25 (D) x 3.5\" (H) Warranty: Limited Lifetime"
+   },
+   "url": "https://www.parentgiving.com/products/drive-medical-hinged-toilet-seat-riser",
+   "handle": "drive-medical-hinged-toilet-seat-riser",
+   "price_range": {
+    "min": {
+     "amount": 4399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4599,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994721820837",
+     "sku": "RTL12607",
+     "title": "Standard / Each",
+     "description": {
+      "html": "Features: Raises the height of the toilet 3.5\" for individuals that require assistance sitting on and standing from the toilet Hinge design allows riser to be moved out of the way when not in use Weight Capacity: 250 lbs. Heavy-duty molded plastic construction provides strength and durability Lightweight, portable, and easily attaches to toilet bowl Easy-to-install on most standard toilets Two models to accommodate either standard or elongated toilet bowls Standard Dimensions: 13.5\" (W) x 17.5\" (D) x 3.5\" (H) Elongated Dimensions: 14\" (W) x 19.25 (D) x 3.5\" (H) Warranty: Limited Lifetime"
+     },
+     "price": {
+      "amount": 4399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4399,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Options",
+       "label": "Standard"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-medical-hinged-toilet-seat-riser-9029-4648.jpg?v=1675885740"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994721820837:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994721853605",
+     "sku": "RTL12608",
+     "title": "Elongated / Each",
+     "description": {
+      "html": "Features: Raises the height of the toilet 3.5\" for individuals that require assistance sitting on and standing from the toilet Hinge design allows riser to be moved out of the way when not in use Weight Capacity: 250 lbs. Heavy-duty molded plastic construction provides strength and durability Lightweight, portable, and easily attaches to toilet bowl Easy-to-install on most standard toilets Two models to accommodate either standard or elongated toilet bowls Standard Dimensions: 13.5\" (W) x 17.5\" (D) x 3.5\" (H) Elongated Dimensions: 14\" (W) x 19.25 (D) x 3.5\" (H) Warranty: Limited Lifetime"
+     },
+     "price": {
+      "amount": 4599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4599,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Options",
+       "label": "Elongated"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-medical-hinged-toilet-seat-riser-9029-4648.jpg?v=1675885740"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994721853605:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Options",
+     "values": [
+      {
+       "label": "Standard"
+      },
+      {
+       "label": "Elongated"
+      }
+     ]
+    },
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-medical-hinged-toilet-seat-riser-9029-4648.jpg?v=1675885740",
+     "alt_text": "Drive Medical Hinged Toilet Seat Riser"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Toilet Seat Risers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858715813",
+     "handle": "toilet-seat-risers",
+     "title": "Toilet Seat Risers",
+     "description": {
+      "html": "Bathroom safety equipment can be a vital part of home care and toilet seat risers can dramatically increase a sense of security and confidence for those with limited mobility. Sitting and standing is difficult for many seniors. Toilet seat risers, often called a booster for a toilet seat, make it easier to transition from a standing position onto a toilet and to stand up again. They are generally retrofitted over existing toilets, making it an easy and affordable modification that raises the seat by between 2 and 6 inches, and can dramatically increase mobility and safety. Models are available for both round and elongated toilets, and some are specially molded for additional support. Most models attach to an existing toilet with a minimum of effort and use the existing seat, with no major modifications to the bathroom or toilet required. There are also hinged models that can fold up and out of the way like a traditional seat, to accommodate bathrooms that are shared by many family members. Some toilet seat risers are also equipped with metal arms on either side, providing additional support for safety and a sense of confidence. On many models, the arms are padded for additional comfort. Many also detach easily, so they can be taken on and off to offer maximum flexibility. Bathroom safety equipment is often a vital part of home care, because it can increase mobility, confidence and a sense of independence so substantially. Installing a toilet seat riser can make using a restroom easier and safer, and most models can be installed easily using the existing toilet and seat. Read our buyer's guide for help selecting toilet seat risers. It will walk you through various options and how to make the right choice. Then browse models to find the one that is best suited to your home care needs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045702217893",
+   "title": "3-in-1 Steel Drop Arm Bedside Commode with Padded Seat by Drive Medical",
+   "description": {
+    "html": "The deluxe steel drop arm bedside commode by Drive Medical is designed to meet your needs. The frame can be configured to be used as a bedside commode, toilet safety frame, elevated toilet seat or over your existing toilet. The tool free removable back makes configuring the commode easy for any application. The padded seat provides a comfortable place to rest on when sitting and the padded arm rests indicate a safe place to grab making sitting and standing easier. For consumers using a wheelchair the tool free drop arms makes lateral transfer to and from this commode easy and safe. The drop arms feature a large, easy to push release lever which is great for users with limited finger or hand dexterity. The push button height adjustable legs makes sizing a breeze allowing this commode to be used as an elevated toilet seat. In addition to comfort this commode can be disassembled without tools making storage and travel convenient. The grey power coated steel welded construction ensures strength and durability able to hold up to 300 lbs. The product comes complete with a snap on seat, 12-quart commode bucket with convenient carry handle, plus splash guard. The product is protected by a manufacturers limited lifetime warranty. Specifications: Width (between arms): 19\" Outside Width: 24\" Seat (Width): 15.25\" Seat (Depth): 16.5\" Height: 19\"-23\" Product Weight: 20.2 lbs. Weight Capacity: 300 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/3-in-1-steel-drop-arm-bedside-commode-with-padded-seat-arms",
+   "handle": "3-in-1-steel-drop-arm-bedside-commode-with-padded-seat-arms",
+   "price_range": {
+    "min": {
+     "amount": 18999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 18999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994465542309",
+     "sku": "11125PSKD-1",
+     "title": "Each",
+     "description": {
+      "html": "The deluxe steel drop arm bedside commode by Drive Medical is designed to meet your needs. The frame can be configured to be used as a bedside commode, toilet safety frame, elevated toilet seat or over your existing toilet. The tool free removable back makes configuring the commode easy for any application. The padded seat provides a comfortable place to rest on when sitting and the padded arm rests indicate a safe place to grab making sitting and standing easier. For consumers using a wheelchair the tool free drop arms makes lateral transfer to and from this commode easy and safe. The drop arms feature a large, easy to push release lever which is great for users with limited finger or hand dexterity. The push button height adjustable legs makes sizing a breeze allowing this commode to be used as an elevated toilet seat. In addition to comfort this commode can be disassembled without tools making storage and travel convenient. The grey power coated steel welded construction ensures strength and durability able to hold up to 300 lbs. The product comes complete with a snap on seat, 12-quart commode bucket with convenient carry handle, plus splash guard. The product is protected by a manufacturers limited lifetime warranty. Specifications: Width (between arms): 19\" Outside Width: 24\" Seat (Width): 15.25\" Seat (Depth): 16.5\" Height: 19\"-23\" Product Weight: 20.2 lbs. Weight Capacity: 300 lbs."
+     },
+     "price": {
+      "amount": 18999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 18999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/SteelDrop-Drive.jpg?v=1708530592"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994465542309:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/SteelDrop-Drive.jpg?v=1708530592"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "3-in-1 Commodes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289861402789",
+     "handle": "commode-chairs",
+     "title": "Commode Chairs",
+     "description": {
+      "html": "Commode chairs are an essential device for many people who have severe mobility problems. Having a portable toilet chair in the bedroom is convenient for home caregivers and their patients when they are unable to make the long trip to a regular commode. They can also be placed in a bathroom or shower to provide additional support and function. At Parentgiving, we carry many types of commode chairs for users of all needs. With low prices on the top manufacturers of home medical equipment such as Complete Medical, Drive Medical, Invacare and Lumex, it's easy to find a lightweight portable commode for elderly and disabled people that will always be at hand. Every portable commode seat in our inventory has a waste receptacle designed for easy removal and cleaning, and a solid frame made from rust-resistant steel or aluminum. From there, you can choose the style that is the best fit for your or your loved one. We have standard bedside commodes along with folding bedside commodes that are easy to store and transport. Shower commode chairs and transfer benches are especially useful if someone needs to go when bathing. A drop-arm elderly potty chair has movable armrests to help people on and off the toilet, while padded commode seats have additional cushioning on the seats, arms and/or backrests for added contentment. Be sure to also browse our urinal for elderly options and other bariatric bathroom equipment. A number of weight capacities are available, including bariatric toilet chairs for plus-size people. You can also choose an ideal seat width, get a commode chair with wheels and find an adjustable height portable commode for multiple-user situations. We even have 3-in-1 commode chairs that can be used as toilet safety rails or elevated toilet seats. If extra assistance is needed, consider our chair lifts for the elderly or a lift for disabled person. Whatever your caregiving needs, you can count on Parentgiving's expert staff to offer a professional perspective and guidance. Our fast and free shipping on orders over $50 lets people save even more. Select a category below or visit our Buyer's Guide for more information on commode chairs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864450213",
+     "handle": "drop-arm-commodes",
+     "title": "Drop-Arm Commodes",
+     "description": {
+      "html": "Drop-arm commodes provide caregivers with a convenient way to safely transfer patients to and from the commode. Drop-arm commodes are useful for transferring wheelchair patients and facilitating nighttime transfers when placed near a bed. Choose from a variety of models to find the one that best fits your needs. We carry everything from heavy-duty bariatric commodes to 3-in-1 bedside commodes to drop-arm commode transport chairs with wheels. Notable brands such as Nova, Medline Industries, Guardian and Drive Medical who have long earned their reputation for manufacturing quality, trustworthy products fill our inventory. Some of the many comfort and useful features you'll find include padded arms and backrests, push-button arm releases, easy height adjustable legs and soft foam handles. In addition, all of our drop-arm commodes come standard with a pail, lid and splash guard. In addition to comfort and convenience, our selection of drop-arm commodes offers durability and strength. Power coated steel frames and welded construction make them strong and supportive."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864482981",
+     "handle": "3-in-1-commodes",
+     "title": "3-in-1 Commodes",
+     "description": {
+      "html": "Everyone needs to go, and an all-in-one commode chair is a very useful tool for those with limited mobility. These chairs can be used as a bedroom commode for those who are bedridden, as a raised toilet seat for an existing bathroom commode or as a safety frame to assist with getting up or down. They are quickly reconfigurable and can perform all three functions in one day if needed. We have a variety of commode bathroom and bedroom chairs from leading manufacturers such as Drive Medical, Invacare and Lumex, so you can get the right 3-in-1 commode chair at the right price. Parentgiving has steel and aluminum bathroom commodes that are lightweight, resist rust, have high weight capacities and are easy to move and clean. Some of our options include folding commodes, height-adjustable toilet seats and commodes with padded seats. We also offer drop-arm commodes for use with patients in wheelchairs. Each toilet and commode has padded arms for comfort and backs that can be removed. With fast free shipping on orders over $50 and a satisfaction guarantee, we offer more ways to save money on products that make home care less stressful."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8108252430501",
+   "title": "Pride Mobility PLR-935 Tranquil 2 Viva Lift Power Recliner",
+   "description": {
+    "html": "The Tranquil 2 Collection of power lift chair recliners puts the power of customized relaxation in your hands. It starts with size and color selection and ends with you adjusting your lift chair to achieve personalized support and comfort. Once you\u2019ve chosen from one of four different sizes to fit your exact height and width, picked the color, it\u2019s time to settle in and explore a whole new world of customized comfort. The remote gives you control over the power headrest for neck and shoulder support and lumbar control lets your body decide just how much cushion your lower back needs. The reclining backrest moves independently of other components so you can keep your feet or head and shoulders elevated while leaning back to snooze or sitting up when unexpected guests interrupt your afternoon nap. Extra features include a USB charger port in the remote to charge your smart device from your seat and a lithium backup battery so you no longer have to worry about getting stuck in your chair if the power goes out (trust us, this might not seem like an issue until it absolutely becomes an issue). Get full operational control of your chair, including raising it to the standing position, all from the lithium backup battery. At Pride Mobility, we don\u2019t just strive for superior comfort and performance, we have aesthetics in mind, too. That\u2019s why the Tranquil 2 Collection of lift chairs sports an elegant faux leather design that is absolutely beautiful. Check out our portable chair lifts for seniors. Features: Comes in Grey, Brown and Mushroom fabrics 3 Sizes to choose from Small: Height of User 5'3\" and Under Medium: Height of User 5'4\" - 6' Large: Height of User 5'9\" - 6'2\" Weight Capacity: 400 lbs. New! Ergonomically designed toggle remote New! True infinite positioning enables the footrest to be raised above your heart, backrest and footrest to move independently from one another so that a variety of positions can be reached The power headrest lifts your head, neck, and shoulders for maximum support The upward lift offers convenient stand assist for getting in and out of the recliner The backrest moves up and down independently to help you find the perfect position Lithium battery backup ensures your recliner is operational when the power goes out Easy-to-use buttons adjust the power lumbar, headrest functions independently The footrest extension allows you to relax and stretch out completely Convenient USB charger port allows you to charge your smart device Infinite lay flat recline position 7-year prorated warranty Click Link for backup Pride Mobility Lithium Battery Pack (ONLY) for Viva Lift Chairs All deliveries are sent signature required."
+   },
+   "url": "https://www.parentgiving.com/products/pride-mobility-tranquil-viva-lift-power-recliner",
+   "handle": "pride-mobility-tranquil-viva-lift-power-recliner",
+   "price_range": {
+    "min": {
+     "amount": 153600,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 160200,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 156300,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 160200,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42087782744229",
+     "sku": "PLR-935S",
+     "title": "Small",
+     "description": {
+      "html": "The Tranquil 2 Collection of power lift chair recliners puts the power of customized relaxation in your hands. It starts with size and color selection and ends with you adjusting your lift chair to achieve personalized support and comfort. Once you\u2019ve chosen from one of four different sizes to fit your exact height and width, picked the color, it\u2019s time to settle in and explore a whole new world of customized comfort. The remote gives you control over the power headrest for neck and shoulder support and lumbar control lets your body decide just how much cushion your lower back needs. The reclining backrest moves independently of other components so you can keep your feet or head and shoulders elevated while leaning back to snooze or sitting up when unexpected guests interrupt your afternoon nap. Extra features include a USB charger port in the remote to charge your smart device from your seat and a lithium backup battery so you no longer have to worry about getting stuck in your chair if the power goes out (trust us, this might not seem like an issue until it absolutely becomes an issue). Get full operational control of your chair, including raising it to the standing position, all from the lithium backup battery. At Pride Mobility, we don\u2019t just strive for superior comfort and performance, we have aesthetics in mind, too. That\u2019s why the Tranquil 2 Collection of lift chairs sports an elegant faux leather design that is absolutely beautiful. Check out our portable chair lifts for seniors. Features: Comes in Grey, Brown and Mushroom fabrics 3 Sizes to choose from Small: Height of User 5'3\" and Under Medium: Height of User 5'4\" - 6' Large: Height of User 5'9\" - 6'2\" Weight Capacity: 400 lbs. New! Ergonomically designed toggle remote New! True infinite positioning enables the footrest to be raised above your heart, backrest and footrest to move independently from one another so that a variety of positions can be reached The power headrest lifts your head, neck, and shoulders for maximum support The upward lift offers convenient stand assist for getting in and out of the recliner The backrest moves up and down independently to help you find the perfect position Lithium battery backup ensures your recliner is operational when the power goes out Easy-to-use buttons adjust the power lumbar, headrest functions independently The footrest extension allows you to relax and stretch out completely Convenient USB charger port allows you to charge your smart device Infinite lay flat recline position 7-year prorated warranty Click Link for backup Pride Mobility Lithium Battery Pack (ONLY) for Viva Lift Chairs All deliveries are sent signature required."
+     },
+     "price": {
+      "amount": 153600,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 156300,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Small"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Tranquil-2.jpg?v=1697655950"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/42087782744229:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42087782776997",
+     "sku": "PLR-935M",
+     "title": "Medium",
+     "description": {
+      "html": "The Tranquil 2 Collection of power lift chair recliners puts the power of customized relaxation in your hands. It starts with size and color selection and ends with you adjusting your lift chair to achieve personalized support and comfort. Once you\u2019ve chosen from one of four different sizes to fit your exact height and width, picked the color, it\u2019s time to settle in and explore a whole new world of customized comfort. The remote gives you control over the power headrest for neck and shoulder support and lumbar control lets your body decide just how much cushion your lower back needs. The reclining backrest moves independently of other components so you can keep your feet or head and shoulders elevated while leaning back to snooze or sitting up when unexpected guests interrupt your afternoon nap. Extra features include a USB charger port in the remote to charge your smart device from your seat and a lithium backup battery so you no longer have to worry about getting stuck in your chair if the power goes out (trust us, this might not seem like an issue until it absolutely becomes an issue). Get full operational control of your chair, including raising it to the standing position, all from the lithium backup battery. At Pride Mobility, we don\u2019t just strive for superior comfort and performance, we have aesthetics in mind, too. That\u2019s why the Tranquil 2 Collection of lift chairs sports an elegant faux leather design that is absolutely beautiful. Check out our portable chair lifts for seniors. Features: Comes in Grey, Brown and Mushroom fabrics 3 Sizes to choose from Small: Height of User 5'3\" and Under Medium: Height of User 5'4\" - 6' Large: Height of User 5'9\" - 6'2\" Weight Capacity: 400 lbs. New! Ergonomically designed toggle remote New! True infinite positioning enables the footrest to be raised above your heart, backrest and footrest to move independently from one another so that a variety of positions can be reached The power headrest lifts your head, neck, and shoulders for maximum support The upward lift offers convenient stand assist for getting in and out of the recliner The backrest moves up and down independently to help you find the perfect position Lithium battery backup ensures your recliner is operational when the power goes out Easy-to-use buttons adjust the power lumbar, headrest functions independently The footrest extension allows you to relax and stretch out completely Convenient USB charger port allows you to charge your smart device Infinite lay flat recline position 7-year prorated warranty Click Link for backup Pride Mobility Lithium Battery Pack (ONLY) for Viva Lift Chairs All deliveries are sent signature required."
+     },
+     "price": {
+      "amount": 159400,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 159400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Medium"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Tranquil-2.jpg?v=1697655950"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/42087782776997:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42087782809765",
+     "sku": "PLR-935LT",
+     "title": "Large",
+     "description": {
+      "html": "The Tranquil 2 Collection of power lift chair recliners puts the power of customized relaxation in your hands. It starts with size and color selection and ends with you adjusting your lift chair to achieve personalized support and comfort. Once you\u2019ve chosen from one of four different sizes to fit your exact height and width, picked the color, it\u2019s time to settle in and explore a whole new world of customized comfort. The remote gives you control over the power headrest for neck and shoulder support and lumbar control lets your body decide just how much cushion your lower back needs. The reclining backrest moves independently of other components so you can keep your feet or head and shoulders elevated while leaning back to snooze or sitting up when unexpected guests interrupt your afternoon nap. Extra features include a USB charger port in the remote to charge your smart device from your seat and a lithium backup battery so you no longer have to worry about getting stuck in your chair if the power goes out (trust us, this might not seem like an issue until it absolutely becomes an issue). Get full operational control of your chair, including raising it to the standing position, all from the lithium backup battery. At Pride Mobility, we don\u2019t just strive for superior comfort and performance, we have aesthetics in mind, too. That\u2019s why the Tranquil 2 Collection of lift chairs sports an elegant faux leather design that is absolutely beautiful. Check out our portable chair lifts for seniors. Features: Comes in Grey, Brown and Mushroom fabrics 3 Sizes to choose from Small: Height of User 5'3\" and Under Medium: Height of User 5'4\" - 6' Large: Height of User 5'9\" - 6'2\" Weight Capacity: 400 lbs. New! Ergonomically designed toggle remote New! True infinite positioning enables the footrest to be raised above your heart, backrest and footrest to move independently from one another so that a variety of positions can be reached The power headrest lifts your head, neck, and shoulders for maximum support The upward lift offers convenient stand assist for getting in and out of the recliner The backrest moves up and down independently to help you find the perfect position Lithium battery backup ensures your recliner is operational when the power goes out Easy-to-use buttons adjust the power lumbar, headrest functions independently The footrest extension allows you to relax and stretch out completely Convenient USB charger port allows you to charge your smart device Infinite lay flat recline position 7-year prorated warranty Click Link for backup Pride Mobility Lithium Battery Pack (ONLY) for Viva Lift Chairs All deliveries are sent signature required."
+     },
+     "price": {
+      "amount": 160200,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 160200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Large"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Tranquil-2.jpg?v=1697655950"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/42087782809765:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "Small"
+      },
+      {
+       "label": "Medium"
+      },
+      {
+       "label": "Large"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Tranquil-2.jpg?v=1697655950"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Pride Lift Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289865007269",
+     "handle": "lift-chairs",
+     "title": "Lift Chairs for Seniors",
+     "description": {
+      "html": "\ufeffA power lift chair can be a big help to anyone experiencing mobility issues. For some people just getting up to go to the bathroom or to get something to eat can be a big challenge. Whether this difficulty is due to arthritis or other health issues it can still make everyday life a lot more difficult. But with a lift chair people with these issues can get in and out of a chair a lot easier and with less pain, Thus making it easier to continue with normal daily activities. In most ways, a power lift chair is like any other recliner. They are adjustable like traditional recliners and have a footrest. However unlike traditional recliners, they come with a motor that lifts the chair up to help the occupant to get out, and it will also help adjust the seat to their satisfaction, so the person can gently sit back down. The occupant will use a remote control device to operate the motor and make adjustments for their comfort. Some chairs even allow the footrests to be adjusted separately from the chair. Best of all, the less expensive lift chairs for seniors cost less than $1000. You can shop for these useful devices right here on Parentgiving. What follows is a buying guide that will help you navigate the options. Who Can Benefit From Lift Chairs For Seniors? A lift chair for seniors can be very helpful for those who have enough trouble getting in and out of a chair that significantly limits their daily activities. Purchasing one of them helps seniors to safely get in and out of the chair safely so that they can stay more active. Some of these chairs will even lay flat, so they can sleep in them, especially convenient if you have a small apartment. Another good reason to get a lift chair is to help your caregiver if it is difficult for them to get you on your feet. It would reduce the risk of either of you potentially falling or getting hurt. With a lift chair for seniors, all your caretaker has to do is help you keep your balance as you finish getting up. They will no longer have to help lift you because the furniture does most of the work. Safety is often a big concern for seniors, especially those with mobility issues. Getting in and out of a chair can be difficult for these seniors which can be stressful and keep them from being as active as they might otherwise be. This fear can also stop them from doing as many of their everyday chores making them less independent. However, with a lift chair, they may feel safer and more comfortable getting out of the chair and on with their everyday activities. These chairs should not be used by everyone because those who can keep up their physical strength should do so. If you aren't sure, check with your medical doctor for advice. But, for those who need them, they provide many benefits, such as: Independence: For those who need help getting in and out of a chair, these can significantly increase their independence. Plus, if you can get a prescription from a doctor, you might get some of the costs covered by insurance. You can even qualify for partial Medicare coverage of lift chairs for seniors under certain circumstances, such as a doctor's certification. Personalization: There are so many different styles colors and fabrics in these chairs that you can easily personalize to your preference and d\u00e9cor. This way, it doesn't need to look like you have a medical device in your house! Sleeping: With a zero gravity recliner, individuals should be able to nap in their recliner if they choose to. This recliner gives people the ability to lean back to a flat position or for those who prefer sleeping within a slightly raised position. Quality: Our chairs are made up of durable high-quality materials that will hold up well over time. They also feature an electric motor that makes them easy to operate. Comfort:These chairs are extremely comfortable. They recline to a variety of positions including totally horizontal if you get the zero gravity chair. They also include footrests for maximum comfort, no matter how tall you are. Plus, this lets you rest your skeletal muscles no matter how tired you are. Finding the Perfect Lift Chairs for Seniors A lift chair, also known as a recliner or rise chair, features a powered lifting mechanism that elevates the entire chair up from its base allowing the user to more easily stand. Modern reclining chairs for the elderly can be positioned infinitely with the feet elevated higher than the head and can offer upgrades in heat and massage, memory foam or mattress type core, and upholstery upgrades to leather or performance fabrics. Parentgiving offers an extensive selection for the elderly to suit your needs and budget. We are an authorized dealer of Pride Lift Chairs and Golden Technologies Lift Chairs. Check out our other options for chair lifts for the elderly."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289868480677",
+     "handle": "pride-lift-chairs",
+     "title": "Pride Lift Chairs",
+     "description": {
+      "html": "Whether you sit for a couple of hours in the evening or sit for many hours each day, you know firsthand the importance of having a comfortable, supportive chair. A quality-made chair goes beyond giving you a cozy place to read, watch TV or nap, it can also provide lumbar support, improve circulation, prevent muscle fatigue and, most importantly, it can help you get in and out of your chair safely. From three-position to infinite-position lift chairs, you'll find a little bit of everything in our growing selection. Whichever Pride chair you select, rest assured that each one is crafted using the highest-performing materials and is engineered for ease of use and years of reliable use. From entry-level, budget recliners to ones with all the bells and whistles, we're confident you'll find the one that meets your needs and budget. As you browse our inventory, you'll notice we have quite the assortment of styles that range from classic to modern. Our goal is to give you plenty of chair options so you can choose the one that seamlessly complements your current d\u00c3\u00a9cor. They're also available in different fabrics, materials and colors. To ensure you reap the maximum benefits, many of our chairs come in different sizes to accommodate our petite and tall customers. Depending on the style you select, a small sampling of the many must-have features you'll discover include: full-width power headrests, lumbar support, battery backup in case of a power outage, dual pockets, quiet lifting system and an infinite number of positions \u2014 from sitting to completely flat to the therapeutic Trendelenburg position. All of them feature a heavy-duty lift actuator and scissor mechanism that smoothly and quietly lifts the chair to an upright position. This gives the elderly or those with limited mobility a safer solution to getting in and out of their chair. Once you try a Pride lift chair or recliner, you'll immediately feel the difference and appreciate the advantages it has over a traditional recliner."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289868841125",
+     "handle": "infinite-position-lift-chairs",
+     "title": "Infinite-Position Lift Chairs",
+     "description": {
+      "html": "Are you looking for a lift chair that gives you the freedom to choose lots of different reclining positions? Our selection of Infinite-Position Lift Chairs lets you do just that. From sitting and watching TV to reading, relaxing and napping, you'll be able to enjoy unlimited positions. We have carefully curated a lineup of some of the most trusted brands in the industry, including Golden Technologies, Pride Mobility and more. Each brand manufactures their infinite position chairs using the highest-quality materials to ensure the comfort and longevity of their finished products. Many of them also proudly build their chairs and other products in the U.S. What makes an infinite position lift chair such a popular choice is that beyond the typical reclining position, it allows you to choose from up to five different positions. When entertaining with friends and family, the \u00e2\u20ac\u0153sit position\u00e2\u20ac\u009d offers a true 90 degree back angle for the proper alignment. The \u00e2\u20ac\u0153TV watching position\u00e2\u20ac\u009d is designed to offer a comfortable neutral posture for upright relaxation. Many of our models also allow you to recline the back of the chair without raising the footrest. When you want to take a nap, the \u00e2\u20ac\u0153lay flat\u00e2\u20ac\u009d position allows you to enjoy your recliner for a restful sleep. The zero gravity and Trendelenburg positions offer therapeutic solutions; zero gravity was created to eliminate pressure on the body, while the Trendelenburg position goes one step further to elevate the legs and feet above the heart to help improve circulation in the body and to release tension from the lower extremities. Many of our infinite-position recliners are available in different sizes \u2014 small, medium and large \u2014 so you can find the one that fits your stature perfectly. Also available are many different materials, fabrics and color choices, so you can find the one that best complements your decorative style."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567379109",
+     "handle": "all-lift-assits",
+     "title": "All Lift Assits",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045764509861",
+   "title": "Nova Wall Mounted Foldable Shower Seat",
+   "description": {
+    "html": "The Wall mounted Foldable Shower Seat by Nova mounts directly to shower wall and saves space by folding up when not in use.All bath items are non-returnable for hygienic reasons. Specifications: Weight Capacity: 250 lbs Overall Weight: 7 lbs Folded Width: 5\" Seat Height: 18\"-21\" Seat Dimension: 16\"w x 16\"d Overall Dimensions: 19\"w x 19.5\"d Note: Wall mounted foldable shower seat, can only be used on concrete or sheetrock walls."
+   },
+   "url": "https://www.parentgiving.com/products/wall-mounted-foldable-shower-seat-by-nova",
+   "handle": "wall-mounted-foldable-shower-seat-by-nova",
+   "price_range": {
+    "min": {
+     "amount": 12995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12995,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994530390181",
+     "sku": "9404",
+     "title": "Each",
+     "description": {
+      "html": "The Wall mounted Foldable Shower Seat by Nova mounts directly to shower wall and saves space by folding up when not in use.All bath items are non-returnable for hygienic reasons. Specifications: Weight Capacity: 250 lbs Overall Weight: 7 lbs Folded Width: 5\" Seat Height: 18\"-21\" Seat Dimension: 16\"w x 16\"d Overall Dimensions: 19\"w x 19.5\"d Note: Wall mounted foldable shower seat, can only be used on concrete or sheetrock walls."
+     },
+     "price": {
+      "amount": 12995,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/NovaWallMount.jpg?v=1735567787"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994530390181:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/NovaWallMount.jpg?v=1735567787"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15021120586100",
+   "title": "Wonder Toilet Safety Rail by Stander",
+   "description": {
+    "html": "Features: Provides support to sit and stand while toileting Soft ergonomic handles for secure grip Supports up to 300 pounds Folds easily for compact storage Footrest adds extra stability Ready to use; no assembly required Specifications: Height: 28\"-36\" Width: 25.75\" Depth: 26\" Weight: 15 lbs Materials: Aluminum"
+   },
+   "url": "https://www.parentgiving.com/products/wonder-toilet-safety-rail-by-stander",
+   "handle": "wonder-toilet-safety-rail-by-stander",
+   "price_range": {
+    "min": {
+     "amount": 8999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/54330556744052",
+     "sku": "2320",
+     "title": "Each",
+     "description": {
+      "html": "Features: Provides support to sit and stand while toileting Soft ergonomic handles for secure grip Supports up to 300 pounds Folds easily for compact storage Footrest adds extra stability Ready to use; no assembly required Specifications: Height: 28\"-36\" Width: 25.75\" Depth: 26\" Weight: 15 lbs Materials: Aluminum"
+     },
+     "price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/StanderToiletSafety-1.jpg?v=1775762281"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/54330556744052:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/StanderToiletSafety-1.jpg?v=1775762281"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-1-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Toilet Safety"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858551973",
+     "handle": "bathroom-safety",
+     "title": "Bath Safety & Bathroom Safety Products",
+     "description": {
+      "html": "The bathroom is a potentially dangerous place for most people, and the risks go up tenfold for those with limited mobility. Elderly people and those who are disabled or injured face further hazards in the form of slick wet surfaces and hard fixtures. But you don't need to completely renovate your bathroom to make it safer and easier to navigate. Our bathroom elderly safety products are an inexpensive temporary or long-term solution for you and your loved ones. Safety in the bathroom should always be a leading priority, and our low prices on trusted brands mean you don't have to choose between security and affordability. Parentgiving has a variety of devices and bathroom accessories for safety. Get in and out of the tub more easily with bath mats, lift seats for elderly, bath rails grab bars and other products for maintaining your footing. For those with injuries, our cast protectors will keep your arm or leg cast from being ruined by water. Shower chairs and benches allow people to sit in the shower without standing for long periods, and with a transfer bench, patients don't have to climb over the tub wall. Don't underestimate toilet safety either \u2014 commode support rails and raised toilet seats provide stability and reduce the effort needed to get up or down. We have shower commode chairs as well for those with bladder conditions. Our bath safety products for seniors are made from waterproof and rust-resistant materials that are strong enough to handle everyday use while light enough to quickly move and set up. In addition to our standard-sized accessories, caregivers and patients can order bariatric bathroom safety aids for larger people and pediatric bath safety devices for younger people. Parentgiving is one of the leading medical supply and equipment sellers, and we are committed to bathtub safety for seniors, adults and kids who need mobility assistance. Contact us today for industry-leading customer service from knowledgeable staff that can help you find the right product while saving money."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869234341",
+     "handle": "toilet-safety",
+     "title": "Toilet Safety",
+     "description": {
+      "html": "Toilet safety consists of support rails, bedside commodes, and toilet seats to provide safety and convenience for the handicapped and the elderly. Framing and rails are easy to grasp to assist in getting up from and down on to toilet seats."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045751828645",
+   "title": "Drive Medical Toilet Safety Frame, Comfortable Waterfall Armrests",
+   "description": {
+    "html": "This sturdy and lightweight toilet safety frame by Drive Medical provides your customer with Waterfall armrests which provide additional comfort and support. Powder coated aluminum brackets which easily attaches the frame to toilet. The Arms are height and width adjustable and Limited Lifetime Warranty. Specifications: Overall width: 23.5\" at maximum arm width Overall length/depth: 32\" Overall height: 32\" Armrest height: adjustable from 28\" to 32\" Width between armrests: 19\" to 23.5\" Weight: 4 lbs. Weight capacity: 300 lbs"
+   },
+   "url": "https://www.parentgiving.com/products/drive-medical-toilet-safety-frame-comfortable-waterfall-armrests",
+   "handle": "drive-medical-toilet-safety-frame-comfortable-waterfall-armrests",
+   "price_range": {
+    "min": {
+     "amount": 5199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994521936037",
+     "sku": "RTL12000",
+     "title": "Each",
+     "description": {
+      "html": "This sturdy and lightweight toilet safety frame by Drive Medical provides your customer with Waterfall armrests which provide additional comfort and support. Powder coated aluminum brackets which easily attaches the frame to toilet. The Arms are height and width adjustable and Limited Lifetime Warranty. Specifications: Overall width: 23.5\" at maximum arm width Overall length/depth: 32\" Overall height: 32\" Armrest height: adjustable from 28\" to 32\" Width between armrests: 19\" to 23.5\" Weight: 4 lbs. Weight capacity: 300 lbs"
+     },
+     "price": {
+      "amount": 5199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-medical-toilet-safety-frame-comfortable-waterfall-armrests-5765.jpg?v=1675885825"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994521936037:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-medical-toilet-safety-frame-comfortable-waterfall-armrests-5765.jpg?v=1675885825",
+     "alt_text": "Drive Medical Toilet Safety Frame, Comfortable Waterfall Armrests"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Toilet Safety"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289869234341",
+     "handle": "toilet-safety",
+     "title": "Toilet Safety",
+     "description": {
+      "html": "Toilet safety consists of support rails, bedside commodes, and toilet seats to provide safety and convenience for the handicapped and the elderly. Framing and rails are easy to grasp to assist in getting up from and down on to toilet seats."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNRFExTnpVeE9ESTROalExTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

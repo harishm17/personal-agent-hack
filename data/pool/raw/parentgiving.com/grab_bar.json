@@ -1,0 +1,1631 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.parentgiving.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Parentgiving",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.parentgiving.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "43026907301"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "43026907301"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8045756154021",
+   "title": "Drive White Powder Coated Grab Bar",
+   "description": {
+    "html": "Product DescriptionThe White Powder Coated Grab Bar comes as an attractive white powder coated steel which is easy to clean and highly durable. The unit can be mounted vertically or horizontally depending on the user's needs. The White Powder Coated Grab Bar when mounted, sticks out 1.5\" from the wall.Features and Benefits Durable, white powder coated steel is attractive and easy-to-clean. Mounts vertically or horizontally. 1.5\" distance from wall. Weight Capacity: 300 lbs 12\" L Excess water should be wiped off grab bar after each use to prevent rusting. Attractive retail packaging. Drilling Required Model # RTL12012"
+   },
+   "url": "https://www.parentgiving.com/products/white-powder-coated-grab-bar",
+   "handle": "white-powder-coated-grab-bar",
+   "price_range": {
+    "min": {
+     "amount": 1799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1799,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994523312293",
+     "sku": "RTL12012",
+     "title": "Each",
+     "description": {
+      "html": "Product DescriptionThe White Powder Coated Grab Bar comes as an attractive white powder coated steel which is easy to clean and highly durable. The unit can be mounted vertically or horizontally depending on the user's needs. The White Powder Coated Grab Bar when mounted, sticks out 1.5\" from the wall.Features and Benefits Durable, white powder coated steel is attractive and easy-to-clean. Mounts vertically or horizontally. 1.5\" distance from wall. Weight Capacity: 300 lbs 12\" L Excess water should be wiped off grab bar after each use to prevent rusting. Attractive retail packaging. Drilling Required Model # RTL12012"
+     },
+     "price": {
+      "amount": 1799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-white-powder-coated-grab-bar-5898.jpg?v=1664822649"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994523312293:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-white-powder-coated-grab-bar-5898.jpg?v=1664822649",
+     "alt_text": "White Powder Coated Grab Bar"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom and Shower Grab Bars",
+    "Bathtub"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858650277",
+     "handle": "shower-grab-bars",
+     "title": "Bathtub, Bathroom and Shower Grab Bars",
+     "description": {
+      "html": "Statistics repeatedly show that slips and falls in the bathtub are one of the most common causes of serious injury in the elderly and those with mobility issues. Getting in and out of a slippery bathtub can be difficult even when mobility isn't an issue. That's why installing a shower or bathtub grab bar, or floor to ceiling transfer pole is one of the most important safety enhancements to any bathroom. Grab bars for bathrooms are attached strategically to walls in the tub and shower area to offer a steadying brace to hold onto while getting in and out of the bath and when standing in the shower. It's one of the most helpful bathroom accessories used by those who live alone and want to maintain their independence as well as caregivers taking care of loved ones. Our selection of bathroom grab bars comes in a range of sizes, styles and finishes to best fit your needs and complement your bathroom decor. Choose from bathtub handles to shower knobs to safety rails. We have styles that can be affixed permanently as well as ones that can be removed when not in use. Non-wearing rubber pads ensure the product will not scratch your tub's surface. Easy and quick to install, many removable bars require tool-free installation. Specialized features such as textured gripping surfaces, adjustable heights and dual level designs for high-low support offer further protection from falls. With such trusted brands as Carex, Stander, Complete Medical and Drive Medical filling our inventory, you'll have peace of mind knowing that whichever one you select, it'll be durably made to offer exceptional stability. If needed, we also offer toilet handles and bars to facilitate getting up and down from the toilet, to further lower your risk of a fall in the bathroom. Whether you're shopping for yourself or a loved one, help to create the safest bathing environment possible with our quality selection of bathroom bars and railings. For bedroom safety, check out our grab bars for beds."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045652967589",
+   "title": "The Curve Grab Bar - Toilet Rail",
+   "description": {
+    "html": "The Curve Grab Bar makes it easy to stand from the toilet. The 4-Hand-Grips make it easy to climb to a standing position \u2014 and the grab bar can be pivoted out of the way when not in use. It's space-saving designe blends in with the look and feel of your bathroom. And like all of our products, it comes with a lifetime satisfaction guarantee. Features: Offer 4 hand grips at 4 different heights. Pivoting grab bar locks in place every 45 degrees. Can also be locked flat against the wall when not in use. Made of rust resistant, zinc plated steel. Installs quickly into two wall studs. Specifications: Weight capacity: 300lbs Product length: 40in. Dimensions: Length of curved handle: 18 3/4 in., Length of horizontal base bar: 14 in., Length of extension from the wall at 90 degree position: 12 1/2 in. Diameter: 1 1/4 in. Weight of product: 12lbs."
+   },
+   "url": "https://www.parentgiving.com/products/the-curve-grab-bar-toilet-rail",
+   "handle": "the-curve-grab-bar-toilet-rail",
+   "price_range": {
+    "min": {
+     "amount": 16999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 17999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994389291173",
+     "sku": "9000",
+     "title": "Each",
+     "description": {
+      "html": "The Curve Grab Bar makes it easy to stand from the toilet. The 4-Hand-Grips make it easy to climb to a standing position \u2014 and the grab bar can be pivoted out of the way when not in use. It's space-saving designe blends in with the look and feel of your bathroom. And like all of our products, it comes with a lifetime satisfaction guarantee. Features: Offer 4 hand grips at 4 different heights. Pivoting grab bar locks in place every 45 degrees. Can also be locked flat against the wall when not in use. Made of rust resistant, zinc plated steel. Installs quickly into two wall studs. Specifications: Weight capacity: 300lbs Product length: 40in. Dimensions: Length of curved handle: 18 3/4 in., Length of horizontal base bar: 14 in., Length of extension from the wall at 90 degree position: 12 1/2 in. Diameter: 1 1/4 in. Weight of product: 12lbs."
+     },
+     "price": {
+      "amount": 16999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-the-curve-grab-bar-toilet-rail-1669-0028.jpg?v=1675896941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994389291173:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-the-curve-grab-bar-toilet-rail-1669-0028.jpg?v=1675896941",
+     "alt_text": "The Curve Grab Bar - Toilet Rail"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom and Shower Grab Bars",
+    "Bathtub"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858650277",
+     "handle": "shower-grab-bars",
+     "title": "Bathtub, Bathroom and Shower Grab Bars",
+     "description": {
+      "html": "Statistics repeatedly show that slips and falls in the bathtub are one of the most common causes of serious injury in the elderly and those with mobility issues. Getting in and out of a slippery bathtub can be difficult even when mobility isn't an issue. That's why installing a shower or bathtub grab bar, or floor to ceiling transfer pole is one of the most important safety enhancements to any bathroom. Grab bars for bathrooms are attached strategically to walls in the tub and shower area to offer a steadying brace to hold onto while getting in and out of the bath and when standing in the shower. It's one of the most helpful bathroom accessories used by those who live alone and want to maintain their independence as well as caregivers taking care of loved ones. Our selection of bathroom grab bars comes in a range of sizes, styles and finishes to best fit your needs and complement your bathroom decor. Choose from bathtub handles to shower knobs to safety rails. We have styles that can be affixed permanently as well as ones that can be removed when not in use. Non-wearing rubber pads ensure the product will not scratch your tub's surface. Easy and quick to install, many removable bars require tool-free installation. Specialized features such as textured gripping surfaces, adjustable heights and dual level designs for high-low support offer further protection from falls. With such trusted brands as Carex, Stander, Complete Medical and Drive Medical filling our inventory, you'll have peace of mind knowing that whichever one you select, it'll be durably made to offer exceptional stability. If needed, we also offer toilet handles and bars to facilitate getting up and down from the toilet, to further lower your risk of a fall in the bathroom. Whether you're shopping for yourself or a loved one, help to create the safest bathing environment possible with our quality selection of bathroom bars and railings. For bedroom safety, check out our grab bars for beds."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289859666085",
+     "handle": "stander-bed-rails",
+     "title": "Stander Products",
+     "description": {
+      "html": "Stander has quickly become a leader in innovative products that enhance mobility and extend independence. With a dedicated research and development team, the company is committed to further expanding its line to meet the growing needs of customers. Tools that answer real life needs are the hallmark of this company. Parentgiving is pleased to offer Stander mobility aids that make everyday life easier and more comfortable \u2014 at affordable prices. For many, daily tasks such as getting out of bed, standing up from the toilet or getting up out of a chair can be difficult. It's our goal to provide you and your loved ones with quality products that help you to feel safe and allow you to live your life to the fullest. Included is a wide range of in-home designs that offer support for getting in and out of bed and chairs, from bed rails and poles to organizers and standing aids that also hold personal items you need within reach. For those who have an active lifestyle, Stander also makes effective mobility items, such as its easy-to-fold walkers and car aids that offer support and easier seating."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300361842853",
+     "handle": "bathtub-grab-bar-top-picks",
+     "title": "Bathtub Grab Bar & Mats Top Picks",
+     "description": {
+      "html": "Grab Bars give some needed support and comfort for the elderly getting in and out of the tub safely. These products can be mounted or attached to the walls. These Grab Bars are top of the line products with great designs from Parentgiving."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8201298706597",
+   "title": "Drive Medical Rotating Suction-Cup Grab Bar",
+   "description": {
+    "html": "Features: Provides additional stability when entering and exiting the tub or shower. Easy to install or remove with locking latches that secure the grab bar into place. CAUTION: Grab Bar is to be used as a balance assist only. It is not intended to support body weight, and body weight should not be applied to grab bar. (If a device is required to bear any body weight, or is used for leverage, it is recommended that a traditional, permanently mounted grab bar be installed.) Before each and every use, make sure grab bar is securely attached. If it can be moved or feels at all loose, flip up the latches and reattach in accordance with these instructions. Ensure that reattachment is secure before use. Color indicators ensure safe and secure installation. Green display means the grab bar is secure and ready for use, red will be displayed if the seal is not airtight. Specifications: Length: 19.75\" Weight: 1 lb. Carton Ship Weight: 3.5 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/drive-medical-rotating-suction-cup-grab-bar",
+   "handle": "drive-medical-rotating-suction-cup-grab-bar",
+   "price_range": {
+    "min": {
+     "amount": 2699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2599,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2599,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42389388984485",
+     "sku": "RTL13084",
+     "title": "Each",
+     "description": {
+      "html": "Features: Provides additional stability when entering and exiting the tub or shower. Easy to install or remove with locking latches that secure the grab bar into place. CAUTION: Grab Bar is to be used as a balance assist only. It is not intended to support body weight, and body weight should not be applied to grab bar. (If a device is required to bear any body weight, or is used for leverage, it is recommended that a traditional, permanently mounted grab bar be installed.) Before each and every use, make sure grab bar is securely attached. If it can be moved or feels at all loose, flip up the latches and reattach in accordance with these instructions. Ensure that reattachment is secure before use. Color indicators ensure safe and secure installation. Green display means the grab bar is secure and ready for use, red will be displayed if the seal is not airtight. Specifications: Length: 19.75\" Weight: 1 lb. Carton Ship Weight: 3.5 lbs."
+     },
+     "price": {
+      "amount": 2699,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2599,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/grabbardrive-2.jpg?v=1686326311"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/42389388984485:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/grabbardrive-2.jpg?v=1686326311"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom and Shower Grab Bars",
+    "Bathtub"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858650277",
+     "handle": "shower-grab-bars",
+     "title": "Bathtub, Bathroom and Shower Grab Bars",
+     "description": {
+      "html": "Statistics repeatedly show that slips and falls in the bathtub are one of the most common causes of serious injury in the elderly and those with mobility issues. Getting in and out of a slippery bathtub can be difficult even when mobility isn't an issue. That's why installing a shower or bathtub grab bar, or floor to ceiling transfer pole is one of the most important safety enhancements to any bathroom. Grab bars for bathrooms are attached strategically to walls in the tub and shower area to offer a steadying brace to hold onto while getting in and out of the bath and when standing in the shower. It's one of the most helpful bathroom accessories used by those who live alone and want to maintain their independence as well as caregivers taking care of loved ones. Our selection of bathroom grab bars comes in a range of sizes, styles and finishes to best fit your needs and complement your bathroom decor. Choose from bathtub handles to shower knobs to safety rails. We have styles that can be affixed permanently as well as ones that can be removed when not in use. Non-wearing rubber pads ensure the product will not scratch your tub's surface. Easy and quick to install, many removable bars require tool-free installation. Specialized features such as textured gripping surfaces, adjustable heights and dual level designs for high-low support offer further protection from falls. With such trusted brands as Carex, Stander, Complete Medical and Drive Medical filling our inventory, you'll have peace of mind knowing that whichever one you select, it'll be durably made to offer exceptional stability. If needed, we also offer toilet handles and bars to facilitate getting up and down from the toilet, to further lower your risk of a fall in the bathroom. Whether you're shopping for yourself or a loved one, help to create the safest bathing environment possible with our quality selection of bathroom bars and railings. For bedroom safety, check out our grab bars for beds."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300361842853",
+     "handle": "bathtub-grab-bar-top-picks",
+     "title": "Bathtub Grab Bar & Mats Top Picks",
+     "description": {
+      "html": "Grab Bars give some needed support and comfort for the elderly getting in and out of the tub safely. These products can be mounted or attached to the walls. These Grab Bars are top of the line products with great designs from Parentgiving."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045780304037",
+   "title": "Bathtub Grab Bars by Medline",
+   "description": {
+    "html": "Tub Grab Bar has a step-through clamp design that provides unobstructed entry/exit path for better hand positioning. Tool-free installation has stainless steel components with rubber-lined pads that won't mar tub surface. Bar locks to the side of the tub Weight Capacity: 250 lbs. Adjust to fit tubs 2.75\"- 6.25\"(7-16 cm)."
+   },
+   "url": "https://www.parentgiving.com/products/bathtub-grab-bars-by-medline",
+   "handle": "bathtub-grab-bars-by-medline",
+   "price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5399,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994566992037",
+     "sku": "MDS86321W",
+     "title": "Case of 2",
+     "description": {
+      "html": "Tub Grab Bar has a step-through clamp design that provides unobstructed entry/exit path for better hand positioning. Tool-free installation has stainless steel components with rubber-lined pads that won't mar tub surface. Bar locks to the side of the tub Weight Capacity: 250 lbs. Adjust to fit tubs 2.75\"- 6.25\"(7-16 cm)."
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5399,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Case of 2"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-bathtub-grab-bars-by-medline-7087-5254.jpg?v=1675883536"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994566992037:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Case of 2"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-bathtub-grab-bars-by-medline-7087-5254.jpg?v=1675883536",
+     "alt_text": "Bathtub Grab Bars by Medline"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom and Shower Grab Bars",
+    "Bathtub"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858650277",
+     "handle": "shower-grab-bars",
+     "title": "Bathtub, Bathroom and Shower Grab Bars",
+     "description": {
+      "html": "Statistics repeatedly show that slips and falls in the bathtub are one of the most common causes of serious injury in the elderly and those with mobility issues. Getting in and out of a slippery bathtub can be difficult even when mobility isn't an issue. That's why installing a shower or bathtub grab bar, or floor to ceiling transfer pole is one of the most important safety enhancements to any bathroom. Grab bars for bathrooms are attached strategically to walls in the tub and shower area to offer a steadying brace to hold onto while getting in and out of the bath and when standing in the shower. It's one of the most helpful bathroom accessories used by those who live alone and want to maintain their independence as well as caregivers taking care of loved ones. Our selection of bathroom grab bars comes in a range of sizes, styles and finishes to best fit your needs and complement your bathroom decor. Choose from bathtub handles to shower knobs to safety rails. We have styles that can be affixed permanently as well as ones that can be removed when not in use. Non-wearing rubber pads ensure the product will not scratch your tub's surface. Easy and quick to install, many removable bars require tool-free installation. Specialized features such as textured gripping surfaces, adjustable heights and dual level designs for high-low support offer further protection from falls. With such trusted brands as Carex, Stander, Complete Medical and Drive Medical filling our inventory, you'll have peace of mind knowing that whichever one you select, it'll be durably made to offer exceptional stability. If needed, we also offer toilet handles and bars to facilitate getting up and down from the toilet, to further lower your risk of a fall in the bathroom. Whether you're shopping for yourself or a loved one, help to create the safest bathing environment possible with our quality selection of bathroom bars and railings. For bedroom safety, check out our grab bars for beds."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045775028389",
+   "title": "Stander Floor to Ceiling Grab Bar",
+   "description": {
+    "html": "The Wonder Pole can be installed anywhere there is a flat floor and flat ceiling, including the bathroom, bedroom, living room, dining room, and kitchen. The Wonder Pole cannot be used inside of a bathtub or shower, on a loose rug, or on a paneled or vaulted ceiling. Features: Height: 7'-9'6\" Width: 22\" Depth: 10\" Weight: 19 lbs. Weight Capacity: 300 lbs. Color: White"
+   },
+   "url": "https://www.parentgiving.com/products/able-life-universal-floor-to-ceiling-grab-bar",
+   "handle": "able-life-universal-floor-to-ceiling-grab-bar",
+   "price_range": {
+    "min": {
+     "amount": 17499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 17499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994546512037",
+     "sku": "8140",
+     "title": "Each",
+     "description": {
+      "html": "The Wonder Pole can be installed anywhere there is a flat floor and flat ceiling, including the bathroom, bedroom, living room, dining room, and kitchen. The Wonder Pole cannot be used inside of a bathtub or shower, on a loose rug, or on a paneled or vaulted ceiling. Features: Height: 7'-9'6\" Width: 22\" Depth: 10\" Weight: 19 lbs. Weight Capacity: 300 lbs. Color: White"
+     },
+     "price": {
+      "amount": 17499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-able-life-universal-floor-to-ceiling-grab-bar-6874-4047.jpg?v=1675882629"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994546512037:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-able-life-universal-floor-to-ceiling-grab-bar-6874-4047.jpg?v=1675882629",
+     "alt_text": "Able Life Universal Floor to Ceiling Grab Bar"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Floor-to-Ceiling Transfer Poles"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289864843429",
+     "handle": "floor-to-ceiling-poles",
+     "title": "Floor-to-Ceiling Transfer Poles",
+     "description": {
+      "html": "Safety bars that tension mount between the floor & ceiling and are easy to install and/or move. For more safety products, check out our assist bed rails."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045702152357",
+   "title": "Drive Parallel Steel Clamp on Tub Rail",
+   "description": {
+    "html": "This durable white powder-coated steel clamp-on tub rail can fit just about any style of bathtub. The parallel style can adjust from 3-7 inches in width making installation a breeze. Sturdy handle design and a stainless steel locking mechanism both provide added security for up to 300 lbs., while non-wearing rubber pads ensure the product will not scratch your tub\\'s surface. Height of 17\". The clamp can close as small as 3 inches or as wide as 7 inches. This product features tool-free installation and is not for use on fiberglass tubs. It comes with a manufacturers limited lifetime warranty."
+   },
+   "url": "https://www.parentgiving.com/products/parallel-steel-clamp-on-tub-rail",
+   "handle": "parallel-steel-clamp-on-tub-rail",
+   "price_range": {
+    "min": {
+     "amount": 4799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4799,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994465411237",
+     "sku": "12036",
+     "title": "Each",
+     "description": {
+      "html": "This durable white powder-coated steel clamp-on tub rail can fit just about any style of bathtub. The parallel style can adjust from 3-7 inches in width making installation a breeze. Sturdy handle design and a stainless steel locking mechanism both provide added security for up to 300 lbs., while non-wearing rubber pads ensure the product will not scratch your tub\\'s surface. Height of 17\". The clamp can close as small as 3 inches or as wide as 7 inches. This product features tool-free installation and is not for use on fiberglass tubs. It comes with a manufacturers limited lifetime warranty."
+     },
+     "price": {
+      "amount": 4799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/ClamponRail.jpg?v=1735566525"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994465411237:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/ClamponRail.jpg?v=1735566525"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom and Shower Grab Bars",
+    "Bathtub"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858650277",
+     "handle": "shower-grab-bars",
+     "title": "Bathtub, Bathroom and Shower Grab Bars",
+     "description": {
+      "html": "Statistics repeatedly show that slips and falls in the bathtub are one of the most common causes of serious injury in the elderly and those with mobility issues. Getting in and out of a slippery bathtub can be difficult even when mobility isn't an issue. That's why installing a shower or bathtub grab bar, or floor to ceiling transfer pole is one of the most important safety enhancements to any bathroom. Grab bars for bathrooms are attached strategically to walls in the tub and shower area to offer a steadying brace to hold onto while getting in and out of the bath and when standing in the shower. It's one of the most helpful bathroom accessories used by those who live alone and want to maintain their independence as well as caregivers taking care of loved ones. Our selection of bathroom grab bars comes in a range of sizes, styles and finishes to best fit your needs and complement your bathroom decor. Choose from bathtub handles to shower knobs to safety rails. We have styles that can be affixed permanently as well as ones that can be removed when not in use. Non-wearing rubber pads ensure the product will not scratch your tub's surface. Easy and quick to install, many removable bars require tool-free installation. Specialized features such as textured gripping surfaces, adjustable heights and dual level designs for high-low support offer further protection from falls. With such trusted brands as Carex, Stander, Complete Medical and Drive Medical filling our inventory, you'll have peace of mind knowing that whichever one you select, it'll be durably made to offer exceptional stability. If needed, we also offer toilet handles and bars to facilitate getting up and down from the toilet, to further lower your risk of a fall in the bathroom. Whether you're shopping for yourself or a loved one, help to create the safest bathing environment possible with our quality selection of bathroom bars and railings. For bedroom safety, check out our grab bars for beds."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290244296869",
+     "handle": "best-bath-toilet-safety-products",
+     "title": "Bath and Toilet Safety Products for Aging in Place",
+     "description": {
+      "html": "Bathrooms require a little extra planning as the space itself can be limited and there are many hard surfaces to navigate. Our most popular bath and toileting safety products are clustered around the toilet (toilet seat risers and toilet safety frames), the bathtub (safety bath mats, tub grab bars, and transfer benches), and the shower (shower chairs, and floor to ceiling poles). Parentgiving carries a huge selection of only the highest rated bath safety products and we have the know-how to guide your product selection. Our Parentgiving picks are as follows:"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300361842853",
+     "handle": "bathtub-grab-bar-top-picks",
+     "title": "Bathtub Grab Bar & Mats Top Picks",
+     "description": {
+      "html": "Grab Bars give some needed support and comfort for the elderly getting in and out of the tub safely. These products can be mounted or attached to the walls. These Grab Bars are top of the line products with great designs from Parentgiving."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045911343269",
+   "title": "Stander Single Grab Bar Accessory",
+   "description": {
+    "html": "Place the Single Grab Bar Accessory from Signature Life anywhere on your Sure Stand Pole for multiple hand holds and more confidence to stand up on your own. Features: Customizable to be place anywhere on the pole that works best for you Use the multiple hand holds to make standing easier Note: Single Grab Bar Accessory only works with the Signature Life Sure Stand Pole by Stander Lifetime Warranty Dimensions: 8\"L x 8\"W x 3\"H Note: Only Grab Bar Note: If you are unsure if this the part you need, please call us at 888-746-2107 Monday-Thursday 9 AM ET \u2014 8 PM ET and until 5 PM ET on Friday as parts are not returnable. We're here to help to make sure you order correctly."
+   },
+   "url": "https://www.parentgiving.com/products/signature-life-sure-stand-pole-single-grab-bar-accessory-by-stander",
+   "handle": "signature-life-sure-stand-pole-single-grab-bar-accessory-by-stander",
+   "price_range": {
+    "min": {
+     "amount": 10000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12500,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994745249957",
+     "sku": "7627-DB",
+     "title": "Deep Bronze / Each",
+     "description": {
+      "html": "Place the Single Grab Bar Accessory from Signature Life anywhere on your Sure Stand Pole for multiple hand holds and more confidence to stand up on your own. Features: Customizable to be place anywhere on the pole that works best for you Use the multiple hand holds to make standing easier Note: Single Grab Bar Accessory only works with the Signature Life Sure Stand Pole by Stander Lifetime Warranty Dimensions: 8\"L x 8\"W x 3\"H Note: Only Grab Bar Note: If you are unsure if this the part you need, please call us at 888-746-2107 Monday-Thursday 9 AM ET \u2014 8 PM ET and until 5 PM ET on Friday as parts are not returnable. We're here to help to make sure you order correctly."
+     },
+     "price": {
+      "amount": 10000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Deep Bronze"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Stander_Acces_pole.jpg?v=1774825974"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994745249957:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994745315493",
+     "sku": "7627-GR",
+     "title": "Graphite / Each",
+     "description": {
+      "html": "Place the Single Grab Bar Accessory from Signature Life anywhere on your Sure Stand Pole for multiple hand holds and more confidence to stand up on your own. Features: Customizable to be place anywhere on the pole that works best for you Use the multiple hand holds to make standing easier Note: Single Grab Bar Accessory only works with the Signature Life Sure Stand Pole by Stander Lifetime Warranty Dimensions: 8\"L x 8\"W x 3\"H Note: Only Grab Bar Note: If you are unsure if this the part you need, please call us at 888-746-2107 Monday-Thursday 9 AM ET \u2014 8 PM ET and until 5 PM ET on Friday as parts are not returnable. We're here to help to make sure you order correctly."
+     },
+     "price": {
+      "amount": 10000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Graphite"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Stander_Acces_pole.jpg?v=1774825974"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994745315493:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Deep Bronze"
+      },
+      {
+       "label": "Graphite"
+      }
+     ]
+    },
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Stander_Acces_pole.jpg?v=1774825974"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bed Safety Accessories"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289859666085",
+     "handle": "stander-bed-rails",
+     "title": "Stander Products",
+     "description": {
+      "html": "Stander has quickly become a leader in innovative products that enhance mobility and extend independence. With a dedicated research and development team, the company is committed to further expanding its line to meet the growing needs of customers. Tools that answer real life needs are the hallmark of this company. Parentgiving is pleased to offer Stander mobility aids that make everyday life easier and more comfortable \u2014 at affordable prices. For many, daily tasks such as getting out of bed, standing up from the toilet or getting up out of a chair can be difficult. It's our goal to provide you and your loved ones with quality products that help you to feel safe and allow you to live your life to the fullest. Included is a wide range of in-home designs that offer support for getting in and out of bed and chairs, from bed rails and poles to organizers and standing aids that also hold personal items you need within reach. For those who have an active lifestyle, Stander also makes effective mobility items, such as its easy-to-fold walkers and car aids that offer support and easier seating."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289867989157",
+     "handle": "bed-safety-accessories",
+     "title": "Bed Safety Accessories",
+     "description": {
+      "html": "Our bed safety accessories make your or a loved one's life easier. From bedside tables, to rails, handles, and toilet seats, Parentgiving has you covered."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045701988517",
+   "title": "Comfort Grip Tub Rail - 16.5 Inches High",
+   "description": {
+    "html": "Designed from durable white plastic, this ergonomically designed tub rail from Drive Medical offers both stability and comfort for safe transfer to and from your tub. Its grip is comfortable and simple to use and its width adjusts anywhere from 3 - 6.5 inches. The product arrives easy-to-install and can be attached to your tub tool-free. This rail is ideal for use on fiberglass tubs. Specifications: Adjustable Width: 3 - 6.5 inches Weight Capacity: 300 lbs. Product Height: 16.5 inches Product Weight: 3.9 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/comfort-grip-tub-rail-165-inches-high",
+   "handle": "comfort-grip-tub-rail-165-inches-high",
+   "price_range": {
+    "min": {
+     "amount": 5199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994464919717",
+     "sku": "12044",
+     "title": "Each",
+     "description": {
+      "html": "Designed from durable white plastic, this ergonomically designed tub rail from Drive Medical offers both stability and comfort for safe transfer to and from your tub. Its grip is comfortable and simple to use and its width adjusts anywhere from 3 - 6.5 inches. The product arrives easy-to-install and can be attached to your tub tool-free. This rail is ideal for use on fiberglass tubs. Specifications: Adjustable Width: 3 - 6.5 inches Weight Capacity: 300 lbs. Product Height: 16.5 inches Product Weight: 3.9 lbs."
+     },
+     "price": {
+      "amount": 5199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/WhiteTubRail.jpg?v=1753706274"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994464919717:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/WhiteTubRail.jpg?v=1753706274"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom and Shower Grab Bars",
+    "Bathtub"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858650277",
+     "handle": "shower-grab-bars",
+     "title": "Bathtub, Bathroom and Shower Grab Bars",
+     "description": {
+      "html": "Statistics repeatedly show that slips and falls in the bathtub are one of the most common causes of serious injury in the elderly and those with mobility issues. Getting in and out of a slippery bathtub can be difficult even when mobility isn't an issue. That's why installing a shower or bathtub grab bar, or floor to ceiling transfer pole is one of the most important safety enhancements to any bathroom. Grab bars for bathrooms are attached strategically to walls in the tub and shower area to offer a steadying brace to hold onto while getting in and out of the bath and when standing in the shower. It's one of the most helpful bathroom accessories used by those who live alone and want to maintain their independence as well as caregivers taking care of loved ones. Our selection of bathroom grab bars comes in a range of sizes, styles and finishes to best fit your needs and complement your bathroom decor. Choose from bathtub handles to shower knobs to safety rails. We have styles that can be affixed permanently as well as ones that can be removed when not in use. Non-wearing rubber pads ensure the product will not scratch your tub's surface. Easy and quick to install, many removable bars require tool-free installation. Specialized features such as textured gripping surfaces, adjustable heights and dual level designs for high-low support offer further protection from falls. With such trusted brands as Carex, Stander, Complete Medical and Drive Medical filling our inventory, you'll have peace of mind knowing that whichever one you select, it'll be durably made to offer exceptional stability. If needed, we also offer toilet handles and bars to facilitate getting up and down from the toilet, to further lower your risk of a fall in the bathroom. Whether you're shopping for yourself or a loved one, help to create the safest bathing environment possible with our quality selection of bathroom bars and railings. For bedroom safety, check out our grab bars for beds."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300361842853",
+     "handle": "bathtub-grab-bar-top-picks",
+     "title": "Bathtub Grab Bar & Mats Top Picks",
+     "description": {
+      "html": "Grab Bars give some needed support and comfort for the elderly getting in and out of the tub safely. These products can be mounted or attached to the walls. These Grab Bars are top of the line products with great designs from Parentgiving."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045869662373",
+   "title": "Wonder Pole Premium by Stander",
+   "description": {
+    "html": "Features: Offers support to sit and stand to prevent falls Two customizable grab bars to any height or angle Installs with tension between floor and ceiling Adjusts to fit flat and vaulted ceilings 7\u2019 to 10\u2019 tall Two attractive colors to match your style: Dark Bronze & Metallic Gray Installs in minutes without additional tools This is the only extender that will work on Pole Signature Life Sure Stand Pole - (Extension Piece Only) by Stander. Specifications: Height Adjustment: 7\u2019 to 10\u2019 Top Beam: 22\" L x 10\" W Pole Diameter: 1.5\u201d Weight Capacity: 300 lbs Weight: 20 lbs Mount Type: Tension-mounted"
+   },
+   "url": "https://www.parentgiving.com/products/signature-life-sure-stand-pole-by-stander",
+   "handle": "signature-life-sure-stand-pole-by-stander",
+   "price_range": {
+    "min": {
+     "amount": 31000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 31000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 31000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 31000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994697146533",
+     "sku": "7620-DB",
+     "title": "Deep Bronze / Each",
+     "description": {
+      "html": "Features: Offers support to sit and stand to prevent falls Two customizable grab bars to any height or angle Installs with tension between floor and ceiling Adjusts to fit flat and vaulted ceilings 7\u2019 to 10\u2019 tall Two attractive colors to match your style: Dark Bronze & Metallic Gray Installs in minutes without additional tools This is the only extender that will work on Pole Signature Life Sure Stand Pole - (Extension Piece Only) by Stander. Specifications: Height Adjustment: 7\u2019 to 10\u2019 Top Beam: 22\" L x 10\" W Pole Diameter: 1.5\u201d Weight Capacity: 300 lbs Weight: 20 lbs Mount Type: Tension-mounted"
+     },
+     "price": {
+      "amount": 31000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 31000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Deep Bronze"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Pole_Premium-1.jpg?v=1774635925"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994697146533:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994697179301",
+     "sku": "7620-GR",
+     "title": "Graphite / Each",
+     "description": {
+      "html": "Features: Offers support to sit and stand to prevent falls Two customizable grab bars to any height or angle Installs with tension between floor and ceiling Adjusts to fit flat and vaulted ceilings 7\u2019 to 10\u2019 tall Two attractive colors to match your style: Dark Bronze & Metallic Gray Installs in minutes without additional tools This is the only extender that will work on Pole Signature Life Sure Stand Pole - (Extension Piece Only) by Stander. Specifications: Height Adjustment: 7\u2019 to 10\u2019 Top Beam: 22\" L x 10\" W Pole Diameter: 1.5\u201d Weight Capacity: 300 lbs Weight: 20 lbs Mount Type: Tension-mounted"
+     },
+     "price": {
+      "amount": 31000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 31000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Graphite"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Pole_Premium-1.jpg?v=1774635925"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994697179301:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Deep Bronze"
+      },
+      {
+       "label": "Graphite"
+      }
+     ]
+    },
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Pole_Premium-1.jpg?v=1774635925"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Floor-to-Ceiling Transfer Poles"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858650277",
+     "handle": "shower-grab-bars",
+     "title": "Bathtub, Bathroom and Shower Grab Bars",
+     "description": {
+      "html": "Statistics repeatedly show that slips and falls in the bathtub are one of the most common causes of serious injury in the elderly and those with mobility issues. Getting in and out of a slippery bathtub can be difficult even when mobility isn't an issue. That's why installing a shower or bathtub grab bar, or floor to ceiling transfer pole is one of the most important safety enhancements to any bathroom. Grab bars for bathrooms are attached strategically to walls in the tub and shower area to offer a steadying brace to hold onto while getting in and out of the bath and when standing in the shower. It's one of the most helpful bathroom accessories used by those who live alone and want to maintain their independence as well as caregivers taking care of loved ones. Our selection of bathroom grab bars comes in a range of sizes, styles and finishes to best fit your needs and complement your bathroom decor. Choose from bathtub handles to shower knobs to safety rails. We have styles that can be affixed permanently as well as ones that can be removed when not in use. Non-wearing rubber pads ensure the product will not scratch your tub's surface. Easy and quick to install, many removable bars require tool-free installation. Specialized features such as textured gripping surfaces, adjustable heights and dual level designs for high-low support offer further protection from falls. With such trusted brands as Carex, Stander, Complete Medical and Drive Medical filling our inventory, you'll have peace of mind knowing that whichever one you select, it'll be durably made to offer exceptional stability. If needed, we also offer toilet handles and bars to facilitate getting up and down from the toilet, to further lower your risk of a fall in the bathroom. Whether you're shopping for yourself or a loved one, help to create the safest bathing environment possible with our quality selection of bathroom bars and railings. For bedroom safety, check out our grab bars for beds."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289859666085",
+     "handle": "stander-bed-rails",
+     "title": "Stander Products",
+     "description": {
+      "html": "Stander has quickly become a leader in innovative products that enhance mobility and extend independence. With a dedicated research and development team, the company is committed to further expanding its line to meet the growing needs of customers. Tools that answer real life needs are the hallmark of this company. Parentgiving is pleased to offer Stander mobility aids that make everyday life easier and more comfortable \u2014 at affordable prices. For many, daily tasks such as getting out of bed, standing up from the toilet or getting up out of a chair can be difficult. It's our goal to provide you and your loved ones with quality products that help you to feel safe and allow you to live your life to the fullest. Included is a wide range of in-home designs that offer support for getting in and out of bed and chairs, from bed rails and poles to organizers and standing aids that also hold personal items you need within reach. For those who have an active lifestyle, Stander also makes effective mobility items, such as its easy-to-fold walkers and car aids that offer support and easier seating."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864843429",
+     "handle": "floor-to-ceiling-poles",
+     "title": "Floor-to-Ceiling Transfer Poles",
+     "description": {
+      "html": "Safety bars that tension mount between the floor & ceiling and are easy to install and/or move. For more safety products, check out our assist bed rails."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289867989157",
+     "handle": "bed-safety-accessories",
+     "title": "Bed Safety Accessories",
+     "description": {
+      "html": "Our bed safety accessories make your or a loved one's life easier. From bedside tables, to rails, handles, and toilet seats, Parentgiving has you covered."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8368305340581",
+   "title": "Medline Bed Assist Bar",
+   "description": {
+    "html": "Our bed assist bar provides help getting in and out of bed It features a soft grip for comfort, a pocket for handy storage and straps for added safety This sturdily constructed bar is built to last Includes a nylon bag for storage Not fully weight bearing"
+   },
+   "url": "https://www.parentgiving.com/products/medline-bed-assist-bar-1",
+   "handle": "medline-bed-assist-bar-1",
+   "price_range": {
+    "min": {
+     "amount": 3399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3799,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42858739663013",
+     "sku": "BA6800",
+     "title": "Each",
+     "description": {
+      "html": "Our bed assist bar provides help getting in and out of bed It features a soft grip for comfort, a pocket for handy storage and straps for added safety This sturdily constructed bar is built to last Includes a nylon bag for storage Not fully weight bearing"
+     },
+     "price": {
+      "amount": 3399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/MedlineAssistBar_2a0ce005-cba0-4bb7-b3d0-ee314e62b9f6.jpg?v=1705678834"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/42858739663013:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/MedlineAssistBar_2a0ce005-cba0-4bb7-b3d0-ee314e62b9f6.jpg?v=1705678834"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bed Assist Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289860845733",
+     "handle": "assist-bed-rails",
+     "title": "Bed Assist Rails",
+     "description": {
+      "html": "Assist bed rails and travel bed rails for adults are sturdy handles that provide balance and stability when getting in and out of bed or changing positions. We carry high quality assist rails by top names like Stander, Carex and SafetySure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300359975077",
+     "handle": "bed-rails-bed-assist-bar-top-picks",
+     "title": "Bed Rails & Bed Assist Bar Top Picks",
+     "description": {
+      "html": "Adult Bed Rails are a great support tool for when getting in and out of bed is a challenge. Often family caregivers call us looking for support structures like hospital beds, when in reality, a good bed rail can serve a similar purpose at a fraction of the cost. A lack of upper body strength, poor mobility and balance issues are some factors that can make this activity of daily living difficult and even painful. One of the simplest yet most effective solutions is a supportive bed rail. Quickly installed, a rail offers one or more easily accessible grasping points to ease lying down and standing up from bed and adjusting position while in bed. For those looking for a little help without a large footprint in the bedroom, these bed rails and bed rails assist fit that \"small footprint\" category. The following are our Parentgiving Picks for best Adult Bed Rails and Assist Bars."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNelk0TXpBMU16UXdOVGd4TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

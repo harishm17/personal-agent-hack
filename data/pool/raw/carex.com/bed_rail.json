@@ -1,0 +1,1564 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://carex.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Carex",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "carex.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "24065048681"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "24065048681"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4121107693673",
+   "title": "Carex Bedside Rail",
+   "description": {
+    "html": "The Bedside Rail is designed to allow the user to get in and out of bed safely and comfortably. This rail is tool-free, quick, convenient, and easy to assemble. Place the rail under the bed frame and adjust to fit. The bed rail for adults adjusts from 32\" to 44\" in height with legs reaching all the way to the floor for added support. The bed assist rail includes foam grip for comfort, underbed rail strap for added safety, and removable mesh pouch. Durably designed for optimal support. The bed support rail is designed to provide support when getting in and out of bed effectively. The bed guard rail is ideal for seniors, children, and disabled persons needing help getting in and out of bed. Functions as a bedside rail and safety handrail. The 2-in1 versatile design allows the bed frame rail to be a source of support and a fall prevention device. The under mattress bed rail keeps users from falling out of bed. Adjustable to fit most beds. The bed safety rail is height adjustable from 32\" to 44\". It fits twin, full, queen, and king-sized beds on both sides. The Carex Bed Rail features a safety strap that loops around the rail, connecting to the bed frame. Supports up to 250 lbs. The home bed rail for beds is an excellent solution for all ages and abilities. It works for toddlers prone to falling out of bed, an adult recovering from surgery, or anyone in need of extra help. The heavy-duty bed rail is a universal solution. Includes a removable mesh pouch for storage. The collapsible bedside rail includes a convenient mesh pouch to store personal items and accessories. It's perfect for holding glasses, books, tissues, medical supplies, remotes, and more. Trust in Carex for your in-home safety needs. For 35+ years, we've helped people keep their independence and improve the quality of their life. Our in-home safety products are battle-tested, customer-centric, and designed to improve the safety of the user. All of our products fall under our warranty and satisfaction guarantee. If you're not happy, we'll make it right. Weight Capacity: 250 lbs. Product Dims (h x w x d): 32 - 44\" x 14\" x 29\" Product Weight: 5.7 lbs. Package Dims (h x w x d): 14.17\" x 17.97\" x 3.35\" Package Weight: 6.4 lbs. Assembly Instructions (PDF)"
+   },
+   "url": "https://carex.com/products/carex-bedside-rail",
+   "handle": "carex-bedside-rail",
+   "price_range": {
+    "min": {
+     "amount": 6500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226918703209",
+     "sku": "FGP57100 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Bedside Rail is designed to allow the user to get in and out of bed safely and comfortably. This rail is tool-free, quick, convenient, and easy to assemble. Place the rail under the bed frame and adjust to fit. The bed rail for adults adjusts from 32\" to 44\" in height with legs reaching all the way to the floor for added support. The bed assist rail includes foam grip for comfort, underbed rail strap for added safety, and removable mesh pouch. Durably designed for optimal support. The bed support rail is designed to provide support when getting in and out of bed effectively. The bed guard rail is ideal for seniors, children, and disabled persons needing help getting in and out of bed. Functions as a bedside rail and safety handrail. The 2-in1 versatile design allows the bed frame rail to be a source of support and a fall prevention device. The under mattress bed rail keeps users from falling out of bed. Adjustable to fit most beds. The bed safety rail is height adjustable from 32\" to 44\". It fits twin, full, queen, and king-sized beds on both sides. The Carex Bed Rail features a safety strap that loops around the rail, connecting to the bed frame. Supports up to 250 lbs. The home bed rail for beds is an excellent solution for all ages and abilities. It works for toddlers prone to falling out of bed, an adult recovering from surgery, or anyone in need of extra help. The heavy-duty bed rail is a universal solution. Includes a removable mesh pouch for storage. The collapsible bedside rail includes a convenient mesh pouch to store personal items and accessories. It's perfect for holding glasses, books, tissues, medical supplies, remotes, and more. Trust in Carex for your in-home safety needs. For 35+ years, we've helped people keep their independence and improve the quality of their life. Our in-home safety products are battle-tested, customer-centric, and designed to improve the safety of the user. All of our products fall under our warranty and satisfaction guarantee. If you're not happy, we'll make it right. Weight Capacity: 250 lbs. Product Dims (h x w x d): 32 - 44\" x 14\" x 29\" Product Weight: 5.7 lbs. Package Dims (h x w x d): 14.17\" x 17.97\" x 3.35\" Package Weight: 6.4 lbs. Assembly Instructions (PDF)"
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/P57100_Web_Images-01.jpg?v=1679936549"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226918703209:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/P57100_Web_Images-01.jpg?v=1679936549",
+     "alt_text": "Carex Bedside Rail - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BedRails",
+    "Brand_Carex",
+    "Carex",
+    "Condition_Osteoporosis",
+    "Height Range_32\" to 44\"",
+    "HomeCare",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Product Category_Home Care",
+    "Product Type_Bed Support Rail",
+    "Weight Capacity_250 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150229385321",
+     "handle": "home-care-medical-products-and-equipment",
+     "title": "Home Care Medical Products and Equipment",
+     "description": {
+      "html": "Carex home health care equipment allows for more freedom and independence with daily living. Carex offers a range of high-quality medical supplies. Our varied assortment includes enabling products such as pillows and cushions, first aid items, in-home care products, light therapy, bed rails and overbed tables. Our senior, handicapped, and elderly care products offer physical support, hygiene care, exercise and fitness aids, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150244720745",
+     "handle": "removeable-bed-support-rails",
+     "title": "Removable Bed Support Rails",
+     "description": {
+      "html": "Our Bed Rails for adults, seniors, and handicapped are designed for in-home use and are convenient, versatile and provide needed security, fall prevention, and stability for those who need assistance getting in and out of bed. Our removable bed rails are the ultimate bed assist devices with height adjustable, serving as a bed grab bar, and reducing the risk of rolling out of bed and risking injury. Each bed assist rail slides between the mattress and bed frame on the side of the bed allowing for easy installation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121107628137",
+   "title": "Carex Easy-Up Bed Rail",
+   "description": {
+    "html": "The Easy-up Bed Rail is a combination of a safety rail and bed support rail for ultimate convenience and safety. Designed for use at home, this bed rail for adults features a black powder coating and a compact frame. It has a single-step release that allows users to easily height adjust the rails. Combines a padded bed support bar and safety rail. The bed guard rails 2 in 1 design offers a grab bar to assist with getting in and out of bed and a safety rail to prevent falls. The under mattress bed rail features a large width to provide plenty of surface area to grab on to. Universally fits most bed sizes. The bed assist rail fits most beds, so you don't have to worry about it not fitting. It fits under the mattress and utilizes the mattress's weight to stay in place and offer sturdy support. Easy to raise or lower the height. The adjustable bed rails for seniors features a single-step to adjust the height easily. The bed frame rail can be height adjusted from 31\" to 37\" to meet user needs and the bed height. Tool-free assembly. Installing the bed rail for beds is quick, easy, and requires no tools. The bed side rail can be installed on either sides of the bed. Supports up to 300 lbs. The heavy-duty bed rail provides a durable and reliable safety and support surface. The safety strap holds the Carex bed rail in place and secure. Trust in Carex for your in-home safety needs. For 35+ years, we've helped people keep their independence and improve the quality of their life. Our in-home safety products are battle-tested, customer-centric, and designed to improve the safety of the user. All of our products fall under our warranty and satisfaction guarantee. If you're not happy, we'll make it right. WARNING ENTRAPMENT, STRANGULATION, SUFFOCATION, AND FALL HAZARDS Gaps in an around this product can entrap and kill. People with Alzheimer's disease or dementia, or those who are sedated, confused, or frail are at increase risk of entrapment and strangulation. People attempting to climb over this product are at increased risk of injury or death from falls. Always make sure this product is properly secured to the bed. If product can move away from bed or mattress, it can lead to entrapment and death. WARNING SUFFOCATION, STRANGULATION, ENTRAPMENT HAZARD If product is installed incorrectly or moves from its initial position, gaps can occur which can entrap and kill. People with Alzheimer's disease, dementia, or other neurological conditions, or those who are sedated, confused, or frail, are at increased risk of entrapment, suffocation and strangulation. Weight Capacity: 300 lbs. Product Weight: 12 lbs Adjustable: Yes Product Dims (h x w x d): 31\" - 37\" x 35\" - 45\" x 20\" Package Dims (h x w x d): 16.5\" x 25.25\" x 3.13\" Package Weight: 15.5 lbs Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-easy-up-bed-rail",
+   "handle": "carex-easy-up-bed-rail",
+   "price_range": {
+    "min": {
+     "amount": 10910,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10910,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226918670441",
+     "sku": "FGP56100 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Easy-up Bed Rail is a combination of a safety rail and bed support rail for ultimate convenience and safety. Designed for use at home, this bed rail for adults features a black powder coating and a compact frame. It has a single-step release that allows users to easily height adjust the rails. Combines a padded bed support bar and safety rail. The bed guard rails 2 in 1 design offers a grab bar to assist with getting in and out of bed and a safety rail to prevent falls. The under mattress bed rail features a large width to provide plenty of surface area to grab on to. Universally fits most bed sizes. The bed assist rail fits most beds, so you don't have to worry about it not fitting. It fits under the mattress and utilizes the mattress's weight to stay in place and offer sturdy support. Easy to raise or lower the height. The adjustable bed rails for seniors features a single-step to adjust the height easily. The bed frame rail can be height adjusted from 31\" to 37\" to meet user needs and the bed height. Tool-free assembly. Installing the bed rail for beds is quick, easy, and requires no tools. The bed side rail can be installed on either sides of the bed. Supports up to 300 lbs. The heavy-duty bed rail provides a durable and reliable safety and support surface. The safety strap holds the Carex bed rail in place and secure. Trust in Carex for your in-home safety needs. For 35+ years, we've helped people keep their independence and improve the quality of their life. Our in-home safety products are battle-tested, customer-centric, and designed to improve the safety of the user. All of our products fall under our warranty and satisfaction guarantee. If you're not happy, we'll make it right. WARNING ENTRAPMENT, STRANGULATION, SUFFOCATION, AND FALL HAZARDS Gaps in an around this product can entrap and kill. People with Alzheimer's disease or dementia, or those who are sedated, confused, or frail are at increase risk of entrapment and strangulation. People attempting to climb over this product are at increased risk of injury or death from falls. Always make sure this product is properly secured to the bed. If product can move away from bed or mattress, it can lead to entrapment and death. WARNING SUFFOCATION, STRANGULATION, ENTRAPMENT HAZARD If product is installed incorrectly or moves from its initial position, gaps can occur which can entrap and kill. People with Alzheimer's disease, dementia, or other neurological conditions, or those who are sedated, confused, or frail, are at increased risk of entrapment, suffocation and strangulation. Weight Capacity: 300 lbs. Product Weight: 12 lbs Adjustable: Yes Product Dims (h x w x d): 31\" - 37\" x 35\" - 45\" x 20\" Package Dims (h x w x d): 16.5\" x 25.25\" x 3.13\" Package Weight: 15.5 lbs Instruction Manual"
+     },
+     "price": {
+      "amount": 10910,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/P561-00_Web_Images-02.jpg?v=1692898686"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226918670441:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/P561-00_Web_Images-02.jpg?v=1692898686",
+     "alt_text": "Carex Easy-Up Bed Rail - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "BedRails",
+    "Brand_Carex",
+    "Carex",
+    "Condition_Osteoporosis",
+    "Height Range_31\" to 37\"",
+    "HomeCare",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Product Category_Home Care",
+    "Product Type_Bed Support Rail"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150229385321",
+     "handle": "home-care-medical-products-and-equipment",
+     "title": "Home Care Medical Products and Equipment",
+     "description": {
+      "html": "Carex home health care equipment allows for more freedom and independence with daily living. Carex offers a range of high-quality medical supplies. Our varied assortment includes enabling products such as pillows and cushions, first aid items, in-home care products, light therapy, bed rails and overbed tables. Our senior, handicapped, and elderly care products offer physical support, hygiene care, exercise and fitness aids, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150244720745",
+     "handle": "removeable-bed-support-rails",
+     "title": "Removable Bed Support Rails",
+     "description": {
+      "html": "Our Bed Rails for adults, seniors, and handicapped are designed for in-home use and are convenient, versatile and provide needed security, fall prevention, and stability for those who need assistance getting in and out of bed. Our removable bed rails are the ultimate bed assist devices with height adjustable, serving as a bed grab bar, and reducing the risk of rolling out of bed and risking injury. Each bed assist rail slides between the mattress and bed frame on the side of the bed allowing for easy installation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121101795433",
+   "title": "Carex Bathroom Safety Rail",
+   "description": {
+    "html": "Add a new level of bathroom safety, comfort, and independence with the Carex Bathroom Safety Rail. The toilet safety rail stands on its own without installation, ideal for adding security and stability around the bathroom. The toilet support rail can easily fit around your toilet to provide safe support and assistance while sitting down or rising from the toilet. Stand-alone design allows it to be used at the toilet or sink. The stand alone toilet safety rail doubles as a toilet grab rail and walker. It can be used in the bathroom or sink for standing support. Provides sitting, standing, and balance assistance. The Carex toilet support rail offers a sturdy source of support for anyone weak in strength. Because it's a free standing support rail, it provides flexibility to be used throughout the home. Tool-free assembly. Free standing toilet safety rails are perfect for anyone not wanting a permanent fixture. Our toilet support bar is quick and easy to set up in minutes. It fits around any standard toilet with no tools or installation needed. Height adjustable from 27\" to 33\". Having the proper height is essential with any bath safety accessory. Our toilet seat safety rail can be quickly adjusted to meet your needs or multiple users' needs. Supports up to 300 lbs. The toilet rail is made of sturdy and reliable aluminum for daily, long-term use. Its high weight capacity makes it an ideal toilet seat rail for bariatric use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Package Weight: 9 lbs. Height Adjustable: Yes Product Weight: 9.65 lbs. Attachable: No Stand Alone: Yes Package Dims (h x w x d): 23.5\" x 17\" x 4\" Product Dims (h x w x d): 27\" - 33\" x 19.75\" x 20\" Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-bathroom-safety-rail",
+   "handle": "carex-bathroom-safety-rail",
+   "price_range": {
+    "min": {
+     "amount": 6596,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6596,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226859262057",
+     "sku": "FGB36900 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Add a new level of bathroom safety, comfort, and independence with the Carex Bathroom Safety Rail. The toilet safety rail stands on its own without installation, ideal for adding security and stability around the bathroom. The toilet support rail can easily fit around your toilet to provide safe support and assistance while sitting down or rising from the toilet. Stand-alone design allows it to be used at the toilet or sink. The stand alone toilet safety rail doubles as a toilet grab rail and walker. It can be used in the bathroom or sink for standing support. Provides sitting, standing, and balance assistance. The Carex toilet support rail offers a sturdy source of support for anyone weak in strength. Because it's a free standing support rail, it provides flexibility to be used throughout the home. Tool-free assembly. Free standing toilet safety rails are perfect for anyone not wanting a permanent fixture. Our toilet support bar is quick and easy to set up in minutes. It fits around any standard toilet with no tools or installation needed. Height adjustable from 27\" to 33\". Having the proper height is essential with any bath safety accessory. Our toilet seat safety rail can be quickly adjusted to meet your needs or multiple users' needs. Supports up to 300 lbs. The toilet rail is made of sturdy and reliable aluminum for daily, long-term use. Its high weight capacity makes it an ideal toilet seat rail for bariatric use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Package Weight: 9 lbs. Height Adjustable: Yes Product Weight: 9.65 lbs. Attachable: No Stand Alone: Yes Package Dims (h x w x d): 23.5\" x 17\" x 4\" Product Dims (h x w x d): 27\" - 33\" x 19.75\" x 20\" Instruction Manual"
+     },
+     "price": {
+      "amount": 6596,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/71k1AKm6c3L.__AC_SX300_SY300_QL70_FMwebp.webp?v=1688753857"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226859262057:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/71k1AKm6c3L.__AC_SX300_SY300_QL70_FMwebp.webp?v=1688753857",
+     "alt_text": "Carex Bathroom Safety Rail - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "BedRails",
+    "Brand_Carex",
+    "Carex",
+    "Condition_Bariatric",
+    "Condition_Hip Injury",
+    "Condition_Osteoporosis",
+    "Height Range_27\" to 33\"",
+    "HomeCare",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Product Category_Bathroom Safety",
+    "Product Category_Home Care",
+    "Product Type_Toilet Safety Rail",
+    "Stand Alone_Yes",
+    "ToiletSafetyRails",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150219817065",
+     "handle": "bariatric-obesity-products",
+     "title": "Bariatric/Obesity Products and Equipment",
+     "description": {
+      "html": "Those with bariatric conditions struggle with day-to-day activities such as personal hygiene and walking. Carex Health Brand's bariatric products include specialized equipment with heavy-duty, reinforced frames allowing bariatric patients to gain back their independence. Each bariatric product is designed to withstand higher weights for quality care. Our bariatric products are designed to make activities of daily living easy to perform and with as much independence as possible. Please be sure to check the weight capacity of each product for safety before using."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150229385321",
+     "handle": "home-care-medical-products-and-equipment",
+     "title": "Home Care Medical Products and Equipment",
+     "description": {
+      "html": "Carex home health care equipment allows for more freedom and independence with daily living. Carex offers a range of high-quality medical supplies. Our varied assortment includes enabling products such as pillows and cushions, first aid items, in-home care products, light therapy, bed rails and overbed tables. Our senior, handicapped, and elderly care products offer physical support, hygiene care, exercise and fitness aids, and more."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7425343619177",
+   "title": "Carex Stand-Alone Adjustable Toilet Safety Frame",
+   "description": {
+    "html": "The Carex Stand-Alone Adjustable Toilet Safety Frame is an essential solution for those seeking support and stability in the bathroom. This innovative frame enhances safety and empowers individuals to maintain their independence during toilet use. Experience peace of mind and comfort with this invaluable addition to your bathroom setup. Enhances safety and promotes toilet independence. Individuals with balance and stability challenges often struggle to sit down or rise from the toilet. Our innovative safety frame provides essential support, significantly reducing the risk of falls and making the bathroom experience much more manageable. Quick and tool-free setup. Enjoy hassle-free assembly that takes just minutes and requires no tools at all. Flexible and easy to position. This safety frame's stand-alone design effortlessly allows it to be placed or removed wherever needed. Adjustable height for personalized comfort. The frame can be modified from 24\" to 29\", ensuring it meets the needs of users of all heights. Includes a handy storage solution. Featuring a built-in magazine rack, this frame offers the perfect spot for reading materials, enhancing the bathroom experience. Robust construction supports up to 300 lbs. Our toilet frame is engineered to endure rigorous use, capable of safely supporting up to 300 lbs, with durable aluminum materials specially designed to thrive in the humid bathroom environment."
+   },
+   "url": "https://carex.com/products/carex-stand-alone-adjustable-toilet-safety-frame",
+   "handle": "carex-stand-alone-adjustable-toilet-safety-frame",
+   "price_range": {
+    "min": {
+     "amount": 9423,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9423,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41898615701609",
+     "sku": "FGE815C0 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Carex Stand-Alone Adjustable Toilet Safety Frame is an essential solution for those seeking support and stability in the bathroom. This innovative frame enhances safety and empowers individuals to maintain their independence during toilet use. Experience peace of mind and comfort with this invaluable addition to your bathroom setup. Enhances safety and promotes toilet independence. Individuals with balance and stability challenges often struggle to sit down or rise from the toilet. Our innovative safety frame provides essential support, significantly reducing the risk of falls and making the bathroom experience much more manageable. Quick and tool-free setup. Enjoy hassle-free assembly that takes just minutes and requires no tools at all. Flexible and easy to position. This safety frame's stand-alone design effortlessly allows it to be placed or removed wherever needed. Adjustable height for personalized comfort. The frame can be modified from 24\" to 29\", ensuring it meets the needs of users of all heights. Includes a handy storage solution. Featuring a built-in magazine rack, this frame offers the perfect spot for reading materials, enhancing the bathroom experience. Robust construction supports up to 300 lbs. Our toilet frame is engineered to endure rigorous use, capable of safely supporting up to 300 lbs, with durable aluminum materials specially designed to thrive in the humid bathroom environment."
+     },
+     "price": {
+      "amount": 9423,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGE815C00000_Web_Images-03.jpg?v=1729609931"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/41898615701609:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGE815C00000_Web_Images-03.jpg?v=1729609931",
+     "alt_text": "A white toilet safety frame in front of a toilet"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BedRails",
+    "Brand_Carex",
+    "Carex",
+    "Condition_Bariatric",
+    "Condition_Hip Injury",
+    "Condition_Osteoporosis",
+    "Height Range_24\" to 29\"",
+    "HomeCare",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Product Category_Bathroom Safety",
+    "Product Category_Home Care",
+    "Product Type_Toilet Safety Rail",
+    "Stand Alone_Yes",
+    "ToiletSafetyRails",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150219817065",
+     "handle": "bariatric-obesity-products",
+     "title": "Bariatric/Obesity Products and Equipment",
+     "description": {
+      "html": "Those with bariatric conditions struggle with day-to-day activities such as personal hygiene and walking. Carex Health Brand's bariatric products include specialized equipment with heavy-duty, reinforced frames allowing bariatric patients to gain back their independence. Each bariatric product is designed to withstand higher weights for quality care. Our bariatric products are designed to make activities of daily living easy to perform and with as much independence as possible. Please be sure to check the weight capacity of each product for safety before using."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150229385321",
+     "handle": "home-care-medical-products-and-equipment",
+     "title": "Home Care Medical Products and Equipment",
+     "description": {
+      "html": "Carex home health care equipment allows for more freedom and independence with daily living. Carex offers a range of high-quality medical supplies. Our varied assortment includes enabling products such as pillows and cushions, first aid items, in-home care products, light therapy, bed rails and overbed tables. Our senior, handicapped, and elderly care products offer physical support, hygiene care, exercise and fitness aids, and more."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121101500521",
+   "title": "Carex Toilet Safety Frame",
+   "description": {
+    "html": "Enhance your independence and bath safety with the Carex Toilet Support Rail. The toilet safety rail provides a source of support for users to safety stand or sit at the toilet. To maximize comfort, the toilet support bar is height adjustable to meet user needs. It fits most toilets with an adjustable width from 18\" to 20\". Installation and set up is quick and easy within minutes. Height and width adjustable. The toilet hand rail has an adjustable width from 18\" to 20\" to fist most toilets. Its height adjusts as well to provide custom toilet grab rail support when sitting or standing. Cushioned hand grips for a comfortable experience. Hard grips on any toilet seat rail can make it difficult to use for those with fragile hands. The toilet assist rail features Hypalon cushioned hand grips for added comfort. It is an ideal bathroom safety rail for elderly persons, disabled, or anyone in need of a comfortable bathroom aid. Keeps users safe and independent. Remaining comfortable and independent in the bathroom helps maintain one's quality of life. Adjustable toilet safety rails provide safety and support for those that struggle with sitting, standing, or balancing. Non-slip rubber tips keep it in place. Improperly designed toilet arm rails can post a serious fall risk. Our handicap toilet rail features non-slip rubber tips to keep it in place and from falling. Easy to install. Installing the toilet seat safety rail is quick and easy. Supports up to 300 lbs. The steel construction gives the toilet frame a strong and durable build, perfect for daily long-term use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lb Product Dims (h x w x d): 27.5\" - 31.5\" x 20.5\" x 17.5\" Product Weight: 3 lb Package Dims (h x w x d): 20\" x 3.5\" x 20\" Package Weight: 4.7 lb Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-toilet-safety-frame",
+   "handle": "carex-toilet-safety-frame",
+   "price_range": {
+    "min": {
+     "amount": 4582,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4582,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226854346857",
+     "sku": "FGB35800 GRAY",
+     "title": "Default Title",
+     "description": {
+      "html": "Enhance your independence and bath safety with the Carex Toilet Support Rail. The toilet safety rail provides a source of support for users to safety stand or sit at the toilet. To maximize comfort, the toilet support bar is height adjustable to meet user needs. It fits most toilets with an adjustable width from 18\" to 20\". Installation and set up is quick and easy within minutes. Height and width adjustable. The toilet hand rail has an adjustable width from 18\" to 20\" to fist most toilets. Its height adjusts as well to provide custom toilet grab rail support when sitting or standing. Cushioned hand grips for a comfortable experience. Hard grips on any toilet seat rail can make it difficult to use for those with fragile hands. The toilet assist rail features Hypalon cushioned hand grips for added comfort. It is an ideal bathroom safety rail for elderly persons, disabled, or anyone in need of a comfortable bathroom aid. Keeps users safe and independent. Remaining comfortable and independent in the bathroom helps maintain one's quality of life. Adjustable toilet safety rails provide safety and support for those that struggle with sitting, standing, or balancing. Non-slip rubber tips keep it in place. Improperly designed toilet arm rails can post a serious fall risk. Our handicap toilet rail features non-slip rubber tips to keep it in place and from falling. Easy to install. Installing the toilet seat safety rail is quick and easy. Supports up to 300 lbs. The steel construction gives the toilet frame a strong and durable build, perfect for daily long-term use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lb Product Dims (h x w x d): 27.5\" - 31.5\" x 20.5\" x 17.5\" Product Weight: 3 lb Package Dims (h x w x d): 20\" x 3.5\" x 20\" Package Weight: 4.7 lb Instruction Manual"
+     },
+     "price": {
+      "amount": 4582,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-toilet-assist-safety-rails-carex-toilet-safety-frame-28288338690153.png?v=1679945499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226854346857:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-toilet-assist-safety-rails-carex-toilet-safety-frame-28288338690153.png?v=1679945499",
+     "alt_text": "Carex Toilet Safety Frame - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Condition_Hip Injury",
+    "Height Range_18\" to 20\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Product Category_Bathroom Safety",
+    "Product Type_Toilet Safety Rail",
+    "Stand Alone_No",
+    "ToiletSafetyRails",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150242361449",
+     "handle": "toilet-assist-safety-rails",
+     "title": "Toilet Assist Safety Rails",
+     "description": {
+      "html": "Toilet Safety Rails and Safety Frames for toilets can be conveniently paired with Raised Toilet Seats to add additional support and bathroom safety. Carex Frames and toilet Rails are available to attach directly to the toilet (easy to install) or as a stand-alone toilet grab bars with no installation needed, fitting your standard toilet with adjustable height. Our safety frames and rails can be used for bariatric patients with a weight capacity of up to 300 pounds. Please check the product details for further information."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121098322025",
+   "title": "Carex Dual Level Bathtub Rail",
+   "description": {
+    "html": "Easily and effortlessly get in and out of the tub with the Carex Dual Level Bathtub Safety Rail. The bathtub bar features an attractive chrome finished to inhibit rust. Its dual level design provides a high and low gripping area for help getting out of the bathtub. Each gripping area has a textured finish for added grip. The bathroom safety rail fits most tubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to fit most standard tubs securely. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily, and it will withstand even the wettest bathroom. Two surfaces to grip. The bath assist device has two levels of gripping surfaces to offer convenience and support. Users can use one surface for getting in and the other for getting out of the tub. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide a flexible grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and straightforward. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 250 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those vulnerable in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 5 lbs. Weight Capacity: 200 lbs. Package Dims (h x w x d): 1.5\" x 12.5\" x 24.5\" Package Weight: 6.38 lbs. Product Dims (h x w x d): 16\" x 12\" x 1\" Color: Chrome Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-dual-level-bathtub-rail",
+   "handle": "carex-dual-level-bathtub-rail",
+   "price_range": {
+    "min": {
+     "amount": 5892,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5892,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226816729193",
+     "sku": "FGB20300 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Easily and effortlessly get in and out of the tub with the Carex Dual Level Bathtub Safety Rail. The bathtub bar features an attractive chrome finished to inhibit rust. Its dual level design provides a high and low gripping area for help getting out of the bathtub. Each gripping area has a textured finish for added grip. The bathroom safety rail fits most tubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to fit most standard tubs securely. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily, and it will withstand even the wettest bathroom. Two surfaces to grip. The bath assist device has two levels of gripping surfaces to offer convenience and support. Users can use one surface for getting in and the other for getting out of the tub. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide a flexible grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and straightforward. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 250 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those vulnerable in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 5 lbs. Weight Capacity: 200 lbs. Package Dims (h x w x d): 1.5\" x 12.5\" x 24.5\" Package Weight: 6.38 lbs. Product Dims (h x w x d): 16\" x 12\" x 1\" Color: Chrome Instruction Manual"
+     },
+     "price": {
+      "amount": 5892,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-dual-level-bathtub-rail-28288279380073.png?v=1679938334"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226816729193:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-dual-level-bathtub-rail-28288279380073.png?v=1679938334",
+     "alt_text": "Carex Dual Level Bathtub Rail - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "BathTubSafetyRails",
+    "Brand_Carex",
+    "Carex",
+    "Height Added to Side of Bathtub_18\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Levels of Support_Two",
+    "Product Category_Bathroom Safety",
+    "Product Type_Bathtub Safety Rail",
+    "Weight Capacity_200 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221258857",
+     "handle": "bathtub-safety-rails-and-aids",
+     "title": "Bathtub Safety Rails and Aids",
+     "description": {
+      "html": "For additional support while entering or exiting the shower or bathtub add a Carex Bathtub Rail. Available in several options of gripping areas single, dual or tri-level and in chrome or white finishes that blend nicely with any bathroom. Our safety rails for bathtubs are easy to install, clamping on to the side of the bath tub. These work extremely well with bath benches and bath seats, making it easy to get in and out of the bath when stepping over the tub wall. We've designed our bathtub aids for elderly, seniors, handicapped, or those needing extra bathing support. Each bathtub assist bar has adjustable height making it beneficial for everyone, regardless of height."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121098518633",
+   "title": "Carex White Bathtub Rail",
+   "description": {
+    "html": "Improve your bath safety, reduce falls, and remain healthy with the Carex White Bathtub Rail. The tub safety rail is ideal for use on fiberglass tubs and features a wide contact area to help disperse weight evenly. This Bathtub Rail fits most bathtubs and easily attaches with a mounting clamp. Wide contact area for even weight distribution. The bathroom safety rail's 7\" wide grip evenly distributes the user's weight for stable help getting out of the bathtub. It allows for a firm and sturdy grip for safe entrance in and exit from the tub. Prevents bathroom accidents. Bathrooms are the most dangerous room in any house. Bathtub safety handles offer a source of support to avoid losing balance and slipping. Supports up to 200 lbs. The bathtub safety rail offers a solid support surface for those with weak balance or strength. Features a modern & attractive white color. The bath assist device's white color blends in nicely with most fiberglass tubs. The bathroom equipment is an attractive yet functional fixture in any bathroom. Attaches easily with mounting clamp. The bathtub safety bar's mounting clamp easily attaches to tubs with flat top walls 2.5\" to 5\" wide. The bathroom handrail extends up to 14\" above the tub wall for a convenient source of support. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 5 lbs. Weight Capacity: 200 lbs. Package Dims (h x w x d): 6\" x 7.5\" x 20.5\" Package Weight: 6.03 lbs. Product Dims (h x w x d): 13.5\" x 7\" x 1\" Color: White Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-white-bathtub-rail",
+   "handle": "carex-white-bathtub-rail",
+   "price_range": {
+    "min": {
+     "amount": 4747,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4747,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226819580009",
+     "sku": "FGB20400 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Improve your bath safety, reduce falls, and remain healthy with the Carex White Bathtub Rail. The tub safety rail is ideal for use on fiberglass tubs and features a wide contact area to help disperse weight evenly. This Bathtub Rail fits most bathtubs and easily attaches with a mounting clamp. Wide contact area for even weight distribution. The bathroom safety rail's 7\" wide grip evenly distributes the user's weight for stable help getting out of the bathtub. It allows for a firm and sturdy grip for safe entrance in and exit from the tub. Prevents bathroom accidents. Bathrooms are the most dangerous room in any house. Bathtub safety handles offer a source of support to avoid losing balance and slipping. Supports up to 200 lbs. The bathtub safety rail offers a solid support surface for those with weak balance or strength. Features a modern & attractive white color. The bath assist device's white color blends in nicely with most fiberglass tubs. The bathroom equipment is an attractive yet functional fixture in any bathroom. Attaches easily with mounting clamp. The bathtub safety bar's mounting clamp easily attaches to tubs with flat top walls 2.5\" to 5\" wide. The bathroom handrail extends up to 14\" above the tub wall for a convenient source of support. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 5 lbs. Weight Capacity: 200 lbs. Package Dims (h x w x d): 6\" x 7.5\" x 20.5\" Package Weight: 6.03 lbs. Product Dims (h x w x d): 13.5\" x 7\" x 1\" Color: White Instruction Manual"
+     },
+     "price": {
+      "amount": 4747,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-white-bathtub-rail-28288279019625.png?v=1679948370"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226819580009:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-white-bathtub-rail-28288279019625.png?v=1679948370",
+     "alt_text": "Carex White Bathtub Rail - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BathTubSafetyRails",
+    "Brand_Carex",
+    "Carex",
+    "Height Added to Side of Bathtub_14.12\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Levels of Support_One",
+    "Product Category_Bathroom Safety",
+    "Product Type_Bathtub Safety Rail",
+    "Weight Capacity_200 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221258857",
+     "handle": "bathtub-safety-rails-and-aids",
+     "title": "Bathtub Safety Rails and Aids",
+     "description": {
+      "html": "For additional support while entering or exiting the shower or bathtub add a Carex Bathtub Rail. Available in several options of gripping areas single, dual or tri-level and in chrome or white finishes that blend nicely with any bathroom. Our safety rails for bathtubs are easy to install, clamping on to the side of the bath tub. These work extremely well with bath benches and bath seats, making it easy to get in and out of the bath when stepping over the tub wall. We've designed our bathtub aids for elderly, seniors, handicapped, or those needing extra bathing support. Each bathtub assist bar has adjustable height making it beneficial for everyone, regardless of height."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121097732201",
+   "title": "Carex Bathtub Rail With Chrome Finish",
+   "description": {
+    "html": "Prevent slips and falls with the Carex Bathtub Rail. The bathtub bar features an attractive chrome finished to inhibit rust. It features a subtle height and reliable grip for bathing support that won't get in the way. The gripping area has a textured finish for added grip. The bathroom safety rail fits most bathtubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to securely fit most standard tubs. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily and it will withstand even the wettest bathroom. Offers a single level surface to grip. The bath assist device has a single level gripping surface to offer convenience and support. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide an adjustable grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and easy. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 200 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those weak in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 4.1 lbs. Package Dims (h x w x d): 1.5\" x 10.75\" x 14.75\" Package Weight: 4.83 lbs. Product Dims (h x w x d): 7\" x 11\" x 0.75\" Weight Capacity: 200 lbs. Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-bathtub-rail-with-chrome-finish",
+   "handle": "carex-bathtub-rail-with-chrome-finish",
+   "price_range": {
+    "min": {
+     "amount": 4083,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4083,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226811093097",
+     "sku": "FGB20100 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Prevent slips and falls with the Carex Bathtub Rail. The bathtub bar features an attractive chrome finished to inhibit rust. It features a subtle height and reliable grip for bathing support that won't get in the way. The gripping area has a textured finish for added grip. The bathroom safety rail fits most bathtubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to securely fit most standard tubs. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily and it will withstand even the wettest bathroom. Offers a single level surface to grip. The bath assist device has a single level gripping surface to offer convenience and support. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide an adjustable grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and easy. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 200 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those weak in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 4.1 lbs. Package Dims (h x w x d): 1.5\" x 10.75\" x 14.75\" Package Weight: 4.83 lbs. Product Dims (h x w x d): 7\" x 11\" x 0.75\" Weight Capacity: 200 lbs. Instruction Manual"
+     },
+     "price": {
+      "amount": 4083,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-bathtub-rail-with-chrome-finish-28288278036585.png?v=1679935891"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226811093097:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-bathtub-rail-with-chrome-finish-28288278036585.png?v=1679935891",
+     "alt_text": "Carex Bathtub Rail With Chrome Finish - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "BathTubSafetyRails",
+    "Brand_Carex",
+    "Carex",
+    "Condition_Osteoporosis",
+    "Height Added to Side of Bathtub_7.5\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Levels of Support_One",
+    "Product Category_Bathroom Safety",
+    "Product Type_Bathtub Safety Rail",
+    "Weight Capacity_200 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221258857",
+     "handle": "bathtub-safety-rails-and-aids",
+     "title": "Bathtub Safety Rails and Aids",
+     "description": {
+      "html": "For additional support while entering or exiting the shower or bathtub add a Carex Bathtub Rail. Available in several options of gripping areas single, dual or tri-level and in chrome or white finishes that blend nicely with any bathroom. Our safety rails for bathtubs are easy to install, clamping on to the side of the bath tub. These work extremely well with bath benches and bath seats, making it easy to get in and out of the bath when stepping over the tub wall. We've designed our bathtub aids for elderly, seniors, handicapped, or those needing extra bathing support. Each bathtub assist bar has adjustable height making it beneficial for everyone, regardless of height."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121097928809",
+   "title": "Carex Tri-Grip Bathtub Rail",
+   "description": {
+    "html": "Add an extra level of bathroom safety and support with the Carex Tri-Grip Bathtub Rail. The bathtub bar features an attractive chrome finished to inhibit rust. Its ti level design provides multiple support surfaces to hold on to. Each gripping area has a textured finish for added grip. The bathroom safety rail fits most bathtubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to securely fit most standard tubs. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily and it will withstand even the wettest bathroom. Three surfaces to grip. The bath assist device has three levels of gripping surfaces to offer convenience and support. Users can grip on to each support surface based on their comfort level. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide an adjustable grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and easy. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 200 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those weak in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 200 lbs. Package Dims (h x w x d): 1.5\" x 17.75\" x 23.5\" Package Weight: 6.3 lbs. Product Dims (h x w x d): 16\" x 18\" x 7.5\" Product Weight: 4.8 lbs. Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-tri-grip-bathtub-rail",
+   "handle": "carex-tri-grip-bathtub-rail",
+   "price_range": {
+    "min": {
+     "amount": 6242,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6242,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226811388009",
+     "sku": "FGB20200 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Add an extra level of bathroom safety and support with the Carex Tri-Grip Bathtub Rail. The bathtub bar features an attractive chrome finished to inhibit rust. Its ti level design provides multiple support surfaces to hold on to. Each gripping area has a textured finish for added grip. The bathroom safety rail fits most bathtubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to securely fit most standard tubs. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily and it will withstand even the wettest bathroom. Three surfaces to grip. The bath assist device has three levels of gripping surfaces to offer convenience and support. Users can grip on to each support surface based on their comfort level. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide an adjustable grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and easy. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 200 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those weak in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 200 lbs. Package Dims (h x w x d): 1.5\" x 17.75\" x 23.5\" Package Weight: 6.3 lbs. Product Dims (h x w x d): 16\" x 18\" x 7.5\" Product Weight: 4.8 lbs. Instruction Manual"
+     },
+     "price": {
+      "amount": 6242,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-tri-grip-bathtub-rail-28288278003817.png?v=1679946904"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226811388009:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-tri-grip-bathtub-rail-28288278003817.png?v=1679946904",
+     "alt_text": "Carex Tri-Grip Bathtub Rail - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "BathTubSafetyRails",
+    "Brand_Carex",
+    "Carex",
+    "Height Added to Side of Bathtub_16\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Levels of Support_Three",
+    "Product Category_Bathroom Safety",
+    "Product Type_Bathtub Safety Rail",
+    "Weight Capacity_200 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221258857",
+     "handle": "bathtub-safety-rails-and-aids",
+     "title": "Bathtub Safety Rails and Aids",
+     "description": {
+      "html": "For additional support while entering or exiting the shower or bathtub add a Carex Bathtub Rail. Available in several options of gripping areas single, dual or tri-level and in chrome or white finishes that blend nicely with any bathroom. Our safety rails for bathtubs are easy to install, clamping on to the side of the bath tub. These work extremely well with bath benches and bath seats, making it easy to get in and out of the bath when stepping over the tub wall. We've designed our bathtub aids for elderly, seniors, handicapped, or those needing extra bathing support. Each bathtub assist bar has adjustable height making it beneficial for everyone, regardless of height."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6669025869929",
+   "title": "Roscoe Bedside Fall Mat",
+   "description": {
+    "html": "Protect yourself and loved ones from injury and falls with the Roscoe cushion floor mat. Our padded mat system is made of 2\" high compression foam to provide a firm support surface. Protective floor mats can be placed beside the bed to enhance safety for those at-risk of falls. The bi-fold design and hook & loop fasteners make transporting and storage of the folding vinyl floor mat convenient and effortless. Fall protection mats make the perfect addition to enhance safety and peace of mind. Enhances overall safety and prevent injuries. It's a known fact that elderly persons are more prone to falls, making bedside fall protection vital. Our bed floor mats create a safer environment by preventing injury should they fall. If prone to falling out of bed, then a safety floor mat is a must-have. Made from durable high-compression foam. Our fall floor mat features a durable and shock absorbent build to absorb shock and reduce the chances of injury. Its durable materials make the fall matt ideal for those in need of a long-term floor safety solution. The perfect addition to other fall safety products. Fall mats for elderly persons make an excellent addition to other fall prevention aids such as bed rails, grab bars, and more. Use in unison with a commode as an incontinence bedside floor mat. Bi-folding design for easy storage and transportation. Our bedside fall safety mat features an easy fold design with hook and loop fasteners for easy storage. The fall protection flooring is easy to store when not in use and can be taken anywhere. Easy to clean and flame retardant. Because they're on the floor, floor mats for patient falls must be easy to clean. Our bedside foam fall pad features a vinyl cover that's low-maintenance and easy to clean. Its cover is coated with a flame retardant to meet California Technical Bulletin #117 standards. 24\" x 66\" x 2\" size for ample fall support. We've designed the best fall mat for elderly and disabled persons to offer plenty of room next to the bed. The extended size of the bedside safety mat makes it adequate for covering most bedsides, offering plenty of fall protection and keeping patients from falling directly on the floor. Universal to be used throughout the house. Our medical floor mats are universal, whether you're in need of a bedside mat, a mat for under a bedside commode, or a padded mat for the bottom of stairs. Product Weight: 5.85 lbs Product Dims (h x w x d): 24\" x 66\" x 2\""
+   },
+   "url": "https://carex.com/products/roscoe-bedside-fall-mat",
+   "handle": "roscoe-bedside-fall-mat",
+   "price_range": {
+    "min": {
+     "amount": 5399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39552127991913",
+     "sku": "30036",
+     "title": "Default Title",
+     "description": {
+      "html": "Protect yourself and loved ones from injury and falls with the Roscoe cushion floor mat. Our padded mat system is made of 2\" high compression foam to provide a firm support surface. Protective floor mats can be placed beside the bed to enhance safety for those at-risk of falls. The bi-fold design and hook & loop fasteners make transporting and storage of the folding vinyl floor mat convenient and effortless. Fall protection mats make the perfect addition to enhance safety and peace of mind. Enhances overall safety and prevent injuries. It's a known fact that elderly persons are more prone to falls, making bedside fall protection vital. Our bed floor mats create a safer environment by preventing injury should they fall. If prone to falling out of bed, then a safety floor mat is a must-have. Made from durable high-compression foam. Our fall floor mat features a durable and shock absorbent build to absorb shock and reduce the chances of injury. Its durable materials make the fall matt ideal for those in need of a long-term floor safety solution. The perfect addition to other fall safety products. Fall mats for elderly persons make an excellent addition to other fall prevention aids such as bed rails, grab bars, and more. Use in unison with a commode as an incontinence bedside floor mat. Bi-folding design for easy storage and transportation. Our bedside fall safety mat features an easy fold design with hook and loop fasteners for easy storage. The fall protection flooring is easy to store when not in use and can be taken anywhere. Easy to clean and flame retardant. Because they're on the floor, floor mats for patient falls must be easy to clean. Our bedside foam fall pad features a vinyl cover that's low-maintenance and easy to clean. Its cover is coated with a flame retardant to meet California Technical Bulletin #117 standards. 24\" x 66\" x 2\" size for ample fall support. We've designed the best fall mat for elderly and disabled persons to offer plenty of room next to the bed. The extended size of the bedside safety mat makes it adequate for covering most bedsides, offering plenty of fall protection and keeping patients from falling directly on the floor. Universal to be used throughout the house. Our medical floor mats are universal, whether you're in need of a bedside mat, a mat for under a bedside commode, or a padded mat for the bottom of stairs. Product Weight: 5.85 lbs Product Dims (h x w x d): 24\" x 66\" x 2\""
+     },
+     "price": {
+      "amount": 5399,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-roscoe-bedside-fall-mat-28917800403049.jpg?v=1648076328"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/39552127991913:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-roscoe-bedside-fall-mat-28917800403049.jpg?v=1648076328",
+     "alt_text": "Roscoe Bedside Fall Mat - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Condition_Incontinence",
+    "Condition_Muscle Weakness",
+    "Condition_Post Operation",
+    "DailyLiving",
+    "FallMat",
+    "HomeCare",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Incontinence",
+    "PostOp",
+    "Product Category_Home Care",
+    "Product Type_Protective Fall Mat",
+    "RoscoeMedical"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125648489",
+     "handle": "roscoe-medical",
+     "title": "Roscoe Medical Products and Equipment",
+     "description": {
+      "html": "The Roscoe brand meets the highest standards for quality, giving you the peace of mind that the products will perform as expected, minimizing unnecessary maintenance and service calls. Roscoe Medical specializes in home healthcare products, durable medical equipment, pain management products, and mobility and walking aids. Its wide array of products includes knee scooters, overbed tables, pain-relieving gel, CPAP tubing, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150224896105",
+     "handle": "daily-independent-living-aids",
+     "title": "Daily Independent Living Aids",
+     "description": {
+      "html": "Living independently from home is one of the top priorities for seniors. Carex offers a variety of independent living aids to ensure daily living is not only doable but easy. Our senior living aids are perfect for those with arthritis, mobility issues, or just need some form of assistive devices. Carex daily independent living aids include doorknob grips, easy key turners, lamp switch turners, metal reachers, and more. These small yet convenient items offer a large source of independence with day-to-day tasks keeping them in their own home an out of assisted living communities."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150229385321",
+     "handle": "home-care-medical-products-and-equipment",
+     "title": "Home Care Medical Products and Equipment",
+     "description": {
+      "html": "Carex home health care equipment allows for more freedom and independence with daily living. Carex offers a range of high-quality medical supplies. Our varied assortment includes enabling products such as pillows and cushions, first aid items, in-home care products, light therapy, bed rails and overbed tables. Our senior, handicapped, and elderly care products offer physical support, hygiene care, exercise and fitness aids, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150230696041",
+     "handle": "incontinence-care-and-management-products",
+     "title": "Incontinence Care and Management Products",
+     "description": {
+      "html": "Urinary incontinence can be an embarrassing and inconvenient condition as bladder leakage can happen at the most inopportune times. Carex offers incontinence products that reduce the amount of mess created by incontinence. Our home care incontinence supplies and bladder leakage solutions offer easy cleanup and make functional hygiene manageable."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzJOalk1TURJMU9EWTVPVEk1TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

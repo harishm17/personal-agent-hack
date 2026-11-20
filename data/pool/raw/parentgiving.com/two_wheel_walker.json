@@ -1,0 +1,1949 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.parentgiving.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Parentgiving",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.parentgiving.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "43026907301"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "43026907301"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8045777453221",
+   "title": "Two Wheeled Walker with Seat by Drive Medical",
+   "description": {
+    "html": "Features comfortable and convenient padded seat and backrest. Quickly folds when not in use. Rear leg tips act as brakes when pressed down. Height adjustable handles. Large swivel wheels for added maneuverability. Contoured handles for a comfortable grip. Specifications: Overall Width: 20.75\" Depth: 23.25\" Handle Height: 29\" - 38\" Seat height: 20.5\" Seat Dimensions: 15.875\" (W) x 8\" (D) Weight: 12 lbs. Carton Shipping Weight: 14 lbs. Weight Limit: 300 lbs. Warranty: Limited Lifetime"
+   },
+   "url": "https://www.parentgiving.com/products/two-wheeled-walker-with-seat-by-drive-medical",
+   "handle": "two-wheeled-walker-with-seat-by-drive-medical",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994552672421",
+     "sku": "1239RD",
+     "title": "Red / Each",
+     "description": {
+      "html": "Features comfortable and convenient padded seat and backrest. Quickly folds when not in use. Rear leg tips act as brakes when pressed down. Height adjustable handles. Large swivel wheels for added maneuverability. Contoured handles for a comfortable grip. Specifications: Overall Width: 20.75\" Depth: 23.25\" Handle Height: 29\" - 38\" Seat height: 20.5\" Seat Dimensions: 15.875\" (W) x 8\" (D) Weight: 12 lbs. Carton Shipping Weight: 14 lbs. Weight Limit: 300 lbs. Warranty: Limited Lifetime"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-two-wheeled-walker-with-seat-by-drive-medical-6970-2531.jpg?v=1664823598"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994552672421:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Red"
+      }
+     ]
+    },
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-two-wheeled-walker-with-seat-by-drive-medical-6970-2531.jpg?v=1664823598",
+     "alt_text": "Two Wheeled Walker with Seat by Drive Medical"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Foldable Rollators"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289867727013",
+     "handle": "rollators",
+     "title": "Rollators",
+     "description": {
+      "html": "Rollators (also referred to as \u201cwheeled walkers\u201d or \u201crolling walkers\u201d or \"walkers with wheels\") are walking aids constructed with an aluminum or steel metal frame and three or four large wheels to accommodate uneven surfaces such as curbs, walkways, or transitional areas indoors. Rollators are a step-up from indoor walkers and allow users to travel farther with greater flexibility than traditional indoor walkers. Rollators are great for travelling, with most popular models having a fold-down seat with an attachable bag. The fold-down seat provides temporary relief for the user to sit down, and also allows for a companion to push the rollator much like a transport chair. The bag under a rollator seat is a great place for storage or personal items. Many of our best-selling rollators fold up for storage in the trunk of a car, in an airplane overhead bin, or in a closet. Rollators come in a variety of sizes and shapes and it is critical to fit the rollator to the specific size of the user and the weight capacity of the user (petite, tall, plus size, etc). Tips for choosing the best rollator for your specific needs: If transporting a rollator in a car is the norm (for trips to go shopping, to church, etal) then choose a lightweight rollator with an aluminum frame as these rollators are easier to lift in and out of the trunk of a car. Our recommended lightweight rollators can be found here https://www.parentgiving.com/shop/lightweight-rollators-879/c/ If a rollator is primarily used outside to navigate curbs, walkways, and urban environments, then go with a larger wheel diameter to avoid getting the wheels stuck and to enjoy less friction in transitional surfaces. Our recommended outdoor rollators can be found here https://www.parentgiving.com/shop/outdoor-rollators-859/c/ If a rollator is primarily used indoors and in tighter quarters (assisted living room, small apartment, small house), then go with a narrower rollator for ease of navigation in tight spaces. There is a trade-off in stability with a narrow rollator, but we find users like the narrow fit versus banging into objects in tight quarters. Our recommended narrow rollators can be found here https://www.parentgiving.com/shop/narrow-rollators-878/c/ Many assisted living facilities will mandate a rollator for transportation from a residents room to a dining hall and vice-versa. We carry the best rollators and accessories from the best brands such as Lumex, Drive, Medline, Graham Field, Nova, and Stander. And as an authorized dealer \u2013 you can rest assure that our products are all backed by a manufacturer\u2019s warranty. For the best advice on what rollator to choose, and to ensure a proper fit, we encourage you to call Parentgiving at 1-888-746-2107"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289868218533",
+     "handle": "lightweight-rollators",
+     "title": "Lightweight Rollators",
+     "description": {
+      "html": "Parentgiving carries a huge selection of lightweight rollators, aluminum walkers and more that are perfect for traveling. Built to be portable, these walkers and rollators are a must have."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045747437733",
+   "title": "Two-Button Folding Walker with 5 Inch Wheels",
+   "description": {
+    "html": "The two-button folding walkers by Medline with 5 inch front wheels operates independently on each side to provide easy movement through narrow spaces with greater stability. A front end cross brace near the top of the walker adds additional stability and allows for a full stride. This walker is made from 1 inch aluminum tubing - meaning it is lightwight, and durable. The walker folds down to a narrow 4.5 inches for transport and storage. Features: Lightweight aluminum folding walker Width inside hand grips: 18 inches Weight Capacity: 300 lbs. width inside base legs: 21 inches Depth opened at base: 16 inches 300-lb. weight capacityLimited lifetime warranty on frame. Height Adjustments vary from 32\"-32.5\" to 39\"-39.5\" Easy-to-use, push-button mechanisms let walkers fold easily 5\" wheels Side cross braces provide extra durability Product weight: 8lbs"
+   },
+   "url": "https://www.parentgiving.com/products/two-button-folding-walkers-with-5-inch-wheels",
+   "handle": "two-button-folding-walkers-with-5-inch-wheels",
+   "price_range": {
+    "min": {
+     "amount": 3099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3099,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3099,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994515873957",
+     "sku": "MDS86410W54H",
+     "title": "Each",
+     "description": {
+      "html": "The two-button folding walkers by Medline with 5 inch front wheels operates independently on each side to provide easy movement through narrow spaces with greater stability. A front end cross brace near the top of the walker adds additional stability and allows for a full stride. This walker is made from 1 inch aluminum tubing - meaning it is lightwight, and durable. The walker folds down to a narrow 4.5 inches for transport and storage. Features: Lightweight aluminum folding walker Width inside hand grips: 18 inches Weight Capacity: 300 lbs. width inside base legs: 21 inches Depth opened at base: 16 inches 300-lb. weight capacityLimited lifetime warranty on frame. Height Adjustments vary from 32\"-32.5\" to 39\"-39.5\" Easy-to-use, push-button mechanisms let walkers fold easily 5\" wheels Side cross braces provide extra durability Product weight: 8lbs"
+     },
+     "price": {
+      "amount": 3099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3099,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-two-button-folding-walkers-with-5-inch-wheels-5433-3220.jpg?v=1664822369"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994515873957:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-two-button-folding-walkers-with-5-inch-wheels-5433-3220.jpg?v=1664822369",
+     "alt_text": "Two-Button Folding Walker with 5 Inch Wheels"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Standard Walkers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289862451365",
+     "handle": "standard-walkers",
+     "title": "Standard Walkers",
+     "description": {
+      "html": "If you are a patient who has mobility problems but can still move around with assistance, a walker may provide the support and balance that's needed for everyday activity. At Parentgiving, you can get a mobility walker for elderly or handicapped individuals in a number of sizes. We have standard walkers without wheels and front-wheeled walkers that offer stability in a lightweight design. You can also get plus-size walkers for larger individuals and one-arm side walkers for those who only need support on one side. Individuals do need to advance the walker themselves, so a certain level of strength and coordination is needed to use them. Our handicapped walkers come from the top home health care brands such as Cardinal Health, Lumex, Medline and Able Life. We know getting a quality elderly walker now will save trouble later, so we only choose the best ones to offer customers. Folding walkers are easy to adjust and to use, and are incredibly lightweight to minimize strain. Contact our experienced caregivers today and we will be happy to assist you in choose the right walker for elderly or disabled users. For a more advanced mobility assistance option, check out our selection of four-wheel rollators."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/632386814324",
+     "handle": "all-medical-home-supplies",
+     "title": "All Medical Home Supplies",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045974257829",
+   "title": "Drive Deluxe Folding Two-Button Walker With 5\" Wheels",
+   "description": {
+    "html": "Features: Deluxe Folding Walker combines strength and durability with the lightweight ease of use. The walker features a unique push button mechanism for easy folding. Its U-shaped frame offers greater clearance while its enhanced cross-frame design provides you with greater stability. The 5\" wheels allow for navigation on many types of terrain, while the contoured hand grip and adjustable height make the walker comfortable to use Durable and lightweight design easily folds for storage Sturdy aluminum construction ensures maximum strength while remaining lightweight Easily fold and unfold the walker with the dual push-button design, which may be operated by fingers, palms or side of hand Unique U-shaped frame design allows you to bring the walker closer to assist in standing, as well as improved gait pattern when walking Soft, vinyl contoured handgrip Using the marked peg holes, easily adjust the height in 1'\" increments for a customized fit 5\" wheels are ideal for maneuvering both indoors and outdoors Rear glide cap allows for walker to slide easily and smoothly over most surfaces Folds for easy transport and the sides are detachable for storing in tight spaces Quick and tool-free assembly Features: Base Dimensions: Depth: 18\" Handle Height: 32\" - 39\" Material: Aluminum Overall Width: 25\" Product Weight: 7.5\" Weight Capacity: 350 lbs Wheel Size: 5\""
+   },
+   "url": "https://www.parentgiving.com/products/preservetech-deluxe-folding-two-button-walker-with-5-wheels",
+   "handle": "preservetech-deluxe-folding-two-button-walker-with-5-wheels",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994810228901",
+     "sku": "10210-1",
+     "title": "Each",
+     "description": {
+      "html": "Features: Deluxe Folding Walker combines strength and durability with the lightweight ease of use. The walker features a unique push button mechanism for easy folding. Its U-shaped frame offers greater clearance while its enhanced cross-frame design provides you with greater stability. The 5\" wheels allow for navigation on many types of terrain, while the contoured hand grip and adjustable height make the walker comfortable to use Durable and lightweight design easily folds for storage Sturdy aluminum construction ensures maximum strength while remaining lightweight Easily fold and unfold the walker with the dual push-button design, which may be operated by fingers, palms or side of hand Unique U-shaped frame design allows you to bring the walker closer to assist in standing, as well as improved gait pattern when walking Soft, vinyl contoured handgrip Using the marked peg holes, easily adjust the height in 1'\" increments for a customized fit 5\" wheels are ideal for maneuvering both indoors and outdoors Rear glide cap allows for walker to slide easily and smoothly over most surfaces Folds for easy transport and the sides are detachable for storing in tight spaces Quick and tool-free assembly Features: Base Dimensions: Depth: 18\" Handle Height: 32\" - 39\" Material: Aluminum Overall Width: 25\" Product Weight: 7.5\" Weight Capacity: 350 lbs Wheel Size: 5\""
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-preservetech-deluxe-folding-two-button-walker-with-5-wheels-9934-2056.jpg?v=1675892460"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994810228901:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-preservetech-deluxe-folding-two-button-walker-with-5-wheels-9934-2056.jpg?v=1675892460",
+     "alt_text": "PreserveTech Deluxe Folding Two-Button Walker With 5\" Wheels"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Drive Medical Walkers & Rollators"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289862516901",
+     "handle": "folding-walkers",
+     "title": "Folding Walkers",
+     "description": {
+      "html": "These walkers fold for travel or storage, making things more convenient for seniors with limited mobility."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/632386814324",
+     "handle": "all-medical-home-supplies",
+     "title": "All Medical Home Supplies",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045670432933",
+   "title": "Medline Deluxe Bariatric Walker with Wheels",
+   "description": {
+    "html": "Deluxe Bariatric Two Button Folding Walker with dual 5\" wheels feature easy-to-use push-button mechanisms that may be operated by the fingers, palm or side of hand. The front cross braces located near the top of the walker allow full stride. Sturdy 1\" aluminum tubing folds to a slim 4 1/2\" for easy transportation and storage. Contoured textured, PVC handgrips provide additional patient comfort. Manufacturers limited lifetime manufacturers warranty on frame. Six month manufacturers warranty on hand grips, push buttons, feet, wheels, glide caps, and any other wearable parts. Specifications: Overall Width: 29\" Height adjusts from 33 1/2\" to 43 1/4\" in one-inch increments Width inside hand grips: 20 1/2\" width inside base legs: 23\" depth opened at base: 19\" Product weight: 8.5 lbs Weight Capacity: 500 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/deluxe-bariatric-walker-with-dual-5-inch-wheels",
+   "handle": "deluxe-bariatric-walker-with-dual-5-inch-wheels",
+   "price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994423894181",
+     "sku": "MDS86410XWW",
+     "title": "Each",
+     "description": {
+      "html": "Deluxe Bariatric Two Button Folding Walker with dual 5\" wheels feature easy-to-use push-button mechanisms that may be operated by the fingers, palm or side of hand. The front cross braces located near the top of the walker allow full stride. Sturdy 1\" aluminum tubing folds to a slim 4 1/2\" for easy transportation and storage. Contoured textured, PVC handgrips provide additional patient comfort. Manufacturers limited lifetime manufacturers warranty on frame. Six month manufacturers warranty on hand grips, push buttons, feet, wheels, glide caps, and any other wearable parts. Specifications: Overall Width: 29\" Height adjusts from 33 1/2\" to 43 1/4\" in one-inch increments Width inside hand grips: 20 1/2\" width inside base legs: 23\" depth opened at base: 19\" Product weight: 8.5 lbs Weight Capacity: 500 lbs."
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/MedlineDeluxeBariartric-1.jpg?v=1716303097"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994423894181:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/MedlineDeluxeBariartric-1.jpg?v=1716303097"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Plus Size & Tall Rollators"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289862451365",
+     "handle": "standard-walkers",
+     "title": "Standard Walkers",
+     "description": {
+      "html": "If you are a patient who has mobility problems but can still move around with assistance, a walker may provide the support and balance that's needed for everyday activity. At Parentgiving, you can get a mobility walker for elderly or handicapped individuals in a number of sizes. We have standard walkers without wheels and front-wheeled walkers that offer stability in a lightweight design. You can also get plus-size walkers for larger individuals and one-arm side walkers for those who only need support on one side. Individuals do need to advance the walker themselves, so a certain level of strength and coordination is needed to use them. Our handicapped walkers come from the top home health care brands such as Cardinal Health, Lumex, Medline and Able Life. We know getting a quality elderly walker now will save trouble later, so we only choose the best ones to offer customers. Folding walkers are easy to adjust and to use, and are incredibly lightweight to minimize strain. Contact our experienced caregivers today and we will be happy to assist you in choose the right walker for elderly or disabled users. For a more advanced mobility assistance option, check out our selection of four-wheel rollators."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289862516901",
+     "handle": "folding-walkers",
+     "title": "Folding Walkers",
+     "description": {
+      "html": "These walkers fold for travel or storage, making things more convenient for seniors with limited mobility."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289867759781",
+     "handle": "bariatric-walkers",
+     "title": "Bariatric Walkers",
+     "description": {
+      "html": "Larger individuals often have trouble moving around, and doing so can place excessive strain on joints and limbs. Our bariatric walkers are designed for heavy users of all ages as they go about daily life. These walking aids are certified to be strong and long-lasting, so you have stability when you need it. Many of our plus-size walkers are rated for a weight capacity of 500 pounds or more. We offer standard bariatric walkers, heavy-duty walkers with front wheels and side walkers to choose from. You can also get replacement walker wheels and extension legs to repair or upgrade your current mobility device. Folding plus-size walkers are made from aluminum or steel that is remarkably strong yet lightweight. Each walker has adjustable height using a one-button or two-button design, and hand grips made from vinyl or foam for comfort. Glide caps on non-wheeled legs provide stability on irregular surfaces. Sort by width, weight and other options to narrow down your search and find what matches you or your patient. Parentgiving is where to find a walker and other medical supplies for larger people without paying a large price. All order ship fast everywhere in the U.S.!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300333039781",
+     "handle": "rollator-walker-top-picks",
+     "title": "Rollator & Walker Top Picks",
+     "description": {
+      "html": "Rollators & Walkers are a perfect option for those with limited mobility who want to keep moving without slowing down. These products are beneficial for the elderly, handicapped or someone recovering from a lower-body injury but wants to keep living to the fullest. We have ensured our top picks give you great value and freedom for your everyday life."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045680066725",
+   "title": "Drive Duet Transport Chair & Rollator",
+   "description": {
+    "html": "Drive Medical's Duet combines the features of a transport chair and rolling walker so an individual can ambulate by themself or be pushed by their caregiver. The two-position padded contoured back rest can be attached to the front or the back for maximum comfort and convenience. This popular rollator and transport chair is loaded with features. Features: Very lightweight - weighs only 19 lbs. Fold up for easy travel/storage. Large 8\" casters (flat-free wheels) - ideal for indoor & outdoor. Easy release loop locks. Included handy carry pouch. Seat lock prevents the Duet from accidentally folding. Foot rest folds down when used as a transport chair & folds up and out of the way when used as a rollator. Specifications: Unit Width: 25.5\" (outside width in open position) Overall Height: 37\" Overall Length: 26\" Seat to-Floor Height: 21\" Handle Height Range: 31.5\"-37\" Back Height: 36\" Seat Depth: 13\" Seat Width: 13.5\" Width between handlebars: 18\" Wheels: 8\" diameter casters Product Weight: 19 lbs. Weight Capacity: 300 lbs. The Drive Duet has a Limited Lifetime Warranty from Drive Medical."
+   },
+   "url": "https://www.parentgiving.com/products/drive-duet-transport-chair-rollator",
+   "handle": "drive-duet-transport-chair-rollator",
+   "price_range": {
+    "min": {
+     "amount": 22499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 22499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 29999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994434183333",
+     "sku": "795BK",
+     "title": "Black",
+     "description": {
+      "html": "Drive Medical's Duet combines the features of a transport chair and rolling walker so an individual can ambulate by themself or be pushed by their caregiver. The two-position padded contoured back rest can be attached to the front or the back for maximum comfort and convenience. This popular rollator and transport chair is loaded with features. Features: Very lightweight - weighs only 19 lbs. Fold up for easy travel/storage. Large 8\" casters (flat-free wheels) - ideal for indoor & outdoor. Easy release loop locks. Included handy carry pouch. Seat lock prevents the Duet from accidentally folding. Foot rest folds down when used as a transport chair & folds up and out of the way when used as a rollator. Specifications: Unit Width: 25.5\" (outside width in open position) Overall Height: 37\" Overall Length: 26\" Seat to-Floor Height: 21\" Handle Height Range: 31.5\"-37\" Back Height: 36\" Seat Depth: 13\" Seat Width: 13.5\" Width between handlebars: 18\" Wheels: 8\" diameter casters Product Weight: 19 lbs. Weight Capacity: 300 lbs. The Drive Duet has a Limited Lifetime Warranty from Drive Medical."
+     },
+     "price": {
+      "amount": 22499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-duet-transport-chair-rollator-3339-5329.jpg?v=1675885613"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994434183333:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994434216101",
+     "sku": "795B",
+     "title": "Blue",
+     "description": {
+      "html": "Drive Medical's Duet combines the features of a transport chair and rolling walker so an individual can ambulate by themself or be pushed by their caregiver. The two-position padded contoured back rest can be attached to the front or the back for maximum comfort and convenience. This popular rollator and transport chair is loaded with features. Features: Very lightweight - weighs only 19 lbs. Fold up for easy travel/storage. Large 8\" casters (flat-free wheels) - ideal for indoor & outdoor. Easy release loop locks. Included handy carry pouch. Seat lock prevents the Duet from accidentally folding. Foot rest folds down when used as a transport chair & folds up and out of the way when used as a rollator. Specifications: Unit Width: 25.5\" (outside width in open position) Overall Height: 37\" Overall Length: 26\" Seat to-Floor Height: 21\" Handle Height Range: 31.5\"-37\" Back Height: 36\" Seat Depth: 13\" Seat Width: 13.5\" Width between handlebars: 18\" Wheels: 8\" diameter casters Product Weight: 19 lbs. Weight Capacity: 300 lbs. The Drive Duet has a Limited Lifetime Warranty from Drive Medical."
+     },
+     "price": {
+      "amount": 22499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-duet-transport-chair-rollator-3339-5329.jpg?v=1675885613"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994434216101:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994434248869",
+     "sku": "795BU",
+     "title": "Burgundy",
+     "description": {
+      "html": "Drive Medical's Duet combines the features of a transport chair and rolling walker so an individual can ambulate by themself or be pushed by their caregiver. The two-position padded contoured back rest can be attached to the front or the back for maximum comfort and convenience. This popular rollator and transport chair is loaded with features. Features: Very lightweight - weighs only 19 lbs. Fold up for easy travel/storage. Large 8\" casters (flat-free wheels) - ideal for indoor & outdoor. Easy release loop locks. Included handy carry pouch. Seat lock prevents the Duet from accidentally folding. Foot rest folds down when used as a transport chair & folds up and out of the way when used as a rollator. Specifications: Unit Width: 25.5\" (outside width in open position) Overall Height: 37\" Overall Length: 26\" Seat to-Floor Height: 21\" Handle Height Range: 31.5\"-37\" Back Height: 36\" Seat Depth: 13\" Seat Width: 13.5\" Width between handlebars: 18\" Wheels: 8\" diameter casters Product Weight: 19 lbs. Weight Capacity: 300 lbs. The Drive Duet has a Limited Lifetime Warranty from Drive Medical."
+     },
+     "price": {
+      "amount": 22499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Burgundy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-duet-transport-chair-rollator-3339-5329.jpg?v=1675885613"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994434248869:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Burgundy"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-duet-transport-chair-rollator-3339-5329.jpg?v=1675885613",
+     "alt_text": "Drive Duet Transport Chair & Rollator"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "4 Wheel Rollators With Seat/ Walkers With Seats"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289862484133",
+     "handle": "4-wheel-rollators",
+     "title": "4 Wheel Rollators With Seat/ Walkers With Seats",
+     "description": {
+      "html": "Rollators are a perfect option for those with limited mobility who want to keep moving without slowing down. These 4-wheel walkers can be used indoors or outdoors, but are especially advantageous on uneven surfaces and rough terrain. Because the user doesn't have to lift the walker for each step, they require less effort, which is ideal for long outings and for older users with less arm strength. If a rolling walker sounds like the best way to get around, Parentgiving has a huge selection at great prices. Order one today for someone who is elderly, handicapped or recovering from a lower-body injury but wants to keep living to the fullest. Adjustable four-wheel walkers have a number of useful features and come in many sizes, colors and weight capacities so everyone can find the right one. Most rollator walker options have brakes for slowing down on hills, wheels that lock up for safe stopping and a seat for resting when tired. From there, you can choose folding rollators for traveling, best rollator transport chair combo options and transport chairs, rolling walkers with seats and baskets and many others. Get larger wheels if you are tall or are particularly active and small wheelers for occasional indoor use. Rollators with padded seats and removable backs add another level of comfort and support. Our How to Choose guide has valuable information on selecting 4-wheel walkers that are comfortable to use and will reduce the chances of falls and injuries. Sorting by handle height, weight capacity, width, wheel size and other options will help you narrow down to the ones that meet your needs. Whichever rollator you pick, you'll be getting one with a durable steel or aluminum frame and other premium materials from a top brand that is known for producing quality medical equipment in our aluminum walkers and more. Stay moving with our senior and handicapped rollators that ship fast and free if they exceed $50. Be sure to check out our drive products for seniors including our bariatric electric wheelchair options."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291461333157",
+     "handle": "top-products",
+     "title": "Parentgiving Top Senior Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045680197797",
+   "title": "Guardian Rollator With Loop Brakes",
+   "description": {
+    "html": "This lightweight rollator walker by Medline has a padded seat, curved backrest, and loop hand brakes for quick and easy stopping. Its easy to maneuver and folds for storage. The hand grips adjust to your height: measures 31\" from the floor in lowest position or 35\" from the floor in highest position. Pull on the grips to stop, and push to lock the brakes. The unit weighs only 14 lbs! Capacity: 250 lbs. Pouch comes standard for convenient storage. Limited lifetime warranty on frame. Six month warranty on handgrips, push buttons, brakes, casters, knobs, brake cable, back bar, upholstery, basket and any other wearable parts. Specifications: Wheel size: 6\" Overall Width: 24\" Seat: 12\" x 12\", 20.5\" high (from floor) Height adjusts: 31\" - 35\" Pouch size: 14\" x 9\" x 6\" Weight: 14 lbs. Capacity: 250 lbs. Distance between handlebars: 20.5\" Color: Blue or Burgundy (choose above)"
+   },
+   "url": "https://www.parentgiving.com/products/medline-basic-rollator",
+   "handle": "medline-basic-rollator",
+   "price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994434904229",
+     "sku": "MDS86850EB",
+     "title": "Blue",
+     "description": {
+      "html": "This lightweight rollator walker by Medline has a padded seat, curved backrest, and loop hand brakes for quick and easy stopping. Its easy to maneuver and folds for storage. The hand grips adjust to your height: measures 31\" from the floor in lowest position or 35\" from the floor in highest position. Pull on the grips to stop, and push to lock the brakes. The unit weighs only 14 lbs! Capacity: 250 lbs. Pouch comes standard for convenient storage. Limited lifetime warranty on frame. Six month warranty on handgrips, push buttons, brakes, casters, knobs, brake cable, back bar, upholstery, basket and any other wearable parts. Specifications: Wheel size: 6\" Overall Width: 24\" Seat: 12\" x 12\", 20.5\" high (from floor) Height adjusts: 31\" - 35\" Pouch size: 14\" x 9\" x 6\" Weight: 14 lbs. Capacity: 250 lbs. Distance between handlebars: 20.5\" Color: Blue or Burgundy (choose above)"
+     },
+     "price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-basic-rollator-3365-1947.jpg?v=1675888680"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994434904229:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994434936997",
+     "sku": "MDS86850E",
+     "title": "Burgundy",
+     "description": {
+      "html": "This lightweight rollator walker by Medline has a padded seat, curved backrest, and loop hand brakes for quick and easy stopping. Its easy to maneuver and folds for storage. The hand grips adjust to your height: measures 31\" from the floor in lowest position or 35\" from the floor in highest position. Pull on the grips to stop, and push to lock the brakes. The unit weighs only 14 lbs! Capacity: 250 lbs. Pouch comes standard for convenient storage. Limited lifetime warranty on frame. Six month warranty on handgrips, push buttons, brakes, casters, knobs, brake cable, back bar, upholstery, basket and any other wearable parts. Specifications: Wheel size: 6\" Overall Width: 24\" Seat: 12\" x 12\", 20.5\" high (from floor) Height adjusts: 31\" - 35\" Pouch size: 14\" x 9\" x 6\" Weight: 14 lbs. Capacity: 250 lbs. Distance between handlebars: 20.5\" Color: Blue or Burgundy (choose above)"
+     },
+     "price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Burgundy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-basic-rollator-3365-1947.jpg?v=1675888680"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994434936997:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Burgundy"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-basic-rollator-3365-1947.jpg?v=1675888680",
+     "alt_text": "Guardian Rollator With Loop Brakes"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Walkers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289862484133",
+     "handle": "4-wheel-rollators",
+     "title": "4 Wheel Rollators With Seat/ Walkers With Seats",
+     "description": {
+      "html": "Rollators are a perfect option for those with limited mobility who want to keep moving without slowing down. These 4-wheel walkers can be used indoors or outdoors, but are especially advantageous on uneven surfaces and rough terrain. Because the user doesn't have to lift the walker for each step, they require less effort, which is ideal for long outings and for older users with less arm strength. If a rolling walker sounds like the best way to get around, Parentgiving has a huge selection at great prices. Order one today for someone who is elderly, handicapped or recovering from a lower-body injury but wants to keep living to the fullest. Adjustable four-wheel walkers have a number of useful features and come in many sizes, colors and weight capacities so everyone can find the right one. Most rollator walker options have brakes for slowing down on hills, wheels that lock up for safe stopping and a seat for resting when tired. From there, you can choose folding rollators for traveling, best rollator transport chair combo options and transport chairs, rolling walkers with seats and baskets and many others. Get larger wheels if you are tall or are particularly active and small wheelers for occasional indoor use. Rollators with padded seats and removable backs add another level of comfort and support. Our How to Choose guide has valuable information on selecting 4-wheel walkers that are comfortable to use and will reduce the chances of falls and injuries. Sorting by handle height, weight capacity, width, wheel size and other options will help you narrow down to the ones that meet your needs. Whichever rollator you pick, you'll be getting one with a durable steel or aluminum frame and other premium materials from a top brand that is known for producing quality medical equipment in our aluminum walkers and more. Stay moving with our senior and handicapped rollators that ship fast and free if they exceed $50. Be sure to check out our drive products for seniors including our bariatric electric wheelchair options."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045762085029",
+   "title": "Traveler 3-Wheeled Walker by Nova",
+   "description": {
+    "html": "The Traveler will take you many places with its unique three-wheel maneuverable design. Available in several colors. Features: Locking Hand Brakes Tray Basket Pouch Foldable 8\" Wheels Specifications: Weight Capacity: 250 lbs Overall Weight: 15 lbs Approx. User Height: 5'4\"-6'2\" Handle Hgt. Adjustment: 33\"-37.25\" Width btw Handles: 12\" Product Weight: 15 lbs Pouch Dimensions: 11.75w x 9d x 11.75h Overall Dimensions: 24\"w x 23.75\"d Overall Folded Dimensions: 27\"l x 11\"w x 26.5\"d"
+   },
+   "url": "https://www.parentgiving.com/products/traveler-3-wheeled-walker-by-nova",
+   "handle": "traveler-3-wheeled-walker-by-nova",
+   "price_range": {
+    "min": {
+     "amount": 15999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 17999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994528063653",
+     "sku": "4900BK",
+     "title": "Black",
+     "description": {
+      "html": "The Traveler will take you many places with its unique three-wheel maneuverable design. Available in several colors. Features: Locking Hand Brakes Tray Basket Pouch Foldable 8\" Wheels Specifications: Weight Capacity: 250 lbs Overall Weight: 15 lbs Approx. User Height: 5'4\"-6'2\" Handle Hgt. Adjustment: 33\"-37.25\" Width btw Handles: 12\" Product Weight: 15 lbs Pouch Dimensions: 11.75w x 9d x 11.75h Overall Dimensions: 24\"w x 23.75\"d Overall Folded Dimensions: 27\"l x 11\"w x 26.5\"d"
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Travller3Wheel-1.jpg?v=1717075128"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994528063653:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994528096421",
+     "sku": "4900BL",
+     "title": "Blue",
+     "description": {
+      "html": "The Traveler will take you many places with its unique three-wheel maneuverable design. Available in several colors. Features: Locking Hand Brakes Tray Basket Pouch Foldable 8\" Wheels Specifications: Weight Capacity: 250 lbs Overall Weight: 15 lbs Approx. User Height: 5'4\"-6'2\" Handle Hgt. Adjustment: 33\"-37.25\" Width btw Handles: 12\" Product Weight: 15 lbs Pouch Dimensions: 11.75w x 9d x 11.75h Overall Dimensions: 24\"w x 23.75\"d Overall Folded Dimensions: 27\"l x 11\"w x 26.5\"d"
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Travller3Wheel-1.jpg?v=1717075128"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994528096421:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994528129189",
+     "sku": "4900RD",
+     "title": "Red",
+     "description": {
+      "html": "The Traveler will take you many places with its unique three-wheel maneuverable design. Available in several colors. Features: Locking Hand Brakes Tray Basket Pouch Foldable 8\" Wheels Specifications: Weight Capacity: 250 lbs Overall Weight: 15 lbs Approx. User Height: 5'4\"-6'2\" Handle Hgt. Adjustment: 33\"-37.25\" Width btw Handles: 12\" Product Weight: 15 lbs Pouch Dimensions: 11.75w x 9d x 11.75h Overall Dimensions: 24\"w x 23.75\"d Overall Folded Dimensions: 27\"l x 11\"w x 26.5\"d"
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Travller3Wheel-1.jpg?v=1717075128"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994528129189:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994528161957",
+     "sku": "4900PL",
+     "title": "Purple",
+     "description": {
+      "html": "The Traveler will take you many places with its unique three-wheel maneuverable design. Available in several colors. Features: Locking Hand Brakes Tray Basket Pouch Foldable 8\" Wheels Specifications: Weight Capacity: 250 lbs Overall Weight: 15 lbs Approx. User Height: 5'4\"-6'2\" Handle Hgt. Adjustment: 33\"-37.25\" Width btw Handles: 12\" Product Weight: 15 lbs Pouch Dimensions: 11.75w x 9d x 11.75h Overall Dimensions: 24\"w x 23.75\"d Overall Folded Dimensions: 27\"l x 11\"w x 26.5\"d"
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Travller3Wheel-1.jpg?v=1717075128"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994528161957:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994528194725",
+     "sku": "4900DB",
+     "title": "Sky Blue",
+     "description": {
+      "html": "The Traveler will take you many places with its unique three-wheel maneuverable design. Available in several colors. Features: Locking Hand Brakes Tray Basket Pouch Foldable 8\" Wheels Specifications: Weight Capacity: 250 lbs Overall Weight: 15 lbs Approx. User Height: 5'4\"-6'2\" Handle Hgt. Adjustment: 33\"-37.25\" Width btw Handles: 12\" Product Weight: 15 lbs Pouch Dimensions: 11.75w x 9d x 11.75h Overall Dimensions: 24\"w x 23.75\"d Overall Folded Dimensions: 27\"l x 11\"w x 26.5\"d"
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sky Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Travller3Wheel-1.jpg?v=1717075128"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994528194725:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Red"
+      },
+      {
+       "label": "Purple"
+      },
+      {
+       "label": "Sky Blue"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Travller3Wheel-1.jpg?v=1717075128"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "3 Wheel Rollators Without Seat"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289863172261",
+     "handle": "3-wheel-rollators",
+     "title": "3 Wheel Rollators Without Seat",
+     "description": {
+      "html": "When you need maximum maneuverability without a four wheel stability requirement, the smaller and lighter three wheel rollator models are the way to go. These rollators feature adjustable handle height, easy folding, locking brakes, a pouch, and puncture-resistant rubber wheels. The Lumex Sure-Gait II features loop brakes and a chrome-plated steel frame. The Traveler Walker by Nova has several color options available and comes with a tray and basket. The 3 Wheel Rollator by Drive is made of lightweight aluminum, comes with a folding basket, tray, and features loop locks for extra security. The handle height is adjustable and the frame can be folded two ways for better storage."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289867727013",
+     "handle": "rollators",
+     "title": "Rollators",
+     "description": {
+      "html": "Rollators (also referred to as \u201cwheeled walkers\u201d or \u201crolling walkers\u201d or \"walkers with wheels\") are walking aids constructed with an aluminum or steel metal frame and three or four large wheels to accommodate uneven surfaces such as curbs, walkways, or transitional areas indoors. Rollators are a step-up from indoor walkers and allow users to travel farther with greater flexibility than traditional indoor walkers. Rollators are great for travelling, with most popular models having a fold-down seat with an attachable bag. The fold-down seat provides temporary relief for the user to sit down, and also allows for a companion to push the rollator much like a transport chair. The bag under a rollator seat is a great place for storage or personal items. Many of our best-selling rollators fold up for storage in the trunk of a car, in an airplane overhead bin, or in a closet. Rollators come in a variety of sizes and shapes and it is critical to fit the rollator to the specific size of the user and the weight capacity of the user (petite, tall, plus size, etc). Tips for choosing the best rollator for your specific needs: If transporting a rollator in a car is the norm (for trips to go shopping, to church, etal) then choose a lightweight rollator with an aluminum frame as these rollators are easier to lift in and out of the trunk of a car. Our recommended lightweight rollators can be found here https://www.parentgiving.com/shop/lightweight-rollators-879/c/ If a rollator is primarily used outside to navigate curbs, walkways, and urban environments, then go with a larger wheel diameter to avoid getting the wheels stuck and to enjoy less friction in transitional surfaces. Our recommended outdoor rollators can be found here https://www.parentgiving.com/shop/outdoor-rollators-859/c/ If a rollator is primarily used indoors and in tighter quarters (assisted living room, small apartment, small house), then go with a narrower rollator for ease of navigation in tight spaces. There is a trade-off in stability with a narrow rollator, but we find users like the narrow fit versus banging into objects in tight quarters. Our recommended narrow rollators can be found here https://www.parentgiving.com/shop/narrow-rollators-878/c/ Many assisted living facilities will mandate a rollator for transportation from a residents room to a dining hall and vice-versa. We carry the best rollators and accessories from the best brands such as Lumex, Drive, Medline, Graham Field, Nova, and Stander. And as an authorized dealer \u2013 you can rest assure that our products are all backed by a manufacturer\u2019s warranty. For the best advice on what rollator to choose, and to ensure a proper fit, we encourage you to call Parentgiving at 1-888-746-2107"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290244198565",
+     "handle": "top-mobility-products-seniors",
+     "title": "Top Mobility Products",
+     "description": {
+      "html": "Staying mobile is key to healthy aging, but many seniors may not feel steady on their feet or are wrestling with conditions that make walking difficult. Choosing the right walker, rollator or cane to address this issue can make all the difference in the world. The hand selected mobility picks listed below are some of our top selling products and are an excellent place to start."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045701267621",
+   "title": "Drive Medical Aluminum Rollator Walker with Fold Up Padded Seat",
+   "description": {
+    "html": "This lightweight, folding rollator walker with a padded seat and removable back support from Drive Medical is very popular - a top seller nationwide. The rollator folds easily with the under seat pouch attached. It comes in five different colors and it is loaded with features! Features: Frame colors: blue, red, silver, green or black frame color. Adjustable height handles allow for the perfect fit. Removable, hinged, padded backrest can be folded up or down as necessary. Easy to use loop locks. Comes with comfy padded seat and zippered pouch under the seat. 6\" casters with soft-grip tires work well for indoor or outdoor use. Lightweight aluminum walkers. Specifications: Unit Width: 24.5\" (outside width in open position) Unit Length: 28\" Weight capacity: 300 lbs, Handle Height: 37\"(highest), 32\"(lowest) Seat: 14\"D x 14\"W x 21\"H Width between handle grips: 21\" Product Weight: 13 lbs. Shipping Weight: 16 lbs. Approximate folded size: 24.6\" L x 30.7\" H x 7.25\" W"
+   },
+   "url": "https://www.parentgiving.com/products/soft-seat-rollator-with-fold-up-removable-round-back-support",
+   "handle": "soft-seat-rollator-with-fold-up-removable-round-back-support",
+   "price_range": {
+    "min": {
+     "amount": 11999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994463576229",
+     "sku": "R726BK",
+     "title": "Black",
+     "description": {
+      "html": "This lightweight, folding rollator walker with a padded seat and removable back support from Drive Medical is very popular - a top seller nationwide. The rollator folds easily with the under seat pouch attached. It comes in five different colors and it is loaded with features! Features: Frame colors: blue, red, silver, green or black frame color. Adjustable height handles allow for the perfect fit. Removable, hinged, padded backrest can be folded up or down as necessary. Easy to use loop locks. Comes with comfy padded seat and zippered pouch under the seat. 6\" casters with soft-grip tires work well for indoor or outdoor use. Lightweight aluminum walkers. Specifications: Unit Width: 24.5\" (outside width in open position) Unit Length: 28\" Weight capacity: 300 lbs, Handle Height: 37\"(highest), 32\"(lowest) Seat: 14\"D x 14\"W x 21\"H Width between handle grips: 21\" Product Weight: 13 lbs. Shipping Weight: 16 lbs. Approximate folded size: 24.6\" L x 30.7\" H x 7.25\" W"
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-soft-seat-rollator-with-fold-up-removable-round-back-support-3810.jpg?v=1675885703"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994463576229:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994463608997",
+     "sku": "R726BL",
+     "title": "Blue",
+     "description": {
+      "html": "This lightweight, folding rollator walker with a padded seat and removable back support from Drive Medical is very popular - a top seller nationwide. The rollator folds easily with the under seat pouch attached. It comes in five different colors and it is loaded with features! Features: Frame colors: blue, red, silver, green or black frame color. Adjustable height handles allow for the perfect fit. Removable, hinged, padded backrest can be folded up or down as necessary. Easy to use loop locks. Comes with comfy padded seat and zippered pouch under the seat. 6\" casters with soft-grip tires work well for indoor or outdoor use. Lightweight aluminum walkers. Specifications: Unit Width: 24.5\" (outside width in open position) Unit Length: 28\" Weight capacity: 300 lbs, Handle Height: 37\"(highest), 32\"(lowest) Seat: 14\"D x 14\"W x 21\"H Width between handle grips: 21\" Product Weight: 13 lbs. Shipping Weight: 16 lbs. Approximate folded size: 24.6\" L x 30.7\" H x 7.25\" W"
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-soft-seat-rollator-with-fold-up-removable-round-back-support-3810.jpg?v=1675885703"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994463608997:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994463641765",
+     "sku": "R726RD",
+     "title": "Red",
+     "description": {
+      "html": "This lightweight, folding rollator walker with a padded seat and removable back support from Drive Medical is very popular - a top seller nationwide. The rollator folds easily with the under seat pouch attached. It comes in five different colors and it is loaded with features! Features: Frame colors: blue, red, silver, green or black frame color. Adjustable height handles allow for the perfect fit. Removable, hinged, padded backrest can be folded up or down as necessary. Easy to use loop locks. Comes with comfy padded seat and zippered pouch under the seat. 6\" casters with soft-grip tires work well for indoor or outdoor use. Lightweight aluminum walkers. Specifications: Unit Width: 24.5\" (outside width in open position) Unit Length: 28\" Weight capacity: 300 lbs, Handle Height: 37\"(highest), 32\"(lowest) Seat: 14\"D x 14\"W x 21\"H Width between handle grips: 21\" Product Weight: 13 lbs. Shipping Weight: 16 lbs. Approximate folded size: 24.6\" L x 30.7\" H x 7.25\" W"
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-soft-seat-rollator-with-fold-up-removable-round-back-support-3810.jpg?v=1675885703"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994463641765:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Red"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-soft-seat-rollator-with-fold-up-removable-round-back-support-3810.jpg?v=1675885703",
+     "alt_text": "Drive Medical Aluminum Rollator Walker with Fold Up Padded Seat and Removable Back Support"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "4 Wheel Rollators With Seat/ Walkers With Seats"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289862484133",
+     "handle": "4-wheel-rollators",
+     "title": "4 Wheel Rollators With Seat/ Walkers With Seats",
+     "description": {
+      "html": "Rollators are a perfect option for those with limited mobility who want to keep moving without slowing down. These 4-wheel walkers can be used indoors or outdoors, but are especially advantageous on uneven surfaces and rough terrain. Because the user doesn't have to lift the walker for each step, they require less effort, which is ideal for long outings and for older users with less arm strength. If a rolling walker sounds like the best way to get around, Parentgiving has a huge selection at great prices. Order one today for someone who is elderly, handicapped or recovering from a lower-body injury but wants to keep living to the fullest. Adjustable four-wheel walkers have a number of useful features and come in many sizes, colors and weight capacities so everyone can find the right one. Most rollator walker options have brakes for slowing down on hills, wheels that lock up for safe stopping and a seat for resting when tired. From there, you can choose folding rollators for traveling, best rollator transport chair combo options and transport chairs, rolling walkers with seats and baskets and many others. Get larger wheels if you are tall or are particularly active and small wheelers for occasional indoor use. Rollators with padded seats and removable backs add another level of comfort and support. Our How to Choose guide has valuable information on selecting 4-wheel walkers that are comfortable to use and will reduce the chances of falls and injuries. Sorting by handle height, weight capacity, width, wheel size and other options will help you narrow down to the ones that meet your needs. Whichever rollator you pick, you'll be getting one with a durable steel or aluminum frame and other premium materials from a top brand that is known for producing quality medical equipment in our aluminum walkers and more. Stay moving with our senior and handicapped rollators that ship fast and free if they exceed $50. Be sure to check out our drive products for seniors including our bariatric electric wheelchair options."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289867727013",
+     "handle": "rollators",
+     "title": "Rollators",
+     "description": {
+      "html": "Rollators (also referred to as \u201cwheeled walkers\u201d or \u201crolling walkers\u201d or \"walkers with wheels\") are walking aids constructed with an aluminum or steel metal frame and three or four large wheels to accommodate uneven surfaces such as curbs, walkways, or transitional areas indoors. Rollators are a step-up from indoor walkers and allow users to travel farther with greater flexibility than traditional indoor walkers. Rollators are great for travelling, with most popular models having a fold-down seat with an attachable bag. The fold-down seat provides temporary relief for the user to sit down, and also allows for a companion to push the rollator much like a transport chair. The bag under a rollator seat is a great place for storage or personal items. Many of our best-selling rollators fold up for storage in the trunk of a car, in an airplane overhead bin, or in a closet. Rollators come in a variety of sizes and shapes and it is critical to fit the rollator to the specific size of the user and the weight capacity of the user (petite, tall, plus size, etc). Tips for choosing the best rollator for your specific needs: If transporting a rollator in a car is the norm (for trips to go shopping, to church, etal) then choose a lightweight rollator with an aluminum frame as these rollators are easier to lift in and out of the trunk of a car. Our recommended lightweight rollators can be found here https://www.parentgiving.com/shop/lightweight-rollators-879/c/ If a rollator is primarily used outside to navigate curbs, walkways, and urban environments, then go with a larger wheel diameter to avoid getting the wheels stuck and to enjoy less friction in transitional surfaces. Our recommended outdoor rollators can be found here https://www.parentgiving.com/shop/outdoor-rollators-859/c/ If a rollator is primarily used indoors and in tighter quarters (assisted living room, small apartment, small house), then go with a narrower rollator for ease of navigation in tight spaces. There is a trade-off in stability with a narrow rollator, but we find users like the narrow fit versus banging into objects in tight quarters. Our recommended narrow rollators can be found here https://www.parentgiving.com/shop/narrow-rollators-878/c/ Many assisted living facilities will mandate a rollator for transportation from a residents room to a dining hall and vice-versa. We carry the best rollators and accessories from the best brands such as Lumex, Drive, Medline, Graham Field, Nova, and Stander. And as an authorized dealer \u2013 you can rest assure that our products are all backed by a manufacturer\u2019s warranty. For the best advice on what rollator to choose, and to ensure a proper fit, we encourage you to call Parentgiving at 1-888-746-2107"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289868218533",
+     "handle": "lightweight-rollators",
+     "title": "Lightweight Rollators",
+     "description": {
+      "html": "Parentgiving carries a huge selection of lightweight rollators, aluminum walkers and more that are perfect for traveling. Built to be portable, these walkers and rollators are a must have."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290244264101",
+     "handle": "best-rollators",
+     "title": "Top Rollators (or Rolling Walkers)",
+     "description": {
+      "html": "You can often see Seniors using them in assisted living facilities, shopping malls, grocery stores, and public transportation. Since we sell so many of them, and since we have relationships with the best brand manufacturers of these products, we know what to look for. The essential attributes of a \"good\" rollator are: to be lightweight and packable (for putting into car trunks or folding up in smaller senior living spaces) to have larger wheels (7.5\" inches or more) for traversing curbs and landings to have a seat (for taking a rest when tired) to have an easy breaking mechanism (loop brakes, handle breaks, etc.) for easing stopping and for staying in place to have some storage for keeping essentials (phone, wallet, other) When selecting a rollator, ensure the size and weight capacity meets the user's needs. Some rollators have adjustable height handles, or are designed specifically for petite or oversize persons (large weight capacity). Also have an idea on where the rollator will be used, if on city streets or public spaces, then larger wheels are required. If the rollator is used primarily indoors or in one's living space, than smaller wheel diameters and a smaller footprint is ideal. Regardless of your personal preference, the following Parentgiving Picks are our best rated and most popular. Call customer service if you have particular questions or want to ensure an ideal fit."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045708640421",
+   "title": "3 Wheel Aluminum Rollator With Tote And Basket By Drive",
+   "description": {
+    "html": "The Rollator comes with a basket that folds flat and a unique frame design that allows it to be folded in two directions, making it compact for storage and transport. Features: Comes standard with folding basket, tray and pouch; basket conveniently folds for easy storage Folding basket and trombone-style folding frame allow for shipping in ultra compact carton; ships in folded/closed position Frame unfolds with a pivot hinge that locks frame into open position, preventing Rollator from closing Rear of Rollator opens into place by sliding trombone style frame at rear wheel; click of \u2014push pin\" indicates rear wheel is in locked position; self-threading lock knob provided for added safety Loop locks operate easily and ensure safety Lightweight aluminum frame available in Red or Blue Limited lifetime warranty Specifications: Handle height easily adjusts from 31\" to 38\", secured by a self-threading knob Dimensions: 25\"W x 24\"L Weight: 11 lbs Lightweight, solid 7.5\" casters for indoor or outdoor use Weight capacity 300 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/3-wheel-aluminum-rollator-with-tote-and-basket-by-drive",
+   "handle": "3-wheel-aluminum-rollator-with-tote-and-basket-by-drive",
+   "price_range": {
+    "min": {
+     "amount": 14499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994471866533",
+     "sku": "10289BL",
+     "title": "Blue / Each",
+     "description": {
+      "html": "The Rollator comes with a basket that folds flat and a unique frame design that allows it to be folded in two directions, making it compact for storage and transport. Features: Comes standard with folding basket, tray and pouch; basket conveniently folds for easy storage Folding basket and trombone-style folding frame allow for shipping in ultra compact carton; ships in folded/closed position Frame unfolds with a pivot hinge that locks frame into open position, preventing Rollator from closing Rear of Rollator opens into place by sliding trombone style frame at rear wheel; click of \u2014push pin\" indicates rear wheel is in locked position; self-threading lock knob provided for added safety Loop locks operate easily and ensure safety Lightweight aluminum frame available in Red or Blue Limited lifetime warranty Specifications: Handle height easily adjusts from 31\" to 38\", secured by a self-threading knob Dimensions: 25\"W x 24\"L Weight: 11 lbs Lightweight, solid 7.5\" casters for indoor or outdoor use Weight capacity 300 lbs."
+     },
+     "price": {
+      "amount": 14499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-3-wheel-aluminum-rollator-with-tote-and-basket-by-drive-4400.jpg?v=1675881712"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994471866533:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994471899301",
+     "sku": "10289RD",
+     "title": "Red / Each",
+     "description": {
+      "html": "The Rollator comes with a basket that folds flat and a unique frame design that allows it to be folded in two directions, making it compact for storage and transport. Features: Comes standard with folding basket, tray and pouch; basket conveniently folds for easy storage Folding basket and trombone-style folding frame allow for shipping in ultra compact carton; ships in folded/closed position Frame unfolds with a pivot hinge that locks frame into open position, preventing Rollator from closing Rear of Rollator opens into place by sliding trombone style frame at rear wheel; click of \u2014push pin\" indicates rear wheel is in locked position; self-threading lock knob provided for added safety Loop locks operate easily and ensure safety Lightweight aluminum frame available in Red or Blue Limited lifetime warranty Specifications: Handle height easily adjusts from 31\" to 38\", secured by a self-threading knob Dimensions: 25\"W x 24\"L Weight: 11 lbs Lightweight, solid 7.5\" casters for indoor or outdoor use Weight capacity 300 lbs."
+     },
+     "price": {
+      "amount": 14499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-3-wheel-aluminum-rollator-with-tote-and-basket-by-drive-4400.jpg?v=1675881712"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994471899301:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Red"
+      }
+     ]
+    },
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-3-wheel-aluminum-rollator-with-tote-and-basket-by-drive-4400.jpg?v=1675881712",
+     "alt_text": "3 Wheel Aluminum Rollator With Tote And Basket By Drive"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Specialty Walkers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289863172261",
+     "handle": "3-wheel-rollators",
+     "title": "3 Wheel Rollators Without Seat",
+     "description": {
+      "html": "When you need maximum maneuverability without a four wheel stability requirement, the smaller and lighter three wheel rollator models are the way to go. These rollators feature adjustable handle height, easy folding, locking brakes, a pouch, and puncture-resistant rubber wheels. The Lumex Sure-Gait II features loop brakes and a chrome-plated steel frame. The Traveler Walker by Nova has several color options available and comes with a tray and basket. The 3 Wheel Rollator by Drive is made of lightweight aluminum, comes with a folding basket, tray, and features loop locks for extra security. The handle height is adjustable and the frame can be folded two ways for better storage."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289867727013",
+     "handle": "rollators",
+     "title": "Rollators",
+     "description": {
+      "html": "Rollators (also referred to as \u201cwheeled walkers\u201d or \u201crolling walkers\u201d or \"walkers with wheels\") are walking aids constructed with an aluminum or steel metal frame and three or four large wheels to accommodate uneven surfaces such as curbs, walkways, or transitional areas indoors. Rollators are a step-up from indoor walkers and allow users to travel farther with greater flexibility than traditional indoor walkers. Rollators are great for travelling, with most popular models having a fold-down seat with an attachable bag. The fold-down seat provides temporary relief for the user to sit down, and also allows for a companion to push the rollator much like a transport chair. The bag under a rollator seat is a great place for storage or personal items. Many of our best-selling rollators fold up for storage in the trunk of a car, in an airplane overhead bin, or in a closet. Rollators come in a variety of sizes and shapes and it is critical to fit the rollator to the specific size of the user and the weight capacity of the user (petite, tall, plus size, etc). Tips for choosing the best rollator for your specific needs: If transporting a rollator in a car is the norm (for trips to go shopping, to church, etal) then choose a lightweight rollator with an aluminum frame as these rollators are easier to lift in and out of the trunk of a car. Our recommended lightweight rollators can be found here https://www.parentgiving.com/shop/lightweight-rollators-879/c/ If a rollator is primarily used outside to navigate curbs, walkways, and urban environments, then go with a larger wheel diameter to avoid getting the wheels stuck and to enjoy less friction in transitional surfaces. Our recommended outdoor rollators can be found here https://www.parentgiving.com/shop/outdoor-rollators-859/c/ If a rollator is primarily used indoors and in tighter quarters (assisted living room, small apartment, small house), then go with a narrower rollator for ease of navigation in tight spaces. There is a trade-off in stability with a narrow rollator, but we find users like the narrow fit versus banging into objects in tight quarters. Our recommended narrow rollators can be found here https://www.parentgiving.com/shop/narrow-rollators-878/c/ Many assisted living facilities will mandate a rollator for transportation from a residents room to a dining hall and vice-versa. We carry the best rollators and accessories from the best brands such as Lumex, Drive, Medline, Graham Field, Nova, and Stander. And as an authorized dealer \u2013 you can rest assure that our products are all backed by a manufacturer\u2019s warranty. For the best advice on what rollator to choose, and to ensure a proper fit, we encourage you to call Parentgiving at 1-888-746-2107"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045910786213",
+   "title": "Medline Bariatric Heavy Duty Rollator",
+   "description": {
+    "html": "Features: Reinforced design to support higher weight capacities Wider distance between handles for users needing extra room Loop-style brakes you push down to lock and pull up to release Padded backrest and padded seat offer users ability to rest Specifications: Weight Capacity: 500 lbs. Inside Walker Width: 23.5\" Overall Width: 29\" Seat Width: 17.5\" Walker Height Range: 31.5\"-37.5\" Wheel Size: 8\" Product Weight: 25 lbs. Warranty: Lifetime Frame / 6 Month Parts Color: Burgundy"
+   },
+   "url": "https://www.parentgiving.com/products/medline-bariatric-heavy-duty-rollator",
+   "handle": "medline-bariatric-heavy-duty-rollator",
+   "price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994744463525",
+     "sku": "MDS86800XWS",
+     "title": "Burgundy / Each",
+     "description": {
+      "html": "Features: Reinforced design to support higher weight capacities Wider distance between handles for users needing extra room Loop-style brakes you push down to lock and pull up to release Padded backrest and padded seat offer users ability to rest Specifications: Weight Capacity: 500 lbs. Inside Walker Width: 23.5\" Overall Width: 29\" Seat Width: 17.5\" Walker Height Range: 31.5\"-37.5\" Wheel Size: 8\" Product Weight: 25 lbs. Warranty: Lifetime Frame / 6 Month Parts Color: Burgundy"
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Burgundy"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-bariatric-heavy-duty-rollator-9323-2629.jpg?v=1675890637"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994744463525:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Burgundy"
+      }
+     ]
+    },
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-bariatric-heavy-duty-rollator-9323-2629.jpg?v=1675890637",
+     "alt_text": "Medline Bariatric Heavy Duty Rollator"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Rollators"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289859797157",
+     "handle": "bariatric-rollators",
+     "title": "Plus Size & Tall Rollators",
+     "description": {
+      "html": "Bariatric Rollators That Keep You Mobile Choosing the right mobility device can be a bit of a challenge, especially if you've only recently discovered that you could benefit from one. We recommend bariatric rollators for larger individuals who have trouble getting around. These handy devices are designed to help you maintain your independence, prevent injury and deter overexertion. Bariatric rollators are designed for heavier adults and support those who weigh 250 pounds or more. Parentgiving is here to assist you with finding the right bariatric rollator for your needs, with styles by the top brands like Drive, Medline, Nova, Lumex, Karman and more. You can easily narrow our selection by to find rollators by size, weight capacity, brand and price. Is a Rollator the Best Choice for Me? Before deciding on a specific walking aid, it's important to note that there are tons of unique options on the market. Though similar, bariatric rollators differ from bariatric walkers in many ways. Where a traditional bariatric walker has a fixed base, a rollator has wheels at the end of all four legs, offering ease of movement over various different terrains. These walking aids have several unique features that vary based on model. In general, you're more likely to find styles with extras like seats and baskets when you opt for a rollator instead of a walker. We have a wide variety of rollators with seats that allow you to take a brief rest whenever you need to, as well as several folding rollators that are perfect for travel, everyday errands and more. If you intend to use your rollator outdoors, make sure you choose one with larger, more heavy-duty wheels that allow you to easily glide over everything from carpeting and hardwood to grass and gravel. If you aren't sure which rollator style is most appropriate for you or your patient, feel free to reach out to us at Parentgiving and we'd be happy to assist you with your purchase."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289867727013",
+     "handle": "rollators",
+     "title": "Rollators",
+     "description": {
+      "html": "Rollators (also referred to as \u201cwheeled walkers\u201d or \u201crolling walkers\u201d or \"walkers with wheels\") are walking aids constructed with an aluminum or steel metal frame and three or four large wheels to accommodate uneven surfaces such as curbs, walkways, or transitional areas indoors. Rollators are a step-up from indoor walkers and allow users to travel farther with greater flexibility than traditional indoor walkers. Rollators are great for travelling, with most popular models having a fold-down seat with an attachable bag. The fold-down seat provides temporary relief for the user to sit down, and also allows for a companion to push the rollator much like a transport chair. The bag under a rollator seat is a great place for storage or personal items. Many of our best-selling rollators fold up for storage in the trunk of a car, in an airplane overhead bin, or in a closet. Rollators come in a variety of sizes and shapes and it is critical to fit the rollator to the specific size of the user and the weight capacity of the user (petite, tall, plus size, etc). Tips for choosing the best rollator for your specific needs: If transporting a rollator in a car is the norm (for trips to go shopping, to church, etal) then choose a lightweight rollator with an aluminum frame as these rollators are easier to lift in and out of the trunk of a car. Our recommended lightweight rollators can be found here https://www.parentgiving.com/shop/lightweight-rollators-879/c/ If a rollator is primarily used outside to navigate curbs, walkways, and urban environments, then go with a larger wheel diameter to avoid getting the wheels stuck and to enjoy less friction in transitional surfaces. Our recommended outdoor rollators can be found here https://www.parentgiving.com/shop/outdoor-rollators-859/c/ If a rollator is primarily used indoors and in tighter quarters (assisted living room, small apartment, small house), then go with a narrower rollator for ease of navigation in tight spaces. There is a trade-off in stability with a narrow rollator, but we find users like the narrow fit versus banging into objects in tight quarters. Our recommended narrow rollators can be found here https://www.parentgiving.com/shop/narrow-rollators-878/c/ Many assisted living facilities will mandate a rollator for transportation from a residents room to a dining hall and vice-versa. We carry the best rollators and accessories from the best brands such as Lumex, Drive, Medline, Graham Field, Nova, and Stander. And as an authorized dealer \u2013 you can rest assure that our products are all backed by a manufacturer\u2019s warranty. For the best advice on what rollator to choose, and to ensure a proper fit, we encourage you to call Parentgiving at 1-888-746-2107"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300333039781",
+     "handle": "rollator-walker-top-picks",
+     "title": "Rollator & Walker Top Picks",
+     "description": {
+      "html": "Rollators & Walkers are a perfect option for those with limited mobility who want to keep moving without slowing down. These products are beneficial for the elderly, handicapped or someone recovering from a lower-body injury but wants to keep living to the fullest. We have ensured our top picks give you great value and freedom for your everyday life."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300335562917",
+     "handle": "bariatric-mobility-product-top-picks",
+     "title": "Bariatric Mobility Top Picks",
+     "description": {
+      "html": "Bariatric mobility caters for the larger person with heavy-duty supports, increased weight capacity, and wider widths. A welcomed improvement for those that feel cramped, unsteady, or uncomfortable. Our Products include Walkers, Rollator, Transport chairs and more. Our top picks highlight top brands and great value."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNRFExT1RFd056ZzJNakV6TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}
