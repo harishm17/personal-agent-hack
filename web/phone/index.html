@@ -3,64 +3,71 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light dark">
-<title>Sign-Off: issuer</title>
+<meta name="color-scheme" content="light">
+<title>Sign-Off</title>
 <style>
-  :root { --bg:#f6f5f1; --ink:#1d1d1b; --mute:#66655e; --line:#d9d6cc; --card:#fff; --accent:#1a5fb4; --accent-ink:#fff; --ok:#2a7a3b; --bad:#b3261e; --warn:#8a5200; }
-  :root[data-theme="dark"] { --bg:#161614; --ink:#eeede8; --mute:#a09f97; --line:#3a3935; --card:#1f1f1c; --accent:#78aeed; --accent-ink:#10253f; --ok:#6cc47d; --bad:#f2918b; --warn:#e8a64a; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#161614; --ink:#eeede8; --mute:#a09f97; --line:#3a3935; --card:#1f1f1c; --accent:#78aeed; --accent-ink:#10253f; --ok:#6cc47d; --bad:#f2918b; --warn:#e8a64a; } }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html { background: var(--bg); }
-  body { margin:0; color:var(--ink); background:var(--bg); font:17px/1.4 system-ui, -apple-system, sans-serif; padding-bottom:calc(76px + env(safe-area-inset-bottom)); }
-  header { padding:14px 16px 8px; }
-  header h1 { margin:0; font-size:20px; }
-  header .who { color:var(--mute); font-size:14px; margin-top:2px; }
-  nav { position:fixed; left:0; right:0; bottom:0; display:flex; background:var(--card); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom); z-index:5; }
-  nav button { flex:1; min-height:60px; border:0; background:none; color:var(--mute); font:inherit; font-size:15px; font-weight:600; }
-  nav button[aria-selected="true"] { color:var(--accent); box-shadow:inset 0 3px 0 var(--accent); }
-  main { padding:0 16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin:10px 0; }
-  .card h2 { font-size:17px; margin:0 0 2px; }
-  .mute { color:var(--mute); font-size:14px; }
-  .tag { display:inline-block; font-size:12px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:2px 8px; border-radius:99px; border:1px solid var(--line); color:var(--mute); }
-  .tag.ok { color:var(--ok); border-color:var(--ok); } .tag.bad { color:var(--bad); border-color:var(--bad); } .tag.warn { color:var(--warn); border-color:var(--warn); }
-  .limit { margin-top:12px; }
-  .limit .row { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
-  .limit .val { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; }
-  input[type=range] { width:100%; height:44px; margin:2px 0; accent-color:var(--accent); }
-  .pickline { margin-top:6px; font-size:15px; }
-  .pickline b { font-weight:700; }
-  button.act { min-height:48px; padding:0 18px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--ink); font:inherit; font-weight:600; }
-  button.act.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  /* Same system as the big screen: white ground, one grey scale, one type family, hairline borders, one accent. */
+  :root { --ink:#1b1d21; --g1:#5c626c; --g2:#9ba1ab; --g3:#dfe2e6; --g4:#f4f5f6; --accent:#2a6db8; --bad:#a3352b; --ok:#2c7a4b;
+          --f:"Avenir Next", Avenir, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { margin:0; background:#fff; color:var(--ink); font:500 17px/1.35 var(--f); }
+  body { padding-bottom:calc(64px + env(safe-area-inset-bottom)); }
+  header { padding:16px 18px 10px; }
+  header h1 { margin:0; font:600 22px/1.2 var(--f); letter-spacing:-.01em; }
+  header .sub { color:var(--g1); font-size:15px; margin-top:2px; }
+  nav { position:fixed; left:0; right:0; bottom:0; display:flex; background:#fff; border-top:1px solid var(--g3); padding-bottom:env(safe-area-inset-bottom); z-index:5; }
+  nav button { flex:1; height:56px; border:0; background:none; color:var(--g1); font:600 15px var(--f); }
+  nav button[aria-selected="true"] { color:var(--ink); box-shadow:inset 0 2px 0 var(--ink); }
+  main { padding:0 18px; }
+  .rule { border-top:1px solid var(--g3); }
+  .item { padding:13px 0; border-top:1px solid var(--g3); }
+  .item:first-child { border-top:0; }
+  .row { display:flex; justify-content:space-between; gap:12px; align-items:baseline; }
+  .need { font-weight:600; }
+  .num { font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; }
+  .sub { color:var(--g1); font-size:15px; }
+  .pick { margin-top:2px; }
+  .lim { display:block; width:100%; text-align:left; border:0; background:none; padding:3px 0 0; font:500 15px/1.35 var(--f); color:var(--g1); }
+  .lim .src { color:var(--g2); }
+  .lim.changed .src { color:var(--accent); font-weight:600; }
+  .quote { margin:3px 0 2px; padding-left:10px; border-left:2px solid var(--g3); font-size:15px; color:var(--ink); }
+  .total { font:600 30px/1.1 var(--f); font-variant-numeric:tabular-nums; }
+  .label { color:var(--g1); font-size:14px; letter-spacing:.04em; text-transform:uppercase; margin:18px 0 4px; }
+  .hash { font:13px/1.3 ui-monospace, Menlo, monospace; color:var(--g1); word-break:break-all; }
+  button.act { height:48px; padding:0 18px; border:1px solid var(--g3); border-radius:5px; background:#fff; color:var(--ink); font:600 16px var(--f); }
+  button.act:active { border-color:var(--ink); }
+  button.act.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+  button.act.big { width:100%; height:58px; font-size:19px; }
   button.act.danger { color:var(--bad); border-color:var(--bad); }
-  button.act:disabled { opacity:.45; }
-  button.act.big { width:100%; min-height:60px; font-size:19px; }
-  .btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
-  input[type=text] { width:100%; min-height:48px; font:inherit; padding:0 12px; border:1px solid var(--line); border-radius:12px; background:var(--bg); color:var(--ink); }
+  button.act:disabled { opacity:.4; }
+  button.link { border:0; background:none; padding:0; color:var(--accent); font:600 15px var(--f); }
+  button:focus-visible, input:focus-visible, summary:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .btns { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  input[type=text] { width:100%; height:48px; font:inherit; padding:0 12px; border:1px solid var(--g3); border-radius:5px; background:#fff; color:var(--ink); }
+  input[type=range] { width:100%; height:44px; accent-color:var(--ink); margin:4px 0 0; }
   .chips { display:flex; gap:6px; flex-wrap:wrap; margin:8px 0; }
-  .chips button { min-height:40px; padding:0 12px; border-radius:99px; border:1px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; font-size:15px; }
-  .hash { font:13px/1.35 ui-monospace, Menlo, monospace; word-break:break-all; color:var(--mute); }
-  .total { font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; }
-  ul.sheet { list-style:none; padding:0; margin:8px 0 0; }
-  ul.sheet li { padding:9px 0; border-top:1px solid var(--line); }
-  ul.sheet li:first-child { border-top:0; }
-  #toast { position:fixed; left:12px; right:12px; bottom:calc(72px + env(safe-area-inset-bottom)); background:var(--ink); color:var(--bg); padding:12px 14px; border-radius:12px; z-index:9; display:none; font-size:15px; }
-  a { color:var(--accent); }
-  details { margin:18px 0; color:var(--mute); font-size:14px; }
-  .seal { border:2px solid var(--ok); }
+  .chips button { height:38px; padding:0 12px; border:1px solid var(--g3); border-radius:99px; background:#fff; color:var(--ink); font:500 15px var(--f); }
+  .tag { font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--g1); }
+  .tag.ok { color:var(--ok); } .tag.bad { color:var(--bad); }
+  details summary { cursor:pointer; color:var(--accent); font-weight:600; font-size:15px; }
+  ul.plain { list-style:none; margin:6px 0 0; padding:0; }
+  ul.plain li { padding:7px 0; border-top:1px solid var(--g3); font-size:15px; }
+  .big-v { font:600 34px/1.1 var(--f); font-variant-numeric:tabular-nums; }
+  #toast { position:fixed; left:14px; right:14px; bottom:calc(70px + env(safe-area-inset-bottom)); background:var(--ink); color:#fff; padding:12px 14px; border-radius:5px; z-index:9; display:none; font-size:15px; }
+  a { color:var(--accent); text-underline-offset:3px; }
   [hidden] { display:none !important; }
 </style>
 </head>
 <body>
 <header>
   <h1 id="h1">Sign-Off</h1>
-  <div class="who" id="who">starting…</div>
+  <div class="sub" id="who">starting…</div>
 </header>
 <main id="main" aria-live="polite"></main>
 <nav id="nav" role="tablist" hidden>
-  <button role="tab" data-tab="limits" aria-selected="true">Limits</button>
+  <button role="tab" data-tab="sheet" aria-selected="true">Sheet</button>
   <button role="tab" data-tab="lines" aria-selected="false">Lines</button>
-  <button role="tab" data-tab="sign" aria-selected="false">Sign</button>
+  <button role="tab" data-tab="adjust" aria-selected="false">Adjust a limit</button>
 </nav>
 <div id="toast" role="status"></div>
 
@@ -71,7 +78,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<
 const money = (c) => (c == null ? "" : "$" + (c / 100).toFixed(2));
 const fmt = (v) => (Number.isInteger(v) ? String(v) : String(Math.round(v * 100) / 100));
 
-/* ---------- key storage: private key is non-extractable and lives in IndexedDB ---------- */
+/* ---------- the signing key: not extractable, kept in IndexedDB ---------- */
 const DB = { name: "signoff-phone", store: "kv" };
 function idb() {
   return new Promise((resolve, reject) => {
@@ -81,25 +88,15 @@ function idb() {
     open.onerror = () => reject(open.error);
   });
 }
-async function kvGet(key) {
-  const db = await idb();
-  return new Promise((res, rej) => { const r = db.transaction(DB.store).objectStore(DB.store).get(key); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
-}
-async function kvSet(key, value) {
-  const db = await idb();
-  return new Promise((res, rej) => { const tx = db.transaction(DB.store, "readwrite"); tx.objectStore(DB.store).put(value, key); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
-}
-async function kvDel(key) {
-  const db = await idb();
-  return new Promise((res, rej) => { const tx = db.transaction(DB.store, "readwrite"); tx.objectStore(DB.store).delete(key); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
-}
-
+async function kvGet(key) { const db = await idb(); return new Promise((res, rej) => { const r = db.transaction(DB.store).objectStore(DB.store).get(key); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+async function kvSet(key, value) { const db = await idb(); return new Promise((res, rej) => { const tx = db.transaction(DB.store, "readwrite"); tx.objectStore(DB.store).put(value, key); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
 const b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
 let keyRec = null;      // { privateKey, jwk, key_id|null, seq }
-let issuer = null;      // server's view: { enrolled, key_id, name, persona, senso }
-let state = null, canon = null, persona = null;
-let tab = "limits", signed = false, busy = false;
+let issuer = null;      // { enrolled, key_id, name, persona, senso }
+let state = null, persona = null;
+let tab = "sheet", signed = false, busy = false, openLimit = null;
+const shown = new Set();   // limit ids whose order sentence is open
 const dragging = new Set();
 
 async function ensureKey() {
@@ -111,7 +108,6 @@ async function ensureKey() {
     await kvSet("key", keyRec);
   }
 }
-
 async function signedRequest(type, fields) {
   keyRec.seq = Math.max(keyRec.seq + 1, Date.now());
   await kvSet("key", keyRec);
@@ -123,47 +119,40 @@ async function signedRequest(type, fields) {
   if (!res.ok || body.ok === false) { const err = new Error(body.detail || ("HTTP " + res.status)); err.code = body.error; throw err; }
   return body;
 }
+async function keyIdOf(jwk) {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(jwk.x + "." + jwk.y));
+  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+}
 
 /* ---------- small helpers ---------- */
 let toastTimer;
-function toast(text, ms = 4500) {
-  const t = $("#toast"); t.textContent = text; t.style.display = "block";
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.style.display = "none"), ms);
-}
+function toast(text, ms = 4500) { const t = $("#toast"); t.textContent = text; t.style.display = "block"; clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.style.display = "none"), ms); }
 async function getJSON(url, opts) { const r = await fetch(url, opts); if (!r.ok) throw new Error(url + " " + r.status); return r.json(); }
 const lineOf = (id) => state.lines.find((l) => l.line_id === id);
 const pickOf = (line) => (line && line.pick ? line.candidates.find((c) => c.id === line.pick) : null);
+const hashNow = () => state && state.sheet_hash;
+const mine = () => issuer && issuer.enrolled && keyRec && keyRec.key_id === issuer.key_id;
 
 /* ---------- boot ---------- */
 async function boot() {
   if (!window.crypto || !crypto.subtle || !window.indexedDB) {
     $("#who").textContent = "";
-    $("#main").innerHTML = '<div class="card"><h2>This page needs a secure address</h2><p class="mute">Signing keys only work on https or localhost. Open the address of the tunnel (https), not a plain http address.</p></div>';
+    $("#main").innerHTML = '<div class="item"><div class="need">This page needs a secure address</div><div class="sub">Signing keys only work on https or localhost. Open the address of the tunnel.</div></div>';
     return;
   }
-  try { await ensureKey(); } catch (e) { $("#main").innerHTML = '<div class="card"><h2>No key storage</h2><p class="mute">This browser would not keep a key (private window?). Open the page in a normal tab.</p></div>'; return; }
+  try { await ensureKey(); } catch (e) { $("#main").innerHTML = '<div class="item"><div class="need">No key storage</div><div class="sub">This browser would not keep a key (private window?). Open the page in a normal tab.</div></div>'; return; }
   await refreshIssuer();
-  if (issuer.enrolled && keyRec.key_id !== issuer.key_id) keyRec.key_id = null;   // a reset happened or another phone is the issuer
-  if (issuer.enrolled && keyRec.key_id === null) {
-    // is the enrolled key ours? the server only tells us its id, ours is derived the same way
-    const mine = await keyIdOf(keyRec.jwk);
-    if (mine === issuer.key_id) { keyRec.key_id = mine; await kvSet("key", keyRec); }
+  if (issuer.enrolled && keyRec.key_id !== issuer.key_id) {
+    keyRec.key_id = null;
+    const id = await keyIdOf(keyRec.jwk);
+    if (id === issuer.key_id) { keyRec.key_id = id; await kvSet("key", keyRec); }
   }
   await loadState();
   startEvents();
   render();
 }
-async function keyIdOf(jwk) {
-  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(jwk.x + "." + jwk.y));
-  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
-}
 async function refreshIssuer() { issuer = await getJSON("/api/issuer/status"); }
-async function loadState() {
-  state = await getJSON("/api/state");
-  signed = !!(state.seal && state.seal.signed);
-  try { canon = await getJSON("/api/sheet/canonical"); } catch (e) { canon = null; }
-}
-let evt;
+async function loadState() { state = await getJSON("/api/state"); signed = !!(state.seal && state.seal.signed); }
 function startEvents() {
   let pending = false, again = false;
   const refetch = async () => {
@@ -172,40 +161,37 @@ function startEvents() {
     try { await loadState(); renderLive(); } catch (e) { /* offline blip */ }
     pending = false; if (again) { again = false; refetch(); }
   };
-  try { evt = new EventSource("/api/events"); evt.onmessage = refetch; } catch (e) { /* fall back to polling */ }
+  try { const evt = new EventSource("/api/events"); evt.onmessage = refetch; } catch (e) { /* polling below */ }
   setInterval(refetch, 3000);
 }
 
-/* ---------- rendering ---------- */
-function isMine() { return issuer && issuer.enrolled && keyRec && keyRec.key_id === issuer.key_id; }
-function render() {
-  const issuerName = state && state.sheet && state.sheet.issuer ? state.sheet.issuer.name : "Issuer";
+/* ---------- render ---------- */
+function head() {
   $("#h1").textContent = state ? state.sheet.title : "Sign-Off";
-  if (!issuer.enrolled) return renderEnrol(issuerName);
-  if (!isMine()) return renderNotMine();
+  if (!issuer.enrolled || !mine()) return;
+  $("#who").textContent = issuer.name + " · key " + issuer.key_id.slice(0, 6) + (signed ? " · signed" : "");
+}
+function render() {
+  const name = state && state.sheet && state.sheet.issuer ? state.sheet.issuer.name : "";
+  head();
+  if (!issuer.enrolled) return renderEnrol(name);
+  if (!mine()) return renderNotMine();
   $("#nav").hidden = false;
-  $("#who").textContent = issuer.name + " · key " + issuer.key_id.slice(0, 6) + " · " + (state.mode || "") + (signed ? " · signed" : "");
-  $("#main").innerHTML = "";
-  if (tab === "limits") renderLimits();
-  else if (tab === "lines") renderLines();
-  else renderSign();
+  if (tab === "sheet") renderSheet(); else if (tab === "lines") renderLines(); else renderAdjust();
 }
 function renderLive() {
-  // keep what the finger is on; redraw the rest
-  if (!isMine()) return;
-  if (tab === "limits") updateLimits();
+  if (!mine()) return;
+  head();
+  if (tab === "sheet") { if (!busy) renderSheet(); }
   else if (tab === "lines") { if (!document.activeElement || document.activeElement.tagName !== "INPUT") renderLines(); }
-  else if (!busy) renderSign();
-  $("#who").textContent = issuer.name + " · key " + issuer.key_id.slice(0, 6) + " · " + (state.mode || "") + (signed ? " · signed" : "");
+  else updateAdjust();
 }
-
 function renderEnrol(name) {
   $("#nav").hidden = true;
   $("#who").textContent = "this phone is not enrolled";
-  $("#main").innerHTML = `<div class="card"><h2>Use this phone as the signing key</h2>
-    <p class="mute">A key pair was made in this browser. The private half cannot be exported. Only requests signed by it can change a limit, strike a line or create the carts.</p>
-    <label class="mute" for="nm">Name shown on the seal</label>
-    <input type="text" id="nm" value="${esc(name)}" autocomplete="name">
+  $("#main").innerHTML = `<div class="item"><div class="need">Use this phone to sign</div>
+    <div class="sub">A key was made in this browser and cannot leave it. Only requests signed with it can change the sheet or create carts.</div>
+    <div class="label">Name on the seal</div><input type="text" id="nm" value="${esc(name)}" autocomplete="name">
     <div class="btns"><button class="act primary big" id="enrol">Enrol this phone</button></div></div>`;
   $("#enrol").onclick = async () => {
     $("#enrol").disabled = true;
@@ -220,10 +206,10 @@ function renderEnrol(name) {
 }
 function renderNotMine() {
   $("#nav").hidden = true;
-  $("#who").textContent = "another phone is the signing key";
-  $("#main").innerHTML = `<div class="card"><h2>${esc(issuer.name)}'s phone is enrolled</h2>
-    <p class="mute">This phone can look but not sign. After a rehearsal reset, reload this page to enrol it instead.</p></div>
-    <details><summary>Rehearsal</summary><div class="btns"><button class="act danger" id="reset">Reset: unsigned, no key</button></div></details>`;
+  $("#who").textContent = "another phone signs";
+  $("#main").innerHTML = `<div class="item"><div class="need">${esc(issuer.name)}'s phone is enrolled</div>
+    <div class="sub">This phone can look but not sign. After a rehearsal reset, reload to enrol it instead.</div></div>
+    <details class="item"><summary>Rehearsal</summary><div class="btns"><button class="act danger" id="reset">Reset: unsigned, no key</button></div></details>`;
   $("#reset").onclick = resetAll;
 }
 async function resetAll() {
@@ -233,7 +219,95 @@ async function resetAll() {
   await refreshIssuer(); await loadState(); render();
 }
 
-/* limits: one slider per issuer-set limit, a signed set_limit while it moves, at most ten a second */
+/* limit helpers */
+function sheetLine(id) { return state.sheet.lines.find((x) => x.id === id); }
+function limitText(l) {
+  const b = l.bound;
+  if (b.source === "issuer") return esc(l.label) + ' <b class="num">' + fmt(b.value) + " " + esc(l.unit) + "</b>";
+  const f = state.sheet.shopper_facts.find((x) => x.id === b.fact);
+  return esc(l.label) + (f ? ' <b class="num">' + fmt(f.value) + " " + esc(f.unit) + "</b>" : "");
+}
+function limitSource(l) {
+  if (l.bound.source !== "issuer") return { text: "from the home", changed: false };
+  const fo = l.from_order;
+  if (fo && fo.matches === false) return { text: "changed from the order", changed: true };
+  return { text: fo ? "from the order" : "set before the order", changed: false };
+}
+function limitRow(l) {
+  const s = limitSource(l), fo = l.from_order, open = shown.has(l.id);
+  return `<button class="lim ${s.changed ? "changed" : ""}" data-lim="${esc(l.id)}" aria-expanded="${open}">${limitText(l)} <span class="src">· ${esc(s.text)}</span></button>` +
+    (open ? `<div class="quote">${fo && fo.quote ? "“" + esc(fo.quote) + "”" : (l.bound.source === "issuer" ? "The order text is not available here." : "A measurement of the home.")}</div>` : "");
+}
+
+/* sheet: what is being signed, then one button */
+let sensoRunning = false, sensoFor = null;
+function sensoLine() {
+  const s = (issuer && issuer.senso) || {};
+  if (s.configured === false) return { text: "Senso is not connected", rows: [] };
+  const fresh = s.for_hash && s.for_hash === hashNow();
+  if (sensoRunning || !fresh) return { text: "Checking the sheet against the order…", rows: [] };
+  const rows = s.checks || [], ok = rows.filter((r) => r.verdict === "verified").length;
+  return { text: "Checked against the order: " + ok + " of " + rows.length + " verified" + ((s.blocking || []).length ? ", " + s.blocking.length + " stop the signature" : ""), rows };
+}
+async function ensureSenso() {
+  const s = issuer && issuer.senso;
+  if (sensoRunning || !hashNow() || !s || s.configured === false || s.for_hash === hashNow() || sensoFor === hashNow()) return;
+  sensoRunning = true; sensoFor = hashNow();
+  try {
+    await fetch("/api/senso/run", { method: "POST" });          // returns at once; the server runs it in the background
+    for (let i = 0; i < 45 && issuer.senso.for_hash !== hashNow(); i++) { await new Promise((r) => setTimeout(r, 2000)); await refreshIssuer(); }
+  } catch (e) { /* the server signs with the check marked pending */ }
+  sensoRunning = false;
+  if (tab === "sheet" && !busy) renderSheet();
+}
+function renderSheet() {
+  const main = $("#main"), seal = state.seal || {};
+  if (signed) {
+    const who = (seal.signature && seal.signature.name) || "";
+    main.innerHTML = `<div class="label">Signed</div><div class="big-v">${esc(who)}</div>
+      <div class="sub">${esc((seal.signature && seal.signature.at) || "")}</div>
+      <div class="hash" style="margin-top:6px">${esc(seal.sheet_hash || "")}</div>
+      <div class="label">Carts</div><ul class="plain">${(seal.carts || []).map((c) => `<li><div class="row"><span>${esc(c.store)}</span><span class="num">${money(c.total_cents)}</span></div>${c.cart_url ? `<a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> <span class="sub">${esc(c.mode || "")}</span>` : `<span class="sub">${c.mode === "pending" ? "still being created at the store" : "not created: " + esc(c.note || "")}</span>`}</li>`).join("")}</ul>
+      <div class="label">Checks</div><div class="sub">${esc(((seal.signature && seal.signature.persona) || {}).label || "identity not checked")}</div>
+      <div class="sub">${seal.signature && seal.signature.senso && seal.signature.senso.status === "pending" ? "Senso check still running" : "Checked against the order"}</div>
+      <div class="btns"><button class="act danger" id="reset">Reset for rehearsal</button></div>`;
+    $("#reset").onclick = resetAll;
+    return;
+  }
+  const per = persona || (issuer && issuer.persona) || { label: "identity not checked" };
+  const sl = sensoLine();
+  const buyable = state.lines.filter((L) => (L.status === "ready" || L.status === "next_candidate") && pickOf(L)).length;
+  main.innerHTML = state.lines.map((L) => {
+    const p = pickOf(L), sl2 = sheetLine(L.line_id);
+    const pickHtml = L.status === "pick_up" ? `<div class="pick sub">pick up locally, not in a cart</div>` :
+      p ? `<div class="pick">${esc(p.product.title)}</div><div class="sub">${esc(p.product.store)}</div>` : `<div class="pick sub">no pick: ${esc(L.reason || "")}</div>`;
+    return `<div class="item"><div class="row"><span class="need">${esc(L.need)}</span><span class="num">${p && L.status !== "pick_up" ? money(p.product.price_cents) : ""}</span></div>${pickHtml}
+      <div>${sl2.limits.map(limitRow).join("")}</div></div>`;
+  }).join("") +
+    `<div class="rule"></div><div class="label">Total in carts</div><div class="total">${money(state.total_cents)}</div>
+    <div class="label">Checks</div>
+    <div class="sub">${esc(per.label || "identity not checked")} · <button class="link" id="pstart">${per.inquiry_id ? "refresh" : "check identity"}</button>${per.link ? ` · <a href="${esc(per.link)}" target="_blank" rel="noopener">open</a>` : ""}</div>
+    <div class="sub" style="margin-top:4px">${esc(sl.text)}</div>
+    ${sl.rows.length ? `<details style="margin-top:4px"><summary>Sentences</summary><ul class="plain">${sl.rows.map((c) => `<li><span class="tag ${c.verdict === "verified" ? "ok" : c.verdict === "conflict" ? "bad" : ""}">${esc(c.verdict)}</span>${c.blocks ? "" : ' <span class="sub">advisory</span>'}<br>${esc(c.sentence)}${c.moved_from_order ? '<br><span class="sub">changed from the order</span>' : ""}</li>`).join("")}</ul></details>` : ""}
+    <div class="label">Sheet</div><div class="hash">${esc(hashNow() || "")}</div>
+    <div class="btns"><button class="act primary big" id="sign" ${hashNow() && buyable ? "" : "disabled"}>Sign</button></div>`;
+  ensureSenso();
+  $("#pstart").onclick = async () => {
+    try {
+      persona = await getJSON(per.inquiry_id ? "/api/issuer/persona/status" : "/api/issuer/persona/start", per.inquiry_id ? undefined : { method: "POST" });
+      await refreshIssuer(); renderSheet(); if (!persona.link && !persona.inquiry_id) toast(persona.reason || persona.label);
+    } catch (e) { toast(e.message); }
+  };
+  $("#sign").onclick = async () => {
+    const seen = hashNow();
+    if (!confirm("Sign this sheet and create the carts?")) return;
+    busy = true; $("#sign").disabled = true; $("#sign").textContent = "Signing…";
+    try { await signedRequest("sign_sheet", { sheet_hash: seen }); await loadState(); busy = false; renderSheet(); }
+    catch (e) { busy = false; handleError(e); await loadState().catch(() => {}); renderSheet(); }
+  };
+}
+
+/* adjust a limit: the order's value is the default; a slider overrides it, at most ten signed moves a second */
 const sendQ = { latest: new Map(), running: false, last: 0 };
 function queueLimit(id, value) { sendQ.latest.set(id, value); pump(); }
 async function pump() {
@@ -244,83 +318,81 @@ async function pump() {
       const wait = 100 - (Date.now() - sendQ.last);
       if (wait > 0) await new Promise((r) => setTimeout(r, wait));
       const [id, value] = sendQ.latest.entries().next().value;
-      sendQ.latest.delete(id);
-      sendQ.last = Date.now();
-      try { await signedRequest("set_limit", { limit_id: id, value }); }
-      catch (e) { handleError(e); }
+      sendQ.latest.delete(id); sendQ.last = Date.now();
+      try { await signedRequest("set_limit", { limit_id: id, value }); } catch (e) { handleError(e); }
     }
   } finally { sendQ.running = false; }
 }
 function handleError(e) {
-  if (e.code === "stale_hash") { toast("The sheet changed after you looked. Check it and sign again."); loadState().then(() => { if (tab === "sign") renderSign(); }); }
-  else if (e.code === "replayed_seq") { /* an older move arrived late; the newest one wins */ }
+  if (e.code === "stale_hash") { toast("The sheet changed after you looked. Check it and sign again."); loadState().then(() => { if (tab === "sheet") renderSheet(); }); }
+  else if (e.code === "replayed_seq") { /* an older move arrived late; the newest wins */ }
   else if (e.code === "not_enrolled" || e.code === "unknown_key") { toast(e.message); refreshIssuer().then(render); }
   else toast(e.message);
 }
-function issuerLimits() {
-  const out = [];
-  for (const line of state.sheet.lines) for (const l of line.limits) if (l.bound.source === "issuer") out.push({ line, limit: l });
-  return out;
-}
-function renderLimits() {
+function issuerLimits() { const out = []; for (const line of state.sheet.lines) for (const l of line.limits) if (l.bound.source === "issuer") out.push({ line, limit: l }); return out; }
+function renderAdjust() {
   const main = $("#main");
-  main.innerHTML = `<p class="mute">${esc(state.sheet.issuer.name)}'s limits. The shopper cannot change these. Moving a slider re-picks at once.</p>` +
-    issuerLimits().map(({ line, limit }) => `<div class="card limit" data-limit="${esc(limit.id)}">
-      <h2>${esc(line.need)}</h2>
-      <div class="row"><span>${esc(limit.label)}</span><span class="val"><span class="v"></span> ${esc(limit.unit)}</span></div>
-      <input type="range" min="${limit.bound.min}" max="${limit.bound.max}" step="${limit.bound.step}" aria-label="${esc(line.need)}: ${esc(limit.label)}" ${signed ? "disabled" : ""}>
-      <div class="pickline mute"></div></div>`).join("");
-  main.querySelectorAll("[data-limit]").forEach((card) => {
-    const id = card.dataset.limit, input = $("input", card);
-    const move = () => { $(".v", card).textContent = fmt(+input.value); queueLimit(id, +input.value); };
-    input.addEventListener("input", move);
+  main.innerHTML = `<div class="sub" style="padding:4px 0 10px">Override a limit from the order. The sheet re-picks at once, and the limit is marked as changed.</div>` +
+    issuerLimits().map(({ line, limit }) => `<div class="item" data-limit="${esc(limit.id)}">
+      <button class="lim" style="color:var(--ink);font-size:17px" data-open="${esc(limit.id)}"><span class="row"><span><span class="need">${esc(line.need)}</span> <span class="sub">${esc(limit.label)}</span></span><span class="num"><span class="v"></span> ${esc(limit.unit)}</span></span></button>
+      <div class="body" ${openLimit === limit.id ? "" : "hidden"}>
+        <input type="range" min="${limit.bound.min}" max="${limit.bound.max}" step="${limit.bound.step}" aria-label="${esc(line.need)}: ${esc(limit.label)}" ${signed ? "disabled" : ""}>
+        <div class="sub order-note"></div><div class="sub pickline"></div>
+        <div class="btns"><button class="act" data-back="${esc(limit.id)}" hidden>Back to the order</button></div>
+      </div></div>`).join("");
+  main.querySelectorAll("[data-limit]").forEach((row) => {
+    const id = row.dataset.limit, input = $("input", row);
+    input.addEventListener("input", () => { $(".v", row).textContent = fmt(+input.value); queueLimit(id, +input.value); });
     input.addEventListener("pointerdown", () => dragging.add(id));
     const up = () => dragging.delete(id);
-    input.addEventListener("pointerup", up); input.addEventListener("pointercancel", up); input.addEventListener("blur", up); input.addEventListener("change", up);
+    ["pointerup", "pointercancel", "blur", "change"].forEach((ev) => input.addEventListener(ev, up));
   });
-  updateLimits();
+  updateAdjust();
 }
-function updateLimits() {
+function updateAdjust() {
   for (const { line, limit } of issuerLimits()) {
-    const card = $('[data-limit="' + limit.id + '"]'); if (!card) continue;
-    const input = $("input", card);
-    if (!dragging.has(limit.id) && !sendQ.latest.has(limit.id)) { input.value = limit.bound.value; $(".v", card).textContent = fmt(limit.bound.value); }
+    const row = $('[data-limit="' + limit.id + '"]'); if (!row) continue;
+    const input = $("input", row), fo = limit.from_order;
+    if (!dragging.has(limit.id) && !sendQ.latest.has(limit.id)) { input.value = limit.bound.value; $(".v", row).textContent = fmt(limit.bound.value); }
     input.disabled = signed;
+    const differs = fo && fo.matches === false;
+    $(".order-note", row).innerHTML = fo ? (differs ? '<span style="color:var(--accent);font-weight:600">changed from the order</span> · the order says ' + fmt(fo.value) + " " + esc(limit.unit) : "from the order: " + fmt(fo.value) + " " + esc(limit.unit)) : "";
+    const back = $("[data-back]", row); back.hidden = !(differs && !signed);
     const L = lineOf(line.id), p = pickOf(L);
-    $(".pickline", card).innerHTML = p ? 'Pick: <b>' + esc(p.product.title) + "</b> · " + esc(p.product.store) + " · " + money(p.product.price_cents)
-      : '<span class="tag warn">' + esc(L ? L.status : "") + "</span> " + esc(L && L.reason || "no pick");
+    $(".pickline", row).textContent = p ? "Pick now: " + p.product.title + " · " + p.product.store + " · " + money(p.product.price_cents) : (L ? L.status + (L.reason ? ": " + L.reason : "") : "");
   }
 }
 
-/* lines: accept, or strike the picked product with a reason */
-const accepted = new Set();
+/* lines: strike the picked product, with a reason */
 const REASONS = ["He cannot use it", "Wrong for the room", "Not what I asked for"];
 function renderLines() {
   const main = $("#main");
-  main.innerHTML = `<p class="mute">Accept a pick, or strike it. A strike holds at every store and the shopper cannot undo it.</p>` + state.lines.map((L) => {
+  main.innerHTML = `<div class="sub" style="padding:4px 0 6px">Strike a pick with a reason. A strike holds at every store and the shopper cannot undo it.</div>` + state.lines.map((L) => {
     const p = pickOf(L), struck = L.struck || [];
-    const statusTag = { ready: ["ok", "ready"], next_candidate: ["ok", "next in line"], pick_up: ["warn", "pick up locally"], open: ["bad", "open"] }[L.status] || ["", L.status];
-    return `<div class="card" data-line="${esc(L.line_id)}">
-      <h2>${esc(L.need)} <span class="tag ${statusTag[0]}">${esc(statusTag[1])}</span></h2>
-      ${p ? `<div class="pickline"><b>${esc(p.product.title)}</b><br><span class="mute">${esc(p.product.store)} · ${money(p.product.price_cents)}${L.tightest ? " · " + esc(L.tightest.text) : ""}</span></div>` : `<div class="mute">${esc(L.reason || "nothing to pick")}</div>`}
-      ${p && !signed ? `<div class="btns"><button class="act ${accepted.has(L.line_id) ? "primary" : ""}" data-accept="${esc(L.line_id)}">${accepted.has(L.line_id) ? "Accepted" : "Accept"}</button><button class="act danger" data-strike="${esc(L.line_id)}">Strike…</button></div>
+    return `<div class="item" data-line="${esc(L.line_id)}"><div class="row"><span class="need">${esc(L.need)}</span><span class="num">${p ? money(p.product.price_cents) : ""}</span></div>
+      ${p ? `<div class="pick">${esc(p.product.title)}</div><div class="sub">${esc(p.product.store)}</div>` : `<div class="sub">${esc(L.reason || "nothing to pick")}</div>`}
+      ${p && !signed ? `<div class="btns"><button class="act danger" data-strike="${esc(L.line_id)}">Strike…</button></div>
         <div class="strikebox" hidden><div class="chips">${REASONS.map((r) => `<button type="button" data-chip="${esc(r)}">${esc(r)}</button>`).join("")}</div>
         <input type="text" placeholder="Reason" maxlength="160" aria-label="Reason for the strike"><div class="btns"><button class="act danger" data-confirm="${esc(L.line_id)}">Strike this product</button></div></div>` : ""}
-      ${struck.map((s) => `<div class="pickline mute">Struck: ${esc(s.product_key)} — ${esc(s.reason)}${signed ? "" : ` <button class="act" data-unstrike="${esc(L.line_id)}" data-key="${esc(s.product_key)}">Put back</button>`}</div>`).join("")}
-    </div>`;
+      ${struck.map((s) => `<div class="sub" style="margin-top:6px">Struck: ${esc(s.product_key)}, ${esc(s.reason)}${signed ? "" : ` <button class="link" data-unstrike="${esc(L.line_id)}" data-key="${esc(s.product_key)}">put back</button>`}</div>`).join("")}</div>`;
   }).join("");
 }
 document.addEventListener("click", async (e) => {
   const t = e.target.closest("button"); if (!t) return;
-  if (t.dataset.tab) { tab = t.dataset.tab; document.querySelectorAll("nav button").forEach((b) => b.setAttribute("aria-selected", b === t)); render(); return; }
-  if (t.dataset.accept) { accepted.has(t.dataset.accept) ? accepted.delete(t.dataset.accept) : accepted.add(t.dataset.accept); renderLines(); return; }
-  if (t.dataset.strike) { const box = t.closest(".card").querySelector(".strikebox"); box.hidden = !box.hidden; if (!box.hidden) $("input", box).focus(); return; }
+  if (t.dataset.tab) { tab = t.dataset.tab; document.querySelectorAll("nav button").forEach((b) => b.setAttribute("aria-selected", b === t)); render(); window.scrollTo(0, 0); return; }
+  if (t.dataset.lim) { shown.has(t.dataset.lim) ? shown.delete(t.dataset.lim) : shown.add(t.dataset.lim); renderSheet(); return; }
+  if (t.dataset.open) { openLimit = openLimit === t.dataset.open ? null : t.dataset.open; document.querySelectorAll("[data-limit] .body").forEach((b) => (b.hidden = b.parentElement.dataset.limit !== openLimit)); return; }
+  if (t.dataset.back) {
+    const l = issuerLimits().find((x) => x.limit.id === t.dataset.back).limit;
+    queueLimit(l.id, l.from_order.value); return;
+  }
+  if (t.dataset.strike) { const box = t.closest(".item").querySelector(".strikebox"); box.hidden = !box.hidden; if (!box.hidden) $("input", box).focus(); return; }
   if (t.dataset.chip) { $("input", t.closest(".strikebox")).value = t.dataset.chip; return; }
   if (t.dataset.confirm) {
     const L = lineOf(t.dataset.confirm), p = pickOf(L), reason = $("input", t.closest(".strikebox")).value.trim();
     if (!reason) return toast("Give a reason for the strike");
     t.disabled = true;
-    try { await signedRequest("strike", { line_id: L.line_id, product_key: p.product.product_key, reason }); accepted.delete(L.line_id); await loadState(); renderLines(); }
+    try { await signedRequest("strike", { line_id: L.line_id, product_key: p.product.product_key, reason }); await loadState(); renderLines(); }
     catch (err) { handleError(err); t.disabled = false; }
     return;
   }
@@ -330,81 +402,7 @@ document.addEventListener("click", async (e) => {
     catch (err) { handleError(err); t.disabled = false; }
   }
 });
-
-/* sign: the sheet in words, the hash, one button. The total comes from the server's own sum. */
-function limitWords(line, limit) {
-  const b = limit.bound;
-  const bound = b.source === "issuer" ? fmt(b.value) + " " + limit.unit + " (set by " + state.sheet.issuer.name + ")" : "the shopper's " + b.fact.replace(/_/g, " ");
-  const left = limit.terms.map((t) => (t.source === "store" ? "the store's " + t.figure.replace(/_/g, " ") : "the shopper's " + t.fact.replace(/_/g, " "))).join(" + ");
-  return left + " " + limit.op + " " + bound;
-}
-let sensoRunning = false, sensoFor = null;
-function sensoCard(s) {
-  if (s.configured === false) return `<p class="mute">${esc(s.label || "Senso not connected")}</p>`;
-  const fresh = canon && s.for_hash === canon.sheet_hash;
-  const rows = fresh ? (s.checks || []) : [];
-  const tag = (v) => ({ verified: "ok", conflict: "bad", unsupported: "warn", error: "warn" }[v] || "");
-  const head = sensoRunning || !fresh ? "Senso is checking each sentence…" : rows.length + " sentences checked, " + (s.blocking || []).length + " stop the signature";
-  return `<p class="mute">${esc(head)}</p><ul class="sheet">${rows.map((c) => `<li><span class="tag ${tag(c.verdict)}">${esc(c.verdict)}</span>${c.blocks ? "" : ' <span class="mute">advisory</span>'}<br>${esc(c.sentence)}${c.moved_from_order ? '<br><span class="mute">Dana moved this from the order.</span>' : ""}</li>`).join("")}</ul>`;
-}
-async function ensureSenso() {
-  if (sensoRunning || !canon || !issuer || !issuer.senso || issuer.senso.configured === false || issuer.senso.for_hash === canon.sheet_hash || sensoFor === canon.sheet_hash) return;
-  sensoRunning = true; sensoFor = canon.sheet_hash;
-  try { await fetch("/api/senso/run", { method: "POST" }); await refreshIssuer(); }
-  catch (e) { /* the sign button still works; the server checks again */ }
-  sensoRunning = false;
-  if (tab === "sign" && !busy) renderSign();
-}
-function renderSign() {
-  const main = $("#main");
-  const buy = state.lines.filter((L) => (L.status === "ready" || L.status === "next_candidate") && pickOf(L));
-  const local = state.lines.filter((L) => L.status === "pick_up");
-  const open = state.lines.filter((L) => L.status === "open");
-  const per = persona || (issuer && issuer.persona) || { label: "identity not checked" };
-  const senso = (issuer && issuer.senso) || {};
-  const seal = state.seal || {};
-  if (signed) {
-    main.innerHTML = `<div class="card seal"><h2>Signed</h2>
-      <div>${esc((seal.signature && seal.signature.name) || "")} · ${esc((seal.signature && seal.signature.at) || "")}</div>
-      <div class="hash">${esc(seal.sheet_hash || "")}</div>
-      <ul class="sheet">${(seal.carts || []).map((c) => `<li>${esc(c.store)} · ${money(c.total_cents)}<br><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> <span class="mute">${esc(c.mode || "")}</span></li>`).join("")}</ul>
-      <p class="mute">${esc(per.label || "")}</p>
-      <div class="btns"><button class="act danger" id="reset">Reset for rehearsal</button></div></div>`;
-    $("#reset").onclick = resetAll;
-    return;
-  }
-  main.innerHTML = `<div class="card"><h2>You are signing</h2>
-    <ul class="sheet">
-      ${buy.map((L) => { const c = pickOf(L); return `<li><b>${esc(L.need)}</b>: ${esc(c.product.title)}<br><span class="mute">${esc(c.product.store)} · ${money(c.product.price_cents)}</span>
-        <div class="mute">${state.sheet.lines.find((x) => x.id === L.line_id).limits.map((l) => esc(limitWords(L, l))).join("<br>")}</div></li>`; }).join("")}
-      ${local.map((L) => `<li><b>${esc(L.need)}</b>: pick up locally, not in a cart<br><span class="mute">${esc(L.reason || "")}</span></li>`).join("")}
-      ${open.map((L) => `<li><b>${esc(L.need)}</b>: nothing chosen, not in a cart<br><span class="mute">${esc(L.reason || "")}</span></li>`).join("")}
-    </ul>
-    <div class="mute" style="margin-top:10px">Total in carts (summed by code)</div>
-    <div class="total">${money(state.total_cents)}</div>
-    <div class="mute" style="margin-top:10px">Sheet hash</div>
-    <div class="hash">${esc(canon ? canon.sheet_hash : "not available")}</div></div>
-    <div class="card"><h2>Identity <span class="tag warn">sandbox</span></h2>
-      <p class="mute" id="plabel">${esc(per.label || "identity not checked")}</p>
-      ${per.link ? `<p><a href="${esc(per.link)}" target="_blank" rel="noopener">Open the identity check (sandbox)</a></p>` : ""}
-      <div class="btns"><button class="act" id="pstart">Check my identity</button><button class="act" id="pstatus">Refresh status</button></div></div>
-    <div class="card"><h2>Senso checks</h2>${sensoCard(senso)}</div>
-    <div class="btns"><button class="act primary big" id="sign" ${canon && buy.length ? "" : "disabled"}>Sign and create carts</button></div>`;
-  ensureSenso();
-  $("#pstart").onclick = async () => {
-    try { persona = await getJSON("/api/issuer/persona/start", { method: "POST" }); await refreshIssuer(); renderSign();
-      if (!persona.link) toast(persona.reason || persona.label); } catch (e) { toast(e.message); }
-  };
-  $("#pstatus").onclick = async () => { try { persona = await getJSON("/api/issuer/persona/status"); await refreshIssuer(); renderSign(); } catch (e) { toast(e.message); } };
-  $("#sign").onclick = async () => {
-    const shown = canon.sheet_hash;
-    if (!confirm("Sign this sheet and create the carts?")) return;
-    busy = true; $("#sign").disabled = true; $("#sign").textContent = "Signing…";
-    try { await signedRequest("sign_sheet", { sheet_hash: shown }); await loadState(); busy = false; renderSign(); }
-    catch (e) { busy = false; handleError(e); await loadState().catch(() => {}); renderSign(); }
-  };
-}
-boot().catch((e) => { $("#who").textContent = "could not start"; $("#main").innerHTML = '<div class="card"><h2>Could not start</h2><p class="mute">' + esc(e.message) + "</p></div>"; });
+boot().catch((e) => { $("#who").textContent = "could not start"; $("#main").innerHTML = '<div class="item"><div class="need">Could not start</div><div class="sub">' + esc(e.message) + "</div></div>"; });
 </script>
 </body>
 </html>

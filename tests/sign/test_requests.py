@@ -124,7 +124,7 @@ def sign(env, **over):
 def test_sign_creates_carts_and_marks_signed(env):
     r = sign(env)
     assert r.status_code == 200, r.text
-    picks = env.cart.calls[0]
+    picks = [x for call in env.cart.calls for x in call]
     assert picks and all(set(p) == {"store", "variant_id", "quantity"} for p in picks)
     kind, signature, carts = env.engine.calls[-1]
     assert kind == "mark_signed" and signature["sheet_hash"] == env.engine.sheet_hash() and carts
@@ -134,7 +134,7 @@ def test_sign_creates_carts_and_marks_signed(env):
 
 def test_pick_up_lines_get_no_cart(env):
     sign(env)
-    picked = {p["variant_id"] for p in env.cart.calls[0]}
+    picked = {p["variant_id"] for call in env.cart.calls for p in call}
     state = env.engine.state
     grab_bar = next(l for l in state["lines"] if l["line_id"] == "L5")
     cand = next(c for c in grab_bar["candidates"] if c["id"] == grab_bar["pick"])
@@ -157,15 +157,17 @@ def test_hash_changes_after_a_limit_move(env):
 def test_replayed_sign_is_refused(env):
     body = env.phone.request("sign_sheet", sheet_hash=env.engine.sheet_hash())
     assert post(env, body).status_code == 200
+    made = len(env.cart.calls)  # one call per store
     assert post(env, body).status_code == 409
-    assert len(env.cart.calls) == 1
+    assert len(env.cart.calls) == made
 
 
 def test_signed_sheet_cannot_be_signed_or_changed_again(env):
     sign(env)
+    made = len(env.cart.calls)
     assert sign(env).json()["error"] == "already_signed"
     assert post(env, env.phone.request("set_limit", **LIMIT)).json()["error"] == "already_signed"
-    assert len(env.cart.calls) == 1
+    assert len(env.cart.calls) == made
 
 
 def test_cart_failure_signs_nothing(env):
