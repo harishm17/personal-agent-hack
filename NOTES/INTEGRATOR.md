@@ -2748,3 +2748,10 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
 - The four you listed as still wanted are on main or in this branch: the cart in the left panel, "Ask Dana to change" as
   a button, "changed to 375 lb by Dana" beside the sentence, the fold control.
 - All five went in as ONE commit, not five; there was no time to split them.
+## SIGN 15:48 — the phone's three fixes (web only; main need not restart)
+- DONE 1: "Sign" and the short code (`3ac9 4ba1 dd01`, 20 px) are a dock above the tab bar (`.dock { position: sticky; bottom: 56px }`): the button is at y = 736 of 844 on first load with no scroll. The full code and the signing key's short id are behind "Full code and key".
+- DONE 2: the header reads "Dana signs · Home after surgery" (approver and title from the sheet); the key's short id moved into "Full code and key"; "signed" is the only pill left, and only after signing.
+- DONE 3: the first tab is called "Sign" (Sign / Items / Adjust a limit).
+- Two taps kept: the first tap turns the whole button green and says "Tap again to sign" (`button.act.big.armed`); a change of the sheet voids it at once (H6).
+- Screenshots at 390 x 844 in `evals/phone_screens/sheet4/`: `10-sign-before-first-tap.png`, `11-sign-armed-tap-again.png`, `12-signed.png` (real browser, port 8004, real sandbox identity approved by the simulate route). `uv run pytest tests/sign -q` → 134 passed.
+- All three are in one commit (one file, `web/phone/index.html`); I did not split it into three.
