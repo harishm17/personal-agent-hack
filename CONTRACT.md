@@ -299,3 +299,24 @@ compared locally; no store is told a limit". Not allowed: "provable", any leak r
 trials, "hand-checked".
 Cut for good: sheet 2, Cognee, Arcee, Tokens& Observe, a simulated multi-turn store agent, a redaction
 model as the guard.
+
+## Amendment 12:10 — the builder's decisions: the agent derives the limits; items 3 and 4 go ahead; motion
+- **Nobody configures limits.** The therapist's order is a plain document
+  (`signoff/sign/senso_docs/order.txt`, the same text Senso holds). The agent reads it with the same
+  reader and span check it uses on store text and proposes every limit with the order's own sentence
+  quoted. ENGINE: `python -m signoff.extract.order` writes `data/order/derived.json` (per limit id: line,
+  figure terms, op, value, unit, `quote`, `start`, `end`, `extractor`, `span_found_in_text`), read once
+  and cached like the figures. New optional key on each sheet limit in `/api/state`: `from_order`
+  (`{doc, quote, start, end, value, matches}`) and at top level `order` (`{doc, title, limits_derived,
+  limits_matching, derived_at, delivered_by}`). A test proves the derived limits equal
+  `sheets/sheet1.json`; the sheet file stays what the engine runs on, so the working path is unchanged.
+  Elena's home measurements are context the agent holds, shown with their source, not a control surface.
+- **The approver reviews and signs.** The phone opens on the sheet to sign. Each limit shows the order's
+  sentence. One limit can be adjusted as an override (the live moment); it is then marked "changed from
+  the order" (Senso already says so). No screen asks anyone to set six limits.
+- **On screen** every number has a source in one or two words: "from the order", "from the home", "the
+  store states", "the store's agent said". Role jargon and the owner legend go.
+- **Items 3 (receipt chain) and 4 (outbound ledger) of Amendment 12:00 are approved.**
+- **The flow layout is approved; SCREEN adds motion.**
+- Firedrill: the builder's account has 2,000 credits and an assigned seat, so
+  `native_participant_capacity_exceeded` is on Firedrill's side; he is asking their staff.
