@@ -225,8 +225,8 @@ def test_recall_by_meaning_never_raises_and_says_when_it_did_not_run(records, sh
     monkeypatch.setattr(meaning, "embed", lambda *a, **k: 1 / 0)
     monkeypatch.setattr(meaning, "_queries", {})
     recalled = memory.recall(sheet)
-    told = meaning.search(sheet, "L5", recalled)
-    assert told["ranked"] == [] and "ZeroDivisionError" in told["error"] and told["query"].startswith("grab bar")
+    told = meaning.search(sheet, "L5", recalled, wait_s=1.0)
+    assert told["ranked"] == [] and told["pending"] is True and told["error"] and told["query"].startswith("grab bar")
     assert meaning.search(sheet, "nope", recalled)["error"]
 
 
@@ -243,14 +243,14 @@ def test_meaning_ranks_the_memories_about_the_item_first(records, sheet, product
     signed_strike(product, "the suction cup lets go on tile")
     try:
         done = meaning.index(timeout_s=600)
-        assert done["indexed"] == done["of"] > 0
+        assert done["indexed"] == done["of"] > 0 and meaning.warm(sheet) == len(sheet["lines"])
         recalled = memory.recall(sheet)
-        told = meaning.search(sheet, product["line_id"], recalled, k=3, timeout_s=120)
+        told = meaning.search(sheet, product["line_id"], recalled, k=3)
         assert told["error"] is None and told["recalled"] == 3 and told["of"] == recalled["counts"]["recalled"]
         assert told["not_indexed_yet"] == 0
         assert told["ranked"][0]["kind"] == "strike" and told["ranked"][0]["key"] == product["product_key"]
         assert all(r["owner"] in ("shopper", "issuer", *sheet["stores"]) for r in told["ranked"])
-        only_stores = meaning.search(sheet, product["line_id"], recalled, k=3, kinds=["store_answer"], timeout_s=120)
+        only_stores = meaning.search(sheet, product["line_id"], recalled, k=3, kinds=["store_answer"])
         assert {r["kind"] for r in only_stores["ranked"]} == {"store_answer"}
     finally:
         for table in (name, name + "_vec"):

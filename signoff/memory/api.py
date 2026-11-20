@@ -33,9 +33,9 @@ def memory():
     four owner slots holding what a new run of the sheet on the table would recall.
     `{read_from, database, mirror, counts, shelf, owners: [{owner, owner_name, rows: [...]}], not_memories}`."""
     held = store.read()
-    if held["database"]["state"] == "ok":
-        meaning.index_in_background()  # new memories get their vectors; the reply does not wait for it
     sheet = _active_sheet()
+    if held["database"]["state"] == "ok":
+        meaning.index_in_background(sheet)  # new memories get their vectors; the reply does not wait for it
     recalled = recalling.recall(sheet)
     on_shelf = {e["memory_id"] for part in ("facts", "strikes", "store_answers", "purchases") for e in recalled[part]}
     owners, kinds = {}, {}
