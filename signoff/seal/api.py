@@ -12,6 +12,8 @@ import json
 
 from fastapi import APIRouter
 
+from signoff import config
+
 router = APIRouter()
 LANES = ("phone", "agent", "stores")
 ALGORITHM = {"signature": "ECDSA P-256, SHA-256, raw r||s (64 bytes), base64url",
@@ -97,11 +99,26 @@ def summary(canonical: str, sheet_hash: str | None, name: str | None) -> dict:
                                                         word("picks", "pick"), n["total_cents"] / 100)}
 
 
+NOT_HER_KEY = ("unsigned", "no_key")  # refusals SIGN raises before or at the signature check (signoff/sign/verify.py)
+
+
 def refused(receipts: list) -> list:
-    """Every request the server refused in this run, from the receipt chain: [{n, at, request, why}]."""
-    return [{"n": r.get("n"), "at": r["at"], "request": (r.get("detail") or {}).get("request"),
-             "why": (r.get("detail") or {}).get("refused_because")}
-            for r in receipts if r.get("type") in ("request_refused", "enrolment_refused")]
+    """Every request the server refused in this run, from the receipt chain, oldest first:
+    [{n, at, request, limit_id, value, code, words, why, her_key}]. `words` is the server's own sentence and `code` its
+    own code, as the receipt holds them. `her_key`: False when the refusal is one SIGN raises before a signature has
+    verified, True when it can only be raised after one has, None when the receipt does not say. The receipt does not
+    record where a request came from, nor its HTTP status."""
+    out = []
+    for r in receipts:
+        if r.get("type") not in ("request_refused", "enrolment_refused"):
+            continue
+        d = r.get("detail") or {}
+        why = str(d.get("refused_because") or "")
+        code, _, words = why.partition(": ")
+        out.append({"n": r.get("n"), "at": r["at"], "request": d.get("request") or ("enrol" if r["type"] == "enrolment_refused" else None),
+                    "limit_id": d.get("limit_id"), "value": d.get("value"), "code": code, "words": words or code, "why": why,
+                    "her_key": None if r["type"] == "enrolment_refused" or code == "bad_payload" else code not in NOT_HER_KEY})
+    return out
 
 
 def compose(state: dict, canonical: str, key, receipts: list, identity_required: bool) -> dict:
@@ -123,7 +140,7 @@ def compose(state: dict, canonical: str, key, receipts: list, identity_required:
         "public_key": key and {"jwk": key.jwk, "key_id": key.key_id, "name": key.name, "enrolled_at": key.enrolled_at},
         "algorithm": ALGORITHM,
         "identity": {"required": identity_required, **{k: (key.persona if key else {}).get(k) for k in ("status", "verified", "sandbox")}},
-        "events": events(receipts, seal), "refused": refused(receipts),
+        "events": events(receipts, seal), "refused": refused(receipts), "public_url": config.public_url() or None,
         "carts": [{"store": c.get("store"), "total_cents": c.get("total_cents"), "signed_total_cents": c.get("signed_total_cents"),
                    "lines": len(c.get("lines") or []), "lines_checked": c.get("lines_checked"), "mode": c.get("mode")}
                   for c in seal.get("carts", [])],

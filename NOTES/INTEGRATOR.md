@@ -2755,3 +2755,20 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
 - Two taps kept: the first tap turns the whole button green and says "Tap again to sign" (`button.act.big.armed`); a change of the sheet voids it at once (H6).
 - Screenshots at 390 x 844 in `evals/phone_screens/sheet4/`: `10-sign-before-first-tap.png`, `11-sign-armed-tap-again.png`, `12-signed.png` (real browser, port 8004, real sandbox identity approved by the simulate route). `uv run pytest tests/sign -q` → 134 passed.
 - All three are in one commit (one file, `web/phone/index.html`); I did not split it into three.
+## TALK 15:49 — the "Without Dana's signature" card reshaped (the builder, 15:51 message); what it sends is unchanged
+- Leads with the record: "N refused in this run", then one row per refusal from the receipt chain, newest first (four
+  shown, "+N earlier"): what was attempted in the sheet's words, whether the refusal is one raised before or after a
+  signature of hers verified, the server's own sentence from the receipt, the time. With none: "No one has tried in this run."
+- "Send one yourself": four plain rows with a small "Send". A sent row opens to the exact request (method, path, the JSON
+  body as sent, the signature shortened to 16 characters) and the exact response (status and the raw body text).
+- "copy as curl" on each row, for `PUBLIC_URL` when the proof has it (`public_url`), else the page's own origin. The line
+  reads "these are real requests to this server. Send them from anywhere." The slogan line is gone.
+- Two things the records do not hold, so the page does not show them: where a request came from (laptop, outside, phone)
+  and the HTTP status of a past refusal. The receipt keeps the refusal's code and sentence only. The page says "no
+  signature from Dana's key" or "signed by Dana's key", which follows from the code (`unsigned`, `no_key` are raised
+  before a signature verifies; the others after). If you want the origin shown, SIGN has to write it into the receipt.
+- Not checked: "copy as curl" was not pressed in a real browser (headless Chrome has no clipboard), and the curl line was
+  not run against the tunnel. The same four bodies are the ones the tests post.
+- Seen against main's new canonical sheet on my port: titles as the store writes them, 28 in and 16 in, no "Default Title".
+- `uv run pytest tests/seal tests/talk -q` → `65 passed`. Shots, looked at: `web/seal/shots/seal-without-none.png`,
+  `seal-without-one-open.png`. The other `/seal/` shots are from 15:30 and show the earlier card.
