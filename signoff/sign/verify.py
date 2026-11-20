@@ -21,7 +21,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
 
-TYPES = ("set_limit", "strike", "unstrike", "sign_sheet", "decline_ask")
+TYPES = ("set_limit", "strike", "unstrike", "sign_sheet", "decline_ask", "persona_start")
 RUNTIME = pathlib.Path(__file__).resolve().parent / "_runtime"
 
 
