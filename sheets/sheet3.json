@@ -1,0 +1,46 @@
+{
+  "id": "sheet3",
+  "title": "What Leo may buy",
+  "invented": true,
+  "invented_note": "Invented parent and teenager, invented rules. Real stores, real product text, real carts.",
+  "order_doc": "sheets/sheet3_order.txt",
+  "issuer": {"id": "maya", "name": "Maya", "role": "parent", "role_label": "parent, wrote the rules and pays", "invented": true},
+  "shopper": {"id": "leo", "name": "Leo", "role": "shopper", "role_label": "teenager, shops for himself", "invented": true},
+  "stores": ["jlab.com", "purosound.com", "onanoff.com", "skullcandy.com", "hiboy.com", "gotrax.com", "alaninu.com", "guayaki.com"],
+  "need_by": "2026-12-04",
+  "pick_rule": {"id": "cheapest", "label": "cheapest inside the rules", "set_by": "shopper"},
+  "units": {
+    "dB": ["db", "dba", "decibel", "decibels"],
+    "mph": ["mph", "mi/h", "miles per hour"],
+    "mg": ["mg", "milligram", "milligrams"]
+  },
+  "figures": {
+    "max_volume": "how loud the headphones can play, in decibels (dB), as the page states it. A page that states more than one level or mode (a limited mode and a louder one) states several values: report each.",
+    "top_speed": "the scooter's top speed, in miles per hour (mph).",
+    "caffeine": "the caffeine in one can or serving, in milligrams (mg)."
+  },
+  "shopper_facts": [],
+  "lines": [
+    {
+      "id": "K1", "need": "headphones", "room": "for school", "fulfilment": "cart",
+      "queries": ["headphones", "wireless headphones", "kids headphones"],
+      "limits": [
+        {"id": "K1.volume", "name": "volume limit", "label": "no louder than", "terms": [{"source": "store", "figure": "max_volume"}], "op": "<=", "several": "largest", "bound": {"source": "issuer", "value": 85, "min": 70, "max": 100, "step": 1}, "unit": "dB", "set_by": "issuer", "issuer_role": "parent", "set_at": "2026-11-20T13:30:00-08:00"}
+      ]
+    },
+    {
+      "id": "K2", "need": "electric scooter", "room": "for getting to school", "fulfilment": "cart",
+      "queries": ["electric scooter", "electric scooter for teens"],
+      "limits": [
+        {"id": "K2.speed", "name": "top speed", "label": "no faster than", "terms": [{"source": "store", "figure": "top_speed"}], "op": "<=", "bound": {"source": "issuer", "value": 15, "min": 8, "max": 25, "step": 0.5}, "unit": "mph", "set_by": "issuer", "issuer_role": "parent", "set_at": "2026-11-20T13:30:00-08:00"}
+      ]
+    },
+    {
+      "id": "K3", "need": "energy drink", "room": "for practice", "fulfilment": "cart",
+      "queries": ["energy drink"],
+      "limits": [
+        {"id": "K3.caffeine", "name": "caffeine", "label": "caffeine at most", "terms": [{"source": "store", "figure": "caffeine"}], "op": "<=", "bound": {"source": "issuer", "value": 100, "min": 0, "max": 300, "step": 10}, "unit": "mg", "set_by": "issuer", "issuer_role": "parent", "set_at": "2026-11-20T13:30:00-08:00"}
+      ]
+    }
+  ]
+}
