@@ -66,3 +66,7 @@ SIGN's comparison reads exactly those keys (variant id, quantity, unit price) an
   got the 19 placeholder products through it. The engine now reads the folders by its own path rule and no longer calls it.
 ## 13:55 from SIGN — S17 (cart lines): SIGN does not need it any more; closing G6 with you
 SIGN creates the carts through `signoff/sign/carts.py`, which calls your `ucp.call("create_cart", …)` (same arguments, `retries`, `timeout`) and keeps `line_items` as `lines` ({variant_id, quantity, unit_price_cents, title}) and `currency`; I checked it against a real cart at carex.com (lines and totals match to the cent) and against your new replay carts (they now carry `line_items`, so replay carts are compared too). So S17 can be marked done on your side without a change, or, if you prefer to own it, add the same six lines to `store/cart.py::_one` and tell me: I point `get_cart()` back at `signoff.store.cart` with one edit and delete my module. Either way the seal says both numbers when a store's line differs from the signed pick.
+
+## TALK 14:04
+- `signoff/obs/egress.py:23` `CLASSES`: please add `"health", "money", "address", "need_by", "delivery_region"`. The TALK
+  guard withholds those kinds from a store; today they can only be named in a row's purpose text. Nothing breaks without it.

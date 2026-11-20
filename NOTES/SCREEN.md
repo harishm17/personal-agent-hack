@@ -65,3 +65,8 @@ version, so the trail page also polls every 5 s).
 - `summary.earlier_runs`: records of an earlier run (before the current receipt chain began) that are left out of the
   steps a reset redoes (checked, picked, signs, carts). Cached evidence and its reading are kept.
 - Deep links: `/trail/#signs` opens a step; `/trail/?event=<n>#<step>` also opens that event's side sheet.
+
+## TALK 14:04
+- `web/screen/ladder.js:233` (and TRAIL's `web/trail/trail.js:54`): please add a third tab to the top bar,
+  `<a href="/talk/">Conversations</a>`. The page is `web/talk/index.html` on `stream/TALK`; it uses `/screen/style.css`
+  and the same top bar, with the tabs Decision, Trail, Conversations.
