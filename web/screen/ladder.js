@@ -291,18 +291,22 @@ function render() {
   Object.assign(last, { line: id, pick: pickId, signed: !!state.seal.signed, quiet: false });
 }
 
+/** "Elena, daughter, shops": a person, the first words of the sheet's role label, and what they do here. */
+const who = (person, does) => `${person.name}, ${String(person.role_label || person.role || "").split(",")[0]}, ${does}`;
+
 function renderTop() {
   const { sheet, seal } = state;
-  const mode = [state.mode === "fixture" ? "fixture data" : state.mode === "replay" ? "replay of cached store data" : "", SIM ? "simulation" : ""].filter(Boolean);
+  const mode = [state.mode === "fixture" ? "fixture data" : state.mode === "replay" ? "replay" : "", SIM ? "simulation" : ""].filter(Boolean);
   const real = state.mode === "fixture" ? "" : ", real stores";
   const at = seal.signed_at || (seal.signature && seal.signature.at);
   const time = at ? new Date(at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "";
   q("#top").innerHTML = `<span class="brand">Sign-Off</span>
     ${sheetMenu()}
     <nav class="tabs" aria-label="Views">${TABS.filter(([href]) => href === "/" || href === "/trail/" || aux.pages[href]).map(([href, label]) => `<a href="${href}"${href === "/" ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav>
-    <span class="meta">${[sheet.invented ? "invented people" + real : n_(state.lines.length, "item", "items"), ...mode].filter(Boolean).join(" · ")}</span>
+    <span class="meta">${esc(who(sheet.shopper, "shops"))} · ${esc(who(sheet.issuer, "signs"))}${sheet.invented ? ' <span class="inv">invented</span>' : ""}</span>
     <span class="grow"></span>
-    ${toolRows().length ? `<button class="toolsbtn" data-open="tools" aria-expanded="${ui.drawer === "tools"}">Tools at work</button>` : ""}
+    ${mode.length ? `<span class="pill">${esc(cap(mode.join(" · ")))}</span>` : ""}
+    ${toolRows().length ? `<button class="toolsbtn" data-open="tools" aria-expanded="${ui.drawer === "tools"}" title="Tools at work">Tools</button>` : ""}
     ${aux.pages["/seal/"] ? `<a class="pill ${seal.signed ? "signed" : ""}" href="/seal/" title="The signature, on its own page">${seal.signed ? "Signed" : "Not signed"}</a>`
       : `<span class="pill ${seal.signed ? "signed" : ""}">${seal.signed ? "Signed" : "Not signed"}</span>`}
     <span class="total"><span class="tl">Total</span> <span data-k="total">${money(state.total_cents)}</span></span>`;
@@ -394,7 +398,7 @@ function stepList(line, pick) {
     { id: "pages_read", label: "Pages read", small: n_(pages, "page", "pages"), done: pages > 0 },
     { id: "checked", label: "Checked", small: `${line.candidates.filter((c) => c.status !== "inside").length} rejected`, done: state.lines.some((l) => l.candidates.length > 0), k: "step.rej" },
     { id: "picked", label: "Picked", small: pick || state.total_cents ? `${n_(state.lines.filter((l) => l.pick).length, "item", "items")} · ${money(state.total_cents)}` : "nothing passes", done: !!pick, k: "step.pick" },
-    { id: "signs", label: `${cap(sheet.issuer.role || "approver")} signs`, small: seal.signed ? `signed by ${sheet.issuer.name}` : "from the phone", done: !!seal.signed },
+    { id: "signs", label: `${cap(sheet.issuer.role || "approver")} signs`, small: seal.signed ? `signed by ${sheet.issuer.name}` : "next · on the phone", done: !!seal.signed },
     { id: "carts", label: "Carts", small: seal.signed ? `${(seal.carts || []).length} created` : "none exist yet", done: !!seal.signed && (seal.carts || []).length > 0 },
   ];
 }
@@ -705,7 +709,7 @@ function renderSide(line, c) {
   } else {
     card = `<section class="card why"><div class="cap">Why this one</div><h2>${line.candidates.length ? "Nothing passes" : "Nothing to show yet"}</h2><div class="muted">${line.candidates.length ? esc(cap(line.reason || "no product meets every limit")) + ". Select a row to read why." : "No page has been read for this item."}</div></section>`;
   }
-  q("#side").innerHTML = card + signatureHtml();
+  q("#side").innerHTML = state.seal.signed ? signatureHtml() + card : card + signatureHtml();
   const why = q("#side .why");
   if (why) why.dataset.fit = why.scrollHeight + "/" + why.clientHeight;
   if (why && why.scrollHeight > why.clientHeight + 1) why.classList.add("tight");
@@ -746,14 +750,14 @@ function signatureHtml() {
     const link = en && (en.url || en.link || en.phone_url || en.phone), qr = !enrolled && link ? qrSvg(link) : "";
     const pending = ((aux.asks && aux.asks.asks) || []).filter((x) => x.status === "pending").length;
     // one place says what happens next, in plain words
-    const next = enrolled ? `<b>Waiting for ${name} to sign</b> · this sheet is on ${name}'s phone now` : `<b>Next:</b> ${name} reviews and signs on the phone`;
+    const next = enrolled ? `<b>Waiting for ${name} to sign</b> · this sheet is on ${name}'s phone now` : `<b>Next:</b> ${name} scans this to sign`;
     return `<section class="card sign"><div class="cap">What happens next</div>
       <div class="enrol">${qr && en && en.code ? `<a class="qr" href="${esc(link)}" target="_blank" rel="noopener" aria-label="Open the phone page" title="Scan to open ${name}'s page on a phone · code ${esc(en.code)}">${qr}</a>` : ""}
         <div><div class="next">${next}</div>${pending ? `<div class="muted small">You asked ${name} about ${n_(pending, "limit", "limits")}</div>` : ""}
-        ${!enrolled && en && en.code ? `<div class="muted small">Scan to open it · code <span class="code">${esc(en.code)}</span></div>` : ""}</div></div>
+        ${!enrolled && en && en.code ? `<div class="muted small">It opens ${name}'s page on the phone · code <span class="code">${esc(en.code)}</span></div>` : ""}</div></div>
       <div class="signs"><b>${name} signs</b> ${whatIsSigned()}</div>
       <div class="muted small">No cart exists until then</div>
-      ${receiptsRow()}</section>`;
+      </section>`;
   }
   const sig = seal.signature || {}, persona = sig.persona || (state.issuer_key && state.issuer_key.persona) || {};
   const who = (sig.signer && sig.signer.name) || String(seal.signer || sheet.issuer.name).replace(/\s*\(.*\)\s*$/, ""), hash = seal.sheet_hash || sig.sheet_hash || "";
@@ -763,11 +767,11 @@ function signatureHtml() {
   const carts = seal.carts || [];
   // the carts are the action once signed: the most visible thing on the page
   return `<section class="card sign signed"><div class="cap">What happens next</div>
-    <div class="next part"><span class="tickmark">✓</span> <b>Signed by ${esc(who)}.</b> ${carts.length ? `Your ${carts.length === 1 ? "cart is" : "carts are"} ready:` : "No cart link came back."}</div>
+    <div class="next part"><span class="tickmark">✓</span> <b>Signed by ${esc(who)}</b> · ${carts.length ? `${n_(carts.length, "cart", "carts")} made` : "no cart link came back"}</div>
     ${carts.map((c) => `<a class="cartbtn part" href="${esc(c.cart_url)}" target="_blank" rel="noopener"><span>${esc(c.store)} cart</span><span>${c.total_cents ? money(c.total_cents) + " " : ""}→</span></a>${differs(c) ? `<div class="badw small part">store total differs · signed ${money(c.signed_total_cents)} · store ${money(c.total_cents)}</div>` : ""}`).join("")}
     ${carts.length ? `<div class="muted small part">You check out yourself; Sign-Off never pays.</div>` : ""}
     <div class="row part muted small"><span>${esc(identity)}</span>${hash ? `<span>code <code class="fp" title="${esc(hash)}">${esc(hash.slice(0, 12).replace(/(.{4})(?=.)/g, "$1 "))}</code></span>` : ""}</div>
-    ${receiptsRow()}</section>`;
+    </section>`;
 }
 
 // ---------- the side sheet: everything longer than a label ----------

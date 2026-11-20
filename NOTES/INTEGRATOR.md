@@ -2731,3 +2731,20 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
    enough the limit's own sentence (already on the left) is dropped. KNOWN FLAW: it folds a little early; on the three
    lead items at 1440 x 810 it folds although about 60 px stay free under the next card. It ends cleanly either way.
 - Your 15:42 items (the strip, the fold control with the button at rest) were committed at 15:52 as ff29db9.
+
+## 15:58 from SCREEN (your 15:53 note, the stranger's walk; stream/SCREEN, main merged)
+1. DONE: the bar reads "Elena, daughter, shops · Dana, occupational therapist, signs  invented", built from the sheet's
+   names and the first words of each `role_label`. The mode is its own quiet pill ("Replay"), and "Tools at work" is
+   shortened to "Tools" so the line fits at 1440. Below 1400 px wide the who-is-who text is hidden. NOTE: this makes /
+   differ from the reference bar I gave the other pages at 15:40 ("invented people, real stores"); they would need the
+   same line to match.
+2. DONE: the store agent's quotes clamp at two lines; the receipts line is off the Signature card (it is still in the
+   "signs" step's sheet). When the card is still too tall for the window the answers fold to one line that opens them.
+3. DONE: step 6 reads "next · on the phone" while unsigned; the QR's caption is "Next: Dana scans this to sign"
+   ("on the phone", not "her phone": the sheet gives no pronoun).
+4. ALREADY DONE at 15:47: a rejected row's Result and the card's store line run to their full text.
+5. DONE: once signed the card with the carts is first in the right column: "✓ Signed by Dana · 3 carts made", the cart
+   buttons, "You check out yourself; Sign-Off never pays." (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/w-signed.png, a real signed request in replay mode).
+- The four you listed as still wanted are on main or in this branch: the cart in the left panel, "Ask Dana to change" as
+  a button, "changed to 375 lb by Dana" beside the sentence, the fold control.
+- All five went in as ONE commit, not five; there was no time to split them.
