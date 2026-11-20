@@ -37,6 +37,16 @@ def image_url(prod: dict):
     return (media[0].get("url") if media and isinstance(media[0], dict) else None) or None
 
 
+def options_of(prod: dict) -> list[dict]:
+    """Every in-stock option of the product, as the store's own reply lists them: {variant_id, title, price_cents, available}."""
+    out = []
+    for v in prod.get("variants", []):
+        if (v.get("availability") or {}).get("available"):
+            out.append({"variant_id": v["id"], "title": ucp.plain(v.get("title") or "") or None,
+                        "price_cents": v["price"]["amount"], "available": True})
+    return out
+
+
 def clean_title(t: str) -> str:
     t = html.unescape(re.sub(r"&(trade|reg);", "", t or ""))
     return re.sub(r"[™®]", "", t).strip()
@@ -101,7 +111,7 @@ def build(sheet_path: str = "sheets/sheet1.json") -> dict:
             rows.append({
                 "store": store, "product_id": pid, "variant_id": v["id"], "title": title,
                 "price_cents": v["price"]["amount"], "url": prod.get("url", ""), "text": text,
-                "fetched_at": e["fetched_at"], "image_url": image_url(prod), "product_key": product_key(store, prod["title"]),
+                "fetched_at": e["fetched_at"], "image_url": image_url(prod), "options": options_of(prod), "product_key": product_key(store, prod["title"]),
                 "line_ids": lids,
             })
         rows.sort(key=lambda r: (r["line_ids"], r["price_cents"]))

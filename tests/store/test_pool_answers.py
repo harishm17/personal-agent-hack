@@ -62,3 +62,19 @@ def test_every_product_carries_the_stores_first_image_or_none():
     assert all(r["image_url"] is None or r["image_url"].startswith("https://") for r in rows)
     assert build_pool.image_url({"media": []}) is None and build_pool.image_url({}) is None
     assert build_pool.image_url({"media": [{"url": "https://x/a.jpg"}, {"url": "https://x/b.jpg"}]}) == "https://x/a.jpg"
+
+
+def test_every_pool_product_carries_every_in_stock_option():
+    import glob
+    rows = [r for f in glob.glob(str(ROOT / "data" / "pool" / "*.json")) + glob.glob(str(ROOT / "data" / "sheet2" / "pool" / "*.json"))
+            for r in json.loads(open(f).read())]
+    for r in rows:
+        o = r["options"]
+        assert o and all(set(x) == {"variant_id", "title", "price_cents", "available"} and x["available"] for x in o)
+        cheapest = min(o, key=lambda x: x["price_cents"])
+        assert r["variant_id"] == cheapest["variant_id"] or r["price_cents"] == cheapest["price_cents"]  # the old top-level fields
+        assert any(x["variant_id"] == r["variant_id"] for x in o)
+    assert any(len(r["options"]) > 1 for r in rows)
+    prod = {"variants": [{"id": "a", "title": "12 Inch", "price": {"amount": 5}, "availability": {"available": True}},
+                         {"id": "b", "title": "16 Inch", "price": {"amount": 6}, "availability": {"available": False}}]}
+    assert build_pool.options_of(prod) == [{"variant_id": "a", "title": "12 Inch", "price_cents": 5, "available": True}]
