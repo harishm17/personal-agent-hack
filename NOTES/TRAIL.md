@@ -70,3 +70,17 @@ Every string that came from a store is untrusted text: escape it. Shape of one e
 - For the lead row use `id: "cbd3c7f37f4f:1"`: 7 removed, sent, a real reply. `cbd3c7f37f4f:2` is its follow-up, refused.
   The agent's own questions (`origin: "agent"`, 6 messages, 3 stores) have `removed: []`: nothing was stopped, by design.
 - Two earlier asks (`f9faad4b5aed:1`, `1553b09d0333:1`) were refused and sent nothing; they are real and stay in the list.
+## REVIEWS 14:20
+- A new step for the run, "Reviews read": `GET /api/reviews/log` → `{step: "Reviews read", recipient: "exa.ai", searches: [...],
+  sent_only_product_titles: true|false, sealed_values_found_in_any_search: []}`. Each search:
+  `{step, at, service, query, sent: {query, numResults, contents}, sent_is_only_the_product_title_and_review, ledger: {n, at, recipient,
+  kind, purpose, bytes, payload_sha256, fact_classes, sealed_found_in_payload}, sent_matches_the_ledger_hash, key_used, pages_returned,
+  pages_read, quotes_kept, dropped, found, note, cost_dollars, serves: {line_id, candidate_ids} | null}`.
+- One plain sentence per search is enough: "Asked exa.ai for 'Carex Folding Walker review': 4 pages, 8 quotes kept, 2 dropped."
+  What left: the product's title and the word "review". `sent` is the whole body; `sent_matches_the_ledger_hash` says code hashed
+  that body again and got the ledger row's SHA-256. No limit, no measurement, no name: `ledger.sealed_found_in_payload` is `[]`.
+- The reader model was sent the product's title and the returned page text (ledger rows with purpose "propose review quotes from one
+  web page", recipient `sie:Qwen/Qwen3.8-27B-FP8`). Nothing of the sheet is in those either.
+- Know this: the ledger file is per checkout. The 14 searches were made from the REVIEWS checkout, so their rows are in the cache
+  entries (`data/reviews/*.json`, field `ledger`) and in this route, not in main's `/api/egress`. A search made on main adds a row there.
+- Reviews are after the pick and beside it: they change no status and no pick. Please do not draw them as a gate.
