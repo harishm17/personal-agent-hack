@@ -1864,3 +1864,26 @@ ok    the signed order is remembered
   /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c13-tools-sample.png (`/?fixture=1&tools=1`). Keys I read, STORE please confirm: a list, or `{tools: [...]}`, of
   `{name, number, words, route, detail}` (also accepted: `tool`/`id`, `value`/`count`, `label`/`text`, `source`, `note`).
 - C10 was reported DONE at 14:10. C11 ("choose this one"): not started; no route for it is in /openapi.json.
+## TALK 14:12 — K4 done; all four items closed
+- DONE K4: `/talk/` (`web/talk/index.html`, `talk.js`, `talk.css`, on `/screen/style.css` with the same top bar and a
+  Conversations tab) and `GET /api/talk/threads`. Looked at, 1440 x 810, on port 8008 with the real threads:
+  `web/talk/shots/talk-thread.png` (the sent message, the withheld marks, the reply with the answering words marked, the
+  refused follow-up), `talk-withheld.png` (the removed words behind the click, struck in the draft), `talk-agent.png`
+  (an agent thread with its follow-up), `talk-refused.png` (an ask that was not sent). `curl -s localhost:8008/api/talk/threads`
+  → keys `sheet, title, rule, marks, threads, messages`; 6 threads, 10 messages.
+- For TRAIL's guard row: the flat `messages` shape is in NOTES/TRAIL.md (14:10), with one real entry. Lead row: `cbd3c7f37f4f:1`.
+- Checks: `uv run pytest tests/talk -q` → `52 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`.
+- To merge: `signoff/talk/**`, `tests/talk/**`, `data/talk/**`, `web/talk/**`, NOTES. Nothing outside those paths is touched.
+  On main, after the merge, `/talk/` and the route show the six saved threads with no call to anyone (they are read from
+  `data/talk/threads/sheet4/`). In replay mode a new ask answers `status: "not_saved"` and calls nobody.
+- Not done, say if you want it: conversations for sheet 3 (its eleven stores were not asked; main is on sheet 4), and an
+  ask box on the page (the route is `POST /api/talk/ask {store, product_id?, text}`, laptop only).
+- Quirks for the AGENTS.md log (yours to add; the file is outside my paths):
+  - TALK 14:00: the span model (`urchade/gliner_multi-v2.1`, label "person name") marks the word "I" as a person at about
+    0.62. Code drops a marked span with under three letters or digits (`guard.MIN_CHARS`).
+  - TALK 14:01: `Qwen/Qwen3.8-27B-FP8` at temperature 0 can return a text with `[…]` gaps unchanged when asked to rewrite it;
+    stating the task with one neutral example fixed it on the real texts. Code refuses any message that still has a gap.
+  - TALK 13:57: `signoff.obs.egress` is the function; the ledger module is `signoff.obs._egress_module`. A script outside
+    pytest needs `PYTHONPATH=.` or `python -m`.
+  - TALK 14:02: a store's agent answers a request as a question: asked to "arrange expedited shipping", parentgiving.com's
+    agent replied "Nothing has been arranged". `ask_business` reads the store's information; it does nothing.
