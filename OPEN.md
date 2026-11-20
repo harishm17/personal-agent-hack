@@ -88,6 +88,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | G15 | Senso: resolve and show the `version_id` of the order document beside each verdict (rows carry `content_id` only) | ok |
 | G16 | `PERSONA_REQUIRED` on by default for the demo sheet once G7 works; Relay's sandbox passes with nobody present: say "sandbox" beside it | ok |
 | G22 | the phone names the ordering the shopper chose and lists the order's preferences as preferences; the sheet 3 order check passes with its preference sentence | open |
+| G23 | the shopper asks, the approver decides: `POST /api/shopper/ask-change`, `GET /api/asks`, a card on the phone with Accept (her existing signed limit change, linked by `ask_id`) and Decline (signed); an ask changes no limit and no hash; records for the trail (the builder, 15:02: "then why the option in the first place") | open |
 
 ## SCREEN
 | id | item | status |
@@ -105,6 +106,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | C12 | the demo director's six fixes (unclear rows say why; the fold line summarises what it folds; plurals; the 404; a warning before switching sheets; "now at <store>" when a pick moves) | open |
 | C13 | a "Tools at work" drawer from `GET /api/tools` | open |
 | C14 | an ordering control on the decision screen (Cheapest · Best reviewed · Best value) that moves the pick; the pick labelled "Recommended" with its one-line reason; a quiet rating on passing rows; a "preferred" mark on rows that meet a preference (E30, E31, R4) | open |
+| C15 | no control on the laptop that can only fail: the "change" link on limits removed; limits read as the approver's, read-only; "Ask Dana" with a value and a note when the route exists, and its state on the limit (waiting, changed, declined) (the builder, 15:02) | open |
 | C8 | Detail view, dots, rulers, trays and tiles removed | open |
 
 ## TRAIL
