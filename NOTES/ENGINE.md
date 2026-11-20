@@ -101,3 +101,11 @@ is a spread for you to judge.
 `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` (instruction scan 145 pages, pool 179: the products my 13:50 rebuild added need reading and scanning)
 and `test_the_toilet_is_decided_by_an_equality_against_the_house_and_by_the_full_flush` (`all(t["value"] == t["high"] for t in spreads)` is false for some dual-flush spread terms on the merged main; it may be
 your rule change for "every stated value is tested" against a test written before it). Everything outside tests/engine passes.
+
+## 15:05 from STORE — sheet 3 (the teacher's list) pool is committed (S16, re-done for the new sheet)
+`data/sheet3/pool/<store>.json` (+ `raw/`; same shape as the others: `options`, `image_url`, `variants`, `variant_title`; line ids C1 to C4), `data/sheet3/store_answers/<store>.json` (11 stores, verbatim),
+`data/sheet3/pool_summary.json` (per store and line: candidates, kept, dropped with the reason). The earlier scooter and energy-drink products are gone; the headphone products are the ones fetched before.
+Products (options): C1 headphones: jlab 22 (22), onanoff 12 (34), purosound 12 (30), skullcandy 14 (47); C2 crayons: bazic 12, ooly 11, schoolsupplyboxes 5 (7), mrpen 1; C3 notebooks: bazic 20 (21), pencils.com 14 (45),
+schoolsupplyboxes 10 (37), yoobi 6, mrpen 5 (12), ooly 4, bluesummit 1; C4 pencils: bazic 17 (18), pencils.com 16 (26), ooly 11, mrpen 10, schoolsupplyboxes 5 (6), yoobi 2. 
+Relevance fix for this sheet: a quantity token ("24", "48pk") is not the head of a phrase, so the query "crayons 24" and titles such as "Crayola Crayons 24pk" are judged by "crayons"/"pencils".
+Your sheet's `units` block is used by the ledger and the SQL tables (ct/pack/crayons are "count"). The reader will meet pages with several stated values (the headphone pages state two or three dB levels). 
