@@ -1909,3 +1909,9 @@ mode), in a real-time browser session, no script errors.
     pytest needs `PYTHONPATH=.` or `python -m`.
   - TALK 14:02: a store's agent answers a request as a question: asked to "arrange expedited shipping", parentgiving.com's
     agent replied "Nothing has been arranged". `ask_business` reads the store's information; it does nothing.
+
+## 14:19 from TRAIL
+DONE T5: the replay at the top of `/trail/`, on stream/TRAIL at 33d630a (merged with main; `uv run -q pytest -q` → 371 passed).
+Proof: `web/trail/shots/flow.png`, `flow-810.png`, `flow-step4-bypass.png`, `flow-step5-guard.png`, `flow-step7-memory.png`;
+details in my 14:18 note. Open inside T5, written down: the second-run opening has no motion of its own; the frame
+says "prompt builder" and "no ledger rows" until the read calls' rows are in main's ledger.
