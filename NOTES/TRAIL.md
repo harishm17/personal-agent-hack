@@ -42,6 +42,22 @@ Link `/screen/style.css` and use its variables and classes; do not copy values. 
 - 14:05 from MEMORY: `GET /api/memory/context` → `{model_calls, calls_given_memory, calls_given_no_memory, by_call: [{recipient, purpose, calls, bytes_per_call, given: [classes],
   payloads_containing_a_home_value, calls_given_memory}], sheets_counted}`, counted from the ledger. One line is enough: "347 model calls · 0 given memory".
   `GET /api/memory/recall?line_id=` now also has `by_meaning: {query, recalled, of, ranked: [{score, owner, kind, text, memory_id, source}], error}`.
+
+## 14:08 from MEMORY — the shelf: `GET /api/memory` → `shelf` is stable (on 8007 now; on main after the next merge)
+```json
+"shelf": [
+ {"slot": "shopper",  "owner": "shopper",    "name": "Elena", "items": [<card>]},
+ {"slot": "approver", "owner": "issuer",     "name": "Dana",  "items": [<card>]},
+ {"slot": "stores",   "owner": "each store", "name": null,    "items": [<card>]},   // card.owner is the store's domain
+ {"slot": "bought",   "owner": "issuer",     "name": "Dana",  "items": [<card>]}]
+```
+A `<card>`: `{memory_id, owner, kind, text, source, at, age: {seconds, text}}` plus, by kind: `home_measurement` → `fact_id, value, unit`; `strike` → `line_id, product_key, title, reason`;
+`store_answer` → `key` (`delivery`, `returns`, or `<figure>:<product id>`), `line_id`; `purchase` → `total_cents, carts`.
+- `text` is one plain sentence ("Elena measured the tub inside width: 22.0 in."); `source` is `{type: "receipt", chain, n, hash, file, at}` or `{type: "file", file, index, at}`; `age.text` is "2 h 51 min".
+- The shelf holds what a new run of the sheet on the table would recall (newest measurement per fact, strikes not undone, this order's stores, this sheet's signed orders). Everything ever kept, by owner, is in `owners[].rows` (each row also has `age` and `on_shelf`).
+- Which cards were recalled for one item: `GET /api/memory/recall?line_id=L1` → `recalled: [{memory_id, kind, owner, why, text, age, ...}]`; match `memory_id` to the shelf's cards. `why` is short ("bounds \"fits inside the tub\" on this item").
+- "recalled from memory" on a measurement: the engine marks the fact in `/api/state` (`remembered: true, measured_by, measured_at`) and a strike with `from_memory: true`.
+- One thing to draw truthfully: a card exists from the moment its receipt exists (a measurement when Elena sets it, a strike when Dana's signed request is accepted), not only at the signature. Only the "bought" card appears on signing. On 8007 after one run: shopper 1, approver 1, stores 9, bought 1.
 ## TALK 14:10 — the guard row: `GET /api/talk/threads` → `messages` (stable; on `stream/TALK`, served on port 8008 now)
 `messages` is a flat list, oldest first, one entry per outbound message of the active sheet (`?sheet=sheet4` for another).
 Every string that came from a store is untrusted text: escape it. Shape of one entry (real, 14:02 today):
@@ -70,3 +86,23 @@ Every string that came from a store is untrusted text: escape it. Shape of one e
 - For the lead row use `id: "cbd3c7f37f4f:1"`: 7 removed, sent, a real reply. `cbd3c7f37f4f:2` is its follow-up, refused.
   The agent's own questions (`origin: "agent"`, 6 messages, 3 stores) have `removed: []`: nothing was stopped, by design.
 - Two earlier asks (`f9faad4b5aed:1`, `1553b09d0333:1`) were refused and sent nothing; they are real and stay in the list.
+
+## TALK 14:15 — one added field in `messages`, nothing changed
+- `purpose_removed`: what the guard finds in the shopper's own words, same span shape as `removed`, offsets in `purpose`;
+  null for the agent's own questions, for a follow-up and for threads saved before 14:12. Optional to draw.
+- A second sent example for the guard row: `98b830ce0828:1` (vivehealth.com, grab bars; six removed, sent, real reply) and
+  its follow-up `98b830ce0828:2` (three removed, sent, real reply). `cbd3c7f37f4f:1` stays valid.
+## REVIEWS 14:20
+- A new step for the run, "Reviews read": `GET /api/reviews/log` → `{step: "Reviews read", recipient: "exa.ai", searches: [...],
+  sent_only_product_titles: true|false, sealed_values_found_in_any_search: []}`. Each search:
+  `{step, at, service, query, sent: {query, numResults, contents}, sent_is_only_the_product_title_and_review, ledger: {n, at, recipient,
+  kind, purpose, bytes, payload_sha256, fact_classes, sealed_found_in_payload}, sent_matches_the_ledger_hash, key_used, pages_returned,
+  pages_read, quotes_kept, dropped, found, note, cost_dollars, serves: {line_id, candidate_ids} | null}`.
+- One plain sentence per search is enough: "Asked exa.ai for 'Carex Folding Walker review': 4 pages, 8 quotes kept, 2 dropped."
+  What left: the product's title and the word "review". `sent` is the whole body; `sent_matches_the_ledger_hash` says code hashed
+  that body again and got the ledger row's SHA-256. No limit, no measurement, no name: `ledger.sealed_found_in_payload` is `[]`.
+- The reader model was sent the product's title and the returned page text (ledger rows with purpose "propose review quotes from one
+  web page", recipient `sie:Qwen/Qwen3.8-27B-FP8`). Nothing of the sheet is in those either.
+- Know this: the ledger file is per checkout. The 14 searches were made from the REVIEWS checkout, so their rows are in the cache
+  entries (`data/reviews/*.json`, field `ledger`) and in this route, not in main's `/api/egress`. A search made on main adds a row there.
+- Reviews are after the pick and beside it: they change no status and no pick. Please do not draw them as a gate.

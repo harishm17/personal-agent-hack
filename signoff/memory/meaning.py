@@ -20,7 +20,7 @@ RECIPIENT = "sie:" + MODEL
 PURPOSE_INDEX = "memory: embed the sentences of memories"
 PURPOSE_QUERY = "embed one item's need, to rank memories against it"
 _lock = threading.Lock()
-_s = {"dim": None, "indexing": False, "error": None, "indexed_at": None, "ready": set()}
+_s = {"dim": None, "indexing": False, "error": None, "last": None, "ready": set()}
 _queries = {}
 
 
@@ -73,12 +73,24 @@ def index(timeout_s=600.0) -> dict:
                                 [(m["id"], MODEL, json.dumps(v)) for m, v in zip(new, vectors)])
             conn.commit()
         store._in_db(work)
-    _s.update(error=None, indexed_at=time.time())
-    return {"indexed": len([m for m in memories if m["id"] in have]) + len(new), "of": len(memories), "added": len(new)}
+    done = {"indexed": len([m for m in memories if m["id"] in have]) + len(new), "of": len(memories), "added": len(new)}
+    _s["last"] = dict(done, at=time.strftime("%Y-%m-%dT%H:%M:%S%z"))
+    return done
 
 
-def index_in_background() -> None:
-    """Starts one indexing pass unless one is running. A failure is kept in `status()`."""
+def warm(sheet: dict, timeout_s=300.0) -> int:
+    """Embeds the need of every item of the sheet that has no query vector yet, in one call. Returns how many."""
+    needs = [n for n in dict.fromkeys(need_of(sheet, l.get("id")) for l in sheet.get("lines") or []) if n and n not in _queries]
+    if needs:
+        for need, vector in zip(needs, embed(needs, is_query=True, timeout_s=timeout_s)):
+            _queries[need] = vector
+    return len(needs)
+
+
+def index_in_background(sheet: dict | None = None) -> None:
+    """Starts one pass unless one is running: vectors for new memories, then for the needs of the sheet's items.
+    The model sleeps after a few idle minutes and then takes about ten seconds, so no reply waits for this.
+    A failure is kept in `status()`."""
     with _lock:
         if _s["indexing"]:
             return
@@ -87,15 +99,19 @@ def index_in_background() -> None:
     def run():
         try:
             index()
+            warm(sheet or {})
+            _s["error"] = None
         except Exception as error:  # noqa: BLE001
-            _s["error"] = "%s" % type(error).__name__
+            _s["error"] = "%s at %s" % (type(error).__name__, time.strftime("%H:%M:%S"))
         finally:
             _s["indexing"] = False
     threading.Thread(target=run, daemon=True, name="memory-index").start()
 
 
 def status() -> dict:
-    return {"model": MODEL, "indexing": _s["indexing"], "error": _s["error"], "table": _vec_table()}
+    """`last` is the last finished pass (`indexed` of `of` memories have a vector); `error` is the last pass's failure."""
+    return {"model": MODEL, "indexing": _s["indexing"], "last": _s.get("last"), "needs_embedded": len(_queries),
+            "error": _s["error"], "table": _vec_table()}
 
 
 def need_of(sheet: dict, line_id: str):
@@ -106,10 +122,11 @@ def need_of(sheet: dict, line_id: str):
     return ". ".join([str(line.get("need"))] + [str(l.get("name")) for l in line.get("limits") or [] if l.get("name")])
 
 
-def search(sheet: dict, line_id: str, recalled: dict, k: int = 5, kinds=None, timeout_s=8.0) -> dict:
+def search(sheet: dict, line_id: str, recalled: dict, k: int = 5, kinds=None, wait_s=3.0) -> dict:
     """The `k` memories nearest in meaning to the item's need, of those `recalled` for the sheet (so a measurement
     that was replaced or a strike that was undone is not ranked). Never raises: a model or database that does not
-    answer comes back as `error`, with nothing ranked."""
+    answer comes back as `error`, with nothing ranked. If the item's need has no vector yet, one is asked for in the
+    background and this waits `wait_s` for it; after that the reply says it is pending and the next call has it."""
     need = need_of(sheet, line_id)
     out = {"model": MODEL, "query": need, "recalled": 0, "of": 0, "ranked": [], "error": None,
            "filter": "owner and kind, among the memories recalled for this sheet, in the same SQL statement as the ranking"}
@@ -122,7 +139,13 @@ def search(sheet: dict, line_id: str, recalled: dict, k: int = 5, kinds=None, ti
         return out
     try:
         if need not in _queries:
-            _queries[need] = embed([need], is_query=True, timeout_s=timeout_s)[0]
+            index_in_background(sheet)
+            until = time.time() + wait_s
+            while need not in _queries and time.time() < until:
+                time.sleep(0.05)
+        if need not in _queries:
+            return dict(out, pending=True, error="the embedding model has not answered yet (%s); ask again" % (
+                _s["error"] or "it is waking or indexing"))
         vector = _queries[need]
 
         def work(conn):

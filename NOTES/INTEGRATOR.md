@@ -1620,6 +1620,19 @@ DONE T4 (as far as the records go): screenshots `web/trail/shots/trail-context.p
 - The chat has no rows in any ledger I can read, so its context is not shown yet; it will appear by itself (same block)
   when a chat call is recorded.
 
+## 14:10 from TRAIL
+T5, part 1 (the static key frame) is committed on stream/TRAIL: 27f14b7. Screenshot `web/trail/shots/flow.png` (1440 x 810,
+sheet 4 on port 8016, replay mode). `uv run -q pytest -q` → 280 passed. It sits at the top of `/trail/`; the timeline is
+below it as the record. All content is from `feed.flow` (new, `signoff/trail/flow.py`), which reads the live state: the
+order's sentences (the one with the issuer's number marked), the home measurement the item uses, the picked product's page
+with the sentences that state its figures, the figure meanings from the sheet, both comparisons with margins, the nearest
+cheaper product that was refused with its reason, the pick and its rule, the signature row, the question to the store's
+agent and its reply. Lines are computed from where the things are, so the bypass ends on the pills' own edges and never
+touches the frame. The frame's caption says "prompt builder" until the ledger rows carry `parts`.
+Quiet two-word cards where no record exists yet: "no ledger rows" (what stayed outside the call), "no guard record",
+"No memory record" (`/api/talk/threads` and `/api/memory` answer 404 on main).
+The replay engine (play, pause, step, the rail as scrubber, space and arrow keys, 24 s) is in the same commit but I have
+not yet watched it frame by frame; that is next.
 ## 13:59 from ENGINE — DONE E27: three reading modes, "disagreement blocks" is the default
 - Modes in the state, named as you asked: `reference`, `disagreement blocks` (default), `both must agree` (strict, for the gate).
   `two_readers.modes` lists them with one sentence each; `two_readers.strict_mode_measured` keeps the strict mode's outcome,
@@ -1763,6 +1776,32 @@ order. The only call that carries memory is the embedding of the memories' own s
   the test suites that set `memory` get nothing remembered, so a demo run on a laptop cannot change another stream's test.
 - Quirks for the log (AGENTS.md is yours): SIE `Qwen/Qwen3-Embedding-4B` timed out cold at 60 s, answered in 7.7 s on the next call and 0.2 s warm, so warm it before the demo
   (`GET /api/memory` starts the indexing in the background); `r[0]["dense"]` is a numpy array. `from signoff.obs import egress` is a function, the module is `importlib.import_module("signoff.obs.egress")`.
+
+## 14:08 from MEMORY — M4 seen working on 8007 at 14:05 in 6 of 7 checks; the seventh (the reason) needs one line from ENGINE. Not marked DONE.
+`uv run python -m tests.memory.second_run` (8007, replay, sheet 4, started from no earlier receipts; the two states are saved in `data/memory/second_run/run1.json` and `run2.json`):
+```
+measurement  tub_inside_width: 21.5 -> 22.0 in; run 2 starts at 22.0 (by Elena, 2026-11-20T14:05:23.978-08:00)
+struck       L5: 'Textured Grab Bars'; run 2 pick: 'Metal Grab Bar'
+struck again [{"line_id": "L5", "product_key": "textured grab bars", "by": "issuer", "reason": "struck earlier", "at": "2026-11-20T14:05:24.020-08:00", "from_memory": true}]
+answers      9 reused, e.g. carex.com on returns: "Opened bath seats cannot be returned". (2 h 51 min old)
+recalled     12 of 42
+ok    run 2 is a new run (new chain, not signed, no key)
+ok    the measurement is remembered
+ok    with who and when
+ok    the struck product is out, from memory
+FAIL  with the approver's reason
+ok    the stores' answers are reused with their age
+ok    the signed order is remembered
+```
+- [ ] **The one open thing, ENGINE's file:** `signoff/engine/state.py`, the `strike` / `unstrike` receipt: add `"reason"` to its `detail`. The reason is only inside `body_hash` today, so after
+  a reset no record can say why she struck it, and I will not take it from anywhere that is not a record. Asked at 13:53 in NOTES/ENGINE.md; not there on stream/ENGINE at 14:07.
+  My side is done and tested with that field (`test_a_new_run_recalls_the_measurement_the_strike_and_the_stores_answers`). When it lands I rerun the script and write DONE M4.
+  Smallest honest version if it does not land: the product stays out, marked "struck before" with who and when, and the words "reason not kept in the receipt".
+- The sheet's name is no longer open: a chain started by "use-sheet" names the sheet and I follow `previous` from a reset back to it. Only a run that starts at process start with no
+  use-sheet has no sheet on record (then names show as "the shopper" / "the approver"). `"sheet_id"` in `chain_started` would close that too (same note to ENGINE).
+- The shelf for the central view is in `GET /api/memory` → `shelf` (four slots, cards with owner, kind, text, source, time and age); shape in NOTES/TRAIL.md, 14:08.
+- For main: I dropped the tables `memory` and `memory_vec` (they held only my test runs) and my server on 8007 now uses `SIGNOFF_MEMORY_TABLE=memory_dev`, so main's shelf starts with
+  the stores' saved answers and nothing of mine. Main's own receipts in `data/receipts/` are read as they are.
 ## TALK 14:04 — the time box holds; K1, K2, K3 are on `stream/TALK`, K4 follows by 14:40
 - DONE K1: `signoff/talk/` (talk.py, writer.py). A Superlinked model (`Qwen/Qwen3.8-27B-FP8`) writes our message from a
   purpose and the product; the store's own agent answers through `ucp.ask_business`; the model marks the answering
@@ -1798,3 +1837,200 @@ order. The only call that carries memory is the embedding of the memories' own s
   itself sends. The saved threads carry their own record (draft, removed, sent, reply) and the page reads those.
 - For STORE (noted in NOTES/STORE.md): `egress.CLASSES` has no `health`, `money`, `address`, so those kinds appear in a
   row's purpose text, not in `fact_classes`.
+## REVIEWS 14:20 — R1, R2, R3 on `stream/REVIEWS` (commits d64fd18, 332b5b0 and the one carrying this note)
+- **DONE R1**: `signoff/reviews/reviews.py`. For the six cheapest `inside` candidates of a line, one Exa search per distinct title
+  (query = the title + " review", nothing else), cached under `data/reviews/<title>-<hash of the query>.json` (14 files, committed, so
+  replay needs no network). The reader (`sie:Qwen/Qwen3.8-27B-FP8`) proposes; code keeps a rating, a count or one sentence only when
+  the quote is in the page's text at its offsets and the number is written in the quote. Proof, live at 14:16 from this checkout:
+  `POST :8010/api/reviews/fetch {"line_id":"L4"}` → 6 searches, key_used EXA_API_KEY, then
+  `GET :8010/api/reviews` → `L1 considered 6 searched 6 with_reviews 3 with_a_rating 3 none 3`, `L4 … with_reviews 6 with_a_rating 4 none 0`,
+  `L5 … with_reviews 0 none 6`. `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `15 passed, 1 deselected`; `-m live` → `1 passed`.
+  Cost of all of today's searches: $0.098 (from the replies' own `costDollars`).
+- **What code refused, so you can say it aloud**: the first run kept "4.8 (786 ratings)" for Vive's "Textured Grab Bars" from a
+  roundup page; the rating belonged to another maker's bar. Fixed in general, not for that page: the reader must quote the name the
+  page gives to the product it rates, and code requires that name to hold every word of the product's title. That page is now
+  dropped ("what the page rates is named …"), and L5 honestly has "no reviews found" for all six. Also general: a scale the page
+  does not write is not supplied ("Rated 4.5 from 138 reviews" is kept as 4.5 with `out_of: null`, and cannot be "best reviewed");
+  "0 / 5 · 0 reviews" is no rating; one number cannot be both the rating and its scale.
+- **The limit that remains, stated in every reply (`summary.limit_of_the_name_rule`)**: a page on another site is matched by name
+  only. A title that names no maker can match another maker's product of the same name: Vive's "Bariatric Walker with Wheels"
+  matched Amazon's "AireMed Bariatric Walker with 5" Wheels". Each source carries `rated_as` and `matched_by` so the screen shows it.
+  The pool has no maker field (`product_key` is the title), so code cannot do better today. Do not claim reviews are verified to be
+  of the same product; say "matched by name".
+- **DONE R2**: `signoff/reviews/api.py` (`router`; already in OPTIONAL_ROUTERS, POST prefix already guarded). `GET /api/reviews?line_id=L4`
+  and `GET /api/reviews` (all lines + `by_candidate`); `POST /api/reviews/fetch {line_id}`. Proof: `:8010/api/health` lists
+  `signoff.reviews.api`; `GET :8010/api/reviews?line_id=NOPE` → 404; the POST with `x-forwarded-for` → 403 `local_only`.
+  "Best reviewed among those that pass" is offered, never applied: minimum 5 reviews and the scale stated; tie-break "highest quoted
+  rating as a share of its scale; then more reviews; then lower price; then candidate id" (both in the reply). On sheet 4: L4 offers
+  the Drive rollator (4.6 of 5, 58 reviews, the seller's own page, $119.99; the pick stays the $44.71 Carex walker); L1 and L5 offer
+  nothing and say why. The module never writes engine state (a test checks the engine's version does not move). Shape sent to
+  SCREEN in NOTES/SCREEN.md. I added no `reviews` block inside `/api/state`: that is ENGINE's; `by_candidate` is keyed by candidate id.
+- **DONE R3**: every search goes through `obs.egress("exa.ai", "search the web for reviews of one product", body, ["product"])`; the
+  reader's calls go through `reader.ask` (ledger rows to `sie:…`). `GET :8010/api/reviews/log` →
+  `14 searches; only titles: True; hash ok: True; sealed: []; keys: ['EXA_API_KEY']`. Route and shape sent to TRAIL and GRAPH.
+- **For you to decide**: (1) main's own ledger has no Exa rows, because the searches ran here and the cache answers on main. If you
+  want the rows in main's `/api/egress` for the demo, delete one line's cache files on main and `POST /api/reviews/fetch` there
+  (about $0.04 and 20 s for a line); otherwise `/api/reviews/log` shows the rows as they were written. (2) The ledger's `kind_of`
+  calls exa.ai a "sponsor service"; I did not know whether Exa is a sponsor, change the word if it is not. (3) Sheet 3 is not
+  searched; one POST per line does it. (4) The backup key was never needed; `key_used` in every reply names the key that answered.
+- Quirks, for the AGENTS.md log if my edit there is refused: Exa returns `title: ""` for some pages (YouTube): the first line of the
+  text is used as the title, and the reply says so. Many pages state a rating with no scale. A search costs $0.007, about 1.5 s.
+
+## 14:18 from TRAIL
+T5 on stream/TRAIL, ready to merge. `uv run -q pytest -q` → 352 passed (tests/trail: 15). Seen on port 8016 (sheet 4, replay
+mode), in a real-time browser session, no script errors.
+- **Key frame** from live records: `web/trail/shots/flow.png` (whole picture), `flow-810.png` (1440 x 810).
+- **Replay**: 24 s, play and pause (space), step (arrow keys, the two buttons), the rail is the scrubber. Frames I looked at:
+  `flow-step4-bypass.png` (the limit and the measurement drawing round the frame, never through it, ending on their
+  pills), `flow-step5-guard.png` (the removed spans leaving the draft for the guard line), `flow-step7-memory.png` (the
+  shelf in view; from step 5 the page scrolls the playing row into sight). Motion off: the final frame.
+- **Guard row** is TALK's record: the message about the picked product in which the guard removed the most (today a
+  draft with 7 spans removed: "My mother", "280 lbs", "hip surgery", "300 lbs", "21.5 inches", "therapist", "Dana"), what
+  was left, and the store agent's reply. **Memory shelf** is MEMORY's `shelf`: four owner slots; today only "Each store's"
+  holds anything (9), the other three say "nothing yet". "recalled from memory" appears on the home card when the
+  shopper's slot holds that measurement (none today, so no tag).
+- **Demo director's two notes**: a step's clock time is shown only when the step happened in this run (cached evidence
+  shows its duration, no clock time), so the times no longer run out of order. The four numbers and the kind chips now
+  sit under the picture, above the timeline. The line "N model calls" is as the ledger has it: on my port "1 model call
+  · 1 given page text · none saw a limit · 1 saw a person's name" (that one call is MEMORY's embedding of memories).
+- **Still said in two words where no record exists**: the frame's caption "prompt builder" and the chip "no ledger rows"
+  until the read calls' rows reach main's ledger. The frame's record is taken only from calls to the reader that read
+  this product's figures (the ledger's recipient equals the figure's `extractor`), never from another model's calls.
+- Not done: the second-run opening (shelf full at 0:00, the measurement rising into the left column, a struck product
+  already refused) has no motion of its own yet; the tag and the shelf are drawn from the records when they exist.
+## 14:35 from SCREEN (your 14:10 note; main merged at 123d154; gate 350 passed)
+- DONE C12: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-L5.png (items 1 to 3), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-nowat.png (item 6), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-confirm.png (item 5). By item:
+  1. An unclear row gives the engine's reason in the result: "✕ unclear · option says 36 in, page describes 12, 16, 24 in"
+     (from the check's `unclear_why`; "two values" / "no unit stated" when the engine gives none).
+  2. The fold line is a summary of the folded rows by which limit failed, with the extreme value, for any item:
+     "14 cheaper above: 9 under 16 in (lowest 12 in) · 4 under 300 lb (lowest 75 lb) · 1 unclear". It opens on click.
+     Groups: under / over / not a bound (per limit), never state it, unclear, struck.
+  3. Singular and plural: items, limits, stores, pages, "1 cheaper one rejected", "1 dearer one also passes", receipts.
+  4. No request that can answer 404 is made any more. The optional routes (tools, sheets, trail, egress, gate, enrol
+     code) are asked for only when `/openapi.json` lists them; the favicon request is gone (an empty icon link); the two
+     HEAD probes of `/graph/` and `/talk/`, repeated every 5 s, are gone. That last one was the 404.
+     ONE THING I NEED FROM YOU: please add `"pages": ["trail", "talk", "graph", ...]` to `GET /api/health` in
+     signoff/app.py (the folders that are mounted). Until then the Conversations tab shows when the talk router is loaded
+     (its page is in the repo) and the Memory tab stays hidden, because I cannot tell whether `web/graph` is served
+     without asking for it (it is not on main at 123d154). With `pages` both follow what is served.
+  5. Switching from the title menu asks once when the sheet is signed or a phone is enrolled: "Switching starts a new
+     run. It clears the phone's enrolment." with Stay / Switch. Checked by clicking it with a key enrolled.
+  6. When a limit change moves the pick to another store, "now at carex.com" shows beside "Why this one" for the three
+     seconds the old pick says "was picked". Checked with a really signed request (shower chair capacity 300 → 400:
+     parentgiving.com → carex.com, $47.11).
+- C13, written, NOT seen with real data: `GET /api/tools` is not on main (not in /openapi.json), so the "Tools at work"
+  button stays hidden. When the route exists a quiet button appears in the top bar and opens a drawer, one row per tool:
+  name, one number, two or three words, the detail and the route on click. Sample from placeholder rows:
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c13-tools-sample.png (`/?fixture=1&tools=1`). Keys I read, STORE please confirm: a list, or `{tools: [...]}`, of
+  `{name, number, words, route, detail}` (also accepted: `tool`/`id`, `value`/`count`, `label`/`text`, `source`, `note`).
+- C10 was reported DONE at 14:10. C11 ("choose this one"): not started; no route for it is in /openapi.json.
+## TALK 14:12 — K4 done; all four items closed
+- DONE K4: `/talk/` (`web/talk/index.html`, `talk.js`, `talk.css`, on `/screen/style.css` with the same top bar and a
+  Conversations tab) and `GET /api/talk/threads`. Looked at, 1440 x 810, on port 8008 with the real threads:
+  `web/talk/shots/talk-thread.png` (the sent message, the withheld marks, the reply with the answering words marked, the
+  refused follow-up), `talk-withheld.png` (the removed words behind the click, struck in the draft), `talk-agent.png`
+  (an agent thread with its follow-up), `talk-refused.png` (an ask that was not sent). `curl -s localhost:8008/api/talk/threads`
+  → keys `sheet, title, rule, marks, threads, messages`; 6 threads, 10 messages.
+- For TRAIL's guard row: the flat `messages` shape is in NOTES/TRAIL.md (14:10), with one real entry. Lead row: `cbd3c7f37f4f:1`.
+- Checks: `uv run pytest tests/talk -q` → `52 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`.
+- To merge: `signoff/talk/**`, `tests/talk/**`, `data/talk/**`, `web/talk/**`, NOTES. Nothing outside those paths is touched.
+  On main, after the merge, `/talk/` and the route show the six saved threads with no call to anyone (they are read from
+  `data/talk/threads/sheet4/`). In replay mode a new ask answers `status: "not_saved"` and calls nobody.
+- Not done, say if you want it: conversations for sheet 3 (its eleven stores were not asked; main is on sheet 4), and an
+  ask box on the page (the route is `POST /api/talk/ask {store, product_id?, text}`, laptop only).
+- Quirks for the AGENTS.md log (yours to add; the file is outside my paths):
+  - TALK 14:00: the span model (`urchade/gliner_multi-v2.1`, label "person name") marks the word "I" as a person at about
+    0.62. Code drops a marked span with under three letters or digits (`guard.MIN_CHARS`).
+  - TALK 14:01: `Qwen/Qwen3.8-27B-FP8` at temperature 0 can return a text with `[…]` gaps unchanged when asked to rewrite it;
+    stating the task with one neutral example fixed it on the real texts. Code refuses any message that still has a gap.
+  - TALK 13:57: `signoff.obs.egress` is the function; the ledger module is `signoff.obs._egress_module`. A script outside
+    pytest needs `PYTHONPATH=.` or `python -m`.
+  - TALK 14:02: a store's agent answers a request as a question: asked to "arrange expedited shipping", parentgiving.com's
+    agent replied "Nothing has been arranged". `ask_business` reads the store's information; it does nothing.
+## STORE 14:25 — DONE S19, DONE S18, S13 and S14 updated
+**DONE S19 (the statement agrees with the engine in all three reading modes).** Two things the engine does that the SQL did not know: a figure the two readers read differently carries `disagree` and makes the check unclear (the shower chair "Shower Chair with Removable Back": 21.5 against 17.75 in), and a limit with `unit_required: false` (a count) takes a figure with no unit. Both are in the statement now
+(`figures.for_other_option` holds `for_other_option` or `disagree`; `limits.unit_required`; schema version 4 drops and recreates the three tables). Proof, clean runs in their own databases, `state.set_reading_mode(mode)` then the engine's inside set against the SQL rows of every line:
+sheet 4: reference L1 9=9, L4 46=46, L5 7=7; disagreement blocks 8=8, 46=46, 7=7; both must agree 7=7, 38=38, 8=8. Sheet 3: reference C1 34=34, C2 6=6, C3 43=43, C4 32=32; disagreement blocks the same; both must agree 34=34, 6=6, 43=43, 33=33. (Also sheets 1 and 2 in the two modes the gate switches between: identical sets on every line.) Script: `scratchpad/modes.py`-style loop, reproduced by
+`pytest -m live tests/store/test_passing_box.py` (4 tests, 55 s): random limits and facts against `rules.build_state` with second statements, foreign units, unsure flags and **reader disagreements**; `==`/gpf/dual flush; hand-built two-level pages, sibling options, `several`, a figure in cm, a quote with no number and a page on which the readers disagree (never inside, in any mode); a count with and without `unit_required`.
+(My own mistake on the way: two comparison runs shared one database and overwrote each other; a database per run settled it.) The line "the same test runs as one SQL statement" can be said for sheets 3 and 4, in every reading mode.
+**DONE S18: `GET /api/tools`** (signoff/obs/tools.py, route in signoff/store/api.py, tests/obs/test_tools.py). Reply `{tools: [...], absent: [{tool, why}], sheet, line_id, at}`. Row fields `tool, job, number, unit, detail, source, ok, live, agrees, basis`. Nothing invented: each number is read at request time from its owner's route (in-process) or file; a tool with no real call is in `absent` with the reason.
+Today, sheet 4, line L4: SingleStore 46 candidates inside, the same as the engine's 46, 3281 decision records over 16 state versions; Airbyte 311 rows delivered, the same query on them returns 46, `same: true`, jobs 24, 23, 25; Statsig: gate sie_reader off (disagreement blocks), 5 real disagreements caught, decision "switched back" with the evidence sentence; Amplitude: events delivered since the app started, by kind, the variant
+`sie_reader=<arm>` on the session; Superlinked SIE: 197 pages read by the Qwen model, 5 figures read differently, 27 only the reference found, **saved run**; Firedrill: 2 campaigns (ids 5fa2f8da, 630ecf19), latest scores Names who can make the change 70.5 (threshold 75), Holds the sheet 99.5, re-run after the fix with every criterion met: no, **saved runs**. Absent now: Senso (no check run for this sheet), Persona (no inquiry), Cognee (no datasets held).
+On the "ok: false" you saw: `ok` now only means the source answered; `live` says whether the call was made by this app just now or is a saved run, and `basis` says it in a sentence ("The pages were read once, earlier (13:38), and the answers saved; this is not a call made just now."); `agrees` carries the SQL equality. SCREEN has the field guide in NOTES/SCREEN.md.
+**S13 (Amplitude visible):** the Amplitude row above shows events delivered, by kind, and the variant attached to the session now; the arm names are `disagreement-blocks` / `both-must-agree` (the gate's two engine reading modes). **S14 (the verdict with ENGINE's modes):** the gate calls `set_reading_mode("both must agree")` when on and `"disagreement blocks"` when off; the verdict is code from `two_readers.strict_mode_measured`:
+kept only if the strict mode changes no pick and adds no spend; today it catches 5 real disagreements, blocks 27 right figures, moves 18 candidates to unclear and changes the L4 pick ($44.71 to $69.99, +$25.28), so `decision: "switched back"`. Tests: tests/obs/test_gate.py. Status route unchanged in shape except `evidence` (now the measurement) and `arm` (`disagreement-blocks` / `both-must-agree`).
+## SIGN 14:20 — G18, G19, G20, G21 closed; what broke; Firedrill status
+- DONE G19: the phone and the seal say "checked against the order, version N" only from a verdict for the signed hash; else "not checked: Senso not reachable / not connected" or "check still running"; identity is never implied by it. Proof: `uv run pytest tests/sign/test_honest_checks.py -q` (Senso unavailable, pending, not connected, differs/unsupported counted); code `sensoSealText` in `web/phone/index.html`, `_senso_gate` in `signoff/sign/api.py`.
+- DONE G20: after a reset or sheet switch the phone says "A new run started: scan the code on the laptop again." Proof, live on port 8004 with the page open and `POST /api/admin/reset` from the laptop: `evals/phone_screens/sheet4/06-new-run-started-after-reset.png`.
+- DONE G21: the Senso check runs once at app start and on every sheet switch (background watcher, no phone needed). Route that shows sheet 4's result: `GET /api/senso/checks` → `for_hash` = the sheet's hash, `checks` 7, all `verified` (shower chair 300 lb, shower chair or transfer bench, walker 300 lb, walker, grab bar 300 lb, grab bar 16 in, grab bar), `order_document.versions` version 1; `GET /api/state` → `senso_current: true`, `senso` 7 rows. Seen at 14:19 on a fresh start on sheet 4.
+- DONE G18: one full rehearsal on sheet 4 in replay mode on port 8004, real browser at 390x844, every state looked at: `evals/phone_screens/sheet4/` — 01-enrol, 02-review-three-cards (L1 shower chair, L4 walker, L5 grab bar), 03-adjust-shower-chair-weight (400 lb moves the pick to Carex Universal Bath Seat $47.11, "changed from the order · the order says 300 lb"), 04-refused-identity ("Not signed: identity not verified"), 05-signed-two-carts (Dana (identity checked, sandbox); carex.com $91.82 and vivehealth.com $27.99, "the store's cart lines match the signed picks"), 06-new-run-started-after-reset.
+- What broke or was wrong, all fixed: (1) the toast covered the Sign button and the refusal could be missed → toast at the top and a "Not signed: …" line under the button; (2) a Senso refresh reset the "tap again" state → kept in module state; (3) the seal said "6 of 7 verified" when one sentence differed from the order (the moved weight) → the check line now counts verified, differs and unsupported separately (screenshot 05 was taken before that wording; the code now says "1 differs from the order"); (4) the old enrol state gave no reason after a reset → G20. Still true: with the sheet changed by the adjustment, one Senso sentence differs from the order by design: the adjusted limit is shown as advisory, not blocking.
+- Firedrill, G14: ENGINE's changed refusal is NOT on main yet (`signoff/agent/chat.py::refusal` on main at 14:19 is still the one-sentence version; exact replacement in NOTES/ENGINE.md 14:25). I rerun the same 3-turn drill as soon as it lands (about 3 minutes). If it is not on main by 14:50, the first two campaigns stand as "found, being fixed": the chat held (nothing restored); the rubric "names who can make the change" scored 77 in campaign 1 (met, 75) and 70.5 in campaign 2 (below), "holds the sheet" 99.5 in campaign 2 (not assessable in campaign 1). The before for the rerun is campaign 2: 70.5 / 99.5. Summary for `GET /api/tools`: `evals/firedrill/summary.json` (status "found, being fixed", `after: null` until the rerun).
+## SIGN 14:23 — G17 closed (sheet 3 rehearsal)
+- DONE G17: sheet 3 (Room 12 class supplies, Ms. Alvarez) now has real picks on main (`data/figures/sheet3/` filled): `SIGNOFF_SHEET=sheet3 SIGNOFF_MODE=replay` on port 8005, real browser 390x844: enrol with the code, review (headphones $431.76 jlab.com, crayons $18.96, notebook, pencils), identity check started and approved through the sandbox simulate route, signed twice-tap: "Ms. Alvarez (identity checked, sandbox)", three carts (jlab.com $431.76, schoolsupplyboxes.com $44.16, bazicproducts.com $47.76) each "the store's cart lines match the signed picks", "Checked against the list (version 1): 8 of 8 verified". Screenshot of the signed state: `evals/phone_screens/sheet3/signed-three-carts.png`. Only that state was captured as an image (the review and enrol screens are the same components as sheet 4's; the enrol/review text was read from the page). I did not rehearse an adjusted limit or a refusal on sheet 3.
+
+## 14:19 from TRAIL
+DONE T5: the replay at the top of `/trail/`, on stream/TRAIL at 33d630a (merged with main; `uv run -q pytest -q` → 371 passed).
+Proof: `web/trail/shots/flow.png`, `flow-810.png`, `flow-step4-bypass.png`, `flow-step5-guard.png`, `flow-step7-memory.png`;
+details in my 14:18 note. Open inside T5, written down: the second-run opening has no motion of its own; the frame
+says "prompt builder" and "no ledger rows" until the read calls' rows are in main's ledger.
+
+## 14:16 from MEMORY — the exact sequence to see the second run on main at 15:15 (M4)
+Main is live on sheet 4 and its chain says "process start", which names no sheet. Step 1 puts the sheet on the table so the receipts name it (then the cards say "Elena" and "Dana").
+**One command does steps 1 to 5 and prints the checks** (no signature, so no cart and no identity check; it enrols a throwaway key as Dana, which the reset in step 5 forgets, so enrol the phone after it):
+```
+uv run python -m tests.memory.second_run http://127.0.0.1:8800 no-sign
+```
+The same by hand (use the phone for step 3 if it is enrolled; a signature in step 3 also fills the "bought" slot):
+1. `curl -s -X POST localhost:8800/api/admin/use-sheet -H 'content-type: application/json' -d '{"sheet_id":"sheet4"}'`
+2. `curl -s -X POST localhost:8800/api/shopper/fact -H 'content-type: application/json' -d '{"fact_id":"tub_inside_width","value":22.5}'` (or drag the tub width on the screen)
+3. On the phone, as Dana: strike the grab bar's pick with a reason. (Optional: sign.)
+4. `curl -s localhost:8800/api/memory` → `shelf`: slot `shopper` has 1 card, "Elena measured the tub inside width: 22.5 in."; slot `approver` has 1 card, "Dana struck <product> from the grab bar."; slot `stores` has the saved answers and the stores' agents' replies (16 on my port); slot `bought` has 1 card only if she signed. `counts.not_proved` is 0.
+5. `curl -s -X POST localhost:8800/api/admin/reset`
+6. `curl -s localhost:8800/api/state` → what to see:
+   - `sheet.shopper_facts[0]`: `"value": 22.5, "remembered": true, "measured_by": "Elena", "measured_at": "<time of step 2>"` (the sheet file says 21.5);
+   - `memory`: `{"facts": [{"fact_id": "tub_inside_width", "value": 22.5, ...}], "strikes": [{"line_id": "L5", "product_key": "...", ...}], "ignored": []}`;
+   - line `L5`: `struck` holds the product with `"from_memory": true` and `"by": "issuer"`; `pick` is the next grab bar that passes, not the struck one;
+   - `seal.signed` false, `issuer_key.enrolled` false, `receipts.chain` a new id: it is a new run, and nobody struck anything in it.
+7. `curl -s localhost:8800/api/memory` → the same cards, older (`age.text`); `curl -s 'localhost:8800/api/memory/recall?line_id=L5'` → `recalled` has the strike with `why: "struck from this item before, by a signed request"`, and `by_meaning.ranked` puts it at or near the top (the first call after an idle spell may say `pending`; ask again).
+What you will **not** see yet: the reason. The strike shows `"reason": "struck earlier"` until ENGINE adds `"reason"` to the strike receipt's `detail` (asked 13:53; one line). The script prints `FAIL  with the approver's reason` until then, and passes after it with no change on my side.
+Afterwards main keeps both memories for every later run, which is the point, and matters for the demo:
+- only two grab bars pass on sheet 4. Strike once: the pick moves to the other one. Strike both and the line has no pick.
+- to put main back: set the width again (`POST /api/shopper/fact` with 21.5; the newest measurement wins) and send a signed unstrike from the phone. To start with an empty shelf instead, move `data/receipts/*.jsonl` aside: without its receipt a memory is not recalled (the rows stay in the table, counted under `not_proved`, never on the shelf).
+Seen on 8007 at 14:13 with this exact command (`no-sign`): 6 of 6 checks it can pass today pass; the reason fails as said. Saved states of the full run with a signature: `data/memory/second_run/run1.json`, `run2.json`.
+Also since my last note: a store's own agent's reply in TALK's saved conversations (`data/talk/threads/`) is now a `store_answer` memory owned by that store (key `talk:<product>:<thread>:<turn>`, `source.turn`);
+what our agent drafted or sent is never in a memory (`test_what_a_stores_own_agent_replied_is_the_stores_memory_and_what_we_wrote_is_not`). `./hk check` → PASS.
+
+## TALK 14:15 — K3: what the record shows, and the calls for main at 15:15
+Your ten were the first merge. The record on `stream/TALK` now holds five real shopper asks; main already has the first
+three. In every one the shopper's own words carried sealed facts and the model's draft repeated them: no draft was clean.
+| thread | at | store | removed from the draft | result |
+|---|---|---|---|---|
+| `f9faad4b5aed` | 14:00 | parentgiving.com | mother, 280 lb, hip surgery, 300 lb, 21.5-inch | refused, nothing sent (the span model marked "I" in the rewrite) |
+| `1553b09d0333` | 14:01 | parentgiving.com | mother, 280 pounds, hip surgery, 300-pound, 21.5-inch | refused, nothing sent (the writer returned the gaps) |
+| `cbd3c7f37f4f` | 14:02 | parentgiving.com | My mother, 280 lbs, hip surgery, 300 lbs, 21.5 inches, therapist, Dana | **sent**; real reply "Nothing has been arranged, …"; follow-up refused |
+| `9b79a4f63b5c` | 14:12 | carex.com | Rosa, 280 lb, hip replacement | refused, nothing sent (the span model missed "my mother" beside "Rosa", the second check caught it) |
+| `98b830ce0828` | 14:13 | vivehealth.com | Rosa, 280 lbs, hip surgery, therapist, 300 lbs, 16 inches | **sent**: "Hi Vive, please confirm if the Textured Grab Bars can arrive by December 2, 2026. Also, what is your return policy if we open the package and find it does not fit her needs?"; real reply; the follow-up had 3 more parts cut and was sent |
+Each refusal became a general rule in code, not a case: a marked span under three letters or digits states no fact; a
+message with a gap mark is not sent; the check sweeps what remains until a pass finds nothing new. With today's code all
+four earlier drafts come out cut, rewritten and clean (checked with the models only; no store was called again).
+- New, as you asked: the guard also reads the shopper's own words. A shopper thread saved from 14:12 on has
+  `purpose_removed` (in `messages` too, offsets in `purpose`; null for older threads and for the agent's own questions).
+  For `98b830ce0828`: Mum, Rosa, 280 pounds, hip surgery, Vive, therapist, 300 lb, 16 inches.
+- Said plainly: the span model is not exact. It marked the store's own name "Vive" as a person (over-blocking), and it
+  marked "my mother" in three drafts and missed it in the fifth; the rewrite dropped those words anyway. A name on the
+  sheet, a limit and a home measurement are found by code, every time, in digits or words. Of five real asks: two sent,
+  three refused, nothing sealed sent in any.
+
+Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs the sweeping check; main must be on sheet 4):
+1. The record, no call to anyone:
+   `curl -s localhost:8800/api/talk/threads | python3 -c "import json,sys; [print(m['id'], m['decision'], [r['text'] for r in m['removed']], '->', m['sent']) for m in json.load(sys.stdin)['messages'] if m['origin']=='shopper']"`
+   expect seven lines, among them `98b830ce0828:1 rewritten ['Rosa', '280 lbs', 'hip surgery', 'therapist', '300 lbs', '16 inches'] -> Hi Vive, …`.
+2. The same ask again; it answers from the saved record with `"from_cache": true` and calls nobody:
+   `curl -s -X POST localhost:8800/api/talk/ask -H 'content-type: application/json' -d '{"store":"vivehealth.com","product_id":"gid://shopify/Product/4843257987172","text":"Mum (Rosa) is 280 pounds and just had hip surgery. Please tell Vive that, and that the therapist wrote the bar must hold 300 lb and be at least 16 inches long, so they ship it this week. Ask what happens if we open it and it is wrong."}'`
+3. A new one, live (two models, then at most two real calls to carex.com, about 15 s). The words are new, so the outcome
+   is not fixed: `decision` is `rewritten` (sent, with `removed` filled) or `refused` (nothing sent, `removed` filled).
+   `curl -s -X POST localhost:8800/api/talk/ask -H 'content-type: application/json' -d '{"store":"carex.com","product_id":"gid://shopify/Product/4121093898345","text":"Please tell Carex my mother weighs 280 pounds and is just out of hip surgery, and that her therapist Dana wrote the walker must hold 300 lb and pass a 28 inch door. Ask them to send it quickly and what a return costs."}'`
+   The page `/talk/` shows it within five seconds.
+- Shots retaken at 14:14 with the fifth ask: `web/talk/shots/talk-withheld.png`, `talk-thread.png`.
+- `uv run pytest tests/talk -q` → `54 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`.

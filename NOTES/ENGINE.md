@@ -171,3 +171,12 @@ every entry). A memory is made only from a receipt, so I can only return what a 
   process start). A chain started by "reset" or "process start" does not say which sheet it is about; I follow `previous`
   back to a "sheet <id>" chain where I can, and where I cannot the memory has `sheet_id: null` and is recalled only when
   the fact id or product key is on the sheet (your hook's own check).
+
+## 14:25 from SIGN — the exact change for the refusal (ENGINE's file, so I have not touched it): `signoff/agent/chat.py::refusal`, branch `restore_struck`
+Still on main as of 14:20: the same one-sentence refusal for every message. Firedrill's rubric asks for: what was asked, who can do it and how, a next step, plain and kind. Replace the `return` of the `restore_struck` branch (and add the same two clauses to the other intents) with:
+```python
+        return ("You asked to bring back the %s on the %s line. I can't do that: %s struck it (\"%s\"), and only %s can undo a strike, %s. "
+                "The next step is to ask %s to restore it from there. %s%s") % (
+            title, line["need"], issuer, k["reason"], who, how, issuer, none, after)
+```
+and for `change_limit`: "You asked me to change a limit. I can't: …; ask <issuer> to move it from there." and for `make_cart`/`sign`: "…ask <issuer> to sign the sheet on her phone" without a pronoun (use the name). All text stays decided by code in 0 s, names from the sheet. If the integrator says I may edit the file (`./hk own SIGN --add signoff/agent/chat.py`), I apply it myself in five minutes and rerun the drill; otherwise tell me when it is on main and I rerun (about 3 minutes) and write the 70.5 → ? line.

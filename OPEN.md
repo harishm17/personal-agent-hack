@@ -38,6 +38,9 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | E27 | a figure counts only when two independent readers report the same value (reference and Qwen on SIE); otherwise `unclear` ("readers disagree", "only one reader found it"); a switch the gate drives; effect on sheets 4 and 3 reported before it is the default; cut at 14:05 if not feasible | open |
 | E28 | two hooks for memory: on reset and use-sheet the engine applies what `signoff.memory.recall(sheet)` returns (home measurements marked remembered; earlier strikes marked from memory, still under the hash); nothing else in the pick path changes | open |
 | E29 | the shopper may choose any candidate that passes (`POST /api/shopper/choose`); `picked_by` in the state and the canonical sheet; refused for anything not inside; WONTDO if over fifteen minutes | open |
+| E30 | the shopper chooses the ordering among the products that pass: `cheapest`, `best_reviewed`, `best_value` (`POST /api/shopper/pick_rule {id}`); each rule is one sort key, stated on the line (`why.rule`, how many had a quoted rating); ratings come from the reviews cache only; the hash already covers the rule (the builder, 14:24) | open |
+| E31 | an order's rule may be a preference, not a requirement: a line's optional `preferences` (same shape as a limit), checked with the same function on figures already read; never changes whether a product passes; among those that pass, more preferences met come first; each candidate carries `preferences: [{id, label, status}]`; under the hash (the builder, 14:24) | open |
+| E32 | a fourth ordering, `most_popular`: the most reviews counted, from the same quoted review counts (the builder, 14:31) | open |
 | E19 | receipts for every state change; `GET /api/receipts/verify` | ok |
 | E20 | seal race, hash covers pick rule, delivery quotes, quantity, currency, variant; scope; `degraded` | ok |
 
@@ -58,6 +61,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | S12 | replay mode for sheet 2 | ok |
 | S16 | sheet 3 pool and store answers fetched once into data/sheet3/ (the teacher's list: eleven stores, four lines), with options and images; counts per store and line in NOTES | ok |
 | S17 | tables, SQL, ledger, replay and carts follow sheet 4 through `data_from`; `create_carts` returns the cart's `lines` so SIGN's line comparison (G6) can run | ok |
+| S18 | `GET /api/tools`: one real number per tool used in this run, each with its source | open |
 | S13 | Amplitude: the gate's variant attached to the session from its start (`experiments` is null now); both arms run once; delivered counts checked (only 2 events were delivered in the 13:25 run) | open |
 | S14 | the gate's verdict re-run after the three reading rules; it says "kept" or "switched back" from the numbers, with the evidence; no line claims Amplitude decided it | open |
 | S15 | `/api/sql/passing-box?source=airbyte` runs the same statement on the rows Airbyte delivered (`airbyte_pool`), only if under 20 minutes; otherwise WONTDO and the claim is "delivered beforehand" | open |
@@ -83,6 +87,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | G18 | Senso's order document and sentences for sheet 4; one phone rehearsal on sheet 4 in replay mode with screenshots | open |
 | G15 | Senso: resolve and show the `version_id` of the order document beside each verdict (rows carry `content_id` only) | ok |
 | G16 | `PERSONA_REQUIRED` on by default for the demo sheet once G7 works; Relay's sandbox passes with nobody present: say "sandbox" beside it | ok |
+| G22 | the phone names the ordering the shopper chose and lists the order's preferences as preferences; the sheet 3 order check passes with its preference sentence | open |
 
 ## SCREEN
 | id | item | status |
@@ -97,6 +102,9 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | C9 | a quiet sheet switcher in the top bar (from `GET /api/sheets`), laptop only | main |
 | C10 | evidence shows the shortest statement that carries the value for this option, with the reason it was matched; the "Method" line replaced by what guards the right number (two readers agree, the number sits with its label, every stated value passes), only as far as it is true in the state | open |
 | C11 | a passing row can be chosen by the shopper ("choose this one"), shown as chosen by her; only when the route exists | open |
+| C12 | the demo director's six fixes (unclear rows say why; the fold line summarises what it folds; plurals; the 404; a warning before switching sheets; "now at <store>" when a pick moves) | open |
+| C13 | a "Tools at work" drawer from `GET /api/tools` | open |
+| C14 | an ordering control on the decision screen (Cheapest · Best reviewed · Best value) that moves the pick; the pick labelled "Recommended" with its one-line reason; a quiet rating on passing rows; a "preferred" mark on rows that meet a preference (E30, E31, R4) | open |
 | C8 | Detail view, dots, rulers, trays and tiles removed | open |
 
 ## TRAIL
@@ -123,13 +131,24 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | K2 | the guard, in code: a sharing rule per kind of fact and recipient from the sheet; every outbound message checked for sealed values and for health, person, money and address spans (a small Superlinked model finds them, code decides); blocked spans removed or the message refused; every decision in the outbound ledger | open |
 | K3 | a real blocked share: the shopper asks the agent to tell a store something sealed; the draft, what was removed and what was sent are recorded | open |
 | K4 | `/talk/`: each store conversation as a thread (sent, withheld, the store agent's reply quoted), in the product's visual system; `GET /api/talk/threads` | open |
+| K5 | `/seal/`, the signature shown: who holds what (the key stays on the phone; the agent holds none), what the signature covers (every rule, measurement, store quote, pick, price and the ordering, flowing into one fingerprint, beside what a signature over a cart alone covers), and "change one thing": the viewer's own browser recomputes the fingerprint and checks the real signature with the approver's public key, and an edited copy fails; real records only (the builder, 14:31; built by the TALK thread) | open |
 
 ## GRAPH (the memory as a knowledge graph, on Cognee)
 | id | item | status |
 |---|---|---|
 | H1 | the run's knowledge as a graph built from real records only: people, the home's facts, the order's items and limits, products, stores, strikes, purchases, and who owns each | open |
 | H2 | Cognee holds it: a dataset per owner with its permissions; a write to the issuer's dataset by the shopper's side is refused and shown | open |
+| H4 | `/graph/` leads with the run as a workflow graph: each step a node with its tool and its real count, products shown by name moving along it and leaving at the rule they fail; the knowledge graph of one decision below it | open |
 | H3 | `GET /api/graph?line_id=` (nodes and edges for one item, with which backend answered) and `/graph/` drawing it quietly | open |
+| H5 | `/graph/` opens on the run explored as a graph that grows: the order, the searches, every product found as a node, each rule sweeping the products that fail it aside with the reason, web review searches attaching ratings to those that pass, the ranking by the chosen ordering, the signature as the last gate before a cart; Play and step; every node clickable to its text and source; real records only (the builder, 14:31) | open |
+
+## REVIEWS (what the web says, quoted with its source)
+| id | item | status |
+|---|---|---|
+| R1 | for the products that pass an item's rules: a web search for reviews (Exa), the pages read, and a rating, a review count or one reviewer sentence kept only as an exact quote with its source address; cached; nothing kept that cannot be quoted | open |
+| R2 | `GET /api/reviews?line_id=` and an optional `reviews` block per candidate for the screens; reviews never change whether a product passes; "best reviewed among those that pass" offered to the shopper as a choice, not applied silently | open |
+| R3 | the step in the run's records (trail feed, outbound ledger: what was sent to the search service, and that no limit, measurement or name was in it) | open |
+| R4 | `signoff.reviews.ratings(line_id)` for the engine: `{candidate_id: {rating, out_of, review_count}}` from the cache only, no network; the minimum review count stated | open |
 
 ## AIRBYTE / RELAY thread
 | id | item | status |
@@ -145,7 +164,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I1 | main switched to sheet 2 when it holds end to end; sheet 1 intact as the fallback | open |
 | I2 | a hand-read sample of `not_stated` and `unclear` on both sheets before any count is said aloud | open |
 | I3 | the list of figures behind the final cart for the builder to read himself | open |
-| I4 | DEMO.md rewritten for the plumber story and the new screen | open |
+| I4 | DEMO.md rewritten from the director's run (surgery lead, class list second); to be checked against the screen at 15:00 | main |
 | I5 | SUBMISSION.md and README from what runs (after the sponsor audit) | open |
 | I6 | backup clip recorded; three timed rehearsals, one in replay mode with the network off | open |
 | I7 | repo public and pushed (needs the builder's yes at 15:45); form submitted by 16:10 | open |
@@ -155,7 +174,8 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I12 | the lead example is sheet 3, the teacher's list (the builder, 13:25); sheet 2 is second and the fallback | ok |
 | I13 | main switched to sheet 4 (the lead) when it holds end to end; sheet 3 reachable through the switcher | ok (13:38; sheet 3 through the switcher still to be seen) |
 | I14 | the lead example is sheet 4, surgery short; sheet 3 the class list is the 15-second second; the plumber and six-item sheets are not shown (the builder: "your choice", 13:30) | ok |
-| I15 | the run of show from the demo director, and the flow designer's spec forwarded to TRAIL and SCREEN | open |
+| I15 | the run of show from the demo director, and the flow designer's spec forwarded to TRAIL and SCREEN | ok |
+| I16 | one preference in a real order: sheet 3's notebook ("at least 70 sheets; 100 if they have them") once E31 is on main; decide at 15:20 whether the lead sheet gets one | open |
 | I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
 ## The builder

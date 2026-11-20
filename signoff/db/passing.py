@@ -34,7 +34,7 @@ FROM (
       l.limit_id, l.op, l.bound, l.shopper_sum, l.several,
       IF(f.cand_id IS NOT NULL AND f.span_found_in_text = 1 AND (f.number_in_quote IS NULL OR f.number_in_quote = 1), 1, 0) AS stated,
       IF(f.cand_id IS NOT NULL AND f.span_found_in_text = 1 AND (f.number_in_quote IS NULL OR f.number_in_quote = 1)
-         AND f.unit = l.unit AND f.for_other_option IS NULL
+         AND (f.unit = l.unit OR (l.unit_required = 0 AND f.unit IS NULL)) AND f.for_other_option IS NULL
          AND ((f.kind = 'single' AND f.value IS NOT NULL) OR (f.kind IN ('spread', 'adjustable') AND f.low IS NOT NULL AND f.high IS NOT NULL)),
          1, 0) AS usable,
       CASE f.kind WHEN 'single' THEN f.value WHEN 'spread' THEN f.low

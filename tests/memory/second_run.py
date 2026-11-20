@@ -3,6 +3,7 @@ sign; reset; then read what the new run starts with. Talks to the app over HTTP 
 
     SIGNOFF_MODE=replay SIGNOFF_SHEET=sheet4 PERSONA_REQUIRED=0 uv run uvicorn signoff.app:app --port 8007
     uv run python -m tests.memory.second_run            # saves data/memory/second_run/run1.json and run2.json
+    uv run python -m tests.memory.second_run http://127.0.0.1:8800 no-sign    # on a live server: no signature, so no cart
 
 Nothing here writes a memory: the script only does what a shopper and an approver do, and the memories come from
 the receipts those actions leave."""
@@ -43,7 +44,7 @@ def picture(http) -> dict:
     }
 
 
-def main(base="http://127.0.0.1:8007", reason="Suction mounts are not for a person's full weight."):
+def main(base="http://127.0.0.1:8007", sign="sign", reason="Suction mounts are not for a person's full weight."):
     http = httpx.Client(base_url=base, timeout=60)
     post = lambda path, body=None: http.post(path, json=body or {})  # noqa: E731
     sheet_id = http.get("/api/state").json()["sheet"]["id"]
@@ -62,16 +63,18 @@ def main(base="http://127.0.0.1:8007", reason="Suction mounts are not for a pers
     item = [i for i in picture(http)["items"] if i["pick_key"]][-1]
     struck = post("/api/issuer/request", phone.request("strike", line_id=item["line_id"], product_key=item["pick_key"], reason=reason))
     assert struck.status_code == 200, struck.text
-    signed = post("/api/issuer/request", phone.request("sign_sheet", sheet_hash=http.get("/api/state").json()["sheet_hash"]))
-    assert signed.status_code == 200, signed.text
+    if sign == "sign":
+        signed = post("/api/issuer/request", phone.request("sign_sheet", sheet_hash=http.get("/api/state").json()["sheet_hash"]))
+        assert signed.status_code == 200, signed.text
     run1 = picture(http)
 
     assert post("/api/admin/reset").status_code == 200  # the reset forgets the key, the seal, the strikes, the measurements
     run2 = picture(http)
 
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "run1.json").write_text(json.dumps(run1, indent=1, ensure_ascii=False) + "\n")
-    (OUT / "run2.json").write_text(json.dumps(run2, indent=1, ensure_ascii=False) + "\n")
+    port = "" if base.endswith(":8007") else "port%s-" % base.rsplit(":", 1)[-1]
+    (OUT / (port + "run1.json")).write_text(json.dumps(run1, indent=1, ensure_ascii=False) + "\n")
+    (OUT / (port + "run2.json")).write_text(json.dumps(run2, indent=1, ensure_ascii=False) + "\n")
 
     after = {m["id"]: m for m in run2["measurements"]}[fact["id"]]
     line2 = next(i for i in run2["items"] if i["line_id"] == item["line_id"])
@@ -84,8 +87,9 @@ def main(base="http://127.0.0.1:8007", reason="Suction mounts are not for a pers
         "with the approver's reason": bool(again) and again[0].get("reason") == reason,
         "the stores' answers are reused with their age": bool(run2["recalled"]["store_answers"]) and all(
             a["age"]["seconds"] for a in run2["recalled"]["store_answers"]),
-        "the signed order is remembered": len(run2["recalled"]["purchases"]) >= 1,
     }
+    if sign == "sign":
+        checks["the signed order is remembered"] = len(run2["recalled"]["purchases"]) >= 1
     print("measurement  %s: %s -> %s %s; run 2 starts at %s (by %s, %s)" % (
         fact["id"], fact["value"], moved, fact["unit"], after["value"], after.get("measured_by"), after.get("measured_at")))
     print("struck       %s: %r; run 2 pick: %r" % (item["line_id"], item["pick"], line2["pick"]))
@@ -99,4 +103,4 @@ def main(base="http://127.0.0.1:8007", reason="Suction mounts are not for a pers
 
 
 if __name__ == "__main__":
-    sys.exit(main(*sys.argv[1:2]))
+    sys.exit(main(*sys.argv[1:3]))

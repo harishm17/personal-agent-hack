@@ -1,8 +1,10 @@
 """What may become a memory: only a record that already exists.
 
-Two kinds of record are read, and nothing else:
+Three kinds of record are read, and nothing else:
 - a receipt in a chain file under data/receipts/ whose chain recomputes (every hash and link);
-- an entry in a saved store-answer file under data/**/store_answers/.
+- an entry in a saved store-answer file under data/**/store_answers/;
+- a turn of a saved conversation with a store's own agent under data/talk/threads/ in which the store replied
+  (only the store's reply is remembered; what our agent drafted or sent is never a memory).
 
 `derive()` turns every such record into the memories it proves; `prove(source)` does the same for one named
 record. No model text is read here and no model is called.
@@ -62,16 +64,23 @@ def _sheet(sheet_id) -> dict:
     return (_cached(SHEETS / ("%s.json" % sheet_id), _json) or {}) if sheet_id else {}
 
 
-def _titles() -> dict:
-    """product_key -> title, from the saved pools. Used only to write a memory's sentence."""
+def _pool_rows() -> list:
+    """The few fields memory needs of every product in the saved pools (read once per version of each file)."""
     from signoff.store import sheetctx
-    out = {}
+    keep = ("store", "product_id", "product_key", "title", "line_ids")
+    out = []
     for folder in sheetctx.all_pool_dirs():
         for path in sorted(folder.glob("*.json")):
-            for p in _cached(path, lambda f: [{"product_key": p.get("product_key"), "title": p.get("title")}
-                                              for p in _json(f) if isinstance(p, dict)]) or []:
-                if p["product_key"]:
-                    out.setdefault(p["product_key"], p["title"])
+            out += _cached(path, lambda f: [{k: p.get(k) for k in keep} for p in _json(f) if isinstance(p, dict)]) or []
+    return out
+
+
+def _titles() -> dict:
+    """product_key -> title, from the saved pools. Used only to write a memory's sentence."""
+    out = {}
+    for p in _pool_rows():
+        if p["product_key"]:
+            out.setdefault(p["product_key"], p["title"])
     return out
 
 
@@ -209,10 +218,50 @@ def _from_answer(path, index, entry, sheet_id):
     return out
 
 
+# --- saved conversations with a store's own agent ---------------------------------------------------------------
+
+TALK = ROOT / "data" / "talk" / "threads"
+
+
+def talk_files() -> list:
+    return sorted(TALK.glob("*/*.json")) if TALK.is_dir() else []
+
+
+def _lines_of_products() -> dict:
+    """(store, product id) -> the line ids the saved pools put that product on."""
+    out = {}
+    for p in _pool_rows():
+        out.setdefault((p["store"], p["product_id"]), set()).update(p["line_ids"] or [])
+    return out
+
+
+def _from_talk(path, thread):
+    """One memory per turn in which the store's agent replied: the store's words, owned by the store."""
+    store, out = thread.get("store"), []
+    if not store:
+        return out
+    on_lines = sorted(_lines_of_products().get((store, thread.get("product_id")), ()))
+    for turn in thread.get("turns") or []:
+        if not isinstance(turn, dict) or not turn.get("reply") or not turn.get("reply_at"):
+            continue
+        source = {"type": "file", "file": _rel(path), "turn": turn.get("n"), "at": turn["reply_at"],
+                  "entry_hash": receipts.digest(turn)}
+        out.append({"owner": store, "owner_id": store, "owner_name": store, "kind": "store_answer", "source": source,
+                    "created_at": turn["reply_at"], "sheet_id": thread.get("sheet"),
+                    "key": "talk:%s:%s:%s" % (thread.get("product_id"), thread.get("id"), turn.get("n")),
+                    "value": {"question": turn.get("sent"), "reply": turn["reply"], "product_id": thread.get("product_id"),
+                              "title": thread.get("title"), "line_id": on_lines[0] if len(on_lines) == 1 else None,
+                              "thread": thread.get("id"), "said_by": "the store's own agent"},
+                    "text": "%s's agent on %s: %s" % (store, thread.get("title") or "a product", turn["reply"])})
+    return out
+
+
 # --- all records, and one record ------------------------------------------------------------------------------
 
 def _with_id(memory: dict) -> dict:
     ref = {k: memory["source"].get(k) for k in ("type", "chain", "n", "hash", "file", "index", "entry_hash")}
+    if "turn" in memory["source"]:  # added later; left out where absent so the ids of earlier rows stay what they were
+        ref["turn"] = memory["source"]["turn"]
     return dict(memory, id="m_" + receipts.digest({"source": ref, "kind": memory["kind"], "key": memory["key"]})[:16])
 
 
@@ -242,6 +291,10 @@ def derive() -> dict:
         for index, entry in enumerate(entries if isinstance(entries, list) else []):
             if isinstance(entry, dict):
                 memories += [_with_id(m) for m in _from_answer(path, index, entry, sheet_id)]
+    for path in talk_files():
+        thread = _cached(path, _json)
+        if isinstance(thread, dict):
+            memories += [_with_id(m) for m in _from_talk(path, thread)]
     memories.sort(key=lambda m: (str(m["created_at"]), m["id"]))
     return {"memories": memories, "not_memories": refused}
 
@@ -273,5 +326,13 @@ def prove(source) -> list:
                 if not isinstance(entries, list) or isinstance(index, bool) or not isinstance(index, int) or not 0 <= index < len(entries):
                     break
                 return [_with_id(m) for m in _from_answer(path, index, entries[index], sheet_id)]
-        raise Refused("no_such_record", "no saved store answer at %r, entry %r" % (source.get("file"), source.get("index")))
-    raise Refused("no_source", "a memory must name a receipt or a saved store answer")
+        for path in talk_files():
+            if _rel(path) == source.get("file"):
+                thread = _cached(path, _json)
+                proved = [_with_id(m) for m in _from_talk(path, thread if isinstance(thread, dict) else {})
+                          if m["source"]["turn"] == source.get("turn")]
+                if proved:
+                    return proved
+        raise Refused("no_such_record", "no saved store answer at %r, entry %r" % (
+            source.get("file"), source.get("index", source.get("turn"))))
+    raise Refused("no_source", "a memory must name a receipt, a saved store answer or a store's reply in a saved conversation")
