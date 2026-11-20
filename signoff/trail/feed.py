@@ -498,8 +498,9 @@ def _step_subs(state: dict) -> dict:
     return {"list_read": n(order.get("limits_derived"), "limit, quoted", "limits, quoted"),
             "stores_searched": n(len(sheet.get("stores") or []) or None, "store", "stores"),
             "pages_read": n(counts.get("products_found"), "page", "pages"),
-            "checked": n(counts.get("inside_limits"), "inside", "inside"),
-            "picked": _money(state.get("total_cents")) if counts.get("lines_ready") else "",
+            "checked": n(counts.get("inside_limits"), "passes", "pass"),
+            "picked": " · ".join(x for x in (n(counts.get("lines_ready"), "item", "items"), _money(state.get("total_cents"))) if x)
+            if counts.get("lines_ready") else "",
             "signs": ("signed %s" % at).strip() if seal.get("signed") else ("not signed" if state else ""),
             "carts": n(len(carts), "cart", "carts") if carts else ("none exist" if state else "")}
 

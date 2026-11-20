@@ -60,10 +60,22 @@ def _guard(messages, product_id):
             "stopped": sum(len(k.get("removed") or []) for k in messages)}
 
 
-def _shelf(shelf):
-    """Memory's four owner slots, each with what a new run would recall: [{slot, owner, label, items: [{text, age}], count}]."""
+def _shelf(shelf, sheet=None):
+    """Memory's four owner slots, each with what a new run would recall: [{slot, owner, label, items: [{text, age}], count}].
+    A remembered measurement is worded from the sheet: its own label, value and unit, and the name of who measured."""
     if not isinstance(shelf, list) or not shelf:
         return None
+    sheet = sheet or {}
+    facts = {f.get("id"): f for f in sheet.get("shopper_facts") or []}
+    who = (sheet.get("shopper") or {}).get("name")
+
+    def words(item):
+        f = facts.get(item.get("key"))
+        if not f:
+            return item.get("text") or ""
+        label = str(f.get("label") or _plain(f.get("id")))
+        return "%s: %s%s" % (label[:1].upper() + label[1:], _num(f.get("value"), f.get("unit")), " · %s measured" % who if who else "")
+
     out = []
     for slot in shelf:
         items = slot.get("items") or []
@@ -71,7 +83,7 @@ def _shelf(shelf):
         label = {"stores": "Each store's", "bought": "Bought"}.get(slot.get("slot")) or ("%s's" % name if name else _plain(slot.get("slot")))
         out.append({"slot": slot.get("slot"), "owner": "store" if slot.get("slot") == "stores" else slot.get("owner"), "label": label,
                     "count": len(items), "keys": [i.get("key") for i in items if i.get("key")],
-                    "items": [{"text": i.get("text") or "", "age": (i.get("age") or {}).get("text") or ""} for i in items[:2]]})
+                    "items": [{"text": words(i), "age": (i.get("age") or {}).get("text") or ""} for i in items[:2]]})
     return out
 
 
@@ -115,7 +127,7 @@ def build(state: dict, steps: list, events: list, talk=None, memory=None) -> dic
                            for l in limits if l["from_order"].get("quote")]}
     used = {(l.get("bound") or {}).get("fact") for l in spec.get("limits") or []} | \
            {t.get("fact") for l in spec.get("limits") or [] for t in l.get("terms") or []}
-    shelf = _shelf(memory)
+    shelf = _shelf(memory, sheet)
     recalled = {k for slot in shelf or [] if slot["slot"] == "shopper" for k in slot["keys"]}
     home = [{"who": shopper.get("name"), "label": f.get("label") or _plain(f.get("id")), "value": _num(f.get("value"), f.get("unit")),
              "recalled": f.get("id") in recalled}

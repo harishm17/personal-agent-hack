@@ -2063,6 +2063,44 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
 - Shots retaken at 14:14 with the fifth ask: `web/talk/shots/talk-withheld.png`, `talk-thread.png`.
 - `uv run pytest tests/talk -q` → `54 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`.
 
+## 14:37 from ENGINE — E30, E31, E32 done on stream/ENGINE (commits b48951d and the one after); E28 and E29 closed
+- DONE E30: `rules.PICK_RULES` has `best_reviewed` and `best_value`; each rule is one sort key over the candidates that pass
+  (`rules.pick_order`), no second path: with nothing quoted the same key orders by price and the line says "none of the 8 that
+  pass has a quoted rating, so the cheapest is shown". `POST /api/shopper/pick_rule`, `pick_rules` in the state, `why.rated`,
+  `why.rule`, `picked_because`; `within` is read from the sheet's `pick_rule` (default 0.3), is in the label and under the
+  hash. An unknown id is still an error (400 on the route, ValueError on a sheet). Proof: `uv run -q pytest -q` → "411 passed,
+  12 deselected" at 14:36; `tests/engine/test_pick_rules.py` (12 tests). On 8001, sheet 4: `curl -X POST
+  /api/shopper/pick_rule -d '{"id":"best_value"}'` → `{"ok":true,"version":2,"pick_rule":{"id":"best_value","label":"best value:
+  cheapest within 0.3 stars of the best rated","set_by":"Elena"},"total_cents":11469}`; `{"id":"nicest"}` → 400.
+  **Open on REVIEWS, not on me:** `signoff.reviews.ratings` does not exist on my branch yet (R4), so on the real sheets every
+  line reads "none of the N that pass has a quoted rating" and the pick does not move. The moment R4 is merged it is used; what it
+  must return is in NOTES/REVIEWS.md. I have not seen a pick move on real data, only in the tests with invented ratings.
+- DONE E32: `most_popular`: the most reviews counted, then rating, then price; no quoted count follows by price; same key
+  pattern, `why.rated` (how many have a quoted count), `picked_because` ("212 reviews (rated 4.8), the most that passes"). Its
+  label is "most reviewed among those that pass", in the style of the other three; say if you want exactly "Most reviewed".
+  Proof: `test_most_popular_is_the_most_reviews_counted_then_the_rating_then_the_price`.
+- DONE E31: a line's `preferences` are checked by `rules.check`, the same function as a limit, on the figures already read;
+  status, counts, SQL and the phone's limits are untouched (tested: counts and every candidate's status are equal with and without
+  the preference; `set_limit` on a preference id is refused). Among those that pass, more preferences met come first, then the
+  rule's key; `why.preferences`; the canonical sheet carries each preference with its bound and the pick's result. Proof:
+  `test_a_preference_orders_those_that_pass_and_changes_no_status_and_no_count`, `test_a_preference_is_signed_with_its_bound`.
+  For I16, tried in memory on sheet 3 (sheet file not touched): "at least 100 sheets" as a preference on the notebook line gives
+  "38 of 43 that pass meet the preference" and **the pick does not move**: the $1.05 pick already states 100 sheets ("With 100
+  sheets of paper in each composition book"). Cheapest passing notebook per stated count, from the state: 70 → $2.99, 80 →
+  $16.00, 100 → $1.05, 120 → $2.99, 150 → $5.99. A preference of 120 would move the pick to $2.99; that is your call.
+- Decisions I took that you may want to overrule: (1) a rating with no stated scale is not ordered (never guess a rating); its
+  review count still counts for `most_popular`. If REVIEWS returns most ratings without `out_of`, best reviewed will find few.
+  (2) `best_value`: rated products outside the 0.3 window come after those inside it and before the unrated ones.
+  (3) the pick's quoted rating is in the canonical sheet when a review ordering is active, so the approver signs what the order
+  rested on. (4) recompute now builds the candidates twice when a ratings function exists (REVIEWS reads candidates from the
+  state): measured 9.5 ms and 12.1 ms per change on sheets 4 and 3 with no ratings function; I will measure again with R4.
+- DONE E28: `state._apply_memory`, `tests/engine/test_state.py::test_what_memory_recalls_is_applied_at_the_start_of_a_run_and_nowhere_else`
+  (in the 411 passed); shape in NOTES/MEMORY.md.
+- DONE E29: `POST /api/shopper/choose`, `state.set_shopper_choice`, `picked_by` in the canonical sheet;
+  `test_the_shopper_may_choose_any_candidate_that_passes_and_nothing_that_does_not` (in the 411 passed). Her choice now also
+  carries `picked_because: "chosen by Elena"`.
+- Shapes are in NOTES/SCREEN.md, SIGN.md, GRAPH.md and TALK.md. New route `/api/shopper/pick_rule` is under `/api/shopper/`,
+  so the laptop-only guard already covers it.
 ## 15:00 from SCREEN (your 14:38 additions; main merged into stream/SCREEN as 22d0d1f)
 - C14 (1), four segments: the control draws whatever `state.pick_rules` lists; with four it wraps under the title at 150%
   zoom instead of running off (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-four.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-four-960.png, placeholder data).
@@ -2102,3 +2140,86 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
 - Step 5, C14: NOT CLOSED. `state.pick_rules` is still null and `POST /api/shopper/pick_rule` is not in /openapi.json on
   main at bc3ce1d, so the segments cannot be shown or clicked on real data. The code is in place (see 14:55 and 15:00).
 - C11: DONE at 14:55 on the real route ("Choose this one", "chosen by Elena").
+## SIGN 14:35 — G22 (ordering and preferences on the phone), and what the derive step needs
+- DONE G22 (a): `web/phone/index.html` `ruleText`: "<shopper> asked for <label>" (e.g. "Elena asked for the best reviewed that passes") under the total, label from the signed canonical `pick_rule.label`; the shopper's name and `set_by == "shopper"` are read from `state.sheet.pick_rule` only when its id equals the signed rule's id, otherwise it says "Pick rule: <label>" and claims no choice. ENGINE: please set `sheet.pick_rule.set_by` to "shopper" only when she chose it (today the default `cheapest` already says "shopper", so the default would read "Elena asked for cheapest that meets the order"). Proof: `uv run pytest tests/sign/test_ordering_and_preferences.py -q` → 5 passed (phrase from the real function run in node; no claim when the state names another rule).
+- DONE G22 (a, binding): the ordering is under the hash, so a change after she looked is refused: `test_a_changed_ordering_after_she_looked_is_refused_by_the_hash` signs the earlier hash after the pick rule changed, with the engine's own `state._canonical`: 409 `stale_hash`, no cart call, nothing sealed.
+- DONE G22 (b), written against my guess of the shape, NOT seen with ENGINE's real JSON: a line's `preferences` in the canonical sheet, each `{id, op, bound, unit, terms, set_by}` like a limit (the words from `state.sheet.lines[].preferences[].label`, else "at least"/"at most"), is listed under the limits as "prefers at least 100 sheets · a preference, not a limit": dotted left rule, plain text, no button, so it cannot be adjusted and does not look like a limit. Screenshot with sample data injected into the page (not from the engine): `evals/phone_screens/sheet4/07-preference-row-sample-data.png`. When ENGINE's JSON is in NOTES/SIGN.md I will check the field names; if `preferences[].bound` is an object like the sheet file's `{source, value}` and not a number, tell me and it is a one-line change.
+- DONE G22 (c), what the derive step needs: nothing for the signature. I ran the reader on a scratch copy of `sheets/sheet3_order.txt` with "100 sheets if they have them." added after the 70-sheet sentence in item 3: `uv run python -m signoff.extract.order --sheet sheet3 --doc <copy> --out <scratch>` → 4 limits derived, 4 equal to the sheet, C3.sheets still `>= 70 sheets` (the reader does not take the preference as a limit). The real file is not touched.
+  - After you edit `sheets/sheet3_order.txt` run `uv run python -m signoff.extract.order --sheet sheet3` once (no field name; it is cached by the text, so it re-reads only because the text changed). Reason: each derived limit keeps `start`/`end` offsets into the text; the added sentence is after C3's quote, so the C4 offsets move.
+  - Put the preference sentence under item 3 (or after the blocks), NOT inside "In short, our order requires:" or "Limits, one per sentence:". I made the Senso side ignore any line in those two blocks that does not start with "Our order requires" (`senso._block`), so even a line "Our order prefers 100 sheets if they have them." inside the block does not move the other sentences (test `test_a_preference_sentence_in_the_order_does_not_move_the_requirement_sentences`: both placements give the same eight sentences, all in the document's words). Before that change the in-block placement made four sentences fall back to sheet wording that is not in the document.
+  - Senso then needs the new document text: it is loaded as a new version by the check at app start or at the next sheet switch (G21). Not run live for this change (it would create version 2 of sheet 3's real document); the sentence set is unchanged, so the verdicts should be the same eight.
+- `uv run pytest tests/sign -q` → 113 passed.
+## 14:50 from TRAIL — the judge's five fixes, committed for the 15:00 merge
+1. Play plays: pressing Play, a step button or the rail always animates, whatever the system's motion setting or a scripted
+   browser (seen: an automated browser with no `?motion=` went step 2 at 0:03, step 3 at 0:06, animations running).
+   The page still opens on the final frame; nothing moves on its own. `?motion=0` keeps a still frame for screenshots.
+2. "Never enters a model call" is the figure's headline, same ink as "What the model sees"; the "no ledger rows" chip is gone.
+3. Shelf wording from the sheet: a remembered measurement reads "<Label>: <value unit> · <shopper's name> measured" (the
+   shelf's shopper slot is empty on my port, so I have seen this only in the code path, not on screen). Step bar:
+   "Picked 3 items · $114.69", "Checked 61 pass".
+4. Cut: the frame's caption, the figure meanings to one line, timestamps and ages off the figure; "sent: product name,
+   need-by date" (the guard's own word is "need-by date"; I did not shorten it to "date" by hand).
+5. Top bar: Decision · Trail · Memory · Conversations · Signature (`/`, `/trail/`, `/graph/`, `/talk/`, `/seal/`).
+Also in this commit: T6's route `GET /api/trail/left` and its panel, collapsed to its one line under the figure; the
+open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` are retaken.
+## TALK 14:48 — K5 status and what will not make it
+- Read the code first. Corrections to the brief's summary, which the page will follow:
+  - The phone does not sign the bare hash. It signs a JSON message (`payload`): `type: "sign_sheet"`, the sheet id, `seq`,
+    the phone's time and `sheet_hash`, the SHA-256 the phone itself computed from the canonical sheet it displayed
+    (`web/phone/index.html:129`, `:182`). ECDSA P-256 with SHA-256 over the message's UTF-8 bytes, raw r||s, base64url.
+  - The canonical sheet holds no product title; the pick is named by `product_key`, store, product and variant ids.
+  - Main has no signature and no enrolled key at this moment (14:40), and a signature is kept in memory only: a restart of
+    main drops it. The page says "nothing is signed yet" in that state; it never shows a saved or sample signature.
+  - Verification happens before the carts are made; the receipt that records it (`request_accepted`) is written after.
+- Done so far on `stream/TALK`: `GET /api/seal/proof` (`signoff/seal/api.py`, read-only: the exact canonical string, the
+  signed message, the signature, the public key, the events from the receipt chain, the carts). Two real proofs saved from
+  my port for the tests (`tests/seal/proof-signed.json`, `proof-unsigned.json`: replay mode, signed with the kit's
+  `demo/signer.py`, Persona sandbox inquiry approved through SIGN's simulate route).
+- Will make it: the three parts, the in-browser check with WebCrypto, the editable copy, the test, shots, tab notes.
+- Will not make it: drawn flow lines from each row into the fingerprint (the rows sit beside it instead); a replay
+  control for the lanes (they are drawn in order with their times). Parts 2 and 3 share one card: the rows on the left
+  are the editable copy, the fingerprint and the check are on the right, so a change and its result are seen together.
+## GRAPH 14:45 — H5: what will and will not make it
+- On `stream/GRAPH` now (commit "H5 first version"): `GET /api/graph/explore?line_id=` (nodes, edges, `stages`) and /graph/ opening on the run growing as a graph: the order, the search (every option a node: 73 for the walker), the reading (a dot per quoted figure; dashed when the page does not state one), the rules one at a time (rays from the rule; set aside into a counted band by rule and reason), the web (6 searched, rating pills, "only the title is sent"), the ranking (line toward the gate, pick ringed), the signature (gate, `/seal/`; a cart only when the state has one). Play, step, scrub, arrow keys. The five-column drawing is the second view ("The decision").
+- Will make it by 15:20: A (what it already knows: `GET /api/memory/recall?line_id=` as memory nodes with owner and age, attached to the store, product or measurement they are about; a remembered strike set aside as "struck before") and C (asking the store's agent, from `GET /api/talk/threads`: each message, the parts the guard withheld as struck chips, a stopped message ending at the guard, the reply, and "remembered" where MEMORY holds that reply).
+- Will not make it as asked: B. Sheet 4's order document states no patient weight and links no patient fact to a limit in its own text, so there is no "because" edge to draw without inventing it. The sealed facts do appear where a record shows them: as the withheld chips at the guard in C (the real spans the guard removed). WONTDO B as separate nodes unless the order text gains those sentences.
+- WONTDO H4 (the workflow as step cards): H5 replaces it on the same page; the stages are the steps, with their real counts in the caption. Cut for time: photo on hover (photos show on the few products left in the web and ranking stages).
+- H2 as written at 14:12 is unchanged: datasets per owner, the refusal recorded, Cognee answers the item question; the canvas is `backend: "records"`.
+## REVIEWS 14:34 — R4, and the number you asked for (commit ee7be6e on `stream/REVIEWS`)
+- **DONE R4**: `from signoff.reviews import ratings, MINIMUM_REVIEWS`; `ratings(line_id, line=None)` →
+  `{candidate_id: {"rating": float, "out_of": 5, "review_count": int}}`. Cache only (`data/reviews/`), `{}` when nothing is cached or the
+  line does not exist. The minimum (5 reviews) is in the docstring, in `GET /api/reviews` (`minimum_reviews`, `ratings_rule`, and the same
+  `ratings` map so you can see what ENGINE gets) and per line in `summary.minimum_reviews`. Proof: with `SIGNOFF_MODE=replay` and
+  `httpx.post`/`httpx.get` replaced by a function that raises, `ratings("L4")` returned the two walkers below and equals
+  `for_line(...)["ratings"]`; `GET :8010/api/reviews` in replay mode → `minimum_reviews: 5`, 2 entries in `ratings`;
+  `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `19 passed, 1 deselected`; `./hk check` → PASS.
+  For ENGINE: pass the engine's own line dict as `line` when calling from inside the engine (no second read of the state; without it
+  the function calls `engine.get_state()`, and `_lock` is an RLock, so the same thread does not block). The import is lazy, so
+  importing `signoff.reviews` from the engine loads nothing else. A candidate that is absent has no usable rating: order it after
+  the rated ones, never as zero. Variants of one product share its reviews.
+- **The number: 3 of 31 products ended with a usable quoted rating** (out of five written in the quote, at least 5 quoted reviews).
+  Searched and cached: sheet 4's three items (18 passing candidates = 14 distinct products) and sheet 3's four (24 candidates = 17
+  products); 31 searches, $0.217 by the replies' own `costDollars`, all answered by EXA_API_KEY.
+
+  | sheet | line | products searched | in `ratings()` | which |
+  |---|---|---|---|---|
+  | 4 | L1 shower chair | 6 | 0 | |
+  | 4 | L4 walker | 6 | 2 | Carex Folding Walker $49.99: 4.5 of 5, 158 reviews, walmart.com (matched by name). Drive rollator $119.99: 4.6 of 5, 58 reviews, the seller's own page |
+  | 4 | L5 grab bar | 2 | 0 | |
+  | 3 | C1 headphones | 4 | 1 | JBuddies Folding Gen 2 $19.99: 4.5915494 of 5, 71 reviews, bestbuy.com (matched by name) |
+  | 3 | C2 crayons | 6 | 0 | |
+  | 3 | C3 notebook | 1 | 0 | |
+  | 3 | C4 pencils | 6 | 0 | |
+
+  Wider counts, same 31 products: 17 have some quote kept; 14 have some quoted rating; 11 of those 14 cannot be used, because the
+  page writes no scale ("Rated 4.6 from 852 reviews", checked: the returned text has no "out of 5" anywhere on those pages) or has
+  fewer than 5 reviews. I did not supply a scale and did not lower the minimum to raise the number.
+- **What that means for the control** (yours to decide): "Best reviewed" and "Best value" can move the pick on **one** demo line only,
+  L4 walker (pick today: Carex Classics Dual-Button Walker $44.71, which has no rating). On L1, L5 and three of sheet 3's four lines
+  `ratings()` is `{}`, and on C1 it has one product, so there the control would change nothing or rank a single product. If it is
+  shown, show it on L4 and say on the others "no passing product has a quoted rating out of five with at least 5 reviews"
+  (`best_reviewed_reason` says exactly this). I would not present it as a general feature of the run on these numbers.
+- Since 14:20, both general: (1) when the reader's rating quote has no scale, code says so and the reader may quote once more; the
+  second quote is used only if code finds it on the page with the rating and the scale in it (10 pages asked, 1 changed: Best Buy).
+  (2) When the reader rounds ("4.6" for the page's "4.5915494"), the page's own number is kept, with `value_as_reported` beside it.
+  `best_reviewed` and `ratings()` now use one rule (out of five, at least 5 reviews); the tie-break text is updated in the reply.

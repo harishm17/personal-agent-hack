@@ -85,14 +85,26 @@ def test_a_limit_points_at_the_orders_own_sentence():
     assert order[item["source"]["start"]:item["source"]["end"]] == "1. Chair. It must hold at least 300 lb."
 
 
-def test_a_memory_row_without_a_source_is_refused():
-    rows = [{"id": "m1", "owner": "shopper", "kind": "home_measurement", "key": "tub", "text": "t", "source": {"receipt": "ab"}},
-            {"id": "m2", "owner": "shopper", "kind": "home_measurement", "key": "door", "text": "d", "source": None},
-            {"id": "m3", "owner": "nobody.example", "kind": "store_answer", "key": "k", "text": "x", "source": {"file": "f"}}]
-    g = build.build(load("fixtures/state.json"), memory=rows)
-    ids = {n["id"] for n in g["nodes"]}
-    assert "memory:m1" in ids and "memory:m2" not in ids and "memory:m3" not in ids
+def test_memory_gives_a_source_only_when_a_record_proves_it():
+    state = load("web/screen/fixture-signed.json")
+    struck = next(s for line in state["lines"] for s in line["struck"])
+    fact = state["sheet"]["shopper_facts"][0]
+    earlier = {"type": "receipt", "chain": "c0", "n": 4, "hash": "ab" * 32, "at": "2026-11-20T10:00:00-08:00"}
+    rows = [{"id": "m1", "owner": "issuer", "kind": "strike", "key": struck["product_key"], "proved": True,
+             "value": {"struck": True, "line_id": struck["line_id"]}, "source": earlier, "created_at": "1"},
+            {"id": "m2", "owner": "shopper", "kind": "home_measurement", "key": fact["id"], "proved": False,
+             "value": {}, "source": earlier, "created_at": "1"},
+            {"id": "m3", "owner": "shopper", "kind": "home_measurement", "key": fact["id"], "proved": True,
+             "value": {}, "source": None, "created_at": "1"}]
+    g = build.build(state, receipts=[], memory=rows)
+    strike = next(n for n in g["nodes"] if n["kind"] == "strike")
+    assert strike["remembered"] is True and strike["label"] == "struck before"
+    assert strike["source"] == dict(earlier, record="memory", memory_id="m1")
+    # a row no record proves, and a row with no source, change nothing
+    node = next(n for n in g["nodes"] if n["id"] == "fact:" + fact["id"])
+    assert node["source"]["record"] == "sheet" and "remembered" not in node
     assert {s["id"] for s in g["skipped"]} >= {"memory:m2", "memory:m3"}
+    assert g["memory"] == {"proved_rows": 1, "used_as_source": 1}
 
 
 @pytest.mark.parametrize("name", STATES)

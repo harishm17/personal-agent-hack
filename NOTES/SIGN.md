@@ -60,3 +60,60 @@ answer (no exception); the other store's cart is still returned. Rows: `GET /api
 - `signoff.relay.status() -> dict | None` (never raises): `{"claim_type": "live_human_presence", "result": "passed", "sandbox": true, "at": ...}` once a person has taken the check, else `None`. Attach it to the signature record as optional key `relay` when present (omit the key when `None`); label it "sandbox" wherever you show it.
 - Page: `/relay/` (on main, works over the tunnel on a phone). The phone's Sign view can link to it (open in a new tab); the person taps "I am a real person", the page then shows "Live human: passed (sandbox)". Do it before signing; `relay.status()` keeps the last result in memory (a new `POST /api/issuer/relay/start` clears it).
 - Routes (optional router `signoff.relay.api`): `POST /api/issuer/relay/start`, `POST /api/issuer/relay/complete`, `GET /api/issuer/relay/status`. Nothing in the signature path should depend on it.
+
+## 14:27 from ENGINE — shapes for E30 (pick rule the shopper chooses) and E31 (preferences), fixed now so you can build
+All keys are new and optional; nothing existing is renamed.
+- **`GET /api/state` → `pick_rules`**: `[{"id": "cheapest", "label": "cheapest inside the limits"}, {"id": "best_reviewed", "label":
+  "best reviewed among those that pass"}, {"id": "best_value", "label": "best value: cheapest within 0.3 stars of the best rated"},
+  {"id": "cheapest_with_delivery_time", "label": "cheapest that states a delivery time"}]`. The active one is `sheet.pick_rule`
+  `{id, label, set_by, within?}`.
+- **`POST /api/shopper/pick_rule {"id": "best_value"}`** (laptop only) → `{ok, version, pick_rule, total_cents}`; 400 for an unknown
+  id, 409 once the sheet is signed. The sheet hash changes with the rule (and with `within`).
+- **Per line, `why`**: `rule` is the label actually applied, for example "best reviewed: 2 of 5 that pass have a quoted rating" or
+  "best reviewed: none of the 5 that pass has a quoted rating, so the cheapest is shown"; `rated` = how many of those that pass have a
+  quoted rating (only for the two rating rules).
+- **Per candidate**: `rating`: `{"rating": 4.7, "out_of": 5, "review_count": 212}` or absent when the store's data quotes none;
+  on the picked one, **`picked_because`**: one clause to print, for example "cheapest that passes", "rated 4.7 from 212 reviews, the
+  highest that passes", "cheapest within 0.3 stars of the best rated (4.6 against 4.8)", "chosen by Elena".
+- **E31, a line may carry `preferences`** (same shape as `limits`, in `sheet.lines[]`). Each candidate of such a line carries
+  `preferences`: `[{"id": "C3.sheets_preferred", "label": "…", "status": "met" | "not_met" | "unclear" | "not_stated", "value": 100,
+  "expr": "100 >= 100", "quote": "…"}]`. A preference never changes `status`, the counts, or what the phone may adjust. Among
+  those that pass, more preferences met come first, then the pick rule. `why.preferences` says it in words ("1 of 4 that pass meet
+  the preference"). The canonical sheet carries each preference with its bound, so it is signed.
+
+## 14:37 from ENGINE — E30, E31, E32 are on stream/ENGINE: the shapes as built (this replaces my earlier entry where they differ)
+All keys are new and optional; nothing existing is renamed. A fixture state with no preference and no ratings is unchanged
+apart from `pick_rules` (top level) and `picked_because` (on each picked candidate).
+- **`GET /api/state` → `pick_rules`**: `[{"id": "cheapest", "label": "cheapest inside the limits"}, {"id": "best_reviewed",
+  "label": "best reviewed among those that pass"}, {"id": "best_value", "label": "best value: cheapest within 0.3 stars of the best
+  rated"}, {"id": "most_popular", "label": "most reviewed among those that pass"}, {"id": "cheapest_with_delivery_time", "label":
+  "cheapest that states a delivery time"}]`. The active one is `sheet.pick_rule`: `{id, label, set_by, within?}`; `set_by` is the
+  shopper's name once she has changed it. Choosing the sheet's own id again restores the sheet's own words and its hash.
+- **`POST /api/shopper/pick_rule {"id": "best_value"}`** (laptop only) → `{"ok": true, "version": 2, "pick_rule": {"id":
+  "best_value", "label": "best value: cheapest within 0.3 stars of the best rated", "set_by": "Elena"}, "total_cents": 11469}`;
+  400 `{"error": "no pick rule 'nicest'; the rules know …"}` for an unknown id; 409 once the sheet is signed or while it is being
+  signed. A reset or another sheet returns to the sheet's own rule.
+- **Per line, `why`**: with one of the three review orderings, `why.rule` is the label actually applied and `why.rated` a number:
+  "best reviewed: 3 of 5 that pass have a quoted rating"; "best value (cheapest within 0.3 stars of the best rated): 3 of 5 that pass
+  have a quoted rating"; "most reviewed: 4 of 5 that pass have a quoted review count"; and when nothing is quoted, "best reviewed:
+  none of the 8 that pass has a quoted rating, so the cheapest is shown". With the two cheapest rules `why.rule` is the sheet's
+  label as before and there is no `why.rated`.
+- **Per candidate**: `rating`: `{"rating": 4.8, "out_of": 5, "review_count": 212}`, present only when a rating was quoted with its
+  scale (never null inside, never guessed); `review_count`: `212`, present whenever a count was quoted, with or without a scale.
+  Both are shown under every ordering. A rating never changes `status`.
+- **On the picked candidate, `picked_because`** (one clause, print as is): "cheapest that passes"; "cheapest that passes and states
+  a delivery time"; "rated 4.8 from 212 reviews, the highest that passes"; "cheapest within 0.3 stars of the best rated (4.6 against
+  4.8)"; "rated 4.8 from 212 reviews, the best rated that passes and the cheapest within 0.3 stars of it"; "212 reviews (rated 4.8),
+  the most that passes"; "cheapest that passes; none of them has a quoted rating"; "chosen by Elena" (her own choice through
+  `/api/shopper/choose`; `line.picked_by` is then "shopper"). With a preference: "cheapest that passes, among those that meet
+  the preference".
+- **E31, preferences**: a sheet line may carry `preferences` (same shape as `limits`). Each candidate of that line then carries
+  `preferences`: `[{"id": "C3.sheets_preferred", "label": "100 sheets if they have them", "status": "met", "value": 100.0,
+  "expr": "100 >= 100", "quote": "With 100 sheets of paper in each composition book"}]`; `status` is `met`, `not_met`,
+  `unclear` (then also `why`) or `not_stated` (then `value`, `expr` and `quote` are null). The line carries
+  `why.preferences`: "38 of 43 that pass meet the preference". A preference never changes `status`, a count, or what the phone
+  may adjust (`set_limit` on a preference id is refused as an unknown limit).
+- **Canonical sheet (what is hashed and signed)**: `pick_rule`: `{id, label}`, plus `within` when the id is `best_value`; per
+  line `preferences`: `[{"id", "op", "unit", "set_by", "bound", "terms"}]` when the line has any; in `pick`: `preferences`:
+  `[{"id", "status", "expr"}]`, and with a review ordering `rating` (the object above or null) and, for `most_popular`,
+  `review_count`. `picked_because` is words for the screen and is not in the canonical sheet.

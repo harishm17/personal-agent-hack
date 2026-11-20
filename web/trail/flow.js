@@ -3,8 +3,10 @@
 // meet the quoted figure only in code. Each element belongs to the step that brings it (data-s); the replay shows
 // the elements of the steps played so far, so the last frame, and the page with motion off, is everything in place.
 const params = new URLSearchParams(location.search);
-const MOTION = params.get("motion") === "1"
-  || (params.get("motion") !== "0" && !matchMedia("(prefers-reduced-motion: reduce)").matches && !navigator.webdriver);
+// Nothing here moves on its own: the page opens on the final frame. Motion starts only when someone presses Play, a
+// step button or the rail, which is an explicit request for it, so it plays whatever the system's motion setting is.
+// ?motion=0 still turns it off (for a still screenshot of any step).
+const MOTION = params.get("motion") !== "0";
 const ARRIVE = "cubic-bezier(.2, .7, .2, 1)", TRAVEL = "cubic-bezier(.4, 0, .2, 1)";
 const SECONDS = [3, 3, 5, 4, 3, 3, 3];          // one run of one item: 24 s
 const W = 1392;                                   // the stage is laid out at this width and scaled to its place
@@ -27,14 +29,14 @@ function html(f) {
       <div class="pr">${page.image ? `<img class="thumb" src="${esc(page.image)}" alt="">` : ""}<div><b>${esc(page.title)}</b><span>${esc(page.price)}</span></div></div>
       <p class="pg">${page.excerpt.map((e) => quoted({ ...e, text: e.text })).map((t) => t).join(" … ")}</p></div>` : none("No page record");
   const frame = m ? `<div class="fl-frame" id="fl-frame">
-      <div class="hd"><b>What the model sees</b><span class="cap">${esc([m.reader, m.source === "ledger" ? `${m.calls} calls` : "prompt builder"].filter(Boolean).join(" · "))}</span></div>
+      <div class="hd"><b>What the model sees</b></div>
       <div class="bd">
         <div class="fc in" data-s="2" data-a="from" data-from="#fl-page" id="fl-copy"><div class="cap">${dot("store")}one page of store text</div><p class="pg">${m.page.map(quoted).join(" … ")}</p></div>
-        ${m.meanings.length ? `<div class="fc in" data-s="2" data-d="700"><div class="cap">what each figure means</div><p class="pg">${m.meanings.map((x) => `${esc(x.name)}: ${esc(clip(x.text, 64))}`).join(" · ")}</p></div>` : ""}
+        ${m.meanings.length ? `<div class="fc in" data-s="2" data-d="700"><div class="cap">what each figure means</div><p class="pg one">${m.meanings.map((x) => `${esc(x.name)}: ${esc(x.text)}`).join(" · ")}</p></div>` : ""}
         <div class="qr"><span class="cap">quoted</span>${m.quoted.map((q, i) => `<span class="tok q" data-s="2" data-a="pop" data-d="${1500 + i * 500}" id="fl-q-${i}">${esc(q)}</span>`).join("")}</div>
       </div></div>` : none("No model record");
   const pills = f.bypass.map((b, i) => `<span class="tok by" data-s="0" data-a="from" data-from="${b.owner === "issuer" ? "#fl-order" : "#fl-home-0"}" data-d="${1500 + i * 300}" id="fl-by-${i}" style="left:${150 + i * 150}px;top:${28 + i * 18}px">${dot(b.owner)}${esc(b.text)}</span>`).join("");
-  const outside = m && m.outside ? m.outside.map((o) => `<span class="fchip">${esc(o)}</span>`).join("") : `<span class="fchip">no ledger rows</span>`;
+  const outside = m && m.outside ? m.outside.map((o) => `<span class="fchip">${esc(o)}</span>`).join("") : "";
   const checks = f.checks.map((c, i) => `<span class="tok" data-s="3" data-a="from" data-from="#fl-q-${i}" id="fl-l-${i}">${dot(c.left.owner)}${esc(c.left.text)}</span>
       <span class="op" data-s="3" data-d="600">${esc(c.op)}</span>
       <span class="tok" data-s="3" data-a="from" data-from="#fl-by-${i}" data-d="900" id="fl-r-${i}">${dot(c.right.owner)}${esc(c.right.text)}</span>
@@ -47,7 +49,7 @@ function html(f) {
       <div class="fl-cols">
         <div class="fl-col"><div class="cap up">What each party said</div>${orderCard}${homeCards}${pageCard}</div>
         <div class="fl-col">${frame}
-          <div class="fl-by"><span class="cap">never enters a model call</span>${pills}<div class="chips">${outside}</div></div></div>
+          <div class="fl-by"><b class="byh">Never enters a model call</b>${pills}<div class="chips">${outside}</div></div></div>
         <div class="fl-col"><div class="cap up">Checked in code</div>
           ${f.checks.length ? `<div class="fc"><div class="cap">the store's figure &nbsp;against&nbsp; the limit</div><div class="cmp">${checks}</div></div>` : none("No check record")}
           ${f.refused ? `<div class="fc rowc quiet" data-s="4"><span class="pc">${esc(f.refused.price)}</span><span class="tt">${esc(f.refused.title)}</span><span class="no">refused · ${esc(f.refused.reason)}</span></div>` : ""}
@@ -80,9 +82,9 @@ function guardRow(f) {
   const t = f.talk, a = f.asked;
   if (t) {
     const chips = t.removed.map((r, i) => `<span class="fchip x" data-s="4" data-a="from" data-from="#fl-draft" data-d="${1300 + i * 110}" title="${esc(r.mark)}">${esc(r.text)}</span>`).join("");
-    return `<div class="fc" data-s="4" data-d="900" id="fl-draft"><div class="cap">the agent's draft · ${esc(t.at)}</div><p class="dr">${draftHtml(t)}</p></div>
+    return `<div class="fc" data-s="4" data-d="900" id="fl-draft"><div class="cap">the agent's draft</div><p class="dr">${draftHtml(t)}</p></div>
       <div class="gate" data-s="4" data-d="1100"><b class="cap">Guard · ${t.removed.length ? "stopped here" : "nothing stopped"}</b><div class="stopped">${chips}</div>
-        ${t.left.length ? `<span class="cap">left: ${esc(t.left.join(" · "))}</span>` : ""}</div>
+        ${t.left.length ? `<span class="cap">sent: ${esc(t.left.join(", "))}</span>` : ""}</div>
       <div class="fc" data-s="4" data-d="2300"><div class="cap">${dot("store")}${esc(t.store)}'s agent replied</div><p class="dr">“<mark>${esc(clip(t.reply, 170))}</mark>”</p></div>`;
   }
   return `${a ? `<div class="fc" data-s="4" data-d="900"><div class="cap">our agent wrote</div><p class="dr">${esc(a.question)}</p></div>` : none("No question record")}
@@ -93,9 +95,9 @@ function guardRow(f) {
 /** One owner's slot on the memory shelf: what a new run would recall, or that it is empty. */
 function slot(s, i) {
   const items = s.items.map((it) => `<p class="mi">${esc(it.text)}</p>`).join("");
-  const more = s.count > s.items.length ? `${s.count - s.items.length} more · ` : "";
+  const more = s.count > s.items.length ? `${s.count - s.items.length} more` : "";
   return `<div class="fc ms ${s.count ? "" : "empty"}" data-s="6" data-a="drop" data-d="${i * 200}"><div class="cap">${dot(s.owner)}${esc(s.label)}</div>
-    ${s.count ? `${items}<div class="cap">${esc(more)}${esc(s.items[0].age ? "from " + s.items[0].age + " ago" : "")}</div>` : `<p class="faint">nothing yet</p>`}</div>`;
+    ${s.count ? `${items}${more ? `<div class="cap">${esc(more)}</div>` : ""}` : `<p class="faint">nothing yet</p>`}</div>`;
 }
 
 const none = (words) => `<div class="fc quiet absent">${esc(words)}</div>`;
