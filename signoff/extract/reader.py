@@ -151,7 +151,7 @@ def ask_anthropic_api(model, system, user, max_tokens=4000):
     default fallback model; if it still declines, raise."""
     import anthropic
     _api_calls["made"] += 1
-    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY"), timeout=30.0, max_retries=0)
+    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY"), timeout=12.0, max_retries=0)
     response = client.beta.messages.create(
         model=model, max_tokens=max_tokens, system=system, messages=[{"role": "user", "content": user}],
         output_config={"effort": "low"}, betas=["server-side-fallback-2026-07-01"], fallbacks="default")
@@ -177,7 +177,7 @@ def ask_anthropic(model, system, user, live=False):
                 return ask_anthropic_api(model, system, user)
             except Exception as error:  # noqa: BLE001  (bad key, no credit, a rejected parameter, the network)
                 log.warning("Anthropic API call failed (%s): using claude -p for this one", type(error).__name__)
-    return ask_claude_cli(model, system, user)
+    return ask_claude_cli(model, system, user, timeout=25.0 if live else 180.0)  # a person is waiting: fail soon
 
 
 def ask(model, system, user, live=False):

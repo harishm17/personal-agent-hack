@@ -103,7 +103,7 @@ def test_under_the_agree_policy_a_figure_counts_only_when_the_readers_match():
 
 def test_only_a_live_call_uses_the_api_key_and_it_is_capped_with_the_command_line_as_fallback(monkeypatch):
     calls = []
-    monkeypatch.setattr(reader, "ask_claude_cli", lambda m, s, u: (calls.append("cli") or '{"figures": []}', {}))
+    monkeypatch.setattr(reader, "ask_claude_cli", lambda m, s, u, timeout=0: (calls.append("cli") or '{"figures": []}', {}))
     monkeypatch.setattr(reader.config, "have", lambda name: True)
     monkeypatch.setattr(reader.config, "env", lambda name, default=None: None)
     monkeypatch.setattr(reader, "ask_anthropic_api", lambda m, s, u: (calls.append("api") or "{}", {"via": "api"}))
