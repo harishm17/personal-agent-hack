@@ -8,13 +8,26 @@ from signoff.store import ucp
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 ANSWERS = ROOT / "data" / "store_answers"
-def question_for(need: str) -> str:
-    """The delivery and returns question for a line's `need`, the same wording for every sheet."""
+
+
+def region_for(sheet_id: str | None = None) -> str | None:
+    """Where the order would be delivered, in the sheet's own words (`delivery_region`); None when the sheet names none."""
+    try:
+        from signoff.store import sheetctx
+        return sheetctx.sheet(sheet_id).get("delivery_region")
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def question_for(need: str, region: str | None = None) -> str:
+    """The delivery and returns question for a line's `need`, the same wording for every sheet. `region` ("a California address")
+    comes from the sheet's own `delivery_region`, or the caller; without one the question names none."""
     plural = need.endswith("s") and not need.endswith("ss")
     order = need if plural else ("an " if need[:1].lower() in "aeiou" else "a ") + need
     opened = "opened " + need if plural else "an opened " + need
-    return ("If I order %s today to a California address, how many days will delivery take? "
-            "And can %s be returned, and is there any fee?" % (order, opened))
+    where = (" to " + region) if region else ""
+    return ("If I order %s today%s, how many days will delivery take? "
+            "And can %s be returned, and is there any fee?" % (order, where, opened))
 
 
 QUESTION = question_for("shower chair")  # sheet 1's first line; kept for callers that still import it
@@ -121,7 +134,7 @@ def ask(store: str, query: str | None = None) -> dict:
     """One real ask_business call; the reply is kept verbatim in `answer`. Without a query: the delivery and returns question
     for the first line the store has products for in the active sheet."""
     from signoff.store import sheetctx
-    query = query or question_for(_need_for(store))
+    query = query or question_for(_need_for(store), region_for())
     r = ucp.ask_business(store, query)
     answer = ((r.get("answer") or {}).get("plain")) or json.dumps(r.get("answer"))
     now = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
@@ -149,7 +162,7 @@ def refresh(stores: list[str] | None = None, sheet_id: str | None = None) -> lis
     needs = {l["id"]: l["need"] for l in sheet["lines"]}
     out = []
     for s in stores or sheet["stores"]:
-        rec = ask(s, question_for(_need_for(s, sheet_id)))
+        rec = ask(s, question_for(_need_for(s, sheet_id), region_for(sheet_id)))
         (ans_dir / f"{s}.json").write_text(json.dumps([rec], indent=1, ensure_ascii=False))
         out.append(rec)
     return out

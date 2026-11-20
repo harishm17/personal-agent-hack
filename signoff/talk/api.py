@@ -19,7 +19,10 @@ def threads(sheet: str | None = None):
     """The saved conversations of the active sheet (or `sheet`), oldest first, with the sharing rule in force."""
     sid = sheet or sheetctx.active_id()
     sh = sheetctx.sheet(sid)
-    return {"sheet": sid, "title": sh.get("title"), "rule": guard.rule(sh), "marks": guard.MARK, "threads": talk.threads(sid),
+    turns = [turn for t in talk.threads(sid) for turn in t["turns"]]
+    count = {"messages": len(turns), "not_sent": sum(1 for x in turns if not x["sent"]),
+             "over_cautious": sum(1 for x in turns if not x["sent"] and (x.get("review") or {}).get("verdict") == "over-cautious")}
+    return {"count": count, "sheet": sid, "title": sh.get("title"), "rule": guard.rule(sh), "marks": guard.MARK, "threads": talk.threads(sid),
             "messages": talk.messages(sh)}
 
 

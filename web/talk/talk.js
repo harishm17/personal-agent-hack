@@ -24,7 +24,7 @@ function renderTop() {
   q("#top").innerHTML = `<span class="brand">Sign-Off</span>
     <span class="sheet">${esc(d.title || d.sheet)}</span>
     <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/">Memory</a><a href="/talk/" aria-current="page">Conversations</a><a href="/seal/">Signature</a></nav>
-    <span class="meta">${n} with the stores' own agents</span>
+    <span class="meta">${d.count.messages} messages to the stores' own agents · ${d.count.not_sent} not sent${d.count.over_cautious ? `, ${d.count.over_cautious} of those over-cautious` : ""}</span>
     <span class="grow"></span>
     <span class="pill">${cut} withheld</span>`;
   const mark = (k) => esc(d.marks[k] || k);
@@ -32,23 +32,28 @@ function renderTop() {
     <span class="cap">never</span>${d.rule.sealed.map((k) => `<span class="pill sealed">${mark(k)}</span>`).join("")}`;
 }
 
-// one conversation per store: the newest in which something was withheld and the rest was sent, else the newest
-// that was sent, else the newest; the store's other conversations are behind a count
+// The default view: the one lead blocked share (marked `lead` in its record), then one of the agent's own exchanges
+// per store. The shopper's asks were typed to test the guard: they say so, and the rest are behind a count.
 const sentAny = (t) => t.turns.some((turn) => turn.sent);
-function lead(threads) {
-  const ts = [...threads].reverse();
-  return ts.find((t) => withheld(t) && sentAny(t)) || ts.find(sentAny) || ts[0];
+const TEST = "typed to test the guard";
+const leadShare = () => ui.data.threads.find((t) => t.lead);
+function forStore(store) {
+  const all = ui.data.threads.filter((t) => t.store === store && !t.lead);
+  const first = [...all].reverse().find((t) => t.origin === "agent") || all[all.length - 1];
+  return { first, rest: all.filter((t) => t !== first).reverse() };
 }
 
 function renderList() {
   const stores = [...new Set(ui.data.threads.map((t) => t.store))];
   const item = (t, sub) => `<button class="item ${sub ? "sub" : ""}" data-id="${esc(t.id)}" aria-current="${t.id === ui.id}">
-      <span>${sub ? "" : `<b><i class="od store"></i>${esc(t.store)}</b>`}<span class="muted small">${esc(sub ? (t.origin === "shopper" ? "the shopper asked" : "the agent asked") : t.title || "")}</span></span>
+      <span>${sub ? "" : `<b><i class="od store"></i>${esc(t.store)}</b>`}<span class="muted small">${esc(t.origin === "shopper" ? TEST : sub ? "the agent asked" : t.title || "")}</span></span>
       <span class="n">${!sentAny(t) ? "not sent" : withheld(t) ? withheld(t) + " withheld" : ""}</span></button>`;
-  q("#list").innerHTML = stores.map((store) => {
-    const all = ui.data.threads.filter((t) => t.store === store), first = lead(all);
-    const rest = all.filter((t) => t !== first).reverse(), open = ui.more.has(store) || rest.some((t) => t.id === ui.id);
-    return item(first) + (rest.length ? (open ? rest.map((t) => item(t, true)).join("") : `<button class="more" data-more="${esc(store)}">+${rest.length} more</button>`) : "");
+  const lead = leadShare();
+  q("#list").innerHTML = (lead ? `<div class="cap">A blocked share</div>${item(lead)}<div class="cap">The agent's own questions</div>` : "") + stores.map((store) => {
+    const { first, rest } = forStore(store);
+    if (!first) return "";
+    const open = ui.more.has(store) || rest.some((t) => t.id === ui.id);
+    return item(first) + (rest.length ? (open ? rest.map((t) => item(t, true)).join("") : `<button class="more" data-more="${esc(store)}">+${rest.length} more · ${TEST}</button>`) : "");
   }).join("");
 }
 
@@ -65,7 +70,7 @@ function turnHtml(t, turn, prev) {
       ? `<span class="carried" title="${esc(lead)}">${esc(lead)}</span>${esc(turn.sent.slice(lead.length))}` : esc(turn.sent);
     ours = `<div class="who ours-who">Sent</div><div class="msg ours">${body}</div>`;
   } else {
-    ours = `<div class="who ours-who">Not sent · the guard stopped it</div><div class="msg ours refused">${esc((turn.why || "").replace(/^./, (c) => c.toUpperCase()))}</div>`;
+    ours = `<div class="who ours-who">Not sent · the guard stopped it${turn.review ? ` · ${esc(turn.review.verdict)}: ${esc(turn.review.why)}` : ""}</div><div class="msg ours refused">${esc((turn.why || "").replace(/^./, (c) => c.toUpperCase()))}</div>`;
   }
   const row = turn.removed.length || said.length ? `<button class="wh" data-open="${esc(key)}" aria-expanded="${open}">Withheld ${marks}<span class="caret">${open ? "▴" : "▾"}</span></button>` : "";
   const behind = open ? `<div class="behind">${turn.n === 1 && t.origin === "shopper" ? `<span class="cap">The shopper's words</span>${marked(t.purpose, t.purpose_removed || [], "s")}` : ""}
@@ -78,7 +83,7 @@ function turnHtml(t, turn, prev) {
 function renderThread() {
   const t = ui.data.threads.find((x) => x.id === ui.id);
   if (!t) { q("#thread").innerHTML = `<div class="empty">No conversation yet</div>`; return; }
-  q("#thread").innerHTML = `<div class="row"><h1>${esc(t.title || t.store)}</h1><span class="cap"><i class="od store"></i>${esc(t.store)}</span></div>
+  q("#thread").innerHTML = `<div class="row"><h1>${esc(t.title || t.store)}</h1><span class="cap">${t.origin === "shopper" ? TEST + " · " : ""}<i class="od store"></i>${esc(t.store)}</span></div>
     ${t.error ? `<div class="msg refused">${esc(t.error)}</div>` : ""}
     ${t.turns.map((turn, i) => turnHtml(t, turn, t.turns[i - 1])).join("")}`;
 }
@@ -93,7 +98,7 @@ async function load() {
   ui.key = text;
   ui.data = JSON.parse(text);
   if (!ui.data.threads.some((t) => t.id === ui.id)) {  // open the newest conversation in which something was withheld and sent
-    ui.id = (lead(ui.data.threads) || {}).id;
+    ui.id = (leadShare() || ui.data.threads[ui.data.threads.length - 1] || {}).id;
   }
   render();
 }
@@ -105,4 +110,4 @@ document.addEventListener("click", (e) => {
   if (wh) { ui.open.has(wh.dataset.open) ? ui.open.delete(wh.dataset.open) : ui.open.add(wh.dataset.open); renderThread(); }
 });
 load();
-setInterval(load, 5000);
+setInterval(() => { if (!document.hidden) load(); }, 5000);

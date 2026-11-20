@@ -21,7 +21,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
 
-TYPES = ("set_limit", "strike", "unstrike", "sign_sheet", "decline_ask")
+TYPES = ("set_limit", "strike", "unstrike", "sign_sheet", "decline_ask", "persona_start")
 RUNTIME = pathlib.Path(__file__).resolve().parent / "_runtime"
 
 
@@ -163,8 +163,9 @@ class KeyStore:
 
 
 def verify_request(store: KeyStore, body: dict, sheet_id: str | None = None, current_hash: str | None = None) -> dict:
-    """Checks one signed request and returns the parsed payload. On success `last_seq` is advanced, so the same
-    request can never be applied twice. Raises `Refused` with a stable code otherwise."""
+    """Checks one signed request and returns the parsed payload. `last_seq` is advanced as soon as the signature
+    and the sequence number hold, so the same request can never be applied twice and one refused for a stale hash
+    can never be sent again. Raises `Refused` with a stable code otherwise."""
     unsigned = Refused("unsigned", "not signed by the approver's key", 401)   # one answer, whatever the reason
     if not isinstance(body, dict) or not body.get("payload") or not body.get("sig"):
         raise unsigned
@@ -198,10 +199,12 @@ def verify_request(store: KeyStore, body: dict, sheet_id: str | None = None, cur
             raise Refused("bad_payload", "seq must be an integer", 400)
         if seq <= key.last_seq:
             raise Refused("replayed_seq", "seq %d is not greater than the last one (%d)" % (seq, key.last_seq), 409)
+        # A request the key really signed is spent from here on, accepted or refused: one refused for the wrong
+        # sheet or a stale hash must not become valid later, when the sheet is back where it was, with nobody tapping.
+        key.last_seq = seq
+        store._save()
         if sheet_id is not None and payload.get("sheet_id") != sheet_id:
             raise Refused("wrong_sheet", "the request is for another sheet", 409)
         if payload["type"] == "sign_sheet" and current_hash is not None and payload.get("sheet_hash") != current_hash:
             raise Refused("stale_hash", "the sheet changed after it was shown; look again and sign again", 409)
-        key.last_seq = seq  # burned from here on, whatever happens next
-        store._save()
         return payload

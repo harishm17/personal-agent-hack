@@ -24,7 +24,23 @@ from .verify import KeyStore, Refused, verify_request
 
 router = APIRouter()
 router.include_router(handcheck.router)
-keystore = KeyStore()
+
+
+class SignKeyStore(KeyStore):
+    @staticmethod
+    def _new_code() -> str:
+        return secrets.token_hex(6)  # twelve hex characters: guessing it is hopeless; it travels in the link
+
+
+keystore = SignKeyStore()
+_wrong_codes: dict = {}           # per caller: [wrong tries, locked until]; the laptop is never in it
+CODE_TRIES, CODE_LOCK_S = 5, 60
+
+
+def _caller(request: Request) -> str:
+    h = request.headers
+    return (h.get("cf-connecting-ip") or (h.get("x-forwarded-for") or "").split(",")[0].strip()
+            or (request.client.host if request.client else "") or "unknown")
 _lock = threading.RLock()
 
 
@@ -83,6 +99,7 @@ def _push_issuer_key(engine) -> None:
 async def enroll(request: Request):
     body = await _json(request)
     try:
+        _check_code(request, str(body.get("code") or ""))
         key = keystore.enroll(body.get("public_key_jwk"), str(body.get("name") or ""), _now(), str(body.get("code") or ""))
     except Refused as error:
         audit.receipt("enrolment_refused", "issuer", None, {"name": str(body.get("name") or "")}, {"refused_because": error.code})
@@ -93,6 +110,24 @@ async def enroll(request: Request):
         pass
     audit.receipt("enrolled", "issuer", key.key_id, key.jwk, {"name": key.name, "key_id": key.key_id})
     return {"ok": True, "key_id": key.key_id}
+
+
+def _check_code(request: Request, code: str) -> None:
+    """Wrong codes are counted per caller from outside, never for the laptop, so five wrong guesses from elsewhere cannot lock
+    the right code out of the laptop. A wrong code never reaches the key store."""
+    laptop = _laptop_only(request)
+    who = _caller(request)
+    tries = _wrong_codes.setdefault(who, [0, 0.0])
+    if not laptop and time.time() < tries[1]:
+        raise Refused("code_locked", "too many wrong codes from this address; wait a minute or use the laptop", 429)
+    if code and secrets.compare_digest(code, keystore.code):
+        _wrong_codes.pop(who, None)
+        return
+    if not laptop:
+        tries[0] += 1
+        if tries[0] >= CODE_TRIES:
+            tries[0], tries[1] = 0, time.time() + CODE_LOCK_S
+    raise Refused("bad_code", "the enrolment code is missing or wrong (it is shown on the laptop)", 403)
 
 
 def _laptop_only(request: Request) -> bool:
@@ -370,6 +405,12 @@ def _handle_request(body: dict):
             _check_action(payload, state)
             signer = {"key_id": keystore.key.key_id, "name": keystore.key.name}
             sid = state["sheet"]["id"]
+            if payload["type"] == "persona_start":  # a passed check is never replaced by a new inquiry
+                if persona.record().get("verified"):
+                    raise Refused("identity_already_verified", "the identity check already passed", 409)
+                started = persona.start(signer["key_id"])
+                receipt(body, True)
+                return {"ok": True, "applied": "persona_start", **started}
             if payload["type"] == "decline_ask":  # a signed refusal of the shopper's ask: nothing in the sheet moves
                 asks.settle(sid, str(payload["ask_id"]), "declined", signer["name"], signer["key_id"])
                 receipt(body, True)
@@ -447,9 +488,10 @@ def _version(result, engine):
 # ---- Persona, Senso, reset ------------------------------------------------------------------------------
 
 @router.post("/api/issuer/persona/start")
-def persona_start():
-    key = keystore.key
-    return persona.start(key.key_id if key else None)
+def persona_start_open():
+    """Starting an identity inquiry replaces the current one, so it is a signed request from the enrolled phone
+    (`persona_start` on /api/issuer/request), never an open route."""
+    return _fail(Refused("unsigned", "not signed by the approver's key", 401))
 
 
 @router.get("/api/issuer/persona/status")

@@ -181,6 +181,12 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
   `[{"id", "status", "expr"}]`, and with a review ordering `rating` (the object above or null) and, for `most_popular`,
   `review_count`. `picked_because` is words for the screen and is not in the canonical sheet.
 
+## 15:18 from ENGINE — the canonical sheet gained fields (reviewer's H1, H5); every sheet hash changes
+- `pick.title`; `limits[].name` and `limits[].label` (also on `preferences[]`); `strike_reasons`: `{product_key: reason}` on
+  a line with strikes; `pick_rule.set_by`. Whole numbers are written without ".0" everywhere in the canonical text (16, not 16.0).
+- `sheet.pick_rule.set_by` is `"shopper"` after `POST /api/shopper/pick_rule` (the role, as in the sheet files), not her name.
+- Nothing was removed or renamed. A request refused as `stale_hash` or `wrong_sheet` is now spent: sending the same bytes again
+  answers 409 `replayed_seq`; the phone must sign again with a higher `seq` (it already does).
 ## 15:06 from SIGN — G23, the shopper asks and the approver decides: JSON shapes (the code follows within minutes; these are the contract)
 - **`POST /api/shopper/ask-change {"limit_id": "L1.capacity", "value": 250, "note": "the chair I like is rated 250"}`** (laptop only, like the rest of `/api/shopper/`) →
   `{"ok": true, "ask": ASK}`. `note` is optional text, 300 characters at most. One pending ask per limit: a new one for the same limit replaces the
@@ -207,3 +213,21 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
 - New on every candidate of `GET /api/reviews` and in `by_candidate[id]`: `ordering: {used, reason}`. When `used` is false and the
   row shows a rating, show `reason` beside it, quietly: "rating without a stated scale: not used for ordering" (also: under the
   minimum of 5 reviews; no review count stated). Then the row and the engine's "rated N" tell the same story. Never add "/5" yourself.
+## REVIEWS 15:16
+- Every source in `GET /api/reviews` now has `seller_page: true|false` (the old `sellers_own_page` stays, same value). Every candidate
+  (and `by_candidate[id]`, and `best_reviewed`) has `independent: true|false|null` and `rating_from`: "the seller's own page" or
+  "another site" (null when there is no rating). Where a rating is shown with `independent: false`, please add "on the seller's own
+  page" beside the site: "4.6 · 58 reviews · parentgiving.com, the seller's own page".
+
+## 15:25 from ENGINE — E33 shape, fixed now: where a home measurement's number was quoted from
+When the active sheet has `sheets/<sheet id>_context.json`, a `sheet.shopper_facts[]` entry that a context fact feeds with
+`equals: true` carries
+`"suggested_from": {"message_id": "m6", "from_label": "Elena", "at": "2026-11-20T08:05:00-08:00", "quote": "The tub is 21.5
+inches wide inside", "value": 21.5, "matches": true}`.
+`matches` is false when the sheet's value now differs from the quoted one (the shopper changed it): her value stands, print the
+quote as where the first number came from. No limit ever has this key. A sheet with no context file has no such key. It is not
+in the canonical sheet, so no hash moves. Print for example "from Elena's message, Nov 20" from `from_label` and `at`.
+- 15:26 ENGINE: E33 is on stream/ENGINE as written above (plus `value`, the quoted number). Real output on sheet 4:
+  `tub_inside_width` → `{"message_id": "m6", "from_label": "Elena", "at": "2026-11-20T10:41:00-08:00", "quote": "The tub is 21.5
+  inches wide inside", "value": 21.5, "matches": true}`; `door_clear_opening` → the same message, quote "the bathroom door
+  opening is 28 inches". (The time in my example above was made up; this one is the file's.)
