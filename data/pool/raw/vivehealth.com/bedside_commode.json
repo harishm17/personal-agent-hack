@@ -1,0 +1,1825 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.vivehealth.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Vive Health",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.vivehealth.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "7634541"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "7634541"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/9686713220",
+   "title": "Folding Commode",
+   "description": {
+    "html": "Lifetime Guarantee View Details > Product Description The Vive Folding Commode is a freestanding bedside commode that works at the bedside or placed directly over most standard and elongated toilets as a safety rail. The corrosion-resistant steel frame supports up to 350 pounds, with padded handrails on both sides and non-slip leg caps for stability on any surface. Seat height adjusts from 16.5\" to 22.5\" with locking pins and handrails adjust from 24\" to 30\". The 7.5 quart pail includes a cover, splashguard and carrying handle and the unit works with standard commode liners. This portable commode folds flat without tools for travel or storage, making it just as useful away from home as in the bedroom. Caregivers helping with transfers will find our Transfer Belts a practical addition alongside it. Suited to seniors, post-surgery recovery and anyone with limited mobility, this foldable commode chair is backed by Vive Health's lifetime guarantee. Those placing it over an existing toilet can browse our Raised Toilet Seats for height options and our Toilet Safety Rails offer a related alternative for over-toilet support. Features FREESTANDING COMMODE Use at the bedside or as a toilet safety rail, the folding commode is a convenient option for seniors and those with limited mobility at home or on the go COMPLETE PAIL SET Generously sized, the 7.5 quart capacity pail includes a cover, splashguard and carrying handle for added convenience EASY TO CLEAN Use with standard commode liners if desired and easily wipe down the entire commode with a disinfectant solution for cleanliness LIGHTWEIGHT FRAME Steel, corrosion-resistant frame with non-marking, non-slip, caps & padded handrails, supports up to 350 lbs and provides additional stability HASSLE-FREE ASSEMBLY Folding commode is easy to assemble without special tools HEIGHT ADJUSTABLE Seat height easily adjusts from 14.5\u201d to 20\u201d with locking pins for secure adjustments Customer Reviews Based on 23 reviews Write a review How do I fold the commode for traveling? Remove the pail and set it to the side. Carefully release the front crossbar and push it down to rest against the back of the frame. Then, fold the front legs inward one at a time to rest against the back of the frame. What size is the pail? The large, 7.5 quart pail is 13.5\u201d in diameter. Does the commode come with a splash guard? Yes! The commode includes a 7.5 quart pail with a carrying handle, cover and splashguard. What is the weight limit for the folding commode? The commode safely supports up to 350 pounds. How wide is the toilet seat? The toilet seat is 13.75\u201d wide. How wide is it between the armrests? The commode is 18\u201d between the armrests. Can I use the frame alone with my standard toilet? Yes! The folding commode can be used as a toilet safety rail on most standard and elongated toilets. What is the maximum seat height? The seat height is adjustable from 16.5\u201d to 22.5\u201d. Does this commode come with a lid? Yes, the folding commode includes a traditional toilet seat and lid, as well as a cover and splash guard for the commode pail. Will it easily fold for transport while vacationing? Yes! The commode easily folds for storage or travel. Is the size of the hole close to that of a regular toilet? Yes, the inner diameter of the toilet seat is 11\u201d. Uses: Freestanding foldable commode option for seniors, those with limited mobility and those recovering from surgery or injury Materials: Coated steel frame Closed-cell foam handles Composite pail Dimensions: Adjustable height at the seat: 16.5\u201d to 22.5\u201d Adjustable height at the handrails: 24\u201d to 30\u201d Width at the base: 21.75\u201d Width at the arm rails: 18\u201d Depth: 19\u201d Pail diameter: 13.75\u201d How To Assemble: Open the commode frame. Insert the front crossbar into the front legs until an audible click is heard. Turn the frame upside down, then insert each leg by depressing the push pins and sliding in place until an audible click is heard. Turn the frame right-side up, then insert the outward-facing backrest into the frame until an audible click is heard. Attach the toilet seat and lid. Lower the splash guard and commode bucket into the frame. Care Instructions: Wipe down with disinfectant wipes or similar solution What\u2019s Included: Folding Commode Lifetime guarantee UPC: 028841242250 Product Number: LVA1038 Shipping Weight: 14.5 pounds User Manual: Folding Commode"
+   },
+   "url": "https://www.vivehealth.com/products/commode",
+   "handle": "commode",
+   "price_range": {
+    "min": {
+     "amount": 7499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/33319675204",
+     "sku": "LVA1038",
+     "title": "Default Title",
+     "description": {
+      "html": "Lifetime Guarantee View Details > Product Description The Vive Folding Commode is a freestanding bedside commode that works at the bedside or placed directly over most standard and elongated toilets as a safety rail. The corrosion-resistant steel frame supports up to 350 pounds, with padded handrails on both sides and non-slip leg caps for stability on any surface. Seat height adjusts from 16.5\" to 22.5\" with locking pins and handrails adjust from 24\" to 30\". The 7.5 quart pail includes a cover, splashguard and carrying handle and the unit works with standard commode liners. This portable commode folds flat without tools for travel or storage, making it just as useful away from home as in the bedroom. Caregivers helping with transfers will find our Transfer Belts a practical addition alongside it. Suited to seniors, post-surgery recovery and anyone with limited mobility, this foldable commode chair is backed by Vive Health's lifetime guarantee. Those placing it over an existing toilet can browse our Raised Toilet Seats for height options and our Toilet Safety Rails offer a related alternative for over-toilet support. Features FREESTANDING COMMODE Use at the bedside or as a toilet safety rail, the folding commode is a convenient option for seniors and those with limited mobility at home or on the go COMPLETE PAIL SET Generously sized, the 7.5 quart capacity pail includes a cover, splashguard and carrying handle for added convenience EASY TO CLEAN Use with standard commode liners if desired and easily wipe down the entire commode with a disinfectant solution for cleanliness LIGHTWEIGHT FRAME Steel, corrosion-resistant frame with non-marking, non-slip, caps & padded handrails, supports up to 350 lbs and provides additional stability HASSLE-FREE ASSEMBLY Folding commode is easy to assemble without special tools HEIGHT ADJUSTABLE Seat height easily adjusts from 14.5\u201d to 20\u201d with locking pins for secure adjustments Customer Reviews Based on 23 reviews Write a review How do I fold the commode for traveling? Remove the pail and set it to the side. Carefully release the front crossbar and push it down to rest against the back of the frame. Then, fold the front legs inward one at a time to rest against the back of the frame. What size is the pail? The large, 7.5 quart pail is 13.5\u201d in diameter. Does the commode come with a splash guard? Yes! The commode includes a 7.5 quart pail with a carrying handle, cover and splashguard. What is the weight limit for the folding commode? The commode safely supports up to 350 pounds. How wide is the toilet seat? The toilet seat is 13.75\u201d wide. How wide is it between the armrests? The commode is 18\u201d between the armrests. Can I use the frame alone with my standard toilet? Yes! The folding commode can be used as a toilet safety rail on most standard and elongated toilets. What is the maximum seat height? The seat height is adjustable from 16.5\u201d to 22.5\u201d. Does this commode come with a lid? Yes, the folding commode includes a traditional toilet seat and lid, as well as a cover and splash guard for the commode pail. Will it easily fold for transport while vacationing? Yes! The commode easily folds for storage or travel. Is the size of the hole close to that of a regular toilet? Yes, the inner diameter of the toilet seat is 11\u201d. Uses: Freestanding foldable commode option for seniors, those with limited mobility and those recovering from surgery or injury Materials: Coated steel frame Closed-cell foam handles Composite pail Dimensions: Adjustable height at the seat: 16.5\u201d to 22.5\u201d Adjustable height at the handrails: 24\u201d to 30\u201d Width at the base: 21.75\u201d Width at the arm rails: 18\u201d Depth: 19\u201d Pail diameter: 13.75\u201d How To Assemble: Open the commode frame. Insert the front crossbar into the front legs until an audible click is heard. Turn the frame upside down, then insert each leg by depressing the push pins and sliding in place until an audible click is heard. Turn the frame right-side up, then insert the outward-facing backrest into the frame until an audible click is heard. Attach the toilet seat and lid. Lower the splash guard and commode bucket into the frame. Care Instructions: Wipe down with disinfectant wipes or similar solution What\u2019s Included: Folding Commode Lifetime guarantee UPC: 028841242250 Product Number: LVA1038 Shipping Weight: 14.5 pounds User Manual: Folding Commode"
+     },
+     "price": {
+      "amount": 7499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/folding_commode_1_2ab058eb-c252-4961-a548-62317a8f487a.jpg?v=1631816471"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/33319675204:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/folding_commode_1_2ab058eb-c252-4961-a548-62317a8f487a.jpg?v=1631816471",
+     "alt_text": "Folding Commode"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCM",
+    "BCO",
+    "fsa-hsa"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/11067329796",
+   "title": "Bariatric Commode",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features FREESTANDING COMMODE For use at the bedside, as a toilet safety rail or as an elevated seat riser, the bariatric commode is a convenient option for seniors and those with limited mobility at home or on the go DURABLE AND LIGHTWEIGHT Corrosion-resistant stainless steel frame supports up to 500 pounds with non-slip, non-marking rubber end caps to provide extra stability and security LARGE CAPACITY PAIL Six-quart commode pail fits standard commode liners and also includes a lid and splash guard ARRIVES PARTIALLY ASSEMBLED Initial setup is quick and easy, simply insert the legs to the desired height, set the pail in the frame and place the commode in the desired location TOOL-FREE HEIGHT ADJUSTMENTS Commode height can be adjusted in 1\u201d increments to a maximum of 20\u201d with easy to use push pin extensions CONVENIENT STORAGE Sturdy frame easily folds in for convenient storage and travel Customer Reviews Based on 23 reviews Write a review Does the bariatric commode come assembled? Yes! The Vive commode is partially assembled for a quick and easy setup. How wide are the legs on the commode chair? The width measured between the armrests is 27\u201d. Will it fit over my existing toilet? Yes, the freestanding commode is designed to fit over most toilets for use as a toilet safety rail or elevated toilet seat. Do the arms fold down? The arms are fixed and do not fold down. What is the maximum height from seat to floor? The seat height can be adjusted to a maximum height of 20\u201d. Can I remove the back rail of the Vive bariatric commode? Yes, the back rail is removable. What is the maximum weight limit? The bariatric commode safely supports up to 500 pounds. How wide is the toilet seat and what shape is it? The seat is 13.75\u201d wide with a slightly oval shape. How do I remove the bucket for emptying? First, cover the pail with the splash guard. Then, using the pail handle, carefully lift the pail upward to remove from the commode frame. Does the pail have a handle? Yes, the six-quart pail has a handle, lid and splash guard. Is this a foldable commode? Yes! The commode folds for easy storage and travel. Uses: For use as a bedside commode, safety rail toilet frame or elevated toilet seat. Dimensions: Width at the armrests: 27\u201d Width at the base: 27\u201d Depth: 18\u201d Seat Width: 13.75\u201d Adjustable Seat Height: 16\u201d to 22\u201d Materials: Lightweight stainless steel Composite material Care Instructions: Commode can be wiped down with sanitizing wipes What\u2019s Included: Bariatric commode 60 day guarantee UPC: 818323020458 Product Number: LVA1059 Shipping Weight: 24.3 pounds"
+   },
+   "url": "https://www.vivehealth.com/products/bedside-commode",
+   "handle": "bedside-commode",
+   "price_range": {
+    "min": {
+     "amount": 12999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 18999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41828342276",
+     "sku": "LVA1059",
+     "title": "Default Title",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features FREESTANDING COMMODE For use at the bedside, as a toilet safety rail or as an elevated seat riser, the bariatric commode is a convenient option for seniors and those with limited mobility at home or on the go DURABLE AND LIGHTWEIGHT Corrosion-resistant stainless steel frame supports up to 500 pounds with non-slip, non-marking rubber end caps to provide extra stability and security LARGE CAPACITY PAIL Six-quart commode pail fits standard commode liners and also includes a lid and splash guard ARRIVES PARTIALLY ASSEMBLED Initial setup is quick and easy, simply insert the legs to the desired height, set the pail in the frame and place the commode in the desired location TOOL-FREE HEIGHT ADJUSTMENTS Commode height can be adjusted in 1\u201d increments to a maximum of 20\u201d with easy to use push pin extensions CONVENIENT STORAGE Sturdy frame easily folds in for convenient storage and travel Customer Reviews Based on 23 reviews Write a review Does the bariatric commode come assembled? Yes! The Vive commode is partially assembled for a quick and easy setup. How wide are the legs on the commode chair? The width measured between the armrests is 27\u201d. Will it fit over my existing toilet? Yes, the freestanding commode is designed to fit over most toilets for use as a toilet safety rail or elevated toilet seat. Do the arms fold down? The arms are fixed and do not fold down. What is the maximum height from seat to floor? The seat height can be adjusted to a maximum height of 20\u201d. Can I remove the back rail of the Vive bariatric commode? Yes, the back rail is removable. What is the maximum weight limit? The bariatric commode safely supports up to 500 pounds. How wide is the toilet seat and what shape is it? The seat is 13.75\u201d wide with a slightly oval shape. How do I remove the bucket for emptying? First, cover the pail with the splash guard. Then, using the pail handle, carefully lift the pail upward to remove from the commode frame. Does the pail have a handle? Yes, the six-quart pail has a handle, lid and splash guard. Is this a foldable commode? Yes! The commode folds for easy storage and travel. Uses: For use as a bedside commode, safety rail toilet frame or elevated toilet seat. Dimensions: Width at the armrests: 27\u201d Width at the base: 27\u201d Depth: 18\u201d Seat Width: 13.75\u201d Adjustable Seat Height: 16\u201d to 22\u201d Materials: Lightweight stainless steel Composite material Care Instructions: Commode can be wiped down with sanitizing wipes What\u2019s Included: Bariatric commode 60 day guarantee UPC: 818323020458 Product Number: LVA1059 Shipping Weight: 24.3 pounds"
+     },
+     "price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 18999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_3_1_cb6fb3ad-320d-47ee-a65d-d63d3d8e5cff.jpg?v=1762794141"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/41828342276:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_3_1_cb6fb3ad-320d-47ee-a65d-d63d3d8e5cff.jpg?v=1762794141",
+     "alt_text": "Bariatric Commode"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bariatric Commodes",
+    "BCM",
+    "BCO",
+    "fsa-hsa",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14785944682859",
+   "title": "Padded 3-in-1 Commode",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features VERSATILE 3-IN-1 USE Functions as a bedside commode, raised toilet seat, or bathroom safety frame to meet a wide range of needs. Perfect for seniors, post-surgery patients, or individuals seeking extra bathroom safety and support. CUSHIONED SEAT COMFORT The padded seat and armrests provide a soft, supportive surface that reduces pressure while sitting. Designed for longer use and recovery, it makes bathroom routines more comfortable and stress-free. HEAVY-DUTY STEEL FRAME Built with a strong steel construction, this commode chair ensures stability and long-lasting durability. The sturdy frame safely supports users during transfers, making it ideal for home or care facilities. SAFETY-ENHANCING ARMRESTS Supportive armrests give users balance and security while sitting or standing. This added stability reduces fall risks and promotes confidence in everyday bathroom use. HYGIENIC REMOVABLE BUCKET Includes an easy-to-remove bucket that simplifies emptying and cleaning. Designed for convenience, it helps maintain proper hygiene for both users and caregivers. Customer Reviews Based on 23 reviews Write a review How can this commode be used? The Vive 3-in-1 Commode works as a standalone bedside commode, a raised toilet seat, or a toilet safety frame. Its versatile design adapts to a variety of bathroom needs for seniors, post-surgery recovery, or those with limited mobility. Is the seat comfortable for extended use? Yes, the commode features a padded seat and cushioned armrests to provide extra comfort. This reduces pressure, making it easier to sit for longer periods during recovery or daily use. How stable is the commode? Built with a heavy-duty steel frame, this commode offers reliable stability and long-lasting durability. It provides dependable support during transfers, ensuring safety in home or caregiving environments. Does the commode include armrests? Yes, the integrated armrests add balance and support while sitting or standing. They help reduce the risk of slips or falls, giving users more confidence during use. Is the bucket easy to clean? Absolutely. The removable bucket is designed for simple emptying and cleaning, making it quick and hygienic for both users and caregivers. Can it be used over a standard toilet? Yes, the commode can be placed over most standard toilets to function as a raised toilet seat or safety frame, providing extra height and support. Is this commode lightweight and portable? Yes, despite its sturdy steel frame, the commode is lightweight enough to move easily from one room to another for convenience. Who is this product best for? This commode is ideal for seniors, individuals with limited mobility, post-surgery patients, or anyone who needs additional bathroom support at home, in rehab, or in a caregiving facility. Is there a warranty or guarantee? Yes, every Vive 3-in-1 Commode comes with a 60-day guarantee, so you can purchase with confidence and peace of mind. Uses: A padded commode that can be used as a standalone commode, a raised toilet seat, or a toilet safety frame. Dimensions: Arm Rest 33.5cm Length (13.18\u201d) Backrest Bar 56cm Length (22.04\u201d) Seat Depth 41cm (16.14\u201d) Seat Height 4.3cm (1.69\u201d) Seat Width 42cm (16.53\u201d) Commode Depth 48.5cm (19.09\u201d) Commode Width 67cm (26.37\u201d) 8 one-inch height adjustments Minimum Height - 68cm from ground to top of backrest bar (26.77\u201d) Maximum Height - 85.5cm from ground to top of backrest bar (33.66\u201d) Minimum Height from floor to top of seat 42cm Maximum height from floor to top of seat 58cm Weight: 9.3 lbs Color Grey Size(s) One size Material (s) Steel Care Instructions: Wipe clean with a damp cloth and mild detergent. Do not use harsh chemicals or bleach on any components. What\u2019s Included: 1x Vive 3-in-1 Padded Commode UPC: Product Number: LVA3113 Shipping Weight:"
+   },
+   "url": "https://www.vivehealth.com/products/padded-3-in-1-commode",
+   "handle": "padded-3-in-1-commode",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/52434381242731",
+     "sku": "LVA3113",
+     "title": "Default Title",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features VERSATILE 3-IN-1 USE Functions as a bedside commode, raised toilet seat, or bathroom safety frame to meet a wide range of needs. Perfect for seniors, post-surgery patients, or individuals seeking extra bathroom safety and support. CUSHIONED SEAT COMFORT The padded seat and armrests provide a soft, supportive surface that reduces pressure while sitting. Designed for longer use and recovery, it makes bathroom routines more comfortable and stress-free. HEAVY-DUTY STEEL FRAME Built with a strong steel construction, this commode chair ensures stability and long-lasting durability. The sturdy frame safely supports users during transfers, making it ideal for home or care facilities. SAFETY-ENHANCING ARMRESTS Supportive armrests give users balance and security while sitting or standing. This added stability reduces fall risks and promotes confidence in everyday bathroom use. HYGIENIC REMOVABLE BUCKET Includes an easy-to-remove bucket that simplifies emptying and cleaning. Designed for convenience, it helps maintain proper hygiene for both users and caregivers. Customer Reviews Based on 23 reviews Write a review How can this commode be used? The Vive 3-in-1 Commode works as a standalone bedside commode, a raised toilet seat, or a toilet safety frame. Its versatile design adapts to a variety of bathroom needs for seniors, post-surgery recovery, or those with limited mobility. Is the seat comfortable for extended use? Yes, the commode features a padded seat and cushioned armrests to provide extra comfort. This reduces pressure, making it easier to sit for longer periods during recovery or daily use. How stable is the commode? Built with a heavy-duty steel frame, this commode offers reliable stability and long-lasting durability. It provides dependable support during transfers, ensuring safety in home or caregiving environments. Does the commode include armrests? Yes, the integrated armrests add balance and support while sitting or standing. They help reduce the risk of slips or falls, giving users more confidence during use. Is the bucket easy to clean? Absolutely. The removable bucket is designed for simple emptying and cleaning, making it quick and hygienic for both users and caregivers. Can it be used over a standard toilet? Yes, the commode can be placed over most standard toilets to function as a raised toilet seat or safety frame, providing extra height and support. Is this commode lightweight and portable? Yes, despite its sturdy steel frame, the commode is lightweight enough to move easily from one room to another for convenience. Who is this product best for? This commode is ideal for seniors, individuals with limited mobility, post-surgery patients, or anyone who needs additional bathroom support at home, in rehab, or in a caregiving facility. Is there a warranty or guarantee? Yes, every Vive 3-in-1 Commode comes with a 60-day guarantee, so you can purchase with confidence and peace of mind. Uses: A padded commode that can be used as a standalone commode, a raised toilet seat, or a toilet safety frame. Dimensions: Arm Rest 33.5cm Length (13.18\u201d) Backrest Bar 56cm Length (22.04\u201d) Seat Depth 41cm (16.14\u201d) Seat Height 4.3cm (1.69\u201d) Seat Width 42cm (16.53\u201d) Commode Depth 48.5cm (19.09\u201d) Commode Width 67cm (26.37\u201d) 8 one-inch height adjustments Minimum Height - 68cm from ground to top of backrest bar (26.77\u201d) Maximum Height - 85.5cm from ground to top of backrest bar (33.66\u201d) Minimum Height from floor to top of seat 42cm Maximum height from floor to top of seat 58cm Weight: 9.3 lbs Color Grey Size(s) One size Material (s) Steel Care Instructions: Wipe clean with a damp cloth and mild detergent. Do not use harsh chemicals or bleach on any components. What\u2019s Included: 1x Vive 3-in-1 Padded Commode UPC: Product Number: LVA3113 Shipping Weight:"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1f_3.jpg?v=1793307671"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52434381242731:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1f_3.jpg?v=1793307671",
+     "alt_text": "Padded 3-in-1 Commode"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCO",
+    "BSC",
+    "guarantee-one-year",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14742200254827",
+   "title": "4-in-1 Bariatric Commode Shower Chair",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features CONVENIENT SPACE-SAVING SOLUTION Works as a bedside commode, shower seat, toilet riser, and safety frame to support various hygiene needs. A convenient, space-saving option for seniors, caregivers, and limited-mobility users. REINFORCED BARIATRIC SUPPORT Sturdy aluminum construction safely holds up to 550 pounds without wobbling or bending. Ideal for bariatric patients and heavy-duty daily use in home or medical settings. EXTRA-WIDE ERGONOMIC SEAT Spacious seat design provides added comfort and stability for larger users. The contoured shape supports extended sitting without pressure or discomfort. REMOVABLE SANITARY BUCKET Features a detachable and collapsible commode bucket that slides in securely and lifts out easily. Simple to clean and maintain for caregivers and at-home users. SLIP-RESISTANT AND TRAVEL-FRIENDLY FRAME Rubber-tipped feet help prevent shifting on wet or slick surfaces to reduce fall risks. Lightweight at just 12.8 pounds, making it easy to carry or reposition. Customer Reviews Based on 23 reviews Write a review What are the 4 functions of this chair? This versatile chair functions as a bedside commode, shower chair, raised toilet seat, and toilet safety frame. It\u2019s ideal for anyone needing multi-use support in the bathroom. How much weight can the chair support? The reinforced aluminum frame is designed to safely support up to 550 pounds, making it suitable for bariatric and heavy-duty use. Is the commode bucket removable for cleaning? Yes, the collapsible bucket is easy to slide in and out when aligned properly. It\u2019s designed for quick and hygienic cleanup. Can the chair be used in the shower? Absolutely. The chair\u2019s water-resistant design and slip-resistant rubber feet make it safe for use in wet environments like the shower. How comfortable is the seat for extended use? The seat is extra wide and ergonomically shaped to provide comfort and support during longer periods of sitting, especially for larger individuals. Is the chair easy to move from room to room? Yes, the lightweight frame weighs just 12.8 pounds, making it easy to lift, carry, or reposition as needed. Does this chair require tools to assemble? The chair includes all necessary components and screws for easy assembly. A simple screwdriver is typically all that\u2019s needed. Will the chair scratch tile or bathroom floors? No, the non-marking rubber feet are designed to prevent slipping and protect floors from scratches or damage. Can I remove the backrest and armrests if needed? Yes, the backrest and armrests are detachable, allowing you to customize the chair setup based on your needs and preferences. Is there a warranty included with the purchase? Yes, your purchase is backed by the Vive 60-day guarantee, so you can buy with confidence and peace of mind. Uses: A chair that can be used as a bedside commode, a shower chair, a raised toilet seat, or a toilet safety frame for versatile bathroom support. Dimensions: Backrest Bar = 65.5cm Backrest W X H = 39.5 x 15cm Armrests Length = 35.5 Seat W x L = 58.5 x 46.5 Minimum Seat Height (From floor to top of seat) = 46cm Maximum Seat Height = 56cm 1 Inch Adjustments / 5 Adjustments total Bucket Diameter = 30.5cm Open Bucket Height = 17cm Closed Bucket Height = 6.5cm Weight: 12.8lbs Color: Grey (No other colors at this time) Size(s) One size Material (s) Aluminium, Polypropylene, HDPE, PE, PA6, Rubber, Stainless Steel, Zn Steel, Copper, EVA Care Instructions: Rinse and dry thoroughly after use in wet environments. Do not use harsh chemicals or bleach on any components. What\u2019s Included: 1x Seat 1x Backrest Assembly 2x Armrests 4x feet 12x screws 6x brackets UPC: 0810178883806 Product Number: LVA3105 Shipping Weight: 28 lbs. User Manual: 4-in-1 Bariatric Commode Shower Chair"
+   },
+   "url": "https://www.vivehealth.com/products/4-in-1-bariatric-commode-shower-chair",
+   "handle": "4-in-1-bariatric-commode-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 11999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/52220866265451",
+     "sku": "LVA3105",
+     "title": "Default Title",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features CONVENIENT SPACE-SAVING SOLUTION Works as a bedside commode, shower seat, toilet riser, and safety frame to support various hygiene needs. A convenient, space-saving option for seniors, caregivers, and limited-mobility users. REINFORCED BARIATRIC SUPPORT Sturdy aluminum construction safely holds up to 550 pounds without wobbling or bending. Ideal for bariatric patients and heavy-duty daily use in home or medical settings. EXTRA-WIDE ERGONOMIC SEAT Spacious seat design provides added comfort and stability for larger users. The contoured shape supports extended sitting without pressure or discomfort. REMOVABLE SANITARY BUCKET Features a detachable and collapsible commode bucket that slides in securely and lifts out easily. Simple to clean and maintain for caregivers and at-home users. SLIP-RESISTANT AND TRAVEL-FRIENDLY FRAME Rubber-tipped feet help prevent shifting on wet or slick surfaces to reduce fall risks. Lightweight at just 12.8 pounds, making it easy to carry or reposition. Customer Reviews Based on 23 reviews Write a review What are the 4 functions of this chair? This versatile chair functions as a bedside commode, shower chair, raised toilet seat, and toilet safety frame. It\u2019s ideal for anyone needing multi-use support in the bathroom. How much weight can the chair support? The reinforced aluminum frame is designed to safely support up to 550 pounds, making it suitable for bariatric and heavy-duty use. Is the commode bucket removable for cleaning? Yes, the collapsible bucket is easy to slide in and out when aligned properly. It\u2019s designed for quick and hygienic cleanup. Can the chair be used in the shower? Absolutely. The chair\u2019s water-resistant design and slip-resistant rubber feet make it safe for use in wet environments like the shower. How comfortable is the seat for extended use? The seat is extra wide and ergonomically shaped to provide comfort and support during longer periods of sitting, especially for larger individuals. Is the chair easy to move from room to room? Yes, the lightweight frame weighs just 12.8 pounds, making it easy to lift, carry, or reposition as needed. Does this chair require tools to assemble? The chair includes all necessary components and screws for easy assembly. A simple screwdriver is typically all that\u2019s needed. Will the chair scratch tile or bathroom floors? No, the non-marking rubber feet are designed to prevent slipping and protect floors from scratches or damage. Can I remove the backrest and armrests if needed? Yes, the backrest and armrests are detachable, allowing you to customize the chair setup based on your needs and preferences. Is there a warranty included with the purchase? Yes, your purchase is backed by the Vive 60-day guarantee, so you can buy with confidence and peace of mind. Uses: A chair that can be used as a bedside commode, a shower chair, a raised toilet seat, or a toilet safety frame for versatile bathroom support. Dimensions: Backrest Bar = 65.5cm Backrest W X H = 39.5 x 15cm Armrests Length = 35.5 Seat W x L = 58.5 x 46.5 Minimum Seat Height (From floor to top of seat) = 46cm Maximum Seat Height = 56cm 1 Inch Adjustments / 5 Adjustments total Bucket Diameter = 30.5cm Open Bucket Height = 17cm Closed Bucket Height = 6.5cm Weight: 12.8lbs Color: Grey (No other colors at this time) Size(s) One size Material (s) Aluminium, Polypropylene, HDPE, PE, PA6, Rubber, Stainless Steel, Zn Steel, Copper, EVA Care Instructions: Rinse and dry thoroughly after use in wet environments. Do not use harsh chemicals or bleach on any components. What\u2019s Included: 1x Seat 1x Backrest Assembly 2x Armrests 4x feet 12x screws 6x brackets UPC: 0810178883806 Product Number: LVA3105 Shipping Weight: 28 lbs. User Manual: 4-in-1 Bariatric Commode Shower Chair"
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1cMainImage_42.jpg?v=1794920530"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52220866265451:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1cMainImage_42.jpg?v=1794920530",
+     "alt_text": "4-in-1 Bariatric Commode Shower Chair"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCO",
+    "BSC",
+    "guarantee-60-day",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7407124906084",
+   "title": "Reclining Shower Commode Transport Chair",
+   "description": {
+    "html": "One-Year Guarantee View Details > Product Description Simplify daily care routines with the Vive shower commode chair, a 3-in-1 design that combines a transport chair, shower chair and commode into one convenient unit. Built for post-operative, injured or immobile individuals, it weighs only 32 lbs while supporting up to 300 lbs, with smooth-rolling wheels and a reclining function that make everyday care far less demanding. The 35-degree reclining headrest makes hair washing more comfortable and the built-in commode opening with removable bucket means toileting is handled right in the chair. As a reclining shower wheelchair, the rust-proof aluminum frame holds up reliably in wet environments without losing stability. If you're looking at more bathroom care options, our bathroom safety collection has a range of products worth browsing. Seat height, headrest and footrest all adjust to fit different body types and the locking wheels keep this rolling commode shower chair firmly in place during transfers or bathing. Caregivers can roll it easily between rooms, making daily routines safer and more manageable for everyone involved. For broader transfer and patient care support, our Transfer Benches are also worth considering. Features Versatile 3-in-1 Design: Functions as transport chair, shower chair and commode\u2014one comprehensive solution for multiple daily care needs Adjustable 35-Degree Recline: Customizable tilt positioning enhances comfort during showers, hair washing and relaxation for optimal user experience Heavy-Duty 300 lb Capacity: Robust aluminum frame provides exceptional support for individuals recovering from surgery, injury, or requiring daily assistance Rust-Resistant Construction: Lightweight aluminum design withstands wet shower environments while remaining easy to maneuver at just 32 pounds Fully Adjustable Comfort: Customizable seat height, headrest position and footrest distance accommodate various body types and personal preferences Secure Locking Wheels: Smooth-rolling casters enable easy transport and lock firmly in place for safe, stable transfers and bathroom use Customer Reviews Based on 23 reviews Write a review What weight can the Vive Reclining Shower Commode Transport Chair support? The chair is built with a robust frame that can safely support up to 300 pounds, making it suitable for individuals recovering from surgery or those needing extra support during bathroom activities. Can the chair be adjusted for different reclining positions? Yes, the chair features a customizable recline up to 35 degrees, allowing you to adjust the tilt for various activities such as showering or relaxing, enhancing comfort and convenience for the user. What are the different functions of this chair? This versatile chair functions as a transport chair, a shower chair, and a commode, providing a three-in-one solution that adapts to your various daily needs. Is the chair comfortable for prolonged sitting? Absolutely. The chair is designed with adjustable features and a wide, cushioned seat, ensuring personalized comfort and support, making it ideal for prolonged use. How do I maintain the Vive Reclining Shower Commode Transport Chair? The chair is easy to maintain due to its high-quality, water-resistant materials. Simply wipe it down with standard cleaning agents to keep it hygienic and in top condition. What guarantees come with the Vive Reclining Shower Commode Transport Chair? The chair comes with a 1-year guarantee on the frame, a 6-month guarantee on the wheels, brakes, and accessories, and a 90-day guarantee on the upholstery, ensuring your purchase is protected. How does the reclining feature enhance the chair\u2019s usability? The reclining feature allows for easy adjustment of the user\u2019s position, which is particularly beneficial for tasks like hair washing or achieving a comfortable posture for relaxation and recovery. What makes the chair suitable for shower use? Constructed from lightweight, rust-resistant aluminum, the chair is ideal for use in wet environments like showers, providing durability and resistance against moisture. Can the chair be easily transported or stored? Yes, the lightweight design and locking wheels make it easy to maneuver and transport the chair across different surfaces, and it locks in place securely for safe transfers. What accessories are included with the chair? The chair includes a commode bucket, enhancing its functionality as a commode chair, and providing a comprehensive care solution in one package. Uses: 3-in-1 reclining shower chair, commode and transport chair Ideal for post-surgery or injury recovery Daily bathroom and shower assistance Room-to-room patient transport Perfect for individuals with limited mobility Dimensions: Seat Size: 17.25\" x 17\" Overall Height: 46\"-52\" Headrest Height from Seat: 23\"-27\" Seat Height: 22\"-24\" Footrest Distance from Seat: 15\"-17\" Commode Opening: 7.5\"-11\" Commode Bucket Size: 13\" x 8\" x 4.5\" Overall Size: 36\" x 18\" Weight: 32 lbs Maximum Weight Capacity: 300 pounds Color: White Materials: Lightweight aluminum frame Rust-resistant construction Water-resistant components High-quality, durable materials Features: Adjustable recline up to 35 degrees Multiple height adjustments Locking wheels for safety Smooth-rolling casters Built-in commode opening Removable commode bucket Adjustable headrest Adjustable footrests Padded armrests Wide, cushioned seat Care Instructions: Rinse any remaining soap after use Wipe down gently with standard cleaning agents Easy to maintain and keep hygienic Water-resistant materials simplify cleaning What's Included: 1x Reclining Shower Commode Transport Chair 1x Commode bucket User manual Guarantee Policy: Frame: 1 year Wheels: 6 months Brakes: 6 months Accessories: 6 months Upholstery: 90 days Product Information: UPC: 810113574219 Product Number: MOB1082WHT User Manual: Reclining Shower Commode"
+   },
+   "url": "https://www.vivehealth.com/products/reclining-shower-commode-transport-chair",
+   "handle": "reclining-shower-commode-transport-chair",
+   "price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51618401583467",
+     "sku": "MOB1082WHT",
+     "title": "White",
+     "description": {
+      "html": "One-Year Guarantee View Details > Product Description Simplify daily care routines with the Vive shower commode chair, a 3-in-1 design that combines a transport chair, shower chair and commode into one convenient unit. Built for post-operative, injured or immobile individuals, it weighs only 32 lbs while supporting up to 300 lbs, with smooth-rolling wheels and a reclining function that make everyday care far less demanding. The 35-degree reclining headrest makes hair washing more comfortable and the built-in commode opening with removable bucket means toileting is handled right in the chair. As a reclining shower wheelchair, the rust-proof aluminum frame holds up reliably in wet environments without losing stability. If you're looking at more bathroom care options, our bathroom safety collection has a range of products worth browsing. Seat height, headrest and footrest all adjust to fit different body types and the locking wheels keep this rolling commode shower chair firmly in place during transfers or bathing. Caregivers can roll it easily between rooms, making daily routines safer and more manageable for everyone involved. For broader transfer and patient care support, our Transfer Benches are also worth considering. Features Versatile 3-in-1 Design: Functions as transport chair, shower chair and commode\u2014one comprehensive solution for multiple daily care needs Adjustable 35-Degree Recline: Customizable tilt positioning enhances comfort during showers, hair washing and relaxation for optimal user experience Heavy-Duty 300 lb Capacity: Robust aluminum frame provides exceptional support for individuals recovering from surgery, injury, or requiring daily assistance Rust-Resistant Construction: Lightweight aluminum design withstands wet shower environments while remaining easy to maneuver at just 32 pounds Fully Adjustable Comfort: Customizable seat height, headrest position and footrest distance accommodate various body types and personal preferences Secure Locking Wheels: Smooth-rolling casters enable easy transport and lock firmly in place for safe, stable transfers and bathroom use Customer Reviews Based on 23 reviews Write a review What weight can the Vive Reclining Shower Commode Transport Chair support? The chair is built with a robust frame that can safely support up to 300 pounds, making it suitable for individuals recovering from surgery or those needing extra support during bathroom activities. Can the chair be adjusted for different reclining positions? Yes, the chair features a customizable recline up to 35 degrees, allowing you to adjust the tilt for various activities such as showering or relaxing, enhancing comfort and convenience for the user. What are the different functions of this chair? This versatile chair functions as a transport chair, a shower chair, and a commode, providing a three-in-one solution that adapts to your various daily needs. Is the chair comfortable for prolonged sitting? Absolutely. The chair is designed with adjustable features and a wide, cushioned seat, ensuring personalized comfort and support, making it ideal for prolonged use. How do I maintain the Vive Reclining Shower Commode Transport Chair? The chair is easy to maintain due to its high-quality, water-resistant materials. Simply wipe it down with standard cleaning agents to keep it hygienic and in top condition. What guarantees come with the Vive Reclining Shower Commode Transport Chair? The chair comes with a 1-year guarantee on the frame, a 6-month guarantee on the wheels, brakes, and accessories, and a 90-day guarantee on the upholstery, ensuring your purchase is protected. How does the reclining feature enhance the chair\u2019s usability? The reclining feature allows for easy adjustment of the user\u2019s position, which is particularly beneficial for tasks like hair washing or achieving a comfortable posture for relaxation and recovery. What makes the chair suitable for shower use? Constructed from lightweight, rust-resistant aluminum, the chair is ideal for use in wet environments like showers, providing durability and resistance against moisture. Can the chair be easily transported or stored? Yes, the lightweight design and locking wheels make it easy to maneuver and transport the chair across different surfaces, and it locks in place securely for safe transfers. What accessories are included with the chair? The chair includes a commode bucket, enhancing its functionality as a commode chair, and providing a comprehensive care solution in one package. Uses: 3-in-1 reclining shower chair, commode and transport chair Ideal for post-surgery or injury recovery Daily bathroom and shower assistance Room-to-room patient transport Perfect for individuals with limited mobility Dimensions: Seat Size: 17.25\" x 17\" Overall Height: 46\"-52\" Headrest Height from Seat: 23\"-27\" Seat Height: 22\"-24\" Footrest Distance from Seat: 15\"-17\" Commode Opening: 7.5\"-11\" Commode Bucket Size: 13\" x 8\" x 4.5\" Overall Size: 36\" x 18\" Weight: 32 lbs Maximum Weight Capacity: 300 pounds Color: White Materials: Lightweight aluminum frame Rust-resistant construction Water-resistant components High-quality, durable materials Features: Adjustable recline up to 35 degrees Multiple height adjustments Locking wheels for safety Smooth-rolling casters Built-in commode opening Removable commode bucket Adjustable headrest Adjustable footrests Padded armrests Wide, cushioned seat Care Instructions: Rinse any remaining soap after use Wipe down gently with standard cleaning agents Easy to maintain and keep hygienic Water-resistant materials simplify cleaning What's Included: 1x Reclining Shower Commode Transport Chair 1x Commode bucket User manual Guarantee Policy: Frame: 1 year Wheels: 6 months Brakes: 6 months Accessories: 6 months Upholstery: 90 days Product Information: UPC: 810113574219 Product Number: MOB1082WHT User Manual: Reclining Shower Commode"
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage1.jpg?v=1707767186"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/51618401583467:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage1.jpg?v=1707767186"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCO",
+    "BSC",
+    "guarantee-one-year",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7394104049764",
+   "title": "Shower Commode Transport Chair",
+   "description": {
+    "html": "A 1-year guarantee on the frame, a 6-month guarantee on the footrests, armrests, and wheels/wheel components, and a 90-day guarantee on the cushions. View Details > Features ALL-IN-ONE MULTIFUNCTIONAL SUPPORT CHAIR The Vive Shower Commode Transport Chair seamlessly integrates the functionalities of a shower chair, a commode, and a transport chair into a single efficient unit. This versatile chair simplifies mobility and care processes, significantly enhancing independence and comfort for users with mobility challenges ENHANCED SAFETY WITH LOCKABLE WHEELS Designed with user safety in mind, this chair features robust locking wheels that ensure smooth movement across different floor types and secure locking in place for safe transfers. These wheels provide reliable stability, reducing the risk of accidents and increasing confidence for both users and caregivers LIGHT AND DURABLE ALUMINUM CONSTRUCTION Crafted from premium lightweight aluminum, this transport chair is easy to handle and exceptionally durable. Its corrosion-resistant frame is perfectly suited for use in wet environments like the burden of heavy lifting ADJUSTABLE COMFORT FOR TAILORED SUPPORT With its generously cushioned seat and easily adjustable footrests, this chair can be customized to suit various body types and preferences. These features ensure that every user experiences tailored support and comfort, enhancing satisfaction during extended use EFFORTLESS CLEANING FOR OPTIMAL HYGIENE The Vive Shower Commode Transport Chair is designed for easy maintenance, featuring water-resistant materials that can be quickly wiped down. This helps to ensure a clean and safe environment with minimal effort, for both private and professional care setting Customer Reviews Based on 23 reviews Write a review What functions does the Vive Shower Commode Transport Chair serve? The Vive Shower Commode Transport Chair is a versatile 3-in-1 solution designed to serve as a shower chair, a commode, and a transport chair. This integration facilitates smooth transitions and enhances user independence in various caregiving environments. How secure is the chair during transfers? Equipped with sturdy locking wheels, the chair glides smoothly across different surfaces and locks firmly in place when needed. This feature enhances the chair\u2019s stability and safety, providing peace of mind for users and caregivers alike. Is the chair suitable for use in wet environments like showers? Absolutely. The chair is crafted from high-quality, lightweight, rust-resistant aluminum, making it ideal for use in moisture-rich environments such as showers or bathrooms. Can the seat and footrests be adjusted for different users? Yes, the chair features a wide, cushioned seat and adjustable footrests that can be tailored to accommodate various body sizes and preferences, ensuring personalized comfort and support for each user. What measures are in place to ensure easy maintenance and cleanliness? The Shower Commode Transport Chair is designed with non-porous surfaces that are quick to wipe down and resistant to water, ensuring easy cleaning and maintenance while maintaining high standards of hygiene. What is the weight capacity of the Vive Shower Commode Transport Chair? The chair can support up to 300 pounds, making it a robust and reliable choice for users. How does the chair enhance comfort for prolonged use? The chair\u2019s thick, wide cushioned seat reduces pressure points and provides substantial support, while the adjustable features like footrests enhance comfort, making prolonged use more enjoyable. Does the chair come with any accessories? Yes, the chair includes footrests for comfort and a commode bucket with a lid for functionality as a commode chair. Is the chair easy to assemble and disassemble for storage? Yes, the chair is designed for straightforward assembly with all the necessary tools provided. Its design also allows for easy disassembly, making it convenient to store when not in use. Uses: A commode and shower chair on wheels so it can transport the patient around as well. Similar to the reclining version except this one does not recline Dimensions: Seat Height: 20.5\u201d - 22.5\u201d Seat dims: 17 x 17\u201d Bucket: 12 x 9 x 5.5\u201dDeep Footrest Distance from seat: 14\u201d-17\u201d Wheels: 4\u201d Weight: 19 lbs Color: White Grey Size(s): N/A Material(s): Aluminum Care Instructions: Wipe down after use What\u2019s Included: 1x chair with footrests 1x commode bucket with lid UPC: 810113576152 Product Number: MOB1090SLV"
+   },
+   "url": "https://www.vivehealth.com/products/shower-commode-transport-chair",
+   "handle": "shower-commode-transport-chair",
+   "price_range": {
+    "min": {
+     "amount": 16899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 22999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 22999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42844982739044",
+     "sku": "MOB1090",
+     "title": "Default Title",
+     "description": {
+      "html": "A 1-year guarantee on the frame, a 6-month guarantee on the footrests, armrests, and wheels/wheel components, and a 90-day guarantee on the cushions. View Details > Features ALL-IN-ONE MULTIFUNCTIONAL SUPPORT CHAIR The Vive Shower Commode Transport Chair seamlessly integrates the functionalities of a shower chair, a commode, and a transport chair into a single efficient unit. This versatile chair simplifies mobility and care processes, significantly enhancing independence and comfort for users with mobility challenges ENHANCED SAFETY WITH LOCKABLE WHEELS Designed with user safety in mind, this chair features robust locking wheels that ensure smooth movement across different floor types and secure locking in place for safe transfers. These wheels provide reliable stability, reducing the risk of accidents and increasing confidence for both users and caregivers LIGHT AND DURABLE ALUMINUM CONSTRUCTION Crafted from premium lightweight aluminum, this transport chair is easy to handle and exceptionally durable. Its corrosion-resistant frame is perfectly suited for use in wet environments like the burden of heavy lifting ADJUSTABLE COMFORT FOR TAILORED SUPPORT With its generously cushioned seat and easily adjustable footrests, this chair can be customized to suit various body types and preferences. These features ensure that every user experiences tailored support and comfort, enhancing satisfaction during extended use EFFORTLESS CLEANING FOR OPTIMAL HYGIENE The Vive Shower Commode Transport Chair is designed for easy maintenance, featuring water-resistant materials that can be quickly wiped down. This helps to ensure a clean and safe environment with minimal effort, for both private and professional care setting Customer Reviews Based on 23 reviews Write a review What functions does the Vive Shower Commode Transport Chair serve? The Vive Shower Commode Transport Chair is a versatile 3-in-1 solution designed to serve as a shower chair, a commode, and a transport chair. This integration facilitates smooth transitions and enhances user independence in various caregiving environments. How secure is the chair during transfers? Equipped with sturdy locking wheels, the chair glides smoothly across different surfaces and locks firmly in place when needed. This feature enhances the chair\u2019s stability and safety, providing peace of mind for users and caregivers alike. Is the chair suitable for use in wet environments like showers? Absolutely. The chair is crafted from high-quality, lightweight, rust-resistant aluminum, making it ideal for use in moisture-rich environments such as showers or bathrooms. Can the seat and footrests be adjusted for different users? Yes, the chair features a wide, cushioned seat and adjustable footrests that can be tailored to accommodate various body sizes and preferences, ensuring personalized comfort and support for each user. What measures are in place to ensure easy maintenance and cleanliness? The Shower Commode Transport Chair is designed with non-porous surfaces that are quick to wipe down and resistant to water, ensuring easy cleaning and maintenance while maintaining high standards of hygiene. What is the weight capacity of the Vive Shower Commode Transport Chair? The chair can support up to 300 pounds, making it a robust and reliable choice for users. How does the chair enhance comfort for prolonged use? The chair\u2019s thick, wide cushioned seat reduces pressure points and provides substantial support, while the adjustable features like footrests enhance comfort, making prolonged use more enjoyable. Does the chair come with any accessories? Yes, the chair includes footrests for comfort and a commode bucket with a lid for functionality as a commode chair. Is the chair easy to assemble and disassemble for storage? Yes, the chair is designed for straightforward assembly with all the necessary tools provided. Its design also allows for easy disassembly, making it convenient to store when not in use. Uses: A commode and shower chair on wheels so it can transport the patient around as well. Similar to the reclining version except this one does not recline Dimensions: Seat Height: 20.5\u201d - 22.5\u201d Seat dims: 17 x 17\u201d Bucket: 12 x 9 x 5.5\u201dDeep Footrest Distance from seat: 14\u201d-17\u201d Wheels: 4\u201d Weight: 19 lbs Color: White Grey Size(s): N/A Material(s): Aluminum Care Instructions: Wipe down after use What\u2019s Included: 1x chair with footrests 1x commode bucket with lid UPC: 810113576152 Product Number: MOB1090SLV"
+     },
+     "price": {
+      "amount": 16899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/image1_3fe75875-3612-45d0-aede-ce9222c88fcf.jpg?v=1724184268"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/42844982739044:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/image1_3fe75875-3612-45d0-aede-ce9222c88fcf.jpg?v=1724184268",
+     "alt_text": "Shower Commode Transport Chair"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCO",
+    "BSC",
+    "guarantee-one-year",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/551685750819",
+   "title": "Commode Liners",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features SANITARY DISPOSABLE LINERS Hygienic liners eliminate the risk of cross-contamination and make cleanup quick and easy FITS ANY COMMODE PAIL Safely use disposable liners with any standard or bariatric commode pail SUPER ABSORBENT PAD Reducing splashes and spills, each liner includes a super-absorbent pad that holds up to 16 fluid ounces LEAK FREE DESIGN Sanitary commode liners are leak-proof and include a convenient drawstring for spillproof disposal NEUTRALIZES ODORS Unscented commode liners effectively neutralize unpleasant odors PACK OF 24 Includes 24 universal fit liners and 24 super-absorbent pads Customer Reviews Based on 23 reviews Write a review How many liners in each package? There are 24 commode liner and 24 absorbent pads in each package. Are they absorbent? Yes! Each liner includes a super-absorbent pad that holds up to 16 fluid ounces. Are they unscented? Yes, the liners are unscented. Do the liners trap odors as well? Yes, the liner neutralizes unpleasant odors. How thick are the liners? The liners are 40 microns thick. Will this work with my elongated commode pail? Yes, the liners are generously sized to fit all standard and bariatric pails. Does it safely hold solid waste? Yes, the liners will safely hold solid waste for sanitary disposal. How do I dispose of the liners? Each liner has a drawstring that can be cinched tightly and tied. Dispose of used liners in household trash, according to local sanitation department. Uses: Sanitary, disposable commode pail liners Size: Fits all standard and bariatric commode pails Dimensions: Each liner: 20.66\u201d x 15.16\u201d Absorbent pad: 9\u201d x 4.5\u201d Materials: Bag liner: LDPE Pad: cellulose pulp and acrylate copolymer What\u2019s Included: 24 disposable commode liners 24 absorbent pads 60 Day Guarantee UPC: 818323021752 Product Number: LVA1077"
+   },
+   "url": "https://www.vivehealth.com/products/commode-liners",
+   "handle": "commode-liners",
+   "price_range": {
+    "min": {
+     "amount": 799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5299,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39811648782436",
+     "sku": "LVA1077",
+     "title": "24 Pack",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features SANITARY DISPOSABLE LINERS Hygienic liners eliminate the risk of cross-contamination and make cleanup quick and easy FITS ANY COMMODE PAIL Safely use disposable liners with any standard or bariatric commode pail SUPER ABSORBENT PAD Reducing splashes and spills, each liner includes a super-absorbent pad that holds up to 16 fluid ounces LEAK FREE DESIGN Sanitary commode liners are leak-proof and include a convenient drawstring for spillproof disposal NEUTRALIZES ODORS Unscented commode liners effectively neutralize unpleasant odors PACK OF 24 Includes 24 universal fit liners and 24 super-absorbent pads Customer Reviews Based on 23 reviews Write a review How many liners in each package? There are 24 commode liner and 24 absorbent pads in each package. Are they absorbent? Yes! Each liner includes a super-absorbent pad that holds up to 16 fluid ounces. Are they unscented? Yes, the liners are unscented. Do the liners trap odors as well? Yes, the liner neutralizes unpleasant odors. How thick are the liners? The liners are 40 microns thick. Will this work with my elongated commode pail? Yes, the liners are generously sized to fit all standard and bariatric pails. Does it safely hold solid waste? Yes, the liners will safely hold solid waste for sanitary disposal. How do I dispose of the liners? Each liner has a drawstring that can be cinched tightly and tied. Dispose of used liners in household trash, according to local sanitation department. Uses: Sanitary, disposable commode pail liners Size: Fits all standard and bariatric commode pails Dimensions: Each liner: 20.66\u201d x 15.16\u201d Absorbent pad: 9\u201d x 4.5\u201d Materials: Bag liner: LDPE Pad: cellulose pulp and acrylate copolymer What\u2019s Included: 24 disposable commode liners 24 absorbent pads 60 Day Guarantee UPC: 818323021752 Product Number: LVA1077"
+     },
+     "price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Quantity",
+       "label": "24 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_3_7b4b3650-90dd-4346-9cd2-7ae9537b6a48.jpg?v=1795006873"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39811648782436:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39811648815204",
+     "sku": "LVA1077PK48",
+     "title": "48 Pack",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features SANITARY DISPOSABLE LINERS Hygienic liners eliminate the risk of cross-contamination and make cleanup quick and easy FITS ANY COMMODE PAIL Safely use disposable liners with any standard or bariatric commode pail SUPER ABSORBENT PAD Reducing splashes and spills, each liner includes a super-absorbent pad that holds up to 16 fluid ounces LEAK FREE DESIGN Sanitary commode liners are leak-proof and include a convenient drawstring for spillproof disposal NEUTRALIZES ODORS Unscented commode liners effectively neutralize unpleasant odors PACK OF 24 Includes 24 universal fit liners and 24 super-absorbent pads Customer Reviews Based on 23 reviews Write a review How many liners in each package? There are 24 commode liner and 24 absorbent pads in each package. Are they absorbent? Yes! Each liner includes a super-absorbent pad that holds up to 16 fluid ounces. Are they unscented? Yes, the liners are unscented. Do the liners trap odors as well? Yes, the liner neutralizes unpleasant odors. How thick are the liners? The liners are 40 microns thick. Will this work with my elongated commode pail? Yes, the liners are generously sized to fit all standard and bariatric pails. Does it safely hold solid waste? Yes, the liners will safely hold solid waste for sanitary disposal. How do I dispose of the liners? Each liner has a drawstring that can be cinched tightly and tied. Dispose of used liners in household trash, according to local sanitation department. Uses: Sanitary, disposable commode pail liners Size: Fits all standard and bariatric commode pails Dimensions: Each liner: 20.66\u201d x 15.16\u201d Absorbent pad: 9\u201d x 4.5\u201d Materials: Bag liner: LDPE Pad: cellulose pulp and acrylate copolymer What\u2019s Included: 24 disposable commode liners 24 absorbent pads 60 Day Guarantee UPC: 818323021752 Product Number: LVA1077"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Quantity",
+       "label": "48 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_3_7b4b3650-90dd-4346-9cd2-7ae9537b6a48.jpg?v=1795006873"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39811648815204:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39811648847972",
+     "sku": "LVA1077PK72",
+     "title": "72 Pack",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features SANITARY DISPOSABLE LINERS Hygienic liners eliminate the risk of cross-contamination and make cleanup quick and easy FITS ANY COMMODE PAIL Safely use disposable liners with any standard or bariatric commode pail SUPER ABSORBENT PAD Reducing splashes and spills, each liner includes a super-absorbent pad that holds up to 16 fluid ounces LEAK FREE DESIGN Sanitary commode liners are leak-proof and include a convenient drawstring for spillproof disposal NEUTRALIZES ODORS Unscented commode liners effectively neutralize unpleasant odors PACK OF 24 Includes 24 universal fit liners and 24 super-absorbent pads Customer Reviews Based on 23 reviews Write a review How many liners in each package? There are 24 commode liner and 24 absorbent pads in each package. Are they absorbent? Yes! Each liner includes a super-absorbent pad that holds up to 16 fluid ounces. Are they unscented? Yes, the liners are unscented. Do the liners trap odors as well? Yes, the liner neutralizes unpleasant odors. How thick are the liners? The liners are 40 microns thick. Will this work with my elongated commode pail? Yes, the liners are generously sized to fit all standard and bariatric pails. Does it safely hold solid waste? Yes, the liners will safely hold solid waste for sanitary disposal. How do I dispose of the liners? Each liner has a drawstring that can be cinched tightly and tied. Dispose of used liners in household trash, according to local sanitation department. Uses: Sanitary, disposable commode pail liners Size: Fits all standard and bariatric commode pails Dimensions: Each liner: 20.66\u201d x 15.16\u201d Absorbent pad: 9\u201d x 4.5\u201d Materials: Bag liner: LDPE Pad: cellulose pulp and acrylate copolymer What\u2019s Included: 24 disposable commode liners 24 absorbent pads 60 Day Guarantee UPC: 818323021752 Product Number: LVA1077"
+     },
+     "price": {
+      "amount": 5299,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Quantity",
+       "label": "72 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_3_7b4b3650-90dd-4346-9cd2-7ae9537b6a48.jpg?v=1795006873"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39811648847972:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40912318398564",
+     "sku": "LVA1077ACC",
+     "title": "6 Pack",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features SANITARY DISPOSABLE LINERS Hygienic liners eliminate the risk of cross-contamination and make cleanup quick and easy FITS ANY COMMODE PAIL Safely use disposable liners with any standard or bariatric commode pail SUPER ABSORBENT PAD Reducing splashes and spills, each liner includes a super-absorbent pad that holds up to 16 fluid ounces LEAK FREE DESIGN Sanitary commode liners are leak-proof and include a convenient drawstring for spillproof disposal NEUTRALIZES ODORS Unscented commode liners effectively neutralize unpleasant odors PACK OF 24 Includes 24 universal fit liners and 24 super-absorbent pads Customer Reviews Based on 23 reviews Write a review How many liners in each package? There are 24 commode liner and 24 absorbent pads in each package. Are they absorbent? Yes! Each liner includes a super-absorbent pad that holds up to 16 fluid ounces. Are they unscented? Yes, the liners are unscented. Do the liners trap odors as well? Yes, the liner neutralizes unpleasant odors. How thick are the liners? The liners are 40 microns thick. Will this work with my elongated commode pail? Yes, the liners are generously sized to fit all standard and bariatric pails. Does it safely hold solid waste? Yes, the liners will safely hold solid waste for sanitary disposal. How do I dispose of the liners? Each liner has a drawstring that can be cinched tightly and tied. Dispose of used liners in household trash, according to local sanitation department. Uses: Sanitary, disposable commode pail liners Size: Fits all standard and bariatric commode pails Dimensions: Each liner: 20.66\u201d x 15.16\u201d Absorbent pad: 9\u201d x 4.5\u201d Materials: Bag liner: LDPE Pad: cellulose pulp and acrylate copolymer What\u2019s Included: 24 disposable commode liners 24 absorbent pads 60 Day Guarantee UPC: 818323021752 Product Number: LVA1077"
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Quantity",
+       "label": "6 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_3_7b4b3650-90dd-4346-9cd2-7ae9537b6a48.jpg?v=1795006873"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/40912318398564:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Quantity",
+     "values": [
+      {
+       "label": "24 Pack"
+      },
+      {
+       "label": "48 Pack"
+      },
+      {
+       "label": "72 Pack"
+      },
+      {
+       "label": "6 Pack"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_3_7b4b3650-90dd-4346-9cd2-7ae9537b6a48.jpg?v=1795006873",
+     "alt_text": "Commode Liners"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCM",
+    "BCO",
+    "Commode Liners",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14680250417515",
+   "title": "Core Shower Commode Transport Wheelchair",
+   "description": {
+    "html": "One-Year Guarantee View Details > Features VERSATILE 3-IN-1 DESIGN Use this chair as a commode, shower chair, and mobility aid, offering a practical, space-saving solution for daily personal care. GREATER SAFETY WITH LOCKING WHEELS Designed with easy-to-use locking wheels, this chair glides smoothly over different surfaces and locks firmly in place, preventing unwanted movement for added security. LIGHTWEIGHT AND RUST-RESISTANT Crafted from durable aluminum, this chair is lightweight and easy to maneuver, while its rust-resistant frame ensures long-lasting use in bathrooms and wet areas. CUSHIONED FOR MAXIMUM COMFORT Featuring a wide, padded seat and supportive backrest, this chair provides exceptional comfort, while the soft armrests offer added support and stability. ADJUSTABLE FOLDING FOOTRESTS Built for customized comfort, this chair includes adjustable footrests, allowing users to find the perfect position for enhanced support and ease of use. Customer Reviews Based on 23 reviews Write a review What functions does this chair provide? This 3-in-1 transport chair serves as a commode, shower chair, and mobility aid, offering a versatile, space-saving solution for daily care and assistance. Is the frame rust-resistant? Yes! The lightweight aluminum frame is rust-resistant, making it safe for use in wet environments, such as showers and bathrooms. How do the locking wheels improve safety? The chair is equipped with secure locking wheels that prevent unwanted movement, ensuring stability and safety when in use. Is the seat comfortable for extended use? Absolutely! The wide, cushioned seat and supportive backrest provide all-day comfort, while the padded armrests offer extra support and stability. Can the chair be easily moved from room to room? Yes! The lightweight design and smooth-rolling wheels make it easy to maneuver, whether using it in the bathroom, bedroom, or around the home. Are the footrests adjustable? Yes! The folding footrests allow for a personalized fit, helping users maintain proper posture and comfort during use. Can the commode bucket be removed? Yes, the chair includes a removable commode bucket, allowing for easy cleaning and emptying in between uses. What is the weight capacity of this chair? This transport chair supports up to 275 pounds, providing a durable and reliable mobility solution for most users. Is the chair foldable for storage? While the chair does not fully fold, its compact, lightweight design makes it easy to transport and store when not in use. Uses: A 3-in-1 shower chair, commode, and transport wheelchair. Dimensions: (Lowest and Highest possible): min: 36\u201d max: 38\u201d Base Dims (Unfolded): 22\u201d x 28.5\u201d Front Wheel Size: 4\u201d Back Wheel Size: 4\u201d Dims when folded: 22\u201d x 20.5\u201d Seat Height (if there is a seat): 21\u201d Seat Dims: 17\u201d x 17\u201d Backrest Size: 18\u201d x 6.75\u201d Width between handles (Applies if there is a seat): 17.5\u201d Bucket Dims: 12\u201d x 9\u201d x 6\u201d Foldable Footrest: 21\u201d x 10\u201d Weight: 15 lbs Color White and Grey Size(s) One size Material (s) Aluminum and plastic Care Instructions: Wipe down after use What\u2019s Included: 1x Core Shower Commode Transport Wheelchair 2x Removable Commode Bucket UPC: 810113578392 Product Number: MOB1115 User Manual: Core Shower Commode Transport Wheelchair"
+   },
+   "url": "https://www.vivehealth.com/products/core-shower-commode-transport-wheelchair",
+   "handle": "core-shower-commode-transport-wheelchair",
+   "price_range": {
+    "min": {
+     "amount": 12999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 16999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51940910268779",
+     "sku": "MOB1115",
+     "title": "Default Title",
+     "description": {
+      "html": "One-Year Guarantee View Details > Features VERSATILE 3-IN-1 DESIGN Use this chair as a commode, shower chair, and mobility aid, offering a practical, space-saving solution for daily personal care. GREATER SAFETY WITH LOCKING WHEELS Designed with easy-to-use locking wheels, this chair glides smoothly over different surfaces and locks firmly in place, preventing unwanted movement for added security. LIGHTWEIGHT AND RUST-RESISTANT Crafted from durable aluminum, this chair is lightweight and easy to maneuver, while its rust-resistant frame ensures long-lasting use in bathrooms and wet areas. CUSHIONED FOR MAXIMUM COMFORT Featuring a wide, padded seat and supportive backrest, this chair provides exceptional comfort, while the soft armrests offer added support and stability. ADJUSTABLE FOLDING FOOTRESTS Built for customized comfort, this chair includes adjustable footrests, allowing users to find the perfect position for enhanced support and ease of use. Customer Reviews Based on 23 reviews Write a review What functions does this chair provide? This 3-in-1 transport chair serves as a commode, shower chair, and mobility aid, offering a versatile, space-saving solution for daily care and assistance. Is the frame rust-resistant? Yes! The lightweight aluminum frame is rust-resistant, making it safe for use in wet environments, such as showers and bathrooms. How do the locking wheels improve safety? The chair is equipped with secure locking wheels that prevent unwanted movement, ensuring stability and safety when in use. Is the seat comfortable for extended use? Absolutely! The wide, cushioned seat and supportive backrest provide all-day comfort, while the padded armrests offer extra support and stability. Can the chair be easily moved from room to room? Yes! The lightweight design and smooth-rolling wheels make it easy to maneuver, whether using it in the bathroom, bedroom, or around the home. Are the footrests adjustable? Yes! The folding footrests allow for a personalized fit, helping users maintain proper posture and comfort during use. Can the commode bucket be removed? Yes, the chair includes a removable commode bucket, allowing for easy cleaning and emptying in between uses. What is the weight capacity of this chair? This transport chair supports up to 275 pounds, providing a durable and reliable mobility solution for most users. Is the chair foldable for storage? While the chair does not fully fold, its compact, lightweight design makes it easy to transport and store when not in use. Uses: A 3-in-1 shower chair, commode, and transport wheelchair. Dimensions: (Lowest and Highest possible): min: 36\u201d max: 38\u201d Base Dims (Unfolded): 22\u201d x 28.5\u201d Front Wheel Size: 4\u201d Back Wheel Size: 4\u201d Dims when folded: 22\u201d x 20.5\u201d Seat Height (if there is a seat): 21\u201d Seat Dims: 17\u201d x 17\u201d Backrest Size: 18\u201d x 6.75\u201d Width between handles (Applies if there is a seat): 17.5\u201d Bucket Dims: 12\u201d x 9\u201d x 6\u201d Foldable Footrest: 21\u201d x 10\u201d Weight: 15 lbs Color White and Grey Size(s) One size Material (s) Aluminum and plastic Care Instructions: Wipe down after use What\u2019s Included: 1x Core Shower Commode Transport Wheelchair 2x Removable Commode Bucket UPC: 810113578392 Product Number: MOB1115 User Manual: Core Shower Commode Transport Wheelchair"
+     },
+     "price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 16999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1aMainImage_17.jpg?v=1761750143"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/51940910268779:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1aMainImage_17.jpg?v=1761750143",
+     "alt_text": "Core Shower Commode Transport Wheelchair"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCO",
+    "BSC",
+    "guarantee-60-day",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6792912011364",
+   "title": "Commode Pads (No Liners)",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features SUPER ABSORBENT PAD Each Vive Super Absorbent Pad minimizes spills and splashes when disposing of commode liners HOLDS UP TO 35 FL OZ. Ultra absorbent, each commode pad turns up to 35 fl oz of urine and liquid into a gel for easy disposal FITS ANY COMMODE LINER Our absorbent pads are sized to fit any commode liner or bedpan liner for sanitary use NEUTRALIZES ODORS Unscented, our commode pads effectively trap and neutralize unpleasant odors PACK OF 24 Includes 24 super-absorbent pads for camping, boats, RVs, bedside commode chairs and more Customer Reviews Based on 23 reviews Write a review How many super absorbent pads are in each package? There are 24 absorbent pads in each package. Are the pads absorbent? Yes! Each super-absorbent pad holds up to 35 fluid ounces. Are the commode pads unscented? Yes, the commode pads are unscented. Do the super-absorbent pads trap odors as well? Yes, the Vive Super Absorbent pads neutralize unpleasant odors. What are the dimensions of the absorbent pads? Each absorbent pad measures 10.63\u201d by 5.12\u201d. Will this work with my elongated commode pail? Yes, the absorbent pads are sized to fit all standard and bariatric pails. How do I dispose of the super-absorbent pad? Dispose of used super-absorbent pads in household trash, according to your local sanitation department. Uses: Sanitary, disposable super-absorbent pad for commode liners and bedpan liners Size: Fits all standard and bariatric commode liners, bedpan and toilet liners Dimensions: 10.63\u201d by 5.12\u201d Weight per pad: 0.05 pounds Materials: Cellulose pulp and acrylate copolymer What\u2019s Included: Vive Super Absorbent Pads - Set of 24 60 day guarantee UPC: Product Number: LVA2106PAK2 Shipping Weight: 1.27 pounds"
+   },
+   "url": "https://www.vivehealth.com/products/commode-pads-24-pack-no-liners",
+   "handle": "commode-pads-24-pack-no-liners",
+   "price_range": {
+    "min": {
+     "amount": 1499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/52050336285035",
+     "sku": "LVA2106PAK24",
+     "title": "24",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features SUPER ABSORBENT PAD Each Vive Super Absorbent Pad minimizes spills and splashes when disposing of commode liners HOLDS UP TO 35 FL OZ. Ultra absorbent, each commode pad turns up to 35 fl oz of urine and liquid into a gel for easy disposal FITS ANY COMMODE LINER Our absorbent pads are sized to fit any commode liner or bedpan liner for sanitary use NEUTRALIZES ODORS Unscented, our commode pads effectively trap and neutralize unpleasant odors PACK OF 24 Includes 24 super-absorbent pads for camping, boats, RVs, bedside commode chairs and more Customer Reviews Based on 23 reviews Write a review How many super absorbent pads are in each package? There are 24 absorbent pads in each package. Are the pads absorbent? Yes! Each super-absorbent pad holds up to 35 fluid ounces. Are the commode pads unscented? Yes, the commode pads are unscented. Do the super-absorbent pads trap odors as well? Yes, the Vive Super Absorbent pads neutralize unpleasant odors. What are the dimensions of the absorbent pads? Each absorbent pad measures 10.63\u201d by 5.12\u201d. Will this work with my elongated commode pail? Yes, the absorbent pads are sized to fit all standard and bariatric pails. How do I dispose of the super-absorbent pad? Dispose of used super-absorbent pads in household trash, according to your local sanitation department. Uses: Sanitary, disposable super-absorbent pad for commode liners and bedpan liners Size: Fits all standard and bariatric commode liners, bedpan and toilet liners Dimensions: 10.63\u201d by 5.12\u201d Weight per pad: 0.05 pounds Materials: Cellulose pulp and acrylate copolymer What\u2019s Included: Vive Super Absorbent Pads - Set of 24 60 day guarantee UPC: Product Number: LVA2106PAK2 Shipping Weight: 1.27 pounds"
+     },
+     "price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Count",
+       "label": "24"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/Image_1b_50_2.jpg?v=1666180459"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52050336285035:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/52050336317803",
+     "sku": "LVA2106PAK48",
+     "title": "48",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features SUPER ABSORBENT PAD Each Vive Super Absorbent Pad minimizes spills and splashes when disposing of commode liners HOLDS UP TO 35 FL OZ. Ultra absorbent, each commode pad turns up to 35 fl oz of urine and liquid into a gel for easy disposal FITS ANY COMMODE LINER Our absorbent pads are sized to fit any commode liner or bedpan liner for sanitary use NEUTRALIZES ODORS Unscented, our commode pads effectively trap and neutralize unpleasant odors PACK OF 24 Includes 24 super-absorbent pads for camping, boats, RVs, bedside commode chairs and more Customer Reviews Based on 23 reviews Write a review How many super absorbent pads are in each package? There are 24 absorbent pads in each package. Are the pads absorbent? Yes! Each super-absorbent pad holds up to 35 fluid ounces. Are the commode pads unscented? Yes, the commode pads are unscented. Do the super-absorbent pads trap odors as well? Yes, the Vive Super Absorbent pads neutralize unpleasant odors. What are the dimensions of the absorbent pads? Each absorbent pad measures 10.63\u201d by 5.12\u201d. Will this work with my elongated commode pail? Yes, the absorbent pads are sized to fit all standard and bariatric pails. How do I dispose of the super-absorbent pad? Dispose of used super-absorbent pads in household trash, according to your local sanitation department. Uses: Sanitary, disposable super-absorbent pad for commode liners and bedpan liners Size: Fits all standard and bariatric commode liners, bedpan and toilet liners Dimensions: 10.63\u201d by 5.12\u201d Weight per pad: 0.05 pounds Materials: Cellulose pulp and acrylate copolymer What\u2019s Included: Vive Super Absorbent Pads - Set of 24 60 day guarantee UPC: Product Number: LVA2106PAK2 Shipping Weight: 1.27 pounds"
+     },
+     "price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Count",
+       "label": "48"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/Image_1b_50_2.jpg?v=1666180459"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52050336317803:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/52050336350571",
+     "sku": "LVA2106PAK100",
+     "title": "100",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features SUPER ABSORBENT PAD Each Vive Super Absorbent Pad minimizes spills and splashes when disposing of commode liners HOLDS UP TO 35 FL OZ. Ultra absorbent, each commode pad turns up to 35 fl oz of urine and liquid into a gel for easy disposal FITS ANY COMMODE LINER Our absorbent pads are sized to fit any commode liner or bedpan liner for sanitary use NEUTRALIZES ODORS Unscented, our commode pads effectively trap and neutralize unpleasant odors PACK OF 24 Includes 24 super-absorbent pads for camping, boats, RVs, bedside commode chairs and more Customer Reviews Based on 23 reviews Write a review How many super absorbent pads are in each package? There are 24 absorbent pads in each package. Are the pads absorbent? Yes! Each super-absorbent pad holds up to 35 fluid ounces. Are the commode pads unscented? Yes, the commode pads are unscented. Do the super-absorbent pads trap odors as well? Yes, the Vive Super Absorbent pads neutralize unpleasant odors. What are the dimensions of the absorbent pads? Each absorbent pad measures 10.63\u201d by 5.12\u201d. Will this work with my elongated commode pail? Yes, the absorbent pads are sized to fit all standard and bariatric pails. How do I dispose of the super-absorbent pad? Dispose of used super-absorbent pads in household trash, according to your local sanitation department. Uses: Sanitary, disposable super-absorbent pad for commode liners and bedpan liners Size: Fits all standard and bariatric commode liners, bedpan and toilet liners Dimensions: 10.63\u201d by 5.12\u201d Weight per pad: 0.05 pounds Materials: Cellulose pulp and acrylate copolymer What\u2019s Included: Vive Super Absorbent Pads - Set of 24 60 day guarantee UPC: Product Number: LVA2106PAK2 Shipping Weight: 1.27 pounds"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Count",
+       "label": "100"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/Image_1b_50_2.jpg?v=1666180459"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52050336350571:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Count",
+     "values": [
+      {
+       "label": "24"
+      },
+      {
+       "label": "48"
+      },
+      {
+       "label": "100"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/Image_1b_50_2.jpg?v=1666180459",
+     "alt_text": "super absorbent commode pads"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCM",
+    "BCO",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4588018729060",
+   "title": "Soft Toilet Seat Cushion",
+   "description": {
+    "html": "60 day guarantee Features ACCESSIBLE COMFORT FOR THOSE WITH LIMITED MOBILITY Soft, supportive toilet riser cushioning reduces pressure and discomfort\u2014ideal for individuals with disabilities, injuries, or limited mobility who need safer, more comfortable bathroom seating. CUSHIONING RISER SUPPORT Constructed with comfortable, rebound-tested foam that is resilient for comfortable, long-term use, our toilet seat cushion comes in two sizes--4\" and 2\". FITS ALL TOILETS Designed with a flat back to rest flush against the toilet tank, the seat cushion works with most standard and elongated toilets STRONG SUCTION CUP BASE The seat cushion base includes four strong suction cups for easy and secure installation on the existing toilet seat REMOVABLE COVER Zippered cover is easy to clean with household disinfectant wipes or solution EASY TO REMOVE FOR CLEANING A putty knife is included to allow for simple, touch-free removal for easier cleaning Customer Reviews Is the Vive Seat Cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushion provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: Total Product: 15\u201d (L) by 14.8\u201d (W) by 2\u201d (H) Inside Opening: 13.5\" (L) by 7.5\" (W) Materials: Dense foam Pleather cover with zipper Strong suction cups Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: 810041982018 Product Number: CSH1061WHT Shipping Weight: 0.7 pounds User Manual: Toilet Seat Cushion"
+   },
+   "url": "https://www.vivehealth.com/products/toilet-seat-cushion",
+   "handle": "toilet-seat-cushion",
+   "price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39788843892836",
+     "sku": "CSH1061WHT",
+     "title": "2\" Cushioning Foam",
+     "description": {
+      "html": "60 day guarantee Features ACCESSIBLE COMFORT FOR THOSE WITH LIMITED MOBILITY Soft, supportive toilet riser cushioning reduces pressure and discomfort\u2014ideal for individuals with disabilities, injuries, or limited mobility who need safer, more comfortable bathroom seating. CUSHIONING RISER SUPPORT Constructed with comfortable, rebound-tested foam that is resilient for comfortable, long-term use, our toilet seat cushion comes in two sizes--4\" and 2\". FITS ALL TOILETS Designed with a flat back to rest flush against the toilet tank, the seat cushion works with most standard and elongated toilets STRONG SUCTION CUP BASE The seat cushion base includes four strong suction cups for easy and secure installation on the existing toilet seat REMOVABLE COVER Zippered cover is easy to clean with household disinfectant wipes or solution EASY TO REMOVE FOR CLEANING A putty knife is included to allow for simple, touch-free removal for easier cleaning Customer Reviews Is the Vive Seat Cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushion provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: Total Product: 15\u201d (L) by 14.8\u201d (W) by 2\u201d (H) Inside Opening: 13.5\" (L) by 7.5\" (W) Materials: Dense foam Pleather cover with zipper Strong suction cups Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: 810041982018 Product Number: CSH1061WHT Shipping Weight: 0.7 pounds User Manual: Toilet Seat Cushion"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2\" Cushioning Foam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_6f30887e-94c2-41ab-9b90-70847d7dbffe.jpg?v=1776805271"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39788843892836:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39788843925604",
+     "sku": "CSH1079WHT",
+     "title": "4\" Cushioning Foam",
+     "description": {
+      "html": "60 day guarantee Features ACCESSIBLE COMFORT FOR THOSE WITH LIMITED MOBILITY Soft, supportive toilet riser cushioning reduces pressure and discomfort\u2014ideal for individuals with disabilities, injuries, or limited mobility who need safer, more comfortable bathroom seating. CUSHIONING RISER SUPPORT Constructed with comfortable, rebound-tested foam that is resilient for comfortable, long-term use, our toilet seat cushion comes in two sizes--4\" and 2\". FITS ALL TOILETS Designed with a flat back to rest flush against the toilet tank, the seat cushion works with most standard and elongated toilets STRONG SUCTION CUP BASE The seat cushion base includes four strong suction cups for easy and secure installation on the existing toilet seat REMOVABLE COVER Zippered cover is easy to clean with household disinfectant wipes or solution EASY TO REMOVE FOR CLEANING A putty knife is included to allow for simple, touch-free removal for easier cleaning Customer Reviews Is the Vive Seat Cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushion provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: Total Product: 15\u201d (L) by 14.8\u201d (W) by 2\u201d (H) Inside Opening: 13.5\" (L) by 7.5\" (W) Materials: Dense foam Pleather cover with zipper Strong suction cups Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: 810041982018 Product Number: CSH1061WHT Shipping Weight: 0.7 pounds User Manual: Toilet Seat Cushion"
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4\" Cushioning Foam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/51hdENKb8QL._AC_SL1500_f9878759-3d70-4fa7-8779-bfa5da95dfcf.jpg?v=1776805360"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39788843925604:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39835103133796",
+     "sku": "CSH1061BLK",
+     "title": "2\" Black",
+     "description": {
+      "html": "60 day guarantee Features ACCESSIBLE COMFORT FOR THOSE WITH LIMITED MOBILITY Soft, supportive toilet riser cushioning reduces pressure and discomfort\u2014ideal for individuals with disabilities, injuries, or limited mobility who need safer, more comfortable bathroom seating. CUSHIONING RISER SUPPORT Constructed with comfortable, rebound-tested foam that is resilient for comfortable, long-term use, our toilet seat cushion comes in two sizes--4\" and 2\". FITS ALL TOILETS Designed with a flat back to rest flush against the toilet tank, the seat cushion works with most standard and elongated toilets STRONG SUCTION CUP BASE The seat cushion base includes four strong suction cups for easy and secure installation on the existing toilet seat REMOVABLE COVER Zippered cover is easy to clean with household disinfectant wipes or solution EASY TO REMOVE FOR CLEANING A putty knife is included to allow for simple, touch-free removal for easier cleaning Customer Reviews Is the Vive Seat Cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushion provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: Total Product: 15\u201d (L) by 14.8\u201d (W) by 2\u201d (H) Inside Opening: 13.5\" (L) by 7.5\" (W) Materials: Dense foam Pleather cover with zipper Strong suction cups Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: 810041982018 Product Number: CSH1061WHT Shipping Weight: 0.7 pounds User Manual: Toilet Seat Cushion"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2\" Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_6f30887e-94c2-41ab-9b90-70847d7dbffe.jpg?v=1776805271"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39835103133796:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "2\" Cushioning Foam"
+      },
+      {
+       "label": "4\" Cushioning Foam"
+      },
+      {
+       "label": "2\" Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_6f30887e-94c2-41ab-9b90-70847d7dbffe.jpg?v=1776805271"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BTA",
+    "BTC",
+    "guarantee-60-day",
+    "Prop65",
+    "SBA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzBOVGc0TURFNE56STVNRFl3TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

@@ -1,0 +1,1728 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.vivehealth.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Vive Health",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.vivehealth.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "7634541"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "7634541"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/9664571268",
+   "title": "Tub Transfer Bench",
+   "description": {
+    "html": "Enter and Exit the Tub Safely Lightly textured large surface bench Reversible back and armrest Non-slip suction cups on interior feet Tool-Free Assembly 400 Pound Weight Capacity Lifetime Guarantee View Details > Prodcut Description Getting in and out of the tub can be a risky moment for seniors, post-surgery patients, and individuals with limited mobility. The Vive Tub Transfer Bench addresses that directly by letting you sit down outside the tub and slide across into the bathing area, keeping your weight supported throughout the entire transfer. It gives seniors, post-surgery patients and those with limited mobility a way to bathe safely without needing assistance. The lightweight aluminum frame is corrosion-resistant and holds up to 400 pounds through daily wet use. Suction cup feet lock onto the tub floor from inside while non-slip rubber caps keep the outer legs grounded on the bathroom floor, keeping the bench firm on both sides. The textured seat drains water through built-in holes and the reversible back with height-adjustable legs from 18.5\" to 23.5\" lets it fit almost any standard tub. It arrives semi-assembled with setup taking around 10 minutes. For additional wet floor protection around the bench, our Shower & Bath Mats are a practical add-on. Backed by Vive Health's warranty, this shower transfer bench is built for seniors, caregivers and anyone who needs a dependable long-term bathing solution at home. Browse our full Transfer Aids collection gives you everything needed for safer, more independent daily transfers. Features REDUCE THE RISK OF INJURY Promotes bathroom safety and independence supporting 400 pounds SIMPLE ASSEMBLY AND INSTALLATION Arrives semi-assembled for quick and easy placement in your bathroom ADJUST TO FIT The reversible seat back and adjustable leg height will accommodate almost any tub NON-SKID FEET Feel safe as you wash with strong suction cup feet and nonslip rubber caps CLEANSE IN COMFORT A textured seat with built-in drainage provides a stress-free bath DURABLE ALUMINUM FRAME The lightweight yet durable frame is corrosion-resistant and easily cleaned with any bathroom cleaner Customer Reviews Based on 23 reviews Write a review What are the dimensions of the transfer bench? The transfer bench is 30.5\u201d wide at the base and 22\u201d deep. What are the dimensions of the seat? The seat is 26.25\u201d long and 16\u201d wide. How wide is the seat back? The seat back is 16.5\u201d. How wide is the arm rest? The seat back is 11\u201d. How tall are the transfer bench legs? The transfer bench legs are height adjustable in \u00bd inch increments, from 18.5\u201d to 23.5\u201d. Will this transfer bench fit over a high-sided tub? The transfer bench by Vive can clear up to 21\" Is the transfer bench seat back reversible? Yes, the seat back can be used on either side of the transfer bench. Is the transfer bench seat back removable? Yes, the back is removable by pressing the two release buttons under the bench and sliding it out. How do I assemble my Vive Tub Transfer Bench? Is the transfer bench armrest reversible? Yes, the armrest can be used on either end of the transfer bench. Are the transfer bench legs removable? Yes, the legs are removable. How long will it take to assemble the transfer bench? The assembly should take about 10 minutes. Will I need tools to assemble the transfer bench? A Philip's head screw driver is needed to assemble your transfer bench. Why are there holes in the transfer bench seat? The holes conveniently drain water away so that you are not sitting in a puddle. Does the transfer bench stick outside of the tub? Yes, to use the transfer bench safely, the suction cupped legs should be in the tub and the rubber tipped legs should be outside of the tub. Will a shower curtain fit around the transfer bench? Most shower curtains will not fit around the bench and stay in the tub. For best results, use a handheld showerhead to control water spray. Can I remove one of the seat sections? No, the seat sections are not removable. How much weight will the transfer bench hold? The transfer bench will accommodate up to 400 pounds. How much does the transfer bench weigh? The shipping weight is 14.4 pounds. Uses: Transfer to and from wheelchair and tub safely and securely Bathe in comfort while seated Dimensions: 30.5 inches wide 22 inches deep The legs and seat adjust up to 23.5 inches high Materials: Lightweight and corrosion-resistant aluminum Cleaning Instructions: Wipe down with wet cloth and disinfectant Air dry What\u2019s Included: Transfer Bench Lifetime warranty UPC: 818323020014 Product Number: LVA1041 Shipping Weight: 14.4 pounds User Manual: Transfer Bench by Vive"
+   },
+   "url": "https://www.vivehealth.com/products/tub-transfer-bench",
+   "handle": "tub-transfer-bench",
+   "price_range": {
+    "min": {
+     "amount": 11999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 17999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/33200069316",
+     "sku": "LVA1041",
+     "title": "Default Title",
+     "description": {
+      "html": "Enter and Exit the Tub Safely Lightly textured large surface bench Reversible back and armrest Non-slip suction cups on interior feet Tool-Free Assembly 400 Pound Weight Capacity Lifetime Guarantee View Details > Prodcut Description Getting in and out of the tub can be a risky moment for seniors, post-surgery patients, and individuals with limited mobility. The Vive Tub Transfer Bench addresses that directly by letting you sit down outside the tub and slide across into the bathing area, keeping your weight supported throughout the entire transfer. It gives seniors, post-surgery patients and those with limited mobility a way to bathe safely without needing assistance. The lightweight aluminum frame is corrosion-resistant and holds up to 400 pounds through daily wet use. Suction cup feet lock onto the tub floor from inside while non-slip rubber caps keep the outer legs grounded on the bathroom floor, keeping the bench firm on both sides. The textured seat drains water through built-in holes and the reversible back with height-adjustable legs from 18.5\" to 23.5\" lets it fit almost any standard tub. It arrives semi-assembled with setup taking around 10 minutes. For additional wet floor protection around the bench, our Shower & Bath Mats are a practical add-on. Backed by Vive Health's warranty, this shower transfer bench is built for seniors, caregivers and anyone who needs a dependable long-term bathing solution at home. Browse our full Transfer Aids collection gives you everything needed for safer, more independent daily transfers. Features REDUCE THE RISK OF INJURY Promotes bathroom safety and independence supporting 400 pounds SIMPLE ASSEMBLY AND INSTALLATION Arrives semi-assembled for quick and easy placement in your bathroom ADJUST TO FIT The reversible seat back and adjustable leg height will accommodate almost any tub NON-SKID FEET Feel safe as you wash with strong suction cup feet and nonslip rubber caps CLEANSE IN COMFORT A textured seat with built-in drainage provides a stress-free bath DURABLE ALUMINUM FRAME The lightweight yet durable frame is corrosion-resistant and easily cleaned with any bathroom cleaner Customer Reviews Based on 23 reviews Write a review What are the dimensions of the transfer bench? The transfer bench is 30.5\u201d wide at the base and 22\u201d deep. What are the dimensions of the seat? The seat is 26.25\u201d long and 16\u201d wide. How wide is the seat back? The seat back is 16.5\u201d. How wide is the arm rest? The seat back is 11\u201d. How tall are the transfer bench legs? The transfer bench legs are height adjustable in \u00bd inch increments, from 18.5\u201d to 23.5\u201d. Will this transfer bench fit over a high-sided tub? The transfer bench by Vive can clear up to 21\" Is the transfer bench seat back reversible? Yes, the seat back can be used on either side of the transfer bench. Is the transfer bench seat back removable? Yes, the back is removable by pressing the two release buttons under the bench and sliding it out. How do I assemble my Vive Tub Transfer Bench? Is the transfer bench armrest reversible? Yes, the armrest can be used on either end of the transfer bench. Are the transfer bench legs removable? Yes, the legs are removable. How long will it take to assemble the transfer bench? The assembly should take about 10 minutes. Will I need tools to assemble the transfer bench? A Philip's head screw driver is needed to assemble your transfer bench. Why are there holes in the transfer bench seat? The holes conveniently drain water away so that you are not sitting in a puddle. Does the transfer bench stick outside of the tub? Yes, to use the transfer bench safely, the suction cupped legs should be in the tub and the rubber tipped legs should be outside of the tub. Will a shower curtain fit around the transfer bench? Most shower curtains will not fit around the bench and stay in the tub. For best results, use a handheld showerhead to control water spray. Can I remove one of the seat sections? No, the seat sections are not removable. How much weight will the transfer bench hold? The transfer bench will accommodate up to 400 pounds. How much does the transfer bench weigh? The shipping weight is 14.4 pounds. Uses: Transfer to and from wheelchair and tub safely and securely Bathe in comfort while seated Dimensions: 30.5 inches wide 22 inches deep The legs and seat adjust up to 23.5 inches high Materials: Lightweight and corrosion-resistant aluminum Cleaning Instructions: Wipe down with wet cloth and disinfectant Air dry What\u2019s Included: Transfer Bench Lifetime warranty UPC: 818323020014 Product Number: LVA1041 Shipping Weight: 14.4 pounds User Manual: Transfer Bench by Vive"
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/ORIGINAL_IMAGE.jpg?v=1772060470"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/33200069316:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/ORIGINAL_IMAGE.jpg?v=1772060470",
+     "alt_text": "White adjustable bath bench with backrest on a white background"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BSC",
+    "fsa-hsa",
+    "guarantee-lifetime",
+    "Prop65",
+    "TRA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59749793827",
+     "handle": "tub-transfer-bench",
+     "title": "Tub Transfer Benches",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7391859081316",
+   "title": "Sliding Shower Chair",
+   "description": {
+    "html": "One Year Guarantee View Details > Features DURABLE AND ADAPTABLE SHOWER ASSISTANCE The Vive Sliding Shower Chair is a robust and multipurpose mobility aid that supports up to 300 pounds. Ideal for aiding recovery after surgery, this device is ideal for rehabilitation from injuries, assisting those with chronic fatigue, improving balance, or offering support to the elderly. Its construction from a lightweight aluminum frame guarantees both strength and reliability for your safety and confidence RUST-RESISTANT ALUMINUM CONSTRUCTION Expertly crafted from anodized aluminum that resists corrosion, the shower chair ensures longevity and consistent performance. Enjoy your showers with peace of mind, free from concerns about rust or wear and tear, enhancing the durability of your bathing aid SMOOTH SLIDING WITH SECURE LOCKING FEATURE Experience ease of movement with the shower chair\u2019s seamless sliding functionality, coupled with a reliable locking system for safety. The chair\u2019s design includes a spacious seat, offering both comfort and convenience and making shower access smoother and safer TAILORABLE HEIGHT FOR INDIVIDUAL COMFORT The Vive Sliding Shower Chair offers customizable height adjustments, ranging from 21\u201d to 25,\u201d in half-inch increments. This feature allows users to find their ideal seating height, ensuring a comfortable and secure shower experience, and accommodating users of various statures ENHANCED SEATING FOR SHOWER SAFETY This chair\u2019s wide and comfortable seating area is designed to facilitate easier and safer entry and exit from the shower. Its thoughtful design not only prioritizes comfort but also enhances the overall safety and usability of the chair, catering to a wide range of mobility needs Customer Reviews Based on 23 reviews Write a review What is the weight capacity of the Vive Sliding Shower Chair? The chair is designed to support up to 300 pounds, providing sturdy and reliable support. Is the chair suitable for post-surgery recovery? Yes, it is perfect for post-surgery recovery, as well as for injury rehabilitation, managing chronic fatigue, and enhancing balance. Will the chair rust or corrode over time? No, it is constructed from corrosion-resistant anodized aluminum, which is designed to withstand frequent use without rusting or corroding. Can the chair\u2019s height be adjusted? Yes, the chair\u2019s height can be adjusted in half-inch increments, ranging from 21\u201d to 25\u201d, to accommodate different user heights. Is the Vive Sliding Shower Chair easy to use for elderly individuals? Yes. It is designed with senior users in mind, offering a dependable solution for shower mobility and assistance. How does the sliding mechanism work? The chair features a smooth sliding mechanism that allows effortless movement left and right along the sturdy frame, making it easy to position in the shower. Is the shower chair portable and easy to store? While the product description doesn\u2019t specify portability, its lightweight aluminum frame allows for simple handling and storage. What is included with the purchase of the Vive Sliding Shower Chair? The package includes 1 Vive Sliding Shower Chair. Does the Vive Sliding Chair come with any warranty? Yes, it comes with a 1-year guarantee, providing confidence in your purchase. Can the chair be used on different shower surfaces? The chair is designed to be versatile and should work well on various shower surfaces. However, always ensure stability before use. Uses: A shower bench/chair that sits on a slide so you can transfer in and out of the bath or shower while seated Dimensions: Seat: 18.5 inches in depth x 22.5 inches 30 x 8.3 x 19.1 inches 21-25 inches in height; overall length: 42 inches; maximum recommended weight: 300 lbs Weight: 16lbs Color: White Size(s): N/A Material(s): Plastic Aluminum Care Instructions: Spray down after use. Air dry or wipe dry What\u2019s Included: 1x Vive Sliding Shower Chair UPC:810113573700 Product Number: LVA3026WHT User Manual: Sliding Shower Chair"
+   },
+   "url": "https://www.vivehealth.com/products/sliding-shower-chair",
+   "handle": "sliding-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 15999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42835135070308",
+     "sku": "LVA3026WHT",
+     "title": "Default Title",
+     "description": {
+      "html": "One Year Guarantee View Details > Features DURABLE AND ADAPTABLE SHOWER ASSISTANCE The Vive Sliding Shower Chair is a robust and multipurpose mobility aid that supports up to 300 pounds. Ideal for aiding recovery after surgery, this device is ideal for rehabilitation from injuries, assisting those with chronic fatigue, improving balance, or offering support to the elderly. Its construction from a lightweight aluminum frame guarantees both strength and reliability for your safety and confidence RUST-RESISTANT ALUMINUM CONSTRUCTION Expertly crafted from anodized aluminum that resists corrosion, the shower chair ensures longevity and consistent performance. Enjoy your showers with peace of mind, free from concerns about rust or wear and tear, enhancing the durability of your bathing aid SMOOTH SLIDING WITH SECURE LOCKING FEATURE Experience ease of movement with the shower chair\u2019s seamless sliding functionality, coupled with a reliable locking system for safety. The chair\u2019s design includes a spacious seat, offering both comfort and convenience and making shower access smoother and safer TAILORABLE HEIGHT FOR INDIVIDUAL COMFORT The Vive Sliding Shower Chair offers customizable height adjustments, ranging from 21\u201d to 25,\u201d in half-inch increments. This feature allows users to find their ideal seating height, ensuring a comfortable and secure shower experience, and accommodating users of various statures ENHANCED SEATING FOR SHOWER SAFETY This chair\u2019s wide and comfortable seating area is designed to facilitate easier and safer entry and exit from the shower. Its thoughtful design not only prioritizes comfort but also enhances the overall safety and usability of the chair, catering to a wide range of mobility needs Customer Reviews Based on 23 reviews Write a review What is the weight capacity of the Vive Sliding Shower Chair? The chair is designed to support up to 300 pounds, providing sturdy and reliable support. Is the chair suitable for post-surgery recovery? Yes, it is perfect for post-surgery recovery, as well as for injury rehabilitation, managing chronic fatigue, and enhancing balance. Will the chair rust or corrode over time? No, it is constructed from corrosion-resistant anodized aluminum, which is designed to withstand frequent use without rusting or corroding. Can the chair\u2019s height be adjusted? Yes, the chair\u2019s height can be adjusted in half-inch increments, ranging from 21\u201d to 25\u201d, to accommodate different user heights. Is the Vive Sliding Shower Chair easy to use for elderly individuals? Yes. It is designed with senior users in mind, offering a dependable solution for shower mobility and assistance. How does the sliding mechanism work? The chair features a smooth sliding mechanism that allows effortless movement left and right along the sturdy frame, making it easy to position in the shower. Is the shower chair portable and easy to store? While the product description doesn\u2019t specify portability, its lightweight aluminum frame allows for simple handling and storage. What is included with the purchase of the Vive Sliding Shower Chair? The package includes 1 Vive Sliding Shower Chair. Does the Vive Sliding Chair come with any warranty? Yes, it comes with a 1-year guarantee, providing confidence in your purchase. Can the chair be used on different shower surfaces? The chair is designed to be versatile and should work well on various shower surfaces. However, always ensure stability before use. Uses: A shower bench/chair that sits on a slide so you can transfer in and out of the bath or shower while seated Dimensions: Seat: 18.5 inches in depth x 22.5 inches 30 x 8.3 x 19.1 inches 21-25 inches in height; overall length: 42 inches; maximum recommended weight: 300 lbs Weight: 16lbs Color: White Size(s): N/A Material(s): Plastic Aluminum Care Instructions: Spray down after use. Air dry or wipe dry What\u2019s Included: 1x Vive Sliding Shower Chair UPC:810113573700 Product Number: LVA3026WHT User Manual: Sliding Shower Chair"
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage_1b.jpg?v=1706642065"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/42835135070308:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage_1b.jpg?v=1706642065"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BSC",
+    "guarantee-one-year",
+    "TRA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/1469817454627",
+   "title": "Wooden Transfer Board",
+   "description": {
+    "html": "Easy Transfers For Anyone With Mobility Issues Reduce Caregiver Injury Rounded Corners and Cut-out Handles Lightweight and Portable Supports up to 400 Pounds 60 Day Guarantee View Details > Features TRANSFER WITH CONFIDENCE Aids in the safe and easy transfer between a bed, chair, wheelchair, car and more EXTRA LONG FOR ENHANCED SECURITY Ensures greater flexibility in positioning and gives caregivers more room to assist. TWO CONVENIENT GRIPS The cut-out handles on each end are rounded and sealed to protect hands and clothing EASY TRANSFER WITH TAPERED ENDS Each corner is rounded and sealed to increase patient comfort and eliminate scratches and snags STURDY WOODEN CONSTRUCTION Sealed and coated to prevent cracks and chipping and to make it easy for patient to slide on LIGHTWEIGHT AND PORTABLE The thin and compact board is easy to bring along on trips and outings Customer Reviews Based on 23 reviews Write a review What is the transfer board made of? The board is constructed from sealed and coated wood that is crack and chip resistant. How long is the wooden transfer board? The board is 30\u201d long. How wide is the wooden transfer board? The board is 7.5\u201d wide? How thick is the wooden transfer board? The board is .75\u201d thick. How much weight will the wooden transfer board hold? The transfer board will support up to 400 pounds. Can I wash the wooden transfer board? You may wipe down the transfer board with a towel. It is not recommended to immerse the board in water. Does the wooden transfer board have handles? Yes, the board features two cut out handles for easy use. Is the wooden transfer board durable? Yes, the wooden board is sealed and coated to make it resistant to cracking and chipping. How heavy is the wooden transfer board? The board is about 2.6 pounds. Will this help me move from my wheelchair to my bed? Yes, the board is designed to help those with mobility issues transfer from bed to chair or vice versa safely. Will this help me move my mom from her wheelchair to a regular chair without having to pick her up? Yes, the board is designed to help those with mobility issues transfer from wheelchair to chair or vice versa safely by sliding the patient over instead of lifting. Will the wood snag my clothes? No, the wood is coated and sealed so it will not snag clothes or furniture. Can I slide easily on the wooden transfer board? Yes, the wood is coated and sealed which makes it very easy to slide on. How do I use the wooden transfer board? It\u2019s very easy. Just place at least \u2153 of the board on the surface you are transferring from and at least \u2153 of the board on the surface you are transferring to. Support your body weight on the board and slowly slide from one end to the other. If you are unstable, make sure to have an assistant help you. Recommended Weight Limit: 400 pounds Uses: Use to transfer patients with mobility issues to and from a bed, wheelchair, car, chair, or commode Dimensions: Length: 30\u201d Width: 7.5\u201d Thickness: 0.75\u201d Materials: Sealed and coated lightweight wood Instructions: Place at least \u2153 of the board on the surface you are transferring from Place at least \u2153 of the board on the surface you are transferring to Support your body weight on the board and slowly move from one end to the other Care Instructions: Wipe down with dry cloth Keep dry What\u2019s Included: Wooden Transfer Board 60 Day Guarantee UPC: 818323021431 Product Number: RHB1037WOOD Shipping Weight: 2.6 pounds User Manual: Wooden Transfer Board Manual"
+   },
+   "url": "https://www.vivehealth.com/products/transfer-board",
+   "handle": "transfer-board",
+   "price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31277504036964",
+     "sku": "RHB1037WOOD",
+     "title": "30\" x 8\"",
+     "description": {
+      "html": "Easy Transfers For Anyone With Mobility Issues Reduce Caregiver Injury Rounded Corners and Cut-out Handles Lightweight and Portable Supports up to 400 Pounds 60 Day Guarantee View Details > Features TRANSFER WITH CONFIDENCE Aids in the safe and easy transfer between a bed, chair, wheelchair, car and more EXTRA LONG FOR ENHANCED SECURITY Ensures greater flexibility in positioning and gives caregivers more room to assist. TWO CONVENIENT GRIPS The cut-out handles on each end are rounded and sealed to protect hands and clothing EASY TRANSFER WITH TAPERED ENDS Each corner is rounded and sealed to increase patient comfort and eliminate scratches and snags STURDY WOODEN CONSTRUCTION Sealed and coated to prevent cracks and chipping and to make it easy for patient to slide on LIGHTWEIGHT AND PORTABLE The thin and compact board is easy to bring along on trips and outings Customer Reviews Based on 23 reviews Write a review What is the transfer board made of? The board is constructed from sealed and coated wood that is crack and chip resistant. How long is the wooden transfer board? The board is 30\u201d long. How wide is the wooden transfer board? The board is 7.5\u201d wide? How thick is the wooden transfer board? The board is .75\u201d thick. How much weight will the wooden transfer board hold? The transfer board will support up to 400 pounds. Can I wash the wooden transfer board? You may wipe down the transfer board with a towel. It is not recommended to immerse the board in water. Does the wooden transfer board have handles? Yes, the board features two cut out handles for easy use. Is the wooden transfer board durable? Yes, the wooden board is sealed and coated to make it resistant to cracking and chipping. How heavy is the wooden transfer board? The board is about 2.6 pounds. Will this help me move from my wheelchair to my bed? Yes, the board is designed to help those with mobility issues transfer from bed to chair or vice versa safely. Will this help me move my mom from her wheelchair to a regular chair without having to pick her up? Yes, the board is designed to help those with mobility issues transfer from wheelchair to chair or vice versa safely by sliding the patient over instead of lifting. Will the wood snag my clothes? No, the wood is coated and sealed so it will not snag clothes or furniture. Can I slide easily on the wooden transfer board? Yes, the wood is coated and sealed which makes it very easy to slide on. How do I use the wooden transfer board? It\u2019s very easy. Just place at least \u2153 of the board on the surface you are transferring from and at least \u2153 of the board on the surface you are transferring to. Support your body weight on the board and slowly slide from one end to the other. If you are unstable, make sure to have an assistant help you. Recommended Weight Limit: 400 pounds Uses: Use to transfer patients with mobility issues to and from a bed, wheelchair, car, chair, or commode Dimensions: Length: 30\u201d Width: 7.5\u201d Thickness: 0.75\u201d Materials: Sealed and coated lightweight wood Instructions: Place at least \u2153 of the board on the surface you are transferring from Place at least \u2153 of the board on the surface you are transferring to Support your body weight on the board and slowly move from one end to the other Care Instructions: Wipe down with dry cloth Keep dry What\u2019s Included: Wooden Transfer Board 60 Day Guarantee UPC: 818323021431 Product Number: RHB1037WOOD Shipping Weight: 2.6 pounds User Manual: Wooden Transfer Board Manual"
+     },
+     "price": {
+      "amount": 4399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "30\" x 8\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_99.jpg?v=1766156745"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/31277504036964:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/31277504069732",
+     "sku": "RHB1037WOODL",
+     "title": "36\" x 12\"",
+     "description": {
+      "html": "Easy Transfers For Anyone With Mobility Issues Reduce Caregiver Injury Rounded Corners and Cut-out Handles Lightweight and Portable Supports up to 400 Pounds 60 Day Guarantee View Details > Features TRANSFER WITH CONFIDENCE Aids in the safe and easy transfer between a bed, chair, wheelchair, car and more EXTRA LONG FOR ENHANCED SECURITY Ensures greater flexibility in positioning and gives caregivers more room to assist. TWO CONVENIENT GRIPS The cut-out handles on each end are rounded and sealed to protect hands and clothing EASY TRANSFER WITH TAPERED ENDS Each corner is rounded and sealed to increase patient comfort and eliminate scratches and snags STURDY WOODEN CONSTRUCTION Sealed and coated to prevent cracks and chipping and to make it easy for patient to slide on LIGHTWEIGHT AND PORTABLE The thin and compact board is easy to bring along on trips and outings Customer Reviews Based on 23 reviews Write a review What is the transfer board made of? The board is constructed from sealed and coated wood that is crack and chip resistant. How long is the wooden transfer board? The board is 30\u201d long. How wide is the wooden transfer board? The board is 7.5\u201d wide? How thick is the wooden transfer board? The board is .75\u201d thick. How much weight will the wooden transfer board hold? The transfer board will support up to 400 pounds. Can I wash the wooden transfer board? You may wipe down the transfer board with a towel. It is not recommended to immerse the board in water. Does the wooden transfer board have handles? Yes, the board features two cut out handles for easy use. Is the wooden transfer board durable? Yes, the wooden board is sealed and coated to make it resistant to cracking and chipping. How heavy is the wooden transfer board? The board is about 2.6 pounds. Will this help me move from my wheelchair to my bed? Yes, the board is designed to help those with mobility issues transfer from bed to chair or vice versa safely. Will this help me move my mom from her wheelchair to a regular chair without having to pick her up? Yes, the board is designed to help those with mobility issues transfer from wheelchair to chair or vice versa safely by sliding the patient over instead of lifting. Will the wood snag my clothes? No, the wood is coated and sealed so it will not snag clothes or furniture. Can I slide easily on the wooden transfer board? Yes, the wood is coated and sealed which makes it very easy to slide on. How do I use the wooden transfer board? It\u2019s very easy. Just place at least \u2153 of the board on the surface you are transferring from and at least \u2153 of the board on the surface you are transferring to. Support your body weight on the board and slowly slide from one end to the other. If you are unstable, make sure to have an assistant help you. Recommended Weight Limit: 400 pounds Uses: Use to transfer patients with mobility issues to and from a bed, wheelchair, car, chair, or commode Dimensions: Length: 30\u201d Width: 7.5\u201d Thickness: 0.75\u201d Materials: Sealed and coated lightweight wood Instructions: Place at least \u2153 of the board on the surface you are transferring from Place at least \u2153 of the board on the surface you are transferring to Support your body weight on the board and slowly move from one end to the other Care Instructions: Wipe down with dry cloth Keep dry What\u2019s Included: Wooden Transfer Board 60 Day Guarantee UPC: 818323021431 Product Number: RHB1037WOOD Shipping Weight: 2.6 pounds User Manual: Wooden Transfer Board Manual"
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "36\" x 12\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_99.jpg?v=1766156745"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/31277504069732:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/52695607378283",
+     "title": "24\" x 8\"",
+     "description": {
+      "html": "Easy Transfers For Anyone With Mobility Issues Reduce Caregiver Injury Rounded Corners and Cut-out Handles Lightweight and Portable Supports up to 400 Pounds 60 Day Guarantee View Details > Features TRANSFER WITH CONFIDENCE Aids in the safe and easy transfer between a bed, chair, wheelchair, car and more EXTRA LONG FOR ENHANCED SECURITY Ensures greater flexibility in positioning and gives caregivers more room to assist. TWO CONVENIENT GRIPS The cut-out handles on each end are rounded and sealed to protect hands and clothing EASY TRANSFER WITH TAPERED ENDS Each corner is rounded and sealed to increase patient comfort and eliminate scratches and snags STURDY WOODEN CONSTRUCTION Sealed and coated to prevent cracks and chipping and to make it easy for patient to slide on LIGHTWEIGHT AND PORTABLE The thin and compact board is easy to bring along on trips and outings Customer Reviews Based on 23 reviews Write a review What is the transfer board made of? The board is constructed from sealed and coated wood that is crack and chip resistant. How long is the wooden transfer board? The board is 30\u201d long. How wide is the wooden transfer board? The board is 7.5\u201d wide? How thick is the wooden transfer board? The board is .75\u201d thick. How much weight will the wooden transfer board hold? The transfer board will support up to 400 pounds. Can I wash the wooden transfer board? You may wipe down the transfer board with a towel. It is not recommended to immerse the board in water. Does the wooden transfer board have handles? Yes, the board features two cut out handles for easy use. Is the wooden transfer board durable? Yes, the wooden board is sealed and coated to make it resistant to cracking and chipping. How heavy is the wooden transfer board? The board is about 2.6 pounds. Will this help me move from my wheelchair to my bed? Yes, the board is designed to help those with mobility issues transfer from bed to chair or vice versa safely. Will this help me move my mom from her wheelchair to a regular chair without having to pick her up? Yes, the board is designed to help those with mobility issues transfer from wheelchair to chair or vice versa safely by sliding the patient over instead of lifting. Will the wood snag my clothes? No, the wood is coated and sealed so it will not snag clothes or furniture. Can I slide easily on the wooden transfer board? Yes, the wood is coated and sealed which makes it very easy to slide on. How do I use the wooden transfer board? It\u2019s very easy. Just place at least \u2153 of the board on the surface you are transferring from and at least \u2153 of the board on the surface you are transferring to. Support your body weight on the board and slowly slide from one end to the other. If you are unstable, make sure to have an assistant help you. Recommended Weight Limit: 400 pounds Uses: Use to transfer patients with mobility issues to and from a bed, wheelchair, car, chair, or commode Dimensions: Length: 30\u201d Width: 7.5\u201d Thickness: 0.75\u201d Materials: Sealed and coated lightweight wood Instructions: Place at least \u2153 of the board on the surface you are transferring from Place at least \u2153 of the board on the surface you are transferring to Support your body weight on the board and slowly move from one end to the other Care Instructions: Wipe down with dry cloth Keep dry What\u2019s Included: Wooden Transfer Board 60 Day Guarantee UPC: 818323021431 Product Number: RHB1037WOOD Shipping Weight: 2.6 pounds User Manual: Wooden Transfer Board Manual"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "24\" x 8\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_99.jpg?v=1766156745"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52695607378283:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "30\" x 8\""
+      },
+      {
+       "label": "36\" x 12\""
+      },
+      {
+       "label": "24\" x 8\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_99.jpg?v=1766156745",
+     "alt_text": "Wooden Transfer Board"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "fsa-hsa",
+    "guarantee-60-day",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30002400",
+     "handle": "mobility-aids",
+     "title": "Mobility",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59806810147",
+     "handle": "transfer-belts-aids",
+     "title": "Transfer Belts & Patient Transfer Aids",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Transfer Aids & Recommendations Here: Choosing A Transfer Device For additional questions or comments, contact our product specialist today.Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4858639384676",
+   "title": "Transfer Disc",
+   "description": {
+    "html": "30 day guarantee Features SAFELY TRANSFER WITHOUT TWISTING Great for those with limited mobility, the Vive transfer disc allows patients and loved ones to be transferred without twisting and turning SMOOTHLY ROTATES Utilizing steel bearings, the transfer disc smoothly rotates a full 360 degrees for assistance in any directions TEXTURED NON-SLIP PLATFORM Lightly textured, the platform is lined to created greater traction and security SAFE FOR ANY FLOOR Featuring a nonslip base, the transfer disc is safe for any flat surface including hardwood, tile and low-pile carpet DURABLE CONSTRUCTION Made with a strong composite material, the transfer disc safely supports up to 350 pounds Customer Reviews Based on 23 reviews Write a review Will the transfer disc still rotate on carpet? Yes! The Vive transfer disc is designed to safely rotate on low-pile carpet up to 0.5\u201d in height. Is this safe to use with a bath seat? It is not recommended for use on wet or slippery surfaces. Will the transfer disc work for someone with large feet? Yes! The Vive transfer disc measures 15.75\u2019 in diameter to accommodate large shoe sizes. What is the maximum weight limit for the transfer disc? The Vive transfer disc safely supports up to 350 pounds. Does the transfer disc work with ball bearings? Yes! The transfer disc utilizes steel bearings to smoothly rotate. Can the transfer disc be used on a chair? It is not recommended for use on a chair. Our swivel seat cushion provides a safe way to enter and exit chairs and seats without twisting and turning. Does the transfer disc turn easily? The Vive transfer disc turns smoothly and easily. For everyone\u2019s safety, it is always necessary for the caregiver to anchor the transfer disc with their foot. What are the dimensions of the transfer disc? The Vive transfer disc measures 15.75\u201d in diameter to accommodate most foot sizes. Uses: For safely transferring patients and loved ones from a bed to a wheelchair, commode and more Dimensions: Diameter: 15.75\u201d Height: 0.89\u201d Weight: 2.7 pounds Materials: ABS composite Steel bearings EVA textured material Care Instructions: Lightly spray the transfer disc with a disinfectant or similar solution and wipe clean Do not use harsh or abrasive chemicals What\u2019s Included: Vive Transfer Disc 30 day guarantee UPC: 810041982490 Product Number: RHB2022BLK Shipping Weight: 2.65 pounds User Manual: Transfer Disc"
+   },
+   "url": "https://www.vivehealth.com/products/transfer-disc",
+   "handle": "transfer-disc",
+   "price_range": {
+    "min": {
+     "amount": 6499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 6499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32971229364324",
+     "sku": "RHB2022BLK",
+     "title": "Default Title",
+     "description": {
+      "html": "30 day guarantee Features SAFELY TRANSFER WITHOUT TWISTING Great for those with limited mobility, the Vive transfer disc allows patients and loved ones to be transferred without twisting and turning SMOOTHLY ROTATES Utilizing steel bearings, the transfer disc smoothly rotates a full 360 degrees for assistance in any directions TEXTURED NON-SLIP PLATFORM Lightly textured, the platform is lined to created greater traction and security SAFE FOR ANY FLOOR Featuring a nonslip base, the transfer disc is safe for any flat surface including hardwood, tile and low-pile carpet DURABLE CONSTRUCTION Made with a strong composite material, the transfer disc safely supports up to 350 pounds Customer Reviews Based on 23 reviews Write a review Will the transfer disc still rotate on carpet? Yes! The Vive transfer disc is designed to safely rotate on low-pile carpet up to 0.5\u201d in height. Is this safe to use with a bath seat? It is not recommended for use on wet or slippery surfaces. Will the transfer disc work for someone with large feet? Yes! The Vive transfer disc measures 15.75\u2019 in diameter to accommodate large shoe sizes. What is the maximum weight limit for the transfer disc? The Vive transfer disc safely supports up to 350 pounds. Does the transfer disc work with ball bearings? Yes! The transfer disc utilizes steel bearings to smoothly rotate. Can the transfer disc be used on a chair? It is not recommended for use on a chair. Our swivel seat cushion provides a safe way to enter and exit chairs and seats without twisting and turning. Does the transfer disc turn easily? The Vive transfer disc turns smoothly and easily. For everyone\u2019s safety, it is always necessary for the caregiver to anchor the transfer disc with their foot. What are the dimensions of the transfer disc? The Vive transfer disc measures 15.75\u201d in diameter to accommodate most foot sizes. Uses: For safely transferring patients and loved ones from a bed to a wheelchair, commode and more Dimensions: Diameter: 15.75\u201d Height: 0.89\u201d Weight: 2.7 pounds Materials: ABS composite Steel bearings EVA textured material Care Instructions: Lightly spray the transfer disc with a disinfectant or similar solution and wipe clean Do not use harsh or abrasive chemicals What\u2019s Included: Vive Transfer Disc 30 day guarantee UPC: 810041982490 Product Number: RHB2022BLK Shipping Weight: 2.65 pounds User Manual: Transfer Disc"
+     },
+     "price": {
+      "amount": 6499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/main_image_55194f2c__YQ220.jpg?v=1623133272"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/32971229364324:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/main_image_55194f2c__YQ220.jpg?v=1623133272",
+     "alt_text": "Transfer Disc"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "guarantee-30-day",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30002400",
+     "handle": "mobility-aids",
+     "title": "Mobility",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59806810147",
+     "handle": "transfer-belts-aids",
+     "title": "Transfer Belts & Patient Transfer Aids",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Transfer Aids & Recommendations Here: Choosing A Transfer Device For additional questions or comments, contact our product specialist today.Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/1741889503267",
+   "title": "Transfer Blanket",
+   "description": {
+    "html": "One Year Guarantee View Details > Features TRANSFER, LIFT AND REPOSITION Minimizing the risk of injury to patients or caregivers, the transfer blanket assists in repositioning or transferring individuals safely ASSIST FROM ANY ANGLE Handles are placed to allow for easy assistance at any angle DURABLE NYLON CONSTRUCTION Featuring strong, reinforced stitching, the transfer blanket is made with a durable nylon material that safely supports up to 600 pounds STRONG HANDLES Lightly padded for greater comfort, each of the handles are reinforced for added strength WATERPROOF NON-SLIP EXTERIOR Water resistant, the blanket exterior is also non-slip for added security MACHINE WASHABLE Easy to clean, the transfer blanket is machine washable Customer Reviews Based on 23 reviews Write a review Can I use this transfer blanket to get someone out of bed? Yes, the Vive transfer blanket is useful for assisting patients and loved ones who have difficulties getting out of bed. Do I leave the transfer blanket under them all of the time? Yes, the blanket can be left on the bed or wheelchair for greater convenience. Is this safe for use on a hospital bed with an alternating air pressure mattress? Yes, the transfer blanket is safe to use on any surface. What are the dimensions of the transfer blanket? The small transfer blanket measures 35\u201d by 34\u201d. The large transfer blanket measures 38.5\u201d wide by 77\u201d in length. Which side faces the patient? The side of the blanket with the nylon webbing should be facing the patient. Is the blanket waterproof? Yes, the Vive transfer blanket is waterproof. How much weight will the transfer blanket hold? The small transfer blanket safely supports up to 300 pounds. The large transfer blanket safely supports up to 600 pounds. Does the transfer blanket make a crinkly noise? No, the nylon transfer blanket is quiet. Will we be able to lift someone from off of the floor with the blanket? Yes! The Vive transfer blanket will allow you to safely assist an individual who has fallen or slid to the floor. Is the transfer blanket washable? Yes! The transfer blanket is machine washable in cold water with a mild detergent. Allow to air dry completely before use. Can I use this blanket with a transfer board? Yes! The blanket is fitted with pockets to secure a transfer board for additional stability. How many handles are there around the blanket? The small transfer blanket has four handles. The large transfer blanket has fourteen handles including one at the head and one at the foot of the blanket. Uses: For safely transferring or repositioning a loved one or patient Dimensions: Standard size: 35\u201d by 34\u201d Large size: 77\u201d by 38.5\u201d Materials: Reinforced nylon fabric Warnings: Do not try to move a patient without proper training Review a patient\u2019s care plan to ensure the patient should be moved Do not try to move a patient if the patient does not have the strength to roll over or stay on their side Make sure you have the proper equipment and assistance before starting to move a patient Care Instructions: Machine wash in cold water with a mild detergent Air dry completely before use Do not bleach What\u2019s Included: Vive Transfer Blanket One year guarantee UPC: 818323024777 (Small); 818323024760 (Large) Product Number: MOB1022WHTS (Small); MOB1022WHTL (Large) Shipping Weight: 15.2 ounces (Small); 2.6 pounds (Large)"
+   },
+   "url": "https://www.vivehealth.com/products/patient-transfer-sheet-handles",
+   "handle": "patient-transfer-sheet-handles",
+   "price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7799,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39401678667876",
+     "sku": "MOB1022WHTS",
+     "title": "35\" x 34\"",
+     "description": {
+      "html": "One Year Guarantee View Details > Features TRANSFER, LIFT AND REPOSITION Minimizing the risk of injury to patients or caregivers, the transfer blanket assists in repositioning or transferring individuals safely ASSIST FROM ANY ANGLE Handles are placed to allow for easy assistance at any angle DURABLE NYLON CONSTRUCTION Featuring strong, reinforced stitching, the transfer blanket is made with a durable nylon material that safely supports up to 600 pounds STRONG HANDLES Lightly padded for greater comfort, each of the handles are reinforced for added strength WATERPROOF NON-SLIP EXTERIOR Water resistant, the blanket exterior is also non-slip for added security MACHINE WASHABLE Easy to clean, the transfer blanket is machine washable Customer Reviews Based on 23 reviews Write a review Can I use this transfer blanket to get someone out of bed? Yes, the Vive transfer blanket is useful for assisting patients and loved ones who have difficulties getting out of bed. Do I leave the transfer blanket under them all of the time? Yes, the blanket can be left on the bed or wheelchair for greater convenience. Is this safe for use on a hospital bed with an alternating air pressure mattress? Yes, the transfer blanket is safe to use on any surface. What are the dimensions of the transfer blanket? The small transfer blanket measures 35\u201d by 34\u201d. The large transfer blanket measures 38.5\u201d wide by 77\u201d in length. Which side faces the patient? The side of the blanket with the nylon webbing should be facing the patient. Is the blanket waterproof? Yes, the Vive transfer blanket is waterproof. How much weight will the transfer blanket hold? The small transfer blanket safely supports up to 300 pounds. The large transfer blanket safely supports up to 600 pounds. Does the transfer blanket make a crinkly noise? No, the nylon transfer blanket is quiet. Will we be able to lift someone from off of the floor with the blanket? Yes! The Vive transfer blanket will allow you to safely assist an individual who has fallen or slid to the floor. Is the transfer blanket washable? Yes! The transfer blanket is machine washable in cold water with a mild detergent. Allow to air dry completely before use. Can I use this blanket with a transfer board? Yes! The blanket is fitted with pockets to secure a transfer board for additional stability. How many handles are there around the blanket? The small transfer blanket has four handles. The large transfer blanket has fourteen handles including one at the head and one at the foot of the blanket. Uses: For safely transferring or repositioning a loved one or patient Dimensions: Standard size: 35\u201d by 34\u201d Large size: 77\u201d by 38.5\u201d Materials: Reinforced nylon fabric Warnings: Do not try to move a patient without proper training Review a patient\u2019s care plan to ensure the patient should be moved Do not try to move a patient if the patient does not have the strength to roll over or stay on their side Make sure you have the proper equipment and assistance before starting to move a patient Care Instructions: Machine wash in cold water with a mild detergent Air dry completely before use Do not bleach What\u2019s Included: Vive Transfer Blanket One year guarantee UPC: 818323024777 (Small); 818323024760 (Large) Product Number: MOB1022WHTS (Small); MOB1022WHTL (Large) Shipping Weight: 15.2 ounces (Small); 2.6 pounds (Large)"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "35\" x 34\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/small_transfer_blank_2SA7O_200ccbce-6f95-49bb-8490-b2e1428d381b.jpg?v=1629835605"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39401678667876:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39401678700644",
+     "sku": "MOB1022WHTL",
+     "title": "38.5\" x 77\"",
+     "description": {
+      "html": "One Year Guarantee View Details > Features TRANSFER, LIFT AND REPOSITION Minimizing the risk of injury to patients or caregivers, the transfer blanket assists in repositioning or transferring individuals safely ASSIST FROM ANY ANGLE Handles are placed to allow for easy assistance at any angle DURABLE NYLON CONSTRUCTION Featuring strong, reinforced stitching, the transfer blanket is made with a durable nylon material that safely supports up to 600 pounds STRONG HANDLES Lightly padded for greater comfort, each of the handles are reinforced for added strength WATERPROOF NON-SLIP EXTERIOR Water resistant, the blanket exterior is also non-slip for added security MACHINE WASHABLE Easy to clean, the transfer blanket is machine washable Customer Reviews Based on 23 reviews Write a review Can I use this transfer blanket to get someone out of bed? Yes, the Vive transfer blanket is useful for assisting patients and loved ones who have difficulties getting out of bed. Do I leave the transfer blanket under them all of the time? Yes, the blanket can be left on the bed or wheelchair for greater convenience. Is this safe for use on a hospital bed with an alternating air pressure mattress? Yes, the transfer blanket is safe to use on any surface. What are the dimensions of the transfer blanket? The small transfer blanket measures 35\u201d by 34\u201d. The large transfer blanket measures 38.5\u201d wide by 77\u201d in length. Which side faces the patient? The side of the blanket with the nylon webbing should be facing the patient. Is the blanket waterproof? Yes, the Vive transfer blanket is waterproof. How much weight will the transfer blanket hold? The small transfer blanket safely supports up to 300 pounds. The large transfer blanket safely supports up to 600 pounds. Does the transfer blanket make a crinkly noise? No, the nylon transfer blanket is quiet. Will we be able to lift someone from off of the floor with the blanket? Yes! The Vive transfer blanket will allow you to safely assist an individual who has fallen or slid to the floor. Is the transfer blanket washable? Yes! The transfer blanket is machine washable in cold water with a mild detergent. Allow to air dry completely before use. Can I use this blanket with a transfer board? Yes! The blanket is fitted with pockets to secure a transfer board for additional stability. How many handles are there around the blanket? The small transfer blanket has four handles. The large transfer blanket has fourteen handles including one at the head and one at the foot of the blanket. Uses: For safely transferring or repositioning a loved one or patient Dimensions: Standard size: 35\u201d by 34\u201d Large size: 77\u201d by 38.5\u201d Materials: Reinforced nylon fabric Warnings: Do not try to move a patient without proper training Review a patient\u2019s care plan to ensure the patient should be moved Do not try to move a patient if the patient does not have the strength to roll over or stay on their side Make sure you have the proper equipment and assistance before starting to move a patient Care Instructions: Machine wash in cold water with a mild detergent Air dry completely before use Do not bleach What\u2019s Included: Vive Transfer Blanket One year guarantee UPC: 818323024777 (Small); 818323024760 (Large) Product Number: MOB1022WHTS (Small); MOB1022WHTL (Large) Shipping Weight: 15.2 ounces (Small); 2.6 pounds (Large)"
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "38.5\" x 77\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/large_transfer_blank_0Gsq0.jpg?v=1622039579"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39401678700644:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "35\" x 34\""
+      },
+      {
+       "label": "38.5\" x 77\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/large_transfer_blank_0Gsq0.jpg?v=1622039579",
+     "alt_text": "Large Transfer Blanket with handles"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "fsa-hsa",
+    "guarantee-one-year",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30002400",
+     "handle": "mobility-aids",
+     "title": "Mobility",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59806810147",
+     "handle": "transfer-belts-aids",
+     "title": "Transfer Belts & Patient Transfer Aids",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Transfer Aids & Recommendations Here: Choosing A Transfer Device For additional questions or comments, contact our product specialist today.Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7501287358564",
+   "title": "Stand Assist Transfer Disc",
+   "description": {
+    "html": "Vive Guarantee View Details > Features COMFORT-FOCUSED STAND ASSIST HANDLE WITH VARIOUS HOLDS The Vive Stand Assist Transfer Disc is engineered for secure and efficient patient transfers, boasting ergonomic handles that offer superior grip and support. Coupled with cushioned knee rests and a base that resists slipping, this disc ensures a safe grip from any position, accommodating users of all heights with ease KNEE RESTS WITH CUSTOMIZABLE HEIGHT FOR OPTIMAL COMFORT This innovative transfer disc is fitted with knee rests that are both soft and adjustable, providing a comfortable support point for users during rotation or transfer. The customizable height feature guarantees comfort and mobility for people of any stature in various settings EFFORTLESS ROTATION WITH SMOOTH-SWIVEL ACTION Designed for ease of use, this transfer disc features a swiveling mechanism that facilitates fluid and gentle turns, reducing physical strain on caregivers while safeguarding the well-being of users. Its portability and flexibility make transitioning between different areas or seating options straightforward CONVENIENTLY MOBILE DESIGN FEATURING WHEELS Equipped with wheels for ease of movement, this transfer disc can be relocated effortlessly to wherever it\u2019s needed most, and stored away just as easily when not in use. Its design simplifies standing, sitting, and pivoting for easy transfers between chairs, wheelchairs, and other seating STREAMLINED MOBILITY AID FOR ENHANCED INDEPENDENCE As an essential tool for enhancing mobility, the Vive Stand Assist Transfer Disc simplifies the process of standing, sitting, and transferring for those who need assistance. Its thoughtful design incorporates handles for a steady grip, adjustable knee support for comfort, and a smooth swivel for easy turns, making it an indispensable aid for caregivers and users alike Customer Reviews Based on 23 reviews Write a review Can the Vive Stand Assist Transfer Disc be used by people of all heights? Yes, it features ergonomic handles and adjustable padded knee rests, making it suitable for individuals of any height to use comfortably. How does the transfer disc ensure safety during transfers? The disc is equipped with a slip-resistant turning base and a smooth-swivel design, ensuring safe and easy turns and pivots, reducing the strain on caregivers, and enhancing safety for the user. Is the Vive Stand Assist Transfer Disc portable? Absolutely, with built-in wheels, the transfer disc can be easily transported and stored, making it convenient to move between different locations or stores when not in use. How do I adjust the knee rests on the transfer disc? The transfer disc comes with an adjustable mechanism that allows you to change the height of the padded knee rests to accommodate users of any height, ensuring enhanced comfort and mobility. How do I adjust the knee rests on the transfer disc? The transfer disc comes with an adjustable mechanism that allows you to change the height of the padded knee rests to accommodate users of any height, ensuring enhanced comfort and mobility. Can the transfer disc be used on different types of flooring? Yes, its smooth swivel design and slip-resistant base make it versatile for use on various flooring types, facilitating easy and safe transfers to different chairs or other mobility aids. How can I clean the Vive Stand Assist Transfer Disc? The disc is designed for easy maintenance, thanks to its durable construction. Simply wipe it down with a damp cloth or mild disinfectant to keep it clean and fresh. Is this transfer disc suitable for use in both home and healthcare settings? Yes, an ergonomic design, ease of use, and portability make the Vive Stand Assist Transfer Disc ideal for a wide range of settings, including homes and healthcare facilities. Does the Vive Stand Assist Transfer Disc require any tools for assembly or installation? No, the transfer disc is designed for hassle-free installation with integrated armrest brackets, allowing for quick attachment or removal without the need for tools. What is included with the purchase of the Vive Stand Assist Transfer Disc? The package includes one Vive Stand Assist Transfer Disc, with straightforward assembly directions and all parts included. Is this good for people with disablities / handicapped people? Yes, this product is specifically designed for individuals who require ongoing assistance with daily mobility, such as standing up. Built with long-term durability in mind, the transport stand assist supports those who will continue to need reliable aid for years to come. Uses: A device for helping a patient stand up and then turn them around so they can be moved from one chair to another or a bed to a chair, etc Dimensions: Disc - 15.5\u201d diameter Height - 50\u201d Knee Pad height - 4\u201d to 21\u201d height Weight: 20lbs Color: Grey Size(s): One size Material(s): Steel Care Instructions: Gently wipe with a dry rag What\u2019s Included: 1x Vive Stand Assist Transfer Disc UPC: 810113574912 Product Number: LVA3041BLK"
+   },
+   "url": "https://www.vivehealth.com/products/stand-assist-transfer-disc",
+   "handle": "stand-assist-transfer-disc",
+   "price_range": {
+    "min": {
+     "amount": 26999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 34999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 34999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43240436236388",
+     "sku": "LVA3041BLK",
+     "title": "Default Title",
+     "description": {
+      "html": "Vive Guarantee View Details > Features COMFORT-FOCUSED STAND ASSIST HANDLE WITH VARIOUS HOLDS The Vive Stand Assist Transfer Disc is engineered for secure and efficient patient transfers, boasting ergonomic handles that offer superior grip and support. Coupled with cushioned knee rests and a base that resists slipping, this disc ensures a safe grip from any position, accommodating users of all heights with ease KNEE RESTS WITH CUSTOMIZABLE HEIGHT FOR OPTIMAL COMFORT This innovative transfer disc is fitted with knee rests that are both soft and adjustable, providing a comfortable support point for users during rotation or transfer. The customizable height feature guarantees comfort and mobility for people of any stature in various settings EFFORTLESS ROTATION WITH SMOOTH-SWIVEL ACTION Designed for ease of use, this transfer disc features a swiveling mechanism that facilitates fluid and gentle turns, reducing physical strain on caregivers while safeguarding the well-being of users. Its portability and flexibility make transitioning between different areas or seating options straightforward CONVENIENTLY MOBILE DESIGN FEATURING WHEELS Equipped with wheels for ease of movement, this transfer disc can be relocated effortlessly to wherever it\u2019s needed most, and stored away just as easily when not in use. Its design simplifies standing, sitting, and pivoting for easy transfers between chairs, wheelchairs, and other seating STREAMLINED MOBILITY AID FOR ENHANCED INDEPENDENCE As an essential tool for enhancing mobility, the Vive Stand Assist Transfer Disc simplifies the process of standing, sitting, and transferring for those who need assistance. Its thoughtful design incorporates handles for a steady grip, adjustable knee support for comfort, and a smooth swivel for easy turns, making it an indispensable aid for caregivers and users alike Customer Reviews Based on 23 reviews Write a review Can the Vive Stand Assist Transfer Disc be used by people of all heights? Yes, it features ergonomic handles and adjustable padded knee rests, making it suitable for individuals of any height to use comfortably. How does the transfer disc ensure safety during transfers? The disc is equipped with a slip-resistant turning base and a smooth-swivel design, ensuring safe and easy turns and pivots, reducing the strain on caregivers, and enhancing safety for the user. Is the Vive Stand Assist Transfer Disc portable? Absolutely, with built-in wheels, the transfer disc can be easily transported and stored, making it convenient to move between different locations or stores when not in use. How do I adjust the knee rests on the transfer disc? The transfer disc comes with an adjustable mechanism that allows you to change the height of the padded knee rests to accommodate users of any height, ensuring enhanced comfort and mobility. How do I adjust the knee rests on the transfer disc? The transfer disc comes with an adjustable mechanism that allows you to change the height of the padded knee rests to accommodate users of any height, ensuring enhanced comfort and mobility. Can the transfer disc be used on different types of flooring? Yes, its smooth swivel design and slip-resistant base make it versatile for use on various flooring types, facilitating easy and safe transfers to different chairs or other mobility aids. How can I clean the Vive Stand Assist Transfer Disc? The disc is designed for easy maintenance, thanks to its durable construction. Simply wipe it down with a damp cloth or mild disinfectant to keep it clean and fresh. Is this transfer disc suitable for use in both home and healthcare settings? Yes, an ergonomic design, ease of use, and portability make the Vive Stand Assist Transfer Disc ideal for a wide range of settings, including homes and healthcare facilities. Does the Vive Stand Assist Transfer Disc require any tools for assembly or installation? No, the transfer disc is designed for hassle-free installation with integrated armrest brackets, allowing for quick attachment or removal without the need for tools. What is included with the purchase of the Vive Stand Assist Transfer Disc? The package includes one Vive Stand Assist Transfer Disc, with straightforward assembly directions and all parts included. Is this good for people with disablities / handicapped people? Yes, this product is specifically designed for individuals who require ongoing assistance with daily mobility, such as standing up. Built with long-term durability in mind, the transport stand assist supports those who will continue to need reliable aid for years to come. Uses: A device for helping a patient stand up and then turn them around so they can be moved from one chair to another or a bed to a chair, etc Dimensions: Disc - 15.5\u201d diameter Height - 50\u201d Knee Pad height - 4\u201d to 21\u201d height Weight: 20lbs Color: Grey Size(s): One size Material(s): Steel Care Instructions: Gently wipe with a dry rag What\u2019s Included: 1x Vive Stand Assist Transfer Disc UPC: 810113574912 Product Number: LVA3041BLK"
+     },
+     "price": {
+      "amount": 26999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 34999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/Image_1_23.jpg?v=1732046671"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/43240436236388:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/Image_1_23.jpg?v=1732046671",
+     "alt_text": "Stand Assist Transfer Disc"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59806810147",
+     "handle": "transfer-belts-aids",
+     "title": "Transfer Belts & Patient Transfer Aids",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Transfer Aids & Recommendations Here: Choosing A Transfer Device For additional questions or comments, contact our product specialist today.Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7407124906084",
+   "title": "Reclining Shower Commode Transport Chair",
+   "description": {
+    "html": "One-Year Guarantee View Details > Product Description Simplify daily care routines with the Vive shower commode chair, a 3-in-1 design that combines a transport chair, shower chair and commode into one convenient unit. Built for post-operative, injured or immobile individuals, it weighs only 32 lbs while supporting up to 300 lbs, with smooth-rolling wheels and a reclining function that make everyday care far less demanding. The 35-degree reclining headrest makes hair washing more comfortable and the built-in commode opening with removable bucket means toileting is handled right in the chair. As a reclining shower wheelchair, the rust-proof aluminum frame holds up reliably in wet environments without losing stability. If you're looking at more bathroom care options, our bathroom safety collection has a range of products worth browsing. Seat height, headrest and footrest all adjust to fit different body types and the locking wheels keep this rolling commode shower chair firmly in place during transfers or bathing. Caregivers can roll it easily between rooms, making daily routines safer and more manageable for everyone involved. For broader transfer and patient care support, our Transfer Benches are also worth considering. Features Versatile 3-in-1 Design: Functions as transport chair, shower chair and commode\u2014one comprehensive solution for multiple daily care needs Adjustable 35-Degree Recline: Customizable tilt positioning enhances comfort during showers, hair washing and relaxation for optimal user experience Heavy-Duty 300 lb Capacity: Robust aluminum frame provides exceptional support for individuals recovering from surgery, injury, or requiring daily assistance Rust-Resistant Construction: Lightweight aluminum design withstands wet shower environments while remaining easy to maneuver at just 32 pounds Fully Adjustable Comfort: Customizable seat height, headrest position and footrest distance accommodate various body types and personal preferences Secure Locking Wheels: Smooth-rolling casters enable easy transport and lock firmly in place for safe, stable transfers and bathroom use Customer Reviews Based on 23 reviews Write a review What weight can the Vive Reclining Shower Commode Transport Chair support? The chair is built with a robust frame that can safely support up to 300 pounds, making it suitable for individuals recovering from surgery or those needing extra support during bathroom activities. Can the chair be adjusted for different reclining positions? Yes, the chair features a customizable recline up to 35 degrees, allowing you to adjust the tilt for various activities such as showering or relaxing, enhancing comfort and convenience for the user. What are the different functions of this chair? This versatile chair functions as a transport chair, a shower chair, and a commode, providing a three-in-one solution that adapts to your various daily needs. Is the chair comfortable for prolonged sitting? Absolutely. The chair is designed with adjustable features and a wide, cushioned seat, ensuring personalized comfort and support, making it ideal for prolonged use. How do I maintain the Vive Reclining Shower Commode Transport Chair? The chair is easy to maintain due to its high-quality, water-resistant materials. Simply wipe it down with standard cleaning agents to keep it hygienic and in top condition. What guarantees come with the Vive Reclining Shower Commode Transport Chair? The chair comes with a 1-year guarantee on the frame, a 6-month guarantee on the wheels, brakes, and accessories, and a 90-day guarantee on the upholstery, ensuring your purchase is protected. How does the reclining feature enhance the chair\u2019s usability? The reclining feature allows for easy adjustment of the user\u2019s position, which is particularly beneficial for tasks like hair washing or achieving a comfortable posture for relaxation and recovery. What makes the chair suitable for shower use? Constructed from lightweight, rust-resistant aluminum, the chair is ideal for use in wet environments like showers, providing durability and resistance against moisture. Can the chair be easily transported or stored? Yes, the lightweight design and locking wheels make it easy to maneuver and transport the chair across different surfaces, and it locks in place securely for safe transfers. What accessories are included with the chair? The chair includes a commode bucket, enhancing its functionality as a commode chair, and providing a comprehensive care solution in one package. Uses: 3-in-1 reclining shower chair, commode and transport chair Ideal for post-surgery or injury recovery Daily bathroom and shower assistance Room-to-room patient transport Perfect for individuals with limited mobility Dimensions: Seat Size: 17.25\" x 17\" Overall Height: 46\"-52\" Headrest Height from Seat: 23\"-27\" Seat Height: 22\"-24\" Footrest Distance from Seat: 15\"-17\" Commode Opening: 7.5\"-11\" Commode Bucket Size: 13\" x 8\" x 4.5\" Overall Size: 36\" x 18\" Weight: 32 lbs Maximum Weight Capacity: 300 pounds Color: White Materials: Lightweight aluminum frame Rust-resistant construction Water-resistant components High-quality, durable materials Features: Adjustable recline up to 35 degrees Multiple height adjustments Locking wheels for safety Smooth-rolling casters Built-in commode opening Removable commode bucket Adjustable headrest Adjustable footrests Padded armrests Wide, cushioned seat Care Instructions: Rinse any remaining soap after use Wipe down gently with standard cleaning agents Easy to maintain and keep hygienic Water-resistant materials simplify cleaning What's Included: 1x Reclining Shower Commode Transport Chair 1x Commode bucket User manual Guarantee Policy: Frame: 1 year Wheels: 6 months Brakes: 6 months Accessories: 6 months Upholstery: 90 days Product Information: UPC: 810113574219 Product Number: MOB1082WHT User Manual: Reclining Shower Commode"
+   },
+   "url": "https://www.vivehealth.com/products/reclining-shower-commode-transport-chair",
+   "handle": "reclining-shower-commode-transport-chair",
+   "price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51618401583467",
+     "sku": "MOB1082WHT",
+     "title": "White",
+     "description": {
+      "html": "One-Year Guarantee View Details > Product Description Simplify daily care routines with the Vive shower commode chair, a 3-in-1 design that combines a transport chair, shower chair and commode into one convenient unit. Built for post-operative, injured or immobile individuals, it weighs only 32 lbs while supporting up to 300 lbs, with smooth-rolling wheels and a reclining function that make everyday care far less demanding. The 35-degree reclining headrest makes hair washing more comfortable and the built-in commode opening with removable bucket means toileting is handled right in the chair. As a reclining shower wheelchair, the rust-proof aluminum frame holds up reliably in wet environments without losing stability. If you're looking at more bathroom care options, our bathroom safety collection has a range of products worth browsing. Seat height, headrest and footrest all adjust to fit different body types and the locking wheels keep this rolling commode shower chair firmly in place during transfers or bathing. Caregivers can roll it easily between rooms, making daily routines safer and more manageable for everyone involved. For broader transfer and patient care support, our Transfer Benches are also worth considering. Features Versatile 3-in-1 Design: Functions as transport chair, shower chair and commode\u2014one comprehensive solution for multiple daily care needs Adjustable 35-Degree Recline: Customizable tilt positioning enhances comfort during showers, hair washing and relaxation for optimal user experience Heavy-Duty 300 lb Capacity: Robust aluminum frame provides exceptional support for individuals recovering from surgery, injury, or requiring daily assistance Rust-Resistant Construction: Lightweight aluminum design withstands wet shower environments while remaining easy to maneuver at just 32 pounds Fully Adjustable Comfort: Customizable seat height, headrest position and footrest distance accommodate various body types and personal preferences Secure Locking Wheels: Smooth-rolling casters enable easy transport and lock firmly in place for safe, stable transfers and bathroom use Customer Reviews Based on 23 reviews Write a review What weight can the Vive Reclining Shower Commode Transport Chair support? The chair is built with a robust frame that can safely support up to 300 pounds, making it suitable for individuals recovering from surgery or those needing extra support during bathroom activities. Can the chair be adjusted for different reclining positions? Yes, the chair features a customizable recline up to 35 degrees, allowing you to adjust the tilt for various activities such as showering or relaxing, enhancing comfort and convenience for the user. What are the different functions of this chair? This versatile chair functions as a transport chair, a shower chair, and a commode, providing a three-in-one solution that adapts to your various daily needs. Is the chair comfortable for prolonged sitting? Absolutely. The chair is designed with adjustable features and a wide, cushioned seat, ensuring personalized comfort and support, making it ideal for prolonged use. How do I maintain the Vive Reclining Shower Commode Transport Chair? The chair is easy to maintain due to its high-quality, water-resistant materials. Simply wipe it down with standard cleaning agents to keep it hygienic and in top condition. What guarantees come with the Vive Reclining Shower Commode Transport Chair? The chair comes with a 1-year guarantee on the frame, a 6-month guarantee on the wheels, brakes, and accessories, and a 90-day guarantee on the upholstery, ensuring your purchase is protected. How does the reclining feature enhance the chair\u2019s usability? The reclining feature allows for easy adjustment of the user\u2019s position, which is particularly beneficial for tasks like hair washing or achieving a comfortable posture for relaxation and recovery. What makes the chair suitable for shower use? Constructed from lightweight, rust-resistant aluminum, the chair is ideal for use in wet environments like showers, providing durability and resistance against moisture. Can the chair be easily transported or stored? Yes, the lightweight design and locking wheels make it easy to maneuver and transport the chair across different surfaces, and it locks in place securely for safe transfers. What accessories are included with the chair? The chair includes a commode bucket, enhancing its functionality as a commode chair, and providing a comprehensive care solution in one package. Uses: 3-in-1 reclining shower chair, commode and transport chair Ideal for post-surgery or injury recovery Daily bathroom and shower assistance Room-to-room patient transport Perfect for individuals with limited mobility Dimensions: Seat Size: 17.25\" x 17\" Overall Height: 46\"-52\" Headrest Height from Seat: 23\"-27\" Seat Height: 22\"-24\" Footrest Distance from Seat: 15\"-17\" Commode Opening: 7.5\"-11\" Commode Bucket Size: 13\" x 8\" x 4.5\" Overall Size: 36\" x 18\" Weight: 32 lbs Maximum Weight Capacity: 300 pounds Color: White Materials: Lightweight aluminum frame Rust-resistant construction Water-resistant components High-quality, durable materials Features: Adjustable recline up to 35 degrees Multiple height adjustments Locking wheels for safety Smooth-rolling casters Built-in commode opening Removable commode bucket Adjustable headrest Adjustable footrests Padded armrests Wide, cushioned seat Care Instructions: Rinse any remaining soap after use Wipe down gently with standard cleaning agents Easy to maintain and keep hygienic Water-resistant materials simplify cleaning What's Included: 1x Reclining Shower Commode Transport Chair 1x Commode bucket User manual Guarantee Policy: Frame: 1 year Wheels: 6 months Brakes: 6 months Accessories: 6 months Upholstery: 90 days Product Information: UPC: 810113574219 Product Number: MOB1082WHT User Manual: Reclining Shower Commode"
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage1.jpg?v=1707767186"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/51618401583467:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage1.jpg?v=1707767186"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCO",
+    "BSC",
+    "guarantee-one-year",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4895896076388",
+   "title": "Transfer Sling",
+   "description": {
+    "html": "60 day guarantee Features SAFELY LIFT AND TRANSFER Assist those with limited mobility to transfer from the bed, wheelchair, car or commode TEN PADDED HANDLES Each of the transfer sling\u2019s black handles are textured for a secure grip and padded for greater comfort EXTRA WIDE DESIGN Designed with a 9.5\u201d-inch width to evenly distribute pressure for maximum patient comfort NON-SLIP LINING The transfer sling is lined with a nonslip material to prevent riding up, sliding or bunching ADJUSTABLE WAIST BELT Featuring a quick-release buckle, the transfer sling\u2019s waist belt provides added security when transferring patients and loved ones PREMIUM MATERIALS Made with a strong polyester to safely support up to 330 pounds Customer Reviews Based on 23 reviews Write a review Can the Vive transfer sling be used for lifting? The Vive transfer sling can be used to assist individuals when rising from bed, but not designed to assist in lifting from the floor. What is the maximum weight the transfer sling can take? The Vive transfer sling safely supports up to 330 pounds. How many handles does the transfer sling have? The Vive transfer sling includes ten handles for safely assisting in any situation. Does the transfer sling have a buckle? Yes! The Vive transfer sling includes an optional waist belt with a quick-release buckle for added security when transferring a patient or loved one. Will this help when getting a loved one out of the car? Yes, the transfer sling can be used to help those with limited mobility when exiting a car. Does the Vive transfer sling contain latex? Yes, the transfer sling does contain latex. What are the dimensions of the transfer sling? The Vive transfer sling measures 35\u201d by 9.5\u201d. Uses: For safely transferring and assisting non-ambulatory individuals Dimensions: Transfer sling: 35\u201d x 9.5\u201d Handles: 5.19\u201d by 0.83\u201d Waist belt: 59.06\u201d to 66.14\u201d Total weight: 1.08 pounds Materials: Polyester Foam PVC Care Instructions: Spot clean as needed with a damp cloth and mild detergent Allow to air dry completely before use What\u2019s Included: Vive Transfer Sling 60 day guarantee UPC: 810041982476 Product Number: LVA2056BLK Shipping Weight: 1.59 pounds"
+   },
+   "url": "https://www.vivehealth.com/products/transfer-sling",
+   "handle": "transfer-sling",
+   "price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/33053283876964",
+     "sku": "LVA2056BLK",
+     "title": "Default Title",
+     "description": {
+      "html": "60 day guarantee Features SAFELY LIFT AND TRANSFER Assist those with limited mobility to transfer from the bed, wheelchair, car or commode TEN PADDED HANDLES Each of the transfer sling\u2019s black handles are textured for a secure grip and padded for greater comfort EXTRA WIDE DESIGN Designed with a 9.5\u201d-inch width to evenly distribute pressure for maximum patient comfort NON-SLIP LINING The transfer sling is lined with a nonslip material to prevent riding up, sliding or bunching ADJUSTABLE WAIST BELT Featuring a quick-release buckle, the transfer sling\u2019s waist belt provides added security when transferring patients and loved ones PREMIUM MATERIALS Made with a strong polyester to safely support up to 330 pounds Customer Reviews Based on 23 reviews Write a review Can the Vive transfer sling be used for lifting? The Vive transfer sling can be used to assist individuals when rising from bed, but not designed to assist in lifting from the floor. What is the maximum weight the transfer sling can take? The Vive transfer sling safely supports up to 330 pounds. How many handles does the transfer sling have? The Vive transfer sling includes ten handles for safely assisting in any situation. Does the transfer sling have a buckle? Yes! The Vive transfer sling includes an optional waist belt with a quick-release buckle for added security when transferring a patient or loved one. Will this help when getting a loved one out of the car? Yes, the transfer sling can be used to help those with limited mobility when exiting a car. Does the Vive transfer sling contain latex? Yes, the transfer sling does contain latex. What are the dimensions of the transfer sling? The Vive transfer sling measures 35\u201d by 9.5\u201d. Uses: For safely transferring and assisting non-ambulatory individuals Dimensions: Transfer sling: 35\u201d x 9.5\u201d Handles: 5.19\u201d by 0.83\u201d Waist belt: 59.06\u201d to 66.14\u201d Total weight: 1.08 pounds Materials: Polyester Foam PVC Care Instructions: Spot clean as needed with a damp cloth and mild detergent Allow to air dry completely before use What\u2019s Included: Vive Transfer Sling 60 day guarantee UPC: 810041982476 Product Number: LVA2056BLK Shipping Weight: 1.59 pounds"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1-2026-01-09T071815.418.jpg?v=1767956471"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/33053283876964:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1-2026-01-09T071815.418.jpg?v=1767956471",
+     "alt_text": "Transfer Sling"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "fsa-hsa",
+    "guarantee-60-day",
+    "MPL",
+    "MTA",
+    "Prop65"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30002400",
+     "handle": "mobility-aids",
+     "title": "Mobility",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59806810147",
+     "handle": "transfer-belts-aids",
+     "title": "Transfer Belts & Patient Transfer Aids",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Transfer Aids & Recommendations Here: Choosing A Transfer Device For additional questions or comments, contact our product specialist today.Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7822380859492",
+   "title": "Vive Tubular Slide Sheet - Patient Transfer Aid",
+   "description": {
+    "html": "60-day guarantee Product Features: ENHANCED PROTECTION FOR PATIENTS AND CAREGIVERS ALIKE The Vive Tubular Slide Sheet revolutionizes patient transfers, delivering a smooth, frictionless surface that simplifies moving patients. This essential device significantly lowers the risk of injuries, ensuring a safer transition for individuals between various resting positions, to help caregivers and patients equally. FLEXIBLE SOLUTION FOR ANY SETTING This slide sheet is designed to be highly versatile, meeting the needs of different care environments including hospitals, nursing homes, and residential settings. Its ability to efficiently assist in shifting, turning, and repositioning individuals makes it an indispensable tool for any care plan. DURABLE DESIGN FOR SUSTAINED USE Crafted from premium-quality polyester, the Vive Tubular Slide Sheet is built to last, accommodating frequent usage without compromising its integrity. It is easy to clean, simply machine-wash or hand-wash it with mild detergent and hang it to dry. PRIORITIZE COMFORT AND PREVENT SKIN IRRITATION With patient patient comfort a priority, this slide sheet is made from a gentle material that is comfortable yet durable. By evenly distributing the user\u2019s weight, this sheet reduces the risk of pressure sores and ensures comfort during repositioning and transfers. EASY TO KEEP CLEAN TO ENSURE PROPER HYGIENE With water-resistant polyester, this sheet resists stains and spills. Ready for immediate reuse with minimal maintenance, this sheet can be wiped down or washed between uses. Uphold the highest hygiene standards in critical care and medical environments, or ensure comfort and wellbeing at home. FAQ: What safety features does the Vive Tubular Slide Sheet offer? The Vive Slide Sheet provides a smooth, low-friction surface that reduces the risk of injury during patient transfers, ensuring a safer handling experience for patients and caregivers across different environments. Can the Vive Slide Sheet be used in different healthcare settings? Yes. Its versatile design is great for various healthcare environments including hospitals, nursing homes, and home care settings, supporting lateral shifts, rotations, and other patient movements. How durable is the Vive Tubular Slide Sheet? This slide sheet is made from high-quality polyester, designed for frequent use. It\u2019s easy to maintain and clean, ensuring long-lasting durability and adherence to health standards. Is the slide sheet comfortable for individuals who are lying on it? It is crafted from soft, breathable fabric that evenly distributes weight to reduce pressure points, enhancing comfort during transfers and repositioning. What sizes and adjustments does the slide sheet offer? Choose from small (28\u201d x 28\u201d), medium (47\u201d x 28\u201d), or large (79\u201d x 39\u201d) to ensure your sheet fits your bed. How can I keep the slide sheet clean? The slide sheet can be easily wiped down with a damp cloth or machine-washed with mild detergent and air-dried. This keeps the sheet clean and hygienic for repeated use. Is the Vive Slide Sheet easy to use for caregivers? Yes. Its low-friction surface and ergonomic design simplify moving patients, reducing physical strain on caregivers and improving the transfer experience. What is the Vive Guarantee for the slide sheet? This slide sheet comes with a 60-day guarantee, offering you peace of mind and confidence in the quality and reliability of your purchase. How does the slide sheet promote faster recovery for patients? By ensuring safer, more comfortable transfers and reducing the risk of injury and skin irritation, the slide sheet supports a more pleasant care experience, aiding the patient\u2019s recovery process. Can the slide sheet be used for patients of all sizes? Yes, the flexible and adaptable design of the Vive Slide Sheet makes it ideal for patients of various sizes, ensuring a comfortable and secure fit for nearly everyone. Specs Uses: A polyester slide sheet to aid in moving patients to multiple positions on a flat surface. Dimensions: Small: 28\u201d x 28\u201d Medium: 47\u201d x 28\u201d Large: 79\u201d x 39\u201d Weight: Small: 0.14 lbs Medium: 0.23 lbs Large: 0.55 lbs Color Medical blue Size(s) Small, Medium, Large Material (s) 100% polyester Care Instructions: Machine or hand wash with mild detergent. Air dry. What\u2019s Included: 1x Tubular Slide Sheet"
+   },
+   "url": "https://www.vivehealth.com/products/tubular-slide-sheet",
+   "handle": "tubular-slide-sheet",
+   "price_range": {
+    "min": {
+     "amount": 1299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44102319964260",
+     "sku": "RHB2108MBLUS",
+     "title": "Small - 28\" x 28\"",
+     "description": {
+      "html": "60-day guarantee Product Features: ENHANCED PROTECTION FOR PATIENTS AND CAREGIVERS ALIKE The Vive Tubular Slide Sheet revolutionizes patient transfers, delivering a smooth, frictionless surface that simplifies moving patients. This essential device significantly lowers the risk of injuries, ensuring a safer transition for individuals between various resting positions, to help caregivers and patients equally. FLEXIBLE SOLUTION FOR ANY SETTING This slide sheet is designed to be highly versatile, meeting the needs of different care environments including hospitals, nursing homes, and residential settings. Its ability to efficiently assist in shifting, turning, and repositioning individuals makes it an indispensable tool for any care plan. DURABLE DESIGN FOR SUSTAINED USE Crafted from premium-quality polyester, the Vive Tubular Slide Sheet is built to last, accommodating frequent usage without compromising its integrity. It is easy to clean, simply machine-wash or hand-wash it with mild detergent and hang it to dry. PRIORITIZE COMFORT AND PREVENT SKIN IRRITATION With patient patient comfort a priority, this slide sheet is made from a gentle material that is comfortable yet durable. By evenly distributing the user\u2019s weight, this sheet reduces the risk of pressure sores and ensures comfort during repositioning and transfers. EASY TO KEEP CLEAN TO ENSURE PROPER HYGIENE With water-resistant polyester, this sheet resists stains and spills. Ready for immediate reuse with minimal maintenance, this sheet can be wiped down or washed between uses. Uphold the highest hygiene standards in critical care and medical environments, or ensure comfort and wellbeing at home. FAQ: What safety features does the Vive Tubular Slide Sheet offer? The Vive Slide Sheet provides a smooth, low-friction surface that reduces the risk of injury during patient transfers, ensuring a safer handling experience for patients and caregivers across different environments. Can the Vive Slide Sheet be used in different healthcare settings? Yes. Its versatile design is great for various healthcare environments including hospitals, nursing homes, and home care settings, supporting lateral shifts, rotations, and other patient movements. How durable is the Vive Tubular Slide Sheet? This slide sheet is made from high-quality polyester, designed for frequent use. It\u2019s easy to maintain and clean, ensuring long-lasting durability and adherence to health standards. Is the slide sheet comfortable for individuals who are lying on it? It is crafted from soft, breathable fabric that evenly distributes weight to reduce pressure points, enhancing comfort during transfers and repositioning. What sizes and adjustments does the slide sheet offer? Choose from small (28\u201d x 28\u201d), medium (47\u201d x 28\u201d), or large (79\u201d x 39\u201d) to ensure your sheet fits your bed. How can I keep the slide sheet clean? The slide sheet can be easily wiped down with a damp cloth or machine-washed with mild detergent and air-dried. This keeps the sheet clean and hygienic for repeated use. Is the Vive Slide Sheet easy to use for caregivers? Yes. Its low-friction surface and ergonomic design simplify moving patients, reducing physical strain on caregivers and improving the transfer experience. What is the Vive Guarantee for the slide sheet? This slide sheet comes with a 60-day guarantee, offering you peace of mind and confidence in the quality and reliability of your purchase. How does the slide sheet promote faster recovery for patients? By ensuring safer, more comfortable transfers and reducing the risk of injury and skin irritation, the slide sheet supports a more pleasant care experience, aiding the patient\u2019s recovery process. Can the slide sheet be used for patients of all sizes? Yes, the flexible and adaptable design of the Vive Slide Sheet makes it ideal for patients of various sizes, ensuring a comfortable and secure fit for nearly everyone. Specs Uses: A polyester slide sheet to aid in moving patients to multiple positions on a flat surface. Dimensions: Small: 28\u201d x 28\u201d Medium: 47\u201d x 28\u201d Large: 79\u201d x 39\u201d Weight: Small: 0.14 lbs Medium: 0.23 lbs Large: 0.55 lbs Color Medical blue Size(s) Small, Medium, Large Material (s) 100% polyester Care Instructions: Machine or hand wash with mild detergent. Air dry. What\u2019s Included: 1x Tubular Slide Sheet"
+     },
+     "price": {
+      "amount": 1299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Small - 28\" x 28\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/TubularSlideSheetEdits_1_c384a4d3-d2eb-4b24-bdcf-d5846d1e0e79.jpg?v=1723493200"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/44102319964260:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44102319997028",
+     "sku": "RHB2108MBLUM",
+     "title": "Medium - 28\" x 47\"",
+     "description": {
+      "html": "60-day guarantee Product Features: ENHANCED PROTECTION FOR PATIENTS AND CAREGIVERS ALIKE The Vive Tubular Slide Sheet revolutionizes patient transfers, delivering a smooth, frictionless surface that simplifies moving patients. This essential device significantly lowers the risk of injuries, ensuring a safer transition for individuals between various resting positions, to help caregivers and patients equally. FLEXIBLE SOLUTION FOR ANY SETTING This slide sheet is designed to be highly versatile, meeting the needs of different care environments including hospitals, nursing homes, and residential settings. Its ability to efficiently assist in shifting, turning, and repositioning individuals makes it an indispensable tool for any care plan. DURABLE DESIGN FOR SUSTAINED USE Crafted from premium-quality polyester, the Vive Tubular Slide Sheet is built to last, accommodating frequent usage without compromising its integrity. It is easy to clean, simply machine-wash or hand-wash it with mild detergent and hang it to dry. PRIORITIZE COMFORT AND PREVENT SKIN IRRITATION With patient patient comfort a priority, this slide sheet is made from a gentle material that is comfortable yet durable. By evenly distributing the user\u2019s weight, this sheet reduces the risk of pressure sores and ensures comfort during repositioning and transfers. EASY TO KEEP CLEAN TO ENSURE PROPER HYGIENE With water-resistant polyester, this sheet resists stains and spills. Ready for immediate reuse with minimal maintenance, this sheet can be wiped down or washed between uses. Uphold the highest hygiene standards in critical care and medical environments, or ensure comfort and wellbeing at home. FAQ: What safety features does the Vive Tubular Slide Sheet offer? The Vive Slide Sheet provides a smooth, low-friction surface that reduces the risk of injury during patient transfers, ensuring a safer handling experience for patients and caregivers across different environments. Can the Vive Slide Sheet be used in different healthcare settings? Yes. Its versatile design is great for various healthcare environments including hospitals, nursing homes, and home care settings, supporting lateral shifts, rotations, and other patient movements. How durable is the Vive Tubular Slide Sheet? This slide sheet is made from high-quality polyester, designed for frequent use. It\u2019s easy to maintain and clean, ensuring long-lasting durability and adherence to health standards. Is the slide sheet comfortable for individuals who are lying on it? It is crafted from soft, breathable fabric that evenly distributes weight to reduce pressure points, enhancing comfort during transfers and repositioning. What sizes and adjustments does the slide sheet offer? Choose from small (28\u201d x 28\u201d), medium (47\u201d x 28\u201d), or large (79\u201d x 39\u201d) to ensure your sheet fits your bed. How can I keep the slide sheet clean? The slide sheet can be easily wiped down with a damp cloth or machine-washed with mild detergent and air-dried. This keeps the sheet clean and hygienic for repeated use. Is the Vive Slide Sheet easy to use for caregivers? Yes. Its low-friction surface and ergonomic design simplify moving patients, reducing physical strain on caregivers and improving the transfer experience. What is the Vive Guarantee for the slide sheet? This slide sheet comes with a 60-day guarantee, offering you peace of mind and confidence in the quality and reliability of your purchase. How does the slide sheet promote faster recovery for patients? By ensuring safer, more comfortable transfers and reducing the risk of injury and skin irritation, the slide sheet supports a more pleasant care experience, aiding the patient\u2019s recovery process. Can the slide sheet be used for patients of all sizes? Yes, the flexible and adaptable design of the Vive Slide Sheet makes it ideal for patients of various sizes, ensuring a comfortable and secure fit for nearly everyone. Specs Uses: A polyester slide sheet to aid in moving patients to multiple positions on a flat surface. Dimensions: Small: 28\u201d x 28\u201d Medium: 47\u201d x 28\u201d Large: 79\u201d x 39\u201d Weight: Small: 0.14 lbs Medium: 0.23 lbs Large: 0.55 lbs Color Medical blue Size(s) Small, Medium, Large Material (s) 100% polyester Care Instructions: Machine or hand wash with mild detergent. Air dry. What\u2019s Included: 1x Tubular Slide Sheet"
+     },
+     "price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Medium - 28\" x 47\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/TubularSlideSheetEdits_1_c384a4d3-d2eb-4b24-bdcf-d5846d1e0e79.jpg?v=1723493200"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/44102319997028:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44102320029796",
+     "sku": "RHB2108MBLUL",
+     "title": "Large - 39\" x 79\"",
+     "description": {
+      "html": "60-day guarantee Product Features: ENHANCED PROTECTION FOR PATIENTS AND CAREGIVERS ALIKE The Vive Tubular Slide Sheet revolutionizes patient transfers, delivering a smooth, frictionless surface that simplifies moving patients. This essential device significantly lowers the risk of injuries, ensuring a safer transition for individuals between various resting positions, to help caregivers and patients equally. FLEXIBLE SOLUTION FOR ANY SETTING This slide sheet is designed to be highly versatile, meeting the needs of different care environments including hospitals, nursing homes, and residential settings. Its ability to efficiently assist in shifting, turning, and repositioning individuals makes it an indispensable tool for any care plan. DURABLE DESIGN FOR SUSTAINED USE Crafted from premium-quality polyester, the Vive Tubular Slide Sheet is built to last, accommodating frequent usage without compromising its integrity. It is easy to clean, simply machine-wash or hand-wash it with mild detergent and hang it to dry. PRIORITIZE COMFORT AND PREVENT SKIN IRRITATION With patient patient comfort a priority, this slide sheet is made from a gentle material that is comfortable yet durable. By evenly distributing the user\u2019s weight, this sheet reduces the risk of pressure sores and ensures comfort during repositioning and transfers. EASY TO KEEP CLEAN TO ENSURE PROPER HYGIENE With water-resistant polyester, this sheet resists stains and spills. Ready for immediate reuse with minimal maintenance, this sheet can be wiped down or washed between uses. Uphold the highest hygiene standards in critical care and medical environments, or ensure comfort and wellbeing at home. FAQ: What safety features does the Vive Tubular Slide Sheet offer? The Vive Slide Sheet provides a smooth, low-friction surface that reduces the risk of injury during patient transfers, ensuring a safer handling experience for patients and caregivers across different environments. Can the Vive Slide Sheet be used in different healthcare settings? Yes. Its versatile design is great for various healthcare environments including hospitals, nursing homes, and home care settings, supporting lateral shifts, rotations, and other patient movements. How durable is the Vive Tubular Slide Sheet? This slide sheet is made from high-quality polyester, designed for frequent use. It\u2019s easy to maintain and clean, ensuring long-lasting durability and adherence to health standards. Is the slide sheet comfortable for individuals who are lying on it? It is crafted from soft, breathable fabric that evenly distributes weight to reduce pressure points, enhancing comfort during transfers and repositioning. What sizes and adjustments does the slide sheet offer? Choose from small (28\u201d x 28\u201d), medium (47\u201d x 28\u201d), or large (79\u201d x 39\u201d) to ensure your sheet fits your bed. How can I keep the slide sheet clean? The slide sheet can be easily wiped down with a damp cloth or machine-washed with mild detergent and air-dried. This keeps the sheet clean and hygienic for repeated use. Is the Vive Slide Sheet easy to use for caregivers? Yes. Its low-friction surface and ergonomic design simplify moving patients, reducing physical strain on caregivers and improving the transfer experience. What is the Vive Guarantee for the slide sheet? This slide sheet comes with a 60-day guarantee, offering you peace of mind and confidence in the quality and reliability of your purchase. How does the slide sheet promote faster recovery for patients? By ensuring safer, more comfortable transfers and reducing the risk of injury and skin irritation, the slide sheet supports a more pleasant care experience, aiding the patient\u2019s recovery process. Can the slide sheet be used for patients of all sizes? Yes, the flexible and adaptable design of the Vive Slide Sheet makes it ideal for patients of various sizes, ensuring a comfortable and secure fit for nearly everyone. Specs Uses: A polyester slide sheet to aid in moving patients to multiple positions on a flat surface. Dimensions: Small: 28\u201d x 28\u201d Medium: 47\u201d x 28\u201d Large: 79\u201d x 39\u201d Weight: Small: 0.14 lbs Medium: 0.23 lbs Large: 0.55 lbs Color Medical blue Size(s) Small, Medium, Large Material (s) 100% polyester Care Instructions: Machine or hand wash with mild detergent. Air dry. What\u2019s Included: 1x Tubular Slide Sheet"
+     },
+     "price": {
+      "amount": 1899,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Large - 39\" x 79\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/TubularSlideSheetEdits_1_c384a4d3-d2eb-4b24-bdcf-d5846d1e0e79.jpg?v=1723493200"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/44102320029796:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "Small - 28\" x 28\""
+      },
+      {
+       "label": "Medium - 28\" x 47\""
+      },
+      {
+       "label": "Large - 39\" x 79\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/TubularSlideSheetEdits_1_c384a4d3-d2eb-4b24-bdcf-d5846d1e0e79.jpg?v=1723493200",
+     "alt_text": "Patient Transfer Slide"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/bi-19-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BPL",
+    "BTB",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/160661733476",
+     "handle": "vive",
+     "title": "Vive",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14878639915371",
+   "title": "Transfer Belt with Handles",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features MULTIPLE GRIP OPTIONS Seven padded handles offer versatile hand positions for caregivers, allowing secure control during transfers, assisted walking, and guided movement from any angle. SOFT PADDED HANDLES Comfortable hand-grips reduce strain and pressure, providing a secure, ergonomic hold for both the caregiver and the user during routine mobility assistance. SECURE QUICK BUCKLE Durable plastic buckle fastens easily and releases instantly when needed, ensuring fast setup and reliable safety during transfers or walking support. DURABLE REINFORCED MATERIAL Crafted from heavy-duty nylon, this belt offers long-lasting strength and dependable performance for daily use in home care or professional environments. ADJUSTABLE WAIST FIT Easily adjusts to fit waist sizes 30\u201d\u201354\u201d, providing a customized, secure fit that accommodates a wide range of caregivers and users. Customer Reviews Based on 23 reviews Write a review What is the Vive Transfer Belt? The Vive Transfer Belt with Handles is a padded caregiver belt designed to assist with safe transfers, walking support, and guided mobility for patients or loved ones. How many handles does it have? This transfer belt features seven strategically placed padded handles, providing multiple grip options for better control during transfers and mobility assistance. Are the handles comfortable to hold? Yes, all handles are cushioned with soft padding to reduce strain and provide a secure, comfortable grip for both caregivers and users. How does the buckle work? The belt includes a durable plastic buckle that fastens securely and releases quickly, making it easy to put on, adjust, or remove as needed. What materials is the belt made from? The transfer belt is constructed from reinforced heavy-duty nylon, offering long-lasting strength and dependable performance for daily caregiver use. Can the belt fit different waist sizes? Yes, the adjustable design fits waist sizes from 30\u201d to 54\u201d, allowing caregivers to customize the fit for a variety of body types. Is the belt suitable for professional caregivers? Absolutely, the Vive Transfer Belt is ideal for nurses, therapists, and family caregivers who assist individuals with limited mobility during transfers or walking. How does a multi-handle design help? Multiple handles allow caregivers to maintain better control from different angles, providing safer assistance during lifting, walking, or repositioning activities. How durable is the belt? Made with reinforced nylon and high-quality stitching, the belt is built to withstand frequent use in home care or professional settings. What is included with the purchase? Each package includes one Vive Transfer Belt with Handles, complete with the secure plastic buckle for easy setup and reliable support. Uses: A transfer belt with handles for safe transfers, walking, and assistance during rehabilitation exercises. Dimensions: With straps unextended: [LxW] {78cm x 10cm [30.71in x 3.94in]} With straps extended: [LxW] {141cm x 10cm [55.51in x 3.94in]} Strap L x W: 68.5cm x 5cm (26.97in x 1.97in) Weight: 0.29kg (0.64lbs) Color Black Size(s) One size, Waist 30\u201d- 54\u201d Material (s) Nylon, POM Care Instructions: Storage: Store the belt in a cool, dry place away from direct sunlight when not in use. Maintenance / Cleaning: Spot clean with a damp cloth. Air dry. What\u2019s Included: 1x Transfer Belt With Handles - Plastic Buckle UPC: Product Number: RHB3073 Shipping Weight:"
+   },
+   "url": "https://www.vivehealth.com/products/transfer-belt-with-handles-plastic-buckle",
+   "handle": "transfer-belt-with-handles-plastic-buckle",
+   "price_range": {
+    "min": {
+     "amount": 1999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/52771632742763",
+     "sku": "RHB3073BLK",
+     "title": "Default Title",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features MULTIPLE GRIP OPTIONS Seven padded handles offer versatile hand positions for caregivers, allowing secure control during transfers, assisted walking, and guided movement from any angle. SOFT PADDED HANDLES Comfortable hand-grips reduce strain and pressure, providing a secure, ergonomic hold for both the caregiver and the user during routine mobility assistance. SECURE QUICK BUCKLE Durable plastic buckle fastens easily and releases instantly when needed, ensuring fast setup and reliable safety during transfers or walking support. DURABLE REINFORCED MATERIAL Crafted from heavy-duty nylon, this belt offers long-lasting strength and dependable performance for daily use in home care or professional environments. ADJUSTABLE WAIST FIT Easily adjusts to fit waist sizes 30\u201d\u201354\u201d, providing a customized, secure fit that accommodates a wide range of caregivers and users. Customer Reviews Based on 23 reviews Write a review What is the Vive Transfer Belt? The Vive Transfer Belt with Handles is a padded caregiver belt designed to assist with safe transfers, walking support, and guided mobility for patients or loved ones. How many handles does it have? This transfer belt features seven strategically placed padded handles, providing multiple grip options for better control during transfers and mobility assistance. Are the handles comfortable to hold? Yes, all handles are cushioned with soft padding to reduce strain and provide a secure, comfortable grip for both caregivers and users. How does the buckle work? The belt includes a durable plastic buckle that fastens securely and releases quickly, making it easy to put on, adjust, or remove as needed. What materials is the belt made from? The transfer belt is constructed from reinforced heavy-duty nylon, offering long-lasting strength and dependable performance for daily caregiver use. Can the belt fit different waist sizes? Yes, the adjustable design fits waist sizes from 30\u201d to 54\u201d, allowing caregivers to customize the fit for a variety of body types. Is the belt suitable for professional caregivers? Absolutely, the Vive Transfer Belt is ideal for nurses, therapists, and family caregivers who assist individuals with limited mobility during transfers or walking. How does a multi-handle design help? Multiple handles allow caregivers to maintain better control from different angles, providing safer assistance during lifting, walking, or repositioning activities. How durable is the belt? Made with reinforced nylon and high-quality stitching, the belt is built to withstand frequent use in home care or professional settings. What is included with the purchase? Each package includes one Vive Transfer Belt with Handles, complete with the secure plastic buckle for easy setup and reliable support. Uses: A transfer belt with handles for safe transfers, walking, and assistance during rehabilitation exercises. Dimensions: With straps unextended: [LxW] {78cm x 10cm [30.71in x 3.94in]} With straps extended: [LxW] {141cm x 10cm [55.51in x 3.94in]} Strap L x W: 68.5cm x 5cm (26.97in x 1.97in) Weight: 0.29kg (0.64lbs) Color Black Size(s) One size, Waist 30\u201d- 54\u201d Material (s) Nylon, POM Care Instructions: Storage: Store the belt in a cool, dry place away from direct sunlight when not in use. Maintenance / Cleaning: Spot clean with a damp cloth. Air dry. What\u2019s Included: 1x Transfer Belt With Handles - Plastic Buckle UPC: Product Number: RHB3073 Shipping Weight:"
+     },
+     "price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_72.jpg?v=1782493318"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52771632742763:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_72.jpg?v=1782493318",
+     "alt_text": "Transfer Belt with Handles"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/bi-19-4-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BTB",
+    "guarantee-60-day",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59806810147",
+     "handle": "transfer-belts-aids",
+     "title": "Transfer Belts & Patient Transfer Aids",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Transfer Aids & Recommendations Here: Choosing A Transfer Device For additional questions or comments, contact our product specialist today.Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqb3hORGczT0RZek9Ua3hOVE0zTVN3aWNtVjJaWEp6WlNJNmRISjFaU3dpYjJabWMyVjBJam81ZlE9PSIsInBhZ2UiOjJ9"
+ },
+ "messages": []
+}

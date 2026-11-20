@@ -1,0 +1,1770 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://carex.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Carex",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "carex.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "24065048681"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "24065048681"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4121098977385",
+   "title": "Carex Textured Wall Grab Bar",
+   "description": {
+    "html": "Significantly improve your bathroom safety and independence with the Carex Textured Wall Grab Bar. Bathroom grab bars provide additional security when using a commode or bathing. The bathroom safety bar is made of heavy-duty, durable steel tubing for a reliable source of support. It features a beautiful diamond-knurled texture for extra gripping. The tub safety bar is available in 12\", 16\", 18\", 24\", and 32\" sizes. Professional installation is recommended. Made of durable, heavy-duty steel. Bathtub safety bars offer an additional level of support. They help those with issues sitting or standing. The shower safety handle is made of rust-resistant steel guaranteed to last. Available in 12\", 16\", 18\", 24\", and 32\" length. Smaller shower safety bars offer a compact and subtle source of support. Larger bathtub grab bars are excellent for those in need of a more significant support surface. Diamond-knurled texture for gripping. The shower support bar's diamond-knurled texture keeps your hand from slipping, an essential feature when being used in the shower or tub. Secures to any wall via steel wood screws. For anyone in need of a strong support surface, the bathtub safety handle is ideal. It securely screws into the wall for a tight and reliable source of support. Supports up to 250 lbs. Bathroom safety grab bars offer stability when transitioning in and out of the shower. The stainless steel grab bar can be installed vertically and horizontally with no risk of rust or corrosion from water. Professional installation recommended. Because screws are required for installation, we do recommend hiring a professional to install. If this is not a possibility, we recommend our suction cup grab bars. Weight Capacity: 250 lb. Product Weight: 12\": 1.2 lb. Installation: Yes Package Dims (h x w x d): 12\": 17\" x 3.25\" x 3.25\" Product Dims (h x w x d): 12\": 1.5\" x 12\" x 1.25\" Package Weight: 12\": 1.52 lb. Color: Chrome Material: Textured Steel Installation Instructions (PDF)"
+   },
+   "url": "https://carex.com/products/carex-textured-wall-grab-bar-12",
+   "handle": "carex-textured-wall-grab-bar-12",
+   "price_range": {
+    "min": {
+     "amount": 2355,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3203,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30977232928873",
+     "sku": "FGB20900 0000",
+     "title": "12\"",
+     "description": {
+      "html": "Significantly improve your bathroom safety and independence with the Carex Textured Wall Grab Bar. Bathroom grab bars provide additional security when using a commode or bathing. The bathroom safety bar is made of heavy-duty, durable steel tubing for a reliable source of support. It features a beautiful diamond-knurled texture for extra gripping. The tub safety bar is available in 12\", 16\", 18\", 24\", and 32\" sizes. Professional installation is recommended. Made of durable, heavy-duty steel. Bathtub safety bars offer an additional level of support. They help those with issues sitting or standing. The shower safety handle is made of rust-resistant steel guaranteed to last. Available in 12\", 16\", 18\", 24\", and 32\" length. Smaller shower safety bars offer a compact and subtle source of support. Larger bathtub grab bars are excellent for those in need of a more significant support surface. Diamond-knurled texture for gripping. The shower support bar's diamond-knurled texture keeps your hand from slipping, an essential feature when being used in the shower or tub. Secures to any wall via steel wood screws. For anyone in need of a strong support surface, the bathtub safety handle is ideal. It securely screws into the wall for a tight and reliable source of support. Supports up to 250 lbs. Bathroom safety grab bars offer stability when transitioning in and out of the shower. The stainless steel grab bar can be installed vertically and horizontally with no risk of rust or corrosion from water. Professional installation recommended. Because screws are required for installation, we do recommend hiring a professional to install. If this is not a possibility, we recommend our suction cup grab bars. Weight Capacity: 250 lb. Product Weight: 12\": 1.2 lb. Installation: Yes Package Dims (h x w x d): 12\": 17\" x 3.25\" x 3.25\" Product Dims (h x w x d): 12\": 1.5\" x 12\" x 1.25\" Package Weight: 12\": 1.52 lb. Color: Chrome Material: Textured Steel Installation Instructions (PDF)"
+     },
+     "price": {
+      "amount": 2355,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "12\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-carex-textured-wall-grab-bar-28288287604841.png?v=1679945495"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30977232928873:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/30977232961641",
+     "sku": "FGB21000 0000",
+     "title": "16\"",
+     "description": {
+      "html": "Significantly improve your bathroom safety and independence with the Carex Textured Wall Grab Bar. Bathroom grab bars provide additional security when using a commode or bathing. The bathroom safety bar is made of heavy-duty, durable steel tubing for a reliable source of support. It features a beautiful diamond-knurled texture for extra gripping. The tub safety bar is available in 12\", 16\", 18\", 24\", and 32\" sizes. Professional installation is recommended. Made of durable, heavy-duty steel. Bathtub safety bars offer an additional level of support. They help those with issues sitting or standing. The shower safety handle is made of rust-resistant steel guaranteed to last. Available in 12\", 16\", 18\", 24\", and 32\" length. Smaller shower safety bars offer a compact and subtle source of support. Larger bathtub grab bars are excellent for those in need of a more significant support surface. Diamond-knurled texture for gripping. The shower support bar's diamond-knurled texture keeps your hand from slipping, an essential feature when being used in the shower or tub. Secures to any wall via steel wood screws. For anyone in need of a strong support surface, the bathtub safety handle is ideal. It securely screws into the wall for a tight and reliable source of support. Supports up to 250 lbs. Bathroom safety grab bars offer stability when transitioning in and out of the shower. The stainless steel grab bar can be installed vertically and horizontally with no risk of rust or corrosion from water. Professional installation recommended. Because screws are required for installation, we do recommend hiring a professional to install. If this is not a possibility, we recommend our suction cup grab bars. Weight Capacity: 250 lb. Product Weight: 12\": 1.2 lb. Installation: Yes Package Dims (h x w x d): 12\": 17\" x 3.25\" x 3.25\" Product Dims (h x w x d): 12\": 1.5\" x 12\" x 1.25\" Package Weight: 12\": 1.52 lb. Color: Chrome Material: Textured Steel Installation Instructions (PDF)"
+     },
+     "price": {
+      "amount": 2638,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "16\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-carex-textured-wall-grab-bar-28288287604841.png?v=1679945495"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30977232961641:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/30977232994409",
+     "sku": "FGB21100 0000",
+     "title": "18\"",
+     "description": {
+      "html": "Significantly improve your bathroom safety and independence with the Carex Textured Wall Grab Bar. Bathroom grab bars provide additional security when using a commode or bathing. The bathroom safety bar is made of heavy-duty, durable steel tubing for a reliable source of support. It features a beautiful diamond-knurled texture for extra gripping. The tub safety bar is available in 12\", 16\", 18\", 24\", and 32\" sizes. Professional installation is recommended. Made of durable, heavy-duty steel. Bathtub safety bars offer an additional level of support. They help those with issues sitting or standing. The shower safety handle is made of rust-resistant steel guaranteed to last. Available in 12\", 16\", 18\", 24\", and 32\" length. Smaller shower safety bars offer a compact and subtle source of support. Larger bathtub grab bars are excellent for those in need of a more significant support surface. Diamond-knurled texture for gripping. The shower support bar's diamond-knurled texture keeps your hand from slipping, an essential feature when being used in the shower or tub. Secures to any wall via steel wood screws. For anyone in need of a strong support surface, the bathtub safety handle is ideal. It securely screws into the wall for a tight and reliable source of support. Supports up to 250 lbs. Bathroom safety grab bars offer stability when transitioning in and out of the shower. The stainless steel grab bar can be installed vertically and horizontally with no risk of rust or corrosion from water. Professional installation recommended. Because screws are required for installation, we do recommend hiring a professional to install. If this is not a possibility, we recommend our suction cup grab bars. Weight Capacity: 250 lb. Product Weight: 12\": 1.2 lb. Installation: Yes Package Dims (h x w x d): 12\": 17\" x 3.25\" x 3.25\" Product Dims (h x w x d): 12\": 1.5\" x 12\" x 1.25\" Package Weight: 12\": 1.52 lb. Color: Chrome Material: Textured Steel Installation Instructions (PDF)"
+     },
+     "price": {
+      "amount": 2826,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "18\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-carex-textured-wall-grab-bar-28288287604841.png?v=1679945495"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30977232994409:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/30977233027177",
+     "sku": "FGB21200 0000",
+     "title": "24\"",
+     "description": {
+      "html": "Significantly improve your bathroom safety and independence with the Carex Textured Wall Grab Bar. Bathroom grab bars provide additional security when using a commode or bathing. The bathroom safety bar is made of heavy-duty, durable steel tubing for a reliable source of support. It features a beautiful diamond-knurled texture for extra gripping. The tub safety bar is available in 12\", 16\", 18\", 24\", and 32\" sizes. Professional installation is recommended. Made of durable, heavy-duty steel. Bathtub safety bars offer an additional level of support. They help those with issues sitting or standing. The shower safety handle is made of rust-resistant steel guaranteed to last. Available in 12\", 16\", 18\", 24\", and 32\" length. Smaller shower safety bars offer a compact and subtle source of support. Larger bathtub grab bars are excellent for those in need of a more significant support surface. Diamond-knurled texture for gripping. The shower support bar's diamond-knurled texture keeps your hand from slipping, an essential feature when being used in the shower or tub. Secures to any wall via steel wood screws. For anyone in need of a strong support surface, the bathtub safety handle is ideal. It securely screws into the wall for a tight and reliable source of support. Supports up to 250 lbs. Bathroom safety grab bars offer stability when transitioning in and out of the shower. The stainless steel grab bar can be installed vertically and horizontally with no risk of rust or corrosion from water. Professional installation recommended. Because screws are required for installation, we do recommend hiring a professional to install. If this is not a possibility, we recommend our suction cup grab bars. Weight Capacity: 250 lb. Product Weight: 12\": 1.2 lb. Installation: Yes Package Dims (h x w x d): 12\": 17\" x 3.25\" x 3.25\" Product Dims (h x w x d): 12\": 1.5\" x 12\" x 1.25\" Package Weight: 12\": 1.52 lb. Color: Chrome Material: Textured Steel Installation Instructions (PDF)"
+     },
+     "price": {
+      "amount": 3015,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "24\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-carex-textured-wall-grab-bar-28288287604841.png?v=1679945495"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30977233027177:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/30977233059945",
+     "sku": "FGB21300 0000",
+     "title": "32\"",
+     "description": {
+      "html": "Significantly improve your bathroom safety and independence with the Carex Textured Wall Grab Bar. Bathroom grab bars provide additional security when using a commode or bathing. The bathroom safety bar is made of heavy-duty, durable steel tubing for a reliable source of support. It features a beautiful diamond-knurled texture for extra gripping. The tub safety bar is available in 12\", 16\", 18\", 24\", and 32\" sizes. Professional installation is recommended. Made of durable, heavy-duty steel. Bathtub safety bars offer an additional level of support. They help those with issues sitting or standing. The shower safety handle is made of rust-resistant steel guaranteed to last. Available in 12\", 16\", 18\", 24\", and 32\" length. Smaller shower safety bars offer a compact and subtle source of support. Larger bathtub grab bars are excellent for those in need of a more significant support surface. Diamond-knurled texture for gripping. The shower support bar's diamond-knurled texture keeps your hand from slipping, an essential feature when being used in the shower or tub. Secures to any wall via steel wood screws. For anyone in need of a strong support surface, the bathtub safety handle is ideal. It securely screws into the wall for a tight and reliable source of support. Supports up to 250 lbs. Bathroom safety grab bars offer stability when transitioning in and out of the shower. The stainless steel grab bar can be installed vertically and horizontally with no risk of rust or corrosion from water. Professional installation recommended. Because screws are required for installation, we do recommend hiring a professional to install. If this is not a possibility, we recommend our suction cup grab bars. Weight Capacity: 250 lb. Product Weight: 12\": 1.2 lb. Installation: Yes Package Dims (h x w x d): 12\": 17\" x 3.25\" x 3.25\" Product Dims (h x w x d): 12\": 1.5\" x 12\" x 1.25\" Package Weight: 12\": 1.52 lb. Color: Chrome Material: Textured Steel Installation Instructions (PDF)"
+     },
+     "price": {
+      "amount": 3203,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "32\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-carex-textured-wall-grab-bar-28288287604841.png?v=1679945495"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30977233059945:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "12\""
+      },
+      {
+       "label": "16\""
+      },
+      {
+       "label": "18\""
+      },
+      {
+       "label": "24\""
+      },
+      {
+       "label": "32\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-carex-textured-wall-grab-bar-28288287604841.png?v=1679945495",
+     "alt_text": "Carex Textured Wall Grab Bar - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "GrabBars",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Tools Required (Screw-In)",
+    "Product Category_Bathroom Safety",
+    "Product Type_Grab Bar",
+    "Size_12\"",
+    "Size_16\"",
+    "Size_18\"",
+    "Size_24\"",
+    "Size_32\"",
+    "Weight Capacity_250 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150242263145",
+     "handle": "toilet-shower-and-bathtub-safety-grab-bars",
+     "title": "Toilet, Shower, and Bathtub Safety Grab Bars",
+     "description": {
+      "html": "Carex bathroom Grab bars are available in many sizes ranging from 12\"-32\" and are finished in white or textured chrome heavy duty stainless steel with drilling required or quick and easy to attach suction cup grab bar models. Our portable grab bars with suction cups easily attach to any smooth surface making grab bar installation quick and effortless regardless of the shower. Use a Carex shower Grab Bar to securely and safely assist with balance in the shower or bathtub."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121097666665",
+   "title": "Carex Ultra Grip&trade; Grab Bar",
+   "description": {
+    "html": "Stay independent and improve your bath safety with the Carex safety grab bar. The Ultra Grip Grab Bar assists users entering or leaving the bathtub or shower. Its strong suction grips hold tightly to any smooth, flat, and non-porous surface. The bathroom grab bar features a visual indicator that changes from red to green to show when the bar is properly secured into place. No installation is required. Available in 12\" or 16\". Powerful dual-locking suction cups. The shower safety bar's suction cups make it convenient and easy to install. No need to hire someone or use any power tools to install the bathroom safety bar. Indicates when the bathtub safety bar is properly fastened. A significant drawback for most suction cup shower handles is not knowing when they're fastened. This can lead to injury. Our tub safety bar features indicators that change from red to green to show when it's properly fastened to the wall. Excellent for travel. Because no tools are required, the shower safety handle is perfect for travel. Installing and removing the bathtub only takes a few seconds, making it the perfect portable grab bar. Works on most surfaces. The shower support bar easily attaches to most surfaces including shower tile and fiberglass. For best results from the shower handlebar, install on a smooth surface. Available in 12\" or 16\". Choose from a more compact 12\" bathtub bar or a larger 16\" grip bar with more support surface. Smaller bathroom handles are more subtle and fit in more tubs while larger bathtub safety handles offer a larger surface to grab on to. Supports up to 250 lbs. The bathroom safety grab bar offers a reliable and dependable source of support. It can be easily removed and adjusted to a new position based on user needs. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 250 lbs. Product Weight: 0.75 lbs, 1 lbs Length: 12\" or 16\" Installation: No Package Dims (h x w x d): 13.63\" x 5.63\" x 3.13\", 18.82\" x 6.22\" x 3.66\" Package Weight: 0.82 lbs, 1.08 lbs. Product Dims (h x w x d): 12\" x 4.5\" x 3.5\", 16\" x 4.5\" x 3.5\" Color: White & Blue Material: Plastic"
+   },
+   "url": "https://carex.com/products/carex-ultra-grip-grab-bar",
+   "handle": "carex-ultra-grip-grab-bar",
+   "price_range": {
+    "min": {
+     "amount": 1224,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1790,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32612778115177",
+     "sku": "FGB20000 0000",
+     "title": "12\"",
+     "description": {
+      "html": "Stay independent and improve your bath safety with the Carex safety grab bar. The Ultra Grip Grab Bar assists users entering or leaving the bathtub or shower. Its strong suction grips hold tightly to any smooth, flat, and non-porous surface. The bathroom grab bar features a visual indicator that changes from red to green to show when the bar is properly secured into place. No installation is required. Available in 12\" or 16\". Powerful dual-locking suction cups. The shower safety bar's suction cups make it convenient and easy to install. No need to hire someone or use any power tools to install the bathroom safety bar. Indicates when the bathtub safety bar is properly fastened. A significant drawback for most suction cup shower handles is not knowing when they're fastened. This can lead to injury. Our tub safety bar features indicators that change from red to green to show when it's properly fastened to the wall. Excellent for travel. Because no tools are required, the shower safety handle is perfect for travel. Installing and removing the bathtub only takes a few seconds, making it the perfect portable grab bar. Works on most surfaces. The shower support bar easily attaches to most surfaces including shower tile and fiberglass. For best results from the shower handlebar, install on a smooth surface. Available in 12\" or 16\". Choose from a more compact 12\" bathtub bar or a larger 16\" grip bar with more support surface. Smaller bathroom handles are more subtle and fit in more tubs while larger bathtub safety handles offer a larger surface to grab on to. Supports up to 250 lbs. The bathroom safety grab bar offers a reliable and dependable source of support. It can be easily removed and adjusted to a new position based on user needs. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 250 lbs. Product Weight: 0.75 lbs, 1 lbs Length: 12\" or 16\" Installation: No Package Dims (h x w x d): 13.63\" x 5.63\" x 3.13\", 18.82\" x 6.22\" x 3.66\" Package Weight: 0.82 lbs, 1.08 lbs. Product Dims (h x w x d): 12\" x 4.5\" x 3.5\", 16\" x 4.5\" x 3.5\" Color: White & Blue Material: Plastic"
+     },
+     "price": {
+      "amount": 1224,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "12\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-12-carex-ultra-grip-trade-grab-bar-28288077889641.png?v=1679947275"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/32612778115177:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32612778147945",
+     "sku": "FGB19600 0000",
+     "title": "16\"",
+     "description": {
+      "html": "Stay independent and improve your bath safety with the Carex safety grab bar. The Ultra Grip Grab Bar assists users entering or leaving the bathtub or shower. Its strong suction grips hold tightly to any smooth, flat, and non-porous surface. The bathroom grab bar features a visual indicator that changes from red to green to show when the bar is properly secured into place. No installation is required. Available in 12\" or 16\". Powerful dual-locking suction cups. The shower safety bar's suction cups make it convenient and easy to install. No need to hire someone or use any power tools to install the bathroom safety bar. Indicates when the bathtub safety bar is properly fastened. A significant drawback for most suction cup shower handles is not knowing when they're fastened. This can lead to injury. Our tub safety bar features indicators that change from red to green to show when it's properly fastened to the wall. Excellent for travel. Because no tools are required, the shower safety handle is perfect for travel. Installing and removing the bathtub only takes a few seconds, making it the perfect portable grab bar. Works on most surfaces. The shower support bar easily attaches to most surfaces including shower tile and fiberglass. For best results from the shower handlebar, install on a smooth surface. Available in 12\" or 16\". Choose from a more compact 12\" bathtub bar or a larger 16\" grip bar with more support surface. Smaller bathroom handles are more subtle and fit in more tubs while larger bathtub safety handles offer a larger surface to grab on to. Supports up to 250 lbs. The bathroom safety grab bar offers a reliable and dependable source of support. It can be easily removed and adjusted to a new position based on user needs. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 250 lbs. Product Weight: 0.75 lbs, 1 lbs Length: 12\" or 16\" Installation: No Package Dims (h x w x d): 13.63\" x 5.63\" x 3.13\", 18.82\" x 6.22\" x 3.66\" Package Weight: 0.82 lbs, 1.08 lbs. Product Dims (h x w x d): 12\" x 4.5\" x 3.5\", 16\" x 4.5\" x 3.5\" Color: White & Blue Material: Plastic"
+     },
+     "price": {
+      "amount": 1790,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "16\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-16-carex-ultra-grip-trade-grab-bar-28288260833385.png?v=1679947395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/32612778147945:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "12\""
+      },
+      {
+       "label": "16\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-12-carex-ultra-grip-trade-grab-bar-28288077889641.png?v=1679947275",
+     "alt_text": "Carex Ultra Grip&trade; Grab Bar - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-1-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "GrabBars",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Tool-Free (Suction Cups)",
+    "Product Category_Bathroom Safety",
+    "Product Type_Grab Bar",
+    "Size_12\"",
+    "Size_16\"",
+    "Weight Capacity_75 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150242263145",
+     "handle": "toilet-shower-and-bathtub-safety-grab-bars",
+     "title": "Toilet, Shower, and Bathtub Safety Grab Bars",
+     "description": {
+      "html": "Carex bathroom Grab bars are available in many sizes ranging from 12\"-32\" and are finished in white or textured chrome heavy duty stainless steel with drilling required or quick and easy to attach suction cup grab bar models. Our portable grab bars with suction cups easily attach to any smooth surface making grab bar installation quick and effortless regardless of the shower. Use a Carex shower Grab Bar to securely and safely assist with balance in the shower or bathtub."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121096978537",
+   "title": "Carex Chrome Ultra Grip Bath Handle and Grab Bar",
+   "description": {
+    "html": "Enjoy peace-of-mind when entering or leaving the bathtub or shower with the Carex Chrome Ultra Grip Suction Grab Bar. Using Ultra Grip Technology, this versatile bathtub grab bar assists with balance when entering or leaving the shower or bathtub. Strong suction grips hold tightly to any smooth, flat, non-porous surface. The shower grab bar's sleek chrome finish complements any decor and is designed to provide years of trouble-free service. Available in 12\" or 16\". Select a smaller, 12\" size for a compact support bathtub bar or a 16\" size for a larger support surface. Tells you when suction is securely fastened. The shower safety bar features a visual indicator that turns from red to green when secured in place. Place the bathroom safety bar on the wall or shower and flip the locks into place. The indicators will turn green when secure. Easy to install. Suction cup bathtub safety bars offer a versatile and easy installation process compared to screw-in bars. The suction cup shower handle offer a versatile and portable support surface for any shower or tub. No tools required. Mounts to any shower. The ultra-strong dual locking suction cups provide a safe and secure hold mounted to any smooth flat and non-porous surface. Wide handle to fit the hand and assist with balance. The bathroom grab bar's wide handle offers a large support surface to help with sitting, standing, and balancing. Stylish for any bathroom. The tub safety bar's unique chrome finish complements any bathroom perfectly. The chrome finish with black accent will look great in any shower or tub. Supports up to 75 lbs. The shower support bar offers maximum bathing support with strong suction cups and durable construction. Its strong hold and durable build make it an ideal shower bar for elderly persons, disabled, or anyone with trouble sitting, standing, or balancing. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 75 lbs. Product Weight: 0.6 lbs, 1 lbs Length: 12\" or 16\" Installation: No Package Dims (h x w x d): 3.75\" x 14.50\" x 6.25\", 3.75\" x 18.75\" x 6.00\" Package Weight: 0.9 lbs, 1.05 lbs. Product Dims (h x w x d): 11.30\" x 3.10\" x 4.50\", 16\" x 3.10\" x 4.50\" Color: Chrome and Black Material: Aluminum"
+   },
+   "url": "https://carex.com/products/carex-chrome-ultra-grip-bath-handle-12",
+   "handle": "carex-chrome-ultra-grip-bath-handle-12",
+   "price_range": {
+    "min": {
+     "amount": 1601,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1884,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30976848035945",
+     "sku": "FGB19000 0000",
+     "title": "12\"",
+     "description": {
+      "html": "Enjoy peace-of-mind when entering or leaving the bathtub or shower with the Carex Chrome Ultra Grip Suction Grab Bar. Using Ultra Grip Technology, this versatile bathtub grab bar assists with balance when entering or leaving the shower or bathtub. Strong suction grips hold tightly to any smooth, flat, non-porous surface. The shower grab bar's sleek chrome finish complements any decor and is designed to provide years of trouble-free service. Available in 12\" or 16\". Select a smaller, 12\" size for a compact support bathtub bar or a 16\" size for a larger support surface. Tells you when suction is securely fastened. The shower safety bar features a visual indicator that turns from red to green when secured in place. Place the bathroom safety bar on the wall or shower and flip the locks into place. The indicators will turn green when secure. Easy to install. Suction cup bathtub safety bars offer a versatile and easy installation process compared to screw-in bars. The suction cup shower handle offer a versatile and portable support surface for any shower or tub. No tools required. Mounts to any shower. The ultra-strong dual locking suction cups provide a safe and secure hold mounted to any smooth flat and non-porous surface. Wide handle to fit the hand and assist with balance. The bathroom grab bar's wide handle offers a large support surface to help with sitting, standing, and balancing. Stylish for any bathroom. The tub safety bar's unique chrome finish complements any bathroom perfectly. The chrome finish with black accent will look great in any shower or tub. Supports up to 75 lbs. The shower support bar offers maximum bathing support with strong suction cups and durable construction. Its strong hold and durable build make it an ideal shower bar for elderly persons, disabled, or anyone with trouble sitting, standing, or balancing. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 75 lbs. Product Weight: 0.6 lbs, 1 lbs Length: 12\" or 16\" Installation: No Package Dims (h x w x d): 3.75\" x 14.50\" x 6.25\", 3.75\" x 18.75\" x 6.00\" Package Weight: 0.9 lbs, 1.05 lbs. Product Dims (h x w x d): 11.30\" x 3.10\" x 4.50\", 16\" x 3.10\" x 4.50\" Color: Chrome and Black Material: Aluminum"
+     },
+     "price": {
+      "amount": 1601,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "12\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-12-carex-chrome-ultra-grip-bath-handle-and-grab-bar-28288071762025.png?v=1679936729"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30976848035945:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/30976848068713",
+     "sku": "FGB18600 0000",
+     "title": "16\"",
+     "description": {
+      "html": "Enjoy peace-of-mind when entering or leaving the bathtub or shower with the Carex Chrome Ultra Grip Suction Grab Bar. Using Ultra Grip Technology, this versatile bathtub grab bar assists with balance when entering or leaving the shower or bathtub. Strong suction grips hold tightly to any smooth, flat, non-porous surface. The shower grab bar's sleek chrome finish complements any decor and is designed to provide years of trouble-free service. Available in 12\" or 16\". Select a smaller, 12\" size for a compact support bathtub bar or a 16\" size for a larger support surface. Tells you when suction is securely fastened. The shower safety bar features a visual indicator that turns from red to green when secured in place. Place the bathroom safety bar on the wall or shower and flip the locks into place. The indicators will turn green when secure. Easy to install. Suction cup bathtub safety bars offer a versatile and easy installation process compared to screw-in bars. The suction cup shower handle offer a versatile and portable support surface for any shower or tub. No tools required. Mounts to any shower. The ultra-strong dual locking suction cups provide a safe and secure hold mounted to any smooth flat and non-porous surface. Wide handle to fit the hand and assist with balance. The bathroom grab bar's wide handle offers a large support surface to help with sitting, standing, and balancing. Stylish for any bathroom. The tub safety bar's unique chrome finish complements any bathroom perfectly. The chrome finish with black accent will look great in any shower or tub. Supports up to 75 lbs. The shower support bar offers maximum bathing support with strong suction cups and durable construction. Its strong hold and durable build make it an ideal shower bar for elderly persons, disabled, or anyone with trouble sitting, standing, or balancing. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 75 lbs. Product Weight: 0.6 lbs, 1 lbs Length: 12\" or 16\" Installation: No Package Dims (h x w x d): 3.75\" x 14.50\" x 6.25\", 3.75\" x 18.75\" x 6.00\" Package Weight: 0.9 lbs, 1.05 lbs. Product Dims (h x w x d): 11.30\" x 3.10\" x 4.50\", 16\" x 3.10\" x 4.50\" Color: Chrome and Black Material: Aluminum"
+     },
+     "price": {
+      "amount": 1884,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "16\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-16-carex-chrome-ultra-grip-bath-handle-and-grab-bar-28288251986025.png?v=1679936767"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30976848068713:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "12\""
+      },
+      {
+       "label": "16\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-grab-bars-12-carex-chrome-ultra-grip-bath-handle-and-grab-bar-28288071762025.png?v=1679936729",
+     "alt_text": "Carex Chrome Ultra Grip Bath Handle and Grab Bar - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "GrabBars",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Installation Method_Tool-Free (Suction Cups)",
+    "Product Category_Bathroom Safety",
+    "Product Type_Grab Bar",
+    "Size_12\"",
+    "Size_16\"",
+    "Weight Capacity_75 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150242263145",
+     "handle": "toilet-shower-and-bathtub-safety-grab-bars",
+     "title": "Toilet, Shower, and Bathtub Safety Grab Bars",
+     "description": {
+      "html": "Carex bathroom Grab bars are available in many sizes ranging from 12\"-32\" and are finished in white or textured chrome heavy duty stainless steel with drilling required or quick and easy to attach suction cup grab bar models. Our portable grab bars with suction cups easily attach to any smooth surface making grab bar installation quick and effortless regardless of the shower. Use a Carex shower Grab Bar to securely and safely assist with balance in the shower or bathtub."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121101795433",
+   "title": "Carex Bathroom Safety Rail",
+   "description": {
+    "html": "Add a new level of bathroom safety, comfort, and independence with the Carex Bathroom Safety Rail. The toilet safety rail stands on its own without installation, ideal for adding security and stability around the bathroom. The toilet support rail can easily fit around your toilet to provide safe support and assistance while sitting down or rising from the toilet. Stand-alone design allows it to be used at the toilet or sink. The stand alone toilet safety rail doubles as a toilet grab rail and walker. It can be used in the bathroom or sink for standing support. Provides sitting, standing, and balance assistance. The Carex toilet support rail offers a sturdy source of support for anyone weak in strength. Because it's a free standing support rail, it provides flexibility to be used throughout the home. Tool-free assembly. Free standing toilet safety rails are perfect for anyone not wanting a permanent fixture. Our toilet support bar is quick and easy to set up in minutes. It fits around any standard toilet with no tools or installation needed. Height adjustable from 27\" to 33\". Having the proper height is essential with any bath safety accessory. Our toilet seat safety rail can be quickly adjusted to meet your needs or multiple users' needs. Supports up to 300 lbs. The toilet rail is made of sturdy and reliable aluminum for daily, long-term use. Its high weight capacity makes it an ideal toilet seat rail for bariatric use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Package Weight: 9 lbs. Height Adjustable: Yes Product Weight: 9.65 lbs. Attachable: No Stand Alone: Yes Package Dims (h x w x d): 23.5\" x 17\" x 4\" Product Dims (h x w x d): 27\" - 33\" x 19.75\" x 20\" Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-bathroom-safety-rail",
+   "handle": "carex-bathroom-safety-rail",
+   "price_range": {
+    "min": {
+     "amount": 6596,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6596,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226859262057",
+     "sku": "FGB36900 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Add a new level of bathroom safety, comfort, and independence with the Carex Bathroom Safety Rail. The toilet safety rail stands on its own without installation, ideal for adding security and stability around the bathroom. The toilet support rail can easily fit around your toilet to provide safe support and assistance while sitting down or rising from the toilet. Stand-alone design allows it to be used at the toilet or sink. The stand alone toilet safety rail doubles as a toilet grab rail and walker. It can be used in the bathroom or sink for standing support. Provides sitting, standing, and balance assistance. The Carex toilet support rail offers a sturdy source of support for anyone weak in strength. Because it's a free standing support rail, it provides flexibility to be used throughout the home. Tool-free assembly. Free standing toilet safety rails are perfect for anyone not wanting a permanent fixture. Our toilet support bar is quick and easy to set up in minutes. It fits around any standard toilet with no tools or installation needed. Height adjustable from 27\" to 33\". Having the proper height is essential with any bath safety accessory. Our toilet seat safety rail can be quickly adjusted to meet your needs or multiple users' needs. Supports up to 300 lbs. The toilet rail is made of sturdy and reliable aluminum for daily, long-term use. Its high weight capacity makes it an ideal toilet seat rail for bariatric use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lbs. Package Weight: 9 lbs. Height Adjustable: Yes Product Weight: 9.65 lbs. Attachable: No Stand Alone: Yes Package Dims (h x w x d): 23.5\" x 17\" x 4\" Product Dims (h x w x d): 27\" - 33\" x 19.75\" x 20\" Instruction Manual"
+     },
+     "price": {
+      "amount": 6596,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/71k1AKm6c3L.__AC_SX300_SY300_QL70_FMwebp.webp?v=1688753857"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226859262057:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/71k1AKm6c3L.__AC_SX300_SY300_QL70_FMwebp.webp?v=1688753857",
+     "alt_text": "Carex Bathroom Safety Rail - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "BedRails",
+    "Brand_Carex",
+    "Carex",
+    "Condition_Bariatric",
+    "Condition_Hip Injury",
+    "Condition_Osteoporosis",
+    "Height Range_27\" to 33\"",
+    "HomeCare",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Product Category_Bathroom Safety",
+    "Product Category_Home Care",
+    "Product Type_Toilet Safety Rail",
+    "Stand Alone_Yes",
+    "ToiletSafetyRails",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150219817065",
+     "handle": "bariatric-obesity-products",
+     "title": "Bariatric/Obesity Products and Equipment",
+     "description": {
+      "html": "Those with bariatric conditions struggle with day-to-day activities such as personal hygiene and walking. Carex Health Brand's bariatric products include specialized equipment with heavy-duty, reinforced frames allowing bariatric patients to gain back their independence. Each bariatric product is designed to withstand higher weights for quality care. Our bariatric products are designed to make activities of daily living easy to perform and with as much independence as possible. Please be sure to check the weight capacity of each product for safety before using."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150229385321",
+     "handle": "home-care-medical-products-and-equipment",
+     "title": "Home Care Medical Products and Equipment",
+     "description": {
+      "html": "Carex home health care equipment allows for more freedom and independence with daily living. Carex offers a range of high-quality medical supplies. Our varied assortment includes enabling products such as pillows and cushions, first aid items, in-home care products, light therapy, bed rails and overbed tables. Our senior, handicapped, and elderly care products offer physical support, hygiene care, exercise and fitness aids, and more."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121098322025",
+   "title": "Carex Dual Level Bathtub Rail",
+   "description": {
+    "html": "Easily and effortlessly get in and out of the tub with the Carex Dual Level Bathtub Safety Rail. The bathtub bar features an attractive chrome finished to inhibit rust. Its dual level design provides a high and low gripping area for help getting out of the bathtub. Each gripping area has a textured finish for added grip. The bathroom safety rail fits most tubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to fit most standard tubs securely. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily, and it will withstand even the wettest bathroom. Two surfaces to grip. The bath assist device has two levels of gripping surfaces to offer convenience and support. Users can use one surface for getting in and the other for getting out of the tub. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide a flexible grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and straightforward. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 250 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those vulnerable in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 5 lbs. Weight Capacity: 200 lbs. Package Dims (h x w x d): 1.5\" x 12.5\" x 24.5\" Package Weight: 6.38 lbs. Product Dims (h x w x d): 16\" x 12\" x 1\" Color: Chrome Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-dual-level-bathtub-rail",
+   "handle": "carex-dual-level-bathtub-rail",
+   "price_range": {
+    "min": {
+     "amount": 5892,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5892,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226816729193",
+     "sku": "FGB20300 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Easily and effortlessly get in and out of the tub with the Carex Dual Level Bathtub Safety Rail. The bathtub bar features an attractive chrome finished to inhibit rust. Its dual level design provides a high and low gripping area for help getting out of the bathtub. Each gripping area has a textured finish for added grip. The bathroom safety rail fits most tubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to fit most standard tubs securely. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily, and it will withstand even the wettest bathroom. Two surfaces to grip. The bath assist device has two levels of gripping surfaces to offer convenience and support. Users can use one surface for getting in and the other for getting out of the tub. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide a flexible grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and straightforward. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 250 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those vulnerable in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 5 lbs. Weight Capacity: 200 lbs. Package Dims (h x w x d): 1.5\" x 12.5\" x 24.5\" Package Weight: 6.38 lbs. Product Dims (h x w x d): 16\" x 12\" x 1\" Color: Chrome Instruction Manual"
+     },
+     "price": {
+      "amount": 5892,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-dual-level-bathtub-rail-28288279380073.png?v=1679938334"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226816729193:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-dual-level-bathtub-rail-28288279380073.png?v=1679938334",
+     "alt_text": "Carex Dual Level Bathtub Rail - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "BathTubSafetyRails",
+    "Brand_Carex",
+    "Carex",
+    "Height Added to Side of Bathtub_18\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Levels of Support_Two",
+    "Product Category_Bathroom Safety",
+    "Product Type_Bathtub Safety Rail",
+    "Weight Capacity_200 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221258857",
+     "handle": "bathtub-safety-rails-and-aids",
+     "title": "Bathtub Safety Rails and Aids",
+     "description": {
+      "html": "For additional support while entering or exiting the shower or bathtub add a Carex Bathtub Rail. Available in several options of gripping areas single, dual or tri-level and in chrome or white finishes that blend nicely with any bathroom. Our safety rails for bathtubs are easy to install, clamping on to the side of the bath tub. These work extremely well with bath benches and bath seats, making it easy to get in and out of the bath when stepping over the tub wall. We've designed our bathtub aids for elderly, seniors, handicapped, or those needing extra bathing support. Each bathtub assist bar has adjustable height making it beneficial for everyone, regardless of height."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7425343619177",
+   "title": "Carex Stand-Alone Adjustable Toilet Safety Frame",
+   "description": {
+    "html": "The Carex Stand-Alone Adjustable Toilet Safety Frame is an essential solution for those seeking support and stability in the bathroom. This innovative frame enhances safety and empowers individuals to maintain their independence during toilet use. Experience peace of mind and comfort with this invaluable addition to your bathroom setup. Enhances safety and promotes toilet independence. Individuals with balance and stability challenges often struggle to sit down or rise from the toilet. Our innovative safety frame provides essential support, significantly reducing the risk of falls and making the bathroom experience much more manageable. Quick and tool-free setup. Enjoy hassle-free assembly that takes just minutes and requires no tools at all. Flexible and easy to position. This safety frame's stand-alone design effortlessly allows it to be placed or removed wherever needed. Adjustable height for personalized comfort. The frame can be modified from 24\" to 29\", ensuring it meets the needs of users of all heights. Includes a handy storage solution. Featuring a built-in magazine rack, this frame offers the perfect spot for reading materials, enhancing the bathroom experience. Robust construction supports up to 300 lbs. Our toilet frame is engineered to endure rigorous use, capable of safely supporting up to 300 lbs, with durable aluminum materials specially designed to thrive in the humid bathroom environment."
+   },
+   "url": "https://carex.com/products/carex-stand-alone-adjustable-toilet-safety-frame",
+   "handle": "carex-stand-alone-adjustable-toilet-safety-frame",
+   "price_range": {
+    "min": {
+     "amount": 9423,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9423,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41898615701609",
+     "sku": "FGE815C0 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Carex Stand-Alone Adjustable Toilet Safety Frame is an essential solution for those seeking support and stability in the bathroom. This innovative frame enhances safety and empowers individuals to maintain their independence during toilet use. Experience peace of mind and comfort with this invaluable addition to your bathroom setup. Enhances safety and promotes toilet independence. Individuals with balance and stability challenges often struggle to sit down or rise from the toilet. Our innovative safety frame provides essential support, significantly reducing the risk of falls and making the bathroom experience much more manageable. Quick and tool-free setup. Enjoy hassle-free assembly that takes just minutes and requires no tools at all. Flexible and easy to position. This safety frame's stand-alone design effortlessly allows it to be placed or removed wherever needed. Adjustable height for personalized comfort. The frame can be modified from 24\" to 29\", ensuring it meets the needs of users of all heights. Includes a handy storage solution. Featuring a built-in magazine rack, this frame offers the perfect spot for reading materials, enhancing the bathroom experience. Robust construction supports up to 300 lbs. Our toilet frame is engineered to endure rigorous use, capable of safely supporting up to 300 lbs, with durable aluminum materials specially designed to thrive in the humid bathroom environment."
+     },
+     "price": {
+      "amount": 9423,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGE815C00000_Web_Images-03.jpg?v=1729609931"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/41898615701609:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGE815C00000_Web_Images-03.jpg?v=1729609931",
+     "alt_text": "A white toilet safety frame in front of a toilet"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BedRails",
+    "Brand_Carex",
+    "Carex",
+    "Condition_Bariatric",
+    "Condition_Hip Injury",
+    "Condition_Osteoporosis",
+    "Height Range_24\" to 29\"",
+    "HomeCare",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Product Category_Bathroom Safety",
+    "Product Category_Home Care",
+    "Product Type_Toilet Safety Rail",
+    "Stand Alone_Yes",
+    "ToiletSafetyRails",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150219817065",
+     "handle": "bariatric-obesity-products",
+     "title": "Bariatric/Obesity Products and Equipment",
+     "description": {
+      "html": "Those with bariatric conditions struggle with day-to-day activities such as personal hygiene and walking. Carex Health Brand's bariatric products include specialized equipment with heavy-duty, reinforced frames allowing bariatric patients to gain back their independence. Each bariatric product is designed to withstand higher weights for quality care. Our bariatric products are designed to make activities of daily living easy to perform and with as much independence as possible. Please be sure to check the weight capacity of each product for safety before using."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150229385321",
+     "handle": "home-care-medical-products-and-equipment",
+     "title": "Home Care Medical Products and Equipment",
+     "description": {
+      "html": "Carex home health care equipment allows for more freedom and independence with daily living. Carex offers a range of high-quality medical supplies. Our varied assortment includes enabling products such as pillows and cushions, first aid items, in-home care products, light therapy, bed rails and overbed tables. Our senior, handicapped, and elderly care products offer physical support, hygiene care, exercise and fitness aids, and more."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121101500521",
+   "title": "Carex Toilet Safety Frame",
+   "description": {
+    "html": "Enhance your independence and bath safety with the Carex Toilet Support Rail. The toilet safety rail provides a source of support for users to safety stand or sit at the toilet. To maximize comfort, the toilet support bar is height adjustable to meet user needs. It fits most toilets with an adjustable width from 18\" to 20\". Installation and set up is quick and easy within minutes. Height and width adjustable. The toilet hand rail has an adjustable width from 18\" to 20\" to fist most toilets. Its height adjusts as well to provide custom toilet grab rail support when sitting or standing. Cushioned hand grips for a comfortable experience. Hard grips on any toilet seat rail can make it difficult to use for those with fragile hands. The toilet assist rail features Hypalon cushioned hand grips for added comfort. It is an ideal bathroom safety rail for elderly persons, disabled, or anyone in need of a comfortable bathroom aid. Keeps users safe and independent. Remaining comfortable and independent in the bathroom helps maintain one's quality of life. Adjustable toilet safety rails provide safety and support for those that struggle with sitting, standing, or balancing. Non-slip rubber tips keep it in place. Improperly designed toilet arm rails can post a serious fall risk. Our handicap toilet rail features non-slip rubber tips to keep it in place and from falling. Easy to install. Installing the toilet seat safety rail is quick and easy. Supports up to 300 lbs. The steel construction gives the toilet frame a strong and durable build, perfect for daily long-term use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lb Product Dims (h x w x d): 27.5\" - 31.5\" x 20.5\" x 17.5\" Product Weight: 3 lb Package Dims (h x w x d): 20\" x 3.5\" x 20\" Package Weight: 4.7 lb Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-toilet-safety-frame",
+   "handle": "carex-toilet-safety-frame",
+   "price_range": {
+    "min": {
+     "amount": 4582,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4582,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226854346857",
+     "sku": "FGB35800 GRAY",
+     "title": "Default Title",
+     "description": {
+      "html": "Enhance your independence and bath safety with the Carex Toilet Support Rail. The toilet safety rail provides a source of support for users to safety stand or sit at the toilet. To maximize comfort, the toilet support bar is height adjustable to meet user needs. It fits most toilets with an adjustable width from 18\" to 20\". Installation and set up is quick and easy within minutes. Height and width adjustable. The toilet hand rail has an adjustable width from 18\" to 20\" to fist most toilets. Its height adjusts as well to provide custom toilet grab rail support when sitting or standing. Cushioned hand grips for a comfortable experience. Hard grips on any toilet seat rail can make it difficult to use for those with fragile hands. The toilet assist rail features Hypalon cushioned hand grips for added comfort. It is an ideal bathroom safety rail for elderly persons, disabled, or anyone in need of a comfortable bathroom aid. Keeps users safe and independent. Remaining comfortable and independent in the bathroom helps maintain one's quality of life. Adjustable toilet safety rails provide safety and support for those that struggle with sitting, standing, or balancing. Non-slip rubber tips keep it in place. Improperly designed toilet arm rails can post a serious fall risk. Our handicap toilet rail features non-slip rubber tips to keep it in place and from falling. Easy to install. Installing the toilet seat safety rail is quick and easy. Supports up to 300 lbs. The steel construction gives the toilet frame a strong and durable build, perfect for daily long-term use. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. DISCLAIMER: We do not accept returns on any toilet products including commodes and raised toilet seats (opened or unopened). If you are unsure if this will work for you, please contact us so we can provide additional information and answer any questions. Weight Capacity: 300 lb Product Dims (h x w x d): 27.5\" - 31.5\" x 20.5\" x 17.5\" Product Weight: 3 lb Package Dims (h x w x d): 20\" x 3.5\" x 20\" Package Weight: 4.7 lb Instruction Manual"
+     },
+     "price": {
+      "amount": 4582,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-toilet-assist-safety-rails-carex-toilet-safety-frame-28288338690153.png?v=1679945499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226854346857:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-toilet-assist-safety-rails-carex-toilet-safety-frame-28288338690153.png?v=1679945499",
+     "alt_text": "Carex Toilet Safety Frame - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Condition_Hip Injury",
+    "Height Range_18\" to 20\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Product Category_Bathroom Safety",
+    "Product Type_Toilet Safety Rail",
+    "Stand Alone_No",
+    "ToiletSafetyRails",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150242361449",
+     "handle": "toilet-assist-safety-rails",
+     "title": "Toilet Assist Safety Rails",
+     "description": {
+      "html": "Toilet Safety Rails and Safety Frames for toilets can be conveniently paired with Raised Toilet Seats to add additional support and bathroom safety. Carex Frames and toilet Rails are available to attach directly to the toilet (easy to install) or as a stand-alone toilet grab bars with no installation needed, fitting your standard toilet with adjustable height. Our safety frames and rails can be used for bariatric patients with a weight capacity of up to 300 pounds. Please check the product details for further information."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121097928809",
+   "title": "Carex Tri-Grip Bathtub Rail",
+   "description": {
+    "html": "Add an extra level of bathroom safety and support with the Carex Tri-Grip Bathtub Rail. The bathtub bar features an attractive chrome finished to inhibit rust. Its ti level design provides multiple support surfaces to hold on to. Each gripping area has a textured finish for added grip. The bathroom safety rail fits most bathtubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to securely fit most standard tubs. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily and it will withstand even the wettest bathroom. Three surfaces to grip. The bath assist device has three levels of gripping surfaces to offer convenience and support. Users can grip on to each support surface based on their comfort level. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide an adjustable grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and easy. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 200 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those weak in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 200 lbs. Package Dims (h x w x d): 1.5\" x 17.75\" x 23.5\" Package Weight: 6.3 lbs. Product Dims (h x w x d): 16\" x 18\" x 7.5\" Product Weight: 4.8 lbs. Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-tri-grip-bathtub-rail",
+   "handle": "carex-tri-grip-bathtub-rail",
+   "price_range": {
+    "min": {
+     "amount": 6242,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6242,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226811388009",
+     "sku": "FGB20200 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Add an extra level of bathroom safety and support with the Carex Tri-Grip Bathtub Rail. The bathtub bar features an attractive chrome finished to inhibit rust. Its ti level design provides multiple support surfaces to hold on to. Each gripping area has a textured finish for added grip. The bathroom safety rail fits most bathtubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to securely fit most standard tubs. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily and it will withstand even the wettest bathroom. Three surfaces to grip. The bath assist device has three levels of gripping surfaces to offer convenience and support. Users can grip on to each support surface based on their comfort level. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide an adjustable grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and easy. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 200 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those weak in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 200 lbs. Package Dims (h x w x d): 1.5\" x 17.75\" x 23.5\" Package Weight: 6.3 lbs. Product Dims (h x w x d): 16\" x 18\" x 7.5\" Product Weight: 4.8 lbs. Instruction Manual"
+     },
+     "price": {
+      "amount": 6242,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-tri-grip-bathtub-rail-28288278003817.png?v=1679946904"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226811388009:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-tri-grip-bathtub-rail-28288278003817.png?v=1679946904",
+     "alt_text": "Carex Tri-Grip Bathtub Rail - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "BathTubSafetyRails",
+    "Brand_Carex",
+    "Carex",
+    "Height Added to Side of Bathtub_16\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Levels of Support_Three",
+    "Product Category_Bathroom Safety",
+    "Product Type_Bathtub Safety Rail",
+    "Weight Capacity_200 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221258857",
+     "handle": "bathtub-safety-rails-and-aids",
+     "title": "Bathtub Safety Rails and Aids",
+     "description": {
+      "html": "For additional support while entering or exiting the shower or bathtub add a Carex Bathtub Rail. Available in several options of gripping areas single, dual or tri-level and in chrome or white finishes that blend nicely with any bathroom. Our safety rails for bathtubs are easy to install, clamping on to the side of the bath tub. These work extremely well with bath benches and bath seats, making it easy to get in and out of the bath when stepping over the tub wall. We've designed our bathtub aids for elderly, seniors, handicapped, or those needing extra bathing support. Each bathtub assist bar has adjustable height making it beneficial for everyone, regardless of height."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121098518633",
+   "title": "Carex White Bathtub Rail",
+   "description": {
+    "html": "Improve your bath safety, reduce falls, and remain healthy with the Carex White Bathtub Rail. The tub safety rail is ideal for use on fiberglass tubs and features a wide contact area to help disperse weight evenly. This Bathtub Rail fits most bathtubs and easily attaches with a mounting clamp. Wide contact area for even weight distribution. The bathroom safety rail's 7\" wide grip evenly distributes the user's weight for stable help getting out of the bathtub. It allows for a firm and sturdy grip for safe entrance in and exit from the tub. Prevents bathroom accidents. Bathrooms are the most dangerous room in any house. Bathtub safety handles offer a source of support to avoid losing balance and slipping. Supports up to 200 lbs. The bathtub safety rail offers a solid support surface for those with weak balance or strength. Features a modern & attractive white color. The bath assist device's white color blends in nicely with most fiberglass tubs. The bathroom equipment is an attractive yet functional fixture in any bathroom. Attaches easily with mounting clamp. The bathtub safety bar's mounting clamp easily attaches to tubs with flat top walls 2.5\" to 5\" wide. The bathroom handrail extends up to 14\" above the tub wall for a convenient source of support. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 5 lbs. Weight Capacity: 200 lbs. Package Dims (h x w x d): 6\" x 7.5\" x 20.5\" Package Weight: 6.03 lbs. Product Dims (h x w x d): 13.5\" x 7\" x 1\" Color: White Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-white-bathtub-rail",
+   "handle": "carex-white-bathtub-rail",
+   "price_range": {
+    "min": {
+     "amount": 4747,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4747,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226819580009",
+     "sku": "FGB20400 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Improve your bath safety, reduce falls, and remain healthy with the Carex White Bathtub Rail. The tub safety rail is ideal for use on fiberglass tubs and features a wide contact area to help disperse weight evenly. This Bathtub Rail fits most bathtubs and easily attaches with a mounting clamp. Wide contact area for even weight distribution. The bathroom safety rail's 7\" wide grip evenly distributes the user's weight for stable help getting out of the bathtub. It allows for a firm and sturdy grip for safe entrance in and exit from the tub. Prevents bathroom accidents. Bathrooms are the most dangerous room in any house. Bathtub safety handles offer a source of support to avoid losing balance and slipping. Supports up to 200 lbs. The bathtub safety rail offers a solid support surface for those with weak balance or strength. Features a modern & attractive white color. The bath assist device's white color blends in nicely with most fiberglass tubs. The bathroom equipment is an attractive yet functional fixture in any bathroom. Attaches easily with mounting clamp. The bathtub safety bar's mounting clamp easily attaches to tubs with flat top walls 2.5\" to 5\" wide. The bathroom handrail extends up to 14\" above the tub wall for a convenient source of support. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 5 lbs. Weight Capacity: 200 lbs. Package Dims (h x w x d): 6\" x 7.5\" x 20.5\" Package Weight: 6.03 lbs. Product Dims (h x w x d): 13.5\" x 7\" x 1\" Color: White Instruction Manual"
+     },
+     "price": {
+      "amount": 4747,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-white-bathtub-rail-28288279019625.png?v=1679948370"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226819580009:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-white-bathtub-rail-28288279019625.png?v=1679948370",
+     "alt_text": "Carex White Bathtub Rail - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BathTubSafetyRails",
+    "Brand_Carex",
+    "Carex",
+    "Height Added to Side of Bathtub_14.12\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Levels of Support_One",
+    "Product Category_Bathroom Safety",
+    "Product Type_Bathtub Safety Rail",
+    "Weight Capacity_200 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221258857",
+     "handle": "bathtub-safety-rails-and-aids",
+     "title": "Bathtub Safety Rails and Aids",
+     "description": {
+      "html": "For additional support while entering or exiting the shower or bathtub add a Carex Bathtub Rail. Available in several options of gripping areas single, dual or tri-level and in chrome or white finishes that blend nicely with any bathroom. Our safety rails for bathtubs are easy to install, clamping on to the side of the bath tub. These work extremely well with bath benches and bath seats, making it easy to get in and out of the bath when stepping over the tub wall. We've designed our bathtub aids for elderly, seniors, handicapped, or those needing extra bathing support. Each bathtub assist bar has adjustable height making it beneficial for everyone, regardless of height."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121097732201",
+   "title": "Carex Bathtub Rail With Chrome Finish",
+   "description": {
+    "html": "Prevent slips and falls with the Carex Bathtub Rail. The bathtub bar features an attractive chrome finished to inhibit rust. It features a subtle height and reliable grip for bathing support that won't get in the way. The gripping area has a textured finish for added grip. The bathroom safety rail fits most bathtubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to securely fit most standard tubs. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily and it will withstand even the wettest bathroom. Offers a single level surface to grip. The bath assist device has a single level gripping surface to offer convenience and support. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide an adjustable grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and easy. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 200 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those weak in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 4.1 lbs. Package Dims (h x w x d): 1.5\" x 10.75\" x 14.75\" Package Weight: 4.83 lbs. Product Dims (h x w x d): 7\" x 11\" x 0.75\" Weight Capacity: 200 lbs. Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-bathtub-rail-with-chrome-finish",
+   "handle": "carex-bathtub-rail-with-chrome-finish",
+   "price_range": {
+    "min": {
+     "amount": 4083,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4083,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226811093097",
+     "sku": "FGB20100 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Prevent slips and falls with the Carex Bathtub Rail. The bathtub bar features an attractive chrome finished to inhibit rust. It features a subtle height and reliable grip for bathing support that won't get in the way. The gripping area has a textured finish for added grip. The bathroom safety rail fits most bathtubs. Fits most bathtubs. The bathtub safety handle features an adjustable mount to securely fit most standard tubs. Rust-resistant. The tub safety rail has a chrome finish to keep rust from forming. Users can use it daily and it will withstand even the wettest bathroom. Offers a single level surface to grip. The bath assist device has a single level gripping surface to offer convenience and support. Easy and adjustable mounting for an accurate fit. Steel spring clamps provide an adjustable grip for a tight fit. Installing the handicap bathtub rail is quick, painless, and easy. Won't scratch your tub. The bathtub handicap bar features protective rubber pads to keep it from damaging any tub. Supports up to 200 lbs. Bathtub safety bars provide an excellent support surface for anyone weak in strength. The grab bar's large weight capacity makes it a reliable bathtub handle for elderly persons, disabled, or those weak in strength. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 4.1 lbs. Package Dims (h x w x d): 1.5\" x 10.75\" x 14.75\" Package Weight: 4.83 lbs. Product Dims (h x w x d): 7\" x 11\" x 0.75\" Weight Capacity: 200 lbs. Instruction Manual"
+     },
+     "price": {
+      "amount": 4083,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-bathtub-rail-with-chrome-finish-28288278036585.png?v=1679935891"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226811093097:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-bathtub-safety-rails-carex-bathtub-rail-with-chrome-finish-28288278036585.png?v=1679935891",
+     "alt_text": "Carex Bathtub Rail With Chrome Finish - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "BathTubSafetyRails",
+    "Brand_Carex",
+    "Carex",
+    "Condition_Osteoporosis",
+    "Height Added to Side of Bathtub_7.5\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Levels of Support_One",
+    "Product Category_Bathroom Safety",
+    "Product Type_Bathtub Safety Rail",
+    "Weight Capacity_200 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221258857",
+     "handle": "bathtub-safety-rails-and-aids",
+     "title": "Bathtub Safety Rails and Aids",
+     "description": {
+      "html": "For additional support while entering or exiting the shower or bathtub add a Carex Bathtub Rail. Available in several options of gripping areas single, dual or tri-level and in chrome or white finishes that blend nicely with any bathroom. Our safety rails for bathtubs are easy to install, clamping on to the side of the bath tub. These work extremely well with bath benches and bath seats, making it easy to get in and out of the bath when stepping over the tub wall. We've designed our bathtub aids for elderly, seniors, handicapped, or those needing extra bathing support. Each bathtub assist bar has adjustable height making it beneficial for everyone, regardless of height."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzBNVEl4TURrM056TXlNakF4TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

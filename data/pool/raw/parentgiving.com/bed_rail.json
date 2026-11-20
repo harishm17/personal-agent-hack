@@ -1,0 +1,1508 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.parentgiving.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Parentgiving",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.parentgiving.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "43026907301"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "43026907301"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8047512748197",
+   "title": "Wonder EZ Adjust Bed Rail by Stander",
+   "description": {
+    "html": "Note: These rails should not be used on adjustable beds. Features: Extends in length from 20\"-30\" for full fall protection Support handle assists when sitting or standing Includes organizer pouch for convenient storage Easily secures to bedframe with safety strap Fits traditional bed types with 10-14 in. thick mattress Not compatible with adjustable base beds Passed the ASTM F3186-17 Safety Standard for Adult Portable Bed Rails Specifications: Weight: 14 lbs Weight Capacity: 300 lbs. Length of Rail: 20\u2033-30\u2033 Rail Height: 20\u2033 from base of mattress Depth: 18\" Fits Mattress Heights: 10\u2033-14\u2033 Materials: Steel Finish Type: Powder-coated"
+   },
+   "url": "https://www.parentgiving.com/products/ez-adjust-side-bed-rail",
+   "handle": "ez-adjust-side-bed-rail",
+   "price_range": {
+    "min": {
+     "amount": 13999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41996509348005",
+     "sku": "8000",
+     "title": "Each",
+     "description": {
+      "html": "Note: These rails should not be used on adjustable beds. Features: Extends in length from 20\"-30\" for full fall protection Support handle assists when sitting or standing Includes organizer pouch for convenient storage Easily secures to bedframe with safety strap Fits traditional bed types with 10-14 in. thick mattress Not compatible with adjustable base beds Passed the ASTM F3186-17 Safety Standard for Adult Portable Bed Rails Specifications: Weight: 14 lbs Weight Capacity: 300 lbs. Length of Rail: 20\u2033-30\u2033 Rail Height: 20\u2033 from base of mattress Depth: 18\" Fits Mattress Heights: 10\u2033-14\u2033 Materials: Steel Finish Type: Powder-coated"
+     },
+     "price": {
+      "amount": 13999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/WonderEZRail-1.jpg?v=1774624585"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41996509348005:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/WonderEZRail-1.jpg?v=1774624585"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Adjustable Bed Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289859666085",
+     "handle": "stander-bed-rails",
+     "title": "Stander Products",
+     "description": {
+      "html": "Stander has quickly become a leader in innovative products that enhance mobility and extend independence. With a dedicated research and development team, the company is committed to further expanding its line to meet the growing needs of customers. Tools that answer real life needs are the hallmark of this company. Parentgiving is pleased to offer Stander mobility aids that make everyday life easier and more comfortable \u2014 at affordable prices. For many, daily tasks such as getting out of bed, standing up from the toilet or getting up out of a chair can be difficult. It's our goal to provide you and your loved ones with quality products that help you to feel safe and allow you to live your life to the fullest. Included is a wide range of in-home designs that offer support for getting in and out of bed and chairs, from bed rails and poles to organizers and standing aids that also hold personal items you need within reach. For those who have an active lifestyle, Stander also makes effective mobility items, such as its easy-to-fold walkers and car aids that offer support and easier seating."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289863958693",
+     "handle": "adjustable-bed-rails",
+     "title": "Adjustable Bed Rails",
+     "description": {
+      "html": "Adjustable bed rails are the perfect solution to bedroom mobility, as they can be adjusted either up or down or width-wise to suit a person's particular needs in relation to their size and other considerations and also can be minimized almost completely when not needed."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290243903653",
+     "handle": "top-support-bed-rails",
+     "title": "Top Adult Bed Rails",
+     "description": {
+      "html": "Adult Bed Rails are a great support tool for when getting in and out of bed is a challenge. Often family caregivers call us looking for support structures like hospital beds, when in reality, a good bed rail can serve a similar purpose at a fraction of the cost. A lack of upper body strength, poor mobility and balance issues are some factors that can make this activity of daily living difficult and even painful. One of the simplest yet most effective solutions is a supportive bed rail. Quickly installed, a rail offers one or more easily accessible grasping points to ease lying down and standing up from bed and adjusting position while in bed. Some styles pivot or fold down and out of the way, while others also come with holders for bedside essentials like reading glasses. The following are our Parentgiving Picks for best Adult Bed Rails:"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291461333157",
+     "handle": "top-products",
+     "title": "Parentgiving Top Senior Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045634748581",
+   "title": "Bed Rail Advantage Traveler by Stander",
+   "description": {
+    "html": "Even away from home you can rest safely and get out of bed easily with the most portable bed rail ever designed. The Advantage Traveler comes fully assembled and weighs less than 8 pounds. To use, simply unfold the Traveler and slide it between the box spring and mattress. A safety strap is included for extra security. The Traveler features a cushion grip handle and bonus organizer pouch. Features: Prevent Falls: The ergonomic and padded handle of the Advantage Traveler helps to provide balance and support when transferring from bed Bariatric Support: The heavy duty Bed Rail Advantage Traveler supports up to 400 lbs making it the perfect bariatric solution for bedroom fall prevention Folds for Storage: Remove the two pins and fold the bed rail in half to carry on vacation in a suitcase or to keep in storage for visiting parents Organizer Pouch: Store small items in an easily accessible location next to your bed inside the included storage pouch Easy to Install: The Advantage Traveler slips between the mattress and box spring/slats and attaches to the bedframe with the included safety strap Bed Compatibility: The Bed Rail Advantage Traveler works with most traditional bed types with mattresses between 6\u2033 and 16\u2033 thick. Use the rail with any mattress size from a Twin to a California King. It is not intended to be used with adjustable beds. Do not use with an extra soft mattress"
+   },
+   "url": "https://www.parentgiving.com/products/portable-bed-rail-organizer",
+   "handle": "portable-bed-rail-organizer",
+   "price_range": {
+    "min": {
+     "amount": 11499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 11499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994369761445",
+     "sku": "5000",
+     "title": "Each",
+     "description": {
+      "html": "Even away from home you can rest safely and get out of bed easily with the most portable bed rail ever designed. The Advantage Traveler comes fully assembled and weighs less than 8 pounds. To use, simply unfold the Traveler and slide it between the box spring and mattress. A safety strap is included for extra security. The Traveler features a cushion grip handle and bonus organizer pouch. Features: Prevent Falls: The ergonomic and padded handle of the Advantage Traveler helps to provide balance and support when transferring from bed Bariatric Support: The heavy duty Bed Rail Advantage Traveler supports up to 400 lbs making it the perfect bariatric solution for bedroom fall prevention Folds for Storage: Remove the two pins and fold the bed rail in half to carry on vacation in a suitcase or to keep in storage for visiting parents Organizer Pouch: Store small items in an easily accessible location next to your bed inside the included storage pouch Easy to Install: The Advantage Traveler slips between the mattress and box spring/slats and attaches to the bedframe with the included safety strap Bed Compatibility: The Bed Rail Advantage Traveler works with most traditional bed types with mattresses between 6\u2033 and 16\u2033 thick. Use the rail with any mattress size from a Twin to a California King. It is not intended to be used with adjustable beds. Do not use with an extra soft mattress"
+     },
+     "price": {
+      "amount": 11499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/5000-1.jpg?v=1715352435"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994369761445:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/5000-1.jpg?v=1715352435"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bed Assist Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289859666085",
+     "handle": "stander-bed-rails",
+     "title": "Stander Products",
+     "description": {
+      "html": "Stander has quickly become a leader in innovative products that enhance mobility and extend independence. With a dedicated research and development team, the company is committed to further expanding its line to meet the growing needs of customers. Tools that answer real life needs are the hallmark of this company. Parentgiving is pleased to offer Stander mobility aids that make everyday life easier and more comfortable \u2014 at affordable prices. For many, daily tasks such as getting out of bed, standing up from the toilet or getting up out of a chair can be difficult. It's our goal to provide you and your loved ones with quality products that help you to feel safe and allow you to live your life to the fullest. Included is a wide range of in-home designs that offer support for getting in and out of bed and chairs, from bed rails and poles to organizers and standing aids that also hold personal items you need within reach. For those who have an active lifestyle, Stander also makes effective mobility items, such as its easy-to-fold walkers and car aids that offer support and easier seating."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289860845733",
+     "handle": "assist-bed-rails",
+     "title": "Bed Assist Rails",
+     "description": {
+      "html": "Assist bed rails and travel bed rails for adults are sturdy handles that provide balance and stability when getting in and out of bed or changing positions. We carry high quality assist rails by top names like Stander, Carex and SafetySure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289860878501",
+     "handle": "hospital-bed-rails",
+     "title": "Hospital Bed Rails",
+     "description": {
+      "html": "Hospital bed rails for seniors bolt on the bed frame or attach to the beds springs to help prevent falls or rolling out of bed."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289863991461",
+     "handle": "portable-bed-rails",
+     "title": "Portable or Travel Bed Rails",
+     "description": {
+      "html": "Portable bad rails are perfect for those who travel: they're lightweight, easy to remove and just as easy to reinstall. Most adult bed rails come with their own carrying cases, while others store easily in most suitcases."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290244427941",
+     "handle": "best-small-bedrails-bedrail-assists",
+     "title": "Best Smaller Footprint Bedrails (Bedrail Assists)",
+     "description": {
+      "html": "For those looking for a little help without a large footprint in the bedroom, these bed rails and bed rails assist fit that \"small footprint\" category. All of our Parentgiving Picks here are highly rated but we reserve a special shout out for the newly launched Signature Life Sleep Safe Rail - its width can be adjusted from a tidy 26\" to a robust 42\" and its attractive faux leather pouch and modern finish make it a distinct winner apart from its medical looking peers. An additional shout out goes to Stander again for their innovative Bed Rail Advantage Traveler - weighing only 6 lbs and folds compact to fit in a suitcase. Both of these standouts can be found here"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045710377125",
+   "title": "Wonder Stable Rail by Stander",
+   "description": {
+    "html": "The Stable Rail is the most stable bed rail on the market. This bed rail boasts a small, incredibly stable design for aiding with getting into and out of bed. This rail can be used on Twin, Full, Queen and King size beds. Features Include: Padded support handle helps get in and out of bed Adjustable legs reach the floor for added stability Easily secures to bedframe with safety strap Fits traditional bed types with 6-14 in. thick mattress Not compatible with adjustable base beds Specifications Weight: 9.6 lbs Weight Capacity: 300 lbs Length of Rail: 17\u201d Rail Height: 30\u201d-40\u201d Fits Mattress Heights: 6\u2033-14\u2033 Materials: Steel"
+   },
+   "url": "https://www.parentgiving.com/products/stable-rail",
+   "handle": "stable-rail",
+   "price_range": {
+    "min": {
+     "amount": 13199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994473472165",
+     "sku": "5800",
+     "title": "Each",
+     "description": {
+      "html": "The Stable Rail is the most stable bed rail on the market. This bed rail boasts a small, incredibly stable design for aiding with getting into and out of bed. This rail can be used on Twin, Full, Queen and King size beds. Features Include: Padded support handle helps get in and out of bed Adjustable legs reach the floor for added stability Easily secures to bedframe with safety strap Fits traditional bed types with 6-14 in. thick mattress Not compatible with adjustable base beds Specifications Weight: 9.6 lbs Weight Capacity: 300 lbs Length of Rail: 17\u201d Rail Height: 30\u201d-40\u201d Fits Mattress Heights: 6\u2033-14\u2033 Materials: Steel"
+     },
+     "price": {
+      "amount": 13199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Stable_Rail-1.jpg?v=1754325794"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994473472165:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Stable_Rail-1.jpg?v=1754325794"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bed Assist Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289859666085",
+     "handle": "stander-bed-rails",
+     "title": "Stander Products",
+     "description": {
+      "html": "Stander has quickly become a leader in innovative products that enhance mobility and extend independence. With a dedicated research and development team, the company is committed to further expanding its line to meet the growing needs of customers. Tools that answer real life needs are the hallmark of this company. Parentgiving is pleased to offer Stander mobility aids that make everyday life easier and more comfortable \u2014 at affordable prices. For many, daily tasks such as getting out of bed, standing up from the toilet or getting up out of a chair can be difficult. It's our goal to provide you and your loved ones with quality products that help you to feel safe and allow you to live your life to the fullest. Included is a wide range of in-home designs that offer support for getting in and out of bed and chairs, from bed rails and poles to organizers and standing aids that also hold personal items you need within reach. For those who have an active lifestyle, Stander also makes effective mobility items, such as its easy-to-fold walkers and car aids that offer support and easier seating."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289860845733",
+     "handle": "assist-bed-rails",
+     "title": "Bed Assist Rails",
+     "description": {
+      "html": "Assist bed rails and travel bed rails for adults are sturdy handles that provide balance and stability when getting in and out of bed or changing positions. We carry high quality assist rails by top names like Stander, Carex and SafetySure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045635240101",
+   "title": "Safety Bed Rail by Stander",
+   "description": {
+    "html": "The EZ Fold Metal Bed Rail from Standers Inc. (a.k.a. 30\" Safety Bed Rail) is 30 inches long and easily pivots/folds down and out of the way. This rail is designed to prevent falls while in bed and provide assistance for entering and exiting bed. It can be used with any size home or hospital bed. Space between rails is 3\". At 23\" high this rail will accommodate taller pillow top mattresses. This rail can be used on Twin, Full, Queen and King size beds. Features: Adding a support rail to a bed gives caregivers peace of mind because it helps keep loved ones safe. Stander's 30\" Safety Bed Rail works well as a side rail for preventing falls, and as a support bar for getting in and out of bed. The rail folds down and out of the way when it is not in use - a great feature when it's time to make the bed. It can be installed on either side of the bed in between the mattress and box spring. The 30\" Safety Bed Rail attaches to the bed frame with a dual safety strap which provides stability and keeps it from getting bumped out of place. It works on most traditional home beds and at 23\u201d high will accommodate taller pillow top mattresses. 2-IN-1: Use as a full guard rails to prevent nighttime falls or as a bedside support handle COLLAPSIBLE: Bed rail pivots down 180\u00b0 for increased access to the bed CLEARANCE: Requires 15\" of clearance from bottom of mattress to the floor to pivot WEIGHT CAPACITY: The EZ Adjust Bed Rail support up to 300 lbs BED TYPES: Attaches to most traditional home beds; not intended for us on adjustable beds MATTRESS HEIGHTS: Works with mattresses 10\"-19\" thick SAFETY STRAP: Included safety strap attaches rail to bed frame to prevent gaps and sliding Dimensions: 30\"L x 23\"W x 23\"H."
+   },
+   "url": "https://www.parentgiving.com/products/ez-fold-metal-bed-rail",
+   "handle": "ez-fold-metal-bed-rail",
+   "price_range": {
+    "min": {
+     "amount": 14499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994369826981",
+     "sku": "8050",
+     "title": "Each",
+     "description": {
+      "html": "The EZ Fold Metal Bed Rail from Standers Inc. (a.k.a. 30\" Safety Bed Rail) is 30 inches long and easily pivots/folds down and out of the way. This rail is designed to prevent falls while in bed and provide assistance for entering and exiting bed. It can be used with any size home or hospital bed. Space between rails is 3\". At 23\" high this rail will accommodate taller pillow top mattresses. This rail can be used on Twin, Full, Queen and King size beds. Features: Adding a support rail to a bed gives caregivers peace of mind because it helps keep loved ones safe. Stander's 30\" Safety Bed Rail works well as a side rail for preventing falls, and as a support bar for getting in and out of bed. The rail folds down and out of the way when it is not in use - a great feature when it's time to make the bed. It can be installed on either side of the bed in between the mattress and box spring. The 30\" Safety Bed Rail attaches to the bed frame with a dual safety strap which provides stability and keeps it from getting bumped out of place. It works on most traditional home beds and at 23\u201d high will accommodate taller pillow top mattresses. 2-IN-1: Use as a full guard rails to prevent nighttime falls or as a bedside support handle COLLAPSIBLE: Bed rail pivots down 180\u00b0 for increased access to the bed CLEARANCE: Requires 15\" of clearance from bottom of mattress to the floor to pivot WEIGHT CAPACITY: The EZ Adjust Bed Rail support up to 300 lbs BED TYPES: Attaches to most traditional home beds; not intended for us on adjustable beds MATTRESS HEIGHTS: Works with mattresses 10\"-19\" thick SAFETY STRAP: Included safety strap attaches rail to bed frame to prevent gaps and sliding Dimensions: 30\"L x 23\"W x 23\"H."
+     },
+     "price": {
+      "amount": 14499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-ez-fold-metal-bed-rail-1273-3437.jpg?v=1675894209"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994369826981:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-ez-fold-metal-bed-rail-1273-3437.jpg?v=1675894209",
+     "alt_text": "Safety Bed Rail by Stander"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bed Assist Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289859666085",
+     "handle": "stander-bed-rails",
+     "title": "Stander Products",
+     "description": {
+      "html": "Stander has quickly become a leader in innovative products that enhance mobility and extend independence. With a dedicated research and development team, the company is committed to further expanding its line to meet the growing needs of customers. Tools that answer real life needs are the hallmark of this company. Parentgiving is pleased to offer Stander mobility aids that make everyday life easier and more comfortable \u2014 at affordable prices. For many, daily tasks such as getting out of bed, standing up from the toilet or getting up out of a chair can be difficult. It's our goal to provide you and your loved ones with quality products that help you to feel safe and allow you to live your life to the fullest. Included is a wide range of in-home designs that offer support for getting in and out of bed and chairs, from bed rails and poles to organizers and standing aids that also hold personal items you need within reach. For those who have an active lifestyle, Stander also makes effective mobility items, such as its easy-to-fold walkers and car aids that offer support and easier seating."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289860845733",
+     "handle": "assist-bed-rails",
+     "title": "Bed Assist Rails",
+     "description": {
+      "html": "Assist bed rails and travel bed rails for adults are sturdy handles that provide balance and stability when getting in and out of bed or changing positions. We carry high quality assist rails by top names like Stander, Carex and SafetySure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289860878501",
+     "handle": "hospital-bed-rails",
+     "title": "Hospital Bed Rails",
+     "description": {
+      "html": "Hospital bed rails for seniors bolt on the bed frame or attach to the beds springs to help prevent falls or rolling out of bed."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290243903653",
+     "handle": "top-support-bed-rails",
+     "title": "Top Adult Bed Rails",
+     "description": {
+      "html": "Adult Bed Rails are a great support tool for when getting in and out of bed is a challenge. Often family caregivers call us looking for support structures like hospital beds, when in reality, a good bed rail can serve a similar purpose at a fraction of the cost. A lack of upper body strength, poor mobility and balance issues are some factors that can make this activity of daily living difficult and even painful. One of the simplest yet most effective solutions is a supportive bed rail. Quickly installed, a rail offers one or more easily accessible grasping points to ease lying down and standing up from bed and adjusting position while in bed. Some styles pivot or fold down and out of the way, while others also come with holders for bedside essentials like reading glasses. The following are our Parentgiving Picks for best Adult Bed Rails:"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045702480037",
+   "title": "No Gap Deluxe Half Length Side Bed Rails by Drive Medical",
+   "description": {
+    "html": "A unique design saves you from worry on this no-gap deluxe half length side bed rail by Drive Medical. It prevents individuals from being lodged between bars. The 1 inch steel construction with brown vein finish is durable and strong yet attractive. The rail fits most hospital beds with a steel frame (it is advisable to confirm compatibility with the bed manufacturer prior to purchase) and is ideal for maximum protection with the bed elevated. It comes easy to install and protected by a manufacturers limited lifetime warranty. (Not for use with Pan-Style bed surfaces.) 36\" Long x 18\" High x 2\" Wide. Please Note: Comes as 1 pair of two half length bed rails."
+   },
+   "url": "https://www.parentgiving.com/products/no-gap-deluxe-half-length-side-bed-rails-with-brown-vein-finish",
+   "handle": "no-gap-deluxe-half-length-side-bed-rails-with-brown-vein-finish",
+   "price_range": {
+    "min": {
+     "amount": 11499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 11499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994465935525",
+     "sku": "15201BV",
+     "title": "Case of 1",
+     "description": {
+      "html": "A unique design saves you from worry on this no-gap deluxe half length side bed rail by Drive Medical. It prevents individuals from being lodged between bars. The 1 inch steel construction with brown vein finish is durable and strong yet attractive. The rail fits most hospital beds with a steel frame (it is advisable to confirm compatibility with the bed manufacturer prior to purchase) and is ideal for maximum protection with the bed elevated. It comes easy to install and protected by a manufacturers limited lifetime warranty. (Not for use with Pan-Style bed surfaces.) 36\" Long x 18\" High x 2\" Wide. Please Note: Comes as 1 pair of two half length bed rails."
+     },
+     "price": {
+      "amount": 11499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Case of 1"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-no-gap-deluxe-half-length-side-bed-rails-with-brown-vein-finish-3935-4711.jpg?v=1675891695"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994465935525:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Case of 1"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-no-gap-deluxe-half-length-side-bed-rails-with-brown-vein-finish-3935-4711.jpg?v=1675891695",
+     "alt_text": "No Gap Deluxe Half Length Side Bed Rails by Drive Medical"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Adjustable Bed Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289860845733",
+     "handle": "assist-bed-rails",
+     "title": "Bed Assist Rails",
+     "description": {
+      "html": "Assist bed rails and travel bed rails for adults are sturdy handles that provide balance and stability when getting in and out of bed or changing positions. We carry high quality assist rails by top names like Stander, Carex and SafetySure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289860878501",
+     "handle": "hospital-bed-rails",
+     "title": "Hospital Bed Rails",
+     "description": {
+      "html": "Hospital bed rails for seniors bolt on the bed frame or attach to the beds springs to help prevent falls or rolling out of bed."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289863958693",
+     "handle": "adjustable-bed-rails",
+     "title": "Adjustable Bed Rails",
+     "description": {
+      "html": "Adjustable bed rails are the perfect solution to bedroom mobility, as they can be adjusted either up or down or width-wise to suit a person's particular needs in relation to their size and other considerations and also can be minimized almost completely when not needed."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15100367765876",
+   "title": "Wonder Pivot Bed Rail",
+   "description": {
+    "html": "Features: Fits traditional bed types with 8-12 in. thick mattress Extends in length for fall protection out of bed Railing pivots down 180 degrees Assist handle for bed transfers; supports 300 pounds Easily secures to bedframe with safety strap Not compatible with adjustable base beds Specifications: Weight Capacity: 300 lbs Length of Rail: 26\u2033-32\u2033-38.5\" Rail Height: 18\u2033 from base of mattress Depth: 22\""
+   },
+   "url": "https://www.parentgiving.com/products/wonder-pivot-bed-rail",
+   "handle": "wonder-pivot-bed-rail",
+   "price_range": {
+    "min": {
+     "amount": 15499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/54770441421172",
+     "sku": "8010",
+     "title": "Each",
+     "description": {
+      "html": "Features: Fits traditional bed types with 8-12 in. thick mattress Extends in length for fall protection out of bed Railing pivots down 180 degrees Assist handle for bed transfers; supports 300 pounds Easily secures to bedframe with safety strap Not compatible with adjustable base beds Specifications: Weight Capacity: 300 lbs Length of Rail: 26\u2033-32\u2033-38.5\" Rail Height: 18\u2033 from base of mattress Depth: 22\""
+     },
+     "price": {
+      "amount": 15499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/8010-1.jpg?v=1781098459"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/54770441421172:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/8010-1.jpg?v=1781098459"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Adjustable Bed Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289859666085",
+     "handle": "stander-bed-rails",
+     "title": "Stander Products",
+     "description": {
+      "html": "Stander has quickly become a leader in innovative products that enhance mobility and extend independence. With a dedicated research and development team, the company is committed to further expanding its line to meet the growing needs of customers. Tools that answer real life needs are the hallmark of this company. Parentgiving is pleased to offer Stander mobility aids that make everyday life easier and more comfortable \u2014 at affordable prices. For many, daily tasks such as getting out of bed, standing up from the toilet or getting up out of a chair can be difficult. It's our goal to provide you and your loved ones with quality products that help you to feel safe and allow you to live your life to the fullest. Included is a wide range of in-home designs that offer support for getting in and out of bed and chairs, from bed rails and poles to organizers and standing aids that also hold personal items you need within reach. For those who have an active lifestyle, Stander also makes effective mobility items, such as its easy-to-fold walkers and car aids that offer support and easier seating."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289860845733",
+     "handle": "assist-bed-rails",
+     "title": "Bed Assist Rails",
+     "description": {
+      "html": "Assist bed rails and travel bed rails for adults are sturdy handles that provide balance and stability when getting in and out of bed or changing positions. We carry high quality assist rails by top names like Stander, Carex and SafetySure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289863958693",
+     "handle": "adjustable-bed-rails",
+     "title": "Adjustable Bed Rails",
+     "description": {
+      "html": "Adjustable bed rails are the perfect solution to bedroom mobility, as they can be adjusted either up or down or width-wise to suit a person's particular needs in relation to their size and other considerations and also can be minimized almost completely when not needed."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045849182373",
+   "title": "Bed Rail Foam Bumper Pads by Drive Medical",
+   "description": {
+    "html": "Side Rail bumper pads are an ideal choice for those at risk for entrapment or that have trouble staying In bed. The soft foam provides a comfortable barrier that provides security Features: Made with high-density foam to create a safe environment for patients Each pair comes complete with a fluid-resistant vinyl cover with hook-and-loop fastener straps to secure to side rail Product Specification: Overall Product Height: 1.5\" Length 72\" Overall Product Width: 14\" Primary Product Color: Green Primary Product Material: Foam and Viny"
+   },
+   "url": "https://www.parentgiving.com/products/bed-rail-foam-bumper-pads-by-drive-medical",
+   "handle": "bed-rail-foam-bumper-pads-by-drive-medical",
+   "price_range": {
+    "min": {
+     "amount": 8399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8399,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994679550117",
+     "sku": "M3800-72",
+     "title": "Pair of 2",
+     "description": {
+      "html": "Side Rail bumper pads are an ideal choice for those at risk for entrapment or that have trouble staying In bed. The soft foam provides a comfortable barrier that provides security Features: Made with high-density foam to create a safe environment for patients Each pair comes complete with a fluid-resistant vinyl cover with hook-and-loop fastener straps to secure to side rail Product Specification: Overall Product Height: 1.5\" Length 72\" Overall Product Width: 14\" Primary Product Color: Green Primary Product Material: Foam and Viny"
+     },
+     "price": {
+      "amount": 8399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8399,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Pair of 2"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-bed-rail-foam-bumper-pads-by-drive-medical-8237-3854.jpg?v=1675883719"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994679550117:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Pair of 2"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-bed-rail-foam-bumper-pads-by-drive-medical-8237-3854.jpg?v=1675883719",
+     "alt_text": "Bed Rail Foam Bumper Pads by Drive Medical"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bed Rail Pads & Accessories"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858977957",
+     "handle": "more-bedding-products",
+     "title": "Bedroom Accessories",
+     "description": {
+      "html": "Bedboards, book and beverage holders, in-bed bathing system, fall pad, specialty pillows and more make being in bed more comfortable. Read our Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289860911269",
+     "handle": "bed-rail-pads-more",
+     "title": "Bed Rail Pads & Accessories",
+     "description": {
+      "html": "Pads and Accessories for adult bed rails, roll prevention bolster pads, rail gap wedges and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045708771493",
+   "title": "Wonder Mobility Rail by Stander",
+   "description": {
+    "html": "Features: Padded support handle helps get in and out of bed Swing-out bar pivots 180 degrees for extra support Easily secures to bedframe with safety strap Fits traditional bed types with 10-15 in. thick mattress Not compatible with adjustable base beds Passed the ASTM F3186-17 Safety Standard for Adult Portable Bed Rails Specifications: Weight: 10.5 lbs Weight Capacity: 300 lbs Length of Rail: 19\u201d Rail Height: 21\u2033 from base of mattress Swing-out Arm Width: 15\u201d Fits Mattress Heights: 10\u2033-15\u2033 Materials: Steel Finish Type: Powder-coated Both the legs and rail are height adjustable."
+   },
+   "url": "https://www.parentgiving.com/products/the-mobility-rail",
+   "handle": "the-mobility-rail",
+   "price_range": {
+    "min": {
+     "amount": 12999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15665,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15665,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994472095909",
+     "sku": "5850",
+     "title": "Each",
+     "description": {
+      "html": "Features: Padded support handle helps get in and out of bed Swing-out bar pivots 180 degrees for extra support Easily secures to bedframe with safety strap Fits traditional bed types with 10-15 in. thick mattress Not compatible with adjustable base beds Passed the ASTM F3186-17 Safety Standard for Adult Portable Bed Rails Specifications: Weight: 10.5 lbs Weight Capacity: 300 lbs Length of Rail: 19\u201d Rail Height: 21\u2033 from base of mattress Swing-out Arm Width: 15\u201d Fits Mattress Heights: 10\u2033-15\u2033 Materials: Steel Finish Type: Powder-coated Both the legs and rail are height adjustable."
+     },
+     "price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15665,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/5850-1.jpg?v=1754320775"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994472095909:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/5850-1.jpg?v=1754320775"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bed Assist Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289859666085",
+     "handle": "stander-bed-rails",
+     "title": "Stander Products",
+     "description": {
+      "html": "Stander has quickly become a leader in innovative products that enhance mobility and extend independence. With a dedicated research and development team, the company is committed to further expanding its line to meet the growing needs of customers. Tools that answer real life needs are the hallmark of this company. Parentgiving is pleased to offer Stander mobility aids that make everyday life easier and more comfortable \u2014 at affordable prices. For many, daily tasks such as getting out of bed, standing up from the toilet or getting up out of a chair can be difficult. It's our goal to provide you and your loved ones with quality products that help you to feel safe and allow you to live your life to the fullest. Included is a wide range of in-home designs that offer support for getting in and out of bed and chairs, from bed rails and poles to organizers and standing aids that also hold personal items you need within reach. For those who have an active lifestyle, Stander also makes effective mobility items, such as its easy-to-fold walkers and car aids that offer support and easier seating."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289860845733",
+     "handle": "assist-bed-rails",
+     "title": "Bed Assist Rails",
+     "description": {
+      "html": "Assist bed rails and travel bed rails for adults are sturdy handles that provide balance and stability when getting in and out of bed or changing positions. We carry high quality assist rails by top names like Stander, Carex and SafetySure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289867989157",
+     "handle": "bed-safety-accessories",
+     "title": "Bed Safety Accessories",
+     "description": {
+      "html": "Our bed safety accessories make your or a loved one's life easier. From bedside tables, to rails, handles, and toilet seats, Parentgiving has you covered."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15014019465588",
+   "title": "Stander 30'' Safety Bed Rail & Padded Pouch",
+   "description": {
+    "html": "Features: 30 in. wide guard rail to prevent falls out of bed Support handle offers assistance in and out of bed Railing pivots down 180 degrees for bed access Organizer pouch for convenient bedside storage Easily secures to bedframe with safety strap Fits traditional bed types with 6-16 in. thick mattress Not compatible with adjustable base beds Specifications: Length of Rail: 30\u201d Rail Height: 23\u2033 from base of mattress Weight: 12 lbs Weight Capacity: 300 lbs Fits Mattress Heights: 6\u2033-16\u2033 Materials: Steel Finish Type: Powder-coated"
+   },
+   "url": "https://www.parentgiving.com/products/stander-30-safety-bed-rail-padded-pouch",
+   "handle": "stander-30-safety-bed-rail-padded-pouch",
+   "price_range": {
+    "min": {
+     "amount": 14999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/54264043635060",
+     "sku": "8051",
+     "title": "Each",
+     "description": {
+      "html": "Features: 30 in. wide guard rail to prevent falls out of bed Support handle offers assistance in and out of bed Railing pivots down 180 degrees for bed access Organizer pouch for convenient bedside storage Easily secures to bedframe with safety strap Fits traditional bed types with 6-16 in. thick mattress Not compatible with adjustable base beds Specifications: Length of Rail: 30\u201d Rail Height: 23\u2033 from base of mattress Weight: 12 lbs Weight Capacity: 300 lbs Fits Mattress Heights: 6\u2033-16\u2033 Materials: Steel Finish Type: Powder-coated"
+     },
+     "price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/StanderPaddedBedRail-1.jpg?v=1775153144"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/54264043635060:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/StanderPaddedBedRail-1.jpg?v=1775153144"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bed Assist Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289860845733",
+     "handle": "assist-bed-rails",
+     "title": "Bed Assist Rails",
+     "description": {
+      "html": "Assist bed rails and travel bed rails for adults are sturdy handles that provide balance and stability when getting in and out of bed or changing positions. We carry high quality assist rails by top names like Stander, Carex and SafetySure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045772439717",
+   "title": "Wonder Bed Handle",
+   "description": {
+    "html": "Features: Padded support handle helps get in and out of bed Easily secures to bedframe with safety strap Fits traditional bed types with 6-14 in. thick mattress Not compatible with adjustable base beds Specifications: Weight: 6 lbs Weight Capacity: 300 lbs Length of Rail: 17.5\u201d Rail Height: 21\u201d from base of mattress Depth: 18\" Fits Mattress Heights: 6\u2033-14\u2033 Materials: Steel Finish Type: Powder-coated"
+   },
+   "url": "https://www.parentgiving.com/products/able-life-bedside-safety-handle-pouch-by-stander",
+   "handle": "able-life-bedside-safety-handle-pouch-by-stander",
+   "price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994534813861",
+     "sku": "8400",
+     "title": "Each",
+     "description": {
+      "html": "Features: Padded support handle helps get in and out of bed Easily secures to bedframe with safety strap Fits traditional bed types with 6-14 in. thick mattress Not compatible with adjustable base beds Specifications: Weight: 6 lbs Weight Capacity: 300 lbs Length of Rail: 17.5\u201d Rail Height: 21\u201d from base of mattress Depth: 18\" Fits Mattress Heights: 6\u2033-14\u2033 Materials: Steel Finish Type: Powder-coated"
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Wonder8400-1.jpg?v=1774364010"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994534813861:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Wonder8400-1.jpg?v=1774364010"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bed Assist Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289860845733",
+     "handle": "assist-bed-rails",
+     "title": "Bed Assist Rails",
+     "description": {
+      "html": "Assist bed rails and travel bed rails for adults are sturdy handles that provide balance and stability when getting in and out of bed or changing positions. We carry high quality assist rails by top names like Stander, Carex and SafetySure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNRFExTnpjeU5ETTVOekUzTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

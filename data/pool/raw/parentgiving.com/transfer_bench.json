@@ -1,0 +1,1514 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.parentgiving.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Parentgiving",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.parentgiving.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "43026907301"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "43026907301"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8045900857509",
+   "title": "ProBasics Transfer Bench",
+   "description": {
+    "html": "Features: Aluminum frame is lightweight, sturdy and corrosion-proof Durable blow-molded bench and back have a textured surface and are contoured with drainage holes to reduce slipping Wide-based tips and suction cups add sturdiness and prevent slipping Legs have one-inch easy snap-button adjustments Converts easily for left or right hand transfers Quick tool-free assembly Specifications: Overall Footprint: 28.5\"W x 17.5\"D Seat Dimensions: 25\"W x 16\"D Adjustable Seat Height: 19\" - 23\" Weight Capacity: 300 lbs. Product Weight: 11.3 lbs"
+   },
+   "url": "https://www.parentgiving.com/products/probasics-transfer-bench",
+   "handle": "probasics-transfer-bench",
+   "price_range": {
+    "min": {
+     "amount": 9799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9799,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42668163170469",
+     "sku": "CPHBSTB_1",
+     "title": "Each",
+     "description": {
+      "html": "Features: Aluminum frame is lightweight, sturdy and corrosion-proof Durable blow-molded bench and back have a textured surface and are contoured with drainage holes to reduce slipping Wide-based tips and suction cups add sturdiness and prevent slipping Legs have one-inch easy snap-button adjustments Converts easily for left or right hand transfers Quick tool-free assembly Specifications: Overall Footprint: 28.5\"W x 17.5\"D Seat Dimensions: 25\"W x 16\"D Adjustable Seat Height: 19\" - 23\" Weight Capacity: 300 lbs. Product Weight: 11.3 lbs"
+     },
+     "price": {
+      "amount": 9799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-probasics-transfer-bench-9134-2010.jpg?v=1675893584"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/42668163170469:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-probasics-transfer-bench-9134-2010.jpg?v=1675893584",
+     "alt_text": "ProBasics Transfer Bench"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathtub Transfer Benches"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858683045",
+     "handle": "bathtub-transfer-benches",
+     "title": "Bathtub Transfer Benches",
+     "description": {
+      "html": "Everyone needs a good shower or bath on a regular basis. But for seniors, disabled persons and others with limited mobility, getting in or out of a bathtub can be a challenging and potentially dangerous experience. Stepping over a tub wall simply isn't an option for some, and many caregivers aren't strong enough to lift someone up and over. A tub transfer bench is a safe and effective way to get in the shower without unnecessary risk or strain. Parentgiving has bath benches for elderly and injured individuals from top brands that will provide bathroom mobility for those who need assistance. We have a wide assortment of transfer benches and chairs in all sizes and styles. Universal bathroom benches straddle the bathtub wall, allowing users to sit on the portion outside of the tub, easily slide inside and remain seated for a bath or shower. A backrest on the in-tub portion provides additional support. From there, you can select a number of options for fit and function. Select an adjustable shower bench for added customization, padded transfer benches that are extra-comfortable, reversible bath benches that can be used in any tub or a bariatric transfer bench for heavier patients. Molded shower benches fit the body more exactly for added comfort. All of our transfer tub seats for elderly people are made to be secure and easy to use. Steel or aluminum frames offer lightweight strength while the textured plastic seats have drain holes to prevent water puddling. Enjoy full stability thanks to angled rubber-tipped legs and get a bench with a commode opening for sudden urges. The current and former caregivers on our staff only choose the best transfer benches and other bathroom aids that have been shown to work well at an affordable price. Check out our Bathtub Transfer Bench Buyer's Guide for more information or contact us for knowledgeable assistance. All orders over $50 will ship fast and free!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290244165797",
+     "handle": "best-bath-safety-items",
+     "title": "Top Bath Safety Items",
+     "description": {
+      "html": "Bathrooms are an unforgiving environment for the frail: they are comprised of hard surfaces (porcelain and tile), can become slick with condensation and moisture, and require transition from standing to sitting (toileting) or transition from bath or shower. All of these factors can lead to falls or undue strain on caregivers. We have carefully compiled the best bath safety products (by activity) to better navigate bathroom tasks and keep a loved one safer in their home environment. Our Parentgiving Picks for Bath Safety are:"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/641214349684",
+     "handle": "caregiving-essentials",
+     "title": "Caregiving Essentials",
+     "description": {
+      "html": "Caregiving Essentials for the elderly are assistive devices and daily living products designed to promote independence, ensure safety, and reduce physical strain on caregivers. These tools are categorized into mobility, bathing and toileting, personal care, and safety and monitoring solutions."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045917831333",
+   "title": "Drive Medical Splash Defense Transfer Bench with Curtain Guard Protection",
+   "description": {
+    "html": "Features: Please Note: Please Measure before ordering to ensure item fits correctly. For safety and hygienic reasons this item is not returnable once the case has been opened. New \"U\" shape cut-out design enables the shower curtain liner to stay within the bath tub and avoiding water spillage outside onto the bathroom floor Reversible to accommodate any bathroom Tool-free assembly of back, legs and arm Height adjusts in \u00bd\" increments with unique \"Dual Column\" extension legs 400 lb weight capacity A-frame construction provides stability Durable blow-molded plastic bench and backrest Pinch-free lever allows for push pins to be depressed without pinching fingers Specifications: Armrest Length: 11.75\" Height Adjustment: 1/2\" increments Height Setting (armrest to floor): 27.25\" Outside Width Between Legs: 33.5\" Seat Depth: 16\" Seat To Floor Height: 17.5\u201d \u2013 22.5\u201d Seat Width: 28\" Warranty: Limited Lifetime Drive Medical Splash Defense Transfer Bench with Curtain Guard Protection Spec Sheet"
+   },
+   "url": "https://www.parentgiving.com/products/drive-medical-splash-defense-transfer-bench-with-curtain-guard-protection",
+   "handle": "drive-medical-splash-defense-transfer-bench-with-curtain-guard-protection",
+   "price_range": {
+    "min": {
+     "amount": 14900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994753245349",
+     "sku": "RTL12032KDR",
+     "title": "Each",
+     "description": {
+      "html": "Features: Please Note: Please Measure before ordering to ensure item fits correctly. For safety and hygienic reasons this item is not returnable once the case has been opened. New \"U\" shape cut-out design enables the shower curtain liner to stay within the bath tub and avoiding water spillage outside onto the bathroom floor Reversible to accommodate any bathroom Tool-free assembly of back, legs and arm Height adjusts in \u00bd\" increments with unique \"Dual Column\" extension legs 400 lb weight capacity A-frame construction provides stability Durable blow-molded plastic bench and backrest Pinch-free lever allows for push pins to be depressed without pinching fingers Specifications: Armrest Length: 11.75\" Height Adjustment: 1/2\" increments Height Setting (armrest to floor): 27.25\" Outside Width Between Legs: 33.5\" Seat Depth: 16\" Seat To Floor Height: 17.5\u201d \u2013 22.5\u201d Seat Width: 28\" Warranty: Limited Lifetime Drive Medical Splash Defense Transfer Bench with Curtain Guard Protection Spec Sheet"
+     },
+     "price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-medical-splash-defense-transfer-bench-with-curtain-guard-protection-9456-2738.jpg?v=1675885809"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994753245349:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drive-medical-splash-defense-transfer-bench-with-curtain-guard-protection-9456-2738.jpg?v=1675885809",
+     "alt_text": "Drive Medical Splash Defense Transfer Bench with Curtain Guard Protection"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathtub Transfer Benches"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858683045",
+     "handle": "bathtub-transfer-benches",
+     "title": "Bathtub Transfer Benches",
+     "description": {
+      "html": "Everyone needs a good shower or bath on a regular basis. But for seniors, disabled persons and others with limited mobility, getting in or out of a bathtub can be a challenging and potentially dangerous experience. Stepping over a tub wall simply isn't an option for some, and many caregivers aren't strong enough to lift someone up and over. A tub transfer bench is a safe and effective way to get in the shower without unnecessary risk or strain. Parentgiving has bath benches for elderly and injured individuals from top brands that will provide bathroom mobility for those who need assistance. We have a wide assortment of transfer benches and chairs in all sizes and styles. Universal bathroom benches straddle the bathtub wall, allowing users to sit on the portion outside of the tub, easily slide inside and remain seated for a bath or shower. A backrest on the in-tub portion provides additional support. From there, you can select a number of options for fit and function. Select an adjustable shower bench for added customization, padded transfer benches that are extra-comfortable, reversible bath benches that can be used in any tub or a bariatric transfer bench for heavier patients. Molded shower benches fit the body more exactly for added comfort. All of our transfer tub seats for elderly people are made to be secure and easy to use. Steel or aluminum frames offer lightweight strength while the textured plastic seats have drain holes to prevent water puddling. Enjoy full stability thanks to angled rubber-tipped legs and get a bench with a commode opening for sudden urges. The current and former caregivers on our staff only choose the best transfer benches and other bathroom aids that have been shown to work well at an affordable price. Check out our Bathtub Transfer Bench Buyer's Guide for more information or contact us for knowledgeable assistance. All orders over $50 will ship fast and free!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300360171685",
+     "handle": "bathtub-safety-top-picks",
+     "title": "Bathtub Shower Bench & Chair Top Picks",
+     "description": {
+      "html": "Bathtubs are an unforgiving environment for the frail: they are comprised of hard surfaces (porcelain and tile), can become slick with condensation and moisture, and require transition from bath or shower. All of these factors can lead to falls or undue strain on caregivers. We have carefully compiled the best bathtub safety products to better navigate from preventing falls and tasks to keep a loved one safer in their home environment."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14696603648372",
+   "title": "Medline Transfer Bench with Backrest and Pushbutton Height Adjustment",
+   "description": {
+    "html": "Features: Medline transfer benches feature slip-resistant suction cup feet for stability in the shower. Direction of the seat back can be reversed easily without tools Side arm provides extra stability and leverage Material: Aluminum Max Tub Height: 21\" Weight Capacity: 400 lb."
+   },
+   "url": "https://www.parentgiving.com/products/medline-transfer-bench-with-backrest-and-pushbutton-height-adjustment",
+   "handle": "medline-transfer-bench-with-backrest-and-pushbutton-height-adjustment",
+   "price_range": {
+    "min": {
+     "amount": 5999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51987749831028",
+     "sku": "G3-100KBX1",
+     "title": "Each",
+     "description": {
+      "html": "Features: Medline transfer benches feature slip-resistant suction cup feet for stability in the shower. Direction of the seat back can be reversed easily without tools Side arm provides extra stability and leverage Material: Aluminum Max Tub Height: 21\" Weight Capacity: 400 lb."
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/TransferBenchAdjust-1.jpg?v=1743523372"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/51987749831028:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/TransferBenchAdjust-1.jpg?v=1743523372"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathtub Transfer Benches"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858683045",
+     "handle": "bathtub-transfer-benches",
+     "title": "Bathtub Transfer Benches",
+     "description": {
+      "html": "Everyone needs a good shower or bath on a regular basis. But for seniors, disabled persons and others with limited mobility, getting in or out of a bathtub can be a challenging and potentially dangerous experience. Stepping over a tub wall simply isn't an option for some, and many caregivers aren't strong enough to lift someone up and over. A tub transfer bench is a safe and effective way to get in the shower without unnecessary risk or strain. Parentgiving has bath benches for elderly and injured individuals from top brands that will provide bathroom mobility for those who need assistance. We have a wide assortment of transfer benches and chairs in all sizes and styles. Universal bathroom benches straddle the bathtub wall, allowing users to sit on the portion outside of the tub, easily slide inside and remain seated for a bath or shower. A backrest on the in-tub portion provides additional support. From there, you can select a number of options for fit and function. Select an adjustable shower bench for added customization, padded transfer benches that are extra-comfortable, reversible bath benches that can be used in any tub or a bariatric transfer bench for heavier patients. Molded shower benches fit the body more exactly for added comfort. All of our transfer tub seats for elderly people are made to be secure and easy to use. Steel or aluminum frames offer lightweight strength while the textured plastic seats have drain holes to prevent water puddling. Enjoy full stability thanks to angled rubber-tipped legs and get a bench with a commode opening for sudden urges. The current and former caregivers on our staff only choose the best transfer benches and other bathroom aids that have been shown to work well at an affordable price. Check out our Bathtub Transfer Bench Buyer's Guide for more information or contact us for knowledgeable assistance. All orders over $50 will ship fast and free!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045696385189",
+   "title": "Drive Medical Bathtub Transfer Bench with Adjustable Backrest",
+   "description": {
+    "html": "This plastic bathtub transfer bench by Drive Medical accommodates any bathroom because of its reversible seat and extension legs with extra large suction cups that lock to provide added versatility and safety. The Dual Column extension legs height adjust in 1/2\" increments. Sturdy A frame construction, durable blow-molded plastic bench and backrest ensure maximum stability. This product features tool-free assembly leaving no hardware exposed. The product also comes with a manufacturers limited lifetime warranty. Specifications: Outside Legs (Width): 33\" Outside Legs (Depth): 24\" Overall Height: 36.75\" Seat (Width): 26\" Seat (Depth): 18.5\"-19.5\" Seat (Height): 17.75\"-21.75\" Product Weight: 10.3 lbs. Weight Capacity: 400 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/bathtub-transfer-bench-with-adjustable-backrest",
+   "handle": "bathtub-transfer-bench-with-adjustable-backrest",
+   "price_range": {
+    "min": {
+     "amount": 11199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 11199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994460070053",
+     "sku": "12011KD-1",
+     "title": "Each",
+     "description": {
+      "html": "This plastic bathtub transfer bench by Drive Medical accommodates any bathroom because of its reversible seat and extension legs with extra large suction cups that lock to provide added versatility and safety. The Dual Column extension legs height adjust in 1/2\" increments. Sturdy A frame construction, durable blow-molded plastic bench and backrest ensure maximum stability. This product features tool-free assembly leaving no hardware exposed. The product also comes with a manufacturers limited lifetime warranty. Specifications: Outside Legs (Width): 33\" Outside Legs (Depth): 24\" Overall Height: 36.75\" Seat (Width): 26\" Seat (Depth): 18.5\"-19.5\" Seat (Height): 17.75\"-21.75\" Product Weight: 10.3 lbs. Weight Capacity: 400 lbs."
+     },
+     "price": {
+      "amount": 11199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/TransferBenchDrive-1.jpg?v=1794582387"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994460070053:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/TransferBenchDrive-1.jpg?v=1794582387"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045702086821",
+   "title": "Heavy Duty Bariatric Plastic Seat Transfer Bench",
+   "description": {
+    "html": "This heavy duty plastic transfer bench by Drive Medical is built extra strong, capable of withstanding a weight capacity of 500 pounds. It easily accommodates any bathroom because of its reversible bench and extension legs with extra large suction cups that lock to provide added versatility and safety. The Dual Column extension legs height adjust in 1/2 increments. Sturdy A frame construction, durable blow-molded plastic bench and backrest ensure maximum stability. This product features tool-free assembly leaving no hardware exposed. The product also comes with a manufacturers limited lifetime warranty. Specifications: Outside Legs (Width): 33\" Outside Legs (Depth): 25\" Overall Height: 39.5\" Seat (Width): 26.5\" Seat (Depth): 16.5\" Seat (Height): 18.25\"-23.25\" (adjustable) Product Weight: 12 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/heavy-duty-bariatric-plastic-seat-transfer-bench",
+   "handle": "heavy-duty-bariatric-plastic-seat-transfer-bench",
+   "price_range": {
+    "min": {
+     "amount": 16999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 16999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994465149093",
+     "sku": "12025KD-1",
+     "title": "Each",
+     "description": {
+      "html": "This heavy duty plastic transfer bench by Drive Medical is built extra strong, capable of withstanding a weight capacity of 500 pounds. It easily accommodates any bathroom because of its reversible bench and extension legs with extra large suction cups that lock to provide added versatility and safety. The Dual Column extension legs height adjust in 1/2 increments. Sturdy A frame construction, durable blow-molded plastic bench and backrest ensure maximum stability. This product features tool-free assembly leaving no hardware exposed. The product also comes with a manufacturers limited lifetime warranty. Specifications: Outside Legs (Width): 33\" Outside Legs (Depth): 25\" Overall Height: 39.5\" Seat (Width): 26.5\" Seat (Depth): 16.5\" Seat (Height): 18.25\"-23.25\" (adjustable) Product Weight: 12 lbs."
+     },
+     "price": {
+      "amount": 16999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 16999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-heavy-duty-bariatric-plastic-seat-transfer-bench-3909.jpg?v=1675888754"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994465149093:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-heavy-duty-bariatric-plastic-seat-transfer-bench-3909.jpg?v=1675888754",
+     "alt_text": "Heavy Duty Bariatric Plastic Seat Transfer Bench"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathtub Transfer Benches"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858683045",
+     "handle": "bathtub-transfer-benches",
+     "title": "Bathtub Transfer Benches",
+     "description": {
+      "html": "Everyone needs a good shower or bath on a regular basis. But for seniors, disabled persons and others with limited mobility, getting in or out of a bathtub can be a challenging and potentially dangerous experience. Stepping over a tub wall simply isn't an option for some, and many caregivers aren't strong enough to lift someone up and over. A tub transfer bench is a safe and effective way to get in the shower without unnecessary risk or strain. Parentgiving has bath benches for elderly and injured individuals from top brands that will provide bathroom mobility for those who need assistance. We have a wide assortment of transfer benches and chairs in all sizes and styles. Universal bathroom benches straddle the bathtub wall, allowing users to sit on the portion outside of the tub, easily slide inside and remain seated for a bath or shower. A backrest on the in-tub portion provides additional support. From there, you can select a number of options for fit and function. Select an adjustable shower bench for added customization, padded transfer benches that are extra-comfortable, reversible bath benches that can be used in any tub or a bariatric transfer bench for heavier patients. Molded shower benches fit the body more exactly for added comfort. All of our transfer tub seats for elderly people are made to be secure and easy to use. Steel or aluminum frames offer lightweight strength while the textured plastic seats have drain holes to prevent water puddling. Enjoy full stability thanks to angled rubber-tipped legs and get a bench with a commode opening for sudden urges. The current and former caregivers on our staff only choose the best transfer benches and other bathroom aids that have been shown to work well at an affordable price. Check out our Bathtub Transfer Bench Buyer's Guide for more information or contact us for knowledgeable assistance. All orders over $50 will ship fast and free!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045702119589",
+   "title": "Combination Padded Seat Transfer Bench with Commode Opening",
+   "description": {
+    "html": "This versatile product from Drive Medical combines a transfer bench and a commode into one. Its comfortable cushioned seat, backrest and aluminum-frame construction provide comfort and stability. The seat\\'s back adjusts tool-free for your convenience, while extra large suction cups provide added safety. The product comes with a 7.5-quart commode bucket and can withstand a 400-pound capacity. It is protected by a manufacturers limited lifetime warranty. Specifications: Outside Legs Width: 17.5\" Outside Legs Depth: 28.5\" Overall Height: 36.25\" Seat Width: 24\" Seat Depth: 16\" Seat Height: 18.5\"-22.5\" Product Weight: 11.2 Lbs. Weight Capacity: 400 Lbs Seat Opening Dimension: 9\" wide x 12.5\" deep"
+   },
+   "url": "https://www.parentgiving.com/products/combination-padded-seat-transfer-bench-with-commode-opening",
+   "handle": "combination-padded-seat-transfer-bench-with-commode-opening",
+   "price_range": {
+    "min": {
+     "amount": 15499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994465214629",
+     "sku": "12005KDC-1",
+     "title": "Each",
+     "description": {
+      "html": "This versatile product from Drive Medical combines a transfer bench and a commode into one. Its comfortable cushioned seat, backrest and aluminum-frame construction provide comfort and stability. The seat\\'s back adjusts tool-free for your convenience, while extra large suction cups provide added safety. The product comes with a 7.5-quart commode bucket and can withstand a 400-pound capacity. It is protected by a manufacturers limited lifetime warranty. Specifications: Outside Legs Width: 17.5\" Outside Legs Depth: 28.5\" Overall Height: 36.25\" Seat Width: 24\" Seat Depth: 16\" Seat Height: 18.5\"-22.5\" Product Weight: 11.2 Lbs. Weight Capacity: 400 Lbs Seat Opening Dimension: 9\" wide x 12.5\" deep"
+     },
+     "price": {
+      "amount": 15499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-combination-padded-seat-transfer-bench-with-commode-opening-3916-1218.jpg?v=1675884837"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994465214629:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-combination-padded-seat-transfer-bench-with-commode-opening-3916-1218.jpg?v=1675884837",
+     "alt_text": "Combination Padded Seat Transfer Bench with Commode Opening"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathtub Transfer Benches"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858683045",
+     "handle": "bathtub-transfer-benches",
+     "title": "Bathtub Transfer Benches",
+     "description": {
+      "html": "Everyone needs a good shower or bath on a regular basis. But for seniors, disabled persons and others with limited mobility, getting in or out of a bathtub can be a challenging and potentially dangerous experience. Stepping over a tub wall simply isn't an option for some, and many caregivers aren't strong enough to lift someone up and over. A tub transfer bench is a safe and effective way to get in the shower without unnecessary risk or strain. Parentgiving has bath benches for elderly and injured individuals from top brands that will provide bathroom mobility for those who need assistance. We have a wide assortment of transfer benches and chairs in all sizes and styles. Universal bathroom benches straddle the bathtub wall, allowing users to sit on the portion outside of the tub, easily slide inside and remain seated for a bath or shower. A backrest on the in-tub portion provides additional support. From there, you can select a number of options for fit and function. Select an adjustable shower bench for added customization, padded transfer benches that are extra-comfortable, reversible bath benches that can be used in any tub or a bariatric transfer bench for heavier patients. Molded shower benches fit the body more exactly for added comfort. All of our transfer tub seats for elderly people are made to be secure and easy to use. Steel or aluminum frames offer lightweight strength while the textured plastic seats have drain holes to prevent water puddling. Enjoy full stability thanks to angled rubber-tipped legs and get a bench with a commode opening for sudden urges. The current and former caregivers on our staff only choose the best transfer benches and other bathroom aids that have been shown to work well at an affordable price. Check out our Bathtub Transfer Bench Buyer's Guide for more information or contact us for knowledgeable assistance. All orders over $50 will ship fast and free!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15497543450996",
+   "title": "M+D 360 Transfer Bench by Drive Medical",
+   "description": {
+    "html": "Features: The Bench That Moves: An innovative easy-glide roller system delivers smooth, controlled transfers without the sticking or excessive force common with traditional sliding benches. 360\u00b0 Rotating Seat: A lever-lock rotating seat securely locks into four positions, allowing users to enter and exit the tub from their most comfortable angle. Smooth, Sag-Free Performance: Independent rollers paired with a reinforced support beam provide stable, confident movement throughout every transfer. Safer on Wet Surfaces: Angled anti-slip feet with water-dispersing treads improve traction on wet floors, while integrated drainage channels help reduce standing water on the seat. Broad Customer Fit: Fourteen height adjustment settings, a spacious 20\" \u00d7 14\" seat, removable armrests, and a 350 lb weight capacity allow one SKU to accommodate a wide variety of users."
+   },
+   "url": "https://www.parentgiving.com/products/m-d-360-transfer-bench-by-drive-medical",
+   "handle": "m-d-360-transfer-bench-by-drive-medical",
+   "price_range": {
+    "min": {
+     "amount": 19900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/56881382818164",
+     "sku": "MD50200GR",
+     "title": "Grey / Each",
+     "description": {
+      "html": "Features: The Bench That Moves: An innovative easy-glide roller system delivers smooth, controlled transfers without the sticking or excessive force common with traditional sliding benches. 360\u00b0 Rotating Seat: A lever-lock rotating seat securely locks into four positions, allowing users to enter and exit the tub from their most comfortable angle. Smooth, Sag-Free Performance: Independent rollers paired with a reinforced support beam provide stable, confident movement throughout every transfer. Safer on Wet Surfaces: Angled anti-slip feet with water-dispersing treads improve traction on wet floors, while integrated drainage channels help reduce standing water on the seat. Broad Customer Fit: Fourteen height adjustment settings, a spacious 20\" \u00d7 14\" seat, removable armrests, and a 350 lb weight capacity allow one SKU to accommodate a wide variety of users."
+     },
+     "price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Grey"
+      },
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/MDTransferBench-1.jpg?v=1794840493"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/56881382818164:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Grey"
+      }
+     ]
+    },
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/MDTransferBench-1.jpg?v=1794840493"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathtub Transfer Benches"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858683045",
+     "handle": "bathtub-transfer-benches",
+     "title": "Bathtub Transfer Benches",
+     "description": {
+      "html": "Everyone needs a good shower or bath on a regular basis. But for seniors, disabled persons and others with limited mobility, getting in or out of a bathtub can be a challenging and potentially dangerous experience. Stepping over a tub wall simply isn't an option for some, and many caregivers aren't strong enough to lift someone up and over. A tub transfer bench is a safe and effective way to get in the shower without unnecessary risk or strain. Parentgiving has bath benches for elderly and injured individuals from top brands that will provide bathroom mobility for those who need assistance. We have a wide assortment of transfer benches and chairs in all sizes and styles. Universal bathroom benches straddle the bathtub wall, allowing users to sit on the portion outside of the tub, easily slide inside and remain seated for a bath or shower. A backrest on the in-tub portion provides additional support. From there, you can select a number of options for fit and function. Select an adjustable shower bench for added customization, padded transfer benches that are extra-comfortable, reversible bath benches that can be used in any tub or a bariatric transfer bench for heavier patients. Molded shower benches fit the body more exactly for added comfort. All of our transfer tub seats for elderly people are made to be secure and easy to use. Steel or aluminum frames offer lightweight strength while the textured plastic seats have drain holes to prevent water puddling. Enjoy full stability thanks to angled rubber-tipped legs and get a bench with a commode opening for sudden urges. The current and former caregivers on our staff only choose the best transfer benches and other bathroom aids that have been shown to work well at an affordable price. Check out our Bathtub Transfer Bench Buyer's Guide for more information or contact us for knowledgeable assistance. All orders over $50 will ship fast and free!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/630857433460",
+     "handle": "new-arrivals",
+     "title": "New Arrivals",
+     "description": {
+      "html": "Parentgiving has new products to share from the top names in caregiver and personal hygiene supplies. From disposable incontinence products to mobility scooters and lift chairs, our New Arrivals page shows you our latest additions."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045708509349",
+   "title": "Drive Premium Series Bath Bench with Back and Arms",
+   "description": {
+    "html": "The new Drive Medical Premium Series Bath Bench with Back and Arms is designed for individuals who require additional safety measures with balance in the bath or shower. The seat fits all shapes and sizes and the lightweight design has large stable legs with soft non-slip feet, ensuring user safety. This bath bench has tool free height adjustment and tool free back, leg and arm removal as well. 350lbs weight capacity. Width 21\", depth 14\", seat depth 2.25\", seat high 20.5\", seat low 16\"."
+   },
+   "url": "https://www.parentgiving.com/products/premium-series-bath-bench-with-back-and-arms-by-drive",
+   "handle": "premium-series-bath-bench-with-back-and-arms-by-drive",
+   "price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994471604389",
+     "sku": "RTL12505",
+     "title": "Case of 4",
+     "description": {
+      "html": "The new Drive Medical Premium Series Bath Bench with Back and Arms is designed for individuals who require additional safety measures with balance in the bath or shower. The seat fits all shapes and sizes and the lightweight design has large stable legs with soft non-slip feet, ensuring user safety. This bath bench has tool free height adjustment and tool free back, leg and arm removal as well. 350lbs weight capacity. Width 21\", depth 14\", seat depth 2.25\", seat high 20.5\", seat low 16\"."
+     },
+     "price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Case of 4"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/DriveBathChair-1.jpg?v=1735566166"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994471604389:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Case of 4"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/DriveBathChair-1.jpg?v=1735566166"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300360171685",
+     "handle": "bathtub-safety-top-picks",
+     "title": "Bathtub Shower Bench & Chair Top Picks",
+     "description": {
+      "html": "Bathtubs are an unforgiving environment for the frail: they are comprised of hard surfaces (porcelain and tile), can become slick with condensation and moisture, and require transition from bath or shower. All of these factors can lead to falls or undue strain on caregivers. We have carefully compiled the best bathtub safety products to better navigate from preventing falls and tasks to keep a loved one safer in their home environment."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045756022949",
+   "title": "Adjustable Height Bathing Stool by Drive",
+   "description": {
+    "html": "Product DescriptionManufactured with 1 aluminum tubing, this bath stool by Drive Medical is lightweight yet does not skimp on stability. At 3.5 lbs. this bath stool is portable and great for travel. Additional leg support collars provide increased strength and support. Impact-resistant, composite seat is both crack-proof and tarnish resistant. The bath stools attractive white finish is sure to match any bathroom style. Features and Benefits Aluminum frame is lightweight, durable and corrosion proof Impact resistant, composite seat is crack-proof and tarnish resistant Support collar reduces rattle Product Specification Outside Legs (Width): 13.5. Weight Capacity: 300 lbs. Outside Legs (Depth): 13.5. Seat (Width): 13. Seat (Depth): 13. Seat (Height): 13.5-17. Product Weight: 3.5 lbs. Model # RTL12004KD"
+   },
+   "url": "https://www.parentgiving.com/products/adjustable-height-bath-stool",
+   "handle": "adjustable-height-bath-stool",
+   "price_range": {
+    "min": {
+     "amount": 3899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3899,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994523279525",
+     "sku": "RTL12004KD",
+     "title": "White / Each",
+     "description": {
+      "html": "Product DescriptionManufactured with 1 aluminum tubing, this bath stool by Drive Medical is lightweight yet does not skimp on stability. At 3.5 lbs. this bath stool is portable and great for travel. Additional leg support collars provide increased strength and support. Impact-resistant, composite seat is both crack-proof and tarnish resistant. The bath stools attractive white finish is sure to match any bathroom style. Features and Benefits Aluminum frame is lightweight, durable and corrosion proof Impact resistant, composite seat is crack-proof and tarnish resistant Support collar reduces rattle Product Specification Outside Legs (Width): 13.5. Weight Capacity: 300 lbs. Outside Legs (Depth): 13.5. Seat (Width): 13. Seat (Depth): 13. Seat (Height): 13.5-17. Product Weight: 3.5 lbs. Model # RTL12004KD"
+     },
+     "price": {
+      "amount": 3899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3899,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-adjustable-height-bath-stool-5896.jpg?v=1675882775"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994523279525:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      }
+     ]
+    },
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-adjustable-height-bath-stool-5896.jpg?v=1675882775",
+     "alt_text": "Adjustable Height Bathing Stool by Drive"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300360171685",
+     "handle": "bathtub-safety-top-picks",
+     "title": "Bathtub Shower Bench & Chair Top Picks",
+     "description": {
+      "html": "Bathtubs are an unforgiving environment for the frail: they are comprised of hard surfaces (porcelain and tile), can become slick with condensation and moisture, and require transition from bath or shower. All of these factors can lead to falls or undue strain on caregivers. We have carefully compiled the best bathtub safety products to better navigate from preventing falls and tasks to keep a loved one safer in their home environment."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045889585317",
+   "title": "DMI Wood Transfer Board with Two Cut-Outs",
+   "description": {
+    "html": "Features: Deluxe transfer board with two cutouts Sealed and coated board allows easier transfers to/from bed, wheel chair, chair, car or commode Two cut-out handles allow for easy carrying or gripping Constructed of solid 3/4\" maple plywood. Weight capacity: 440lbs Dimensions: 8 X 30 Inc Sealed and coated for protection and friction-free transfer."
+   },
+   "url": "https://www.parentgiving.com/products/dmi-wood-transfer-board-with-two-cut-outs",
+   "handle": "dmi-wood-transfer-board-with-two-cut-outs",
+   "price_range": {
+    "min": {
+     "amount": 6399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8532,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8532,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994714841253",
+     "sku": "833049_EA",
+     "title": "Each",
+     "description": {
+      "html": "Features: Deluxe transfer board with two cutouts Sealed and coated board allows easier transfers to/from bed, wheel chair, chair, car or commode Two cut-out handles allow for easy carrying or gripping Constructed of solid 3/4\" maple plywood. Weight capacity: 440lbs Dimensions: 8 X 30 Inc Sealed and coated for protection and friction-free transfer."
+     },
+     "price": {
+      "amount": 6399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8532,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-dmi-wood-transfer-board-with-two-cut-outs-8920-0522.jpg?v=1675885583"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994714841253:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-dmi-wood-transfer-board-with-two-cut-outs-8920-0522.jpg?v=1675885583",
+     "alt_text": "DMI Wood Transfer Board with Two Cut-Outs"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Patient Transfer Devices"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289859535013",
+     "handle": "transfer-devices",
+     "title": "Patient Transfer Devices",
+     "description": {
+      "html": "People with limited mobility still need to move to and from places. But manually lifting and assisting someone into a wheelchair or bathtub is time-consuming and exhausting at best and can often increase the risk of injury. The right transfer device can simplify the process for both caregivers and patients, saving time and headaches while improving safety. Parentgiving has many types of transfer devices for those who don't have sufficient leg strength or function to do certain activities on their own. From standing up on your own to getting into bed, we have the products and recommendations to assist patients and caregivers. Transfer aids are availability for all levels of mobility and limb function. The simplest way to get from location to location is a patient transfer board for sliding from wheelchair to toilet, bed to wheelchair and other movements. Long and short transfer boards can be ordered depending on the transfer distance. For help getting up or sitting down, options include ceiling-to-floor grab bars, small assist rails and trapeze stands for more independent patients or transfer belts for when caregiver help is needed. If a patient has trouble turning, a pivot disc will help them change directions without slipping on the floor. At Parentgiving, we offer the best seat lifts for elderly disabled seniors. Other options include vehicle grab handles for getting out of a car, bed slings for caregivers to move a patient into the correct position and sliding pads to make turning over in bed easier. Find out more about specific transfer devices by reading our Buyer's Guide or by calling our customer service team. We will help you find the right bed to wheelchair transfer assist device, auto transfer device or other aid for immobile people. Our low prices and fast shipping are part of our commitment to patients and caregivers to sell quality transfer products that the people who need them most can afford."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNRFExT0RnNU5UZzFNekUzTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}
