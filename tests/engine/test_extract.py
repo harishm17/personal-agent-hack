@@ -227,3 +227,11 @@ def test_a_sheet_declares_its_own_units_and_no_code_names_them():
             for spelling in rules.DECLARED.pop(name, []):
                 rules.ALIASES.pop(spelling, None)
             rules.FAMILY.pop(name, None)
+
+
+def test_a_grade_number_and_a_number_joined_to_a_word_are_not_rival_quantities():
+    assert [n["value"] for n in spans.quote_numbers("#2 Premium Yellow Pencil (144/Pack)")] == [144.0]
+    assert [n["value"] for n in spans.quote_numbers("No. 2 pencils, 12 in a box")] == [12.0]
+    three = spans.quote_numbers("100 perforated, 3-hole punched sheets each")
+    assert [(n["value"], n["family"]) for n in three] == [(100.0, None), (3.0, "other unit")]
+    assert spans.quote_numbers("10-inch rough-in")[0]["family"] == "length"

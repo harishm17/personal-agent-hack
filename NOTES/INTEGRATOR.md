@@ -1333,3 +1333,101 @@ The gate is red after merging main (bbbdc45) into stream/TRAIL: 2 failed, 250 pa
   signs"). Images: still no `product.image_url` on any candidate of sheets 1, 2 or 3 on my port; the code draws it when present.
 - STILL OPEN on my side: images unseen (C4), the QR not scanned and no real signature or phone-driven limit move seen on this
   screen (C3, C6), the 20 px hit areas and the guidelines audit.
+
+## 13:25 from ENGINE — DONE E22: sheet 3 read end to end (`SIGNOFF_SHEET=sheet3`), per line, the five probes, and one sheet key I need from you
+Passes run on main's pool: reference and both SIE readers (206 products, **357 option pages**, 2 min 28 s, every quote found), the
+order (**4 of 4 limits match the sheet**), the instruction scan ("206 pages scanned, 0 instructions to an agent found"). Committed:
+`data/figures/sheet3/`. `degraded`: none. 263 tests pass.
+| line (x24) | candidates | inside | outside | unclear | not stated | pick, each | line total |
+|---|---|---|---|---|---|---|---|
+| C1 headphones | 133 | 34 | 35 | 0 | 64 | jlab.com, JBuddies Studio On-Ear Kids Wired Type-C, Pink, **$17.99**: `85 <= 85` ("caps playback at 85dB") | $431.76 |
+| C2 crayons | 31 | 2 | 11 | 16 | 2 | schoolsupplyboxes.com, 24 Count Crayons, **$0.79**: `24 == 24` ("24 Count Crayons") | $18.96 |
+| C3 notebook | 126 | 43 | 5 | 1 | 77 | schoolsupplyboxes.com, College Ruled 100 Sheet Composition Notebook, Black, **$1.05**: `100 >= 70` | $25.20 |
+| C4 pencils | 73 | 22 | 9 | 25 | 17 | bazicproducts.com, #2 Premium Yellow Pencil (12/Pack), **$1.99**: `12 >= 12` | $47.76 |
+Totals: 363 candidates, 101 inside, 60 outside, 42 unclear, 160 not stated; **total $523.68** for 24 of each.
+
+**The five probes, all as the probe saw them:**
+- BuddyPhones School+ Wireless (onanoff.com, $29.99): **outside, "volume limit: 94 <= 85 is false"**, quote "three sound levels—75dB, 85dB, or 94dB".
+- JLab JBuddies Pop Wireless ($17.99): **outside, "volume limit: 95 <= 85 is false"**; three statements read: "cap output at 85 dB or 95 dB", "95 dB as the default", "Output: 85 / 95 dB (switchable)". The largest counts (`several: "largest"`).
+- PuroBasic Wired (purosound.com, $24.65; scratch-and-dent $20.00): **inside, `85 <= 85`**, "limit harmful volumes over 85 dB", "all within the safety of 85dB".
+- Skullcandy: **all 47 option pages "max volume never stated on the page"** (0 statements read on any of its 14 products).
+- The 64-count box (bazicproducts.com, "64 ct. Premium Crayons w/sharpener", $5.99): **outside, "crayons in a box: 64 == 24 is false"**.
+
+**One thing in `sheets/sheet3.json` made the result worse than the pages deserve: a count has no unit.** Pages say "24 Color Premium
+Crayons", "Set of 12", "Each pack comes with 12 pre-sharpened pencils", "(12/Pack)". The reader rightly returns no unit, and the rule
+"a number without a unit is unclear" then marks them: 14 crayon and 25 pencil candidates read "no unit stated". That rule is right for
+inches and pounds and wrong for things counted. Please add **`"unit_required": false`** to the three count limits (`C2.count`,
+`C3.sheets`, `C4.count`); it is an optional key on a limit (default true) that I have implemented and tested
+(`test_a_count_needs_no_unit_when_the_sheet_says_so_and_a_measure_still_does`). I ran the state with it set in memory:
+| with the key | inside | outside | unclear | not stated | picks |
+|---|---|---|---|---|---|
+| C2 crayons | 6 | 21 | 2 | 2 | unchanged |
+| C3 notebook | 44 | 5 | 0 | 77 | unchanged |
+| C4 pencils | 32 | 21 | 3 | 17 | unchanged |
+| all four lines | 116 | 82 | **5** | 160 | **no pick and no total changes** |
+The 5 left are real: "Each set comes with 12 and 24 crayons" (page states both 12 and 24), a backpack bundle, a mixed pencil set.
+- Two general fixes in code came out of these pages, with tests: a number written "#2" or "No. 2" is a grade, not a quantity (it made
+  "#2 … (144/Pack)" read "page states both 2 and 144"); a number joined to a word ("3-hole", "10-inch") takes that word as its unit.
+- The figure meanings in the sheet read well; I would change none of the words. Two things to know rather than fix: "24 Color …
+  Crayons" is read as 24 crayons (label "Color"), which is what the meaning's examples ask for; and 77 of 126 notebook pages and 64 of
+  133 headphone pages truly state no figure.
+- **Readers on sheet 3 after the rules:** Qwen on SIE has the same outcome on 240 of 363 checks and changes the pick on C2, C3, C4;
+  SIE extract alone 143 of 363. On these pages the SIE readers are well behind the reference; keep the gate on the reference.
+- DONE E13 (reported 13:23) and E14 (reported 13:23, bed-rail line corrected at 13:31). DONE E18 (words sent 13:02, bed-rail entry
+  reworded 13:23). Still yours: `figures` in `sheets/sheet1.json`; `several` on T1.flush and the vanity words in `sheets/sheet2.json`.
+
+## 13:30 from ENGINE — DONE E24, DONE E25: sheet 4 holds on my branch (`SIGNOFF_SHEET=sheet4`); two decisions for you inside
+- DONE E24: `data_from` in `signoff/engine/paths.py` (`data_sheet`): pool, raw replies, store answers, figures, the scan and the
+  reader comparison come from the named sheet; the order document and `derived.json` are the sheet's own
+  (`data/figures/sheet4/_order/`). Nothing was fetched or re-read for sheet 4. `python -m signoff.extract.order --sheet sheet4` →
+  **6 of 6 limits equal to the sheet**. State: mode live, 92 products, **153 candidates** (options), order "matches the sheet on 6 of
+  6 limits", "92 pages scanned, 0 instructions to an agent found", `degraded` none.
+- DONE E25: `POST /api/admin/use-sheet {"sheet_id"}` (resets the run, starts a new receipt chain that names the last one; 404 for an
+  unknown sheet; I added nothing to your guard list) and `GET /api/sheets` → `{active, sheets: [{id, title, items, show, issuer,
+  shopper}], not_shown}` listing the sheets whose file has `"show": true` (none has it yet: set it on 4 and 3). Switching takes
+  about 50 ms, a reset about 30 ms (it was 600 ms: my code re-read the keys file once per figure; fixed).
+| sheet 4 line | candidates | inside | outside | unclear | not stated | pick and price |
+|---|---|---|---|---|---|---|
+| L1 shower chair | 43 | 13 | 11 | 2 | 17 | parentgiving.com, Deluxe Aluminum Bath Bench by Drive (Gray), **$41.99**: `350 >= 300`, width passes |
+| L4 walker | 73 | 47 | 16 | 4 | 6 | carex.com, Carex Classics Dual-Button Walker, **$44.71**: `300 >= 300`, `23.5 <= 28` ("Product Dims (h x w x d): 30" - 37" x 23.5" x 18.5"") |
+| L5 grab bar | 37 | 7 | 22 | 1 | 7 | **open: "nothing inside the limits states a delivery time"** |
+Total $86.70 for the two picked lines; 67 inside, 49 outside, 7 unclear, 30 not stated in all.
+- [ ] **Decide, L5:** all 7 grab bars inside the limits are at vivehealth.com (Textured Grab Bars 16 Inch $27.99, `440 >= 300`,
+  `16 >= 16`; Metal Grab Bar 16" $33.99 in five finishes; Textured 24 Inch $34.99), and vivehealth.com states no delivery time, so
+  under sheet 4's rule the line is open. In sheet 1 this line was `pick_up_locally`; sheet 4 makes it `cart`. Options: leave it
+  open (true, and a good line to show: "the store states no delivery time"); set `"fulfilment": "pick_up_locally"` on L5 (pick:
+  the $27.99 bar, not carted); or the pick rule `cheapest` for the sheet. Nothing in code changes for any of them.
+  What you saw at 13:27 (17 cheaper rejections, the Chrome Ultra Grip at 75 lb): with options as candidates L5 has 22 outside,
+  most of them the 12 in options (`12 >= 16` false) and the 75 and 250 lb bars.
+- [ ] **Decide, the words for `overall_width` (sheet 1 is the data sheet, so the words go in `sheets/sheet1.json`, and sheet 4's copy
+  for consistency):** the new prompt asks for every statement, and on the L1 pick the reader returned two for overall width:
+  `Width (outside legs): 17"` and `Seat Dimensions: 20"W x 14.5"D x 15.75"-19.75"H`. Both pass 21.5, so the pick is right, but the sum
+  shown is `20 <= 21.5` **with the seat's dimensions as its quote**, which is not the overall width. Add one sentence to the meaning:
+  "The seat's own width, the width between the arms, a depth and a height are other measures: do not report them." I am testing
+  those words on the 116 shower chair and walker pages in scratch now and will tell you the result before you change the file.
+- A fix that came out of this: each value put to a test is now shown with the quote of the statement it was read from (it used to
+  show the first statement's quote beside another statement's number). Test `test_the_words_shown_beside_a_value_are_those_of…`.
+- Accessories: STORE's rule **is** applied to sheet 1's pool and lets both through; the exact reasons are in NOTES/STORE.md. On
+  sheet 4 only "Replacement Leg Tips" ($15.00, L1) remains, shown as "weight capacity never stated on the page"; it cannot be picked.
+- Sheet 3 was reported at 13:40 (all five probes as expected). E15, E12, E16 are done (13:23 note).
+- [ ] From my 13:40 note, still yours: `"unit_required": false` on sheet 3's three count limits (unclear 42 → 5, no pick changes).
+
+## 13:32 from ENGINE — the width words, tested: use them
+I read the 116 shower chair and walker pages again in scratch with one sentence added to `figures.overall_width`. Result:
+- Statements whose quote is a seat, an arm span or "between": 5 before, 1 after. The L1 pick now shows **`17 <= 21.5` with the
+  quote `Width (outside legs): 17"`** (it showed `20 <= 21.5` with the seat's dimensions). No pick and no price changes.
+- Sheet 4 with the sentence: L1 12 inside, 12 outside, 1 unclear, 18 not stated (was 13 / 11 / 2 / 17); L4 48 / 16 / 2 / 7 (was 47 /
+  16 / 4 / 6); L5 unchanged. Two pages lose a statement they should have kept and one gains one: that is the reader's own variation
+  between passes, the same size as before.
+- [ ] Put this in `sheets/sheet1.json` (the data sheet; the reading cache follows its words) and the same in `sheets/sheet4.json`:
+  `"overall_width": "the item's overall width, side to side at its widest, in inches: the size that has to fit inside the tub or pass
+  through the door. The seat's own width, the width between the arms, a depth and a height are other measures: do not report them."`
+  Then tell me, or run `uv run python -m signoff.extract.run --sheet sheet1`: it re-reads only the pages asked for overall width
+  (about 90 s with the SIE reader alongside) and nothing else.
+
+**Where every ENGINE line of OPEN.md stands** (proof is in the notes above and in `tests/engine`, 264 passed):
+DONE E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13, E14, E15, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25.
+Nothing is WONTDO. Waiting on you (sheet files): `show: true` on sheets 4 and 3; L5's fulfilment or rule on sheet 4; the width
+sentence in sheets 1 and 4; `unit_required: false` on sheet 3's three counts; the vanity words on sheet 2 (not shown, low priority).
+Known and said: the API key was billed by my batch reads until 13:15 and is probably out of credit; live chat answers now come
+through the command line (3 to 5 s).

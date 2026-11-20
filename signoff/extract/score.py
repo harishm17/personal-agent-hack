@@ -16,6 +16,7 @@ import pathlib
 import statistics
 import sys
 
+from signoff.engine import rules
 from signoff.extract import combine, spans
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -70,7 +71,6 @@ def stated(rows):
 def built(rows, sheet, pool, answers):
     """A reader's figures run through the engine's own rules on the sheet as on disk: each candidate's status,
     each check's outcome, and each line's pick."""
-    from signoff.engine import rules
     text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
     ready = [spans.ready(dict(r), text.get((r["store"], r["product_id"]))) for r in rows]
     state = rules.build_state(json.loads(json.dumps(sheet)), pool, ready, answers, [], "comparison")
