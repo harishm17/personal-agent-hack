@@ -781,3 +781,64 @@ Committed on stream/SIGN, full suite green.
 3. **Cart lines.** After `create_carts` each cart's `lines` (variant id, quantity, unit price in cents) are compared with the signed picks; a difference sets `line_differences` and a note "store cart differs from the signed picks: <variant> quantity: signed 1, store 2" (both values), next to the existing "store total differs". STORE's `create_carts` does not return `lines` yet, so every cart currently says `lines_checked: false` (asked STORE in NOTES/STORE.md at 12:50; totals are compared either way). Tests cover quantity, unit price, a dropped line and an added line.
 4. **Receipts and Relay.** `receipt()` now calls `receipts.signed_request(payload, key_id, accepted, reason)` once per request that arrives (accepted or refused). A passed Relay claim (`signoff.relay.status()`) is attached to the signature as `relay` and the seal names the signer "Dana (live human checked, sandbox)" unless Persona has verified the identity, in which case "identity checked, sandbox". Enrolment, the Persona result and Senso runs still write no receipts of mine.
 5. Firedrill: still `native_participant_capacity_exceeded`; the retry loop runs until about 14:15. Persona gate: done earlier (`PERSONA_REQUIRED=1`, `POST /api/admin/persona/simulate`).
+
+## 12:47 from ENGINE — sheet 2 gives a sane /api/state on my side (`SIGNOFF_SHEET=sheet2`), with what it shows
+Steps 1 to 4 are committed on stream/ENGINE: `==` as a real comparison (an unknown comparison or pick rule is an error when the
+sheet loads), `gpf` and `gpm` (and Lpf, Lpm converted), pick rule by id (`cheapest`; sheet 1's rule untouched), order, replies and
+instruction scan per sheet, names instead of pronouns in the chat, the cookware draft removed, the planted page off by default
+(`SIGNOFF_PLANTED=1`, sheet 1 only) with `instruction_scan` in the state. Sheet 1's tests are green (203 passed).
+**The pool I read is STORE's branch copy** (145 products; main still has cookware in `data/sheet2/pool/`): I pointed the reader and
+the engine at it with `SIGNOFF_POOL_DIR`. Readings are cached by page text in `data/figures/sheet2/`, so once STORE's pool is on main
+nothing is read again and `SIGNOFF_SHEET=sheet2` alone works.
+
+**State:** 145 products found, 99 state every figure, 57 inside, **4 of 4 lines ready, total $1,118.75**. Order: "the agent's reading
+of the order matches the sheet on 5 of 5 limits" (`T1.rough_in` derived as `==` against the home measurement, from "Its rough-in must
+match the rough-in measured at the house."). Instruction scan: "145 pages scanned, 0 instructions to an agent found". `degraded`: none.
+Reading took 79 s for all three readers; every quote found (159 of 159).
+| line | read | state every figure | inside | pick |
+|---|---|---|---|---|
+| T1 toilet | 52 | 35 | 3 | swissmadison.com, St. Tropez One-Piece 10" Rough-in 1.28 GPF, $259.96: `10 == 10` ("Rough-In: 10" Rough-In Standard"), `1.28 <= 1.28` ("Single Flush 1.28 GPF") |
+| T2 sink faucet | 27 | 27 | 27 | swissmadison.com, Sublime Single Hole faucet in Brushed Gold, $96.82: `1.2 <= 1.2` ("Faucet Flow Rate: 1.2 GPM") |
+| T3 shower head | 18 | 18 | 15 | kingstonbrass.com, Tulare KX250 5-function, $62.97: `1.8 <= 1.8` ("1.8 GPM/6.8 LPM showerhead flow rate at 80 PSI"); 3 are out at `2.5 <= 1.8` |
+| T4 vanity | 48 | 19 | 12 | deervalleybath.com, 30" Rectangular Vanity wall-mounting, $699.00: `30 <= 30` ("Overall: 20.47" H X 30" W X 18.35" D") |
+T1 reasons: 19 are `rough-in: 12 == 10 is false`, 11 are `flush volume: 1.6 <= 1.28 is false`, 7 never state a flush volume, 6 never
+state a rough-in.
+
+**The Horow pair does not come out as the story says, and the reason is the store's text, not the reading.** The rough-in half
+holds: T0338W reads 12 ("12-inch rough-in one-piece toilet") → `12 == 10` false; T0338W-10 reads 10 ("a 10-inch rough-in one-piece
+toilet") → `10 == 10` true. But **neither page states a flush volume**: the text STORE got for each is two sentences saying "dual
+flush" with no number. So T0338W-10 ($349) is "flush volume never stated on the page" and cannot be picked; the pick is the Swiss
+Madison at $259.96 (cheaper anyway). 8 of Horow's 16 toilets state a gpf number, these two are not among them.
+- [ ] For STORE: if a product lookup returns Horow's full description (it likely states 1.1/1.6 or 0.8/1.28), the pair can be decided;
+  if it says 1.1/1.6 the -10 is out on the full flush, which is also a true story. Or ask Horow's agent (display only).
+- [ ] Decide (a rule, so I did not touch it): a candidate that **fails a stated limit and also lacks another figure** shows as "not
+  stated" today (the reference code checks "missing" first). T0338W therefore reads "flush volume never stated", not "rough-in: 12 ==
+  10 is false". Showing a stated failure first would flip 9 candidates on sheet 2 from not stated to outside (no pick, count of
+  inside or total changes on either sheet; the fixture state stays equal). One branch in `rules.build_state`; say yes and I do it.
+
+**Dual-flush pages read as the sheet's words ask:** 32 of 41 flush readings are spreads with both numbers quoted ("Flush Volume:
+1.1/1.6 GPF", "1.0 / 1.28 GPF dual flush", "a low 1.1 gpf light flush or a high 1.6 gpf full flush", "Dual-Flush Efficiency:
+0.92/1.25 GPF"); the sum uses the full flush (`1.6 <= 1.28` false, `1.28 <= 1.28` and `1.25 <= 1.28` true). Code will not let a
+reader take the light flush alone: a single number from "1.1/1.6 GPF" is unsure without a label ("several numbers in the quote").
+Two are marked unsure by the reader (title and description disagree).
+
+**The vanity: one wrong reading among the inside ones, and the words that fix it.** Where a page says "30 in. W x 34.4 in. H x 22 in.
+D" the stated width matches or corrects the title (title 30.5 → read 30.5 → out; 20 against a title of 20.5 → unsure). But
+deervalleybath.com labels the long side **L** and the front-to-back side **W** on some pages ("Overall 60" L X 22" W X 34" H"). With
+today's meaning the reader took the store's "W": **a 60-inch vanity ($1,499) reads 22 and counts as inside** (not the pick), and 4
+similar pages were marked unsure. The number rule cannot catch this: the text really does pair "W" with 22. This needs the sheet's
+words, as you said. I tried these on the 48 vanity pages (in scratch, not committed) and they read right: 60 "L" → 60 (out), 30 "L" →
+30 (inside), 26 of 27 figures counted, the 20-against-20.5 page still unsure:
+> "overall_width": "the vanity's side-to-side size along the wall, in inches: the longer of the two horizontal dimensions the page
+> states for the cabinet with its top. Stores label it W, or L on pages that call the front-to-back size W; the height and the
+> front-to-back depth are other measures. Quote the page's dimension line. A size class in a product name is a nominal size, not the
+> overall width: if the page states no dimension line it is not stated, and if the dimension line and the product name disagree about
+> that size, mark it unsure."
+With those words **the T4 pick becomes a $399.99 deervalleybath.com vanity** ("Overall 30"L x 18.30" W x 17.75"H", `30 <= 30`) and the
+total drops by $299.01. A sheet's figure wording is now part of the reading cache key: when you change the words in
+`sheets/sheet2.json`, `python -m signoff.extract.run --sheet sheet2` re-reads only the 48 vanity pages (about 20 s). Tell me when it is in.
+
+**Readers on sheet 2** (`readers`): Qwen on SIE reads the same number on 145 of 145 figures both found (reference alone 2, Qwen alone
+10; its T4 pick differs; 4.2 s per page); SIE extract alone 31 of 32 both found, the reference alone 115 (it finds few of these).
+**Not done yet for sheet 2:** the store agents' replies (none exist for sheet 2 yet), a second pass of the reference, the chat and
+drills were not exercised on it.
