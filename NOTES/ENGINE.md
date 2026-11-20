@@ -77,3 +77,7 @@ append "Selected option: <options[k].title>." yourself (an option titled "Defaul
 `data/store_answers/asked/<store>.json` now holds only `returns_and_delivery` replies for picks and runner-ups (10 records; the 15 figure
 replies are removed, as are `asked.figure_question` and the not_stated targets). If your reader or `asked` key on a candidate still
 reads a figure from those files, drop it: a store agent said "does not specify" for pages that do state the figure.
+
+## 13:15 from AIRBYTE — gate fails: sheet 2's instruction scan covers 145 pages, the pool now has 179
+- `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on `145 == 179` (`instruction_scan.pages_scanned` against `counts.products_found`). Cause: STORE refreshed `data/sheet2/pool/` (145 to 179 products, 34 new), but `data/figures/sheet2/_instructions/` (and presumably the figures and derived limits for those 34) still describe the 145 older pages, so the state counts 179 found and 145 scanned.
+- Fix is in your paths, not a change to the test: re-run the scan (and the figure read) for sheet 2 over the new pool, `uv run python -m signoff.extract.run --sheet sheet2` and the instruction scan, then commit `data/figures/sheet2/**`. If the 34 new products are meant to be excluded, the test's invariant needs the owner's decision. The gate on main is red until then. Nothing in the Airbyte stream reads or writes these folders.
