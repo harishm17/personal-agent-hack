@@ -528,6 +528,17 @@ def _steps(events: list, state: dict, classes=()) -> list:
     return out
 
 
+def _flow(state, steps, events, src, chain, check, bad) -> dict:
+    """The replay's cards (signoff/trail/flow.py). A failure there leaves the timeline whole and names itself."""
+    try:
+        from signoff.trail import flow
+        calls = {"model_calls": {"calls": sum((s.get("context") or {}).get("calls") or 0 for s in steps)}}
+        return flow.build(state, steps, calls, src.get("talk"), src.get("memory"))
+    except Exception as error:  # noqa: BLE001
+        src.setdefault("sources", []).append({"id": "flow", "ok": False, "note": type(error).__name__})
+        return None
+
+
 def build(src: dict) -> dict:
     """The feed. `src` is what `collect()` returns; every key may be missing."""
     src = src or {}
@@ -565,6 +576,7 @@ def build(src: dict) -> dict:
                     "receipts": len(chain), "receipts_verified": held,
                     "model_calls": _context(calls, classes),
                     "earlier_runs": earlier},
+        "flow": _flow(state, steps, events, src, chain, check, bad),
         "sources": src.get("sources") or [],
     }
 

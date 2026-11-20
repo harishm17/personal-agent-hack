@@ -106,7 +106,7 @@ def test_a_new_run_recalls_the_measurement_the_strike_and_the_stores_answers(rec
     assert (strike["line_id"], strike["product_key"], strike["by"]) == (product["line_id"], product["product_key"], "issuer")
     assert strike["reason"] == "the suction cup lets go on tile" and strike["at"]
     assert {a["store"] for a in recalled["store_answers"]} == set(sheet["stores"])
-    assert all(a["age"]["seconds"] > 0 and a["asked_at"] and a["source"]["file"].startswith("data/store_answers/")
+    assert all(a["age"]["seconds"] > 0 and a["asked_at"] and a["source"]["file"].startswith(("data/store_answers/", "data/talk/threads/"))
                for a in recalled["store_answers"])
     assert recalled["counts"]["recalled"] == 2 + len(recalled["store_answers"]) <= recalled["counts"]["of"]
 
@@ -225,8 +225,8 @@ def test_recall_by_meaning_never_raises_and_says_when_it_did_not_run(records, sh
     monkeypatch.setattr(meaning, "embed", lambda *a, **k: 1 / 0)
     monkeypatch.setattr(meaning, "_queries", {})
     recalled = memory.recall(sheet)
-    told = meaning.search(sheet, "L5", recalled)
-    assert told["ranked"] == [] and "ZeroDivisionError" in told["error"] and told["query"].startswith("grab bar")
+    told = meaning.search(sheet, "L5", recalled, wait_s=1.0)
+    assert told["ranked"] == [] and told["pending"] is True and told["error"] and told["query"].startswith("grab bar")
     assert meaning.search(sheet, "nope", recalled)["error"]
 
 
@@ -243,15 +243,36 @@ def test_meaning_ranks_the_memories_about_the_item_first(records, sheet, product
     signed_strike(product, "the suction cup lets go on tile")
     try:
         done = meaning.index(timeout_s=600)
-        assert done["indexed"] == done["of"] > 0
+        assert done["indexed"] == done["of"] > 0 and meaning.warm(sheet) == len(sheet["lines"])
         recalled = memory.recall(sheet)
-        told = meaning.search(sheet, product["line_id"], recalled, k=3, timeout_s=120)
+        told = meaning.search(sheet, product["line_id"], recalled, k=3)
         assert told["error"] is None and told["recalled"] == 3 and told["of"] == recalled["counts"]["recalled"]
         assert told["not_indexed_yet"] == 0
         assert told["ranked"][0]["kind"] == "strike" and told["ranked"][0]["key"] == product["product_key"]
         assert all(r["owner"] in ("shopper", "issuer", *sheet["stores"]) for r in told["ranked"])
-        only_stores = meaning.search(sheet, product["line_id"], recalled, k=3, kinds=["store_answer"], timeout_s=120)
+        only_stores = meaning.search(sheet, product["line_id"], recalled, k=3, kinds=["store_answer"])
         assert {r["kind"] for r in only_stores["ranked"]} == {"store_answer"}
     finally:
         for table in (name, name + "_vec"):
             store._in_db(lambda conn: conn.cursor().execute("DROP TABLE IF EXISTS %s" % table))
+
+
+def test_what_a_stores_own_agent_replied_is_the_stores_memory_and_what_we_wrote_is_not(records, sheet, tmp_path, monkeypatch):
+    threads = tmp_path / "talk"
+    (threads / "sheet4").mkdir(parents=True)
+    monkeypatch.setattr(sources, "TALK", threads)
+    monkeypatch.setattr(sources, "ROOT", tmp_path)
+    store_name = sheet["stores"][0]
+    thread = {"id": "t1", "sheet": "sheet4", "store": store_name, "product_id": "gid://x/1", "title": "A Walker",
+              "turns": [{"n": 1, "draft": "Mum weighs 280 pounds", "sent": "Can an opened walker be returned?",
+                         "reply": "An opened walker cannot be returned.", "reply_at": "2026-11-20T13:59:20-08:00"},
+                        {"n": 2, "draft": "Please rush it", "sent": None, "decision": "refused"}]}
+    (threads / "sheet4" / "t1.json").write_text(json.dumps(thread))
+    talked = [m for m in memory.sync()["memories"] if m["source"].get("turn")]
+    assert [(m["owner"], m["kind"], m["source"]["turn"]) for m in talked] == [(store_name, "store_answer", 1)]
+    assert talked[0]["text"] == "%s's agent on A Walker: An opened walker cannot be returned." % store_name
+    assert "280" not in json.dumps(talked[0])  # the draft our agent wrote is in no memory
+    assert memory.write(dict(talked[0]), database=False)["id"] == talked[0]["id"]
+    with pytest.raises(memory.Refused):  # the turn the guard refused has no reply, so it proves nothing
+        memory.write(dict(talked[0], source=dict(talked[0]["source"], turn=2)))
+    assert talked[0]["id"] in {a["memory_id"] for a in memory.recall(sheet)["store_answers"]}
