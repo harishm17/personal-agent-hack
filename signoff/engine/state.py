@@ -255,6 +255,12 @@ def _option_names(pool, figures, sheet):
                 after = text[end:end + 140]
                 turn = next((n["start"] for n in spans.quote_numbers(after)
                              if any(abs(n["value"] - v) < 1e-6 for v in other_sizes)), len(after))
+                # ... or where the list starts its next entry: a number followed by the same words as this one
+                shape = re.match(r"\s*\d[\d.,/]*\s*(?:\"|”|″)?\s*((?:[A-Za-z]+\s?){1,2})", text[begin:end])
+                if shape and shape.group(1).strip():
+                    again = re.search(r"\d[\d.,/]*\s*(?:\"|”|″)?\s*" + re.escape(shape.group(1).strip()), after)
+                    if again:
+                        turn = min(turn, again.start())
                 stop = after.find("\n", 0, turn)
                 line = (text[begin:end] + after[:stop if stop >= 0 else turn]).rstrip(" -–,;")
                 f.update(sentence=line, quote_in_sentence=[0, end - begin])
