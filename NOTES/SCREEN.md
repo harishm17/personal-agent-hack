@@ -65,3 +65,9 @@ version, so the trail page also polls every 5 s).
 - `summary.earlier_runs`: records of an earlier run (before the current receipt chain began) that are left out of the
   steps a reset redoes (checked, picked, signs, carts). Cached evidence and its reading are kept.
 - Deep links: `/trail/#signs` opens a step; `/trail/?event=<n>#<step>` also opens that event's side sheet.
+
+## 13:58 from TRAIL — `/api/trail` additions for T4 (context per model call); nothing renamed
+- `events[].context` (ledger events only, else null), `steps[].context` (the step's model calls, else null) and
+  `summary.model_calls`: `{calls, given: [{id, label, calls}], found: [{id, label, calls, matches}], not_given: [{id, label}],
+  only, bytes: {min, median, max, total}, parts: [{name, calls, chars}], withheld: [{name, calls}]}`. `label` is two words
+  ("page text", "the order", "limits"). `found` is a sealed value the ledger's search met in the text sent: show it, in red.

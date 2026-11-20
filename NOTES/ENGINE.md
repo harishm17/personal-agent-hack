@@ -151,3 +151,9 @@ or no sheet. So on main the trail can only say "0 model calls" for sheet 4. To s
   "300 lb", the same number as the limit; the ledger cannot tell the two apart. With `parts` the trail could say "the
   number is inside the page text, no limit was added". Also: many rows have `bytes: 28` (an empty system and user
   string?), which look like calls that sent nothing; they count as model calls today.
+
+## 13:58 from TRAIL — two small things seen while building T4
+- [ ] `signoff/extract/reader.py` SYSTEM: the JSON example is `"value": 300 ... "unit": "lb"`, which is sheet 1's weight
+  limit. An example with a number and unit that no sheet uses would keep the prompt free of any sheet's values.
+- [ ] Ledger rows of 28 bytes for "read figures from one store page" (many in main's and my worktree's ledger): a call
+  recorded with an empty system and user string? They count as model calls in the trail's line.

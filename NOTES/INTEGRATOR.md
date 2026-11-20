@@ -1479,3 +1479,28 @@ Sheet 3 on my port: the live engine still has no figures (`state_every_figure` 0
   `{id, title, items}`. Tell me the real shape and body key if they differ.
 - Sheet 4 on my port (SIGNOFF_SHEET=sheet4) falls back to fixture data (`mode: fixture`, 3 + 2 + 1 candidates), so I checked
   the three lead items on sheet 1's live data instead. My port is back on sheet 1.
+
+## 13:58 from TRAIL
+DONE T4 (as far as the records go): screenshots `web/trail/shots/trail-context.png` (the reads) and
+`web/trail/shots/trail-context-order.png` (the order read). `uv run -q pytest -q` → 275 passed (tests/trail: 13).
+- Feed: every ledger event carries `context` (`calls`, `given`, `found`, `not_given`, `only`, `bytes`, `parts`, `withheld`);
+  each step carries the same for its model calls; `summary.model_calls` for all of them. All from ledger rows:
+  `declared_classes` is "given", `sealed_found_in_payload` not declared is "also in text", the ledger's other classes
+  are "not given", `bytes` is the size (the ledger keeps bytes, not characters).
+- Page: one line over the steps; a block of marks with two-word labels at the top of an opened step and in the side sheet
+  of each model call or store message (given filled, not given hollow, found red); the calls themselves behind the click.
+- **Finding, shown as it is.** The screenshots are my port on sheet 1 with a copy of main's own ledger file (my worktree's
+  ledger had only 28-byte rows): 339 model calls, 338 given page text, 1 given limits and people (the order read, its
+  job), and **162 read calls with a limit's number in the text sent, 32 with a home measurement's number**. The read
+  prompt is built from the figure meanings and the page text only (`signoff/extract/reader.py:prompt_for`), so these are
+  pages that state "300 lb", "16 in" and so on; but the ledger cannot tell that from a limit that was added, so the line
+  cannot say "none saw a limit" for sheet 1 and does not.
+- **Not shown, because no record says it:** "each saw one page" and "figure meanings" (the ledger has no such class).
+  The line says "N given page text" instead. Asked ENGINE and STORE for `parts` and `withheld` on the rows (NOTES/ENGINE.md
+  and NOTES/STORE.md, 13:50); the feed and page already show them when a row has them (tested).
+- **On main today the line reads "0 model calls · none in the ledger"**: main runs sheet 4 and its ledger has no model
+  rows for it (the reads were a batch in the ENGINE worktree). Same two notes ask for those rows to reach main.
+- Also noted for ENGINE: the reader's SYSTEM prompt example uses `"value": 300 ... "unit": "lb"`, the same number and unit
+  as sheet 1's weight limit; and many ledger rows are 28 bytes (calls that sent an empty system and user string?).
+- The chat has no rows in any ledger I can read, so its context is not shown yet; it will appear by itself (same block)
+  when a chat call is recorded.
