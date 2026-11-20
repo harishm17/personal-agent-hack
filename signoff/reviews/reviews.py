@@ -470,6 +470,26 @@ def rankable(row):
     return row.get("rating") is not None and row.get("out_of") == 5 and (row.get("review_count") or 0) >= MINIMUM_REVIEWS
 
 
+NO_SCALE = "rating without a stated scale: not used for ordering"
+
+
+def ordering(row):
+    """Whether a candidate's quoted rating is used for ordering, and the reason when it is not: the same test
+    `ratings()` applies, in words, so the screen and the engine tell one story."""
+    if rankable(row):
+        return {"used": True, "reason": None}
+    if row.get("rating") is None:
+        return {"used": False, "reason": "no quoted rating" if row.get("searched") else "not searched yet"}
+    if row.get("out_of") is None:
+        return {"used": False, "reason": NO_SCALE}
+    if row.get("out_of") != 5:
+        return {"used": False, "reason": "rating on a scale of %g, not of five: not used for ordering" % row["out_of"]}
+    if row.get("review_count") is None:
+        return {"used": False, "reason": "rating without a stated number of reviews: not used for ordering"}
+    return {"used": False, "reason": "rating from %d review%s, under the minimum of %d: not used for ordering" % (
+        row["review_count"], "" if row["review_count"] == 1 else "s", MINIMUM_REVIEWS)}
+
+
 def ratings(line_id, line=None):
     """{candidate_id: {"rating": float, "out_of": 5, "review_count": int}} for one line, from the cache only."""
     if line is None:
@@ -500,7 +520,7 @@ def for_line(line, errors=None):
         got = product_reviews(p["title"], p.get("store"), errors)
         rows.append(dict(got, candidate_id=c["id"], store=p.get("store"), title=p["title"],
                          variant_title=p.get("variant_title"), price_cents=p.get("price_cents"),
-                         picked=bool(c.get("picked"))))
+                         picked=bool(c.get("picked")), ordering=ordering(got)))
     eligible = [r for r in rows if rankable(r)]
     eligible.sort(key=lambda r: (-r["rating"], -r["review_count"], r["price_cents"] or 0, r["candidate_id"]))
     best = None
@@ -525,6 +545,8 @@ def for_line(line, errors=None):
             "summary": {"passing_considered": len(rows), "searched": len(searched),
                         "with_reviews": sum(1 for r in rows if r["found"]),
                         "with_a_rating": sum(1 for r in rows if r["rating"] is not None),
+                        "used_for_ordering": len(eligible),
+                        "with_a_rating_not_used_for_ordering": sum(1 for r in rows if r["rating"] is not None and not rankable(r)),
                         "no_reviews_found": sum(1 for r in searched if not r["found"]),
                         "minimum_reviews": MINIMUM_REVIEWS, "tie_break": TIE_BREAK, "name_rule": NAME_RULE,
                         "limit_of_the_name_rule": LIMIT,

@@ -164,3 +164,7 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
   line `preferences`: `[{"id", "op", "unit", "set_by", "bound", "terms"}]` when the line has any; in `pick`: `preferences`:
   `[{"id", "status", "expr"}]`, and with a review ordering `rating` (the object above or null) and, for `most_popular`,
   `review_count`. `picked_because` is words for the screen and is not in the canonical sheet.
+## REVIEWS 14:55
+- New on every candidate of `GET /api/reviews` and in `by_candidate[id]`: `ordering: {used, reason}`. When `used` is false and the
+  row shows a rating, show `reason` beside it, quietly: "rating without a stated scale: not used for ordering" (also: under the
+  minimum of 5 reviews; no review count stated). Then the row and the engine's "rated N" tell the same story. Never add "/5" yourself.
