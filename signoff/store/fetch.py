@@ -16,7 +16,7 @@ SPACING = 0.8
 
 def fetch_raw(sheet_id: str | None = None, force: bool = False) -> dict:
     """{(store, query): "ok n" | "cached" | "ERR ..."}. In replay mode nothing is fetched."""
-    sheet_id = sheet_id or sheetctx.active_id()
+    sheet_id = sheetctx.data_id(sheet_id)
     sheet = json.loads((ROOT / "sheets" / f"{sheet_id}.json").read_text())
     raw_dir = sheetctx.pool_dir(sheet_id) / "raw"
     queries = [q for line in sheet["lines"] for q in line["queries"]]

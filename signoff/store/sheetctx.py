@@ -32,13 +32,22 @@ def sheet(sheet_id: str | None = None) -> dict:
     return json.loads((ROOT / "sheets" / f"{sheet_id}.json").read_text())
 
 
-def pool_dir(sheet_id: str | None = None) -> pathlib.Path:
+def data_id(sheet_id: str | None = None) -> str:
+    """The sheet whose pool and store answers this sheet uses: its own `data_from`, else itself (sheet 4 is sheet 1's data)."""
     sid = sheet_id or active_id()
+    try:
+        return json.loads((ROOT / "sheets" / f"{sid}.json").read_text()).get("data_from") or sid
+    except Exception:  # noqa: BLE001
+        return sid
+
+
+def pool_dir(sheet_id: str | None = None) -> pathlib.Path:
+    sid = data_id(sheet_id)
     return DATA / "pool" if sid == "sheet1" else DATA / sid / "pool"
 
 
 def answers_dir(sheet_id: str | None = None) -> pathlib.Path:
-    sid = sheet_id or active_id()
+    sid = data_id(sheet_id)
     return DATA / "store_answers" if sid == "sheet1" else DATA / sid / "store_answers"
 
 
