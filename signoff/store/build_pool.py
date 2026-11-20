@@ -31,6 +31,12 @@ BRANDS = ["carex", "drive", "medline", "guardian", "stander", "probasics", "nova
 STORE_BRAND = {"carex.com": "carex", "vivehealth.com": "vive"}
 
 
+def image_url(prod: dict):
+    """The store's own first image from its reply (`media[0].url`), or None. Nothing is fetched or resized."""
+    media = prod.get("media") or []
+    return (media[0].get("url") if media and isinstance(media[0], dict) else None) or None
+
+
 def clean_title(t: str) -> str:
     t = html.unescape(re.sub(r"&(trade|reg);", "", t or ""))
     return re.sub(r"[™®]", "", t).strip()
@@ -95,7 +101,7 @@ def build(sheet_path: str = "sheets/sheet1.json") -> dict:
             rows.append({
                 "store": store, "product_id": pid, "variant_id": v["id"], "title": title,
                 "price_cents": v["price"]["amount"], "url": prod.get("url", ""), "text": text,
-                "fetched_at": e["fetched_at"], "product_key": product_key(store, prod["title"]),
+                "fetched_at": e["fetched_at"], "image_url": image_url(prod), "product_key": product_key(store, prod["title"]),
                 "line_ids": lids,
             })
         rows.sort(key=lambda r: (r["line_ids"], r["price_cents"]))

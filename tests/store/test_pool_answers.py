@@ -52,3 +52,13 @@ def test_returnable_needs_the_sentence_to_affirm_it():
     assert f("Returns are generally limited to unused items in their original packaging") == "unclear"
     assert f("An opened toilet would not meet the stated return conditions: it must be uninstalled") == "unclear"
     assert f("We ship on Tuesdays and return calls on Fridays") == "unclear"
+
+
+def test_every_product_carries_the_stores_first_image_or_none():
+    import glob
+    rows = [r for f in glob.glob(str(ROOT / "data" / "pool" / "*.json")) + glob.glob(str(ROOT / "data" / "sheet2" / "pool" / "*.json"))
+            for r in json.loads(open(f).read())]
+    assert rows and all("image_url" in r for r in rows)
+    assert all(r["image_url"] is None or r["image_url"].startswith("https://") for r in rows)
+    assert build_pool.image_url({"media": []}) is None and build_pool.image_url({}) is None
+    assert build_pool.image_url({"media": [{"url": "https://x/a.jpg"}, {"url": "https://x/b.jpg"}]}) == "https://x/a.jpg"

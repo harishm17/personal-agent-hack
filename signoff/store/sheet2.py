@@ -96,7 +96,7 @@ def build() -> dict:
             rows.append({"store": store, "product_id": pid, "variant_id": v["id"], "title": title,
                          "price_cents": v["price"]["amount"], "url": prod.get("url", ""), "text": text,
                          "fetched_at": datetime.datetime.fromtimestamp(e["t"]).astimezone().isoformat(timespec="seconds"),
-                         "product_key": build_pool.product_key(store, prod["title"]), "line_ids": sorted(e["lines"]),
+                         "image_url": build_pool.image_url(prod), "product_key": build_pool.product_key(store, prod["title"]), "line_ids": sorted(e["lines"]),
                          "variants": len(avail), "variant_title": vt})
         rows.sort(key=lambda r: (r["line_ids"], r["price_cents"]))
         (OUT / f"{store}.json").write_text(json.dumps(rows, indent=1, ensure_ascii=False))

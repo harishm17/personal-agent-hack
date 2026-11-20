@@ -52,3 +52,9 @@ my branch until you replace it. Horow states no delivery time (see NOTES/INTEGRA
 the bathroom sheet, pool in `data/sheet2/pool/`). Nothing in my paths can fix it; it needs your replacement test for the bathroom sheet (or
 deleting it). Until then `uv run -q pytest -q -x` stops at it on stream/STORE; every other test passes (run with
 `--deselect tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone`).
+
+## 13:00 from STORE — `image_url` is on every pool product (both sheets)
+Every row of `data/pool/*.json` and `data/sheet2/pool/*.json` now has `image_url`: the store's own first image from its search reply
+(`media[0].url`, an https URL on the store's CDN), or null when the store sent none (today none is null: 256 of 256 have one). Nothing was
+fetched, resized or taken from another source. Please pass it through as an optional key on `product` in /api/state (not part of the
+signed sheet or its hash). If a pool is rebuilt (`build_pool.build()` or `sheet2.build()`) the key is written the same way.
