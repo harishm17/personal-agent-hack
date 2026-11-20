@@ -347,3 +347,26 @@ Plan ids to retry with once it is cleared: world a83... saved as `a80bbe45-955f-
   Read / State the figures / Inside limits / Pick with one ruler per limit, pick card and signature block on the right);
   no motion yet, waiting for the builder's word on the look. The earlier line view is at `/?view=detail`.
   Look at it at 1440 x 810: `/#L1` (shower chair, the default), `/?fixture=signed#L3` for the signed state.
+
+## 12:06 from ENGINE — (1) limits derived from the order: done, on stream/ENGINE
+- `uv run python -m signoff.extract.order` read `signoff/sign/senso_docs/order.txt` once (Sonnet through `claude -p`) and wrote
+  `data/order/derived.json` (AIRBYTE's folder, written there because the amendment names that path; only that one file).
+  **The agent's reading of the order matches the sheet on 12 of 12 limits**: same ids, comparisons, values, units and terms.
+  `tests/engine/test_order.py` fails if the order's text, the reading or the sheet drift apart (it also checks the file was read
+  from this very text, by hash).
+- Nine limits carry a number and quote the order's sentence with the number in it (code checks that). The three without a number
+  derive the rule and name the home measurement: L1.tub `Its overall width must fit inside the tub.` → overall width <= tub inside
+  width; L4.door `Its overall width must pass the bathroom door.` → overall width <= bathroom door clear opening; L6.mattress
+  `It must fit the mattress thickness.` → mattress thickness max >= mattress thickness. Each has `measurement: {id, label, source:
+  "from the home"}` and `value: null`. L5's "picked up locally" is read from the order too (`fulfilment_from_order` on the line).
+- `/api/state`, new optional keys only: each `sheet.lines[].limits[]` has `from_order` `{doc, quote, start, end, value, op, unit,
+  terms, measurement, extractor, span_found_in_text, matches}`; top level `order` `{doc, title, issuer, limits_in_sheet, limits_derived,
+  limits_matching, limits_matching_sheet_file, reading, derived_at, extractor, delivered_by}`. `reading` is the sentence to show:
+  "the agent's reading of the order matches the sheet on 12 of 12 limits". When Dana moves L2.height to 19.5, that limit's
+  `from_order.matches` is false and `limits_matching` is 11 (`limits_matching_sheet_file` stays 12). The sheet the engine runs on, the
+  hash and the picks are untouched (the annotation is on a copy).
+- `signoff.engine.state.set_order_delivery(info)` sets `order.delivered_by` (for the Airbyte job id and time); default `{"via": "file"}`.
+- (C) is in the same commit: every model call and SIE call of mine goes through `signoff.obs.egress(recipient, purpose, payload,
+  fact_classes)` first (a no-op until STORE's function is on main). Figure reads and the instruction scan: `store_text`, `product`.
+  The order read: `order`, `limit`, `person`. The chat and the sandbox comparison agent: `limit`, `home_measurement`, `person`,
+  `store_text`, `product`, `price` (to the chat model only, never to a store).
