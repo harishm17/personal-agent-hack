@@ -114,7 +114,11 @@ async function loadAux() {
   const health = (await get("/api/health")) || {};
   const served = Array.isArray(health.pages) ? health.pages.map((x) => "/" + String(x).replace(/^\/|\/$/g, "") + "/") : null;
   aux.pages = Object.fromEntries(TABS.slice(2).map(([href, , router]) => [href, served ? served.includes(href) : (health.routers || []).includes(router) && KNOWN_PAGES.has(href)]));
-  aux.tools = has("/api/tools") ? await get("/api/tools") : null;
+  // the tools route runs live queries and can take seconds: it never holds up the rest
+  if (has("/api/tools") && !aux.toolsBusy) {
+    aux.toolsBusy = true;
+    get("/api/tools").then((t) => { aux.toolsBusy = false; const first = !aux.tools && t; aux.tools = t || aux.tools; if (first && state) { last.quiet = true; render(); } });
+  }
   if (has("/api/reviews") && state) {
     const id = theLine().line_id, got = await get("/api/reviews?line_id=" + encodeURIComponent(id));
     const list = Array.isArray(got) ? got : got && (got.candidates || got.reviews || got.rows);
@@ -124,7 +128,7 @@ async function loadAux() {
   const opt = (path, url) => (has(path) ? get(url || path) : null);
   const [egress, gate, enroll, trail, sheets] = await Promise.all([opt("/api/egress", "/api/egress?limit=5000"), opt("/api/gate/status"),
     needCode ? opt("/api/issuer/enroll-code") : null, opt("/api/trail"), opt("/api/sheets")]);
-  const key = JSON.stringify([aux.pages, aux.tools, aux.reviews, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
+  const key = JSON.stringify([aux.pages, aux.reviews, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
   Object.assign(aux, { egress, gate, enroll, trail, sheets });
   if (key !== aux.key && state) {       // redraw quietly, and never in the middle of the opening motion
     aux.key = key;
@@ -343,7 +347,7 @@ function stepList(line, pick) {
     { id: "list_read", label: "List read", small: limits ? `${n_(limits, "limit", "limits")}, quoted` : "limits on the sheet", done: true },
     { id: "stores_searched", label: "Stores searched", small: n_(sheet.stores.length, "store", "stores"), done: pages > 0 },
     { id: "pages_read", label: "Pages read", small: n_(pages, "page", "pages"), done: pages > 0 },
-    { id: "checked", label: "Checked", small: byPrice() ? "cheapest first" : String(((state.pick_rules || []).find((r) => r.id === ruleId()) || {}).label || ruleId()).replace(/ (that|inside|among) .*$/, "").replace(/_/g, " ") + " first", done: state.lines.some((l) => l.candidates.length > 0) },
+    { id: "checked", label: "Checked", small: `${line.candidates.filter((c) => c.status !== "inside").length} rejected, with reasons`, done: state.lines.some((l) => l.candidates.length > 0), k: "step.rej" },
     { id: "picked", label: "Picked", small: pick ? money(pick.product.price_cents) + times(line) : "nothing passes", done: !!pick, k: "step.pick" },
     { id: "signs", label: `${cap(sheet.issuer.role || "approver")} signs`, small: seal.signed ? `${sheet.issuer.name}, ${time}` : "from the phone", done: !!seal.signed },
     { id: "carts", label: "Carts", small: seal.signed ? `${(seal.carts || []).length} created` : "none exist yet", done: !!seal.signed && (seal.carts || []).length > 0 },
@@ -352,7 +356,7 @@ function stepList(line, pick) {
 
 function renderSteps(line, pick) {
   const steps = stepList(line, pick), current = steps.findIndex((s) => !s.done);
-  q("#steps").innerHTML = steps.map((s, i) => `<button class="step ${s.done ? "done" : "todo"}${i === current ? " now" : ""}" data-open="step:${s.id}" ${i === current ? 'aria-current="step"' : ""}>
+  q("#steps").innerHTML = steps.map((s, i) => `<button class="step ${s.done ? "done" : "todo"}${i === current ? " now" : ""}${s.id === "signs" || s.id === "carts" ? " key" : ""}" data-open="step:${s.id}" ${i === current ? 'aria-current="step"' : ""}>
     <span class="n">${s.done ? "✓" : i + 1}</span><span class="t"><span class="l">${esc(s.label)}</span><small ${s.k ? `data-k="${s.k}"` : ""}>${esc(s.small)}</small></span></button>`).join("");
 }
 
@@ -497,7 +501,8 @@ function renderList(line, pick) {
   const pinned = fold && ui.was ? before.slice(0, fold).filter((c) => c.id === ui.was.id) : [];
   if (pinned.length) fold += 1;
   const forged = (limit) => limit.bound.source === "issuer" && !state.seal.signed
-    ? `<span class="forge" role="button" tabindex="0" data-forge="${esc(limit.id)}" title="Try to change this limit from here, without the approver's key" aria-label="Try to change this limit from here">change</span>` : "";
+    ? (ui.refusal && ui.refusal.id === limit.id ? `<span class="refline" role="status">${ui.refusal.html}</span>`
+      : `<span class="forge" role="button" tabindex="0" data-forge="${esc(limit.id)}" title="${esc(state.sheet.shopper.name)} tries to change this limit from here, without ${esc(state.sheet.issuer.name)}'s phone">try to change</span>`) : "";
   const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span>${esc(h.name)} <b data-k="head.${limit.id}">${esc(h.rule)}</b></span>${forged(limit)}</span>`; }).join("");
   const rules = Array.isArray(state.pick_rules) && state.pick_rules.length > 1 ? state.pick_rules : null;
   const short = (r) => cap(String(r.short || r.label || r.id).replace(/ (that|inside|among) .*$/, "").replace(/_/g, " "));
@@ -641,16 +646,23 @@ function qrSvg(text) {
   }
 }
 
+/** What the signature covers, counted from the state: the limits, the quotes, the picks and the total. */
+function whatIsSigned() {
+  const limits = state.sheet.lines.reduce((n, l) => n + l.limits.length, 0);
+  const picks = state.lines.filter((l) => l.pick && l.status !== "pick_up").length;
+  return `${n_(limits, "limit", "limits")} · the quotes · ${n_(picks, "pick", "picks")} · <span data-k="sig.total">${money(state.total_cents)}</span>`;
+}
+
 function signatureHtml() {
   const { sheet, seal } = state;
   if (!seal.signed) {
     const en = aux.enroll, enrolled = state.issuer_key && state.issuer_key.enrolled;
     const link = en && (en.url || en.link || en.phone_url || en.phone), qr = !enrolled && link ? qrSvg(link) : "";
     return `<section class="card sign"><div class="cap">Signature</div>
-      <div class="who"><i class="pending"></i>${esc(sheet.issuer.name)} must sign · no cart exists</div>
+      <div class="signs"><b>${esc(sheet.issuer.name)} signs:</b> ${whatIsSigned()}</div>
+      <div class="muted small">${enrolled ? "From the enrolled phone" : "From the phone"} · no cart exists until then</div>
       ${!enrolled && en && en.code ? `<div class="enrol">${qr ? `<a class="qr" href="${esc(link)}" target="_blank" rel="noopener" aria-label="Open the phone page">${qr}</a>` : ""}
-        <div><div>Scan to enrol the phone</div><div class="muted">code <span class="code">${esc(en.code)}</span></div></div></div>`
-        : enrolled ? `<div class="muted small">Phone enrolled · waiting for the signature</div>` : ""}
+        <div class="muted small"><div>Scan to enrol the phone</div><div>code <span class="code">${esc(en.code)}</span></div></div></div>` : ""}
       ${receiptsRow()}</section>`;
   }
   const sig = seal.signature || {}, persona = sig.persona || (state.issuer_key && state.issuer_key.persona) || {};
@@ -935,6 +947,7 @@ function toast(anchor, html) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { el.hidden = true; }, 6000);
 }
+let refusalTimer = null;
 async function forgeChange(anchor) {
   const line = theLine(), limit = sheetLineOf(line).limits.find((l) => l.id === anchor.dataset.forge);
   const payload = JSON.stringify({ type: "set_limit", sheet_id: state.sheet.id, seq: Date.now(), at: new Date().toISOString(), limit_id: limit.id, value: limit.bound.min });
@@ -944,12 +957,18 @@ async function forgeChange(anchor) {
     const res = await fetch("/api/issuer/request", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ payload, sig, key_id: (state.issuer_key && state.issuer_key.key_id) || "this-screen" }) });
     const out = await res.json().catch(() => ({}));
-    html = res.ok && out.ok !== false ? `<b class="badw">Accepted</b> <span class="code2">${res.status}</span>`
-      : `<b>Refused</b> · ${esc(REFUSAL[out.error] || words(out.error || "no reason given"))} <span class="code2" title="${esc(out.detail || "")}">${res.status}</span>`;
+    // the server's answer, said plainly; its own code and reason are on hover
+    html = res.ok && out.ok !== false ? `<b>Accepted</b> <span class="code2">${res.status}</span>`
+      : `<b>Refused:</b> only ${esc(state.sheet.issuer.name)}'s phone can change this <span class="code2" title="${esc((REFUSAL[out.error] || words(out.error || "")) + (out.detail ? ": " + out.detail : ""))}">${res.status}</span>`;
   } catch (error) {
     html = "No answer from the server";
   }
-  toast(q(`[data-forge="${CSS.escape(limit.id)}"]`) || anchor, html);
+  ui.refusal = { id: limit.id, html };
+  clearTimeout(refusalTimer);
+  refusalTimer = setTimeout(() => { ui.refusal = null; last.quiet = true; render(); }, 4200);
+  last.quiet = true;
+  render();
+  fx.arrive(q(".refline"), 0, 240, 3);
   load();
 }
 
