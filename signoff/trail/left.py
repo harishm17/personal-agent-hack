@@ -19,7 +19,7 @@ OWNER = {"limit": "issuer", "order": "issuer", "need_by": "issuer", "home_measur
          "health": "shopper", "money": "shopper", "address": "shopper", "delivery_region": "shopper",
          "product": "store", "store_text": "store", "price": "store"}
 GROUP_OVER = 3      # more stores than this are one column, counted
-LISTED = 12         # records listed behind one cell; the rest are counted
+LISTED = 6          # records listed behind one cell; the rest are counted
 
 
 def _examples(sheet: dict, flow: dict, messages: list) -> dict:
@@ -88,8 +88,8 @@ def build(sheet: dict, flow: dict, rows: list, messages: list, rule: dict = None
                                 "members": [name]})
                 payloads_of[name] = rs
     stores = sorted({m.get("store") for m in messages if m.get("store")})
-    if messages:
-        columns.append({"id": "agents", "label": "%d store agent%s" % (len(stores), "" if len(stores) == 1 else "s"),
+    if messages:      # the stores' own agents first: they are the outside party the sharing rule is about
+        columns.insert(0, {"id": "agents", "label": "%d store agent%s" % (len(stores), "" if len(stores) == 1 else "s"),
                         "kind": "store agent", "payloads": len(messages), "members": stores})
 
     # rows: the classes that exist in this run (an example of it, or a record that carries or stops it)

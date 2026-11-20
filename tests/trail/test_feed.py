@@ -201,7 +201,7 @@ def test_what_left_is_read_from_the_ledger_and_the_guard_and_never_claims_what_n
     rule = {"may": ["product", "need_by"], "sealed": ["limit", "home_measurement", "person", "health"]}
     out = left.build(sheet, None, rows, messages, rule, {"health": "health detail", "limit": "order limit"})
     cell = lambda c, col: out["cells"][c][col]
-    assert [c["id"] for c in out["columns"]] == ["anthropic:x", "senso", "agents"]
+    assert [c["id"] for c in out["columns"]] == ["agents", "anthropic:x", "senso"]
     assert cell("store_text", "anthropic:x")["state"] == "sent" and cell("store_text", "anthropic:x")["sent"] == 2
     assert cell("limit", "anthropic:x")["state"] == "found" and cell("limit", "anthropic:x")["found_items"][0]["match"] == "300 lb"
     assert cell("limit", "senso")["state"] == "sent" and cell("person", "senso")["state"] == "never"
