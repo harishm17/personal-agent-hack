@@ -131,6 +131,7 @@ def same_as_sheet(derived, limit):
 def derive(text, sheet, model=None):
     """The order read once: (document dict for derived.json)."""
     model = model or config.env("SIGNOFF_READER_MODEL") or reader.DEFAULT_MODEL
+    rules.declare_units(sheet)
     user = "%s\n\nThe order, between the markers:\n<<<ORDER\n%s\nORDER>>>" % (vocabulary(sheet), text)
     reply, usage, extractor = reader.ask(model, SYSTEM, user, purpose="read the limits from the written order",
                                          fact_classes=["order", "limit", "person"])

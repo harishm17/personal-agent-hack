@@ -150,6 +150,7 @@ def inputs(figures):
     if sheet_id is None:
         return None, None, [], []
     sheet = json.loads((ROOT / "sheets" / (sheet_id + ".json")).read_text())
+    rules.declare_units(sheet)
     pool = runner.rows_of(runner.pool_files(sheet_id=sheet_id))
     answers_dir = runner.sheet_dirs(sheet_id)[0].parent / "store_answers"
     answers = [a for f in sorted(answers_dir.glob("*.json")) for a in json.loads(f.read_text())] if answers_dir.is_dir() else []

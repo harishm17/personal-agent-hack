@@ -281,6 +281,7 @@ def _load(keep_changes=False):
         return
     strikes_file = (DATA if from_data else FIXTURES) / "strikes.json"
     sheet = _read(SHEETS / (sheet_id + ".json"))
+    rules.declare_units(sheet)
     try:
         rules.validate_sheet(sheet)
     except ValueError as error:

@@ -204,3 +204,26 @@ def test_a_dual_flush_page_reads_as_two_numbers_and_the_full_flush_cannot_be_dro
     litres = spans.finish({"figure": "flush_volume", "kind": "single", "value": 4.8, "unit": "Lpf", "quote": "4.8 Lpf"},
                           {"store": "s", "product_id": "p", "text": "Uses 4.8 Lpf."}, "any", target_unit="gpf")
     assert litres["value"] == 1.27 and litres["stated_unit"] == "Lpf"
+
+
+def test_a_sheet_declares_its_own_units_and_no_code_names_them():
+    from signoff.engine import rules
+    sheet = {"units": {"dB": ["db", "dba", "decibels"], "mph": ["mph", "miles per hour"]}}
+    try:
+        rules.declare_units(sheet)
+        assert rules.unit_name("Decibels") == "dB" and rules.unit_name("MPH") == "mph" and rules.convert(85, "dBA", "dB") == 85
+        assert rules.convert(85, "dB", "mph") is None  # two declared units are two kinds of measure
+        text = "Kids headphones. Volume limiting: Yes (85 dB). Unlimited mode plays at 95 dB as the default. Battery 20 hours."
+        page = {"store": "s", "product_id": "p", "text": text}
+        made = spans.finish({"figure": "max_volume", "kind": "single", "value": 85, "unit": "dB",
+                             "quote": "Volume limiting: Yes (85 dB)"}, page, "any", target_unit="dB")
+        assert (made["value"], made["unit"]) == (85, "dB") and "possible" not in made
+        both = spans.finish({"figure": "max_volume", "kind": "spread", "low": 85, "high": 95, "unit": "decibels",
+                             "quote": "Volume limiting: Yes (85 dB). Unlimited mode plays at 95 dB"}, page, "any", target_unit="dB")
+        assert (both["low"], both["high"], both["unit"]) == (85, 95, "dB")
+        assert [n["family"] for n in spans.quote_numbers("85 dB and 20 hours and 15 mph")] == ["dB", "other unit", "mph"]
+    finally:
+        for name in sheet["units"]:
+            for spelling in rules.DECLARED.pop(name, []):
+                rules.ALIASES.pop(spelling, None)
+            rules.FAMILY.pop(name, None)

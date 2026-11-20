@@ -25,7 +25,7 @@ import sys
 import time
 
 from signoff import config
-from signoff.engine import obs, options, paths
+from signoff.engine import obs, options, paths, rules
 from signoff.extract import combine, gliner, reader, spans
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -156,6 +156,7 @@ def refresh(workers=8):
     from signoff.engine import state
     sheet_id = state.get_state()["sheet"]["id"]
     sheet = json.loads((ROOT / "sheets" / (sheet_id + ".json")).read_text())
+    rules.declare_units(sheet)
     files, out = pool_files(sheet_id=sheet_id), sheet_dirs(sheet_id)[1]
     if not files:
         return {"products": 0, "errors": ["no pool for %s" % sheet_id]}
@@ -189,6 +190,7 @@ def main(argv=None):
         print("no pool for %s under %s: nothing was read" % (args.sheet, args.pool_dir or sheet_dirs(args.sheet)[0]), file=sys.stderr)
         return 2
     sheet = json.loads(pathlib.Path(args.sheet_file or ROOT / "sheets" / (args.sheet + ".json")).read_text())
+    rules.declare_units(sheet)
     try:
         reader.meanings(sorted(reader.figure_units(sheet)), sheet)
     except reader.NoMeaning as error:

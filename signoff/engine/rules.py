@@ -25,6 +25,19 @@ TO_BASE = {("cm", "in"): 1 / 2.54, ("mm", "in"): 1 / 25.4, ("ft", "in"): 12.0, (
 FAMILY = {"lb": "weight", "kg": "weight", "oz": "weight", "in": "length", "cm": "length", "mm": "length",
           "ft": "length", "qt": "volume", "L": "volume", "°F": "temperature", "°C": "temperature",
           "gpf": "volume per flush", "Lpf": "volume per flush", "gpm": "flow", "Lpm": "flow"}
+DECLARED = {}  # units a sheet declares itself: {name: [spellings]}; each is its own kind of measure
+
+
+def declare_units(sheet):
+    """A sheet may name its own units and how stores spell them (`"units": {"dB": ["db", "decibels"], ...}`), so a
+    new sheet needs no change here. The table above stays as the default for units a sheet does not declare."""
+    for name, spellings in (sheet.get("units") or {}).items():
+        DECLARED[name] = sorted({str(x).lower() for x in list(spellings) + [name]}, key=len, reverse=True)
+        for spelling in DECLARED[name]:
+            ALIASES[spelling] = name
+        FAMILY.setdefault(name, name)
+
+
 OPS = (">=", "<=", "==")
 PICK_RULES = ("cheapest_with_delivery_time", "cheapest")
 
