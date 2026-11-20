@@ -113,6 +113,21 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | M3 | recall by meaning for an item (SIE embeddings, SingleStore vector search filtered by owner), shown as "N recalled of M", with what was given to which model call | open |
 | M4 | a second run shown working: after a signed run, a reset keeps what was learned and a struck product stays out without anyone striking it again | open |
 
+## TALK (agent to agent, with a guard on what is shared)
+| id | item | status |
+|---|---|---|
+| K1 | the agent composes its own messages to each store's own agent (a model writes them) and may ask one follow-up; real calls, cached | open |
+| K2 | the guard, in code: a sharing rule per kind of fact and recipient from the sheet; every outbound message checked for sealed values and for health, person, money and address spans (a small Superlinked model finds them, code decides); blocked spans removed or the message refused; every decision in the outbound ledger | open |
+| K3 | a real blocked share: the shopper asks the agent to tell a store something sealed; the draft, what was removed and what was sent are recorded | open |
+| K4 | `/talk/`: each store conversation as a thread (sent, withheld, the store agent's reply quoted), in the product's visual system; `GET /api/talk/threads` | open |
+
+## GRAPH (the memory as a knowledge graph, on Cognee)
+| id | item | status |
+|---|---|---|
+| H1 | the run's knowledge as a graph built from real records only: people, the home's facts, the order's items and limits, products, stores, strikes, purchases, and who owns each | open |
+| H2 | Cognee holds it: a dataset per owner with its permissions; a write to the issuer's dataset by the shopper's side is refused and shown | open |
+| H3 | `GET /api/graph?line_id=` (nodes and edges for one item, with which backend answered) and `/graph/` drawing it quietly | open |
+
 ## AIRBYTE / RELAY thread
 | id | item | status |
 |---|---|---|
