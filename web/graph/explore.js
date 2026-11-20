@@ -9,6 +9,8 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<
 const ownerClass = (o) => (o === "issuer" || o === "shopper" ? o : o === "system" || o === "web" ? "" : "store");
 const short = (s, n) => (String(s || "").length > n ? String(s).slice(0, n - 1).trimEnd() + "…" : String(s || ""));
 const clock = (at) => (at ? String(at).slice(11, 16) : "");
+const FW = px(180);                                                // a fact quoted from a message is a wider card
+const boxW = (n) => (n.kind === "context_fact" ? FW : CW);
 const REASONS = ["outside", "unclear", "not stated", "struck", "struck before"];
 
 let X = null;      // the mounted exploration: data, elements, current stage and positions
@@ -23,6 +25,7 @@ function el(tag, attrs = {}, html = "") {
 // ---------- where everything is at stage k ----------
 function plan(k) {
   const { data, W, H } = X, S = data.stages, at = (id) => S.findIndex((s) => s.id === id);
+  const iEvent = at("event"), iOrder = at("order"), eventPhase = iEvent >= 0 && k <= iOrder;
   const iSearch = at("search"), iRead = at("reading"), iWeb = at("web"), iRank = at("ranking"), iSign = at("signature"), iAsk = at("asking");
   const nodes = new Map(data.nodes.map((n) => [n.id, n]));
   const added = new Map();                                        // node id -> the stage that adds it
@@ -37,15 +40,49 @@ function plan(k) {
   const people = data.nodes.filter((n) => n.kind === "person");
   const item = data.nodes.find((n) => n.kind === "order_item");
   const facts = data.nodes.filter((n) => n.kind === "home_fact");
-  people.forEach((n, i) => put(n.id, 0, i * (CH + px(22))));
-  put(item.id, XI, 0);
-  facts.forEach((n, i) => put(n.id, XI, (i + 1) * (CH + px(22))));
-  // what it already knows: small cards under the order, each with its owner's mark and its age
-  data.nodes.filter((n) => n.kind === "memory").forEach((n, i) =>
-    put(n.id, (i % 2) * XI, 2 * (CH + px(22)) + px(4) + Math.floor(i / 2) * (CH + px(6))));
-  // the rules, above the products
   const limits = data.nodes.filter((n) => n.kind === "limit");
-  limits.forEach((n, i) => put(n.id, PX0 + i * (CW + px(56)), 0));
+  const values = data.nodes.filter((n) => n.kind === "sheet_value");
+  const known = data.nodes.filter((n) => n.kind === "context_fact");
+  const notes = data.nodes.filter((n) => n.kind === "context_message");
+  const around = data.nodes.filter((n) => n.kind === "context_person");
+  if (eventPhase) {
+    // the event fills the canvas: its people, the messages, the facts quoted from them; the order grows at the right
+    put("event", 0, 0);
+    around.forEach((n, i) => put(n.id, 0, CH + px(22) + i * (CH + px(10))));
+    notes.forEach((n, i) => put(n.id, XI, i * (CH + px(10))));
+    const fy = new Map();
+    known.forEach((n, i) => { fy.set(n.id, i * (CH + px(6))); put(n.id, XS, fy.get(n.id), { w: FW, o: k >= iOrder && !n.used ? 0.4 : 1 }); });
+    const XD = XS + FW + px(150), XE = XD + CW + px(24);
+    const want = (id) => { const ys = data.edges.filter((e) => e.feeds && e.to === id).map((e) => fy.get(e.from)); return ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : null; };
+    const stack = (list, x) => {
+      let prev = -Infinity, last = 0;
+      list.map((n, i) => ({ n, y: want(n.id), i })).map((o) => { if (o.y == null) o.y = o.i === 0 ? 0 : null; return o; })
+        .map((o, i, all) => { if (o.y == null) o.y = (all[i - 1]?.y ?? 0) + 1; return o; })
+        .sort((a, b) => a.y - b.y || a.i - b.i)
+        .forEach((o) => { const y = Math.max(o.y, prev + CH + px(10)); prev = y; last = y; put(o.n.id, x, y); });
+      return last;
+    };
+    stack([item, ...limits, ...values, ...facts], XE);
+    const issuer = people.find((n) => n.id === "person:issuer"), shopper = people.find((n) => n.id === "person:shopper");
+    if (issuer) put(issuer.id, XD, P.get(item.id).y);
+    if (shopper) put(shopper.id, XD, Math.max(want(shopper.id) ?? 0, facts.length ? P.get(facts[0].id).y : 0, (issuer ? P.get(item.id).y + CH + px(10) : 0)));
+    const idle = known.find((n) => !n.used);
+    if (idle && k >= iOrder) texts.push({ x: XS + FW + px(10), y: fy.get(idle.id) + CH / 2 + px(3), cls: "gs", html: "held · not used for this order" });
+  } else {
+    people.forEach((n, i) => put(n.id, 0, i * (CH + px(22))));
+    put(item.id, XI, 0);
+    facts.forEach((n, i) => put(n.id, XI, (i + 1) * (CH + px(22))));
+    values.forEach((n, i) => put(n.id, XI, (i + 1 + facts.length) * (CH + px(22))));
+    // the rules, above the products
+    limits.forEach((n, i) => put(n.id, PX0 + i * (CW + px(56)), 0));
+    // the event stays as one node; its people, messages and facts fold back into it
+    if (nodes.has("event")) put("event", 0, H - CH - px(2));
+    [...around, ...notes, ...known].forEach((n) => put(n.id, 0, H - CH - px(2), { o: 0, w: boxW(n) }));
+  }
+  // what it already knows: small cards under the order, each with its owner's mark and its age
+  const memTop = Math.max(2, 1 + facts.length + values.length) * (CH + px(22)) + px(4);
+  data.nodes.filter((n) => n.kind === "memory").forEach((n, i) =>
+    put(n.id, (i % 2) * XI, memTop + Math.floor(i / 2) * (CH + px(6))));
 
   // the stores and the products found at each
   const stores = data.nodes.filter((n) => n.kind === "store");
@@ -155,7 +192,11 @@ function plan(k) {
   const vis = (id) => P.get(id)?.o > 0;
   const card = (a, b, cls = "", label = "") => { if (vis(a) && vis(b)) lines.push({ a, b, cls, label, card: true }); };
   for (const e of data.edges) {
-    if (e.verb === "wrote" || e.verb === "measured") card(e.from, e.to, "", e.verb);
+    if (e.feeds) { if (k >= iOrder && vis(e.from) && vis(e.to)) lines.push({ a: e.from, b: e.to, card: true, cls: e.matches === false ? "fails" : "lit",
+      label: e.verb + (e.matches === true ? " · matches" : e.matches === false ? " · differs" : ""), lt: nodes.get(e.to)?.kind === "person" ? 0.5 : 0.27 }); }
+    else if (e.verb === "says") card(e.from, e.to, "", "");
+    else if (e.verb === "wrote" && nodes.get(e.to)?.kind === "context_message") { if (nodes.get(e.from)?.kind === "context_person") card(e.from, e.to, "", ""); }
+    else if (e.verb === "wrote" || e.verb === "measured") card(e.from, e.to, "", e.verb);
     else if (e.verb === "searches" && nodes.get(e.to)?.kind === "store" && k >= iSearch && !ranked) card(e.from, e.to, k === iSearch ? "lit" : "", k === iSearch ? e.label : "");
     else if (e.verb === "requires" && nodes.get(e.to)?.kind === "home_fact") { if (vis(e.to) && vis(e.from)) lines.push({ a: e.to, b: e.from, cls: "", toCorner: true, card: true }); }
     else if (e.verb === "waits for" && k >= iSign && iSign >= 0) lines.push({ a: e.from, b: e.to, cls: "lit", toCard: true });
@@ -195,8 +236,9 @@ function glyph(n) {
   if (n.kind === "message") return `<title>${esc(n.sub || "")}</title><rect class="b pill${n.stopped ? " stopped" : ""}" width="${px(100)}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${px(50)}" y="${px(12.5)}">${esc(n.label)} ${esc(clock(n.at))}</text>`;
   if (n.kind === "reply") return `<title>${esc(n.sub || "")}</title><rect class="b pill" width="${px(124)}" height="${px(18)}" rx="${px(9)}"/><circle class="od store" cx="${px(10)}" cy="${px(9)}" r="${px(3)}"/><text class="l" x="${px(18)}" y="${px(12.5)}">${n.remembered ? "reply · remembered" : "reply"}</text>`;
   if (n.kind === "review") return `<rect class="b pill" width="${px(72)}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${px(36)}" y="${px(12.5)}">${esc(short(n.label, 11))}</text><text class="s mid" x="${px(36)}" y="${px(30)}">${esc(short(n.sub, 14))}</text>`;
-  return `<title>${esc(n.label)}</title><rect class="b" width="${CW}" height="${CH}" rx="${px(6)}"/>${dot}
-    <text class="l" x="${tx}" y="${px(15.5)}">${esc(short(n.label, 19))}</text><text class="s" x="${tx}" y="${px(28.5)}">${esc(short(n.sub, 24))}</text>
+  const w = boxW(n), room = (w - tx - px(6)) / px(6.1);
+  return `<title>${esc(n.label)}</title><rect class="b" width="${w}" height="${CH}" rx="${px(6)}"/>${dot}
+    <text class="l" x="${tx}" y="${px(15.5)}">${esc(short(n.label, Math.floor(room)))}</text><text class="s" x="${tx}" y="${px(28.5)}">${esc(short(n.sub, Math.floor(room * 1.2)))}</text>
     ${n.kind === "gate" ? `<path class="bar" d="M${-px(12)} ${-px(14)}V${CH + px(14)}"/>` : ""}`;
 }
 
@@ -238,7 +280,7 @@ function paint(P) {
   X.lineEls.forEach(({ l, e, t }) => {
     const [x1, y1] = l.raw ? l.raw : at(l.a, l, "a"), [x2, y2] = l.raw ? l.raw.slice(2) : at(l.b, l, "b");
     e.setAttribute("x1", x1); e.setAttribute("y1", y1); e.setAttribute("x2", x2); e.setAttribute("y2", y2);
-    if (t) { t.setAttribute("x", (x1 + x2) / 2); t.setAttribute("y", (y1 + y2) / 2 - px(4)); }
+    if (t) { const u = l.lt ?? 0.5; t.setAttribute("x", x1 + (x2 - x1) * u); t.setAttribute("y", y1 + (y2 - y1) * u + px(3)); }
   });
 }
 
@@ -251,6 +293,7 @@ function dress(k, target) {
     g.classList.toggle("sel", X.sel === id);
     if (n.kind === "limit") g.classList.toggle("lit", data.stages[k].limit === id);
     if (n.kind === "gate") g.classList.toggle("open", !!n.open);
+    if (n.kind === "context_fact") g.classList.toggle("lit", k === data.stages.findIndex((s) => s.id === "order") && !!n.feeds_here);
     if (n.kind !== "product") continue;
     g.classList.toggle("aside", p.aside); g.classList.toggle("dashed", p.dashed); g.classList.toggle("pick", !!p.pick);
     g.classList.toggle("big", p.big); g.classList.toggle("read", p.read);

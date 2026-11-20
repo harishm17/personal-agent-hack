@@ -15,7 +15,9 @@ const cap = (s) => String(s || "").charAt(0).toUpperCase() + String(s || "").sli
 // space between products, right margin for the stores' lanes.
 const REM = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16;
 const [WIDTHS, H, ROW, GROUP, BUS] = [[150, 150, 150, 124, 210].map((w) => w * REM), 42 * REM, 54 * REM, 14 * REM, 30 * REM];
-const KIND = { person: "Person", store: "Store", order_item: "Order item", home_fact: "Home fact", limit: "Rule",
+const KIND = { event: "Event", context_person: "Person", context_message: "Message", context_fact: "Fact, quoted", sheet_value: "On the order",
+  memory: "Memory", message: "Message to the store's agent", reply: "The store's reply", web: "Web search", review: "Review, quoted", gate: "The gate", cart: "Cart",
+  person: "Person", store: "Store", order_item: "Order item", home_fact: "Home fact", limit: "Rule",
   statement: "Page quote", product: "Product", strike: "Strike", purchase: "Signature" };
 const STATUS = { inside: "meets the order", outside: "outside", unclear: "unclear", not_stated: "not stated", struck: "struck" };
 
@@ -202,6 +204,8 @@ function sourceLine(s) {
   if (s.record === "sheet") return `<code>${esc(s.file)}</code> · <code>${esc(s.pointer)}</code>`;
   if (s.record === "receipt") return `receipt ${s.n} · <code>${esc(String(s.hash).slice(0, 16))}</code> · ${esc(clock(s.at))}`;
   if (s.record === "store_page") return `<a class="link" href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.url).replace(/^https?:\/\/(www\.)?/, ""))}</a>${span} · read ${esc(clock(s.fetched_at))}`;
+  if (s.record === "context") return `${s.from_label ? esc(s.from_label) + " · " + esc(s.channel || "") + " · " + esc(String(s.at || "").slice(0, 10)) + " " + esc(clock(s.at)) + " · " : ""}<code>${esc(s.file)}</code>${s.pointer ? " · <code>" + esc(s.pointer) + "</code>" : ""}${span}`;
+  if (s.record === "talk") return `conversation <code>${esc(s.thread)}</code> · message ${esc(s.n)} · ${esc(clock(s.at))} · <a class="link" href="/talk/">conversations</a>`;
   if (s.record === "web_page") return `<a class="link" href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.url).replace(/^https?:\/\/(www\.)?/, "").slice(0, 60))}</a> · read ${esc(clock(s.fetched_at))}`;
   if (s.record === "ledger") return `outbound ledger · rows ${esc((s.rows || []).join(", "))} · <a class="link" href="/trail/">trail</a>`;
   if (s.record === "memory") return `memory <code>${esc(s.memory_id)}</code> · ${s.hash ? "receipt <code>" + esc(String(s.hash).slice(0, 12)) + "</code>" : "<code>" + esc(s.file || "") + "</code>"} · ${esc(clock(s.at))}`;
@@ -235,6 +239,9 @@ function renderSide() {
     const extra = [n.expr ? `<dt>Check</dt><dd>${esc(n.expr)}${n.why ? " · " + esc(n.why) : ""}</dd>` : "",
       n.kind === "product" && n.reason ? `<dt>Why not</dt><dd>${esc(n.reason)}</dd>` : "",
       n.more_on_page ? `<dt>Also</dt><dd>${n.more_on_page} more on the page</dd>` : "",
+      n.class ? `<dt>Sharing</dt><dd>${esc(n.sub || n.class)}</dd>` : "",
+      n.removed?.length ? `<dt>Withheld</dt><dd>${n.removed.map((c) => `<s>${esc(c.text)}</s> <span class="when">${esc(c.mark || "")}</span>`).join("<br>")}</dd>` : "",
+      n.why && n.kind === "message" ? `<dt>Why</dt><dd>${esc(n.why)}</dd>` : "",
       n.aside ? `<dt>Set aside</dt><dd>${esc(n.aside.reason)} · ${esc(nodes.get(n.aside.limit)?.label || "")}</dd>` : "",
       n.href ? `<dt>Open</dt><dd><a class="link" href="${esc(n.href)}">the signature</a></dd>` : ""].join("");
     el.innerHTML = `<div class="cap">${esc(KIND[n.kind])}<button class="x" data-close aria-label="Close">×</button></div>

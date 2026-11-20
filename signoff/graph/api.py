@@ -16,7 +16,7 @@ import pathlib
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from signoff.graph import build, cognee, explore as exploring, records
+from signoff.graph import build, cognee, context as contexts, explore as exploring, records
 
 router = APIRouter()
 ANSWERS = cognee.DATA / "answers"
@@ -76,7 +76,9 @@ def explore(line_id: str | None = None):
     sheet = r["state"].get("sheet") or {}
     lines = [{"line_id": l["id"], "need": l["need"]} for l in sheet.get("lines") or []]
     line_id = line_id or (lines[0]["line_id"] if lines else None)
-    body = exploring.explore(r, line_id, records.reviews(line_id), records.recall(line_id), records.talk()) if line_id else None
+    held, file = contexts.load(sheet.get("id"))
+    body = exploring.explore(r, line_id, records.reviews(line_id), records.recall(line_id), records.talk(),
+                             contexts.read(held, sheet, file)) if line_id else None
     if body is None:
         return JSONResponse({"backend": "records", "error": "no item %r on this sheet" % line_id, "lines": lines},
                             status_code=404, headers=NO_STORE)
