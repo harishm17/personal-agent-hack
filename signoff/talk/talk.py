@@ -100,7 +100,7 @@ def _decide(text: str, sheet: dict, prod: dict | None, finder, rewrite) -> dict:
         turn.update(decision="refused", why="nothing is left after the sealed parts are removed")
         return turn
     turn["rewritten"] = rewrite(turn["cut"])
-    turn["still"] = guard.check(turn["rewritten"], sheet, prod, finder)
+    turn["still"] = guard.check(turn["rewritten"], sheet, prod, finder) + guard.gaps(turn["rewritten"])
     if turn["still"]:
         turn.update(decision="refused", why="the rewritten message still carries a sealed part")
     else:

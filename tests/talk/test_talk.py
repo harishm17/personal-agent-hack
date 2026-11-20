@@ -130,3 +130,9 @@ def test_the_writer_is_told_only_what_the_recipient_may_receive(sheet, finder):
     talk.ask(STORE, "p", None, sheet, finder=finder, send=Store(), draft=draft, read=lambda q, r: [])
     assert set(seen) == {"product", "needed by", "delivery region"} and seen["needed by"] == "December 2, 2026"
     assert "300" not in str(seen) and "Dana" not in str(seen)
+
+
+def test_a_rewrite_that_keeps_a_gap_mark_is_not_sent(sheet, finder):
+    store = Store()
+    t = run(sheet, finder, store, LEAKS[0][1], rewritten="It must hold […]. Can it be returned?")
+    assert store.got == [] and t["turns"][0]["decision"] == "refused" and t["turns"][0]["still"][0]["kind"] == "gap"

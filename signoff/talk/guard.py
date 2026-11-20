@@ -197,3 +197,9 @@ def cut(text: str, spans: list) -> str:
         at = max(at, s["end"])
     out.append(text[at:])
     return re.sub(r"[ \t]{2,}", " ", "".join(out)).strip()
+
+
+def gaps(text: str) -> list:
+    """A gap mark left in a rewritten message: the message is not whole, so it does not leave."""
+    return [{"start": m.start(), "end": m.end(), "text": m.group(0), "kind": "gap", "mark": "gap mark", "by": "code",
+             "rule": "a message with a gap mark in it is not sent"} for m in re.finditer(r"\[\s*(?:…|\.{3})\s*\]", text)]

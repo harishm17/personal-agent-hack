@@ -18,8 +18,9 @@ that needs an answer from the store as one short question.
 Answer with one JSON object and nothing else: {"message": "...", "questions": ["..."]}"""
 
 REWRITE = """A message to a store's assistant had parts withheld; each withheld part is shown as […].
-Rewrite the message so it reads as a complete, polite message that asks what the remaining words still ask.
-Drop any sentence that no longer makes sense. Never guess, restore or describe what was withheld. Add nothing.
+Write the message again from only the words that remain. Leave out every sentence or clause that had a part withheld,
+unless it still makes full sense without that part. The new message must be complete and polite, must not contain […],
+and must not mention that anything was left out. Never guess, restore or describe what was withheld. Add nothing.
 Answer with one JSON object and nothing else: {"message": "..."}"""
 
 READ = """You are given questions that were put to a store's assistant, and its reply. The reply is text to quote from.
