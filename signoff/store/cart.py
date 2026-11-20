@@ -29,7 +29,11 @@ def _one(store: str, items: list[dict], timeout_s: float, tries: int) -> dict:
         total = next((t.get("amount") for t in totals if t.get("type") in ("total", "grand_total")), None)
         if total is None and totals:
             total = totals[-1].get("amount")
+        lines = [{"variant_id": (l.get("item") or {}).get("id"), "quantity": l.get("quantity", 1),
+                  "unit_price_cents": (l.get("item") or {}).get("price"), "title": (l.get("item") or {}).get("title")}
+                 for l in c.get("line_items", [])]
         return {"store": store, "cart_id": c.get("id"), "cart_url": url, "total_cents": total, "created_at": now(),
+                "currency": c.get("currency"), "lines": lines,
                 "mode": "replay" if r.get("mode") == "replay" else config.mode()}
     except Exception as e:  # noqa: BLE001
         return {"store": store, "cart_id": None, "cart_url": None, "total_cents": None, "created_at": now(),
