@@ -47,7 +47,7 @@ async def admin_guard(request, call_next):
 # Each stream owns one router module. A module that is missing or broken is skipped and reported at
 # /api/health, so one stream's error never stops the others' pages from loading.
 ROUTERS = ["signoff.engine.api", "signoff.store.api", "signoff.sign.api"]
-OPTIONAL_ROUTERS = ["signoff.airbyte.api", "signoff.relay.api"]  # added tools: missing or broken never fails health
+OPTIONAL_ROUTERS = ["signoff.airbyte.api", "signoff.relay.api", "signoff.trail.api"]  # added tools: missing or broken never fails health
 LOADED, FAILED = [], {}
 for name in ROUTERS:
     try:
@@ -89,6 +89,8 @@ def phone():
 app.mount("/phone", StaticFiles(directory=ROOT / "web" / "phone", html=True), name="phone")
 app.mount("/screen", StaticFiles(directory=ROOT / "web" / "screen", html=True), name="screen")
 app.mount("/profile", StaticFiles(directory=ROOT / "profile"), name="profile")
+if (ROOT / "web" / "trail").is_dir():
+    app.mount("/trail", StaticFiles(directory=ROOT / "web" / "trail", html=True), name="trail")
 if (ROOT / "web" / "relay").is_dir():
     app.mount("/relay", StaticFiles(directory=ROOT / "web" / "relay", html=True), name="relay")
 
