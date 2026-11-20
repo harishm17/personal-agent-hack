@@ -16,6 +16,17 @@ Products per store and line (title rules in signoff/store/build_pool.py; every q
 - Senso: SENSO_API_KEY is not in the keys file; `/api/senso/checks` answers "not connected" until it is.
 - Optional hook for the engine (additive, not a contract change): if `signoff.engine.state` defines `set_issuer_key(info: dict)`, SIGN calls it after enrol and after reset with `{enrolled, key_id, name, persona}`, so `GET /api/state` can show `issuer_key`. Also `GET /api/issuer/status` returns the same for the phone.
 
+## 11:30 from SCREEN
+- Screen is on `stream/SCREEN`, merged with main 8add2db, checks green. `/` draws the line with the most candidates;
+  `/#L2` a given line; keys 1 to 6 change line, E opens Elena's controls.
+- `/?fixture=1` draws the committed fixture run whatever the engine holds (badge "FIXTURE DATA"); `/?fixture=signed` the
+  same run after a signature (placeholder signer, carts at fixture-store-*.example). `web/screen/fixture-state.json` is a
+  copy of `fixtures/state.json`; `tests/screen/test_screen_smoke.py` fails if the two differ, so after
+  `uv run python fixtures/make_state.py` also run `cp fixtures/state.json web/screen/fixture-state.json`.
+- `/?sim=1` moves a limit inside the page (red "SIMULATION" button, panel says it is not Dana's phone). Dev only.
+- Screenshots: `demo/shot.sh "/?fixture=1#L2" out.png` (headless Chrome, 1920 x 1080).
+- [ ] No request. One question for DEMO.md: with 111 products and no figures every line is "open", so `/` opens the line
+  with the most candidates (shower chair). If the demo must open on the toilet seat, use `/#L2`.
 ## 11:21 from ENGINE
 - [ ] Arcee key has no credits: every model answers `402 billing.insufficient_credits` ("Required: 0.0002, available: 0.000000")
   on `POST /chat/completions` (`GET /models` works, which is why the key test passed). The reader and the chat cannot run

@@ -9,11 +9,21 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const params = new URLSearchParams(location.search);
 const SIM = params.get("sim") === "1";
+// ?fixture=1 draws the committed fixture run whatever the engine holds; ?fixture=signed the same run after a signature
+const FIXTURE = { 1: "/screen/fixture-state.json", signed: "/screen/fixture-signed.json" }[params.get("fixture")];
 
 let server = null;            // the last /api/state
 let state = null;             // what is drawn: server, or the sim's recompute of it
 let raw = "";
 const ui = { inspect: null, panel: params.get("panel") || (SIM ? "sim" : "words"), sim: { limits: {}, facts: {} }, chat: [], busy: false, note: "" };
+
+// ?sim=1&set=L2.capacity:325,toilet_rim_height:14 starts the sim with moved values (for screenshots)
+if (SIM) {
+  for (const pair of (params.get("set") || "").split(",").filter(Boolean)) {
+    const [id, v] = pair.split(":");
+    (id.includes(".") ? ui.sim.limits : ui.sim.facts)[id] = parseFloat(v);
+  }
+}
 
 // ---------- fitting the 960 x 540 canvas to the window ----------
 function fit() {
@@ -27,7 +37,7 @@ fit();
 // ---------- data ----------
 async function load() {
   try {
-    const res = await fetch("/api/state", { cache: "no-store" });
+    const res = await fetch(FIXTURE || "/api/state", { cache: "no-store" });
     if (!res.ok) throw new Error(res.status);
     const text = await res.text();
     if (text === raw) return;
@@ -47,6 +57,7 @@ function apply() {
 
 let live = false;
 function listen() {
+  if (params.get("live") === "0") return;        // screenshots: no open stream, polling only
   const events = new EventSource("/api/events");
   events.onopen = () => { live = true; };
   events.onmessage = () => load();
@@ -65,6 +76,11 @@ addEventListener("hashchange", () => { ui.inspect = null; render(); });
 function render() {
   if (!state) return;
   $("stage").classList.add("ready");
+  const sheetView = location.hash === "#sheet";
+  $("stage").classList.toggle("sheet", sheetView);
+  $("stage").classList.toggle("sql", !sheetView && ui.panel === "sql");
+  if (sheetView) { renderSheet(); renderSeal(); flashChanges(); return; }
+  if (!$("box")) $("mid").innerHTML = '<div id="plot"><svg id="box" role="img" aria-label="Every candidate of this line against its limits"></svg></div><div id="side"></div>';
   const id = lineId();
   const line = state.lines.find((l) => l.line_id === id);
   const sheetLine = state.sheet.lines.find((l) => l.id === id);
@@ -88,23 +104,28 @@ function render() {
 function renderHead({ line, index }) {
   const { issuer, shopper } = state.sheet;
   const mode = state.mode === "fixture" ? "FIXTURE DATA" : state.mode === "replay" ? "REPLAY OF CACHED STORE DATA" : "";
+  const title = line ? cap(line.need) : state.sheet.title;
+  const sub = line ? `<a href="#sheet" title="The whole sheet. Key: 0">line ${index + 1} of ${state.lines.length}</a>` : `${state.lines.length} lines`;
   $("head").innerHTML = `
-    <h1>${esc(cap(line.need))}</h1>
-    <span class="sub">line ${index + 1} of ${state.lines.length}</span>
+    <h1>${esc(title)}</h1>
+    <span class="sub">${sub}${state.sheet.invented ? " · invented people" : ""}</span>
     <span class="grow"></span>
     <span class="key issuer">${esc(issuer.name)} set</span>
     <span class="key shopper">${esc(shopper.name)} stated</span>
-    <span class="key store">a store's own words</span>
+    <span class="key store">store's words</span>
     <span class="key unknown">not stated</span>
-    <button id="elena" aria-pressed="${ui.panel === "shopper"}" title="Key: E">${esc(shopper.name)}'s controls</button>
-    ${SIM ? `<button id="simbtn" aria-pressed="${ui.panel === "sim"}">Sim</button><span class="badge sim">SIMULATION</span>` : ""}
+    <button id="sqlbtn" aria-pressed="${!!line && ui.panel === "sql"}" title="The one SQL statement that returns this line's passing box. Key: Q">SQL</button>
+    <button id="elena" aria-pressed="${!!line && ui.panel === "shopper"}" title="${esc(shopper.name)}'s measurements and her chat with the agent. Key: E">${esc(shopper.name)}</button>
+    ${SIM ? `<button id="simbtn" class="simbtn" aria-pressed="${ui.panel === "sim"}">SIMULATION</button>` : ""}
     ${mode ? `<span class="badge">${mode}</span>` : ""}`;
   $("elena").onclick = () => togglePanel("shopper");
+  $("sqlbtn").onclick = () => togglePanel("sql");
   if (SIM) $("simbtn").onclick = () => togglePanel("sim");
 }
 
 function togglePanel(name) {
   ui.panel = ui.panel === name ? "words" : name;
+  if (location.hash === "#sheet") { ui.panel = name; location.hash = lineId(); return; }
   render();
   if (ui.panel === "shopper") $("sayText")?.focus();
 }
@@ -154,6 +175,7 @@ function storeWords(c) {
 }
 
 function renderSide(view) {
+  if (ui.panel === "sql") return renderSqlPanel(view);
   if (ui.panel === "shopper") return renderShopperPanel(view);
   if (ui.panel === "sim") return renderSimPanel(view);
   const { line, shown, pick } = view;
@@ -162,9 +184,8 @@ function renderSide(view) {
   let html = "";
   if (shown) {
     const { parts, ends } = storeWords(shown);
-    html += `<div class="cap">${esc(shown.product.store)} states, in its own words</div>
-      <div class="words">${parts.join(" ") || "No sentence with a figure was found on this page."}
-        <a href="${esc(shown.product.url)}" target="_blank" rel="noopener" title="${esc(shown.product.title)}">the store's page ↗</a>
+    html += `<div class="words">${parts.join(" ") || "No sentence with a figure was found on this page."}
+        <a href="${esc(shown.product.url)}" target="_blank" rel="noopener" title="${esc(shown.product.title)}">${esc(shown.product.store)}'s page ↗</a>
         ${ends.map((e) => `<span class="end">${e}</span>`).join("")}</div>`;
   } else {
     html += `<div class="cap">Nothing is proposed for this line</div>
@@ -174,9 +195,9 @@ function renderSide(view) {
   const rule = `<span class="shopper"><b>${esc(state.sheet.shopper.name)}'s rule, ${esc(why.rule)}</b></span>`;
   if (shown && pick && shown.id === pick.id) {
     const struck = line.struck.length ? `<span class="issuer"><b>${esc(state.sheet.issuer.name)} struck ${line.struck.length} before it:</b> “${esc(line.struck[0].reason)}”</span> ` : "";
-    html += `<div class="why"><b>Why this one.</b> ${struck}<b>${why.inside} of ${why.total}</b> are inside ${limitsWord}; <b>${why.with_delivery_time}</b> of those
-      state a delivery time. ${rule}, picks <b>${money(why.pick_price_cents)}</b>.
-      ${line.status === "pick_up" ? esc(cap(line.reason || "")) + "." : ""}</div>`;
+    html += `<div class="why"><b>Why this one.</b> ${struck}<b>${why.inside} of ${why.total}</b> are inside ${limitsWord}${line.status === "pick_up"
+      ? `. Nothing is shipped, so no delivery time is needed: ${esc(line.reason || "picked up locally")}. The cheapest inside is <b>${money(why.pick_price_cents)}</b>.`
+      : `; <b>${why.with_delivery_time}</b> of those state a delivery time. ${rule}, picks <b>${money(why.pick_price_cents)}</b>.`}</div>`;
   } else if (shown) {
     const because = shown.status === "inside"
       ? (shown.arrival && shown.arrival.status !== "stated" ? "it is inside the limits, but its store states no delivery time" : "it is inside the limits, but is not the cheapest that states a delivery time")
@@ -186,7 +207,48 @@ function renderSide(view) {
   } else {
     html += `<div class="why"><b>${why.inside} of ${why.total}</b> are inside ${limitsWord}. ${rule}, has nothing to choose from.</div>`;
   }
+  if (shown) html += agentWords(shown);
   $("side").innerHTML = html;
+}
+
+/** What the store's own agent answered about delivery and returns, in its words. */
+function agentWords(c) {
+  const bits = [];
+  if (c.arrival && c.arrival.quote) bits.push(`delivery, stated not guaranteed: “${esc(c.arrival.quote)}”`);
+  else if (c.arrival) bits.push("delivery time: not stated");
+  const u = c.undo;
+  if (u && u.quote) bits.push(`to undo${u.applies_to && u.applies_to !== "all" ? " (" + esc(u.applies_to) + ")" : ""}: “${esc(u.quote)}”${u.fee ? ", " + esc(u.fee) : ""}`);
+  return bits.length ? `<p class="asked"><b>${esc(c.product.store)}'s agent, asked:</b> ${bits.join("; ")}</p>` : "";
+}
+
+// ---------- the SQL view: one statement returns the passing box ----------
+const sql = { key: null, data: null, error: null };
+
+function renderSqlPanel({ line }) {
+  const key = line.line_id + "|" + state.version;
+  if (sql.key !== key && !FIXTURE && !SIM) {
+    sql.key = key;
+    fetch("/api/sql/passing-box?line_id=" + encodeURIComponent(line.line_id))
+      .then((res) => res.ok ? res.json() : Promise.reject(new Error(res.status === 503 ? "SingleStore is not reachable" : "HTTP " + res.status)))
+      .then((data) => { sql.data = data; sql.error = null; })
+      .catch((error) => { sql.data = null; sql.error = error.message; })
+      .finally(() => { if (ui.panel === "sql") renderSqlPanel({ line: state.lines.find((l) => l.line_id === lineId()) }); });
+  }
+  let body;
+  if (FIXTURE || SIM) body = `<div class="none">The SQL view needs the live engine and SingleStore; this page is drawing ${FIXTURE ? "fixture data" : "a simulation"}.</div>`;
+  else if (sql.error) body = `<div class="none">${esc(sql.error)}. The screen and the checks do not depend on the database.</div>`;
+  else if (!sql.data || sql.data.line_id !== line.line_id) body = `<div class="none">Asking SingleStore…</div>`;
+  else {
+    const id = (store, pid) => store + "|" + pid;
+    const rows = new Set(sql.data.rows.map((r) => id(r.store, r.product_id)));
+    const inside = new Set(line.candidates.filter((c) => c.status === "inside").map((c) => id(c.product.store, c.product.product_id)));
+    const same = rows.size === inside.size && [...rows].every((r) => inside.has(r));
+    const onlySql = [...rows].filter((r) => !inside.has(r)).length, onlyEngine = [...inside].filter((r) => !rows.has(r)).length;
+    body = `<pre class="sqltext">${esc(sql.data.sql)}</pre>
+      <p class="sqlresult ${same ? "same" : "differ"}"><b>${rows.size} rows</b> came back. The engine, in Python, has <b>${inside.size}</b> amber dots.
+      ${same ? "<b>They are the same products.</b>" : `<b>They differ:</b> ${onlySql} only in the query, ${onlyEngine} only in the engine.`}</p>`;
+  }
+  $("side").innerHTML = `<div class="panel"><h2>SingleStore: this one statement is the passing box of this line</h2>${body}</div>`;
 }
 
 // ---------- Elena's controls ----------
@@ -200,8 +262,9 @@ function factsOfLine(sheetLine) {
 }
 
 function slider(owner, id, label, value, unit, min, max, step) {
-  return `<div class="slider ${owner}"><label for="s_${id}">${esc(label)}</label><output>${num(value, unit)} ${esc(unit)}</output>
-    <input id="s_${id}" data-id="${esc(id)}" data-owner="${owner}" type="range" min="${min}" max="${max}" step="${step}" value="${value}"></div>`;
+  return `<div class="slider ${owner}"><label for="s_${id}">${esc(label)}</label>
+    <input id="s_${id}" data-id="${esc(id)}" data-owner="${owner}" data-unit="${esc(unit)}" type="range" min="${min}" max="${max}" step="${step}" value="${value}">
+    <output>${num(value, unit)} ${esc(unit)}</output></div>`;
 }
 
 function renderShopperPanel({ sheetLine }) {
@@ -213,9 +276,9 @@ function renderShopperPanel({ sheetLine }) {
   $("side").innerHTML = `<div class="panel">
     <h2 class="shopper">${esc(shopper.name)}, the shopper${shopper.invented ? " (invented)" : ""}: her measurements and her words</h2>
     ${facts.map((f) => slider("shopper", f.id, f.label, f.value, f.unit, f.min, f.max, f.step)).join("") || '<div class="none">This line uses none of her measurements.</div>'}
-    <form id="say"><input id="sayText" autocomplete="off" aria-label="Say something to the agent" placeholder="Say something to the agent…">
+    <form id="say"><input id="sayText" name="say" type="text" autocomplete="off" aria-label="Say something to the agent" placeholder="Say something to the agent…">
       <button type="submit">Send</button></form>
-    <div id="reply">${last ? chatHtml(last) : `She cannot move a limit or bring back a struck product. Try asking.`}</div></div>`;
+    <div id="reply" aria-live="polite">${last ? chatHtml(last) : `She cannot move a limit or bring back a struck product. Try asking.`}</div></div>`;
   wireSliders();
   $("say").onsubmit = say;
 }
@@ -228,7 +291,7 @@ function chatHtml(turn) {
 function refreshOutputs() {
   for (const input of document.querySelectorAll(".slider input")) {
     const fact = state.sheet.shopper_facts.find((f) => f.id === input.dataset.id);
-    if (fact && input.dataset.owner === "shopper") input.previousElementSibling.textContent = `${num(fact.value, fact.unit)} ${fact.unit}`;
+    if (fact && input.dataset.owner === "shopper") input.nextElementSibling.textContent = `${num(fact.value, fact.unit)} ${fact.unit}`;
   }
   if ($("reply") && ui.chat.length && !ui.busy) $("reply").innerHTML = chatHtml(ui.chat[ui.chat.length - 1]);
 }
@@ -238,7 +301,8 @@ function wireSliders() {
   for (const input of document.querySelectorAll(".slider input")) {
     input.oninput = () => {
       const value = parseFloat(input.value), id = input.dataset.id;
-      if (input.dataset.owner === "issuer") { ui.sim.limits[id] = value; input.previousElementSibling.textContent = input.value; return apply(); }
+      input.nextElementSibling.textContent = `${num(value, input.dataset.unit)} ${input.dataset.unit}`;
+      if (input.dataset.owner === "issuer") { ui.sim.limits[id] = value; return apply(); }
       if (SIM) { ui.sim.facts[id] = value; return apply(); }
       clearTimeout(factTimer);
       factTimer = setTimeout(() => postFact(id, value), 50);
@@ -282,7 +346,7 @@ function renderSimPanel({ sheetLine }) {
   if ((active || "").startsWith("s_")) return refreshOutputs();
   const limits = state.sheet.lines.find((l) => l.id === sheetLine.id).limits.filter((l) => l.bound.source === "issuer");
   $("side").innerHTML = `<div class="panel">
-    <h2 style="color:var(--bad)">SIMULATION, in this page only. Not ${esc(state.sheet.issuer.name)}'s phone; nothing is signed.</h2>
+    <h2 style="color:var(--bad)">SIMULATION in this page. Not ${esc(state.sheet.issuer.name)}'s phone; nothing is signed.</h2>
     ${limits.map((l) => slider("issuer", l.id, l.label, l.bound.value, l.unit, l.bound.min, l.bound.max, l.bound.step)).join("")}
     ${factsOfLine(sheetLine).map((f) => slider("shopper", f.id, f.label, f.value, f.unit, f.min, f.max, f.step)).join("")}
     <button id="simreset">Back to the server's state</button></div>`;
@@ -301,37 +365,70 @@ function renderTiles({ line }) {
     const body = l.tightest
       ? `<span class="status">${esc(head)}${price}</span><span data-k="tile.${l.line_id}">✓ ${esc(l.tightest.text)}</span>`
       : `<span class="wrap"><b class="status">${esc(head)}:</b> ${esc(l.reason || "nothing proposed")}</span>`;
-    return `<button class="tile ${l.status}" data-line="${l.line_id}" aria-current="${l.line_id === line.line_id}">
-      <span class="need">${esc(l.need)}</span>${body}</button>`;
+    return `<a class="tile ${l.status}" href="#${l.line_id}" aria-current="${l.line_id === line.line_id}">
+      <span class="need">${esc(l.need)}</span>${body}</a>`;
   }).join("");
-  for (const tile of document.querySelectorAll(".tile")) tile.onclick = () => { location.hash = tile.dataset.line; };
+}
+
+// ---------- the whole sheet: the counts and six large tiles ----------
+function renderSheet() {
+  renderHead({ line: null });
+  const c = state.counts, stores = state.sheet.stores.length;
+  const step = (n, words, k) => `<div class="count"><span class="n" data-k="count.${k}">${n}</span><span>${words}</span></div>`;
+  $("sums").innerHTML = `<div class="counts">
+    ${step(c.products_found, `products found<br>at ${stores} stores`, "found")}<span class="op">→</span>
+    ${step(c.state_every_figure, `state every deciding figure<br>(read by the model; quote found<br>in the store's text by code)`, "every")}<span class="op">→</span>
+    ${step(c.inside_limits, `are inside<br>the limits`, "inside")}
+    <span class="grow"></span>
+    ${step(`${c.lines_ready} of ${c.lines_total}`, `lines ready<br>(lines, not products)`, "ready")}
+  </div>`;
+  const dots = { inside: "inside", outside: "outside", not_stated: "never state a figure", struck: "struck" };
+  $("mid").innerHTML = `<div class="big">${state.lines.map((l) => {
+    const p = pickOf(l);
+    const tally = Object.keys(dots).map((k) => [k, l.candidates.filter((x) => x.status === k).length]).filter(([, n]) => n)
+      .map(([k, n]) => `<span class="tally"><i class="d ${k}"></i>${n} ${dots[k]}</span>`).join("");
+    return `<a class="tile bigtile ${l.status}" href="#${l.line_id}">
+      <span class="need">${esc(l.need)}</span>
+      <span class="status">${esc(STATUS[l.status] || l.status)}${p && l.status !== "pick_up" ? `<i>${money(p.product.price_cents)}</i>` : ""}</span>
+      <span class="wrap" data-k="big.${l.line_id}">${l.tightest ? `✓ ${esc(l.tightest.text)} on ${esc(l.tightest.name)}` : esc(cap(l.reason || "nothing proposed"))}</span>
+      <span class="store">${p ? esc(p.product.store) : "&nbsp;"}</span>
+      <span class="wrap tallies">${tally || "no product found yet"}</span>
+    </a>`;
+  }).join("")}</div>`;
 }
 
 // ---------- the seal ----------
+function sensoSummary() {
+  const rows = Array.isArray(state.senso) ? state.senso : [];
+  if (!rows.length) return "";
+  const blocked = rows.filter((r) => r.verdict === "conflict" || r.verdict === "unsupported").length;
+  return `<span class="senso ${blocked ? "blocked" : ""}" title="Each sentence of the sheet, checked by Senso against the order and the handout">Senso: ${rows.length} sentences checked, ${blocked ? blocked + " block the signature" : "none in conflict"}</span>`;
+}
+
 function renderSeal() {
   const { seal, issuer_key: key, sheet } = state;
-  const invented = sheet.invented ? `<span class="invented">${esc(sheet.issuer.name)} and ${esc(sheet.shopper.name)} are invented people.</span>` : "";
   const el = $("seal");
   el.classList.toggle("signed", !!seal.signed);
   if (!seal.signed) {
     el.innerHTML = `<span class="state">${esc(seal.text || "Not signed. No cart exists at any store.")}</span>
       <span class="issuer"><b>Only ${esc(sheet.issuer.name)}'s signature creates the carts.</b></span>
-      <span class="grow"></span>${invented}`;
+      <span class="grow"></span>${sensoSummary()}<span class="total">${state.counts.lines_ready} of ${state.counts.lines_total} lines ready${state.total_cents ? " · " + money(state.total_cents) : ""}</span>`;
     return;
   }
   const sig = seal.signature || {};
-  const persona = (key && key.persona) || sig.persona || {};
-  const who = sig.name || sig.signer || sig.signer_name || sheet.issuer.name;
-  const at = sig.at || sig.signed_at || seal.signed_at;
-  const time = at ? new Date(at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+  const persona = sig.persona || (key && key.persona) || {};
+  const who = seal.signer || (sig.signer && sig.signer.name) || sig.name || sheet.issuer.name;
+  const at = seal.signed_at || sig.at || sig.signed_at;
+  const time = at ? new Date(at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "";
   const hash = seal.sheet_hash || sig.sheet_hash || "";
-  const inquiry = persona.inquiry_id || persona.id || sig.persona_inquiry_id;
-  const carts = (seal.carts || []).map((c) => `<a href="${esc(c.cart_url)}" target="_blank" rel="noopener">${esc(c.store)} cart${c.total_cents ? " " + money(c.total_cents) : ""} ↗</a>${c.mode && c.mode !== "real" && c.mode !== "live" ? ` (${esc(c.mode)})` : ""}`);
+  const identity = persona.inquiry_id
+    ? `Persona <code>${esc(persona.inquiry_id)}</code> ${esc(persona.label || persona.status || "")}`
+    : `Persona: ${esc(persona.label || "identity not checked")}`;
+  const carts = (seal.carts || []).map((c) => `<a href="${esc(c.cart_url)}" target="_blank" rel="noopener">${esc(c.store)}${c.total_cents ? " " + money(c.total_cents) : ""} ↗</a>${c.mode && c.mode !== "real" && c.mode !== "live" ? ` (${esc(c.mode)})` : ""}`);
   el.innerHTML = `<span class="state">Signed by ${esc(who)}${time ? " at " + time : ""}.</span>
-    ${hash ? `<span>sheet hash <code title="${esc(hash)}">${esc(hash.slice(0, 12))}…</code></span>` : ""}
-    ${inquiry ? `<span>Persona inquiry <code>${esc(inquiry)}</code>${persona.status ? " " + esc(persona.status) : ""}${persona.sandbox || persona.mode === "sandbox" || persona.environment === "sandbox" ? " (sandbox: always passes)" : ""}</span>` : ""}
-    <span class="grow"></span>${invented}
-    <span style="flex-basis:100%">${carts.length ? "Carts now exist, not checked out: " + carts.join(" · ") : "No cart link came back."}</span>`;
+    ${hash ? `<span>sheet hash <code title="${esc(hash)}">${esc(hash.slice(0, 8))}…</code></span>` : ""}
+    <span>${identity}</span>
+    <span class="carts">${carts.length ? "<b>Carts now exist; nothing is checked out or paid:</b> " + carts.join(" · ") : "No cart link came back."}</span>`;
 }
 
 // ---------- a short flash on every number that changed ----------
@@ -348,9 +445,11 @@ addEventListener("keydown", (e) => {
   if (e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey || !state) return;
   const n = parseInt(e.key, 10);
   if (n >= 1 && n <= state.lines.length) location.hash = state.lines[n - 1].line_id;
+  if (e.key === "0" || e.key === "Escape") location.hash = "sheet";
   if (e.key === "e") { e.preventDefault(); togglePanel("shopper"); }
+  if (e.key === "q") togglePanel("sql");
 });
 
-new ResizeObserver(() => state && render()).observe($("plot"));
+new ResizeObserver(() => state && render()).observe($("mid"));
 load();
 listen();
