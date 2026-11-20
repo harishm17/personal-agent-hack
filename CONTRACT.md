@@ -463,3 +463,31 @@ brand list in `store/build_pool.py`; per-product-type word lists and the hard-co
 in `signoff/app.py` and `extract/run.py`. "168 of 168 agreement" is not shown.
 After the three rules: both sheets are re-read and re-counted, and the integrator reads a sample of
 `not_stated` and `unclear` by hand before any count is said aloud.
+
+## Amendment 13:30 — the lead example is sheet 3, "the teacher's list" (the builder's choice; two research passes)
+- **Why.** The builder: "I still don't get the real life case. Why not just tell the other person what to
+  buy?" An honest search over eleven situations found the real everyday case is not the second signature
+  but **a list written by someone who is not shopping, stated as facts rather than products, and shopped
+  by many people**. The answer to "why not name the product": the teacher knows what is required, not
+  what is in stock or cheapest at each family's store, and one list is shopped by 25 families.
+- **The example** (`sheets/sheet3.json`, `sheets/sheet3_order.txt`; all people invented): Ms. Alvarez, a
+  3rd-grade teacher, writes the list. Dev, the room parent, buys a set for each of 24 students with the
+  class fund; class fund purchases need her signature (PTA practice is two authorisations). Lines: `C1`
+  headphones no louder than 85 dB (the loudest stated level counts), `C2` crayons exactly 24 in a box,
+  `C3` notebook at least 70 sheets, `C4` pencils at least 12 in a pack. Pick rule `cheapest`.
+- **Found on real pages** (pattern counts by two probes, not the reader): a volume level on 26 of 30
+  headphone pages at three kids' brands and on 0 of 10 at Skullcandy; crayon count 16 of 20; notebook
+  sheets 20 of 27; pencil count 19 of 30. Catches: "BuddyPhones School+ Wireless" states "three sound
+  levels—75dB, 85dB, or 94dB"; JLab JBuddies Pop Wireless states "Volume limiting: Yes (85 dB)" and "95 dB
+  as the default"; a 64-count crayon box beside the 24.
+- **Not expressible today and left out**: word facts (wide ruled, #2, blunt tip), "no wheels", brand rules.
+  Optional and general if cheap: a line's `quantity` (24) carried into the cart and the total.
+- **Order of the three sheets**: sheet 3 leads the demo; sheet 2 (the plumber) is the second example and
+  the fallback; sheet 1 (home after surgery) stays in the repo and is not shown. The parent-and-teenager
+  draft is dropped; its best finding (headphones) is line `C1`.
+- **Claims not to make**: that approvals today are blind (Apple's Ask to Buy shows the item; Ramp checks
+  every transaction against policy); that teachers approve parents' carts or that schools work this way
+  today; anything about allergy safety; any pattern count as an accuracy figure; that nothing like this
+  exists (kits and list-to-cart services do).
+- **First twenty seconds of the pitch**: "Every August a teacher writes a list. Twenty-five families
+  guess. Here the list itself shops, and buys nothing it cannot quote."
