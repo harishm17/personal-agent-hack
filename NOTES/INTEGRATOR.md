@@ -2377,3 +2377,26 @@ one message; STORE/SIGN: the database writes and two Senso payloads carry names 
 ## GRAPH 15:03 — DONE H8 (limits are prescribed, never derived)
 - DONE H8: in `signoff/graph/explore.py` a feed whose target is a limit is refused in code, whatever the file says (listed in the event stage's `refused_feeds`, never drawn), and every limit carries exactly one authored edge, `person:issuer —wrote→ limit`, with the order's own span as its source. Proof: `uv run pytest tests/graph -q` → `20 passed, 1 deselected` (`test_no_fact_may_feed_a_limit_and_every_limit_is_written_by_its_author`); `curl -s 'http://127.0.0.1:8009/api/graph/explore?line_id=L4'` → the only edges into a limit from outside the stores' pages are `('person:issuer', 'wrote', 'limit:L4.capacity')` and `('person:issuer', 'wrote', 'limit:L4.door')`; `refused_feeds: []` with the corrected file; caption "10 facts held from 7 messages; 6 shape this order."
 - The three sources are named on the canvas from `sources` in the reply: "prescribed by Dana" over her order and its rules, "supplied by the family" over Elena, the need-by date and the measurement (the only things a fact's edge reaches), "stated by the stores" over the products. The weight is held, dim, with no edge. Shots re-taken: `web/graph/shots/explore-2.png` (the order stage) and the rest.
+## REVIEWS 14:55 — the mismatch on L4 and L1: not a bug, both sides were right; the route now says it per product
+Checked from the cache in replay mode, per product (rating, scale as quoted, count, site, the exact quote, candidate id in `ratings()`):
+
+| line | product | quote code found | scale in the quote | reviews | in `ratings()` | reason |
+|---|---|---|---|---|---|---|
+| L4 | Carex Folding Walker | "4.5 out of 5" (walmart.com) | 5 | 158 | yes | used |
+| L4 | Drive Medical Aluminum Rollator Walker | "Rated 4.6 out of 5 stars" (parentgiving.com, the seller's own page) | 5 | 58 | yes | used |
+| L4 | Drive Deluxe Folding Two-Button Walker With 5" Wheels | "Rated 4.5 from 138 reviews." (homedepot.com) | none | 138 | no | no `out_of` quoted |
+| L4 | Bariatric Walker with Wheels | "Rated 4.2 from 69 reviews." (amazon.com) | none | 69 | no | no `out_of` quoted |
+| L1 | Deluxe Aluminum Bath Bench by Drive | "3.9 (28)" (amazon.com) | none | 28 | no | no `out_of` quoted |
+| L1 | Medline Knockdown Shower Chair with Arms and Back | "Rated 5.0 out of 5 stars" (the seller's own page) | 5 | 2 | no | under the minimum of 5 |
+| L1 | Carex Universal Bath Seat without Back | "4.8 out of 5 stars" (target.com) | 5 | not stated | no | no review count quoted |
+
+- None is a variant-id or cache-read fault: every id in `ratings()` is the candidate id the route shows, and both read the same cache
+  through the same function (`for_line`). For the three with no scale I looked at the returned page text again: it has no "out of",
+  no "/5" and no "stars" anywhere, and the reader, asked once more for the place where the scale is written, answered `null` for each.
+  So the rating stays unordered. No scale of five was guessed.
+- What was wrong was the route's telling: it showed a rating without saying whether it is used. Fixed, general: every candidate in
+  `GET /api/reviews` (and in `by_candidate`) now has `ordering: {used: true|false, reason}`; the reasons are "rating without a stated
+  scale: not used for ordering", "rating from N reviews, under the minimum of 5: not used for ordering", "rating without a stated
+  number of reviews: not used for ordering", "no quoted rating", "not searched yet". `summary` has `used_for_ordering` and
+  `with_a_rating_not_used_for_ordering` (L4: 2 and 2; L1: 0 and 3). A test checks that the candidates with `ordering.used` are exactly
+  the keys of `ratings()`. Proof: `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `19 passed, 1 deselected`.

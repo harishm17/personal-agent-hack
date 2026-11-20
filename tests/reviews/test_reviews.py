@@ -228,7 +228,15 @@ def test_ratings_reads_the_cache_only_and_states_its_minimum():
     assert package.ratings("L4", line) == {"L4:a": {"rating": 4.2, "out_of": 5, "review_count": 300}}
     assert package.MINIMUM_REVIEWS == reviews.MINIMUM_REVIEWS == 5 and "MINIMUM_REVIEWS (5)" in package.ratings.__doc__
     assert package.ratings("no such line") == {}
-    assert reviews.for_line(line)["best_reviewed"]["candidate_id"] == "L4:a"
+    out = reviews.for_line(line)
+    assert out["best_reviewed"]["candidate_id"] == "L4:a"
+    said = {c["candidate_id"]: c["ordering"] for c in out["candidates"]}
+    assert said["L4:a"] == {"used": True, "reason": None}
+    assert said["L4:b"]["reason"] == "rating from 4 reviews, under the minimum of 5: not used for ordering"
+    assert said["L4:c"] == {"used": False, "reason": "rating without a stated scale: not used for ordering"}
+    assert said["L4:e"] == {"used": False, "reason": "not searched yet"}
+    assert {cid for cid, o in said.items() if o["used"]} == set(package.ratings("L4", line))  # one story
+    assert (out["summary"]["used_for_ordering"], out["summary"]["with_a_rating_not_used_for_ordering"]) == (1, 2)
 
 
 def test_a_second_quote_with_the_scale_reaches_the_reply():
