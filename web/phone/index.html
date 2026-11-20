@@ -39,6 +39,7 @@
   .lim.changed .src { color:var(--t1); font-weight:500; text-decoration:underline; text-underline-offset:3px; }
   .quote { margin:4px 0 0; padding-left:8px; border-left:1px solid var(--line); color:var(--t2); overflow-wrap:anywhere; }
   .total { font:500 20px/28px var(--f); }
+  .code { font:600 20px/28px ui-monospace, Menlo, monospace; color:var(--t1); letter-spacing:.02em; }
   .hash { font:12px/16px ui-monospace, Menlo, monospace; color:var(--t2); overflow-wrap:anywhere; }
   .stack { display:flex; flex-direction:column; gap:4px; }
   .rule { border-top:1px solid var(--line); }
@@ -154,6 +155,10 @@ const pickOf = (line) => (line && line.pick ? line.candidates.find((c) => c.id =
 const hashNow = () => canon && canon.hash;               // computed on this phone from the canonical sheet
 const serverHashNow = () => canon && canon.serverHash;   // what the server says (Senso verdicts are keyed by it)
 const mine = () => issuer && issuer.enrolled && keyRec && keyRec.key_id === issuer.key_id;
+
+/* the fingerprint as the laptop and /seal/ show it: the first twelve characters in groups of four, large; the whole value is behind a tap */
+const shortCode = (h) => (h || "").slice(0, 12).replace(/(.{4})(?=.)/g, "$1 ");
+function codeBlock(full) { return `<div class="code">${esc(shortCode(full))}</div><details><summary>Full code</summary><div class="hash">${esc(full || "")}</div></details>`; }
 
 /* ---------- boot ---------- */
 async function boot() {
@@ -328,8 +333,8 @@ function itemCard(L, c) {
   else if (!p) body = `<div class="pick sub">no pick: ${esc(L.status)}</div>`;
   else {
     const cand = stateCandidate(p), title = p.title || (cand && cand.product.title) || p.product_key;
-    const variant = p.variant_title ? " · " + p.variant_title : "";
-    body = `<div class="pick">${esc(title)}</div><div class="sub">${esc(p.store)}${esc(variant)} · × ${esc(p.quantity || 1)}${p.currency ? " · " + esc(p.currency) : ""}</div>`;
+    const variant = p.variant_title && p.variant_title !== "Default Title" ? " · " + p.variant_title : "";   // a product with one variant has no variant to name
+    body = `<div class="pick">${esc(title)}</div><div class="sub">${esc(p.store)}${esc(variant)}${(p.quantity || 1) !== 1 ? " · × " + esc(p.quantity) : ""}</div>`;
   }
   const limits = (L.limits || []).map(limitRowC).join("");
   const prefs = (L.preferences || []).map(prefRowC).join("");
@@ -392,10 +397,10 @@ function renderSheet() {
     const who = (seal.signature && seal.signature.name) || "";
     show(`<div class="card"><div class="cap">Signed</div><div class="big-v">${esc(who)}</div>
       <div class="sub">${esc(when((seal.signature && seal.signature.at) || ""))}</div>
-      <div class="hash">${esc(seal.sheet_hash || "")}</div></div>
-      <div class="card"><div class="cap">Carts</div><ul class="plain">${(seal.carts || []).map((c) => `<li class="stack"><div class="row"><span>${esc(c.store)}</span><span class="num">${money(c.total_cents)}</span></div>${c.total_differs || c.line_differences ? `<div class="sub" style="color:var(--bad)">${esc(c.note)}</div>` : (c.cart_url ? `<div class="sub">${c.lines_checked ? "the store's cart lines match the signed picks" : "the store's cart lines were not compared"}</div>` : "")}${c.cart_url ? `<div><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> <span class="sub">· ${esc(c.mode || "")}</span></div>` : `<span class="sub">${c.mode === "pending" ? "still being created at the store" : "not created: " + esc(c.note || "")}</span>`}</li>`).join("")}</ul></div>
+      ${codeBlock(seal.sheet_hash)}</div>
+      <div class="card"><div class="cap">Carts</div><ul class="plain">${(seal.carts || []).map((c) => `<li class="stack"><div class="row"><span>${esc(c.store)}</span><span class="num">${money(c.total_cents)}</span></div>${c.total_differs || c.line_differences ? `<div class="sub" style="color:var(--bad)">${esc(c.note)}</div>` : (c.cart_url ? `<div class="sub">${c.lines_checked ? "the store's cart lines match the signed picks" : "the store's cart lines were not compared"}</div>` : "")}${c.cart_url ? `<div><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> ${c.mode === "replay" ? '<span class="sub">· a saved copy, not the store\'s live cart</span>' : ""}</div>` : `<span class="sub">${c.mode === "pending" ? "still being created at the store" : "not created: " + esc(c.note || "")}</span>`}</li>`).join("")}</ul></div>
       <div class="card"><div class="cap">Checks</div>
-      <div class="sub">${(() => { const q = (seal.signature && seal.signature.persona) || {}; return q.inquiry_id ? esc(q.label || "") + " · " + esc(q.inquiry_id) + " · " + esc(q.status || "") + " · sandbox" : "identity not checked"; })()}</div>
+      <div class="sub">${(() => { const q = (seal.signature && seal.signature.persona) || {}; return q.inquiry_id ? esc(q.label || "") : "identity not checked"; })()}</div>
       ${seal.signature && seal.signature.relay ? `<div class="sub">Live human: ${esc(seal.signature.relay.result)} (sandbox: a sandbox claim passes with nobody present)</div>` : ""}
       <div class="sub">${esc(sensoSealText(seal.signature, O()))}</div></div>
       <div class="sub">To start over, reset from the laptop.</div>`);
@@ -414,8 +419,8 @@ function renderSheet() {
     <div class="sub">${esc(sl.text)}</div>
     ${sl.rows.length ? `<details><summary>Sentences</summary><ul class="plain">${sl.rows.map((r) => `<li class="stack"><span><span class="tag ${r.verdict === "verified" ? "ok" : r.verdict === "conflict" ? "bad" : ""}">${esc(r.verdict)}</span>${r.blocks ? "" : ' <span class="tag">advisory</span>'}</span><span>${esc(r.sentence)}</span>${r.source && r.source.version_id ? `<span class="sub">against ${esc(r.source.title || "the " + O())}, version ${esc(r.source.version_num || String(r.source.version_id).slice(0, 8))}${r.source.version_num == null && r.source.latest_version_id ? " (an older version)" : ""}</span>` : ""}${r.moved_from_order ? `<span class="sub">changed from the ${esc(O())}</span>` : ""}</li>`).join("")}</ul></details>` : ""}</div>
     <div class="rule"></div>
-    <div class="stack"><div class="cap">What you sign</div><div class="hash">${esc(canon.hash)}</div>
-    <div class="sub" style="color:${canon.match ? "var(--ok)" : "var(--bad)"}">${canon.match ? "Computed on this phone from the sheet above; the server's hash is the same." : "This phone computed a different hash from the one the server sent. It will not sign."}</div></div></div>
+    <div class="stack"><div class="cap">What you sign</div>${codeBlock(canon.hash)}
+    <div class="sub" style="color:${canon.match ? "var(--ok)" : "var(--bad)"}">${canon.match ? "✓ Same code as the laptop. This phone worked it out from the sheet above." : "This phone computed a different hash from the one the server sent. It will not sign."}</div></div></div>
     <button class="act primary big" id="sign" ${canon.match && buyable ? "" : "disabled"}>${armed(Date.now(), armedUntil, armedHash, hashNow()) ? "Tap again to sign" : "Sign"}</button>
     ${signNote ? `<div class="sub" style="color:var(--bad)">Not signed: ${esc(signNote)}</div>` : ""}`);
   main.querySelectorAll("details[data-why]").forEach((d) => { d.open = openWhy.has(d.dataset.why); d.addEventListener("toggle", () => (d.open ? openWhy.add(d.dataset.why) : openWhy.delete(d.dataset.why))); });
