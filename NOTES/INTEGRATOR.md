@@ -2477,6 +2477,33 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
   "40 dearer not shown · 7 of them pass"; the Why panel ends cleanly at 810 on the three lead items (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c16-L1.png): the
   store agent's two answers are one line each, and "Reviewers say" shows when a row is selected or the order is by
   reviews. It runs over again when a limit carries "changed from the list" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c15-settled.png), by one block.
+
+## 15:40 from SCREEN (your 15:20 note, the design review; stream/SCREEN, main merged at dc64db8)
+1. DONE, 150% zoom: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-L5-960.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-L1-960.png. The Recommended row is whole (the number of rejected rows above
+   it is fitted to the height, down to none, and the row is brought into view after every redraw unless the list was
+   scrolled by hand); "Total" drops its word and the tools button hides so the total keeps every digit.
+2. DONE, the limit's header: two lines, 12 px: "Weight capacity" / "≥ 300 lb · Dana's limit" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-L5.png). "Dana's
+   limit" is the way to ask where SIGN's route exists; an ask's outcome takes its place. Hidden at 150%.
+3. DONE: the Signature card shows the code as `3f9a 1c0d e4b7` (first 12 hex in fours, the same function as /seal/);
+   "Hash covers", "self-declared"-style lines stay only as the identity line; "replay" beside carts is gone
+   (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-signed.png, placeholder signed fixture).
+4. DONE in code, PARTLY SEEN: a row shows a rating only when the engine carries `candidate.rating` or the reviews route
+   says `ordering.used: true`, and only under an ordering that uses reviews; a rating that was not used shows in the Why
+   panel with REVIEWS' reason ("rating without a stated scale: not used for ordering"). Seen: under "Cheapest" no row
+   carries a rating any more. NOT re-seen after this change: "Best reviewed" on the shower chair, where the reviewer
+   saw 3.9 above 4.8. If the engine still recommends a product whose rating it did not use, that is in `picked_because`.
+5. DONE on /: "Recommended" (pill, card, "was recommended", "Back to the recommended one", "Passes, not recommended"),
+   "Dana's limits" (list caption), "unclear", names from the sheet. Kept: the step labels "Picked" and "<Role> signs"
+   and "3 picks" on the Signature card, which the review's own table uses.
+6. DONE: the final top-bar markup is in NOTES/TRAIL.md, NOTES/GRAPH.md, NOTES/TALK.md and NOTES/SIGN.md (15:40 entries).
+   On / the right side also has "Tools at work"; the other pages do not need it.
+- Also from the review's table: counts that add up ("42 read · 34 rejected · 8 pass", "+ 40 dearer, not needed"), step 5
+  "3 items · $114.69", "Dana signs 6 limits · 3 picks · $114.69" on one line, the check said once per card, "13.5 ?",
+  "Elena · no measurement needed", "(21.5 in · Elena measured)", the Elena sheet's heading and placeholder, the tools
+  legend removed, a 2 px border on the Recommended row, no "now" ring after signing, the Why card's frame present from
+  the first frame, pills fully round. NOT done: D12 (moving "invented people, real stores" out of the bar; your item 6
+  keeps it there) and D13 beyond the legend (the tools rows still show the route's own detail when opened).
+- C16: still waiting for /graph/'s embed mode on main; the control stays hidden until the word "embed" is in its files.
 ## STORE 15:20 — the four items of the 15:15 note (REVIEW items 3 and 10)
 **1. Amplitude: DONE, and what was true.** Delivery does not stop: events this process hands over are confirmed. The live instance (port 8800, restarted 15:06) answers `/api/obs/status` with queued 3, sent 2, delivered 2, dropped 0, last_status 200: it had made 2 tool calls since the restart. The "287 logged locally" is the shared file `data/obs/events.jsonl`, which every process (tests, other
 streams' runs, earlier runs) appends to: not the same population. In isolation: 300 rapid tool calls, 300 delivered after 6 idle seconds (checked now). Two real defects found and fixed: (a) the session was named `sheet1` whatever sheet ran: engine events arrive before anyone calls `obs.session`, and the fallback was a literal; it is now named from the active sheet (`sheet4-151347-9174`) and a change of sheet starts a new session; (b) the sender flushed only when the queue went idle for 3 s, so a run that never pauses could wait: it now also flushes every 5 s while busy.
@@ -2582,3 +2609,23 @@ the process open (alone, the test exits in 3 s); if the gate hangs again, it is 
   2026-11-20T10:41), `matches: true`; 0 limits carry the key; not in the canonical sheet; change 21.5 → 22 gives `matches:
   false`, back gives true and the same hash. A change now recomputes in 15.1 ms (measured once, with the context read each time).
   If the graph module cannot be imported or the file cannot be read, the state says so in `degraded` ("context").
+## 15:50 from SCREEN
+- DONE C16 on the real embed mode (main merged into stream/SCREEN; web/graph/graph.js now has it): "▶ Replay the run" at
+  the left of the step bar opens the overlay with `/graph/?embed=1&autoplay=1&line_id=<item>` playing (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c16-real.png);
+  pressing GRAPH's "Skip" inside the frame sent `signoff:replay-done` and the overlay closed with the list and the
+  Recommended row there (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c16-after-skip.png). "Back to the list", Esc and a click on the dimmed page close it too.
+  It never opens by itself. Not done: opening at a stage from a step (a step still opens its own drawer), and I do not
+  close on `signoff:replay-ended`, so the last frame stays until the viewer goes back.
+- Item 4 of the design review, now SEEN: "Best reviewed" on the shower chair shows no rating on any row and the card
+  says "Cheapest that passes; none of them has a quoted rating" (the engine's words); the 3.9 appears only in the card
+  as "★ 3.9 (28 on amazon.com)" with REVIEWS' reason that it was not used (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-best-reviewed-L1.png).
+- Step 4's sublabel is "34 rejected" (it was cut once the replay control took its place in the bar).
+
+## 15:36 from SCREEN (your 15:28 addition)
+- `suggested_from`, WRITTEN, NOT SEEN WITH REAL DATA: no home measurement carries the field on main yet and no shape is in
+  NOTES/SCREEN.md, so I built against your message. Where it is present the line under the item's title reads
+  "Elena · the home: tub inside 21.5 in · from <from_label>, Nov 20" (the date from `at`), the quoted sentence on hover and
+  under the measurement in Elena's sheet; with `matches: false` it reads "· changed by Elena since the message". Without
+  the field the line is as before. I print `from_label` as the engine gives it rather than "her message": the sheet
+  gives no pronoun, so if the label should read "her message" the engine can send exactly that.
+  Seen on placeholder values only: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/msg-1.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/msg-0.png (`/?fixture=1&msg=1`, `msg=0`).
