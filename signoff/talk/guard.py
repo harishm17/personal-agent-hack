@@ -24,6 +24,7 @@ SPAN_LABELS = {"person name": "person", "family member": "person", "job title": 
                "health condition": "health", "medical procedure": "health", "body weight": "health",
                "amount of money": "money", "street address": "address"}
 MIN_SCORE = 0.5
+SWEEPS = 4  # passes of the check over what remains; the last pass must find nothing or the loop ends anyway
 MIN_CHARS = 3  # a marked span with fewer letters and digits than this states no fact ("I", "we"): code drops it
 GAP = "[…]"
 
@@ -171,12 +172,25 @@ def model_spans(text: str, sheet: dict, finder, recipient_kind: str = "store") -
     return found
 
 
-def check(text: str, sheet: dict, product: dict | None = None, finder=sie_finder, recipient_kind: str = "store") -> list:
-    """Every sealed span in an outbound message, in order, without overlaps. An empty list means the message may leave."""
+def _once(text: str, sheet: dict, product: dict | None, finder, recipient_kind: str) -> list:
     may, known = allowed(sheet, recipient_kind), facts(sheet, product)
     free = _free(text, [s for k in may for s in known[k] if isinstance(s, str)])
     spans = sheet_spans(text, sheet, product, recipient_kind) + model_spans(text, sheet, finder, recipient_kind)
-    spans = [s for s in spans if not any(a <= s["start"] and s["end"] <= b for a, b in free)]
+    return [s for s in spans if not any(a <= s["start"] and s["end"] <= b for a, b in free)]
+
+
+def check(text: str, sheet: dict, product: dict | None = None, finder=sie_finder, recipient_kind: str = "store") -> list:
+    """Every sealed span in an outbound message, in order, without overlaps. An empty list means the message may leave.
+    The check is run again on what remains (found spans blanked, offsets kept) until a pass finds nothing new: a span
+    model can mark one of two neighbouring spans and miss the other, and what remains after the cut must be clean."""
+    spans, rest = [], text
+    for _ in range(SWEEPS):
+        found = _once(rest, sheet, product, finder, recipient_kind)
+        if not found:
+            break
+        spans += found
+        for s in found:
+            rest = rest[:s["start"]] + "_" * (s["end"] - s["start"]) + rest[s["end"]:]
     spans.sort(key=lambda s: (s["start"], s["by"] != "sheet value", -(s["end"] - s["start"])))
     out = []
     for s in spans:
