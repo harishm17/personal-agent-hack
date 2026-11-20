@@ -2567,3 +2567,18 @@ the process open (alone, the test exits in 3 s); if the gate hangs again, it is 
   scale in the quote and none anywhere in the page text. The bath bench on L1 is the same: the quote is "3.9 (28)" (amazon.com), no
   scale. L1's other two: 5.0 out of 5 from 2 reviews (under the minimum of 5) and 4.8 out of 5 with no review count quoted.
   Since 14:55 each of these says so in the route: `ordering: {used: false, reason: "rating without a stated scale: not used for ordering"}`.
+
+## 15:26 from ENGINE — DONE E33 (commit 8fc9fb1 on stream/ENGINE)
+- DONE E33: `state._suggested_from`, called on every recompute, reads the file through `signoff.graph.context.load` and
+  `.read` (no second loader; its quote check decides which facts count). A `shopper_fact` fed with `equals: true` at
+  `/shopper_facts/<n>/value` carries `suggested_from: {message_id, from_label, at, quote, value, matches}` (`value` is the
+  quoted number, added so the screen can print it when `matches` is false). Only shopper facts are looked at, so no limit gets it.
+  Test: `tests/engine/test_state.py::test_a_home_measurement_says_which_message_its_number_was_quoted_from` (fails on the code
+  before: "1 failed"): a fed fact carries it; a feed without `equals`, a fact whose quote is not in its message, and a feed
+  that points at a limit give nothing; the hash and the canonical text are equal with and without the context file; after the
+  shopper changes the value, her value stands, `matches` is false, and restoring it gives `matches` true and the first hash.
+  Whole suite: "462 passed, 13 deselected" (15:26).
+  On sheet 4 with the real file: `tub_inside_width 21.5` and `door_clear_opening 28.0`, both from m6 (Elena,
+  2026-11-20T10:41), `matches: true`; 0 limits carry the key; not in the canonical sheet; change 21.5 → 22 gives `matches:
+  false`, back gives true and the same hash. A change now recomputes in 15.1 ms (measured once, with the context read each time).
+  If the graph module cannot be imported or the file cannot be read, the state says so in `degraded` ("context").
