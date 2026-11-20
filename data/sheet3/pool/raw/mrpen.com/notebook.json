@@ -1,0 +1,2142 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://mrpen.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Mr. Pen",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "mrpen.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "62824808604"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "62824808604"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8634051100828",
+   "title": "Mr. Pen- Abide Bible Study Journal \u2013 A5 Hardcover Journal with 136 Pages, 120gsm Paper, Gold Metal Spiral, Christian Gift for Women, SOAP Bible Study Method",
+   "description": {
+    "html": "Abide is based off John 15 where Jesus tells us that if we abide in Him and His word abides in us, we will bear much fruit. Studying God\u2019s Word bears much fruit in our lives and this journal walks us through how to do that. \"The goal of this journal isn\u2019t to get through the Bible, it\u2019s to get the Bible through us. This journal helps us slow down and notice things we sometimes miss when just reading the Bible, so we can catch what God is wanting to speak.\" - Kaci Nicole, Designer of the Abide Journal. Guided by SOAP Method: Scripture, Observation, Application, and Prayer, this simple, proven approach helps deepen your understanding of the Bible. Helps You Engage Deeply with Scripture: The SOAP method breaks down Bible study into focused steps, making it easier to understand, reflect on, and live out God\u2019s Word in a personal and practical way. Elegant & Durable: Linen hardcover with gold embossed lettering and a gold metal spiral for a clean, modern look that lays flat, with 136 pages of thick A5 sized, 120gsm paper to minimize bleed-through and support daily use. Created in collaboration with Kaci Nicole: this journal makes Bible study approachable and doable. With simple instructions and room to reflect, it's a tool that empowers Christians of all ages to dig into Scripture systematically. Perfect Christian Gift: A thoughtful gift for women seeking to grow in faith, ideal for birthdays, holidays, or encouragement."
+   },
+   "url": "https://mrpen.com/products/mr-pen-abide-bible-study-journal-by-kaci-nicole-soap-method",
+   "handle": "mr-pen-abide-bible-study-journal-by-kaci-nicole-soap-method",
+   "price_range": {
+    "min": {
+     "amount": 1799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45565318332572",
+     "sku": "MNZA001M529NPINF",
+     "title": "Default Title",
+     "description": {
+      "html": "Abide is based off John 15 where Jesus tells us that if we abide in Him and His word abides in us, we will bear much fruit. Studying God\u2019s Word bears much fruit in our lives and this journal walks us through how to do that. \"The goal of this journal isn\u2019t to get through the Bible, it\u2019s to get the Bible through us. This journal helps us slow down and notice things we sometimes miss when just reading the Bible, so we can catch what God is wanting to speak.\" - Kaci Nicole, Designer of the Abide Journal. Guided by SOAP Method: Scripture, Observation, Application, and Prayer, this simple, proven approach helps deepen your understanding of the Bible. Helps You Engage Deeply with Scripture: The SOAP method breaks down Bible study into focused steps, making it easier to understand, reflect on, and live out God\u2019s Word in a personal and practical way. Elegant & Durable: Linen hardcover with gold embossed lettering and a gold metal spiral for a clean, modern look that lays flat, with 136 pages of thick A5 sized, 120gsm paper to minimize bleed-through and support daily use. Created in collaboration with Kaci Nicole: this journal makes Bible study approachable and doable. With simple instructions and room to reflect, it's a tool that empowers Christians of all ages to dig into Scripture systematically. Perfect Christian Gift: A thoughtful gift for women seeking to grow in faith, ideal for birthdays, holidays, or encouragement."
+     },
+     "price": {
+      "amount": 1799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MNZA.png?v=1784718925"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45565318332572:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MNZA.png?v=1784718925"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412418204",
+     "handle": "journals",
+     "title": "Journals",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/321360724124",
+     "handle": "gift-ideas-for-men",
+     "title": "Gift Ideas for Men",
+     "description": {
+      "html": "Explore Mr. Pen gift ideas for men\u2014practical, faith-inspired essentials to support his work, study, and everyday life."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/321362329756",
+     "handle": "gifts-ideas-for-grandparents",
+     "title": "Gifts Ideas for Grandparents",
+     "description": {
+      "html": "Explore Mr. Pen gift ideas for grandparents\u2014thoughtful, faith-filled essentials to bless their days with comfort and joy."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9176404426908",
+   "title": "Mr. Pen- Lined or Dotted Spiral Journal Notebook, A5 (5.7\"x7.9\"), 160 Pages, Hardcover Spiral",
+   "description": {
+    "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+   },
+   "handle": "mr-pen-lined-spiral-journal-notebook-a5-5-7x7-9-160-pages-black-hardcover-spiral-bound-college-ruled-notebooks-with-pen-and-sticky-tabs-for-notes-journaling-school-daily-planning",
+   "price_range": {
+    "min": {
+     "amount": 599,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 574,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 674,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47264155205788",
+     "sku": "KYUP001M606NP",
+     "title": "Black / Lined",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 655,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      },
+      {
+       "name": "Page Type",
+       "label": "Lined"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71itcGukzPL._AC_SL1500.jpg?v=1784918709"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264155205788:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47264177815708",
+     "sku": "OPWA001M605NPVC",
+     "title": "Black / Dotted",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 601,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      },
+      {
+       "name": "Page Type",
+       "label": "Dotted"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71zBFpiqnZL._AC_SL1500.jpg?v=1784918988"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264177815708:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47264155238556",
+     "sku": "WFAP001M606NP",
+     "title": "Blush / Lined",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 674,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blush"
+      },
+      {
+       "name": "Page Type",
+       "label": "Lined"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71XrjYiMhnL.jpg?v=1784918709"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264155238556:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47264177848476",
+     "sku": "DIEQ001M605NP",
+     "title": "Blush / Dotted",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 574,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blush"
+      },
+      {
+       "name": "Page Type",
+       "label": "Dotted"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71rcCMps5SL._SL1500.jpg?v=1784918922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264177848476:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47264155271324",
+     "sku": "QUZF001M606NP",
+     "title": "Green / Lined",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 674,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      },
+      {
+       "name": "Page Type",
+       "label": "Lined"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71Mw-3b7BML.jpg?v=1784918709"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264155271324:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47264177881244",
+     "sku": "PJOI001M605NPVC",
+     "title": "Green / Dotted",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 614,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      },
+      {
+       "name": "Page Type",
+       "label": "Dotted"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61QKGe84PuL._AC_SL1500.jpg?v=1784919016"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264177881244:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Blush"
+      },
+      {
+       "label": "Green"
+      }
+     ]
+    },
+    {
+     "name": "Page Type",
+     "values": [
+      {
+       "label": "Lined"
+      },
+      {
+       "label": "Dotted"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71itcGukzPL._AC_SL1500.jpg?v=1784918709"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312627495068",
+     "handle": "high-inventoory",
+     "title": "High Inventoory",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8393235136668",
+   "title": "Mr. Pen- Dotted Journal Notebook, 5.7\"x8.3\", 160 Pages, Fabric Hardcover, Soft Blush Bullet Journal Notebook",
+   "description": {
+    "html": "Mr. Pen dotted journal notebook features a beautiful blush pink fabric hardcover, offering an elegant and durable design that stands up to daily use while adding a touch of sophistication to your writing. This 5.7\"x8.3\" journal contains 160 pages, giving you plenty of space for all your writing, sketching, and planning needs. The high-quality paper ensures a smooth writing experience with minimal bleed-through. The dotted grid format makes it perfect for bullet journaling, note-taking, sketching, and organizing your thoughts in a creative and functional way. Designed with a soft blush color, the journal is both stylish and practical, with a secure elastic closure and a ribbon marker for easy access to your current page. Ideal for students, professionals, and journaling enthusiasts, this notebook provides a versatile and attractive option for capturing ideas, thoughts, and goals in an organized manner."
+   },
+   "url": "https://mrpen.com/products/mr-pen-dotted-journal-notebook-5-7x8-3-160-pages-fabric-hardcover-soft-blush-bullet-journal-notebook",
+   "handle": "mr-pen-dotted-journal-notebook-5-7x8-3-160-pages-fabric-hardcover-soft-blush-bullet-journal-notebook",
+   "price_range": {
+    "min": {
+     "amount": 599,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 587,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 587,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44878960984220",
+     "sku": "XCHK001M438NPVC",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen dotted journal notebook features a beautiful blush pink fabric hardcover, offering an elegant and durable design that stands up to daily use while adding a touch of sophistication to your writing. This 5.7\"x8.3\" journal contains 160 pages, giving you plenty of space for all your writing, sketching, and planning needs. The high-quality paper ensures a smooth writing experience with minimal bleed-through. The dotted grid format makes it perfect for bullet journaling, note-taking, sketching, and organizing your thoughts in a creative and functional way. Designed with a soft blush color, the journal is both stylish and practical, with a secure elastic closure and a ribbon marker for easy access to your current page. Ideal for students, professionals, and journaling enthusiasts, this notebook provides a versatile and attractive option for capturing ideas, thoughts, and goals in an organized manner."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 587,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81xtQXu6jpL._SL1500.jpg?v=1755710043"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44878960984220:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81xtQXu6jpL._SL1500.jpg?v=1755710043"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9415956988060",
+   "title": "Lined Journal Notebook, 5.7\"x8.4\", 160 Pages, Pen & Sticky Index Tabs Included",
+   "description": {
+    "html": "Mr. Pen lined journal notebook includes a hardcover journal with 160 lined pages, a matching pen, and sticky index tabs, making it a practical set for work, school, journaling, note-taking, planning, and daily writing. The journal features college ruled pages that help keep handwriting neat and organized for meeting notes, class notes, reflections, lists, goals, and personal writing. The notebook offering a portable size that fits easily in backpacks, work bags, purses, desks, and study spaces. The hardcover design helps protect pages during daily use, while the inner pocket provides extra space for notes, receipts, cards, reminders, and loose papers. The included pen and sticky index tabs make it easy to write, mark important sections, organize topics, and quickly find notes for school, office, home, or travel use."
+   },
+   "url": "https://mrpen.com/products/lined-journal-notebook-5-7x8-4-160-pages-pen-sticky-index-tabs-included",
+   "handle": "lined-journal-notebook-5-7x8-4-160-pages-pen-sticky-index-tabs-included",
+   "price_range": {
+    "min": {
+     "amount": 799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 799,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/48469144436892",
+     "sku": "WS-XGSQ001M60",
+     "title": "Green",
+     "description": {
+      "html": "Mr. Pen lined journal notebook includes a hardcover journal with 160 lined pages, a matching pen, and sticky index tabs, making it a practical set for work, school, journaling, note-taking, planning, and daily writing. The journal features college ruled pages that help keep handwriting neat and organized for meeting notes, class notes, reflections, lists, goals, and personal writing. The notebook offering a portable size that fits easily in backpacks, work bags, purses, desks, and study spaces. The hardcover design helps protect pages during daily use, while the inner pocket provides extra space for notes, receipts, cards, reminders, and loose papers. The included pen and sticky index tabs make it easy to write, mark important sections, organize topics, and quickly find notes for school, office, home, or travel use."
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_86a645a5-ea42-48b4-9adc-17a2cb252fa9.jpg?v=1791573022"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48469144436892:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48469144469660",
+     "sku": "WS-DEZM001M60",
+     "title": "Black",
+     "description": {
+      "html": "Mr. Pen lined journal notebook includes a hardcover journal with 160 lined pages, a matching pen, and sticky index tabs, making it a practical set for work, school, journaling, note-taking, planning, and daily writing. The journal features college ruled pages that help keep handwriting neat and organized for meeting notes, class notes, reflections, lists, goals, and personal writing. The notebook offering a portable size that fits easily in backpacks, work bags, purses, desks, and study spaces. The hardcover design helps protect pages during daily use, while the inner pocket provides extra space for notes, receipts, cards, reminders, and loose papers. The included pen and sticky index tabs make it easy to write, mark important sections, organize topics, and quickly find notes for school, office, home, or travel use."
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_f535afe9-5ff4-4f84-a6ad-cda48951983c.avif?v=1789987939"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48469144469660:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Green"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_86a645a5-ea42-48b4-9adc-17a2cb252fa9.jpg?v=1791573022"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942874726556",
+   "title": "Bible Journaling Kit, Bible Highlighters and Pens No Bleed, Bible Study Kit, Journaling Kit for Women and Gift, Bible Tabs and Highlighter Set",
+   "description": {
+    "html": "Mr. Pen Bible Journaling Kit is an all-in-one package designed to enhance your Bible study experience, featuring a variety of tools including a scripture-inscribed study journal, versatile writing instruments, and colorful accessories. Equipped with 2 mechanical pencils for precise notes, 2 smooth gel highlighters that won't bleed through pages, 2 vibrant highlighters for key passages, and 2 fine pens for detailed annotations. Personalize your Bible with 4 rolls of decorative washi tape, blank tabs for section marking, and a selection of sticky notes for quick references or reminders. The kit includes 2 lead refills ensuring long-lasting use of the mechanical pencils, adding value and sustainability to your study routine. Enhance your learning with thoughtfully designed Bible study cards for reflection, and keep everything in place with stylish paper clips, making this kit a perfect gift for students and scholars alike. Available in 5 beautiful color themes: Pink, Ocean Breeze, Sunset Blush, Golden Blush, and Forest Mist."
+   },
+   "url": "https://mrpen.com/products/mr-pen-bible-journaling-kit-bible-highlighters-and-pens-no-bleed",
+   "handle": "mr-pen-bible-journaling-kit-bible-highlighters-and-pens-no-bleed",
+   "price_range": {
+    "min": {
+     "amount": 1899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4859,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44870213927068",
+     "sku": "CBJK21M221",
+     "title": "Pink",
+     "description": {
+      "html": "Mr. Pen Bible Journaling Kit is an all-in-one package designed to enhance your Bible study experience, featuring a variety of tools including a scripture-inscribed study journal, versatile writing instruments, and colorful accessories. Equipped with 2 mechanical pencils for precise notes, 2 smooth gel highlighters that won't bleed through pages, 2 vibrant highlighters for key passages, and 2 fine pens for detailed annotations. Personalize your Bible with 4 rolls of decorative washi tape, blank tabs for section marking, and a selection of sticky notes for quick references or reminders. The kit includes 2 lead refills ensuring long-lasting use of the mechanical pencils, adding value and sustainability to your study routine. Enhance your learning with thoughtfully designed Bible study cards for reflection, and keep everything in place with stylish paper clips, making this kit a perfect gift for students and scholars alike. Available in 5 beautiful color themes: Pink, Ocean Breeze, Sunset Blush, Golden Blush, and Forest Mist."
+     },
+     "price": {
+      "amount": 1899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2699,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_ea7a2ba8-6417-4b87-bad0-3b4f289ab63d.jpg?v=1743603082"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44870213927068:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44870213959836",
+     "sku": "RHCN021M402VC",
+     "title": "Ocean Breeze",
+     "description": {
+      "html": "Mr. Pen Bible Journaling Kit is an all-in-one package designed to enhance your Bible study experience, featuring a variety of tools including a scripture-inscribed study journal, versatile writing instruments, and colorful accessories. Equipped with 2 mechanical pencils for precise notes, 2 smooth gel highlighters that won't bleed through pages, 2 vibrant highlighters for key passages, and 2 fine pens for detailed annotations. Personalize your Bible with 4 rolls of decorative washi tape, blank tabs for section marking, and a selection of sticky notes for quick references or reminders. The kit includes 2 lead refills ensuring long-lasting use of the mechanical pencils, adding value and sustainability to your study routine. Enhance your learning with thoughtfully designed Bible study cards for reflection, and keep everything in place with stylish paper clips, making this kit a perfect gift for students and scholars alike. Available in 5 beautiful color themes: Pink, Ocean Breeze, Sunset Blush, Golden Blush, and Forest Mist."
+     },
+     "price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3374,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Ocean Breeze"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81QXbHnrR-L._AC_SL1500.jpg?v=1743603082"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44870213959836:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44870213992604",
+     "sku": "PKYO021M402VC",
+     "title": "Sunset Blush",
+     "description": {
+      "html": "Mr. Pen Bible Journaling Kit is an all-in-one package designed to enhance your Bible study experience, featuring a variety of tools including a scripture-inscribed study journal, versatile writing instruments, and colorful accessories. Equipped with 2 mechanical pencils for precise notes, 2 smooth gel highlighters that won't bleed through pages, 2 vibrant highlighters for key passages, and 2 fine pens for detailed annotations. Personalize your Bible with 4 rolls of decorative washi tape, blank tabs for section marking, and a selection of sticky notes for quick references or reminders. The kit includes 2 lead refills ensuring long-lasting use of the mechanical pencils, adding value and sustainability to your study routine. Enhance your learning with thoughtfully designed Bible study cards for reflection, and keep everything in place with stylish paper clips, making this kit a perfect gift for students and scholars alike. Available in 5 beautiful color themes: Pink, Ocean Breeze, Sunset Blush, Golden Blush, and Forest Mist."
+     },
+     "price": {
+      "amount": 2549,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4049,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sunset Blush"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81PKbro9E9L._AC_SL1500.jpg?v=1743603082"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44870213992604:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44870214025372",
+     "sku": "RCDH021M402VC",
+     "title": "Golden Blush",
+     "description": {
+      "html": "Mr. Pen Bible Journaling Kit is an all-in-one package designed to enhance your Bible study experience, featuring a variety of tools including a scripture-inscribed study journal, versatile writing instruments, and colorful accessories. Equipped with 2 mechanical pencils for precise notes, 2 smooth gel highlighters that won't bleed through pages, 2 vibrant highlighters for key passages, and 2 fine pens for detailed annotations. Personalize your Bible with 4 rolls of decorative washi tape, blank tabs for section marking, and a selection of sticky notes for quick references or reminders. The kit includes 2 lead refills ensuring long-lasting use of the mechanical pencils, adding value and sustainability to your study routine. Enhance your learning with thoughtfully designed Bible study cards for reflection, and keep everything in place with stylish paper clips, making this kit a perfect gift for students and scholars alike. Available in 5 beautiful color themes: Pink, Ocean Breeze, Sunset Blush, Golden Blush, and Forest Mist."
+     },
+     "price": {
+      "amount": 3599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4859,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Golden Blush"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81YPRI5gZLL._AC_SL1500.jpg?v=1743603082"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44870214025372:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44870214090908",
+     "sku": "MYJV021M402VC",
+     "title": "Forest Mist",
+     "description": {
+      "html": "Mr. Pen Bible Journaling Kit is an all-in-one package designed to enhance your Bible study experience, featuring a variety of tools including a scripture-inscribed study journal, versatile writing instruments, and colorful accessories. Equipped with 2 mechanical pencils for precise notes, 2 smooth gel highlighters that won't bleed through pages, 2 vibrant highlighters for key passages, and 2 fine pens for detailed annotations. Personalize your Bible with 4 rolls of decorative washi tape, blank tabs for section marking, and a selection of sticky notes for quick references or reminders. The kit includes 2 lead refills ensuring long-lasting use of the mechanical pencils, adding value and sustainability to your study routine. Enhance your learning with thoughtfully designed Bible study cards for reflection, and keep everything in place with stylish paper clips, making this kit a perfect gift for students and scholars alike. Available in 5 beautiful color themes: Pink, Ocean Breeze, Sunset Blush, Golden Blush, and Forest Mist."
+     },
+     "price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2699,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Forest Mist"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81oB6zaxnlL._AC_SL1500.jpg?v=1743603082"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44870214090908:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Pink"
+      },
+      {
+       "label": "Ocean Breeze"
+      },
+      {
+       "label": "Sunset Blush"
+      },
+      {
+       "label": "Golden Blush"
+      },
+      {
+       "label": "Forest Mist"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/5_Color_Options.png?v=1743603082"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2c-only",
+    "Bible",
+    "Bible Journaling Kits"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300696305820",
+     "handle": "bible-journaling-kits",
+     "title": "Bible Journaling Kits",
+     "description": {
+      "html": "Explore Mr. Pen Bible Journaling Kits \u2014 complete sets with pens, highlighters, tabs, and creative supplies to make scripture study organized and inspiring."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300868337820",
+     "handle": "top-selling",
+     "title": "Top Selling",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/306228986012",
+     "handle": "tiktok-shop-products",
+     "title": "TikTok Shop Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8960896041116",
+   "title": "Selah by Mr. Pen - Church Notes Journal with Mini Bible Journaling Kit",
+   "description": {
+    "html": "The Selah Mini Bible Journaling Kit includes everything you need for meaningful and organized study: a Church Notes journal, bookmark, 75 boho Bible tabs, 2 fine point cross pens, 2 no bleed gel highlighters, 2 chisel tip highlighters, and 2 packs of prayer request sticky notes. Guided Sermon Journal with Gold Foil Cover -- Compact 5.1\" x 7.8\" paperback with 104 pages and structured prompts on every spread (Scripture, Key Points, What Did I Learn About God?, How Can I Apply This to My Life?) to turn passive note-taking into intentional spiritual growth, perfect for church, small groups, Bible study, or travel Make Bible study easier and more uplifting with 75 beautifully designed tabs, including 39 Old Testament books, 27 New Testament books, and 9 blank tabs across five sheets. Each tab features a special encouraging quote to inspire your spiritual journey. Each pen features a precise 0.5mm fine point tip for clean, detailed writing. The fast-drying gel ink prevents smudging, making it ideal for both left- and right-handed users. Designed with a cross clip, they easily attach to notebooks, planners, or pockets for convenient use. The gel highlighters are specially designed for Bible pages to prevent bleed-through while providing smooth, vibrant color. The chisel tip highlighters feature quick-drying, smear-resistant ink that resists fading, keeping your notes clean and clear over time."
+   },
+   "url": "https://mrpen.com/products/selah-by-mr-pen-mini-bible-journaling-kit-with-church-notes-journal-copy",
+   "handle": "selah-by-mr-pen-mini-bible-journaling-kit-with-church-notes-journal-copy",
+   "price_range": {
+    "min": {
+     "amount": 499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 674,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46593789788316",
+     "sku": "FRZN001M531NPINF",
+     "title": "Mini Kit / Individual",
+     "description": {
+      "html": "The Selah Mini Bible Journaling Kit includes everything you need for meaningful and organized study: a Church Notes journal, bookmark, 75 boho Bible tabs, 2 fine point cross pens, 2 no bleed gel highlighters, 2 chisel tip highlighters, and 2 packs of prayer request sticky notes. Guided Sermon Journal with Gold Foil Cover -- Compact 5.1\" x 7.8\" paperback with 104 pages and structured prompts on every spread (Scripture, Key Points, What Did I Learn About God?, How Can I Apply This to My Life?) to turn passive note-taking into intentional spiritual growth, perfect for church, small groups, Bible study, or travel Make Bible study easier and more uplifting with 75 beautifully designed tabs, including 39 Old Testament books, 27 New Testament books, and 9 blank tabs across five sheets. Each tab features a special encouraging quote to inspire your spiritual journey. Each pen features a precise 0.5mm fine point tip for clean, detailed writing. The fast-drying gel ink prevents smudging, making it ideal for both left- and right-handed users. Designed with a cross clip, they easily attach to notebooks, planners, or pockets for convenient use. The gel highlighters are specially designed for Bible pages to prevent bleed-through while providing smooth, vibrant color. The chisel tip highlighters feature quick-drying, smear-resistant ink that resists fading, keeping your notes clean and clear over time."
+     },
+     "price": {
+      "amount": 1199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1349,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Mini Kit"
+      },
+      {
+       "name": "Quantity",
+       "label": "Individual"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-450.jpg?v=1794253373"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/46593789788316:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46593789821084",
+     "sku": "FRZN001M531NPINF-4",
+     "title": "Mini Kit / Small Group - 4 Pack",
+     "description": {
+      "html": "The Selah Mini Bible Journaling Kit includes everything you need for meaningful and organized study: a Church Notes journal, bookmark, 75 boho Bible tabs, 2 fine point cross pens, 2 no bleed gel highlighters, 2 chisel tip highlighters, and 2 packs of prayer request sticky notes. Guided Sermon Journal with Gold Foil Cover -- Compact 5.1\" x 7.8\" paperback with 104 pages and structured prompts on every spread (Scripture, Key Points, What Did I Learn About God?, How Can I Apply This to My Life?) to turn passive note-taking into intentional spiritual growth, perfect for church, small groups, Bible study, or travel Make Bible study easier and more uplifting with 75 beautifully designed tabs, including 39 Old Testament books, 27 New Testament books, and 9 blank tabs across five sheets. Each tab features a special encouraging quote to inspire your spiritual journey. Each pen features a precise 0.5mm fine point tip for clean, detailed writing. The fast-drying gel ink prevents smudging, making it ideal for both left- and right-handed users. Designed with a cross clip, they easily attach to notebooks, planners, or pockets for convenient use. The gel highlighters are specially designed for Bible pages to prevent bleed-through while providing smooth, vibrant color. The chisel tip highlighters feature quick-drying, smear-resistant ink that resists fading, keeping your notes clean and clear over time."
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Mini Kit"
+      },
+      {
+       "name": "Quantity",
+       "label": "Small Group - 4 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-450.jpg?v=1794253373"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/46593789821084:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46593789853852",
+     "sku": "HXOL001M536NPINF",
+     "title": "Journal Only / Individual",
+     "description": {
+      "html": "The Selah Mini Bible Journaling Kit includes everything you need for meaningful and organized study: a Church Notes journal, bookmark, 75 boho Bible tabs, 2 fine point cross pens, 2 no bleed gel highlighters, 2 chisel tip highlighters, and 2 packs of prayer request sticky notes. Guided Sermon Journal with Gold Foil Cover -- Compact 5.1\" x 7.8\" paperback with 104 pages and structured prompts on every spread (Scripture, Key Points, What Did I Learn About God?, How Can I Apply This to My Life?) to turn passive note-taking into intentional spiritual growth, perfect for church, small groups, Bible study, or travel Make Bible study easier and more uplifting with 75 beautifully designed tabs, including 39 Old Testament books, 27 New Testament books, and 9 blank tabs across five sheets. Each tab features a special encouraging quote to inspire your spiritual journey. Each pen features a precise 0.5mm fine point tip for clean, detailed writing. The fast-drying gel ink prevents smudging, making it ideal for both left- and right-handed users. Designed with a cross clip, they easily attach to notebooks, planners, or pockets for convenient use. The gel highlighters are specially designed for Bible pages to prevent bleed-through while providing smooth, vibrant color. The chisel tip highlighters feature quick-drying, smear-resistant ink that resists fading, keeping your notes clean and clear over time."
+     },
+     "price": {
+      "amount": 499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 674,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Journal Only"
+      },
+      {
+       "name": "Quantity",
+       "label": "Individual"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/hf_20260317_135521_2c040783-09b5-4dc1-ab5e-cc87712a4180.jpg?v=1773755813"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/46593789853852:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46593789886620",
+     "sku": "HXOL001M536NPINF-4",
+     "title": "Journal Only / Small Group - 4 Pack",
+     "description": {
+      "html": "The Selah Mini Bible Journaling Kit includes everything you need for meaningful and organized study: a Church Notes journal, bookmark, 75 boho Bible tabs, 2 fine point cross pens, 2 no bleed gel highlighters, 2 chisel tip highlighters, and 2 packs of prayer request sticky notes. Guided Sermon Journal with Gold Foil Cover -- Compact 5.1\" x 7.8\" paperback with 104 pages and structured prompts on every spread (Scripture, Key Points, What Did I Learn About God?, How Can I Apply This to My Life?) to turn passive note-taking into intentional spiritual growth, perfect for church, small groups, Bible study, or travel Make Bible study easier and more uplifting with 75 beautifully designed tabs, including 39 Old Testament books, 27 New Testament books, and 9 blank tabs across five sheets. Each tab features a special encouraging quote to inspire your spiritual journey. Each pen features a precise 0.5mm fine point tip for clean, detailed writing. The fast-drying gel ink prevents smudging, making it ideal for both left- and right-handed users. Designed with a cross clip, they easily attach to notebooks, planners, or pockets for convenient use. The gel highlighters are specially designed for Bible pages to prevent bleed-through while providing smooth, vibrant color. The chisel tip highlighters feature quick-drying, smear-resistant ink that resists fading, keeping your notes clean and clear over time."
+     },
+     "price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Journal Only"
+      },
+      {
+       "name": "Quantity",
+       "label": "Small Group - 4 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/2_e086e916-aacc-473e-8c67-28f7d0be612a.png?v=1774636452"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/46593789886620:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Type",
+     "values": [
+      {
+       "label": "Mini Kit"
+      },
+      {
+       "label": "Journal Only"
+      }
+     ]
+    },
+    {
+     "name": "Quantity",
+     "values": [
+      {
+       "label": "Individual"
+      },
+      {
+       "label": "Small Group - 4 Pack"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-450.jpg?v=1794253373"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/rc-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2c-only"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/307319341212",
+     "handle": "holiday-gift-guide",
+     "title": "Holiday Gift Guide",
+     "description": {
+      "html": "All the meaningful gifts and stocking stuffers you need in one place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312627495068",
+     "handle": "high-inventoory",
+     "title": "High Inventoory",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8568222220444",
+   "title": "Mr. Pen - Creative Journaling Kit, 10-Piece Set for Bullet Point Journaling, Includes Notebook, Pens, Markers, Washi Tape & Tabs, Giftable Journaling Supplies for Beginners & Pros",
+   "description": {
+    "html": "Created with Journal Planners in Mind: Designed in collaboration with Memories by Meyers, this all-in-one journaling kit has everything you need to create colorful, cohesive spreads\u2014no extra supplies needed! A Pen Lover's Dream: From smooth black multiliners to vibrant felt-tip and brush pens, plus retractable gel pens for everyday notes\u2014this kit is packed with high quality tools for every kind of journaling moment. Beginner Friendly & Gift Ready: Whether you're just getting started or a journaling pro, this beautifully packaged set makes an inspiring gift or the perfect treat yourself moment. Organize + Decorate with Ease: With 10 washi tapes, sticky tabs, and a 6\" metal ruler, you'll keep your spreads neat, creative, and uniquely you. Use the included color swatch sheet to plan every palette! Versatile, Creative, All-In-One: Ideal for bullet point journaling, planning, hand lettering, or creative unwinding\u2014this kit helps you stay inspired and organized, all in one place. Everything You Need \u2014 $89.99 Value! Includes a premium dot grid journal, color swatch sheet, 10 washi tapes, 6 sheets of sticky tabs, a 6\" metal ruler, 8 black multiliner pens, 12 colored felt-tip pens, 6 retractable gel pens, and 12 brush pens\u2014all thoughtfully curated to bring your journaling to life."
+   },
+   "url": "https://mrpen.com/products/creative-journaling-kit-jenna-meyers",
+   "handle": "creative-journaling-kit-jenna-meyers",
+   "price_range": {
+    "min": {
+     "amount": 3399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3779,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3779,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45405396500636",
+     "sku": "HOMC008M429INF",
+     "title": "Default Title",
+     "description": {
+      "html": "Created with Journal Planners in Mind: Designed in collaboration with Memories by Meyers, this all-in-one journaling kit has everything you need to create colorful, cohesive spreads\u2014no extra supplies needed! A Pen Lover's Dream: From smooth black multiliners to vibrant felt-tip and brush pens, plus retractable gel pens for everyday notes\u2014this kit is packed with high quality tools for every kind of journaling moment. Beginner Friendly & Gift Ready: Whether you're just getting started or a journaling pro, this beautifully packaged set makes an inspiring gift or the perfect treat yourself moment. Organize + Decorate with Ease: With 10 washi tapes, sticky tabs, and a 6\" metal ruler, you'll keep your spreads neat, creative, and uniquely you. Use the included color swatch sheet to plan every palette! Versatile, Creative, All-In-One: Ideal for bullet point journaling, planning, hand lettering, or creative unwinding\u2014this kit helps you stay inspired and organized, all in one place. Everything You Need \u2014 $89.99 Value! Includes a premium dot grid journal, color swatch sheet, 10 washi tapes, 6 sheets of sticky tabs, a 6\" metal ruler, 8 black multiliner pens, 12 colored felt-tip pens, 6 retractable gel pens, and 12 brush pens\u2014all thoughtfully curated to bring your journaling to life."
+     },
+     "price": {
+      "amount": 3399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3779,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/hf_20261109_213512_8ded57a9-a79e-4294-ad3a-c4b7d5483e2a.png?v=1794260271"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45405396500636:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/hf_20261109_213512_8ded57a9-a79e-4294-ad3a-c4b7d5483e2a.png?v=1794260271"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ae-2-1-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412287132",
+     "handle": "journaling-kits",
+     "title": "Journaling Kits",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/321360953500",
+     "handle": "gift-ideas-for-women",
+     "title": "Gift Ideas for Women",
+     "description": {
+      "html": "Explore Mr. Pen gift ideas for women\u2014faith-inspired essentials to uplift her days with creativity, organization, and joy."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942902644892",
+   "title": "Bible Journaling Kit, No Bleed Highlighters & Pens, Tabs, Prayer Cards, Sticky Notes, Pencil Case",
+   "description": {
+    "html": "Introducing Mr. Pen Bible Journaling Kit \u2014 your all-in-one set for interactive and organized scripture study Includes 8 vibrant gel highlighters, 6 no-bleed Bible pens, and 6 additional highlighters for colorful annotations Stay organized with 4 sticky note pads and a precision fineliner for quick thoughts, prayers, or cross-references Enrich your devotion with 20 beautifully designed prayer cards to encourage reflection Easy-to-apply Bible tabs make navigating scripture clear and simple 6 durable bookmarks let you mark and return to meaningful verses anytime All tools store neatly in the included pencil case, keeping everything ready for study at home or on the go Perfect gift set for women, men, or anyone growing deeper in Bible journaling and faith"
+   },
+   "url": "https://mrpen.com/products/mr-pen-bible-journaling-kit-study-supplies-highlighters-pens-no-bleed",
+   "handle": "mr-pen-bible-journaling-kit-study-supplies-highlighters-pens-no-bleed",
+   "price_range": {
+    "min": {
+     "amount": 2399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3239,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3239,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43365258264732",
+     "sku": "TIIL909M313",
+     "title": "Default Title",
+     "description": {
+      "html": "Introducing Mr. Pen Bible Journaling Kit \u2014 your all-in-one set for interactive and organized scripture study Includes 8 vibrant gel highlighters, 6 no-bleed Bible pens, and 6 additional highlighters for colorful annotations Stay organized with 4 sticky note pads and a precision fineliner for quick thoughts, prayers, or cross-references Enrich your devotion with 20 beautifully designed prayer cards to encourage reflection Easy-to-apply Bible tabs make navigating scripture clear and simple 6 durable bookmarks let you mark and return to meaningful verses anytime All tools store neatly in the included pencil case, keeping everything ready for study at home or on the go Perfect gift set for women, men, or anyone growing deeper in Bible journaling and faith"
+     },
+     "price": {
+      "amount": 2399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3239,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-112_877cb8a9-2dc0-4f5f-9649-65593f1fe442.jpg?v=1712191611"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43365258264732:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-112_877cb8a9-2dc0-4f5f-9649-65593f1fe442.jpg?v=1712191611",
+     "alt_text": "1"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2c-only",
+    "Bible",
+    "Bible Journaling Kits"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300696305820",
+     "handle": "bible-journaling-kits",
+     "title": "Bible Journaling Kits",
+     "description": {
+      "html": "Explore Mr. Pen Bible Journaling Kits \u2014 complete sets with pens, highlighters, tabs, and creative supplies to make scripture study organized and inspiring."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300868337820",
+     "handle": "top-selling",
+     "title": "Top Selling",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304123576476",
+     "handle": "bible-pencil-pouches",
+     "title": "Bible Pencil Pouches",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8487459815580",
+   "title": "Selah by Mr. Pen New Testament Journal Set, 19 Books, NLT or KJV Translation, Bible Journaling, Softcover with Notes Space, Filament App Compatible",
+   "description": {
+    "html": "This New Testament book set includes 19 beautifully floral designed softcover books, each having a different book or books of the New Testament in the easy to read NLT translation. Crafted with thick, cream-colored journaling paper, every book features ample space on every other page for prayer notes, reflections, or sermon insights. Built with Smyth sewn binding, each journal lays completely flat perfect for writing without hassle whether at home, church, or Bible study. Easily connect with the Filament Bible app to access rich study tools, devotionals, maps, and more. Turning every page into a deeper learning experience. Lightweight and portable each book is 5.1\" wide and 7.8\" tall, this collection is ideal for on the go study, personal devotionals, or small group engagement and looks stunning on any shelf. Journaling Set Includes: 8 no-bleed gel highlighters 6 smooth black pens + fine liner Transparent sticky notes \u2014 round & rectangular 3 washi tapes + 14 floral sticker sheets Bible tabs, floral paper clips & coordinating pouch Cost $15 with Journals but retails for $29.99!"
+   },
+   "url": "https://mrpen.com/products/nlt-filament-bible-journal-set",
+   "handle": "nlt-filament-bible-journal-set",
+   "price_range": {
+    "min": {
+     "amount": 4749,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45426735743132",
+     "sku": "UJQX001M538NPINF",
+     "title": "Books Only / NLT",
+     "description": {
+      "html": "This New Testament book set includes 19 beautifully floral designed softcover books, each having a different book or books of the New Testament in the easy to read NLT translation. Crafted with thick, cream-colored journaling paper, every book features ample space on every other page for prayer notes, reflections, or sermon insights. Built with Smyth sewn binding, each journal lays completely flat perfect for writing without hassle whether at home, church, or Bible study. Easily connect with the Filament Bible app to access rich study tools, devotionals, maps, and more. Turning every page into a deeper learning experience. Lightweight and portable each book is 5.1\" wide and 7.8\" tall, this collection is ideal for on the go study, personal devotionals, or small group engagement and looks stunning on any shelf. Journaling Set Includes: 8 no-bleed gel highlighters 6 smooth black pens + fine liner Transparent sticky notes \u2014 round & rectangular 3 washi tapes + 14 floral sticker sheets Bible tabs, floral paper clips & coordinating pouch Cost $15 with Journals but retails for $29.99!"
+     },
+     "price": {
+      "amount": 4749,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8774,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Include Journaling Set?",
+       "label": "Books Only"
+      },
+      {
+       "name": "Translation",
+       "label": "NLT"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1.png?v=1756925481"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45426735743132:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45426735775900",
+     "sku": "SHOP-FIL0020-BUNDLE",
+     "title": "19 Books + Bloom in the Bible Journaling Kit / NLT",
+     "description": {
+      "html": "This New Testament book set includes 19 beautifully floral designed softcover books, each having a different book or books of the New Testament in the easy to read NLT translation. Crafted with thick, cream-colored journaling paper, every book features ample space on every other page for prayer notes, reflections, or sermon insights. Built with Smyth sewn binding, each journal lays completely flat perfect for writing without hassle whether at home, church, or Bible study. Easily connect with the Filament Bible app to access rich study tools, devotionals, maps, and more. Turning every page into a deeper learning experience. Lightweight and portable each book is 5.1\" wide and 7.8\" tall, this collection is ideal for on the go study, personal devotionals, or small group engagement and looks stunning on any shelf. Journaling Set Includes: 8 no-bleed gel highlighters 6 smooth black pens + fine liner Transparent sticky notes \u2014 round & rectangular 3 washi tapes + 14 floral sticker sheets Bible tabs, floral paper clips & coordinating pouch Cost $15 with Journals but retails for $29.99!"
+     },
+     "price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Include Journaling Set?",
+       "label": "19 Books + Bloom in the Bible Journaling Kit"
+      },
+      {
+       "name": "Translation",
+       "label": "NLT"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/Hosanna_Revival_Bible_Journaling_Kit_Leather_4_bab6b206-24d1-49a8-8096-06a1d8101fe2.png?v=1773856082"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45426735775900:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48482376220828",
+     "sku": "LXEM019M547NPINF",
+     "title": "Books Only / KJV",
+     "description": {
+      "html": "This New Testament book set includes 19 beautifully floral designed softcover books, each having a different book or books of the New Testament in the easy to read NLT translation. Crafted with thick, cream-colored journaling paper, every book features ample space on every other page for prayer notes, reflections, or sermon insights. Built with Smyth sewn binding, each journal lays completely flat perfect for writing without hassle whether at home, church, or Bible study. Easily connect with the Filament Bible app to access rich study tools, devotionals, maps, and more. Turning every page into a deeper learning experience. Lightweight and portable each book is 5.1\" wide and 7.8\" tall, this collection is ideal for on the go study, personal devotionals, or small group engagement and looks stunning on any shelf. Journaling Set Includes: 8 no-bleed gel highlighters 6 smooth black pens + fine liner Transparent sticky notes \u2014 round & rectangular 3 washi tapes + 14 floral sticker sheets Bible tabs, floral paper clips & coordinating pouch Cost $15 with Journals but retails for $29.99!"
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Include Journaling Set?",
+       "label": "Books Only"
+      },
+      {
+       "name": "Translation",
+       "label": "KJV"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81uUPdmVvGL_44b38863-98bd-4436-8dab-b403f3cd7fba.jpg?v=1795033253"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48482376220828:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Include Journaling Set?",
+     "values": [
+      {
+       "label": "Books Only"
+      },
+      {
+       "label": "19 Books + Bloom in the Bible Journaling Kit"
+      }
+     ]
+    },
+    {
+     "name": "Translation",
+     "values": [
+      {
+       "label": "NLT"
+      },
+      {
+       "label": "KJV"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1.png?v=1756925481"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/me-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2c-only",
+    "NLT"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/313522094236",
+     "handle": "nlt-journaling-bibles",
+     "title": "NLT Journaling Bibles for Note-Taking, Creative Study, Prayer & Reflection",
+     "description": {
+      "html": "Explore NLT Journaling Bibles with wide margins for note-taking, art, and prayer. Beautiful, durable designs for study, devotion, and daily reflection."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319510675612",
+     "handle": "shop-all-bibles",
+     "title": "Shop All bibles",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412352668",
+     "handle": "journaling-bibles-1",
+     "title": "Journaling Bibles",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9395795034268",
+   "title": "Mr. Pen- Yes and Amen Christian Prayer Journal, 52-Week Bible Study Notebook",
+   "description": {
+    "html": "Mr. Pen weekly prayer journal is a thoughtfully designed 52-week journal that provides dedicated space each week for prayer, reflection, Bible study, and spiritual growth. The journal features a premium hardcover, durable twin-wire spiral binding, and an elastic closure to help keep pages securely together. Measuring 5.7 x 8.3 inches, this prayer journal offers a convenient portable size with plenty of writing space for notes, prayers, and personal reflections. Each section is organized with weekly verses, prayers, sermon notes, study notes, reflections and thoughts, gratitude prompts, and guided spiritual reflection. The structured layout includes welcome and contents pages along with dedicated writing sections, making it easy to keep prayers, Scripture study, and faith-based notes organized throughout the year."
+   },
+   "url": "https://mrpen.com/products/mr-pen-christian-prayer-journal-for-women-52-week-bible-study-notebook",
+   "handle": "mr-pen-christian-prayer-journal-for-women-52-week-bible-study-notebook",
+   "price_range": {
+    "min": {
+     "amount": 999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1349,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1349,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/48317861953692",
+     "sku": "RPNM001M630NPVDINF",
+     "title": "Women",
+     "description": {
+      "html": "Mr. Pen weekly prayer journal is a thoughtfully designed 52-week journal that provides dedicated space each week for prayer, reflection, Bible study, and spiritual growth. The journal features a premium hardcover, durable twin-wire spiral binding, and an elastic closure to help keep pages securely together. Measuring 5.7 x 8.3 inches, this prayer journal offers a convenient portable size with plenty of writing space for notes, prayers, and personal reflections. Each section is organized with weekly verses, prayers, sermon notes, study notes, reflections and thoughts, gratitude prompts, and guided spiritual reflection. The structured layout includes welcome and contents pages along with dedicated writing sections, making it easy to keep prayers, Scripture study, and faith-based notes organized throughout the year."
+     },
+     "price": {
+      "amount": 999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1349,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Women"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71RIbpLtsrL.jpg?v=1794340477"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48317861953692:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48318088446108",
+     "sku": "KMRG001M630NPINF",
+     "title": "Men",
+     "description": {
+      "html": "Mr. Pen weekly prayer journal is a thoughtfully designed 52-week journal that provides dedicated space each week for prayer, reflection, Bible study, and spiritual growth. The journal features a premium hardcover, durable twin-wire spiral binding, and an elastic closure to help keep pages securely together. Measuring 5.7 x 8.3 inches, this prayer journal offers a convenient portable size with plenty of writing space for notes, prayers, and personal reflections. Each section is organized with weekly verses, prayers, sermon notes, study notes, reflections and thoughts, gratitude prompts, and guided spiritual reflection. The structured layout includes welcome and contents pages along with dedicated writing sections, making it easy to keep prayers, Scripture study, and faith-based notes organized throughout the year."
+     },
+     "price": {
+      "amount": 999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1349,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Men"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71qvGM4EWPL.jpg?v=1794340622"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48318088446108:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Women"
+      },
+      {
+       "label": "Men"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71RIbpLtsrL.jpg?v=1794340477"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/336730882204",
+     "handle": "2026-gift-guide-staff-picks",
+     "title": "2026 Gift Guide Staff Picks",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzVNemsxTnprMU1ETTBNalk0TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

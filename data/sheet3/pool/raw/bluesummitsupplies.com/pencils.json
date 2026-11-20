@@ -1,0 +1,1487 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.bluesummitsupplies.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Blue Summit Supplies",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.bluesummitsupplies.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "21617289"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "21617289"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4416502235194",
+   "title": "Blue Summit Supplies Pink Erasers, 100 Pack",
+   "description": {
+    "html": "Pink School Erasers Bulk for Kids and Classroom UseFix mistakes in an instant with our large pink erasers 100 Pack. These classroom erasers help fix mistakes while lasting longer than a typical pencil eraser. This pink erasers bulk pack are the perfect bulk erasers for school, and the hi polymer eraser ensures durability. These pink wedge erasers easily go in your school supply box, giving you a better, longer-lasting eraser.Our pink school erasers 100 pack will help you and your students get through the school year. Pink erasers for school that are made for kids. Perfect for teachers and kids in the classroom.Save Money with our Pink School Erasers 100 Pack, Bulk Packaged for Affordability Our kid-tested and cost effective 100-pack of pink erasers is ideal for stocking up on student school supplies and make perfect classroom erasers Comes with 100 big pink erasers that make perfect classroom erasers and are perfect pink erasers for school. Pink erasers made from durable materials make these ideal for use as classroom erasers, and big pink erasers for kids in school. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/pink-erasers-bulk-785",
+   "handle": "pink-erasers-bulk-785",
+   "price_range": {
+    "min": {
+     "amount": 3099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3099,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31385351422010",
+     "sku": "BSS-92588-785",
+     "title": "Default Title",
+     "description": {
+      "html": "Pink School Erasers Bulk for Kids and Classroom UseFix mistakes in an instant with our large pink erasers 100 Pack. These classroom erasers help fix mistakes while lasting longer than a typical pencil eraser. This pink erasers bulk pack are the perfect bulk erasers for school, and the hi polymer eraser ensures durability. These pink wedge erasers easily go in your school supply box, giving you a better, longer-lasting eraser.Our pink school erasers 100 pack will help you and your students get through the school year. Pink erasers for school that are made for kids. Perfect for teachers and kids in the classroom.Save Money with our Pink School Erasers 100 Pack, Bulk Packaged for Affordability Our kid-tested and cost effective 100-pack of pink erasers is ideal for stocking up on student school supplies and make perfect classroom erasers Comes with 100 big pink erasers that make perfect classroom erasers and are perfect pink erasers for school. Pink erasers made from durable materials make these ideal for use as classroom erasers, and big pink erasers for kids in school. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 3099,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/785_PinkErasers100ct_1.jpg?v=1589985549"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/31385351422010:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/785_PinkErasers100ct_1.jpg?v=1589985549",
+     "alt_text": "Pink Erasers, 100 Pack Accessories Blue Summit Supplies "
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:0",
+    "AvailabilityForB2C:933",
+    "AvailabilityInWarehouse:0",
+    "AvailableForB2B:Sold out",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:FALSE",
+    "B2C",
+    "BSSSKU:TRUE",
+    "Collection:Erasers",
+    "Collection:Office Supplies",
+    "Collection:Writing and Correction",
+    "CollectionHandle:erasers",
+    "CollectionHandle:office-supplies",
+    "CollectionHandle:writing-and-correction",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551627442",
+     "handle": "writing-and-correction",
+     "title": "Writing and Correction",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271674507442",
+     "handle": "erasers",
+     "title": "Erasers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2223978971194",
+   "title": "Blue Summit Supplies Index Dividers, 5-Tab Printable, White, 100 Dividers",
+   "description": {
+    "html": "Durable and Affordable Tabbed Index Dividers for Binders Never again worry about losing the paper inserts out of your binder tabs dividers again when you use our no insert, white index dividers featuring write on tabs, which can be written on using pen or even pencil for repeated use. Alternately, use adhesive printed labels or tape on your section titles onto the tabs for a neat and tidy organized three ring binder to create a fixed, durable solution to binder category labels. White Letter Size 5 Tab Dividers with Reinforced Edge for Repeated Use Our bulk pack of 100 white notebook dividers is a must have for any supply closet for your school or office supplies. Dividers with tabs are a staple to have on hand for organizing your 3 ring binders into sections by school subject, handbook category, date, or topic. With a reinforced 3 hole punch edge, our standard letter size dividers are perfect for use as 3 ring binder divider tabs Made with thick 11pt paper, our white notebook dividers have a smooth writeable surface that can be used with pen, pencil, or adhesive labels to make it easy to identify the section you\u2019re looking for at a glance Our bulk binder dividers are ideal for using to divide the sections in a classroom binder, coupon binder, training manual, company handbook, recipe binder, and more 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/3-ring-binder-dividers-1038",
+   "handle": "3-ring-binder-dividers-1038",
+   "price_range": {
+    "min": {
+     "amount": 2899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/22307048226874",
+     "sku": "BSS-92588-1038",
+     "title": "Default Title",
+     "description": {
+      "html": "Durable and Affordable Tabbed Index Dividers for Binders Never again worry about losing the paper inserts out of your binder tabs dividers again when you use our no insert, white index dividers featuring write on tabs, which can be written on using pen or even pencil for repeated use. Alternately, use adhesive printed labels or tape on your section titles onto the tabs for a neat and tidy organized three ring binder to create a fixed, durable solution to binder category labels. White Letter Size 5 Tab Dividers with Reinforced Edge for Repeated Use Our bulk pack of 100 white notebook dividers is a must have for any supply closet for your school or office supplies. Dividers with tabs are a staple to have on hand for organizing your 3 ring binders into sections by school subject, handbook category, date, or topic. With a reinforced 3 hole punch edge, our standard letter size dividers are perfect for use as 3 ring binder divider tabs Made with thick 11pt paper, our white notebook dividers have a smooth writeable surface that can be used with pen, pencil, or adhesive labels to make it easy to identify the section you\u2019re looking for at a glance Our bulk binder dividers are ideal for using to divide the sections in a classroom binder, coupon binder, training manual, company handbook, recipe binder, and more 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 2899,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1038_IndexDividersFor3Ring_2.JPG?v=1589985042"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/22307048226874:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1038_IndexDividersFor3Ring_2.JPG?v=1589985042",
+     "alt_text": "3 Ring Binder Dividers, 1/5 Cut Tabs, White, 100 Pack Binder Dividers Blue Summit Supplies "
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:492",
+    "AvailabilityForB2C:3889",
+    "AvailabilityInWarehouse:492",
+    "AvailableForB2B:In stock",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:TRUE",
+    "BSSSKU:TRUE",
+    "Collection:Binder Accessories",
+    "Collection:Binder Dividers",
+    "Collection:Office Supplies",
+    "CollectionHandle:binder-accessories",
+    "CollectionHandle:binder-dividers",
+    "CollectionHandle:office-supplies",
+    "EVERYONE",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:TRUE",
+    "Solution-Office"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271565750450",
+     "handle": "binder-dividers",
+     "title": "Binder Dividers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271565783218",
+     "handle": "binder-accessories",
+     "title": "Binder Accessories",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2223958556730",
+   "title": "Blue Summit Supplies Index Dividers, 8-Tab Printable, White, 96 Dividers",
+   "description": {
+    "html": "Durable and Affordable Tabbed Index Dividers for Binders Never again worry about losing the paper inserts out of your binder tabs dividers again when you use our no insert, white index dividers featuring write on tabs, which can be written on using pen or even pencil for repeated use. Alternately, use adhesive printed labels or tape on your section titles onto the tabs for a neat and tidy organized three ring binder to create a fixed, durable solution to binder category labels. White Letter Size 8 Tab Dividers with Reinforced Edge for Repeated Use Our bulk pack of 96 white notebook dividers is a must have for any supply closet for your school or office supplies. Dividers with tabs are a staple to have on hand for organizing your 3 ring binders into sections by school subject, handbook category, date, or topic. With a reinforced 3 hole punch edge, our standard letter size dividers are perfect for use as 3 ring binder divider tabs Made with thick 11pt paper, our white notebook dividers have a smooth writeable surface that can be used with pen, pencil, or adhesive labels to make it easy to identify the section you\u2019re looking for at a glance Our bulk binder dividers are ideal for using to divide the sections in a classroom binder, coupon binder, training manual, company handbook, recipe binder, and more 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/3-ring-binder-dividers-1039",
+   "handle": "3-ring-binder-dividers-1039",
+   "price_range": {
+    "min": {
+     "amount": 3099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3099,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/22306987606074",
+     "sku": "BSS-92588-1039",
+     "title": "Default Title",
+     "description": {
+      "html": "Durable and Affordable Tabbed Index Dividers for Binders Never again worry about losing the paper inserts out of your binder tabs dividers again when you use our no insert, white index dividers featuring write on tabs, which can be written on using pen or even pencil for repeated use. Alternately, use adhesive printed labels or tape on your section titles onto the tabs for a neat and tidy organized three ring binder to create a fixed, durable solution to binder category labels. White Letter Size 8 Tab Dividers with Reinforced Edge for Repeated Use Our bulk pack of 96 white notebook dividers is a must have for any supply closet for your school or office supplies. Dividers with tabs are a staple to have on hand for organizing your 3 ring binders into sections by school subject, handbook category, date, or topic. With a reinforced 3 hole punch edge, our standard letter size dividers are perfect for use as 3 ring binder divider tabs Made with thick 11pt paper, our white notebook dividers have a smooth writeable surface that can be used with pen, pencil, or adhesive labels to make it easy to identify the section you\u2019re looking for at a glance Our bulk binder dividers are ideal for using to divide the sections in a classroom binder, coupon binder, training manual, company handbook, recipe binder, and more 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 3099,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1039_IndexDividersFor3Ring_2.JPG?v=1589984757"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/22306987606074:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1039_IndexDividersFor3Ring_2.JPG?v=1589984757",
+     "alt_text": "3 Ring Binder Dividers, 1/8 Cut Tabs, White, 96 Pack Binder Dividers Blue Summit Supplies "
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:11",
+    "AvailabilityForB2C:4285",
+    "AvailabilityInWarehouse:11",
+    "AvailableForB2B:In stock",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:TRUE",
+    "BSSSKU:TRUE",
+    "Collection:Binder Accessories",
+    "Collection:Binder Dividers",
+    "Collection:Office Supplies",
+    "CollectionHandle:binder-accessories",
+    "CollectionHandle:binder-dividers",
+    "CollectionHandle:office-supplies",
+    "EVERYONE",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:TRUE",
+    "Solution-Office"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271565750450",
+     "handle": "binder-dividers",
+     "title": "Binder Dividers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271565783218",
+     "handle": "binder-accessories",
+     "title": "Binder Accessories",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4530683936826",
+   "title": "Blue Summit Supplies #7 Coin Envelopes, Kraft, Gummed, 500 Pack",
+   "description": {
+    "html": "Keep coins and keys safe and organized with our #7 No Window Coin Envelopes, Gummed Seal, 500 Pack Keep rare coins or spare keys safe and secure with our brown kraft coin envelopes, featuring no windows and an extra wide gummed seal. Extra wide gummed seal ensures contents won\u2019t fall out when moving or mailing envelopes. 3.5\u201d x 6.5\u201d size can hold multiple coins or keys, and 28 lb paper ensure the envelope won't rip or tear while in use. Coins and spare keys will be completely secure in these envelopes It can be so difficult to find envelopes that create a strong lasting seal thus forcing you to waste time using glue sticks or tape to close the envelopes. Our brown kraft coin envelopes with an extra wide gummed seal are designed to immediately create a strong seal so you do not have to worry about your contents being exposed to others. Durable 28 lb brown kraft paper won't tear, and isn\u2019t see through, so your contents remain safe and secret inside. No windows to keep contents safe inside, easily labeling with any pen, pencil or marker, large enough to mail via USPS. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying; however, if our product is not exactly what you are looking for or does not meet your expectations, then send them back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/7-coin-envelopes-039",
+   "handle": "7-coin-envelopes-039",
+   "price_range": {
+    "min": {
+     "amount": 3849,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3849,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31870799904826",
+     "sku": "BSS-92588-039",
+     "title": "Default Title",
+     "description": {
+      "html": "Keep coins and keys safe and organized with our #7 No Window Coin Envelopes, Gummed Seal, 500 Pack Keep rare coins or spare keys safe and secure with our brown kraft coin envelopes, featuring no windows and an extra wide gummed seal. Extra wide gummed seal ensures contents won\u2019t fall out when moving or mailing envelopes. 3.5\u201d x 6.5\u201d size can hold multiple coins or keys, and 28 lb paper ensure the envelope won't rip or tear while in use. Coins and spare keys will be completely secure in these envelopes It can be so difficult to find envelopes that create a strong lasting seal thus forcing you to waste time using glue sticks or tape to close the envelopes. Our brown kraft coin envelopes with an extra wide gummed seal are designed to immediately create a strong seal so you do not have to worry about your contents being exposed to others. Durable 28 lb brown kraft paper won't tear, and isn\u2019t see through, so your contents remain safe and secret inside. No windows to keep contents safe inside, easily labeling with any pen, pencil or marker, large enough to mail via USPS. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying; however, if our product is not exactly what you are looking for or does not meet your expectations, then send them back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 3849,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/039_No7CoinEnvelopes_1.jpg?v=1596747488"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/31870799904826:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/039_No7CoinEnvelopes_1.jpg?v=1596747488",
+     "alt_text": "#7 Coin Envelopes, Gummed Seal, 500 Pack Envelopes Blue Summit Supplies "
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:0",
+    "AvailabilityForB2C:876",
+    "AvailabilityInWarehouse:0",
+    "AvailableForB2B:Sold out",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:FALSE",
+    "B2C",
+    "BSSSKU:TRUE",
+    "Collection:Coin Envelopes",
+    "Collection:Envelopes",
+    "Collection:Office Supplies",
+    "CollectionHandle:coin-envelopes",
+    "CollectionHandle:envelopes",
+    "CollectionHandle:office-supplies",
+    "envelopes2024",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271562014898",
+     "handle": "mailing-envelopes",
+     "title": "Mailing Envelopes",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271562047666",
+     "handle": "envelopes",
+     "title": "Envelopes",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271572369586",
+     "handle": "coin-envelopes",
+     "title": "Coin Envelopes",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2303079645242",
+   "title": "Blue Summit Supplies Pink Erasers, 36 Pack",
+   "description": {
+    "html": "Our Bulk Latex Free Pencil Eraser Pack is Ideal for Students, Teachers, and School Supply Donations When it comes to buying school supplies, pencils are always at the top of the list, but we know that the tiny pink erasers that come standard with pencils never last as long as the pencil does, leaving you in need of affordable and good erasers to replace them with. Make the safe choice for your kids erasers with our Blue Summit Supplies pink eraser. Latex-free and nontoxic, it was designed with the classroom in mind, but is also ideal for use at home, by artists, or even in the garage as a woodworking pencil to remove pencil marks from wood. Stock Up on School Supplies: Pencil Erasers Bulk Pack We know how frustrating it can be to have to constantly replace broken or used up school supplies. Bulk buying is the answer, and when you choose our economy pack of 36 pink erasers, you can rest easy knowing you're selecting a premium product that can be used as a classroom set or to replace broken erasers as needed for the entire school year. A 36 pack of erasers makes an ideal donation item for school supply drives or teachers. Our attractive box design also makes this pack a perfect addition to your office supply closet, so that staff can grab an eraser as needed. Standard Size Kids Erasers for School in a Convenient Multi Pack Our individual erasers are sized to a standard size of 7/8 inch wide x 2 3/8 inch long x 3/8 inch tall. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/pink-erasers-36-count-764",
+   "handle": "pink-erasers-36-count-764",
+   "price_range": {
+    "min": {
+     "amount": 1799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/22691643097146",
+     "sku": "BSS-92588-764",
+     "title": "Default Title",
+     "description": {
+      "html": "Our Bulk Latex Free Pencil Eraser Pack is Ideal for Students, Teachers, and School Supply Donations When it comes to buying school supplies, pencils are always at the top of the list, but we know that the tiny pink erasers that come standard with pencils never last as long as the pencil does, leaving you in need of affordable and good erasers to replace them with. Make the safe choice for your kids erasers with our Blue Summit Supplies pink eraser. Latex-free and nontoxic, it was designed with the classroom in mind, but is also ideal for use at home, by artists, or even in the garage as a woodworking pencil to remove pencil marks from wood. Stock Up on School Supplies: Pencil Erasers Bulk Pack We know how frustrating it can be to have to constantly replace broken or used up school supplies. Bulk buying is the answer, and when you choose our economy pack of 36 pink erasers, you can rest easy knowing you're selecting a premium product that can be used as a classroom set or to replace broken erasers as needed for the entire school year. A 36 pack of erasers makes an ideal donation item for school supply drives or teachers. Our attractive box design also makes this pack a perfect addition to your office supply closet, so that staff can grab an eraser as needed. Standard Size Kids Erasers for School in a Convenient Multi Pack Our individual erasers are sized to a standard size of 7/8 inch wide x 2 3/8 inch long x 3/8 inch tall. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 1799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/764_PinkErasers36Pk_2.JPG?v=1589984450"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/22691643097146:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/764_PinkErasers36Pk_2.JPG?v=1589984450",
+     "alt_text": "Pink Erasers, 36 Count Accessories Blue Summit Supplies "
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:0",
+    "AvailabilityForB2C:1548",
+    "AvailabilityInWarehouse:0",
+    "AvailableForB2B:Sold out",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:FALSE",
+    "B2C",
+    "BSSSKU:TRUE",
+    "Collection:Erasers",
+    "Collection:Office Supplies",
+    "Collection:Writing and Correction",
+    "CollectionHandle:erasers",
+    "CollectionHandle:office-supplies",
+    "CollectionHandle:writing-and-correction",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551627442",
+     "handle": "writing-and-correction",
+     "title": "Writing and Correction",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271674507442",
+     "handle": "erasers",
+     "title": "Erasers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2438663831610",
+   "title": "Blue Summit Supplies 12\" Plastic Shatterproof Rulers, Assorted Colors, 30 Pack",
+   "description": {
+    "html": "Standard 12\" Ruler Pack, Transparent Clear Plastic Rulers, Bulk Set of 30 From school ruler needs to crafts, sewing, everyday workplace tasks, and general household projects, we know how important is is to keep quality, safety, and price in mind, especially when buying in bulk. Our affordable bulk rulers set is ideal for all ages thanks to its flexible shatterproof construction, durable clear plastic design, and multicolor options. All of those qualities and more are what makes this set ideal for any office, home, or colorful rainbow classroom thanks to its assorted fun colors and standard scaled ruler measurements that show both inch and cm markings. The ruler markings are printed in a high contrast black, making it easy to see the measurements at a glance, while the colored translucent plastic is conveniently easy to see through as you work. Stock Up on Must Have Math Tools: Safe Flexible Classroom Ruler Set in Assorted Colors Whether you need safe rulers for kids or a bulk set for the office supply closet, our 30 pack of rainbow clear plastic rulers are ideal due to their shatterproof construction that offers a flexible ruler design that can bend without breaking into sharp pieces. Because there are no holes in this safe plastic ruler, kids are less likely to get in trouble or cause injuries by spinning the lightweight rulers on their pencils or fingers during class. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/plastic-shatterproof-rulers-765",
+   "handle": "plastic-shatterproof-rulers-765",
+   "price_range": {
+    "min": {
+     "amount": 1399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/23271462109242",
+     "sku": "BSS-92588-765",
+     "title": "Default Title",
+     "description": {
+      "html": "Standard 12\" Ruler Pack, Transparent Clear Plastic Rulers, Bulk Set of 30 From school ruler needs to crafts, sewing, everyday workplace tasks, and general household projects, we know how important is is to keep quality, safety, and price in mind, especially when buying in bulk. Our affordable bulk rulers set is ideal for all ages thanks to its flexible shatterproof construction, durable clear plastic design, and multicolor options. All of those qualities and more are what makes this set ideal for any office, home, or colorful rainbow classroom thanks to its assorted fun colors and standard scaled ruler measurements that show both inch and cm markings. The ruler markings are printed in a high contrast black, making it easy to see the measurements at a glance, while the colored translucent plastic is conveniently easy to see through as you work. Stock Up on Must Have Math Tools: Safe Flexible Classroom Ruler Set in Assorted Colors Whether you need safe rulers for kids or a bulk set for the office supply closet, our 30 pack of rainbow clear plastic rulers are ideal due to their shatterproof construction that offers a flexible ruler design that can bend without breaking into sharp pieces. Because there are no holes in this safe plastic ruler, kids are less likely to get in trouble or cause injuries by spinning the lightweight rulers on their pencils or fingers during class. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 1399,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/765_PlasticShatterproofRulers30pk_1.JPG?v=1589984679"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/23271462109242:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/765_PlasticShatterproofRulers30pk_1.JPG?v=1589984679",
+     "alt_text": "Plastic Shatterproof Rulers, Assorted Colors, 30 Pack Rulers Blue Summit Supplies "
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:0",
+    "AvailabilityForB2C:3390",
+    "AvailabilityInWarehouse:0",
+    "AvailableForB2B:Sold out",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:FALSE",
+    "B2C",
+    "BSSSKU:TRUE",
+    "Collection:Office Supplies",
+    "Collection:Office Tools",
+    "Collection:Rulers",
+    "CollectionHandle:office-supplies",
+    "CollectionHandle:office-tools",
+    "CollectionHandle:rulers",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271562342578",
+     "handle": "office-tools",
+     "title": "Office Tools",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271628271794",
+     "handle": "rulers",
+     "title": "Rulers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2475009671226",
+   "title": "Blue Summit Supplies Index Dividers, 5-Tab Printable, Manila, 100 Dividers",
+   "description": {
+    "html": "Durable and Affordable Tabbed Index Dividers for Binders Never again worry about losing the paper inserts out of your binder tabs dividers again when you use our no insert, manila index dividers featuring write on tabs, which can be written on using pen or even pencil for repeated use. Alternately, use adhesive printed labels or tape on your section titles onto the tabs for a neat and tidy organized three ring binder to create a fixed, durable solution to binder category labels. Manila Letter Size 5 Tab Dividers with Reinforced Edge for Repeated Use Our bulk pack of 100 manila notebook dividers is a must have for any supply closet for your school or office supplies. Dividers with tabs are a staple to have on hand for organizing your 3 ring binders into sections by school subject, handbook category, date, or topic. With a reinforced 3 hole punch edge, our standard letter size dividers are perfect for use as 3 ring binder divider tabs Made with thick 11pt paper, our manila notebook dividers have a smooth writable surface that can be used with pen, pencil, or adhesive labels to make it easy to identify the section you\u2019re looking for at a glance Our bulk binder dividers are ideal for using to divide the sections in a classroom binder, coupon binder, training manual, company handbook, recipe binder, and more 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/3-ring-binder-dividers-manila-1047",
+   "handle": "3-ring-binder-dividers-manila-1047",
+   "price_range": {
+    "min": {
+     "amount": 2699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/23456070565946",
+     "sku": "BSS-92588-1047",
+     "title": "Default Title",
+     "description": {
+      "html": "Durable and Affordable Tabbed Index Dividers for Binders Never again worry about losing the paper inserts out of your binder tabs dividers again when you use our no insert, manila index dividers featuring write on tabs, which can be written on using pen or even pencil for repeated use. Alternately, use adhesive printed labels or tape on your section titles onto the tabs for a neat and tidy organized three ring binder to create a fixed, durable solution to binder category labels. Manila Letter Size 5 Tab Dividers with Reinforced Edge for Repeated Use Our bulk pack of 100 manila notebook dividers is a must have for any supply closet for your school or office supplies. Dividers with tabs are a staple to have on hand for organizing your 3 ring binders into sections by school subject, handbook category, date, or topic. With a reinforced 3 hole punch edge, our standard letter size dividers are perfect for use as 3 ring binder divider tabs Made with thick 11pt paper, our manila notebook dividers have a smooth writable surface that can be used with pen, pencil, or adhesive labels to make it easy to identify the section you\u2019re looking for at a glance Our bulk binder dividers are ideal for using to divide the sections in a classroom binder, coupon binder, training manual, company handbook, recipe binder, and more 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 2699,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1047_IndexDividersFor3Ring_2.JPG?v=1589984770"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/23456070565946:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1047_IndexDividersFor3Ring_2.JPG?v=1589984770",
+     "alt_text": "3 Ring Binder Dividers, 1/5 Cut Tabs, Manila, 100 Pack Binder Dividers Blue Summit Supplies "
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:17",
+    "AvailabilityForB2C:297",
+    "AvailabilityInWarehouse:17",
+    "AvailableForB2B:In stock",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:TRUE",
+    "BSSSKU:TRUE",
+    "Collection:Binder Accessories",
+    "Collection:Binder Dividers",
+    "Collection:Office Supplies",
+    "CollectionHandle:binder-accessories",
+    "CollectionHandle:binder-dividers",
+    "CollectionHandle:office-supplies",
+    "EVERYONE",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:TRUE",
+    "Solution-Office"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271565750450",
+     "handle": "binder-dividers",
+     "title": "Binder Dividers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271565783218",
+     "handle": "binder-accessories",
+     "title": "Binder Accessories",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/1987485892666",
+   "title": "Blue Summit Supplies #8 Business Envelopes, Double Window, Security Tint, For QuickBooks, Flip & Seal, 500 Pack",
+   "description": {
+    "html": "Your QuickBooks Printed Checks will Line up Perfectly It can be so difficult to find envelopes that fit business checks perfectly. Some will show the recipient\u2019s address but not the sender's address, while others will hide parts of the addresses, and worse, others will show parts of the check like the check amount, or check memo. So much for security. Our check envelopes have a unique bottom window design so your check amounts and memos will always be hidden, and our window locations are positioned perfectly to line up with your addresses. NO NEED to reformat your software. Bottom window location of 3/4'' from the bottom, and a window height of 7/8\" prevents the check amounts from showing in the bottom window like other check envelopes Bottom window location of 7/8\" from the left side, and a window width of 3.5\u201d guarantees your recipient's address will show without the need to reformat quickbooks for both tri-fold and 3 checks per page check paper. Just print and slide the check in Security with a Professional Look It can be frustrating to purchase envelopes only to find them flimsy enough to have you worried about their durability during transit. Our envelopes are made of 24 LB White wove paper that will provide a professional look from the box all the way to your destination Your checks will be secure with an easy to use Flip and Seal design that will hold its seal and completely hide your checks behind our dark black security tint 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying, however, if our product is not exactly what you are looking for, or does not meet your expectation then send them back anytime for a 100 % refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/envelopes-for-quickbooks-checks-012",
+   "handle": "envelopes-for-quickbooks-checks-012",
+   "price_range": {
+    "min": {
+     "amount": 3599,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/20015134736442",
+     "sku": "CR-INWS-LHTN",
+     "title": "Default Title",
+     "description": {
+      "html": "Your QuickBooks Printed Checks will Line up Perfectly It can be so difficult to find envelopes that fit business checks perfectly. Some will show the recipient\u2019s address but not the sender's address, while others will hide parts of the addresses, and worse, others will show parts of the check like the check amount, or check memo. So much for security. Our check envelopes have a unique bottom window design so your check amounts and memos will always be hidden, and our window locations are positioned perfectly to line up with your addresses. NO NEED to reformat your software. Bottom window location of 3/4'' from the bottom, and a window height of 7/8\" prevents the check amounts from showing in the bottom window like other check envelopes Bottom window location of 7/8\" from the left side, and a window width of 3.5\u201d guarantees your recipient's address will show without the need to reformat quickbooks for both tri-fold and 3 checks per page check paper. Just print and slide the check in Security with a Professional Look It can be frustrating to purchase envelopes only to find them flimsy enough to have you worried about their durability during transit. Our envelopes are made of 24 LB White wove paper that will provide a professional look from the box all the way to your destination Your checks will be secure with an easy to use Flip and Seal design that will hold its seal and completely hide your checks behind our dark black security tint 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying, however, if our product is not exactly what you are looking for, or does not meet your expectation then send them back anytime for a 100 % refund."
+     },
+     "price": {
+      "amount": 3599,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/files/012_main_image_b9e0d6b5-40ef-42c0-a1ea-fe1b6544be27.jpg?v=1726897006"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/20015134736442:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/files/012_main_image_b9e0d6b5-40ef-42c0-a1ea-fe1b6544be27.jpg?v=1726897006",
+     "alt_text": "Blue Summit Supplies #8 Business Envelopes, Double Window, Security Tint, For QuickBooks, Flip & Seal, 500 Pack Mailing Envelopes Blue Summit Supplies "
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:419",
+    "AvailabilityForB2C:2814",
+    "AvailabilityInWarehouse:419",
+    "AvailableForB2B:In stock",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:TRUE",
+    "BSS-92588-012",
+    "BSSSKU:TRUE",
+    "Collection:Envelopes",
+    "Collection:Mailing Envelopes",
+    "Collection:Office Supplies",
+    "CollectionHandle:envelopes",
+    "CollectionHandle:mailing-envelopes",
+    "CollectionHandle:office-supplies",
+    "envelopes2024",
+    "EVERYONE",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/87706009658",
+     "handle": "auto-renew",
+     "title": "Auto Renew",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271562014898",
+     "handle": "mailing-envelopes",
+     "title": "Mailing Envelopes",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271562047666",
+     "handle": "envelopes",
+     "title": "Envelopes",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2475009933370",
+   "title": "Blue Summit Supplies Index Dividers, 8-Tab Printable, Manila, 96 Dividers",
+   "description": {
+    "html": "Durable and Affordable Tabbed Index Dividers for Binders Never again worry about losing the paper inserts out of your binder tabs dividers again when you use our no insert, manila index dividers featuring write on tabs, which can be written on using pen or even pencil for repeated use. Alternately, use adhesive printed labels or tape on your section titles onto the tabs for a neat and tidy organized three ring binder to create a fixed, durable solution to binder category labels. Manila Letter Size 8 Tab Dividers with Reinforced Edge for Repeated Use Our bulk pack of 96 manila notebook dividers is a must have for any supply closet for your school or office supplies. Dividers with tabs are a staple to have on hand for organizing your 3 ring binders into sections by school subject, handbook category, date, or topic. With a reinforced 3 hole punch edge, our standard letter size dividers are perfect for use as 3 ring binder divider tabs Made with thick 11pt paper, our manila notebook dividers have a smooth writable surface that can be used with pen, pencil, or adhesive labels to make it easy to identify the section you\u2019re looking for at a glance Our bulk binder dividers are ideal for using to divide the sections in a classroom binder, coupon binder, training manual, company handbook, recipe binder, and more 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/3-ring-binder-dividers-manila-1048",
+   "handle": "3-ring-binder-dividers-manila-1048",
+   "price_range": {
+    "min": {
+     "amount": 2299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2299,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/23456072269882",
+     "sku": "BSS-92588-1048",
+     "title": "Default Title",
+     "description": {
+      "html": "Durable and Affordable Tabbed Index Dividers for Binders Never again worry about losing the paper inserts out of your binder tabs dividers again when you use our no insert, manila index dividers featuring write on tabs, which can be written on using pen or even pencil for repeated use. Alternately, use adhesive printed labels or tape on your section titles onto the tabs for a neat and tidy organized three ring binder to create a fixed, durable solution to binder category labels. Manila Letter Size 8 Tab Dividers with Reinforced Edge for Repeated Use Our bulk pack of 96 manila notebook dividers is a must have for any supply closet for your school or office supplies. Dividers with tabs are a staple to have on hand for organizing your 3 ring binders into sections by school subject, handbook category, date, or topic. With a reinforced 3 hole punch edge, our standard letter size dividers are perfect for use as 3 ring binder divider tabs Made with thick 11pt paper, our manila notebook dividers have a smooth writable surface that can be used with pen, pencil, or adhesive labels to make it easy to identify the section you\u2019re looking for at a glance Our bulk binder dividers are ideal for using to divide the sections in a classroom binder, coupon binder, training manual, company handbook, recipe binder, and more 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 2299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1048_IndexDividersFor3Ring_2.JPG?v=1589984769"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/23456072269882:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1048_IndexDividersFor3Ring_2.JPG?v=1589984769",
+     "alt_text": "3 Ring Binder Dividers, 1/8 Cut Tabs, Manila, 96 Pack Binder Dividers Blue Summit Supplies "
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:6",
+    "AvailabilityForB2C:505",
+    "AvailabilityInWarehouse:6",
+    "AvailableForB2B:In stock",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:TRUE",
+    "BSSSKU:TRUE",
+    "Collection:Binder Accessories",
+    "Collection:Binder Dividers",
+    "Collection:Office Supplies",
+    "CollectionHandle:binder-accessories",
+    "CollectionHandle:binder-dividers",
+    "CollectionHandle:office-supplies",
+    "EVERYONE",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:TRUE",
+    "Solution-Office"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271565750450",
+     "handle": "binder-dividers",
+     "title": "Binder Dividers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271565783218",
+     "handle": "binder-accessories",
+     "title": "Binder Accessories",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

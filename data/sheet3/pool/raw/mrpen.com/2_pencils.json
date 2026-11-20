@@ -1,0 +1,1640 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://mrpen.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Mr. Pen",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "mrpen.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "62824808604"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "62824808604"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7942822887580",
+   "title": "Pastel Boho Mechanical Pencils, 6 Pack, 0.5 & 0.7mm, Refills",
+   "description": {
+    "html": "Write, sketch, and plan in soft color with Mr. Pen pastel boho mechanical pencils\u2014a 6-pack made for smooth lines and everyday comfort. 6-pack set: Includes 6 pastel boho mechanical pencils in 0.5 mm and 0.7 mm sizes Lead refills included: Comes with 6 lead refills \u2014 3 HB tubes + 3 2B tubes Erasers + refills: Includes 3 erasers and 8 additional eraser refills Comfort for long sessions: Comfortable grip and balanced weight for fatigue-free writing and drawing Durable build: High-quality material for long-lasting performance Smooth, consistent lines: Break-resistant lead supports reliable everyday use Organized storage: Reusable tray with an easy-to-close lid for protection and organization Made for many uses: Great for school, office, everyday writing, art, and technical drawing For students & pros: Perfect for architects, artists, students, teachers, engineers, and professionals"
+   },
+   "url": "https://mrpen.com/products/boho-mechanical-pencil-set-6-pack-0-5mm-0-7mm-lead-eraser-refills-cute",
+   "handle": "boho-mechanical-pencil-set-6-pack-0-5mm-0-7mm-lead-eraser-refills-cute",
+   "price_range": {
+    "min": {
+     "amount": 899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 944,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 944,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43365002051740",
+     "sku": "CPMP03M2230",
+     "title": "Default Title",
+     "description": {
+      "html": "Write, sketch, and plan in soft color with Mr. Pen pastel boho mechanical pencils\u2014a 6-pack made for smooth lines and everyday comfort. 6-pack set: Includes 6 pastel boho mechanical pencils in 0.5 mm and 0.7 mm sizes Lead refills included: Comes with 6 lead refills \u2014 3 HB tubes + 3 2B tubes Erasers + refills: Includes 3 erasers and 8 additional eraser refills Comfort for long sessions: Comfortable grip and balanced weight for fatigue-free writing and drawing Durable build: High-quality material for long-lasting performance Smooth, consistent lines: Break-resistant lead supports reliable everyday use Organized storage: Reusable tray with an easy-to-close lid for protection and organization Made for many uses: Great for school, office, everyday writing, art, and technical drawing For students & pros: Perfect for architects, artists, students, teachers, engineers, and professionals"
+     },
+     "price": {
+      "amount": 899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 944,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/q1-5-5.jpg?v=1750097189"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43365002051740:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/q1-5-5.jpg?v=1750097189",
+     "alt_text": "q1-5"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b",
+    "Mechanical Pencils",
+    "School"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056631452",
+     "handle": "mechanical-pencils",
+     "title": "Mechanical Pencils Collection",
+     "description": {
+      "html": "Explore Mr. Pen Mechanical Pencils, made for smooth writing, note-taking, and creative work. From single pencils to sets, find durable, comfortable options for students, teachers, and professionals. With a variety of lead sizes and styles, there\u2019s a perfect match for every writing need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312174051484",
+     "handle": "pens-pencils-mechanical-pencils",
+     "title": "Pens, Pencils, Mechanical Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/316413706396",
+     "handle": "pencils-1",
+     "title": "Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942901235868",
+   "title": "Large Capacity Pencil Case, 5 Color Options, Pencil Pouch, Pencil Bag, Pen Case, Pen Pouch, Pen Bag, Pencil Pouches, Pencil Bags, Green Pencil Case, School Pencil Case, College Pencil Case",
+   "description": {
+    "html": "Mr. Pen large capacity pencil case boasts a 3-compartment design with 2 additional internal pockets, providing ample space to organize and store a variety of stationery supplies efficiently. This pencil case is designed to fit a wide range of supplies such as pens, pencils, markers, erasers, scissors, calculators, and more, ensuring everything you need is within easy reach. Crafted from high-quality materials, the pencil case is built to withstand the rigors of daily use, protecting your stationery items from damage and the elements. The pencil case features a smooth zipper system that allows quick and easy access to all compartments, making it simple to find what you need without hassle. With its modern design and refreshing color palette, this pencil case is not only functional but also a fashionable accessory for students and professionals alike, fitting easily into most bags and backpacks."
+   },
+   "url": "https://mrpen.com/products/r-pen-large-capacity-pencil-case-pencil-pouch-pencil-bag-pen-case",
+   "handle": "r-pen-large-capacity-pencil-case-pencil-pouch-pencil-bag-pen-case",
+   "price_range": {
+    "min": {
+     "amount": 699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 925,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1619,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44114257379484",
+     "sku": "AQAH001M335VC",
+     "title": "Purple",
+     "description": {
+      "html": "Mr. Pen large capacity pencil case boasts a 3-compartment design with 2 additional internal pockets, providing ample space to organize and store a variety of stationery supplies efficiently. This pencil case is designed to fit a wide range of supplies such as pens, pencils, markers, erasers, scissors, calculators, and more, ensuring everything you need is within easy reach. Crafted from high-quality materials, the pencil case is built to withstand the rigors of daily use, protecting your stationery items from damage and the elements. The pencil case features a smooth zipper system that allows quick and easy access to all compartments, making it simple to find what you need without hassle. With its modern design and refreshing color palette, this pencil case is not only functional but also a fashionable accessory for students and professionals alike, fitting easily into most bags and backpacks."
+     },
+     "price": {
+      "amount": 699,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 925,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-100_f5055894-3ab8-4dfb-8cfe-a1f672f25322.jpg?v=1712191464"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44114257379484:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44114257412252",
+     "sku": "ZXPC001M337VC",
+     "title": "Blue",
+     "description": {
+      "html": "Mr. Pen large capacity pencil case boasts a 3-compartment design with 2 additional internal pockets, providing ample space to organize and store a variety of stationery supplies efficiently. This pencil case is designed to fit a wide range of supplies such as pens, pencils, markers, erasers, scissors, calculators, and more, ensuring everything you need is within easy reach. Crafted from high-quality materials, the pencil case is built to withstand the rigors of daily use, protecting your stationery items from damage and the elements. The pencil case features a smooth zipper system that allows quick and easy access to all compartments, making it simple to find what you need without hassle. With its modern design and refreshing color palette, this pencil case is not only functional but also a fashionable accessory for students and professionals alike, fitting easily into most bags and backpacks."
+     },
+     "price": {
+      "amount": 899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1349,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81ofk0ezBzL._AC_SX425.jpg?v=1718817853"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44114257412252:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44114257445020",
+     "sku": "FVVU001M335VC",
+     "title": "Pastels",
+     "description": {
+      "html": "Mr. Pen large capacity pencil case boasts a 3-compartment design with 2 additional internal pockets, providing ample space to organize and store a variety of stationery supplies efficiently. This pencil case is designed to fit a wide range of supplies such as pens, pencils, markers, erasers, scissors, calculators, and more, ensuring everything you need is within easy reach. Crafted from high-quality materials, the pencil case is built to withstand the rigors of daily use, protecting your stationery items from damage and the elements. The pencil case features a smooth zipper system that allows quick and easy access to all compartments, making it simple to find what you need without hassle. With its modern design and refreshing color palette, this pencil case is not only functional but also a fashionable accessory for students and professionals alike, fitting easily into most bags and backpacks."
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1079,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pastels"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/p.jpg?v=1718817884"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44114257445020:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44114257477788",
+     "sku": "XSWE097M230",
+     "title": "Mint Green",
+     "description": {
+      "html": "Mr. Pen large capacity pencil case boasts a 3-compartment design with 2 additional internal pockets, providing ample space to organize and store a variety of stationery supplies efficiently. This pencil case is designed to fit a wide range of supplies such as pens, pencils, markers, erasers, scissors, calculators, and more, ensuring everything you need is within easy reach. Crafted from high-quality materials, the pencil case is built to withstand the rigors of daily use, protecting your stationery items from damage and the elements. The pencil case features a smooth zipper system that allows quick and easy access to all compartments, making it simple to find what you need without hassle. With its modern design and refreshing color palette, this pencil case is not only functional but also a fashionable accessory for students and professionals alike, fitting easily into most bags and backpacks."
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 925,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Mint Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/min_g.jpg?v=1718817936"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44114257477788:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44114257510556",
+     "sku": "CRJV001M335VC",
+     "title": "Olive Green",
+     "description": {
+      "html": "Mr. Pen large capacity pencil case boasts a 3-compartment design with 2 additional internal pockets, providing ample space to organize and store a variety of stationery supplies efficiently. This pencil case is designed to fit a wide range of supplies such as pens, pencils, markers, erasers, scissors, calculators, and more, ensuring everything you need is within easy reach. Crafted from high-quality materials, the pencil case is built to withstand the rigors of daily use, protecting your stationery items from damage and the elements. The pencil case features a smooth zipper system that allows quick and easy access to all compartments, making it simple to find what you need without hassle. With its modern design and refreshing color palette, this pencil case is not only functional but also a fashionable accessory for students and professionals alike, fitting easily into most bags and backpacks."
+     },
+     "price": {
+      "amount": 899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1619,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Olive Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/gre.jpg?v=1718817983"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44114257510556:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Purple"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Pastels"
+      },
+      {
+       "label": "Mint Green"
+      },
+      {
+       "label": "Olive Green"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-100_f5055894-3ab8-4dfb-8cfe-a1f672f25322.jpg?v=1712191464",
+     "alt_text": "1"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-3-16",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b",
+    "MCF",
+    "Pen Holders",
+    "Pencil Pouches",
+    "School & Office",
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300696731804",
+     "handle": "pen-holders",
+     "title": "Pen Holders",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304123576476",
+     "handle": "bible-pencil-pouches",
+     "title": "Bible Pencil Pouches",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8964511858844",
+   "title": "Mr. Pen- Jumbo Pencils, 60 pcs, Preschool Pencils, Large Pencil, Bright Barrels and Black 2 HB Graphite Cores, Smooth Lead, Latex-Free Eraser Top with Metal Ferrule",
+   "description": {
+    "html": "Mr. Pen jumbo pencils come in a 60-pack and are specially designed for preschoolers who benefit from using large, easy-to-grip writing tools. Each pencil features a smooth-writing black 2 HB graphite core, ideal for early writing, sketching, and classroom practice. The thick barrel helps young children develop proper pencil grip and fine motor control, making it easier to learn writing techniques. Topped with a latex-free eraser and reinforced by a metal ferrule, the eraser allows for clean and safe corrections. The pencils feature bright, colorful barrels that are visually engaging and help keep kids excited about learning and creativity."
+   },
+   "url": "https://mrpen.com/products/mr-pen-jumbo-pencils-60-pcs-preschool-pencils-large-pencil-bright-barrels-and-black-2-hb-graphite-cores-smooth-lead-latex-free-eraser-top-with-metal-ferrule",
+   "handle": "mr-pen-jumbo-pencils-60-pcs-preschool-pencils-large-pencil-bright-barrels-and-black-2-hb-graphite-cores-smooth-lead-latex-free-eraser-top-with-metal-ferrule",
+   "price_range": {
+    "min": {
+     "amount": 2099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2099,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2294,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2294,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46617541836956",
+     "sku": "PHMK060M438VC",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen jumbo pencils come in a 60-pack and are specially designed for preschoolers who benefit from using large, easy-to-grip writing tools. Each pencil features a smooth-writing black 2 HB graphite core, ideal for early writing, sketching, and classroom practice. The thick barrel helps young children develop proper pencil grip and fine motor control, making it easier to learn writing techniques. Topped with a latex-free eraser and reinforced by a metal ferrule, the eraser allows for clean and safe corrections. The pencils feature bright, colorful barrels that are visually engaging and help keep kids excited about learning and creativity."
+     },
+     "price": {
+      "amount": 2099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2294,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_b07b1eb2-3443-4e44-9344-6447eb7ea763.jpg?v=1775061969"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/46617541836956:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_b07b1eb2-3443-4e44-9344-6447eb7ea763.jpg?v=1775061969"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2-2-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/316413706396",
+     "handle": "pencils-1",
+     "title": "Pencils",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942892388508",
+   "title": "Metal Mechanical Pencil Set in Leather Case, 5 Sizes, HB Leads",
+   "description": {
+    "html": "The Mr. Pen Metal Mechanical Pencil Set in Leather Case is a versatile kit with multiple tip sizes\u2014made for writing, sketching, and drafting with ease. 5 metal pencil sizes: Includes 0.3, 0.5, 0.7, 0.9, and 2.0 mm for a wide range of writing and drawing needs Includes 6 HB lead refills: Generous supply to keep you going without interruptions Erasers for easy fixes: Comes with a standard eraser and a kneaded eraser Extra eraser refills: Includes 10 additional eraser refills for ongoing use Sharpener included for 2.0 mm: Specialized sharpener helps maintain a fine point for precision work Leather case packaging: Elegantly packaged in a leather cover for both aesthetic appeal and functional utility"
+   },
+   "url": "https://mrpen.com/products/mr-pen-metal-mechanical-pencil-set-in-leather-case-5-sizes-0-3-0-5-0-7-0-9-2mm",
+   "handle": "mr-pen-metal-mechanical-pencil-set-in-leather-case-5-sizes-0-3-0-5-0-7-0-9-2mm",
+   "price_range": {
+    "min": {
+     "amount": 2099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2099,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2294,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2294,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43365221433500",
+     "sku": "IHCC001M247",
+     "title": "Default Title",
+     "description": {
+      "html": "The Mr. Pen Metal Mechanical Pencil Set in Leather Case is a versatile kit with multiple tip sizes\u2014made for writing, sketching, and drafting with ease. 5 metal pencil sizes: Includes 0.3, 0.5, 0.7, 0.9, and 2.0 mm for a wide range of writing and drawing needs Includes 6 HB lead refills: Generous supply to keep you going without interruptions Erasers for easy fixes: Comes with a standard eraser and a kneaded eraser Extra eraser refills: Includes 10 additional eraser refills for ongoing use Sharpener included for 2.0 mm: Specialized sharpener helps maintain a fine point for precision work Leather case packaging: Elegantly packaged in a leather cover for both aesthetic appeal and functional utility"
+     },
+     "price": {
+      "amount": 2099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2294,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-40_7f27945c-6ee2-47d4-b7ad-8097b24390ce.jpg?v=1712190653"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43365221433500:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-40_7f27945c-6ee2-47d4-b7ad-8097b24390ce.jpg?v=1712190653",
+     "alt_text": "1"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b",
+    "MCF",
+    "Mechanical Pencils",
+    "Pencils",
+    "School & Office"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056631452",
+     "handle": "mechanical-pencils",
+     "title": "Mechanical Pencils Collection",
+     "description": {
+      "html": "Explore Mr. Pen Mechanical Pencils, made for smooth writing, note-taking, and creative work. From single pencils to sets, find durable, comfortable options for students, teachers, and professionals. With a variety of lead sizes and styles, there\u2019s a perfect match for every writing need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312174051484",
+     "handle": "pens-pencils-mechanical-pencils",
+     "title": "Pens, Pencils, Mechanical Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/314259964060",
+     "handle": "12-99-products",
+     "title": "12.99 + Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8507580154012",
+   "title": "Mr. Pen- Pastel Mechanical Pencil Set with Lead Refills & Erasers, 6 Pack, 3 Sizes, 0.5 0.7 & 0.9mm, Aesthetic Mechanical Pencils Set",
+   "description": {
+    "html": "Mr. Pen pastel mechanical pencil set includes 6 high-quality pencils in a beautiful pastel color palette, with 3 different sizes (0.5mm, 0.7mm, and 0.9mm) to cater to various writing or drawing needs. The set comes with a generous supply of lead refills and erasers, including 0.5mm, 0.7mm and 0.9mm lead, ensuring you have plenty of supplies for extended use. The pastel-colored pencils provide a soft, aesthetic look and feature an ergonomic design for comfortable grip and smooth writing, perfect for students, artists, or everyday use. These mechanical pencils offer consistent, clean lines without the need for sharpening, making them ideal for detailed work, note-taking, or sketching. Packaged in a convenient storage case, this set is perfect for on-the-go use, keeping your pencils, leads, and erasers neatly organized and easily accessible."
+   },
+   "url": "https://mrpen.com/products/mr-pen-pastel-mechanical-pencil-set-with-lead-refills-erasers-6-pack-3-sizes-0-5-0-7-0-9mm-aesthetic-mechanical-pencils-set",
+   "handle": "mr-pen-pastel-mechanical-pencil-set-with-lead-refills-erasers-6-pack-3-sizes-0-5-0-7-0-9mm-aesthetic-mechanical-pencils-set",
+   "price_range": {
+    "min": {
+     "amount": 799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 809,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 809,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45254055592092",
+     "sku": "NRVT024M422",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen pastel mechanical pencil set includes 6 high-quality pencils in a beautiful pastel color palette, with 3 different sizes (0.5mm, 0.7mm, and 0.9mm) to cater to various writing or drawing needs. The set comes with a generous supply of lead refills and erasers, including 0.5mm, 0.7mm and 0.9mm lead, ensuring you have plenty of supplies for extended use. The pastel-colored pencils provide a soft, aesthetic look and feature an ergonomic design for comfortable grip and smooth writing, perfect for students, artists, or everyday use. These mechanical pencils offer consistent, clean lines without the need for sharpening, making them ideal for detailed work, note-taking, or sketching. Packaged in a convenient storage case, this set is perfect for on-the-go use, keeping your pencils, leads, and erasers neatly organized and easily accessible."
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 809,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81nZv3sKokL._AC_SL1500.jpg?v=1756815498"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45254055592092:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81nZv3sKokL._AC_SL1500.jpg?v=1756815498"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2c-only"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056631452",
+     "handle": "mechanical-pencils",
+     "title": "Mechanical Pencils Collection",
+     "description": {
+      "html": "Explore Mr. Pen Mechanical Pencils, made for smooth writing, note-taking, and creative work. From single pencils to sets, find durable, comfortable options for students, teachers, and professionals. With a variety of lead sizes and styles, there\u2019s a perfect match for every writing need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312627495068",
+     "handle": "high-inventoory",
+     "title": "High Inventoory",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8338999640220",
+   "title": "2.0mm Mechanical Pencil Set, 5 pcs, Lead, Eraser, Sharpener",
+   "description": {
+    "html": "Everything you need in one tidy kit\u2014the Mr. Pen 2.0mm Mechanical Pencil Set is built for smooth writing, drawing, and drafting. 5-piece essentials set: Includes 2.0mm mechanical pencil, HB pencil, premium eraser, manual sharpener, and 2.0mm lead refill tube Smooth, consistent lines: 2.0mm mechanical pencil delivers reliable performance for writing, drawing, and drafting Versatile HB pencil: Great for sketching or note-taking Clean corrections: Premium eraser helps erase without smudging Sharpener with 2 hole sizes: Manual sharpener accommodates various pencil types for precise tips every time Sleek, organized packaging: Keeps tools neat and easy to grab Ideal for many users: Designed for students, professionals, and artists for efficient, creative work"
+   },
+   "url": "https://mrpen.com/products/mr-pen-mechanical-pencil-set-5-pcs-2-0mm-mechanical-pencil-2-0mm-lead-refill-hb-pencil-eraser-sharpener-mechanical-drafting-pencil",
+   "handle": "mr-pen-mechanical-pencil-set-5-pcs-2-0mm-mechanical-pencil-2-0mm-lead-refill-hb-pencil-eraser-sharpener-mechanical-drafting-pencil",
+   "price_range": {
+    "min": {
+     "amount": 699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 809,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 809,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44724610105500",
+     "sku": "CMEM002M306",
+     "title": "Default Title",
+     "description": {
+      "html": "Everything you need in one tidy kit\u2014the Mr. Pen 2.0mm Mechanical Pencil Set is built for smooth writing, drawing, and drafting. 5-piece essentials set: Includes 2.0mm mechanical pencil, HB pencil, premium eraser, manual sharpener, and 2.0mm lead refill tube Smooth, consistent lines: 2.0mm mechanical pencil delivers reliable performance for writing, drawing, and drafting Versatile HB pencil: Great for sketching or note-taking Clean corrections: Premium eraser helps erase without smudging Sharpener with 2 hole sizes: Manual sharpener accommodates various pencil types for precise tips every time Sleek, organized packaging: Keeps tools neat and easy to grab Ideal for many users: Designed for students, professionals, and artists for efficient, creative work"
+     },
+     "price": {
+      "amount": 699,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 809,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61rtFoRyX1L._AC_SL1500.jpg?v=1761078820"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44724610105500:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61rtFoRyX1L._AC_SL1500.jpg?v=1761078820"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b",
+    "Mechanical Pencils",
+    "Mr. Pen New Products 2025"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056631452",
+     "handle": "mechanical-pencils",
+     "title": "Mechanical Pencils Collection",
+     "description": {
+      "html": "Explore Mr. Pen Mechanical Pencils, made for smooth writing, note-taking, and creative work. From single pencils to sets, find durable, comfortable options for students, teachers, and professionals. With a variety of lead sizes and styles, there\u2019s a perfect match for every writing need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312174051484",
+     "handle": "pens-pencils-mechanical-pencils",
+     "title": "Pens, Pencils, Mechanical Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8128067469468",
+   "title": "Pastel Mechanical Pencil Set with Lead Refills & Erasers, 6 Pack, 2 Sizes, 0.5 & 0.7mm, Aesthetic Mechanical Pencils Set, Pastel Mechanical Pencils, Cute Mechanical Pencils Cute",
+   "description": {
+    "html": "Mr. Pen mechanical pencil set offers a versatile writing experience with three 0.5mm and three 0.7mm pencils, suitable for both fine and broad strokes. These meticulously crafted mechanical pencils provide consistent lead advancement and a smooth writing experience, ensuring precision in every stroke. Accompanying the pencils are 6 lead refills, ensuring you're well-stocked and reducing the need for frequent replacements. Included in the set are 3 standard erasers, designed to effortlessly lift graphite off paper without causing damage. Packaged in a sleek, transparent case, this set is both easy to store and perfect for gifting to students, artists, and professionals."
+   },
+   "handle": "mr-pen-pastel-mechanical-pencil-set-with-lead-refills-erasers-6-pack-2-sizes-0-5-0-7mm",
+   "price_range": {
+    "min": {
+     "amount": 799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 790,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 790,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43815233487004",
+     "sku": "HDUW006M322",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen mechanical pencil set offers a versatile writing experience with three 0.5mm and three 0.7mm pencils, suitable for both fine and broad strokes. These meticulously crafted mechanical pencils provide consistent lead advancement and a smooth writing experience, ensuring precision in every stroke. Accompanying the pencils are 6 lead refills, ensuring you're well-stocked and reducing the need for frequent replacements. Included in the set are 3 standard erasers, designed to effortlessly lift graphite off paper without causing damage. Packaged in a sleek, transparent case, this set is both easy to store and perfect for gifting to students, artists, and professionals."
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 790,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71RqWmVTFjL._AC_SL1500.jpg?v=1717221372"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43815233487004:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71RqWmVTFjL._AC_SL1500.jpg?v=1717221372"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2c-only",
+    "MCF"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056631452",
+     "handle": "mechanical-pencils",
+     "title": "Mechanical Pencils Collection",
+     "description": {
+      "html": "Explore Mr. Pen Mechanical Pencils, made for smooth writing, note-taking, and creative work. From single pencils to sets, find durable, comfortable options for students, teachers, and professionals. With a variety of lead sizes and styles, there\u2019s a perfect match for every writing need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8172347523228",
+   "title": "Pencils with Sharpener and Eraser, 12 Pencil, 1 Metal Pencil Sharpener, 1 Eraser, Pencils and Sharpener, Pencil and Sharpener Set, School Supplies, Pencil with Sharpener, Erasers for Kids",
+   "description": {
+    "html": "/** * Premium-module 5: Comparision table - scroller */ .aplus-v2 .premium-aplus-module-5 h1 { padding-bottom: 30px; } /* position column-headers relative to this table */ .aplus-v2 .premium-aplus-module-5 .table-container { position: relative; opacity: 1; } .aplus-v2 .premium-aplus-module-5 .table-container.loading { opacity: 0; } .aplus-v2 .premium-aplus-module-5 .table-slider { overflow-x: scroll; overflow-y: visible; width: 100%; } /* left column headers are absolute positioned */ .aplus-v2 .premium-aplus-module-5 td.attribute { position: absolute; width: 300px; top: auto; left: 0; } html[dir=\"rtl\"] .aplus-v2 .premium-aplus-module-5 td.attribute { right: 0px; left: auto; } .aplus-v2 .premium-aplus-module-5 td.active-item { position: absolute; top: auto; left: 300px; } html[dir=\"rtl\"] .premium-aplus-module-5 td.active-item { left: auto; right: 300px; } .aplus-v2 .premium-aplus-module-5 .attribute, .aplus-v2 .premium-aplus-module-5 .active-item, .aplus-v2 .premium-aplus-module-5 .description { font-size: 16px; font-family: arial; line-height: 2.5em; white-space:nowrap; color: #000; } .aplus-v2 .premium-aplus-module-5 .attribute, .aplus-v2 .premium-aplus-module-5 .active-item, .aplus-v2 .premium-aplus-module-5 .description { font-family: inherit; } .aplus-v2 .premium-aplus-module-5 table.a-bordered td.attribute, .aplus-v2 .premium-aplus-module-5 table.a-bordered td.active-item { background-color: #fff; z-index: 100; } .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:nth-child(even) td.attribute, .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:nth-child(even) td.active-item { background-color: #f0f2f2; } .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:nth-child(even):last-child td.attribute { border-bottom: #f0f2f2 solid 1px; } /* Override AUI - the odd rows have a white background while the even ones have gray background */ .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:nth-child(odd) { background-color: #fff; } .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:nth-child(even) { background-color: #f0f2f2; } .aplus-v2 .premium-aplus-module-5 table.a-bordered td.attribute .comparison-metric-name { outline-style: none; } .aplus-v2 .premium-aplus-module-5 table.a-bordered td.attribute .aplus-popover-trigger::after { content: \"?\"; display: inline-block; font-size: 12px; position: relative; bottom: 5px; } .aplus-v2 .premium-aplus-module-5 td.attribute.empty { height: 332px; } .aplus-v2 .premium-aplus-module-5 .header-img { padding-top: 10px; } /* Prevent table borders from overlapping */ .aplus-v2 .premium-aplus-module-5 table { border-collapse: separate; } /* Override default AUI .a-bordered table borders */ .aplus-v2 .premium-aplus-module-5 table.a-bordered td, .aplus-v2 .premium-aplus-module-5 table.a-bordered th, .aplus-v2 .premium-aplus-module-5 table.a-bordered { border-width: 0; border-color: #eaeaea; border-style: solid; } .aplus-v2 .premium-aplus-module-5 table.a-bordered td { border-right-width: 1px; } .aplus-v2 .premium-aplus-module-5 table.a-bordered td:last-child { border-right-width: 0; } html[dir=\"rtl\"] .aplus-v2 .premium-aplus-module-5 table.a-bordered td:last-child { border-right-width: 1px; } /* Active column should be surrounded in darker border. */ .aplus-v2 .premium-aplus-module-5 table.a-bordered td.active { border-color: #767676; border-right-width: 1px; border-left-width: 1px; } /* Top Active column needs border-top */ .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:first-child td.active { border-top-width: 1px; height: 332px; } /* Bottom column column needs border-bottom */ .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:last-child td.active { border-bottom-width: 1px; } /* Size the top scroller */ .aplus-v2 .premium-aplus-module-5 .scroll-wrapper-top { width: 100%; height: 20px; overflow-x: scroll; overflow-y: visible; } .aplus-v2 .premium-aplus-module-5 .scroll-bar { height: 1px; } .aplus-v2 .premium-aplus-module-5 .add-to-cart { line-height: 1rem; font-weight: normal; } .aplus-v2 .premium-aplus-module-5 .review { font-size: 14px; } /** * Premium modules global styles */ .aplus-v2.desktop { max-width: 1464px; min-width: 800px; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; } /* Undo this for tech-specs because it breaks table layout */ .aplus-v2.desktop .premium-aplus .aplus-tech-spec-table { word-break: initial; } .aplus-v2 .premium-aplus, .aplus-v2 .premium-aplus .aplus-h1, .aplus-v2 .premium-aplus .aplus-h2, .aplus-v2 .premium-aplus .aplus-p1, .aplus-v2 .premium-aplus .aplus-p2, .aplus-v2 .premium-aplus .aplus-p3, .aplus-v2 .premium-aplus .aplus-accent1, .aplus-v2 .premium-aplus .aplus-accent2 { font-family: Arial, sans-serif; } .aplus-v2 .premium-aplus, .aplus-v2 .premium-aplus .aplus-h1, .aplus-v2 .premium-aplus .aplus-h2, .aplus-v2 .premium-aplus .aplus-p1, .aplus-v2 .premium-aplus .aplus-p2, .aplus-v2 .premium-aplus .aplus-p3, .aplus-v2 .premium-aplus .aplus-accent1, .aplus-v2 .premium-aplus .aplus-accent2 { font-family: inherit; } /* type */ .aplus-v2 .premium-aplus .aplus-h1 { font-size: 32px; line-height: 1.2em; font-weight: 500; } .aplus-v2 .premium-aplus .aplus-h2 { font-size: 26px; line-height: 1.25em; font-weight: 500; } .aplus-v2 .premium-aplus .aplus-h3 { font-size: 18px; line-height: 1.25em; font-weight: 500; } .aplus-v2 .premium-aplus .aplus-p1 { font-size: 20px; line-height: 1.3em; font-weight: 300; } .aplus-v2 .premium-aplus .aplus-p2 { font-size: 16px; line-height: 1.4em; font-weight: 300; } .aplus-v2 .premium-aplus .aplus-p3 { font-size: 14px; line-height: 1.4em; font-weight: 300; } .aplus-v2 .premium-aplus .aplus-accent1 { font-size: 16px; line-height: 1.4em; font-weight: 600; } .aplus-v2 .premium-aplus .aplus-accent2 { font-size: 14px; line-height: 1.4em; font-weight: 600; } /* spacing */ .aplus-v2 .aplus-container-1 { padding: 40px; } .aplus-v2 .aplus-container-1-2 { padding: 40px 80px; } .aplus-v2 .aplus-container-2 { padding: 80px; } .aplus-v2 .aplus-container-3 { padding: 40px 0; } /* Display */ .aplus-v2 .premium-aplus .aplus-display-table { display: table; } .aplus-v2 .premium-aplus .aplus-display-table-cell { display: table-cell; } .aplus-v2 .premium-aplus .aplus-display-inline-block { display: inline-block; } /* Aplus display table with min-width 1000px and fill remaining space inside parent */ .aplus-v2.desktop .premium-aplus .aplus-display-table-width { min-width: 1000px; width: 100% } /** * Padding and margin for element should be 10, 20, 40, or 80 px. Considering mini 10, small 20, medium 40, large 80. */ Package Includes: 12 #2HB Pencils 7\u201d, 1 Metal Pencil Sharpeners 2 hole, 1 White Large Erasers 7\u201d #2HB Soft Pencils with Top Quality Latex-Free Eraser to Provide Easy, Clean Corrections High Quality Large Block Erasers 2-Hole Metal Steel Blade Pencil Sharpener Ideal for Back to School, Home Schooling, Offices Brand Mr. Pen Writing Instrument Form Graphite Pencil Color White Ink Color White Age Range (Description) Adult"
+   },
+   "url": "https://mrpen.com/products/mr-pen-pencils-with-sharpener-and-eraser-12-pencil-1-metal-pencil-sharpener-1-eraser-pencils-and-sharpener-pencil-and-sharpener-set-school-supplies-pencil-with-sharpener-erasers-for-kids",
+   "handle": "mr-pen-pencils-with-sharpener-and-eraser-12-pencil-1-metal-pencil-sharpener-1-eraser-pencils-and-sharpener-pencil-and-sharpener-set-school-supplies-pencil-with-sharpener-erasers-for-kids",
+   "price_range": {
+    "min": {
+     "amount": 799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1079,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1079,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44146894569628",
+     "sku": "PP33N",
+     "title": "Default Title",
+     "description": {
+      "html": "/** * Premium-module 5: Comparision table - scroller */ .aplus-v2 .premium-aplus-module-5 h1 { padding-bottom: 30px; } /* position column-headers relative to this table */ .aplus-v2 .premium-aplus-module-5 .table-container { position: relative; opacity: 1; } .aplus-v2 .premium-aplus-module-5 .table-container.loading { opacity: 0; } .aplus-v2 .premium-aplus-module-5 .table-slider { overflow-x: scroll; overflow-y: visible; width: 100%; } /* left column headers are absolute positioned */ .aplus-v2 .premium-aplus-module-5 td.attribute { position: absolute; width: 300px; top: auto; left: 0; } html[dir=\"rtl\"] .aplus-v2 .premium-aplus-module-5 td.attribute { right: 0px; left: auto; } .aplus-v2 .premium-aplus-module-5 td.active-item { position: absolute; top: auto; left: 300px; } html[dir=\"rtl\"] .premium-aplus-module-5 td.active-item { left: auto; right: 300px; } .aplus-v2 .premium-aplus-module-5 .attribute, .aplus-v2 .premium-aplus-module-5 .active-item, .aplus-v2 .premium-aplus-module-5 .description { font-size: 16px; font-family: arial; line-height: 2.5em; white-space:nowrap; color: #000; } .aplus-v2 .premium-aplus-module-5 .attribute, .aplus-v2 .premium-aplus-module-5 .active-item, .aplus-v2 .premium-aplus-module-5 .description { font-family: inherit; } .aplus-v2 .premium-aplus-module-5 table.a-bordered td.attribute, .aplus-v2 .premium-aplus-module-5 table.a-bordered td.active-item { background-color: #fff; z-index: 100; } .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:nth-child(even) td.attribute, .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:nth-child(even) td.active-item { background-color: #f0f2f2; } .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:nth-child(even):last-child td.attribute { border-bottom: #f0f2f2 solid 1px; } /* Override AUI - the odd rows have a white background while the even ones have gray background */ .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:nth-child(odd) { background-color: #fff; } .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:nth-child(even) { background-color: #f0f2f2; } .aplus-v2 .premium-aplus-module-5 table.a-bordered td.attribute .comparison-metric-name { outline-style: none; } .aplus-v2 .premium-aplus-module-5 table.a-bordered td.attribute .aplus-popover-trigger::after { content: \"?\"; display: inline-block; font-size: 12px; position: relative; bottom: 5px; } .aplus-v2 .premium-aplus-module-5 td.attribute.empty { height: 332px; } .aplus-v2 .premium-aplus-module-5 .header-img { padding-top: 10px; } /* Prevent table borders from overlapping */ .aplus-v2 .premium-aplus-module-5 table { border-collapse: separate; } /* Override default AUI .a-bordered table borders */ .aplus-v2 .premium-aplus-module-5 table.a-bordered td, .aplus-v2 .premium-aplus-module-5 table.a-bordered th, .aplus-v2 .premium-aplus-module-5 table.a-bordered { border-width: 0; border-color: #eaeaea; border-style: solid; } .aplus-v2 .premium-aplus-module-5 table.a-bordered td { border-right-width: 1px; } .aplus-v2 .premium-aplus-module-5 table.a-bordered td:last-child { border-right-width: 0; } html[dir=\"rtl\"] .aplus-v2 .premium-aplus-module-5 table.a-bordered td:last-child { border-right-width: 1px; } /* Active column should be surrounded in darker border. */ .aplus-v2 .premium-aplus-module-5 table.a-bordered td.active { border-color: #767676; border-right-width: 1px; border-left-width: 1px; } /* Top Active column needs border-top */ .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:first-child td.active { border-top-width: 1px; height: 332px; } /* Bottom column column needs border-bottom */ .aplus-v2 .premium-aplus-module-5 table.a-bordered tr:last-child td.active { border-bottom-width: 1px; } /* Size the top scroller */ .aplus-v2 .premium-aplus-module-5 .scroll-wrapper-top { width: 100%; height: 20px; overflow-x: scroll; overflow-y: visible; } .aplus-v2 .premium-aplus-module-5 .scroll-bar { height: 1px; } .aplus-v2 .premium-aplus-module-5 .add-to-cart { line-height: 1rem; font-weight: normal; } .aplus-v2 .premium-aplus-module-5 .review { font-size: 14px; } /** * Premium modules global styles */ .aplus-v2.desktop { max-width: 1464px; min-width: 800px; margin-left: auto; margin-right: auto; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; } /* Undo this for tech-specs because it breaks table layout */ .aplus-v2.desktop .premium-aplus .aplus-tech-spec-table { word-break: initial; } .aplus-v2 .premium-aplus, .aplus-v2 .premium-aplus .aplus-h1, .aplus-v2 .premium-aplus .aplus-h2, .aplus-v2 .premium-aplus .aplus-p1, .aplus-v2 .premium-aplus .aplus-p2, .aplus-v2 .premium-aplus .aplus-p3, .aplus-v2 .premium-aplus .aplus-accent1, .aplus-v2 .premium-aplus .aplus-accent2 { font-family: Arial, sans-serif; } .aplus-v2 .premium-aplus, .aplus-v2 .premium-aplus .aplus-h1, .aplus-v2 .premium-aplus .aplus-h2, .aplus-v2 .premium-aplus .aplus-p1, .aplus-v2 .premium-aplus .aplus-p2, .aplus-v2 .premium-aplus .aplus-p3, .aplus-v2 .premium-aplus .aplus-accent1, .aplus-v2 .premium-aplus .aplus-accent2 { font-family: inherit; } /* type */ .aplus-v2 .premium-aplus .aplus-h1 { font-size: 32px; line-height: 1.2em; font-weight: 500; } .aplus-v2 .premium-aplus .aplus-h2 { font-size: 26px; line-height: 1.25em; font-weight: 500; } .aplus-v2 .premium-aplus .aplus-h3 { font-size: 18px; line-height: 1.25em; font-weight: 500; } .aplus-v2 .premium-aplus .aplus-p1 { font-size: 20px; line-height: 1.3em; font-weight: 300; } .aplus-v2 .premium-aplus .aplus-p2 { font-size: 16px; line-height: 1.4em; font-weight: 300; } .aplus-v2 .premium-aplus .aplus-p3 { font-size: 14px; line-height: 1.4em; font-weight: 300; } .aplus-v2 .premium-aplus .aplus-accent1 { font-size: 16px; line-height: 1.4em; font-weight: 600; } .aplus-v2 .premium-aplus .aplus-accent2 { font-size: 14px; line-height: 1.4em; font-weight: 600; } /* spacing */ .aplus-v2 .aplus-container-1 { padding: 40px; } .aplus-v2 .aplus-container-1-2 { padding: 40px 80px; } .aplus-v2 .aplus-container-2 { padding: 80px; } .aplus-v2 .aplus-container-3 { padding: 40px 0; } /* Display */ .aplus-v2 .premium-aplus .aplus-display-table { display: table; } .aplus-v2 .premium-aplus .aplus-display-table-cell { display: table-cell; } .aplus-v2 .premium-aplus .aplus-display-inline-block { display: inline-block; } /* Aplus display table with min-width 1000px and fill remaining space inside parent */ .aplus-v2.desktop .premium-aplus .aplus-display-table-width { min-width: 1000px; width: 100% } /** * Padding and margin for element should be 10, 20, 40, or 80 px. Considering mini 10, small 20, medium 40, large 80. */ Package Includes: 12 #2HB Pencils 7\u201d, 1 Metal Pencil Sharpeners 2 hole, 1 White Large Erasers 7\u201d #2HB Soft Pencils with Top Quality Latex-Free Eraser to Provide Easy, Clean Corrections High Quality Large Block Erasers 2-Hole Metal Steel Blade Pencil Sharpener Ideal for Back to School, Home Schooling, Offices Brand Mr. Pen Writing Instrument Form Graphite Pencil Color White Ink Color White Age Range (Description) Adult"
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1079,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81BFoJTqwTL._AC_SL1500.jpg?v=1719438369"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44146894569628:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/81BFoJTqwTL._AC_SL1500.jpg?v=1719438369"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "MCF",
+    "School & Office"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8158538891420",
+   "title": "Handheld Metal Pencil Sharpener with 2 Holes, Pack of 12, Silver, Colored Pencil Sharpener, Pencil Sharpeners Handheld Pencil Sharpener Manual Pencil Sharpener, Hand Held Pencil Sharpener",
+   "description": {
+    "html": "This pack contains 12 handheld metal pencil sharpeners, each with dual holes to accommodate a variety of pencil sizes, from standard to jumbo. Made from durable metal, these sharpeners are designed to withstand regular use and maintain blade sharpness for clean, consistent points. With sharp blades and a clear design, these sharpeners deliver a fine point quickly and efficiently, reducing pencil waste. Small and lightweight, these pencil sharpeners can be easily carried in a pencil case, pocket, or bag, making them ideal for students and professionals alike. The silver finish adds a classic, elegant look to these practical tools, making them a stylish addition to any desk or workspace."
+   },
+   "url": "https://mrpen.com/products/mr-pen-handheld-metal-pencil-sharpener-with-2-holes-pack-of-12-silver",
+   "handle": "mr-pen-handheld-metal-pencil-sharpener-with-2-holes-pack-of-12-silver",
+   "price_range": {
+    "min": {
+     "amount": 779,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 779,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1079,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1079,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44076059000988",
+     "sku": "SPLP012M330VQ",
+     "title": "Default Title",
+     "description": {
+      "html": "This pack contains 12 handheld metal pencil sharpeners, each with dual holes to accommodate a variety of pencil sizes, from standard to jumbo. Made from durable metal, these sharpeners are designed to withstand regular use and maintain blade sharpness for clean, consistent points. With sharp blades and a clear design, these sharpeners deliver a fine point quickly and efficiently, reducing pencil waste. Small and lightweight, these pencil sharpeners can be easily carried in a pencil case, pocket, or bag, making them ideal for students and professionals alike. The silver finish adds a classic, elegant look to these practical tools, making them a stylish addition to any desk or workspace."
+     },
+     "price": {
+      "amount": 779,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1079,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71DydH2O6FL._AC_SL1500.jpg?v=1718621312"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44076059000988:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71DydH2O6FL._AC_SL1500.jpg?v=1718621312"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "MCF"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056729756",
+     "handle": "colored-pencils",
+     "title": "Colored Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8238118404252",
+   "title": "Rotary Mechanical Pencil Set, 6 pcs, Twist Design, HB Style",
+   "description": {
+    "html": "Upgrade your everyday writing tools with the Mr. Pen Rotary Mechanical Pencil Set\u2014a 6-pack designed for smooth lead advance, steady grip, and clean, precise lines. 6 high-quality pencils: Rotary-style automatic pencils for writing and drawing Twist-to-advance rotary mechanism: Advances the lead smoothly by rotating the end for quick, easy adjustments Comfortable multi-edged barrel: Unique barrel shape provides a secure, comfortable grip plus a stylish look Smooth, precise writing: Each pencil includes high-quality lead for consistent, clean lines Durable construction: Built for long-lasting use and everyday reliability Great for any workspace: Ideal for students, professionals, and artists Sleek, elegant design: Functional pencils that also look great in your stationery collection"
+   },
+   "url": "https://mrpen.com/products/mr-pen-rotary-mechanical-pencil-set-6-pcs-twist-design",
+   "handle": "mr-pen-rotary-mechanical-pencil-set-6-pcs-twist-design",
+   "price_range": {
+    "min": {
+     "amount": 399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 404,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 404,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44375553638556",
+     "sku": "QWSP001M339",
+     "title": "Default Title",
+     "description": {
+      "html": "Upgrade your everyday writing tools with the Mr. Pen Rotary Mechanical Pencil Set\u2014a 6-pack designed for smooth lead advance, steady grip, and clean, precise lines. 6 high-quality pencils: Rotary-style automatic pencils for writing and drawing Twist-to-advance rotary mechanism: Advances the lead smoothly by rotating the end for quick, easy adjustments Comfortable multi-edged barrel: Unique barrel shape provides a secure, comfortable grip plus a stylish look Smooth, precise writing: Each pencil includes high-quality lead for consistent, clean lines Durable construction: Built for long-lasting use and everyday reliability Great for any workspace: Ideal for students, professionals, and artists Sleek, elegant design: Functional pencils that also look great in your stationery collection"
+     },
+     "price": {
+      "amount": 399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 404,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1111.jpg?v=1724064589"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44375553638556:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1111.jpg?v=1724064589"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b",
+    "Mechanical Pencils"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056631452",
+     "handle": "mechanical-pencils",
+     "title": "Mechanical Pencils Collection",
+     "description": {
+      "html": "Explore Mr. Pen Mechanical Pencils, made for smooth writing, note-taking, and creative work. From single pencils to sets, find durable, comfortable options for students, teachers, and professionals. With a variety of lead sizes and styles, there\u2019s a perfect match for every writing need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312174051484",
+     "handle": "pens-pencils-mechanical-pencils",
+     "title": "Pens, Pencils, Mechanical Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNak00TVRFNE5EQTBNalV5TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

@@ -1,0 +1,2437 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://mrpen.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Mr. Pen",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "mrpen.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "62824808604"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "62824808604"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/9176404426908",
+   "title": "Mr. Pen- Lined or Dotted Spiral Journal Notebook, A5 (5.7\"x7.9\"), 160 Pages, Hardcover Spiral",
+   "description": {
+    "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+   },
+   "handle": "mr-pen-lined-spiral-journal-notebook-a5-5-7x7-9-160-pages-black-hardcover-spiral-bound-college-ruled-notebooks-with-pen-and-sticky-tabs-for-notes-journaling-school-daily-planning",
+   "price_range": {
+    "min": {
+     "amount": 599,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 574,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 674,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47264155205788",
+     "sku": "KYUP001M606NP",
+     "title": "Black / Lined",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 655,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      },
+      {
+       "name": "Page Type",
+       "label": "Lined"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71itcGukzPL._AC_SL1500.jpg?v=1784918709"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264155205788:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47264177815708",
+     "sku": "OPWA001M605NPVC",
+     "title": "Black / Dotted",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 601,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      },
+      {
+       "name": "Page Type",
+       "label": "Dotted"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71zBFpiqnZL._AC_SL1500.jpg?v=1784918988"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264177815708:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47264155238556",
+     "sku": "WFAP001M606NP",
+     "title": "Blush / Lined",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 674,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blush"
+      },
+      {
+       "name": "Page Type",
+       "label": "Lined"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71XrjYiMhnL.jpg?v=1784918709"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264155238556:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47264177848476",
+     "sku": "DIEQ001M605NP",
+     "title": "Blush / Dotted",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 574,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blush"
+      },
+      {
+       "name": "Page Type",
+       "label": "Dotted"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71rcCMps5SL._SL1500.jpg?v=1784918922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264177848476:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47264155271324",
+     "sku": "QUZF001M606NP",
+     "title": "Green / Lined",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 674,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      },
+      {
+       "name": "Page Type",
+       "label": "Lined"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71Mw-3b7BML.jpg?v=1784918709"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264155271324:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47264177881244",
+     "sku": "PJOI001M605NPVC",
+     "title": "Green / Dotted",
+     "description": {
+      "html": "Mr. Pen lined spiral journal notebook includes 160 lined or dotted pages, 1 pen, and divider sticky tabs, providing a complete set for note-taking, journaling, schoolwork, daily planning, and organized writing. The notebook is made with 100 GSM paper and a durable hardcover, offering a smooth writing surface and sturdy construction for everyday use at school, work, home, or on the go. Measuring 5.7\" x 7.9\", this A5 notebook provides a compact yet practical writing space for class notes, meeting notes, lists, reflections, and daily plans. The college-ruled lined pages help keep writing neat and structured, while the spiral binding allows the notebook to lay flat for a more comfortable writing experience. The included pen, divider sticky tabs, and inner storage pocket help keep essentials organized, making this notebook suitable for students, teachers, professionals, writers, and daily planners."
+     },
+     "price": {
+      "amount": 599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 614,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      },
+      {
+       "name": "Page Type",
+       "label": "Dotted"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61QKGe84PuL._AC_SL1500.jpg?v=1784919016"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47264177881244:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Blush"
+      },
+      {
+       "label": "Green"
+      }
+     ]
+    },
+    {
+     "name": "Page Type",
+     "values": [
+      {
+       "label": "Lined"
+      },
+      {
+       "label": "Dotted"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71itcGukzPL._AC_SL1500.jpg?v=1784918709"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312627495068",
+     "handle": "high-inventoory",
+     "title": "High Inventoory",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8441489916060",
+   "title": "ESV Spiral-Bound Journaling Bible, Poetry",
+   "description": {
+    "html": "The ESV Spiral-Bound Journaling Bible, Poetry was created from the ground up to facilitate in-depth note-taking. It includes the 5 Poetical Books of the Old Testament\u2014Job, Psalms, Proverbs, Ecclesiastes, and the Song of Solomon\u2014in an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Perfect for Journaling: Includes the 5 Poetical Books of the Old Testament with ample space for notes Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students"
+   },
+   "url": "https://mrpen.com/products/esv-spiral-bound-journaling-bible-poetry",
+   "handle": "esv-spiral-bound-journaling-bible-poetry",
+   "price_range": {
+    "min": {
+     "amount": 3499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45024199934108",
+     "sku": "SHOP-ESV1004",
+     "title": "Default Title",
+     "description": {
+      "html": "The ESV Spiral-Bound Journaling Bible, Poetry was created from the ground up to facilitate in-depth note-taking. It includes the 5 Poetical Books of the Old Testament\u2014Job, Psalms, Proverbs, Ecclesiastes, and the Song of Solomon\u2014in an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Perfect for Journaling: Includes the 5 Poetical Books of the Old Testament with ample space for notes Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/a143b8e5e83da0b21a9081bb6d9eb6ffaabb8875.png?v=1750098936"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45024199934108:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/a143b8e5e83da0b21a9081bb6d9eb6ffaabb8875.png?v=1750098936"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#esv",
+    "b2c-only",
+    "External"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/313522028700",
+     "handle": "esv-journaling-bibles",
+     "title": "ESV Journaling Bibles",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/313897255068",
+     "handle": "esv-spiral-journaling-bibles",
+     "title": "ESV Spiral Journaling Bibles",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/314382057628",
+     "handle": "esv-collection",
+     "title": "ESV Collection",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8441490243740",
+   "title": "ESV Spiral-Bound Journaling Bible, History",
+   "description": {
+    "html": "The ESV Spiral-Bound Journaling Bible, History was created from the ground up to facilitate in-depth note-taking. It includes the 12 Historical Books of the Old Testament\u2014Joshua, Judges, Ruth, 1\u20132 Samuel, 1\u20132 Kings, 1\u20132 Chronicles, Ezra, Nehemiah, and Esther\u2014in an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Perfect for Journaling: Includes the 12 Historical Books of the Old Testament with ample space for notes Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students"
+   },
+   "url": "https://mrpen.com/products/esv-spiral-bound-journaling-bible-history",
+   "handle": "esv-spiral-bound-journaling-bible-history",
+   "price_range": {
+    "min": {
+     "amount": 3499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45024200294556",
+     "sku": "SHOP-ESV1006",
+     "title": "Default Title",
+     "description": {
+      "html": "The ESV Spiral-Bound Journaling Bible, History was created from the ground up to facilitate in-depth note-taking. It includes the 12 Historical Books of the Old Testament\u2014Joshua, Judges, Ruth, 1\u20132 Samuel, 1\u20132 Kings, 1\u20132 Chronicles, Ezra, Nehemiah, and Esther\u2014in an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Perfect for Journaling: Includes the 12 Historical Books of the Old Testament with ample space for notes Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/ece1e4a69acf49606a1d93a5c35560ca25a431d1.png?v=1750098554"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45024200294556:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/ece1e4a69acf49606a1d93a5c35560ca25a431d1.png?v=1750098554"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#esv",
+    "b2c-only",
+    "External"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/313522028700",
+     "handle": "esv-journaling-bibles",
+     "title": "ESV Journaling Bibles",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/313897255068",
+     "handle": "esv-spiral-journaling-bibles",
+     "title": "ESV Spiral Journaling Bibles",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/314382057628",
+     "handle": "esv-collection",
+     "title": "ESV Collection",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8441490571420",
+   "title": "ESV Spiral-Bound Journaling Bible, New Testament",
+   "description": {
+    "html": "The ESV New Testament Spiral-Bound Journaling Bible was created from the ground up to facilitate in-depth note-taking. It features an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Now, as an all-new bundle, you will invest your time studying God\u2019s Word with tools specifically made for your Bible: One of our most popular Bible Pen and Highlighter sets and Transparent Sticky Notes with a Fineliner Pen so you can jot down your reflections and still read the words on the Bible pages beneath! Who is this bundle for, what exactly is inside, and why do I need it? Perfect for Journaling: Includes the complete New Testament with ample space for notes! Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students and Christians of all ages! Gift: Want to give a thoughtful gift to someone in your life? This bundle is a great gift for men and women, no matter the occasion! Kit Includes: 1x ESV Spiral-Bound Journaling Bible, New Testament Mr. Pen Aesthetic Highlighter and Color Pen Set (12 pack): 6 Bible Pens and 6 Bible Highlighters Bible Reading Tracker Sticker: Color in as you read each book of the Bible. Transparent Sticky Note Set: 4 pads of transparent sticky notes, featuring a total of 200 sheets and a quick-dry fine-tip pen"
+   },
+   "url": "https://mrpen.com/products/esv-spiral-bound-journaling-bible-new-testament",
+   "handle": "esv-spiral-bound-journaling-bible-new-testament",
+   "price_range": {
+    "min": {
+     "amount": 3499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45298363105436",
+     "sku": "SHOP-ESV1022-BUNDLE",
+     "title": "Kit / Floral",
+     "description": {
+      "html": "The ESV New Testament Spiral-Bound Journaling Bible was created from the ground up to facilitate in-depth note-taking. It features an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Now, as an all-new bundle, you will invest your time studying God\u2019s Word with tools specifically made for your Bible: One of our most popular Bible Pen and Highlighter sets and Transparent Sticky Notes with a Fineliner Pen so you can jot down your reflections and still read the words on the Bible pages beneath! Who is this bundle for, what exactly is inside, and why do I need it? Perfect for Journaling: Includes the complete New Testament with ample space for notes! Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students and Christians of all ages! Gift: Want to give a thoughtful gift to someone in your life? This bundle is a great gift for men and women, no matter the occasion! Kit Includes: 1x ESV Spiral-Bound Journaling Bible, New Testament Mr. Pen Aesthetic Highlighter and Color Pen Set (12 pack): 6 Bible Pens and 6 Bible Highlighters Bible Reading Tracker Sticker: Color in as you read each book of the Bible. Transparent Sticky Note Set: 4 pads of transparent sticky notes, featuring a total of 200 sheets and a quick-dry fine-tip pen"
+     },
+     "price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Kit"
+      },
+      {
+       "name": "Style",
+       "label": "Floral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/ESV_Spiral_Journaling_Bibles_Bundle_1_2.png?v=1757704753"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45298363105436:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45178148815004",
+     "sku": "SHOP-ESV1008-Bundle",
+     "title": "Kit / Classic",
+     "description": {
+      "html": "The ESV New Testament Spiral-Bound Journaling Bible was created from the ground up to facilitate in-depth note-taking. It features an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Now, as an all-new bundle, you will invest your time studying God\u2019s Word with tools specifically made for your Bible: One of our most popular Bible Pen and Highlighter sets and Transparent Sticky Notes with a Fineliner Pen so you can jot down your reflections and still read the words on the Bible pages beneath! Who is this bundle for, what exactly is inside, and why do I need it? Perfect for Journaling: Includes the complete New Testament with ample space for notes! Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students and Christians of all ages! Gift: Want to give a thoughtful gift to someone in your life? This bundle is a great gift for men and women, no matter the occasion! Kit Includes: 1x ESV Spiral-Bound Journaling Bible, New Testament Mr. Pen Aesthetic Highlighter and Color Pen Set (12 pack): 6 Bible Pens and 6 Bible Highlighters Bible Reading Tracker Sticker: Color in as you read each book of the Bible. Transparent Sticky Note Set: 4 pads of transparent sticky notes, featuring a total of 200 sheets and a quick-dry fine-tip pen"
+     },
+     "price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Kit"
+      },
+      {
+       "name": "Style",
+       "label": "Classic"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/ESV_Spiral_Journaling_Bibles_Bundle_1.png?v=1757704753"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45178148815004:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45298363138204",
+     "sku": "SHOP-ESV1022",
+     "title": "Book Only / Floral",
+     "description": {
+      "html": "The ESV New Testament Spiral-Bound Journaling Bible was created from the ground up to facilitate in-depth note-taking. It features an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Now, as an all-new bundle, you will invest your time studying God\u2019s Word with tools specifically made for your Bible: One of our most popular Bible Pen and Highlighter sets and Transparent Sticky Notes with a Fineliner Pen so you can jot down your reflections and still read the words on the Bible pages beneath! Who is this bundle for, what exactly is inside, and why do I need it? Perfect for Journaling: Includes the complete New Testament with ample space for notes! Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students and Christians of all ages! Gift: Want to give a thoughtful gift to someone in your life? This bundle is a great gift for men and women, no matter the occasion! Kit Includes: 1x ESV Spiral-Bound Journaling Bible, New Testament Mr. Pen Aesthetic Highlighter and Color Pen Set (12 pack): 6 Bible Pens and 6 Bible Highlighters Bible Reading Tracker Sticker: Color in as you read each book of the Bible. Transparent Sticky Note Set: 4 pads of transparent sticky notes, featuring a total of 200 sheets and a quick-dry fine-tip pen"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Book Only"
+      },
+      {
+       "name": "Style",
+       "label": "Floral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/7ad3c49aaac8e6052a0ed97c779744d2aa51955b.png?v=1761077836"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45298363138204:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45178148847772",
+     "sku": "SHOP-ESV1008",
+     "title": "Book Only / Classic",
+     "description": {
+      "html": "The ESV New Testament Spiral-Bound Journaling Bible was created from the ground up to facilitate in-depth note-taking. It features an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Now, as an all-new bundle, you will invest your time studying God\u2019s Word with tools specifically made for your Bible: One of our most popular Bible Pen and Highlighter sets and Transparent Sticky Notes with a Fineliner Pen so you can jot down your reflections and still read the words on the Bible pages beneath! Who is this bundle for, what exactly is inside, and why do I need it? Perfect for Journaling: Includes the complete New Testament with ample space for notes! Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students and Christians of all ages! Gift: Want to give a thoughtful gift to someone in your life? This bundle is a great gift for men and women, no matter the occasion! Kit Includes: 1x ESV Spiral-Bound Journaling Bible, New Testament Mr. Pen Aesthetic Highlighter and Color Pen Set (12 pack): 6 Bible Pens and 6 Bible Highlighters Bible Reading Tracker Sticker: Color in as you read each book of the Bible. Transparent Sticky Note Set: 4 pads of transparent sticky notes, featuring a total of 200 sheets and a quick-dry fine-tip pen"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Book Only"
+      },
+      {
+       "name": "Style",
+       "label": "Classic"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/00a711f037d31127fd5581527e45e64290e2c019.png?v=1757704753"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45178148847772:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Type",
+     "values": [
+      {
+       "label": "Kit"
+      },
+      {
+       "label": "Book Only"
+      }
+     ]
+    },
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Floral"
+      },
+      {
+       "label": "Classic"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/ESV_Spiral_Journaling_Bibles_Bundle_1_2.png?v=1757704753"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/rc-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#esv",
+    "b2c-only",
+    "External"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/313522028700",
+     "handle": "esv-journaling-bibles",
+     "title": "ESV Journaling Bibles",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/313897255068",
+     "handle": "esv-spiral-journaling-bibles",
+     "title": "ESV Spiral Journaling Bibles",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/314112376988",
+     "handle": "new-arrivals",
+     "title": "New Arrivals",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8634051100828",
+   "title": "Mr. Pen- Abide Bible Study Journal \u2013 A5 Hardcover Journal with 136 Pages, 120gsm Paper, Gold Metal Spiral, Christian Gift for Women, SOAP Bible Study Method",
+   "description": {
+    "html": "Abide is based off John 15 where Jesus tells us that if we abide in Him and His word abides in us, we will bear much fruit. Studying God\u2019s Word bears much fruit in our lives and this journal walks us through how to do that. \"The goal of this journal isn\u2019t to get through the Bible, it\u2019s to get the Bible through us. This journal helps us slow down and notice things we sometimes miss when just reading the Bible, so we can catch what God is wanting to speak.\" - Kaci Nicole, Designer of the Abide Journal. Guided by SOAP Method: Scripture, Observation, Application, and Prayer, this simple, proven approach helps deepen your understanding of the Bible. Helps You Engage Deeply with Scripture: The SOAP method breaks down Bible study into focused steps, making it easier to understand, reflect on, and live out God\u2019s Word in a personal and practical way. Elegant & Durable: Linen hardcover with gold embossed lettering and a gold metal spiral for a clean, modern look that lays flat, with 136 pages of thick A5 sized, 120gsm paper to minimize bleed-through and support daily use. Created in collaboration with Kaci Nicole: this journal makes Bible study approachable and doable. With simple instructions and room to reflect, it's a tool that empowers Christians of all ages to dig into Scripture systematically. Perfect Christian Gift: A thoughtful gift for women seeking to grow in faith, ideal for birthdays, holidays, or encouragement."
+   },
+   "url": "https://mrpen.com/products/mr-pen-abide-bible-study-journal-by-kaci-nicole-soap-method",
+   "handle": "mr-pen-abide-bible-study-journal-by-kaci-nicole-soap-method",
+   "price_range": {
+    "min": {
+     "amount": 1799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45565318332572",
+     "sku": "MNZA001M529NPINF",
+     "title": "Default Title",
+     "description": {
+      "html": "Abide is based off John 15 where Jesus tells us that if we abide in Him and His word abides in us, we will bear much fruit. Studying God\u2019s Word bears much fruit in our lives and this journal walks us through how to do that. \"The goal of this journal isn\u2019t to get through the Bible, it\u2019s to get the Bible through us. This journal helps us slow down and notice things we sometimes miss when just reading the Bible, so we can catch what God is wanting to speak.\" - Kaci Nicole, Designer of the Abide Journal. Guided by SOAP Method: Scripture, Observation, Application, and Prayer, this simple, proven approach helps deepen your understanding of the Bible. Helps You Engage Deeply with Scripture: The SOAP method breaks down Bible study into focused steps, making it easier to understand, reflect on, and live out God\u2019s Word in a personal and practical way. Elegant & Durable: Linen hardcover with gold embossed lettering and a gold metal spiral for a clean, modern look that lays flat, with 136 pages of thick A5 sized, 120gsm paper to minimize bleed-through and support daily use. Created in collaboration with Kaci Nicole: this journal makes Bible study approachable and doable. With simple instructions and room to reflect, it's a tool that empowers Christians of all ages to dig into Scripture systematically. Perfect Christian Gift: A thoughtful gift for women seeking to grow in faith, ideal for birthdays, holidays, or encouragement."
+     },
+     "price": {
+      "amount": 1799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MNZA.png?v=1784718925"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45565318332572:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MNZA.png?v=1784718925"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412418204",
+     "handle": "journals",
+     "title": "Journals",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/321360724124",
+     "handle": "gift-ideas-for-men",
+     "title": "Gift Ideas for Men",
+     "description": {
+      "html": "Explore Mr. Pen gift ideas for men\u2014practical, faith-inspired essentials to support his work, study, and everyday life."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/321362329756",
+     "handle": "gifts-ideas-for-grandparents",
+     "title": "Gifts Ideas for Grandparents",
+     "description": {
+      "html": "Explore Mr. Pen gift ideas for grandparents\u2014thoughtful, faith-filled essentials to bless their days with comfort and joy."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8441490374812",
+   "title": "ESV Spiral-Bound Journaling Bible, Prophets",
+   "description": {
+    "html": "The ESV Spiral-Bound Journaling Bible, Prophets was created from the ground up to facilitate in-depth note-taking. It includes the 17 Prophetic Books of the Old Testament\u2014from Isaiah through Malachi\u2014in an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Perfect for Journaling: Includes the 17 Prophetic Books of the Old Testament\u2014Isaiah, Jeremiah, Lamentations, Ezekiel, Daniel, Hosea, Joel, Amos, Obadiah, Jonah, Micah, Nahum, Habakkuk, Zephaniah, Haggai, Zechariah, and Malachi\u2014with ample space for notes Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students"
+   },
+   "url": "https://mrpen.com/products/esv-spiral-bound-journaling-bible-prophets",
+   "handle": "esv-spiral-bound-journaling-bible-prophets",
+   "price_range": {
+    "min": {
+     "amount": 3499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45024200425628",
+     "sku": "SHOP-ESV1007",
+     "title": "Default Title",
+     "description": {
+      "html": "The ESV Spiral-Bound Journaling Bible, Prophets was created from the ground up to facilitate in-depth note-taking. It includes the 17 Prophetic Books of the Old Testament\u2014from Isaiah through Malachi\u2014in an inviting, easy-to-read layout with generous space for notes. The spiral-bound format lies flat for comfortable reading and writing. Designed to encourage deeper interaction with Scripture, this journaling edition is ideal for recording prayers and reflections. Perfect for Journaling: Includes the 17 Prophetic Books of the Old Testament\u2014Isaiah, Jeremiah, Lamentations, Ezekiel, Daniel, Hosea, Joel, Amos, Obadiah, Jonah, Micah, Nahum, Habakkuk, Zephaniah, Haggai, Zechariah, and Malachi\u2014with ample space for notes Convenient Layout: Pages lie flat to make reading and writing more comfortable A Great Gift for Students"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/bb9db2f1cf9a1a62eba94328dccb921caa92368b.png?v=1750095688"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45024200425628:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/bb9db2f1cf9a1a62eba94328dccb921caa92368b.png?v=1750095688"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/rc-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#esv",
+    "b2c-only",
+    "External"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/313522028700",
+     "handle": "esv-journaling-bibles",
+     "title": "ESV Journaling Bibles",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/313897255068",
+     "handle": "esv-spiral-journaling-bibles",
+     "title": "ESV Spiral Journaling Bibles",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/314382057628",
+     "handle": "esv-collection",
+     "title": "ESV Collection",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9395795034268",
+   "title": "Mr. Pen- Yes and Amen Christian Prayer Journal, 52-Week Bible Study Notebook",
+   "description": {
+    "html": "Mr. Pen weekly prayer journal is a thoughtfully designed 52-week journal that provides dedicated space each week for prayer, reflection, Bible study, and spiritual growth. The journal features a premium hardcover, durable twin-wire spiral binding, and an elastic closure to help keep pages securely together. Measuring 5.7 x 8.3 inches, this prayer journal offers a convenient portable size with plenty of writing space for notes, prayers, and personal reflections. Each section is organized with weekly verses, prayers, sermon notes, study notes, reflections and thoughts, gratitude prompts, and guided spiritual reflection. The structured layout includes welcome and contents pages along with dedicated writing sections, making it easy to keep prayers, Scripture study, and faith-based notes organized throughout the year."
+   },
+   "url": "https://mrpen.com/products/mr-pen-christian-prayer-journal-for-women-52-week-bible-study-notebook",
+   "handle": "mr-pen-christian-prayer-journal-for-women-52-week-bible-study-notebook",
+   "price_range": {
+    "min": {
+     "amount": 999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1349,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1349,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/48317861953692",
+     "sku": "RPNM001M630NPVDINF",
+     "title": "Women",
+     "description": {
+      "html": "Mr. Pen weekly prayer journal is a thoughtfully designed 52-week journal that provides dedicated space each week for prayer, reflection, Bible study, and spiritual growth. The journal features a premium hardcover, durable twin-wire spiral binding, and an elastic closure to help keep pages securely together. Measuring 5.7 x 8.3 inches, this prayer journal offers a convenient portable size with plenty of writing space for notes, prayers, and personal reflections. Each section is organized with weekly verses, prayers, sermon notes, study notes, reflections and thoughts, gratitude prompts, and guided spiritual reflection. The structured layout includes welcome and contents pages along with dedicated writing sections, making it easy to keep prayers, Scripture study, and faith-based notes organized throughout the year."
+     },
+     "price": {
+      "amount": 999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1349,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Women"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71RIbpLtsrL.jpg?v=1794340477"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48317861953692:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48318088446108",
+     "sku": "KMRG001M630NPINF",
+     "title": "Men",
+     "description": {
+      "html": "Mr. Pen weekly prayer journal is a thoughtfully designed 52-week journal that provides dedicated space each week for prayer, reflection, Bible study, and spiritual growth. The journal features a premium hardcover, durable twin-wire spiral binding, and an elastic closure to help keep pages securely together. Measuring 5.7 x 8.3 inches, this prayer journal offers a convenient portable size with plenty of writing space for notes, prayers, and personal reflections. Each section is organized with weekly verses, prayers, sermon notes, study notes, reflections and thoughts, gratitude prompts, and guided spiritual reflection. The structured layout includes welcome and contents pages along with dedicated writing sections, making it easy to keep prayers, Scripture study, and faith-based notes organized throughout the year."
+     },
+     "price": {
+      "amount": 999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1349,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Men"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71qvGM4EWPL.jpg?v=1794340622"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48318088446108:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Women"
+      },
+      {
+       "label": "Men"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71RIbpLtsrL.jpg?v=1794340477"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/336730882204",
+     "handle": "2026-gift-guide-staff-picks",
+     "title": "2026 Gift Guide Staff Picks",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8960896041116",
+   "title": "Selah by Mr. Pen - Church Notes Journal with Mini Bible Journaling Kit",
+   "description": {
+    "html": "The Selah Mini Bible Journaling Kit includes everything you need for meaningful and organized study: a Church Notes journal, bookmark, 75 boho Bible tabs, 2 fine point cross pens, 2 no bleed gel highlighters, 2 chisel tip highlighters, and 2 packs of prayer request sticky notes. Guided Sermon Journal with Gold Foil Cover -- Compact 5.1\" x 7.8\" paperback with 104 pages and structured prompts on every spread (Scripture, Key Points, What Did I Learn About God?, How Can I Apply This to My Life?) to turn passive note-taking into intentional spiritual growth, perfect for church, small groups, Bible study, or travel Make Bible study easier and more uplifting with 75 beautifully designed tabs, including 39 Old Testament books, 27 New Testament books, and 9 blank tabs across five sheets. Each tab features a special encouraging quote to inspire your spiritual journey. Each pen features a precise 0.5mm fine point tip for clean, detailed writing. The fast-drying gel ink prevents smudging, making it ideal for both left- and right-handed users. Designed with a cross clip, they easily attach to notebooks, planners, or pockets for convenient use. The gel highlighters are specially designed for Bible pages to prevent bleed-through while providing smooth, vibrant color. The chisel tip highlighters feature quick-drying, smear-resistant ink that resists fading, keeping your notes clean and clear over time."
+   },
+   "url": "https://mrpen.com/products/selah-by-mr-pen-mini-bible-journaling-kit-with-church-notes-journal-copy",
+   "handle": "selah-by-mr-pen-mini-bible-journaling-kit-with-church-notes-journal-copy",
+   "price_range": {
+    "min": {
+     "amount": 499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 674,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46593789788316",
+     "sku": "FRZN001M531NPINF",
+     "title": "Mini Kit / Individual",
+     "description": {
+      "html": "The Selah Mini Bible Journaling Kit includes everything you need for meaningful and organized study: a Church Notes journal, bookmark, 75 boho Bible tabs, 2 fine point cross pens, 2 no bleed gel highlighters, 2 chisel tip highlighters, and 2 packs of prayer request sticky notes. Guided Sermon Journal with Gold Foil Cover -- Compact 5.1\" x 7.8\" paperback with 104 pages and structured prompts on every spread (Scripture, Key Points, What Did I Learn About God?, How Can I Apply This to My Life?) to turn passive note-taking into intentional spiritual growth, perfect for church, small groups, Bible study, or travel Make Bible study easier and more uplifting with 75 beautifully designed tabs, including 39 Old Testament books, 27 New Testament books, and 9 blank tabs across five sheets. Each tab features a special encouraging quote to inspire your spiritual journey. Each pen features a precise 0.5mm fine point tip for clean, detailed writing. The fast-drying gel ink prevents smudging, making it ideal for both left- and right-handed users. Designed with a cross clip, they easily attach to notebooks, planners, or pockets for convenient use. The gel highlighters are specially designed for Bible pages to prevent bleed-through while providing smooth, vibrant color. The chisel tip highlighters feature quick-drying, smear-resistant ink that resists fading, keeping your notes clean and clear over time."
+     },
+     "price": {
+      "amount": 1199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1349,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Mini Kit"
+      },
+      {
+       "name": "Quantity",
+       "label": "Individual"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-450.jpg?v=1794253373"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/46593789788316:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46593789821084",
+     "sku": "FRZN001M531NPINF-4",
+     "title": "Mini Kit / Small Group - 4 Pack",
+     "description": {
+      "html": "The Selah Mini Bible Journaling Kit includes everything you need for meaningful and organized study: a Church Notes journal, bookmark, 75 boho Bible tabs, 2 fine point cross pens, 2 no bleed gel highlighters, 2 chisel tip highlighters, and 2 packs of prayer request sticky notes. Guided Sermon Journal with Gold Foil Cover -- Compact 5.1\" x 7.8\" paperback with 104 pages and structured prompts on every spread (Scripture, Key Points, What Did I Learn About God?, How Can I Apply This to My Life?) to turn passive note-taking into intentional spiritual growth, perfect for church, small groups, Bible study, or travel Make Bible study easier and more uplifting with 75 beautifully designed tabs, including 39 Old Testament books, 27 New Testament books, and 9 blank tabs across five sheets. Each tab features a special encouraging quote to inspire your spiritual journey. Each pen features a precise 0.5mm fine point tip for clean, detailed writing. The fast-drying gel ink prevents smudging, making it ideal for both left- and right-handed users. Designed with a cross clip, they easily attach to notebooks, planners, or pockets for convenient use. The gel highlighters are specially designed for Bible pages to prevent bleed-through while providing smooth, vibrant color. The chisel tip highlighters feature quick-drying, smear-resistant ink that resists fading, keeping your notes clean and clear over time."
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Mini Kit"
+      },
+      {
+       "name": "Quantity",
+       "label": "Small Group - 4 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-450.jpg?v=1794253373"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/46593789821084:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46593789853852",
+     "sku": "HXOL001M536NPINF",
+     "title": "Journal Only / Individual",
+     "description": {
+      "html": "The Selah Mini Bible Journaling Kit includes everything you need for meaningful and organized study: a Church Notes journal, bookmark, 75 boho Bible tabs, 2 fine point cross pens, 2 no bleed gel highlighters, 2 chisel tip highlighters, and 2 packs of prayer request sticky notes. Guided Sermon Journal with Gold Foil Cover -- Compact 5.1\" x 7.8\" paperback with 104 pages and structured prompts on every spread (Scripture, Key Points, What Did I Learn About God?, How Can I Apply This to My Life?) to turn passive note-taking into intentional spiritual growth, perfect for church, small groups, Bible study, or travel Make Bible study easier and more uplifting with 75 beautifully designed tabs, including 39 Old Testament books, 27 New Testament books, and 9 blank tabs across five sheets. Each tab features a special encouraging quote to inspire your spiritual journey. Each pen features a precise 0.5mm fine point tip for clean, detailed writing. The fast-drying gel ink prevents smudging, making it ideal for both left- and right-handed users. Designed with a cross clip, they easily attach to notebooks, planners, or pockets for convenient use. The gel highlighters are specially designed for Bible pages to prevent bleed-through while providing smooth, vibrant color. The chisel tip highlighters feature quick-drying, smear-resistant ink that resists fading, keeping your notes clean and clear over time."
+     },
+     "price": {
+      "amount": 499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 674,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Journal Only"
+      },
+      {
+       "name": "Quantity",
+       "label": "Individual"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/hf_20260317_135521_2c040783-09b5-4dc1-ab5e-cc87712a4180.jpg?v=1773755813"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/46593789853852:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46593789886620",
+     "sku": "HXOL001M536NPINF-4",
+     "title": "Journal Only / Small Group - 4 Pack",
+     "description": {
+      "html": "The Selah Mini Bible Journaling Kit includes everything you need for meaningful and organized study: a Church Notes journal, bookmark, 75 boho Bible tabs, 2 fine point cross pens, 2 no bleed gel highlighters, 2 chisel tip highlighters, and 2 packs of prayer request sticky notes. Guided Sermon Journal with Gold Foil Cover -- Compact 5.1\" x 7.8\" paperback with 104 pages and structured prompts on every spread (Scripture, Key Points, What Did I Learn About God?, How Can I Apply This to My Life?) to turn passive note-taking into intentional spiritual growth, perfect for church, small groups, Bible study, or travel Make Bible study easier and more uplifting with 75 beautifully designed tabs, including 39 Old Testament books, 27 New Testament books, and 9 blank tabs across five sheets. Each tab features a special encouraging quote to inspire your spiritual journey. Each pen features a precise 0.5mm fine point tip for clean, detailed writing. The fast-drying gel ink prevents smudging, making it ideal for both left- and right-handed users. Designed with a cross clip, they easily attach to notebooks, planners, or pockets for convenient use. The gel highlighters are specially designed for Bible pages to prevent bleed-through while providing smooth, vibrant color. The chisel tip highlighters feature quick-drying, smear-resistant ink that resists fading, keeping your notes clean and clear over time."
+     },
+     "price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Journal Only"
+      },
+      {
+       "name": "Quantity",
+       "label": "Small Group - 4 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/2_e086e916-aacc-473e-8c67-28f7d0be612a.png?v=1774636452"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/46593789886620:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Type",
+     "values": [
+      {
+       "label": "Mini Kit"
+      },
+      {
+       "label": "Journal Only"
+      }
+     ]
+    },
+    {
+     "name": "Quantity",
+     "values": [
+      {
+       "label": "Individual"
+      },
+      {
+       "label": "Small Group - 4 Pack"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-450.jpg?v=1794253373"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/rc-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2c-only"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/307319341212",
+     "handle": "holiday-gift-guide",
+     "title": "Holiday Gift Guide",
+     "description": {
+      "html": "All the meaningful gifts and stocking stuffers you need in one place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312627495068",
+     "handle": "high-inventoory",
+     "title": "High Inventoory",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942687326364",
+   "title": "Christian Planner, 365 Pages, Daily Bible & Prayer Journal with Floral Cover",
+   "description": {
+    "html": "Mr. Pen Christian Planner Includes 365 dated pages for daily prayer, scripture, and reflection. Cover features a floral wreath design with \u201cGive us each day our daily bread\u201d \u2013 Matthew 6:11 on a navy-blue background. Hardcover with gold double-wire spiral binding allows the journal to open flat. Made with premium thick paper to minimize bleed-through from most pens. Compact size: 8.5 x 6.5 inches, ideal for daily use and portability. Encourages prayer, devotional study, and spiritual growth throughout the year. Perfect for Bible study, journaling, and personal reflection. Makes a thoughtful gift for Christians, Bible lovers, and faith-filled friends. Durable binding and sturdy cover designed for long-term daily use. Suitable for teens, adults, students, and church groups."
+   },
+   "url": "https://mrpen.com/products/mr-pen-christian-planner-365-pages",
+   "handle": "mr-pen-christian-planner-365-pages",
+   "price_range": {
+    "min": {
+     "amount": 1299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1299,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1754,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1754,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43364406460572",
+     "sku": "XJ365",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen Christian Planner Includes 365 dated pages for daily prayer, scripture, and reflection. Cover features a floral wreath design with \u201cGive us each day our daily bread\u201d \u2013 Matthew 6:11 on a navy-blue background. Hardcover with gold double-wire spiral binding allows the journal to open flat. Made with premium thick paper to minimize bleed-through from most pens. Compact size: 8.5 x 6.5 inches, ideal for daily use and portability. Encourages prayer, devotional study, and spiritual growth throughout the year. Perfect for Bible study, journaling, and personal reflection. Makes a thoughtful gift for Christians, Bible lovers, and faith-filled friends. Durable binding and sturdy cover designed for long-term daily use. Suitable for teens, adults, students, and church groups."
+     },
+     "price": {
+      "amount": 1299,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1754,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-2-3.jpg?v=1750096888"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43364406460572:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-2-3.jpg?v=1750096888",
+     "alt_text": "1-2"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b",
+    "Bible",
+    "Journal",
+    "Planner"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304123609244",
+     "handle": "christian-planner",
+     "title": "Christian Planner",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304123674780",
+     "handle": "prayer-cards",
+     "title": "Prayer Cards",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312174477468",
+     "handle": "christian-journals-and-planners",
+     "title": "Christian Journals and Planners",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9176304976028",
+   "title": "Selah Floral Notetaking Bible with Name Plate",
+   "description": {
+    "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+   },
+   "url": "https://mrpen.com/products/selah-floral-notetaking-bible-with-name-plate",
+   "handle": "selah-floral-notetaking-bible-with-name-plate",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47263966232732",
+     "sku": "SHOP-ESV1009-SEL-BLU-ANT",
+     "title": "ESV (Hardcover) / Dusty Blue / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Dusty Blue"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-SEL-BLU-ANT.png?v=1784913454"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263966232732:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263966265500",
+     "sku": "SHOP-ESV1009-SEL-BLU-MDN",
+     "title": "ESV (Hardcover) / Dusty Blue / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Dusty Blue"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-SEL-BLU-MDN.png?v=1784913471"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263966265500:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263966298268",
+     "sku": "SHOP-ESV1009-SEL-RED-ANT",
+     "title": "ESV (Hardcover) / Blush / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Blush"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-SEL-RED-ANT.png?v=1784913569"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263966298268:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263966331036",
+     "sku": "SHOP-ESV1009-SEL-RED-MDN",
+     "title": "ESV (Hardcover) / Blush / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Blush"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-SEL-RED-MDN.png?v=1784913578"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263966331036:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263966363804",
+     "sku": "SHOP-ESV1009-SEL-GLD-ANT",
+     "title": "ESV (Hardcover) / Marigold / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Marigold"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-SEL-GLD-ANT.png?v=1784913591"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263966363804:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263966396572",
+     "sku": "SHOP-ESV1009-SEL-GLD-MDN",
+     "title": "ESV (Hardcover) / Marigold / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Marigold"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-SEL-GLD-MDN_79aca5d9-5da1-4b8a-93de-a73fecfb7339.png?v=1784913613"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263966396572:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263966429340",
+     "sku": "SHOP-ESV1009-SEL-CRM-ANT",
+     "title": "ESV (Hardcover) / Cream / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Cream"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-SEL-CRM-ANT.png?v=1784913623"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263966429340:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263966462108",
+     "sku": "SHOP-ESV1009-SEL-CRM-MDN",
+     "title": "ESV (Hardcover) / Cream / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Cream"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-SEL-CRM-MDN.png?v=1784913637"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263966462108:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263966494876",
+     "sku": "SHOP-ESV1009-SEL-GRN-ANT",
+     "title": "ESV (Hardcover) / Green / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Green"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-SEL-GRN-ANT.png?v=1784913651"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263966494876:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263966527644",
+     "sku": "SHOP-ESV1009-SEL-GRN-MDN",
+     "title": "ESV (Hardcover) / Green / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Green"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-SEL-GRN-MDN.png?v=1784913664"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263966527644:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Translation",
+     "values": [
+      {
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "label": "NLT (Softcover)"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Dusty Blue"
+      },
+      {
+       "label": "Blush"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Green"
+      }
+     ]
+    },
+    {
+     "name": "Crest",
+     "values": [
+      {
+       "label": "Antique Crest"
+      },
+      {
+       "label": "Modern Crest"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-175_2.jpg?v=1794252454"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/me-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/314501955740",
+     "handle": "customizable-products",
+     "title": "Customizable Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/330670276764",
+     "handle": "custom-bibles",
+     "title": "Custom Bibles",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzVNVGMyTXpBME9UYzJNREk0TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

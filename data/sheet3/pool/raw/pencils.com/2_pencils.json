@@ -1,0 +1,1871 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://pencils.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Pencils.com",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "pencils.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "17254744164"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "17254744164"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/2723234545764",
+   "title": "Golden Bear USA Blue #2 Pencils (12 Pack)",
+   "description": {
+    "html": "Description Golden Bear USA #2 pencils are made in the USA with globally and domestically sourced components, including, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience and bear (pardon the pun) the PMA seal, making them safe and certified non-toxic. Available in orange and blue finishes, Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.12 pencils per package. Details Item #: 104116 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Blue Country of Origin: Made in the USA with globally and domestically sourced components"
+   },
+   "url": "https://pencils.com/products/golden-bear-usa-blue-2-pencils-12-pack",
+   "handle": "golden-bear-usa-blue-2-pencils-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 495,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/23947506090084",
+     "sku": "104116",
+     "title": "Default Title",
+     "description": {
+      "html": "Description Golden Bear USA #2 pencils are made in the USA with globally and domestically sourced components, including, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience and bear (pardon the pun) the PMA seal, making them safe and certified non-toxic. Available in orange and blue finishes, Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.12 pencils per package. Details Item #: 104116 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Blue Country of Origin: Made in the USA with globally and domestically sourced components"
+     },
+     "price": {
+      "amount": 495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Golden-Bear-Blue.jpg?v=1552933030"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/23947506090084:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Golden-Bear-Blue.jpg?v=1552933030",
+     "alt_text": "Golden Bear Blue #2 Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Featured Pencils",
+    "Gift for Students",
+    "Gifts for Students",
+    "Great for Teachers",
+    "Incense-Cedar",
+    "Made in the USA",
+    "No. 2 Pencils"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118104064100",
+     "handle": "test-scoring-pencils",
+     "title": "Test Scoring Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118737469540",
+     "handle": "recommended-graphite-pencils",
+     "title": "Recommended Graphite Pencils",
+     "description": {
+      "html": "Shop our favorite wood-cased, graphite pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158940987452",
+     "handle": "stay-home-stay-creative",
+     "title": "Stay home, stay creative",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/3223421943908",
+   "title": "Golden Bear Orange #2 Pencils (12 Pack)",
+   "description": {
+    "html": "Description These Golden Bear #2 pencils are made in Thailand out of Genuine, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience. Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.12 #2 pencils per package. Details Item #: 104284 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Orange Country of Origin: Thailand"
+   },
+   "url": "https://pencils.com/products/golden-bear-orange-2-pencils-12-pack-made-in-thailand",
+   "handle": "golden-bear-orange-2-pencils-12-pack-made-in-thailand",
+   "price_range": {
+    "min": {
+     "amount": 395,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 395,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/26289046552676",
+     "sku": "104284",
+     "title": "Default Title",
+     "description": {
+      "html": "Description These Golden Bear #2 pencils are made in Thailand out of Genuine, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience. Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.12 #2 pencils per package. Details Item #: 104284 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Orange Country of Origin: Thailand"
+     },
+     "price": {
+      "amount": 395,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/GoldenBear-Thailand-1.jpg?v=1554163215"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/26289046552676:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/GoldenBear-Thailand-1.jpg?v=1554163215",
+     "alt_text": "Golden Bear Orange #2 Pencils (12 Pack)"
+    }
+   ],
+   "tags": [
+    "50%",
+    "Back-to-School",
+    "Gifts for Students",
+    "Gifts for Writers",
+    "Good for Kids",
+    "Great for Teachers",
+    "Incense-Cedar",
+    "No. 2 Pencils"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118104064100",
+     "handle": "test-scoring-pencils",
+     "title": "Test Scoring Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158940987452",
+     "handle": "stay-home-stay-creative",
+     "title": "Stay home, stay creative",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262107725884",
+     "handle": "back-to-school-favorites",
+     "title": "Back-to-School Favorites",
+     "description": {
+      "html": "Shop back-to-school favorites and quality tools that will set students up for success."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2723237036132",
+   "title": "Golden Bear USA Blue #2 Pencils Bulk (144 Pencils)",
+   "description": {
+    "html": "Description Golden Bear USA pencils are made in the USA with globally and domestically sourced components, including Genuine, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience and bear (pardon the pun) the PMA seal, making them safe and certified non-toxic. Available in orange and blue finishes, Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.144 pencils per package. Details Item #: 104113 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 144 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Blue Country of Origin: Made in the USA with globally and domestically sourced components"
+   },
+   "url": "https://pencils.com/products/golden-bear-usa-blue-2-pencils-bulk-144-pencils",
+   "handle": "golden-bear-usa-blue-2-pencils-bulk-144-pencils",
+   "price_range": {
+    "min": {
+     "amount": 3495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3495,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/23947511562340",
+     "sku": "104113-SET-144",
+     "title": "Default Title",
+     "description": {
+      "html": "Description Golden Bear USA pencils are made in the USA with globally and domestically sourced components, including Genuine, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience and bear (pardon the pun) the PMA seal, making them safe and certified non-toxic. Available in orange and blue finishes, Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.144 pencils per package. Details Item #: 104113 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 144 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Blue Country of Origin: Made in the USA with globally and domestically sourced components"
+     },
+     "price": {
+      "amount": 3495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/p-13353-goldenbearblue.png?v=1551994545"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/23947511562340:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/p-13353-goldenbearblue.png?v=1551994545",
+     "alt_text": "Golden Bear Blue Made in the USA #2 Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Bulk",
+    "Good for Kids",
+    "Great for Teachers",
+    "Incense-Cedar",
+    "Made in the USA",
+    "No. 2 Pencils"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118104064100",
+     "handle": "test-scoring-pencils",
+     "title": "Test Scoring Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158940987452",
+     "handle": "stay-home-stay-creative",
+     "title": "Stay home, stay creative",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262107725884",
+     "handle": "back-to-school-favorites",
+     "title": "Back-to-School Favorites",
+     "description": {
+      "html": "Shop back-to-school favorites and quality tools that will set students up for success."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2723235233892",
+   "title": "ForestChoice #2 Graphite Pencils (12 Pack)",
+   "description": {
+    "html": "Description The world's first FSC\u00ae-certified (FSC-C010858) pencil, ForestChoice #2 (HB) graphite pencils are made from FSC\u00ae-certified Incense-cedar, which means it comes from responsibly-managed forests. Saving the planet never looked so good. These everyday pencils are great for use at your school, home or office. Also available in a 144 count box. Details Item #: 100058 Brand Name: ForestChoice Pencil Type: Graphite Lead Grade(s): HB/#2 Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Natural Country of Origin: Thailand"
+   },
+   "url": "https://pencils.com/products/forestchoice-2-graphite-pencils-12-pack",
+   "handle": "forestchoice-2-graphite-pencils-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/23947506876516",
+     "sku": "100058",
+     "title": "Default Title",
+     "description": {
+      "html": "Description The world's first FSC\u00ae-certified (FSC-C010858) pencil, ForestChoice #2 (HB) graphite pencils are made from FSC\u00ae-certified Incense-cedar, which means it comes from responsibly-managed forests. Saving the planet never looked so good. These everyday pencils are great for use at your school, home or office. Also available in a 144 count box. Details Item #: 100058 Brand Name: ForestChoice Pencil Type: Graphite Lead Grade(s): HB/#2 Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Natural Country of Origin: Thailand"
+     },
+     "price": {
+      "amount": 500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/ForestChoice4upCropped.png?v=1551997224"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/23947506876516:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/ForestChoice4upCropped.png?v=1551997224",
+     "alt_text": "ForestChoice #2 Graphite Pencils"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Eco-Friendly Gifts",
+    "Featured Pencils",
+    "FSC Certified",
+    "Gifts for Crafting",
+    "Gifts for Kids",
+    "Gifts for Students",
+    "Good for Kids",
+    "Incense-Cedar",
+    "No. 2 Pencils"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118104064100",
+     "handle": "test-scoring-pencils",
+     "title": "Test Scoring Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118737469540",
+     "handle": "recommended-graphite-pencils",
+     "title": "Recommended Graphite Pencils",
+     "description": {
+      "html": "Shop our favorite wood-cased, graphite pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158940987452",
+     "handle": "stay-home-stay-creative",
+     "title": "Stay home, stay creative",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8914625822780",
+   "title": "Golden Bear Orange #2 Pencils (144 Pack)",
+   "description": {
+    "html": "Description These Golden Bear #2 pencils are made in Thailand out of Genuine, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience. Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.12 #2 pencils per package. Details Item #: 104283-SET-144 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 144 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Orange Country of Origin: Thailand"
+   },
+   "url": "https://pencils.com/products/golden-bear-orange-2-pencils-144-pack",
+   "handle": "golden-bear-orange-2-pencils-144-pack",
+   "price_range": {
+    "min": {
+     "amount": 2795,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2795,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45133981614140",
+     "sku": "104283-SET-144",
+     "title": "Default Title",
+     "description": {
+      "html": "Description These Golden Bear #2 pencils are made in Thailand out of Genuine, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience. Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.12 #2 pencils per package. Details Item #: 104283-SET-144 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 144 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Orange Country of Origin: Thailand"
+     },
+     "price": {
+      "amount": 2795,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/GoldenBear-Thailand-1.jpg?v=1554163215"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/45133981614140:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/GoldenBear-Thailand-1.jpg?v=1554163215",
+     "alt_text": "Golden Bear Orange #2 Pencils (12 Pack)"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "50%",
+    "Back-to-School",
+    "Gifts for Students",
+    "Gifts for Writers",
+    "Good for Kids",
+    "Great for Teachers",
+    "Incense-Cedar",
+    "No. 2 Pencils"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118104064100",
+     "handle": "test-scoring-pencils",
+     "title": "Test Scoring Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158940987452",
+     "handle": "stay-home-stay-creative",
+     "title": "Stay home, stay creative",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262107725884",
+     "handle": "back-to-school-favorites",
+     "title": "Back-to-School Favorites",
+     "description": {
+      "html": "Shop back-to-school favorites and quality tools that will set students up for success."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/3867831205948",
+   "title": "Golden Bear USA Jumbo #2 Pencils (144 Pack)",
+   "description": {
+    "html": "Description Golden Bear USA Jumbo #2 pencils are made in the USA with globally and domestically sourced components, including California grown, Genuine Incense-cedar. Durable enough for everyday use, these high-quality jumbo #2 pencils feature a smooth graphite core and a larger diameter great for learners and those who prefer a larger pencil. These pencils feature a 10 mm diameter.Bulk package of 144 jumbo pencils. Details Item #: 103823 Brand Name: Golden Bear Pencil Type: Jumbo Package Quantity: 144 Barrel Shape: Round Barrel Color: Orange Country of Origin: Made in the USA with globally and domestically sourced components"
+   },
+   "url": "https://pencils.com/products/golden-bear-usa-jumbo-2-pencils-144-pack",
+   "handle": "golden-bear-usa-jumbo-2-pencils-144-pack",
+   "price_range": {
+    "min": {
+     "amount": 5995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5995,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/29600194428988",
+     "sku": "103823-SET-144",
+     "title": "Default Title",
+     "description": {
+      "html": "Description Golden Bear USA Jumbo #2 pencils are made in the USA with globally and domestically sourced components, including California grown, Genuine Incense-cedar. Durable enough for everyday use, these high-quality jumbo #2 pencils feature a smooth graphite core and a larger diameter great for learners and those who prefer a larger pencil. These pencils feature a 10 mm diameter.Bulk package of 144 jumbo pencils. Details Item #: 103823 Brand Name: Golden Bear Pencil Type: Jumbo Package Quantity: 144 Barrel Shape: Round Barrel Color: Orange Country of Origin: Made in the USA with globally and domestically sourced components"
+     },
+     "price": {
+      "amount": 5995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/GBJumbo4Up-e1470937559505_49507923-7345-47cf-b1d1-e3895a9ecae8.jpg?v=1566232876"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/29600194428988:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/GBJumbo4Up-e1470937559505_49507923-7345-47cf-b1d1-e3895a9ecae8.jpg?v=1566232876",
+     "alt_text": "Golden Bear Jumbo #2 Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Bulk",
+    "Featured Pencils",
+    "Good for Kids",
+    "Incense-Cedar",
+    "Jumbo",
+    "Made in the USA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118737469540",
+     "handle": "recommended-graphite-pencils",
+     "title": "Recommended Graphite Pencils",
+     "description": {
+      "html": "Shop our favorite wood-cased, graphite pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158940987452",
+     "handle": "stay-home-stay-creative",
+     "title": "Stay home, stay creative",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262107725884",
+     "handle": "back-to-school-favorites",
+     "title": "Back-to-School Favorites",
+     "description": {
+      "html": "Shop back-to-school favorites and quality tools that will set students up for success."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2723235659876",
+   "title": "ForestChoice #2 Graphite Pencils Bulk (144 Pencils)",
+   "description": {
+    "html": "Description The world's first Forest Stewardship Council Certified pencil, ForestChoice #2 (HB) graphite pencils are made from natural, FSC\u00ae-certified (FSC-C010858) Incense-cedar which sharpens smoothly and easily while protecting the core from breakage. Write with a clear conscience and a sharp pencil.Also available in a 12 count box. Details Item #: 100059 Brand Name: ForestChoice Pencil Type: Graphite Lead Grade(s): HB/#2 Package Quantity: 144 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Natural Country of Origin: Thailand"
+   },
+   "url": "https://pencils.com/products/forestchoice-2-graphite-pencils-bulk-144-pencils",
+   "handle": "forestchoice-2-graphite-pencils-bulk-144-pencils",
+   "price_range": {
+    "min": {
+     "amount": 6000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/23947507368036",
+     "sku": "100059",
+     "title": "Default Title",
+     "description": {
+      "html": "Description The world's first Forest Stewardship Council Certified pencil, ForestChoice #2 (HB) graphite pencils are made from natural, FSC\u00ae-certified (FSC-C010858) Incense-cedar which sharpens smoothly and easily while protecting the core from breakage. Write with a clear conscience and a sharp pencil.Also available in a 12 count box. Details Item #: 100059 Brand Name: ForestChoice Pencil Type: Graphite Lead Grade(s): HB/#2 Package Quantity: 144 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Natural Country of Origin: Thailand"
+     },
+     "price": {
+      "amount": 6000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/p-12233-fc_graphite.jpg?v=1551997521"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/23947507368036:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/p-12233-fc_graphite.jpg?v=1551997521",
+     "alt_text": "ForestChoice #2 Graphite Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bulk",
+    "FSC Certified",
+    "Gifts for Crafting",
+    "Gifts for Students",
+    "Great for Teachers",
+    "Incense-Cedar",
+    "No. 2 Pencils"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118104064100",
+     "handle": "test-scoring-pencils",
+     "title": "Test Scoring Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158940987452",
+     "handle": "stay-home-stay-creative",
+     "title": "Stay home, stay creative",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262622642236",
+     "handle": "gifts-for-teachers-and-students",
+     "title": "Gifts for Students and Teachers",
+     "description": {
+      "html": "Crafted for success in the classroom. Shop high-quality tools for studying, grading, and more."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/3033129123940",
+   "title": "Blackwing 602 Pencils (12 Pack)",
+   "description": {
+    "html": "Description The iconic Blackwing 602 that once commanded up to $40/pencil and was favored by famous writers like John Steinbeck is back. The Blackwing 602 features a firm and smooth graphite core that is ideal for writers and everyday users who don't like to sharpen often. Includes Blackwing's signature pink extendable eraser and unique ferrule design. Inspired by the past, made for the writers of tomorrow. Each box contains 12 firm and smooth premium graphite pencils, crafted from Genuine Incense-cedar. Details Item #: 105330 Brand Name: Blackwing Pencil Type: Graphite Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Grey Country of Origin: Japan"
+   },
+   "url": "https://pencils.com/products/blackwing-602-pencils-12-pack",
+   "handle": "blackwing-602-pencils-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 3400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/25141242789988",
+     "sku": "105330",
+     "title": "Default Title",
+     "description": {
+      "html": "Description The iconic Blackwing 602 that once commanded up to $40/pencil and was favored by famous writers like John Steinbeck is back. The Blackwing 602 features a firm and smooth graphite core that is ideal for writers and everyday users who don't like to sharpen often. Includes Blackwing's signature pink extendable eraser and unique ferrule design. Inspired by the past, made for the writers of tomorrow. Each box contains 12 firm and smooth premium graphite pencils, crafted from Genuine Incense-cedar. Details Item #: 105330 Brand Name: Blackwing Pencil Type: Graphite Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Grey Country of Origin: Japan"
+     },
+     "price": {
+      "amount": 3400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Blackwing_602.jpg?v=1746750120"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25141242789988:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Blackwing_602.jpg?v=1746750120",
+     "alt_text": "Blackwing 602 Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Best seller",
+    "Featured Pencils",
+    "gifts for stationery fans",
+    "Gifts for Students",
+    "Gifts for Teachers",
+    "Gifts for Writers",
+    "Incense-Cedar",
+    "Japanese Graphite"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118737469540",
+     "handle": "recommended-graphite-pencils",
+     "title": "Recommended Graphite Pencils",
+     "description": {
+      "html": "Shop our favorite wood-cased, graphite pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158306336828",
+     "handle": "blackwing-rebrand",
+     "title": "Blackwing Rebrand",
+     "description": {
+      "html": "Blackwing recently updated their look with new emblems and logos. Check out some of their new products."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2911766052964",
+   "title": "Custom Hex Pencils",
+   "description": {
+    "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+   },
+   "url": "https://pencils.com/products/custom-hex-pencils",
+   "handle": "custom-hex-pencils",
+   "price_range": {
+    "min": {
+     "amount": 40,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 135,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/24666102497380",
+     "sku": "104395",
+     "title": "Standard Black",
+     "description": {
+      "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 40,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "productimize",
+       "label": "Standard Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/24666102497380:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/25334042984548",
+     "sku": "104397",
+     "title": "Standard Green",
+     "description": {
+      "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 40,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "productimize",
+       "label": "Standard Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25334042984548:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/25334043017316",
+     "sku": "104398",
+     "title": "Standard White",
+     "description": {
+      "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 40,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "productimize",
+       "label": "Standard White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25334043017316:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/25868422971492",
+     "sku": "104393",
+     "title": "Standard Red",
+     "description": {
+      "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 40,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "productimize",
+       "label": "Standard Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25868422971492:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/25868430639204",
+     "sku": "104396",
+     "title": "Standard Blue",
+     "description": {
+      "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 40,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "productimize",
+       "label": "Standard Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25868430639204:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/25868445319268",
+     "sku": "104394",
+     "title": "Standard Yellow",
+     "description": {
+      "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 40,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "productimize",
+       "label": "Standard Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25868445319268:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/25868458983524",
+     "sku": "104399",
+     "title": "FSC",
+     "description": {
+      "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 55,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "productimize",
+       "label": "FSC"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25868458983524:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/25868474384484",
+     "sku": "105117",
+     "title": "Premium Black",
+     "description": {
+      "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 125,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "productimize",
+       "label": "Premium Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25868474384484:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/25868480544868",
+     "sku": "105118",
+     "title": "Premium White",
+     "description": {
+      "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 125,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "productimize",
+       "label": "Premium White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25868480544868:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32360319057980",
+     "sku": "105472",
+     "title": "Standard Pink",
+     "description": {
+      "html": "Premium hexagonal pencils personalized using a foil-stamp method, giving each pencil a vintage look. Bulk discounts apply for orders above the minimum. These pencils are all made from quality Genuine Incense-cedar wood. Text is sans-serif font. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245. We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 40,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "productimize",
+       "label": "Standard Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/32360319057980:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "productimize",
+     "values": [
+      {
+       "label": "Standard Black"
+      },
+      {
+       "label": "Standard Green"
+      },
+      {
+       "label": "Standard White"
+      },
+      {
+       "label": "Standard Red"
+      },
+      {
+       "label": "Standard Blue"
+      },
+      {
+       "label": "Standard Yellow"
+      },
+      {
+       "label": "FSC"
+      },
+      {
+       "label": "Premium Black"
+      },
+      {
+       "label": "Premium White"
+      },
+      {
+       "label": "Standard Pink"
+      },
+      {
+       "label": "Standard Purple"
+      },
+      {
+       "label": "Standard Gold"
+      },
+      {
+       "label": "Standard Cream"
+      },
+      {
+       "label": "Standard Black Two-Sided"
+      },
+      {
+       "label": "Standard Green Two-Sided"
+      },
+      {
+       "label": "Standard White Two-Sided"
+      },
+      {
+       "label": "Standard Red Two-Sided"
+      },
+      {
+       "label": "Standard Blue Two-Sided"
+      },
+      {
+       "label": "FSC Two-Sided"
+      },
+      {
+       "label": "Premium Black Two-Sided"
+      },
+      {
+       "label": "Premium White Two-Sided"
+      },
+      {
+       "label": "Standard Purple Two-Sided"
+      },
+      {
+       "label": "Standard Gold Two-Sided"
+      },
+      {
+       "label": "Standard Cream Two-Sided"
+      },
+      {
+       "label": "Standard Yellow Two-Sided"
+      },
+      {
+       "label": "Standard Pink Two-Sided"
+      },
+      {
+       "label": "Standard Orange"
+      },
+      {
+       "label": "Standard Orange Two-Sided"
+      },
+      {
+       "label": "Standard Silver"
+      },
+      {
+       "label": "Standard Silver Two-Sided"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-hex-black.jpg?v=1562843313"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/115743129700",
+     "handle": "custom-products",
+     "title": "Custom Products",
+     "description": {
+      "html": "Customize your Products here"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2878341480548",
+   "title": "Custom Screen Printed Pencils",
+   "description": {
+    "html": "Round pencils personalized using a screen-print method, giving each pencil a clean look. These basswood pencils are made in China and feature a HB graphite core. Minimum order 432 pencils. Bulk discounts apply for orders above the minimum. Sharpened pencils may arrive with graphite dust from the sharpening process. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245.We are available Monday-Friday, 8am-5pm P.T."
+   },
+   "url": "https://pencils.com/products/custom-round-pencils",
+   "handle": "custom-round-pencils",
+   "price_range": {
+    "min": {
+     "amount": 31,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 33,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/24524868845668",
+     "sku": "103007-S",
+     "title": "Yes",
+     "description": {
+      "html": "Round pencils personalized using a screen-print method, giving each pencil a clean look. These basswood pencils are made in China and feature a HB graphite core. Minimum order 432 pencils. Bulk discounts apply for orders above the minimum. Sharpened pencils may arrive with graphite dust from the sharpening process. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245.We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 33,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Sharpened",
+       "label": "Yes"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-round-applegreen.jpg?v=1562843367"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/24524868845668:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/25868284690532",
+     "sku": "103007-U",
+     "title": "No",
+     "description": {
+      "html": "Round pencils personalized using a screen-print method, giving each pencil a clean look. These basswood pencils are made in China and feature a HB graphite core. Minimum order 432 pencils. Bulk discounts apply for orders above the minimum. Sharpened pencils may arrive with graphite dust from the sharpening process. Shipping TimelineOrder ships in approximately 2 weeks.For rush orders or other assistance, please give us a call at (866) 473-6245.We are available Monday-Friday, 8am-5pm P.T."
+     },
+     "price": {
+      "amount": 31,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Sharpened",
+       "label": "No"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-round-applegreen.jpg?v=1562843367"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25868284690532:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Sharpened",
+     "values": [
+      {
+       "label": "Yes"
+      },
+      {
+       "label": "No"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/pdc-round-applegreen.jpg?v=1562843367"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/115743129700",
+     "handle": "custom-products",
+     "title": "Custom Products",
+     "description": {
+      "html": "Customize your Products here"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqb3lPRGM0TXpReE5EZ3dOVFE0TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

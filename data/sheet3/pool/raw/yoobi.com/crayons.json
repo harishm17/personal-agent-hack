@@ -1,0 +1,303 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://yoobi.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Yoobi",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "yoobi.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "4456817"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "4456817"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7162418036849",
+   "title": "Yoobi Color Block No.2 Pencils 48pk",
+   "description": {
+    "html": "Ace Your Test in Style: Kick up your pencil case with these two assorted boxes of standard No. 2 pencils; they come in eye-catching pastel colors, such as pink, baby blue and mint, and are sure to catch compliments Made for Writing, Drawing & More: Suitable for ages 3 and up, these cute pencils feature an ergonomic barrel and durable FSC-certified wood construction Ready for Schoolwork & Homework: Perfect for math, science, English, history and other classes, as well as work, these wood pencils are pre-sharpened with high-quality erasers and use a standard pencil sharpener Let Your Imagination Shine: Whether take these pencils with you to travel or summer camp, they\u2019ll be your go-to tool to turn magical ideas into amazing realities We believe school supplies should be available for every child in every classroom, not at the expense of our teachers; to help ease some of the barriers to education, Yoobi creates fun, colorful products for school, home and office that give back; for each qualifying Yoobi item purchased, Yoobi Global, LLC will donate a Yoobi item to Kids in Need Foundation"
+   },
+   "url": "https://yoobi.com/products/yoobi-color-block-no-2-pencils-48pk",
+   "handle": "yoobi-color-block-no-2-pencils-48pk",
+   "price_range": {
+    "min": {
+     "amount": 1399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41055508922481",
+     "sku": "WRPE2362",
+     "title": "Default Title",
+     "description": {
+      "html": "Ace Your Test in Style: Kick up your pencil case with these two assorted boxes of standard No. 2 pencils; they come in eye-catching pastel colors, such as pink, baby blue and mint, and are sure to catch compliments Made for Writing, Drawing & More: Suitable for ages 3 and up, these cute pencils feature an ergonomic barrel and durable FSC-certified wood construction Ready for Schoolwork & Homework: Perfect for math, science, English, history and other classes, as well as work, these wood pencils are pre-sharpened with high-quality erasers and use a standard pencil sharpener Let Your Imagination Shine: Whether take these pencils with you to travel or summer camp, they\u2019ll be your go-to tool to turn magical ideas into amazing realities We believe school supplies should be available for every child in every classroom, not at the expense of our teachers; to help ease some of the barriers to education, Yoobi creates fun, colorful products for school, home and office that give back; for each qualifying Yoobi item purchased, Yoobi Global, LLC will donate a Yoobi item to Kids in Need Foundation"
+     },
+     "price": {
+      "amount": 1399,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/files/WRPE2362_ColorBlockNo.2Pencils48pk_1.jpg?v=1717087658"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/41055508922481:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/files/WRPE2362_ColorBlockNo.2Pencils48pk_1.jpg?v=1717087658"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all-writing",
+    "bundles"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/76963843",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Looking to stock up on school or office essentials? Yoobi's bundled items have you covered! Choose from our colorful pen sets, complete with gel, ballpoint, and felt-tip options. Love pencils? Grab a bundle that includes No. 2 pencils, sharpeners, and erasers, so you're always prepared. Highlight key points with our vibrant highlighters, and bring your creativity to life with bold markers. Keep everything organized with our adorable pencil pouches\u2014perfect for storing all your favorite supplies in one place. With Yoobi bundles, you\u2019ll have everything you need to stay creative and organized!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/95193989233",
+     "handle": "all-writing",
+     "title": "Writing",
+     "description": {
+      "html": "Whether you prefer to use pencils, ballpoint pens, or gel pens, Yoobi has what you need! Choose from colorful pen sets to No. 2 pencils. Don't forget to grab highlighters and markers! For all you pencil lovers, don't get stuck without a sharpener or eraser too. And, keep it all together with a cute pencil case. We have many pencil pouches to choose from!"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

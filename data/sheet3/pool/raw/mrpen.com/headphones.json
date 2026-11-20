@@ -1,0 +1,2756 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://mrpen.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Mr. Pen",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "mrpen.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "62824808604"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "62824808604"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/9176291606684",
+   "title": "Peony Meadow Custom Notetaking Bible with Name Plate",
+   "description": {
+    "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+   },
+   "url": "https://mrpen.com/products/peony-meadow-custom-notetaking-bible-with-name-plate",
+   "handle": "peony-meadow-custom-notetaking-bible-with-name-plate",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47263932645532",
+     "sku": "SHOP-ESV1009-PEO-BLU-ANT",
+     "title": "ESV (Hardcover) / Dusty Blue / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Dusty Blue"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-PEO-BLU-ANT.png?v=1784912601"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263932645532:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263932678300",
+     "sku": "SHOP-ESV1009-PEO-BLU-MDN",
+     "title": "ESV (Hardcover) / Dusty Blue / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Dusty Blue"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-PEO-BLU-MDN.png?v=1784912626"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263932678300:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263932711068",
+     "sku": "SHOP-ESV1009-PEO-RED-ANT",
+     "title": "ESV (Hardcover) / Blush / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Blush"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-PEO-RED-ANT.png?v=1784912644"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263932711068:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263932743836",
+     "sku": "SHOP-ESV1009-PEO-RED-MDN",
+     "title": "ESV (Hardcover) / Blush / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Blush"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-PEO-RED-MDN.png?v=1784912662"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263932743836:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263932776604",
+     "sku": "SHOP-ESV1009-PEO-GLD-ANT",
+     "title": "ESV (Hardcover) / Marigold / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Marigold"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-PEO-GLD-ANT.png?v=1784912674"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263932776604:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263932809372",
+     "sku": "SHOP-ESV1009-PEO-GLD-MDN",
+     "title": "ESV (Hardcover) / Marigold / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Marigold"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-PEO-GLD-MDN.png?v=1784912685"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263932809372:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263932842140",
+     "sku": "SHOP-ESV1009-PEO-CRM-ANT",
+     "title": "ESV (Hardcover) / Cream / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Cream"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-PEO-CRM-ANT.png?v=1784912698"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263932842140:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263932874908",
+     "sku": "SHOP-ESV1009-PEO-CRM-MDN",
+     "title": "ESV (Hardcover) / Cream / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Cream"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-PEO-CRM-MDN.png?v=1784912710"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263932874908:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263932907676",
+     "sku": "SHOP-ESV1009-PEO-GRN-ANT",
+     "title": "ESV (Hardcover) / Green / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Green"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-PEO-GRN-ANT.png?v=1784912724"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263932907676:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263932940444",
+     "sku": "SHOP-ESV1009-PEO-GRN-MDN",
+     "title": "ESV (Hardcover) / Green / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Green"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-PEO-GRN-MDN.png?v=1784912735"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263932940444:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Translation",
+     "values": [
+      {
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "label": "NLT (Softcover)"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Dusty Blue"
+      },
+      {
+       "label": "Blush"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Green"
+      }
+     ]
+    },
+    {
+     "name": "Crest",
+     "values": [
+      {
+       "label": "Antique Crest"
+      },
+      {
+       "label": "Modern Crest"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-227_95e8d659-b37d-4c7e-ba18-9a69c84553aa.jpg?v=1793915744"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/me-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/314501955740",
+     "handle": "customizable-products",
+     "title": "Customizable Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/330670276764",
+     "handle": "custom-bibles",
+     "title": "Custom Bibles",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9141258944668",
+   "title": "French Chateau Custom Notetaking Bible with Name Plate",
+   "description": {
+    "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+   },
+   "url": "https://mrpen.com/products/french-chateau-custom-notetaking-bible-with-name-plate",
+   "handle": "french-chateau-custom-notetaking-bible-with-name-plate",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47142684819612",
+     "sku": "SHOP-ESV1009-FRE-BLU-ANT",
+     "title": "ESV (Hardcover) / Dusty Blue / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Dusty Blue"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-BLU-ANT.png?v=1783664134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47142684819612:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47142689603740",
+     "sku": "SHOP-ESV1009-FRE-BLU-MDN",
+     "title": "ESV (Hardcover) / Dusty Blue / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Dusty Blue"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-BLU-MDN.png?v=1783664134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47142689603740:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47142684852380",
+     "sku": "SHOP-ESV1009-FRE-RED-ANT",
+     "title": "ESV (Hardcover) / Blush / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Blush"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-RED-ANT.png?v=1783664134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47142684852380:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47142690226332",
+     "sku": "SHOP-ESV1009-FRE-RED-MDN",
+     "title": "ESV (Hardcover) / Blush / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Blush"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-MAR-BLU-ESV_cef5b72f-60e7-4674-8e2d-54f598ebe4ee.png?v=1783664134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47142690226332:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47142684885148",
+     "sku": "SHOP-ESV1009-FRE-GLD-ANT",
+     "title": "ESV (Hardcover) / Marigold / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Marigold"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-GLD-ANT.png?v=1783664134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47142684885148:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47142690848924",
+     "sku": "SHOP-ESV1009-FRE-GLD-MDN",
+     "title": "ESV (Hardcover) / Marigold / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Marigold"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-GLD-MDN.png?v=1783664134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47142690848924:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47142684917916",
+     "sku": "SHOP-ESV1009-FRE-CRM-ANT",
+     "title": "ESV (Hardcover) / Cream / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Cream"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-CRM-ANT.png?v=1783664134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47142684917916:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47142691471516",
+     "sku": "SHOP-ESV1009-FRE-CRM-MDN",
+     "title": "ESV (Hardcover) / Cream / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Cream"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-CRM-MDN.png?v=1783664134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47142691471516:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47142692094108",
+     "sku": "SHOP-ESV1009-FRE-GRN-ANT",
+     "title": "ESV (Hardcover) / Green / Antique Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Green"
+      },
+      {
+       "name": "Crest",
+       "label": "Antique Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-GRN-ANT.png?v=1783664134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47142692094108:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47142692126876",
+     "sku": "SHOP-ESV1009-FRE-GRN-MDN",
+     "title": "ESV (Hardcover) / Green / Modern Crest",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Green"
+      },
+      {
+       "name": "Crest",
+       "label": "Modern Crest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-GRN-MDN.png?v=1783664134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47142692126876:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Translation",
+     "values": [
+      {
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "label": "NLT (Softcover)"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Dusty Blue"
+      },
+      {
+       "label": "Blush"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Green"
+      }
+     ]
+    },
+    {
+     "name": "Crest",
+     "values": [
+      {
+       "label": "Antique Crest"
+      },
+      {
+       "label": "Modern Crest"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-207_1.jpg?v=1793916920"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/me-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/314501955740",
+     "handle": "customizable-products",
+     "title": "Customizable Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/330670276764",
+     "handle": "custom-bibles",
+     "title": "Custom Bibles",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9220289986716",
+   "title": "Wedding Intials Custom Notetaking Bible with Name Plate",
+   "description": {
+    "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+   },
+   "url": "https://mrpen.com/products/wedding-initials-custom-notetaking-bible-with-name-plate",
+   "handle": "wedding-initials-custom-notetaking-bible-with-name-plate",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47470344110236",
+     "sku": "SHOP-ESV1009-wed-BLU",
+     "title": "ESV (Hardcover) / Dusty Blue",
+     "description": {
+      "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Dusty Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-wed-BLU.png?v=1787677761"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47470344110236:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47470344175772",
+     "sku": "SHOP-ESV1009-fri-RED",
+     "title": "ESV (Hardcover) / Blush",
+     "description": {
+      "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Blush"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-fri-RED.png?v=1787677771"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47470344175772:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47470344241308",
+     "sku": "SHOP-ESV1009-sun-GLD",
+     "title": "ESV (Hardcover) / Marigold",
+     "description": {
+      "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-sun-GLD.png?v=1787677781"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47470344241308:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47470344306844",
+     "sku": "SHOP-ESV1009-tue-CRM",
+     "title": "ESV (Hardcover) / Cream",
+     "description": {
+      "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-tue-CRM.png?v=1787677793"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47470344306844:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47470344372380",
+     "sku": "SHOP-ESV1009-thu-GRN",
+     "title": "ESV (Hardcover) / Green",
+     "description": {
+      "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-thu-GRN.png?v=1787677802"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47470344372380:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47470344437916",
+     "sku": "SHOP-NLT1005-thu-BLU",
+     "title": "NLT (Softcover) / Dusty Blue",
+     "description": {
+      "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "NLT (Softcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Dusty Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-NLT1005-thu-BLU.png?v=1787677816"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47470344437916:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47470344503452",
+     "sku": "SHOP-NLT1005-sat-RED",
+     "title": "NLT (Softcover) / Blush",
+     "description": {
+      "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "NLT (Softcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Blush"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-NLT1005-sat-RED.png?v=1787677826"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47470344503452:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47470344568988",
+     "sku": "SHOP-NLT1005-mon-GLD",
+     "title": "NLT (Softcover) / Marigold",
+     "description": {
+      "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "NLT (Softcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-NLT1005-mon-GLD.png?v=1787677836"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47470344568988:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47470344634524",
+     "sku": "SHOP-NLT1005-wed-CRM",
+     "title": "NLT (Softcover) / Cream",
+     "description": {
+      "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "NLT (Softcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-NLT1005-wed-CRM.png?v=1787677846"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47470344634524:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47470344700060",
+     "sku": "SHOP-NLT1005-fri-GRN",
+     "title": "NLT (Softcover) / Green",
+     "description": {
+      "html": "Beautifully Crafted - Bible available in, 5 colors\u2014each can be customized with your initials and wedding date. Wide-margin journaling design \u2014 2.25\" ruled margins, 8-point single-column typesetting, and words of Jesus in red for personal note-taking alongside scripture Premium build quality \u2014 lay-flat Smyth-sewn binding, ribbon marker, presentation page, and full-color Visual Overview of the Bible NLT Bibles have Filament Bible App companion \u2014 free app (iOS/Android) unlocking 25,000+ study notes, 350+ videos, 40+ maps/infographics, 400+ profiles/articles, 1,500+ devotionals, audio Bibles, and reading plans via QR/scan access Translation options: Choose between the ESV (English Standard Version), a hardcover edition offering word-for-word accuracy for deep study, or the NLT (New Living Translation), a softcover PU leather edition written in clear, everyday language with Red Letters for Jesus' words."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "NLT (Softcover)"
+      },
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-NLT1005-fri-GRN.png?v=1787677859"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47470344700060:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Translation",
+     "values": [
+      {
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "label": "NLT (Softcover)"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Dusty Blue"
+      },
+      {
+       "label": "Blush"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Green"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/hf_20261109_193309_9f230d4d-d9b6-4d84-b1e5-1d25b9cf580f.png?v=1794252886"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/me-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/314501955740",
+     "handle": "customizable-products",
+     "title": "Customizable Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/330670276764",
+     "handle": "custom-bibles",
+     "title": "Custom Bibles",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9176325259420",
+   "title": "Bible Lettering Notetaking Bible with Name Plate",
+   "description": {
+    "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+   },
+   "url": "https://mrpen.com/products/bible-lettering-notetaking-bible-with-name-plate",
+   "handle": "bible-lettering-notetaking-bible-with-name-plate",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47263996018844",
+     "sku": "SHOP-ESV1009-patsy-seek-me",
+     "title": "ESV (Hardcover) / Seek Me",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Verse",
+       "label": "Seek Me"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-patsy-seek-me.png?v=1784914502"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263996018844:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263996084380",
+     "sku": "SHOP-ESV1009-patsy-new-heart",
+     "title": "ESV (Hardcover) / New Heart",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Verse",
+       "label": "New Heart"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-patsy-new-heart.png?v=1784914514"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263996084380:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263996149916",
+     "sku": "SHOP-ESV1009-patsy-rejoice",
+     "title": "ESV (Hardcover) / Rejoice",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Verse",
+       "label": "Rejoice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-patsy-rejoice.png?v=1784914523"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263996149916:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263996215452",
+     "sku": "SHOP-ESV1009-patsy-hold-fast",
+     "title": "ESV (Hardcover) / Hold Fast",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Verse",
+       "label": "Hold Fast"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-patsy-hold-fast_d5c11d92-86d0-406c-ad84-22a9b7d4342c.png?v=1784914556"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263996215452:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263996280988",
+     "sku": "SHOP-ESV1009-patsy-joy",
+     "title": "ESV (Hardcover) / Joy",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Verse",
+       "label": "Joy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-patsy-joy.png?v=1784914547"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263996280988:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263998869660",
+     "sku": "SHOP-ESV1009-patsy-courts",
+     "title": "ESV (Hardcover) / Courts of God",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Verse",
+       "label": "Courts of God"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-patsy-courts.png?v=1784914578"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263998869660:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263998902428",
+     "sku": "SHOP-ESV1009-patsy-faithful",
+     "title": "ESV (Hardcover) / Faithfulness",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "name": "Verse",
+       "label": "Faithfulness"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-patsy-faithful.png?v=1784914601"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263998902428:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263996346524",
+     "sku": "SHOP-NLT1005-patsy-seek-me",
+     "title": "NLT (Softcover) / Seek Me",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "NLT (Softcover)"
+      },
+      {
+       "name": "Verse",
+       "label": "Seek Me"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-NLT1005-patsy-seek-me.png?v=1784914616"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263996346524:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263996412060",
+     "sku": "SHOP-NLT1005-patsy-new-heart",
+     "title": "NLT (Softcover) / New Heart",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "NLT (Softcover)"
+      },
+      {
+       "name": "Verse",
+       "label": "New Heart"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-NLT1005-patsy-new-heart.png?v=1784914627"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263996412060:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47263996477596",
+     "sku": "SHOP-NLT1005-patsy-rejoice",
+     "title": "NLT (Softcover) / Rejoice",
+     "description": {
+      "html": "A beautifully crafted hardcover Bible available in 7 patterns, 5 colors, and 3 crest options\u2014each with a nameplate for adding your name or the name of a loved one. Single-column layout with 8-point text for a clean, easy-to-follow reading experience Extra-wide 2-inch ruled margins aligned to verses for notes, prayers, and personal reflections Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Includes a 1-year Bible reading plan to guide you through Scripture Hand drawn design by Patsy Shaw (patsyshaw.com) and every purchase directly supports the artist!"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Translation",
+       "label": "NLT (Softcover)"
+      },
+      {
+       "name": "Verse",
+       "label": "Rejoice"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-NLT1005-patsy-rejoice.png?v=1784914636"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47263996477596:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Translation",
+     "values": [
+      {
+       "label": "ESV (Hardcover)"
+      },
+      {
+       "label": "NLT (Softcover)"
+      }
+     ]
+    },
+    {
+     "name": "Verse",
+     "values": [
+      {
+       "label": "Seek Me"
+      },
+      {
+       "label": "New Heart"
+      },
+      {
+       "label": "Rejoice"
+      },
+      {
+       "label": "Joy"
+      },
+      {
+       "label": "Courts of God"
+      },
+      {
+       "label": "Faithfulness"
+      },
+      {
+       "label": "Hold Fast"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-165_2.jpg?v=1794252942"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/me-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/314501955740",
+     "handle": "customizable-products",
+     "title": "Customizable Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/330670276764",
+     "handle": "custom-bibles",
+     "title": "Custom Bibles",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8568223072412",
+   "title": "Mr. Pen \u2013 Bloom in the Bible Journaling Kit, Bible Journaling Gift Set with Highlighters, Pens, Stickers, Tabs & More",
+   "description": {
+    "html": "Created in Partnership with @SheLovesBible: The Bloom in the Bible Kit was thoughtfully designed to help you flourish in your faith. Whether you're a seasoned Bible journaler or just beginning your journey, this kit encourages deeper, more creative time in God\u2019s Word. Everything You Need for Meaningful Reflection: Includes 8 gel highlighters that won\u2019t bleed through thin Bible pages, 6 smooth black pens, a fine liner pen for sticky notes, 3 washi tapes, 14 floral sticker sheets, and more. Layered, Intentional Journaling: Transparent sticky notes (in round and rectangular shapes) let you reflect directly over scripture without covering it\u2014perfect for layering prayers, insights, or sermon notes. Beautifully Organized & Gift-Ready: With Bible tabs, floral paper clips, and a coordinating Bible pouch, everything stays neat, accessible, and beautifully bundled\u2014ideal for gifting or personal study time. Floral Aesthetic That Grounds You in Scripture: Delicate designs meet spiritual purpose. From the blooms on the stickers to the soft pastels of the tools, this kit helps turn your quiet time into a creative, Christ-centered habit. Optional Bloom in the Bible ESV Journaling Bible: A beautifully crafted hardcover Bible with the Bloom in the Bible theme printed on the front. Features the complete ESV text in a single-column format, thoughtfully designed to support slow, intentional reading and reflection. Includes a 1-year Bible reading plan and 2-inch ruled margins for journaling prayers, notes, and personal insights beside Scripture. Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Printed on cream-colored, high-quality Bible paper with a ribbon marker."
+   },
+   "url": "https://mrpen.com/products/bloom-in-the-bible-kristin-nave",
+   "handle": "bloom-in-the-bible-kristin-nave",
+   "price_range": {
+    "min": {
+     "amount": 2999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3374,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45486325858460",
+     "sku": "OZLX048M417",
+     "title": "Journaling Kit",
+     "description": {
+      "html": "Created in Partnership with @SheLovesBible: The Bloom in the Bible Kit was thoughtfully designed to help you flourish in your faith. Whether you're a seasoned Bible journaler or just beginning your journey, this kit encourages deeper, more creative time in God\u2019s Word. Everything You Need for Meaningful Reflection: Includes 8 gel highlighters that won\u2019t bleed through thin Bible pages, 6 smooth black pens, a fine liner pen for sticky notes, 3 washi tapes, 14 floral sticker sheets, and more. Layered, Intentional Journaling: Transparent sticky notes (in round and rectangular shapes) let you reflect directly over scripture without covering it\u2014perfect for layering prayers, insights, or sermon notes. Beautifully Organized & Gift-Ready: With Bible tabs, floral paper clips, and a coordinating Bible pouch, everything stays neat, accessible, and beautifully bundled\u2014ideal for gifting or personal study time. Floral Aesthetic That Grounds You in Scripture: Delicate designs meet spiritual purpose. From the blooms on the stickers to the soft pastels of the tools, this kit helps turn your quiet time into a creative, Christ-centered habit. Optional Bloom in the Bible ESV Journaling Bible: A beautifully crafted hardcover Bible with the Bloom in the Bible theme printed on the front. Features the complete ESV text in a single-column format, thoughtfully designed to support slow, intentional reading and reflection. Includes a 1-year Bible reading plan and 2-inch ruled margins for journaling prayers, notes, and personal insights beside Scripture. Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Printed on cream-colored, high-quality Bible paper with a ribbon marker."
+     },
+     "price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3374,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Journaling Kit"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/image_10.png?v=1761770387"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45486325858460:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45486325891228",
+     "sku": "OZLX048M417INF-BUNDLE",
+     "title": "Journaling Kit + ESV Journaling Bible",
+     "description": {
+      "html": "Created in Partnership with @SheLovesBible: The Bloom in the Bible Kit was thoughtfully designed to help you flourish in your faith. Whether you're a seasoned Bible journaler or just beginning your journey, this kit encourages deeper, more creative time in God\u2019s Word. Everything You Need for Meaningful Reflection: Includes 8 gel highlighters that won\u2019t bleed through thin Bible pages, 6 smooth black pens, a fine liner pen for sticky notes, 3 washi tapes, 14 floral sticker sheets, and more. Layered, Intentional Journaling: Transparent sticky notes (in round and rectangular shapes) let you reflect directly over scripture without covering it\u2014perfect for layering prayers, insights, or sermon notes. Beautifully Organized & Gift-Ready: With Bible tabs, floral paper clips, and a coordinating Bible pouch, everything stays neat, accessible, and beautifully bundled\u2014ideal for gifting or personal study time. Floral Aesthetic That Grounds You in Scripture: Delicate designs meet spiritual purpose. From the blooms on the stickers to the soft pastels of the tools, this kit helps turn your quiet time into a creative, Christ-centered habit. Optional Bloom in the Bible ESV Journaling Bible: A beautifully crafted hardcover Bible with the Bloom in the Bible theme printed on the front. Features the complete ESV text in a single-column format, thoughtfully designed to support slow, intentional reading and reflection. Includes a 1-year Bible reading plan and 2-inch ruled margins for journaling prayers, notes, and personal insights beside Scripture. Bound with smyth-sewn stitching for strength and flexibility\u2014designed to lie flat for comfortable study and long-term use. Printed on cream-colored, high-quality Bible paper with a ribbon marker."
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Type",
+       "label": "Journaling Kit + ESV Journaling Bible"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/SHOP-ESV1009-CUSTOM_1.png?v=1761770238"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/45486325891228:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Type",
+     "values": [
+      {
+       "label": "Journaling Kit"
+      },
+      {
+       "label": "Journaling Kit + ESV Journaling Bible"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/MP_Christmas_Product_Shoot_2026-228_1.jpg?v=1794253636"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/me-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#esv",
+    "b2c-only"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304123445404",
+     "handle": "bible-stickers",
+     "title": "Bible Stickers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/307319341212",
+     "handle": "holiday-gift-guide",
+     "title": "Holiday Gift Guide",
+     "description": {
+      "html": "All the meaningful gifts and stocking stuffers you need in one place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319948718236",
+     "handle": "sadie-robertsons-top-picks",
+     "title": "Sadie Robertson's Top Picks",
+     "description": {
+      "html": "Use SADIE10 for 10% off your first order at checkout"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9376554418332",
+   "title": "Selah Bible Purse and Bag, Vegan Leather Crossbody Bible Case Purse or Tote Bag Set, Bible Study Kit with No Bleed Highlighters, Pens, Tabs, Christian Gifts for Women",
+   "description": {
+    "html": "LOOKS LIKE A DESIGNER PURSE, CARRIES YOUR BIBLE: Nobody will guess there\u2019s a Bible inside. The Selah Purse is made from soft vegan leather with gold-tone hardware and a structured shape that looks like a designer handbag. Choose the Selah Purse on its own, or the Selah Bag and Purse set for a matching tote that holds everything else. Available in Black, Brown, and Pink. MADE TO HELP YOU READ YOUR BIBLE INTENTIONALLY: Selah means to pause and reflect. We created Selah to help you intentionally read your Bible. Everything you need to read, mark, and remember Scripture is packed in one place. COMPLETE BIBLE JOURNALING KIT INCLUDED: Comes ready to use with Bible tabs, a Books of the Bible sticker sheet, a Biblical theme key sticky note and bookmark, a Bible reading tracker sticker, 3 black ink cross pens, 3 gel highlighters, and 3 chisel tip highlighters TWO SIZES FOR HOW YOU CARRY: The Selah Purse is a crossbody Bible case with a twist-lock flap and adjustable strap, sized to fit large print Journaling Bibles. The Selah Bag and Purse set adds a matching tote with a front zip compartment, elastic pen loops, a mesh pocket for tabs and stickers, a deep side pocket with a buckle strap for large tumblers, and a roomy main compartment for your journal, laptop, and daily essentials. A CHRISTIAN GIFT SHE\u2019LL USE EVERY WEEK: A thoughtful Christmas, birthday, Mother\u2019s Day, Easter, or baptism gift for your wife, mom, daughter, sister, friend, or small group leader. Arrives as a complete set that\u2019s ready to gift, perfect for any woman who loves Jesus and loves a good bag."
+   },
+   "url": "https://mrpen.com/products/selah-purse-and-bag-vegan-leather-crossbody-bible-case-purse-or-tote-bag-set-bible-study-kit-with-no-bleed-highlighters-pens-tabs-christian-gifts-for-women",
+   "handle": "selah-purse-and-bag-vegan-leather-crossbody-bible-case-purse-or-tote-bag-set-bible-study-kit-with-no-bleed-highlighters-pens-tabs-christian-gifts-for-women",
+   "price_range": {
+    "min": {
+     "amount": 3499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/48208153968796",
+     "sku": "HPZJ001M630NP",
+     "title": "Pink / Selah Purse",
+     "description": {
+      "html": "LOOKS LIKE A DESIGNER PURSE, CARRIES YOUR BIBLE: Nobody will guess there\u2019s a Bible inside. The Selah Purse is made from soft vegan leather with gold-tone hardware and a structured shape that looks like a designer handbag. Choose the Selah Purse on its own, or the Selah Bag and Purse set for a matching tote that holds everything else. Available in Black, Brown, and Pink. MADE TO HELP YOU READ YOUR BIBLE INTENTIONALLY: Selah means to pause and reflect. We created Selah to help you intentionally read your Bible. Everything you need to read, mark, and remember Scripture is packed in one place. COMPLETE BIBLE JOURNALING KIT INCLUDED: Comes ready to use with Bible tabs, a Books of the Bible sticker sheet, a Biblical theme key sticky note and bookmark, a Bible reading tracker sticker, 3 black ink cross pens, 3 gel highlighters, and 3 chisel tip highlighters TWO SIZES FOR HOW YOU CARRY: The Selah Purse is a crossbody Bible case with a twist-lock flap and adjustable strap, sized to fit large print Journaling Bibles. The Selah Bag and Purse set adds a matching tote with a front zip compartment, elastic pen loops, a mesh pocket for tabs and stickers, a deep side pocket with a buckle strap for large tumblers, and a roomy main compartment for your journal, laptop, and daily essentials. A CHRISTIAN GIFT SHE\u2019LL USE EVERY WEEK: A thoughtful Christmas, birthday, Mother\u2019s Day, Easter, or baptism gift for your wife, mom, daughter, sister, friend, or small group leader. Arrives as a complete set that\u2019s ready to gift, perfect for any woman who loves Jesus and loves a good bag."
+     },
+     "price": {
+      "amount": 3599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      },
+      {
+       "name": "Size",
+       "label": "Selah Purse"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/8_57df6786-09db-44e7-acfd-dc68a9d3c91b.png?v=1794865095"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48208153968796:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48208154001564",
+     "sku": "OHQK001M630NP",
+     "title": "Pink / Selah Bag + Purse",
+     "description": {
+      "html": "LOOKS LIKE A DESIGNER PURSE, CARRIES YOUR BIBLE: Nobody will guess there\u2019s a Bible inside. The Selah Purse is made from soft vegan leather with gold-tone hardware and a structured shape that looks like a designer handbag. Choose the Selah Purse on its own, or the Selah Bag and Purse set for a matching tote that holds everything else. Available in Black, Brown, and Pink. MADE TO HELP YOU READ YOUR BIBLE INTENTIONALLY: Selah means to pause and reflect. We created Selah to help you intentionally read your Bible. Everything you need to read, mark, and remember Scripture is packed in one place. COMPLETE BIBLE JOURNALING KIT INCLUDED: Comes ready to use with Bible tabs, a Books of the Bible sticker sheet, a Biblical theme key sticky note and bookmark, a Bible reading tracker sticker, 3 black ink cross pens, 3 gel highlighters, and 3 chisel tip highlighters TWO SIZES FOR HOW YOU CARRY: The Selah Purse is a crossbody Bible case with a twist-lock flap and adjustable strap, sized to fit large print Journaling Bibles. The Selah Bag and Purse set adds a matching tote with a front zip compartment, elastic pen loops, a mesh pocket for tabs and stickers, a deep side pocket with a buckle strap for large tumblers, and a roomy main compartment for your journal, laptop, and daily essentials. A CHRISTIAN GIFT SHE\u2019LL USE EVERY WEEK: A thoughtful Christmas, birthday, Mother\u2019s Day, Easter, or baptism gift for your wife, mom, daughter, sister, friend, or small group leader. Arrives as a complete set that\u2019s ready to gift, perfect for any woman who loves Jesus and loves a good bag."
+     },
+     "price": {
+      "amount": 7599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      },
+      {
+       "name": "Size",
+       "label": "Selah Bag + Purse"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_c29c5e8a-c3b9-443b-ba89-aa614ba702f5.png?v=1794865095"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48208154001564:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48208154034332",
+     "sku": "HQRS001M620NPINF",
+     "title": "Black / Selah Purse",
+     "description": {
+      "html": "LOOKS LIKE A DESIGNER PURSE, CARRIES YOUR BIBLE: Nobody will guess there\u2019s a Bible inside. The Selah Purse is made from soft vegan leather with gold-tone hardware and a structured shape that looks like a designer handbag. Choose the Selah Purse on its own, or the Selah Bag and Purse set for a matching tote that holds everything else. Available in Black, Brown, and Pink. MADE TO HELP YOU READ YOUR BIBLE INTENTIONALLY: Selah means to pause and reflect. We created Selah to help you intentionally read your Bible. Everything you need to read, mark, and remember Scripture is packed in one place. COMPLETE BIBLE JOURNALING KIT INCLUDED: Comes ready to use with Bible tabs, a Books of the Bible sticker sheet, a Biblical theme key sticky note and bookmark, a Bible reading tracker sticker, 3 black ink cross pens, 3 gel highlighters, and 3 chisel tip highlighters TWO SIZES FOR HOW YOU CARRY: The Selah Purse is a crossbody Bible case with a twist-lock flap and adjustable strap, sized to fit large print Journaling Bibles. The Selah Bag and Purse set adds a matching tote with a front zip compartment, elastic pen loops, a mesh pocket for tabs and stickers, a deep side pocket with a buckle strap for large tumblers, and a roomy main compartment for your journal, laptop, and daily essentials. A CHRISTIAN GIFT SHE\u2019LL USE EVERY WEEK: A thoughtful Christmas, birthday, Mother\u2019s Day, Easter, or baptism gift for your wife, mom, daughter, sister, friend, or small group leader. Arrives as a complete set that\u2019s ready to gift, perfect for any woman who loves Jesus and loves a good bag."
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      },
+      {
+       "name": "Size",
+       "label": "Selah Purse"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/10_85e0c4cc-9928-4072-86cd-56fedaf3f7a1.png?v=1794865094"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48208154034332:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48208154067100",
+     "sku": "SLCP001M630NPVC",
+     "title": "Black / Selah Bag + Purse",
+     "description": {
+      "html": "LOOKS LIKE A DESIGNER PURSE, CARRIES YOUR BIBLE: Nobody will guess there\u2019s a Bible inside. The Selah Purse is made from soft vegan leather with gold-tone hardware and a structured shape that looks like a designer handbag. Choose the Selah Purse on its own, or the Selah Bag and Purse set for a matching tote that holds everything else. Available in Black, Brown, and Pink. MADE TO HELP YOU READ YOUR BIBLE INTENTIONALLY: Selah means to pause and reflect. We created Selah to help you intentionally read your Bible. Everything you need to read, mark, and remember Scripture is packed in one place. COMPLETE BIBLE JOURNALING KIT INCLUDED: Comes ready to use with Bible tabs, a Books of the Bible sticker sheet, a Biblical theme key sticky note and bookmark, a Bible reading tracker sticker, 3 black ink cross pens, 3 gel highlighters, and 3 chisel tip highlighters TWO SIZES FOR HOW YOU CARRY: The Selah Purse is a crossbody Bible case with a twist-lock flap and adjustable strap, sized to fit large print Journaling Bibles. The Selah Bag and Purse set adds a matching tote with a front zip compartment, elastic pen loops, a mesh pocket for tabs and stickers, a deep side pocket with a buckle strap for large tumblers, and a roomy main compartment for your journal, laptop, and daily essentials. A CHRISTIAN GIFT SHE\u2019LL USE EVERY WEEK: A thoughtful Christmas, birthday, Mother\u2019s Day, Easter, or baptism gift for your wife, mom, daughter, sister, friend, or small group leader. Arrives as a complete set that\u2019s ready to gift, perfect for any woman who loves Jesus and loves a good bag."
+     },
+     "price": {
+      "amount": 7399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      },
+      {
+       "name": "Size",
+       "label": "Selah Bag + Purse"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/11_e12aa347-e628-4c7c-bade-7f96d10fe9c8.png?v=1794865094"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48208154067100:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48208154099868",
+     "sku": "MPOG001M630NPVC",
+     "title": "Brown / Selah Purse",
+     "description": {
+      "html": "LOOKS LIKE A DESIGNER PURSE, CARRIES YOUR BIBLE: Nobody will guess there\u2019s a Bible inside. The Selah Purse is made from soft vegan leather with gold-tone hardware and a structured shape that looks like a designer handbag. Choose the Selah Purse on its own, or the Selah Bag and Purse set for a matching tote that holds everything else. Available in Black, Brown, and Pink. MADE TO HELP YOU READ YOUR BIBLE INTENTIONALLY: Selah means to pause and reflect. We created Selah to help you intentionally read your Bible. Everything you need to read, mark, and remember Scripture is packed in one place. COMPLETE BIBLE JOURNALING KIT INCLUDED: Comes ready to use with Bible tabs, a Books of the Bible sticker sheet, a Biblical theme key sticky note and bookmark, a Bible reading tracker sticker, 3 black ink cross pens, 3 gel highlighters, and 3 chisel tip highlighters TWO SIZES FOR HOW YOU CARRY: The Selah Purse is a crossbody Bible case with a twist-lock flap and adjustable strap, sized to fit large print Journaling Bibles. The Selah Bag and Purse set adds a matching tote with a front zip compartment, elastic pen loops, a mesh pocket for tabs and stickers, a deep side pocket with a buckle strap for large tumblers, and a roomy main compartment for your journal, laptop, and daily essentials. A CHRISTIAN GIFT SHE\u2019LL USE EVERY WEEK: A thoughtful Christmas, birthday, Mother\u2019s Day, Easter, or baptism gift for your wife, mom, daughter, sister, friend, or small group leader. Arrives as a complete set that\u2019s ready to gift, perfect for any woman who loves Jesus and loves a good bag."
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Brown"
+      },
+      {
+       "name": "Size",
+       "label": "Selah Purse"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/9_267c0fed-1eb2-4547-b13d-252521dbd8b0.png?v=1794865095"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48208154099868:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/48208154132636",
+     "sku": "ZWNL001M630NPVC",
+     "title": "Brown / Selah Bag + Purse",
+     "description": {
+      "html": "LOOKS LIKE A DESIGNER PURSE, CARRIES YOUR BIBLE: Nobody will guess there\u2019s a Bible inside. The Selah Purse is made from soft vegan leather with gold-tone hardware and a structured shape that looks like a designer handbag. Choose the Selah Purse on its own, or the Selah Bag and Purse set for a matching tote that holds everything else. Available in Black, Brown, and Pink. MADE TO HELP YOU READ YOUR BIBLE INTENTIONALLY: Selah means to pause and reflect. We created Selah to help you intentionally read your Bible. Everything you need to read, mark, and remember Scripture is packed in one place. COMPLETE BIBLE JOURNALING KIT INCLUDED: Comes ready to use with Bible tabs, a Books of the Bible sticker sheet, a Biblical theme key sticky note and bookmark, a Bible reading tracker sticker, 3 black ink cross pens, 3 gel highlighters, and 3 chisel tip highlighters TWO SIZES FOR HOW YOU CARRY: The Selah Purse is a crossbody Bible case with a twist-lock flap and adjustable strap, sized to fit large print Journaling Bibles. The Selah Bag and Purse set adds a matching tote with a front zip compartment, elastic pen loops, a mesh pocket for tabs and stickers, a deep side pocket with a buckle strap for large tumblers, and a roomy main compartment for your journal, laptop, and daily essentials. A CHRISTIAN GIFT SHE\u2019LL USE EVERY WEEK: A thoughtful Christmas, birthday, Mother\u2019s Day, Easter, or baptism gift for your wife, mom, daughter, sister, friend, or small group leader. Arrives as a complete set that\u2019s ready to gift, perfect for any woman who loves Jesus and loves a good bag."
+     },
+     "price": {
+      "amount": 7399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Brown"
+      },
+      {
+       "name": "Size",
+       "label": "Selah Bag + Purse"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/12_a298f9f4-0ae8-4ddd-affc-7a33ee89a762.png?v=1794865095"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48208154132636:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Pink"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Brown"
+      }
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "Selah Purse"
+      },
+      {
+       "label": "Selah Bag + Purse"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_c29c5e8a-c3b9-443b-ba89-aa614ba702f5.png?v=1794865095"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/rc-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300696207516",
+     "handle": "bible-covers",
+     "title": "Bible Covers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9355032625308",
+   "title": "Selah Conference 2027",
+   "description": {
+    "html": ""
+   },
+   "url": "https://mrpen.com/products/selah-conference-2027",
+   "handle": "selah-conference-2027",
+   "price_range": {
+    "min": {
+     "amount": 24999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 24999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 34999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 34999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/48073549054108",
+     "title": "General Admission",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 24999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 34999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Ticket Type",
+       "label": "General Admission"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/ticket_3d_yellow.jpg?v=1792696057"
+      }
+     ],
+     "requires": {
+      "shipping": false
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/48073549054108:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Ticket Type",
+     "values": [
+      {
+       "label": "General Admission"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/ticket_3d_yellow.jpg?v=1792696057"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/335407415452",
+     "handle": "selah-conference",
+     "title": "Selah Conference",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}
