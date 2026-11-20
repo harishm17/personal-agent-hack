@@ -370,3 +370,33 @@ Plan ids to retry with once it is cleared: world a83... saved as `a80bbe45-955f-
   fact_classes)` first (a no-op until STORE's function is on main). Figure reads and the instruction scan: `store_text`, `product`.
   The order read: `order`, `limit`, `person`. The chat and the sandbox comparison agent: `limit`, `home_measurement`, `person`,
   `store_text`, `product`, `price` (to the chat model only, never to a store).
+
+## 12:08 from ENGINE — (2) the reader comparison made honest, and the reference checked on `h x w x d`
+- `readers` in `/api/state` (and `data/figures/_runs/comparison.json`) now carries, for each reader other than the reference:
+  `statement`, `both_found`, `same_number`, `different_number`, `only_reference_found`, `only_this_reader_found`,
+  `disagreements` (title, figure, both values, both quotes), `extra` (figures only this reader counts, with quote and what the reference
+  said), `picks_changed` (line, both picks with sums and quotes), `inside_only_with_this_reader` (products this reader lets inside the
+  limits that the reference does not) and `wrong_dimension_position`. The old keys are still there.
+- What it says now:
+  | reader | statement | picks changed | lets inside that the reference does not |
+  |---|---|---|---|
+  | `sie:Qwen/Qwen3.8-27B-FP8` | same number on 170 of 173 figures both readers found; the reference alone found 0, this reader alone found 15 | L2 | 12 products |
+  | Sonnet, second pass | same number on 167 of 171 both found; reference alone 2, second pass alone 2 | L2 | 2 products |
+  | `sie:urchade/gliner_multi-v2.1` | same number on 119 of 136 both found; reference alone 37, this reader alone 17 | L2, L3, L4, L5, L6 | 9 products |
+  You are right that "170 of 173" hid the 15 it adds: with Qwen deciding, 12 more products are inside, among them the Carex Portable
+  Shower Bench (`14.75 <= 21.5`; the reference reads 31 and puts it out) and the L2 pick moves to the Rubber Pads seat.
+- **A check in code now catches that mistake without a second model.** `spans.dimension_position` reads a quote that lists dimensions
+  and says which labelled position the reported number sits at. For Qwen's bench: position 3 of 3, label `d`, expected `w`: flagged
+  in `wrong_dimension_position`. It is reported only; it does not change what counts.
+  - [ ] Decide: make it a rule ("a figure quoted from a labelled dimension list counts only if its number sits at that label")? It
+    changes nothing for the reference (0 flagged) and would put Qwen's bench back to "not stated". One line in `rules.usable`; not done,
+    because it touches the working path.
+- **The reference on multi-dimension strings, all of them** (26 figures, every one `overall_width`; 24 counted, 2 marked unsure):
+  - 21 from `Product Dims (h x w x d): A x B x C` at carex.com, **every one taken from position 2, the `w`**: walkers 23, 26, 22.5, 26,
+    25.5, 25, 19.5, 24, 24.5, 23.5 and 18 (the 18 is marked unsure: "height of 20" does not match a walker"); transfer benches 30.5,
+    26.25, 32.75, 30.3 (`19.6" H x 30.3" W x 4.1" D`), 29.75; Portable Shower Bench 31; Round Shower Stool 13; Bath & Shower Seats 20,
+    20, 20; Universal Bath Seat without Back 21 (`16" - 21" x 21" x 18"`: the 21 at position 2, not the top of the height range).
+  - 5 from strings that label each number: `Outside Legs: 17.5" (W) x 17.25" (D)` → 17.5 (W); `Overall Footprint: 28.5"W x 17.5"D` →
+    28.5 (W); `Dimensions: 23.5”W x 20”L x 32” - 40”H` → 23.5 (W); `Base Dims (Unfolded): 23 L x 22 W` → 22 (W), marked unsure (no unit).
+  - None is taken from a height or depth position. The reference does not make the mistake the small model made. The second Sonnet
+    pass: 0 flagged as well. Test: `test_code_can_tell_which_labelled_dimension_a_number_was_taken_from`.
