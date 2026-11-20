@@ -1461,3 +1461,21 @@ Sheet 3 on my port: the live engine still has no figures (`state_every_figure` 0
 - G18, my half DONE: `sheets/sheet4_order.txt` is loaded in Senso as `order:sheet4` (content id e71e1bf7-7b81-4ef1-9894-ffcdf848dffb, version id 9f206233-b4f7-46cb-a509-70c4606ec937, version 1); the sentences are the document's own (three item sentences and the four limits the therapist sets; the two shopper-measured limits have none, as before); on sheet 4's shape all seven came back `verified` in 12 s. Sheet 1's order document was nearly identical and Senso cited both, so the verdict could not name one version: I took sheet 1's order and handout and sheet 2's order out of the knowledge base (`uv run python -m signoff.sign.senso sheet4 unload order handout order:sheet2`; `senso.load_documents("sheet1")` puts sheet 1's back). Now exactly one version is cited ("Home after surgery order (invented)", version 1). Sheet 3's documents stay as you said. Tests: `tests/sign/test_sheet4.py` (3) and the unload test; `tests/sign` 97 passed.
 - G18 OPEN (waiting on ENGINE): with `SIGNOFF_SHEET=sheet4` the live engine still serves the fixture pool (`fixture-store-a.example`, 19 products, L5 open) because `data_from: sheet1` is not wired to sheet 1's real pool yet; a replay cart for a fixture product cannot exist. The therapist's words need no `vocab` (the order document says "order" and "limits" itself). As soon as `/api/state` for sheet 4 shows real picks I run the rehearsal and save `evals/phone_screens/sheet4/`.
 - G14 still open: the loop is at try 10+ (every 3 minutes, last log 13:21), same `native_participant_capacity_exceeded`.
+## 13:50 from SCREEN (your 13:27 note; main merged at 304a973)
+- Photos and motion are on stream/SCREEN now: the engine passes `image_url`, the rows show the stores' photos, and the
+  opening (rows checked from the cheapest down, the highlight landing, the right column filling) is checked frame by frame
+  on the live grab bar: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-open.png. Please merge so the builder sees it.
+- DONE C4 (images now seen): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s1-L5.png (grab bar, photos, live sheet 1 data), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s1-L1-unclear.png (the engine's own
+  `unclear` status: a solid grey chip with the page's values, the page's sentence and the engine's reason on click).
+  The engine's keys match what I read: `state: "unclear"`, `unclear_why`, and `values` on the store term.
+- The lead example's long run: the grab bar shows "13 cheaper ones above, each rejected with its reason", then the last
+  five rejected rows, the pick and "+ 18 dearer, not needed", all without scrolling at 1440 x 810; the failed figure is the
+  only red in each row ("12 in", "250 lb"); two limits give two columns (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s1-L5.png). I show five, not six or seven,
+  because seven do not fit above the pick at that size; the fold line opens the rest.
+- DONE C9, not exercised against the real route: the sheet's title becomes a small menu when `GET /api/sheets` lists two
+  or more sheets; choosing one posts `{sheet_id, sheet, id}` to `POST /api/admin/use-sheet`, then the screen reloads the
+  state and opens the new sheet's first item (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/menu.png, drawn from a sample list: `/?fixture=sheet3&menu=1`).
+  `/api/sheets` answers 404 on my port (main at 304a973), so the shape is a guess: a list, or `{sheets: [...]}`, of ids or
+  `{id, title, items}`. Tell me the real shape and body key if they differ.
+- Sheet 4 on my port (SIGNOFF_SHEET=sheet4) falls back to fixture data (`mode: fixture`, 3 + 2 + 1 candidates), so I checked
+  the three lead items on sheet 1's live data instead. My port is back on sheet 1.

@@ -24,7 +24,7 @@ let server = null, state = null, raw = "";
 const ui = { open: new Set((params.get("open") || "").split(",").filter(Boolean)), drawer: params.get("drawer"), show: params.get("show"),
   chat: [], busy: false, sim: { limits: {}, facts: {}, strikes: [] } };
 const last = { line: null, pick: null, signed: null, quiet: false };
-const aux = { egress: null, gate: null, enroll: null, trail: null, key: "" };
+const aux = { egress: null, gate: null, enroll: null, trail: null, sheets: null, key: "" };
 let introUntil = 0;
 
 if (SIM) {
@@ -81,13 +81,16 @@ function apply() {
 }
 // Optional extras from their own routes; any may be missing, and the screen draws only what exists.
 async function loadAux() {
-  if (FIXTURE) return;
+  if (FIXTURE) {     // ?fixture=..&menu=1: a sample of the sheet menu, to look at it without the route
+    if (params.get("menu") === "1" && state) { aux.sheets = { sheets: [{ id: state.sheet.id, title: state.sheet.title, items: state.lines.length }, { id: "sample", title: "Sample second list", items: 4 }] }; ui.menu = true; last.quiet = true; render(); }
+    return;
+  }
   const get = (url) => fetch(url, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
   const needCode = state && !(state.issuer_key && state.issuer_key.enrolled) && !state.seal.signed;
-  const [egress, gate, enroll, trail] = await Promise.all([get("/api/egress?limit=5000"), get("/api/gate/status"),
-    needCode ? get("/api/issuer/enroll-code") : null, get("/api/trail")]);
-  const key = JSON.stringify([egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary]);
-  Object.assign(aux, { egress, gate, enroll, trail });
+  const [egress, gate, enroll, trail, sheets] = await Promise.all([get("/api/egress?limit=5000"), get("/api/gate/status"),
+    needCode ? get("/api/issuer/enroll-code") : null, get("/api/trail"), get("/api/sheets")]);
+  const key = JSON.stringify([egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
+  Object.assign(aux, { egress, gate, enroll, trail, sheets });
   if (key !== aux.key && state) {       // redraw quietly, and never in the middle of the opening motion
     aux.key = key;
     setTimeout(() => { last.quiet = true; render(); }, Math.max(0, introUntil - performance.now()));
@@ -180,9 +183,9 @@ function verdict(c, line, pick) {
   const ch = c.checks[Math.max(0, i)], reason = c.reason || "";
   // the three kinds are different things: outside a limit, stated but not clearly, not on the page at all
   if (c.status === "unclear" || isUnclear(c, ch)) {
-    const f = unsureFigure(c, ch) || {}, why = ch.missing_why || f.unsure_reason || (reason.includes(":") ? reason.slice(reason.indexOf(":") + 1).trim() : reason);
+    const f = unsureFigure(c, ch) || {}, why = ch.unclear_why || ch.missing_why || f.unsure_reason || (reason.includes(":") ? reason.slice(reason.indexOf(":") + 1).trim() : reason);
     const many = (ch.terms.find((x) => x.owner === "store") || {}).values;
-    const short = f.quote && !f.unit ? "no unit stated" : (f.low != null && f.high != null && f.low !== f.high) || (many && many.length > 1) ? "two values" : "";
+    const short = f.quote && !f.unit ? "no unit stated" : (f.low != null && f.high != null && f.low !== f.high) || (many && many.length > 1) ? (many && many.length > 2 ? "several values" : "two values") : "";
     return { kind: "no unclear", text: "unclear", why, extra: short };
   }
   if (/quote not found/.test(reason)) return { kind: "no", text: "quote not in the page", why: reason };
@@ -226,12 +229,44 @@ function renderTop() {
   const at = seal.signed_at || (seal.signature && seal.signature.at);
   const time = at ? new Date(at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "";
   q("#top").innerHTML = `<span class="brand">Sign-Off</span>
-    <span class="sheet">${esc(sheet.title)}</span>
+    ${sheetMenu()}
     <nav class="tabs" aria-label="Views"><a href="/${location.search}${location.hash}" aria-current="page">Decision</a><a href="/trail/">Trail</a></nav>
     <span class="meta">${[`${state.lines.length} items`, sheet.invented ? "invented people" + real : "", ...mode].filter(Boolean).join(" · ")}</span>
     <span class="grow"></span>
     <span class="pill ${seal.signed ? "signed" : ""}">${seal.signed ? "Signed " + time : "Not signed"}</span>
     <span class="total" data-k="total">${money(state.total_cents)}</span>`;
+}
+
+// ---------- the sheet switcher: the title is a small menu when the engine offers more than one sheet (laptop only) ----------
+function sheetList() {
+  const raw = aux.sheets, list = Array.isArray(raw) ? raw : raw && (raw.sheets || raw.items);
+  if (!Array.isArray(list)) return [];
+  return list.map((x) => (typeof x === "string" ? { id: x, title: x } : { id: x.id || x.sheet_id, title: x.title || x.id, sub: x.items != null ? `${x.items} items` : x.lines != null ? `${Array.isArray(x.lines) ? x.lines.length : x.lines} items` : "" })).filter((x) => x.id);
+}
+function sheetMenu() {
+  const { sheet } = state, list = sheetList();
+  if (list.length < 2) return `<span class="sheet">${esc(sheet.title)}</span>`;
+  return `<span class="sheetmenu"><button class="sheet pickable" data-menu aria-haspopup="menu" aria-expanded="${!!ui.menu}" title="Switch the list">${esc(sheet.title)} <span class="caret">▾</span></button>
+    ${ui.menu ? `<span class="menu" role="menu">${list.map((x) => `<button role="menuitem" data-sheet="${esc(x.id)}" aria-current="${x.id === sheet.id}"><span>${esc(x.title)}</span>${x.sub ? `<small>${esc(x.sub)}</small>` : ""}</button>`).join("")}</span>` : ""}</span>`;
+}
+async function useSheet(id) {
+  ui.menu = false;
+  if (id === state.sheet.id) { last.quiet = true; return render(); }
+  try {
+    const res = await fetch("/api/admin/use-sheet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sheet_id: id, sheet: id, id }) });
+    if (!res.ok) throw new Error(res.status);
+    Object.assign(ui, { drawer: null, show: null, was: null });
+    ui.open.clear();
+    last.line = null;                                   // the new sheet opens like a first load
+    history.replaceState(null, "", location.pathname + location.search);
+    raw = "";
+    await load();
+    loadAux();
+  } catch (error) {
+    toast(q("[data-menu]") || q("#top"), `Could not switch the list <span class="code2">${esc(error.message)}</span>`);
+    last.quiet = true;
+    render();
+  }
 }
 
 // ---------- the stepper: the run across the top. Every number is from the state ----------
@@ -357,7 +392,7 @@ function pairHtml(ch, limit, c) {
   let store;
   const f = unsureFigure(c, ch);
   if (isUnclear(c, ch)) {
-    const quote = (f && f.quote) || t.quote, why = ch.missing_why || (f && f.unsure_reason) || "";
+    const quote = (f && f.quote) || t.quote, why = ch.unclear_why || ch.missing_why || (f && f.unsure_reason) || "";
     store = src("the store states", quote ? fragment(quote, f || t) : `<span class="chip unclear">${esc(statedText(ch, c) || "unclear")}</span>`)
       + (why ? src("why it is unclear", esc(clip(why.replace(/^stated, but not clearly[^:]*:\s*/, ""), 120))) : "");
   } else if (ch.state === "not_stated") store = src("the store states", `<span class="chip none">not stated on the page</span>`);
@@ -735,8 +770,11 @@ async function forgeChange(anchor) {
 
 // ---------- interaction ----------
 document.addEventListener("click", (e) => {
-  const t = e.target.closest("[data-forge], [data-toggle], [data-show], [data-open], [data-close], .rowx");
+  const t = e.target.closest("[data-sheet], [data-menu], [data-forge], [data-toggle], [data-show], [data-open], [data-close], .rowx");
+  if (ui.menu && !(t && (t.dataset.sheet || t.dataset.menu !== undefined))) { ui.menu = false; if (!t) { last.quiet = true; render(); return; } }
   if (!t || e.target.closest("a, input")) return;
+  if (t.dataset.sheet) return useSheet(t.dataset.sheet);
+  if (t.dataset.menu !== undefined) { ui.menu = !ui.menu; last.quiet = true; return render(); }
   if (t.dataset.forge) return forgeChange(t);
   if (t.dataset.toggle) { ui.open.has(t.dataset.toggle) ? ui.open.delete(t.dataset.toggle) : ui.open.add(t.dataset.toggle); }
   else if (t.dataset.close !== undefined) ui.drawer = null;
@@ -748,7 +786,7 @@ document.addEventListener("click", (e) => {
   if (ui.drawer === "shopper") q("#sayText")?.focus();
 });
 addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && (ui.drawer || ui.show)) { ui.drawer = null; ui.show = null; last.quiet = true; render(); }
+  if (e.key === "Escape" && (ui.drawer || ui.show || ui.menu)) { ui.drawer = null; ui.show = null; ui.menu = false; last.quiet = true; render(); }
   if ((e.key === "Enter" || e.key === " ") && e.target.dataset && e.target.dataset.forge) { e.preventDefault(); forgeChange(e.target); }
   if (e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey || !state) return;
   if (e.key === "e") { e.preventDefault(); ui.drawer = ui.drawer === "shopper" ? null : "shopper"; last.quiet = true; render(); q("#sayText")?.focus(); }
