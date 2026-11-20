@@ -225,6 +225,10 @@ def check(limit, product, figs, facts, sheet):
             terms.append(term)
             continue
         values, source = [], {}
+        usable.sort(key=lambda f: bool(f.get("option_name")))  # where the page and the option's name agree, the page's words are shown
+        first = usable[0]
+        term.update(kind=first.get("kind"), low=first.get("low"), high=first.get("high"), quote=first.get("quote"),
+                    start=first.get("start"), end=first.get("end"))
         for f in usable:
             for v in tested_values(f, op, alone):
                 if not any(abs(v - w) < 1e-9 for w in values):

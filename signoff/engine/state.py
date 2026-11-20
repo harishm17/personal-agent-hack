@@ -92,7 +92,7 @@ def _load_figures(pool, from_data, variants=None):
         option = variants.get((f["store"], f["product_id"], f.get("variant_id")))
         if f["span_found_in_text"] and option:
             spans.apply_option_rule(f, option)
-        if f["span_found_in_text"]:  # the store's whole sentence, for the screen to show around the quote
+        if f["span_found_in_text"] and page is not None:  # the store's whole sentence, for the screen to show around the quote
             sentence, a, b = rules.sentence_around(page, f["start"], f["end"])
             f.update(sentence=sentence, quote_in_sentence=[a, b])
     return figures
@@ -217,6 +217,52 @@ def _load_variants(pool, from_data):
     return out
 
 
+def _option_names(pool, figures, sheet):
+    """An option's own name is a statement about it, and a statement about another size is not (the E26 rule).
+
+    For a candidate that is one option of a product whose name states a figure ("18 Inch"): the name becomes a
+    statement of that figure with its span in the candidate's text; page statements that give the same value,
+    or whose passage names this option's value, are about this option; every other page statement of that
+    figure describes another size and is not put to this candidate's test. If no page statement is about this
+    option, the name stands alone and the check is unclear, with both shown: "option says 18 in; the page
+    describes 12, 16 and 24 in". Returns the figures with the name statements added."""
+    by_row = {}
+    for f in figures:
+        by_row.setdefault((f["store"], f["product_id"], f.get("variant_id")), []).append(f)
+    added = []
+    for row in pool:
+        key = (row["store"], row["product_id"], row.get("variant_id"))
+        for named in options.named_figures(row, sheet, spans.quote_numbers, rules.unit_name, spans.family_of):
+            mine = [f for f in by_row.get(key, []) if f["figure"] == named["figure"] and f.get("span_found_in_text")
+                    and f.get("number_in_quote") is not False]
+            value, about_this, others = named["value"], [], []
+            for f in mine:
+                numbers = [f.get("value")] if f.get("kind") == "single" else [f.get("low"), f.get("high")]
+                numbers = [n for n in numbers if isinstance(n, (int, float))]
+                same = (len(numbers) == 1 and abs(numbers[0] - value) < 1e-6) or \
+                    (len(numbers) == 2 and numbers[0] - 1e-6 <= value <= numbers[1] + 1e-6)
+                names_it = any(abs(n["value"] - value) < 1e-6 for n in spans.quote_numbers(f.get("quote") or ""))
+                (about_this if same or names_it else others).append(f)
+            for f in others:
+                shown = "%g" % f["value"] if f.get("kind") == "single" else "%g to %g" % (f["low"], f["high"])
+                f["for_other_option"] = "describes another size (%s %s); this option is %s" % (shown, f.get("unit") or "", named["quote"])
+            statement = {"store": row["store"], "product_id": row["product_id"], "variant_id": row.get("variant_id"),
+                         "figure": named["figure"], "kind": "single", "value": value, "low": value, "high": value,
+                         "unit": named["unit"], "quote": named["quote"], "start": named["start"], "end": named["end"],
+                         "extractor": "code: the option's own name", "label": "Selected option",
+                         "span_found_in_text": rules.span_found(named, row.get("text")), "option_name": True}
+            if not about_this:
+                described = sorted({n for f in others for n in ([f.get("value")] if f.get("kind") == "single" else [f.get("low"), f.get("high")])
+                                    if isinstance(n, (int, float))})
+                statement["for_other_option"] = "option says %g %s; the page %s" % (
+                    value, named["unit"], ("describes " + ", ".join("%g" % n for n in described[:-1]) + (" and " if len(described) > 1 else "") +
+                                           "%g %s" % (described[-1], named["unit"])) if described else "does not describe it")
+            added.append((key, statement))
+    for key, statement in added:  # the name's statement comes first: its words explain an unclear check
+        figures.insert(0, statement)
+    return figures
+
+
 def _load_extras(pool, from_data):
     """Display-only material beside the figures: instruction-like passages found on pages (each a span of the
     page's text, checked again here) and the planted test page's own reading. None of it reaches the pick rule."""
@@ -285,7 +331,10 @@ def _load(keep_changes=False):
         pool = mine if from_data else pool
     mode = "fixture" if not from_data else ("replay" if config.mode() == "replay" else "live")
     variants = _load_variants(pool, from_data)
-    _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data, variants), mode=mode, loaded=True,
+    figures = _load_figures(pool, from_data, variants)
+    if from_data and os.environ.get("SIGNOFF_OPTION_NAMES") != "off":
+        figures = _option_names(pool, figures, _read(SHEETS / (sheet_id + ".json")))
+    _s.update(pool=pool, answers=answers, figures=figures, mode=mode, loaded=True,
               readers=_load_readers(from_data), extras=_load_extras(pool, from_data),
               order=_load_order(sheet_id, from_data), variants=variants)
     if keep_changes and (_s.get("sheet") or {}).get("id") == sheet_id:
