@@ -215,3 +215,19 @@ tool: the therapist is the first issuer, not the product.
 - Fallback sheet test (11:12, pattern match, 78 cookware products at five stores): induction stated on 9,
   an oven temperature on 9, a diameter on 27. All under half: if sheet 2 is built, its limits change to
   ones those pages state (diameter stays; replace the other two after reading the pool).
+
+## Amendment 11:25 — no hand-check sheet; Sonnet is the reference reader
+- The builder's decision: the 30-product hand-check is dropped and `claude-sonnet-5-5` is trusted as the
+  figure reader (through `claude -p` now, the API key later). The span check in code stays the judge of
+  every figure.
+- Nothing on screen, in the README or on stage says "hand-checked" or gives an accuracy against ground
+  truth. `counts.hand_checked` stays false and the counts strip says "read by the model; quote found in
+  the store's text by code".
+- Other readers (Superlinked SIE, an Arcee model) are measured as **agreement with the Sonnet reference**
+  on the same products, plus the share of their figures whose quote is found, cost and latency. Say
+  "agreement", never "accuracy". This is the outcome for the Statsig gate.
+- First-hour tests left: 4 of 6 lines have two candidates stating every deciding figure; a second phone
+  signs over the tunnel. The integrator spot-reads ten figures against the store text before 12:20.
+- Arcee: the key lists models but every completion returns 402 (no credits). Blocked until the builder
+  gets credits. Until then the shopper chat also goes through `claude -p`.
+- Persona: the template is published to Sandbox and a real inquiry was created at 11:21.
