@@ -15,7 +15,6 @@ _lock = threading.Lock()
 _pending: dict | None = None
 _wake = threading.Event()
 _worker: threading.Thread | None = None
-_ready = False
 _last_error: str | None = None
 
 
@@ -44,6 +43,14 @@ def _pool_fingerprint(pool: list) -> str:
     return hashlib.sha256(json.dumps(pool, sort_keys=True).encode()).hexdigest()[:16]
 
 
+def _bulk(cur, head: str, rows: list, chunk: int = 100) -> None:
+    """One multi-row INSERT per chunk: the database is remote, so round trips dominate."""
+    for i in range(0, len(rows), chunk):
+        part = rows[i:i + chunk]
+        ph = "(" + ",".join(["%s"] * len(part[0])) + ")"
+        cur.execute(head + " VALUES " + ",".join([ph] * len(part)), [v for r in part for v in r])
+
+
 def sync_pool(cur, pool: list) -> None:
     cur.execute("SELECT v FROM meta WHERE k = 'pool_fp'")
     row = cur.fetchone()
@@ -51,19 +58,14 @@ def sync_pool(cur, pool: list) -> None:
     if row and row[0] == fp:
         return
     cur.execute("DELETE FROM pool")
-    cur.executemany(
-        "INSERT INTO pool (store, product_id, variant_id, title, price_cents, url, text, fetched_at, product_key, line_ids)"
-        " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-        [(p["store"], p["product_id"], p["variant_id"], p["title"], p["price_cents"], p["url"], p["text"],
+    _bulk(cur, "INSERT INTO pool (store, product_id, variant_id, title, price_cents, url, text, fetched_at, product_key, line_ids)",
+          [(p["store"], p["product_id"], p["variant_id"], p["title"], p["price_cents"], p["url"], p["text"],
           p["fetched_at"], p["product_key"], json.dumps(p["line_ids"])) for p in pool])
     cur.execute("REPLACE INTO meta (k, v) VALUES ('pool_fp', %s)", (fp,))
 
 
 def _write_now(state: dict) -> None:
-    global _ready
-    if not _ready:
-        schema.ensure()
-        _ready = True
+    schema.ensure()
     from signoff.store import pool as pool_mod
     c = conn.connect()
     try:
@@ -84,21 +86,15 @@ def _write_now(state: dict) -> None:
                                   pr["product_key"], cand["status"], cand.get("reason"), 1 if cand.get("picked") else 0,
                                   pr["price_cents"], json.dumps(cand)))
         cur.execute("DELETE FROM figures")
-        if figs:
-            cur.executemany("INSERT INTO figures (store, product_id, figure, kind, value, low, high, unit, quote,"
-                            " start_pos, end_pos, extractor, span_found_in_text) VALUES"
-                            " (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", list(figs.values()))
+        _bulk(cur, "INSERT INTO figures (store, product_id, figure, kind, value, low, high, unit, quote,"
+                   " start_pos, end_pos, extractor, span_found_in_text)", list(figs.values()))
         cur.execute("DELETE FROM limits")
-        cur.executemany("INSERT INTO limits (limit_id, line_id, name, op, figure, shopper_sum, bound, unit,"
-                        " state_version) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)", limit_rows(state))
+        _bulk(cur, "INSERT INTO limits (limit_id, line_id, name, op, figure, shopper_sum, bound, unit, state_version)",
+              limit_rows(state))
         cur.execute("DELETE FROM strikes")
-        if strikes:
-            cur.executemany("INSERT INTO strikes (line_id, product_key, reason) VALUES (%s,%s,%s)",
-                            [(k[0], k[1], v) for k, v in strikes.items()])
-        if decisions:
-            cur.executemany("REPLACE INTO decisions (state_version, candidate_id, line_id, store, product_id,"
-                            " product_key, status, reason, picked, price_cents, record)"
-                            " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", decisions)
+        _bulk(cur, "INSERT INTO strikes (line_id, product_key, reason)", [(k[0], k[1], v) for k, v in strikes.items()])
+        _bulk(cur, "REPLACE INTO decisions (state_version, candidate_id, line_id, store, product_id, product_key,"
+                   " status, reason, picked, price_cents, record)", decisions)
     finally:
         c.close()
 
