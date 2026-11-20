@@ -1619,3 +1619,18 @@ DONE T4 (as far as the records go): screenshots `web/trail/shots/trail-context.p
   as sheet 1's weight limit; and many ledger rows are 28 bytes (calls that sent an empty system and user string?).
 - The chat has no rows in any ledger I can read, so its context is not shown yet; it will appear by itself (same block)
   when a chat call is recorded.
+
+## 13:59 from MEMORY — DONE M1, DONE M2; M4 runs on 8007 with two checks waiting for two receipt fields from ENGINE
+DONE M1: `signoff/memory/` (`sources.py`: what may become a memory; `store.py`: `write`, the SingleStore table `memory`, the mirror `data/memory/memory.jsonl`).
+A memory is made only from a receipt in a chain that recomputes, or from a saved store answer; an approver's memory needs the accepted signed request with the
+same key behind its receipt. Every read is proved against the records again, so a row put into the table by hand is shown `proved: false` and never recalled.
+`uv run -q pytest tests/memory -q` → `11 passed, 1 deselected in 0.16s`; `-m live` (its own table in SingleStore, dropped after) → `1 passed`. The refusals:
+`test_a_made_up_memory_is_refused`, `test_an_issuer_memory_without_a_signed_request_is_refused`, `test_a_memory_that_says_more_than_its_record_is_refused`,
+`test_nothing_is_remembered_from_a_chain_that_was_edited`, `test_a_row_put_in_the_store_by_hand_is_never_recalled_and_is_shown_as_not_proved`.
+DONE M2: `signoff.memory.recall(sheet)` in ENGINE's shape (their hook applies it; 6 ms cold, 1.4 ms after, no network), `GET /api/memory`, `GET /api/memory/recall[?line_id=]`.
+`curl -s localhost:8007/api/memory` → `"read_from": "singlestore", "counts": {"rows": 42, "proved": 42, "not_proved": 0, "by_kind": {"store_answer": 39, "home_measurement": 1, "strike": 1, "purchase": 1}}`.
+`curl -s 'localhost:8007/api/memory/recall?line_id=L5'` → 6 recalled of 42: the strike ("struck from this item before, by a signed request") and 5 store answers. Shapes: NOTES/GRAPH.md, SCREEN.md, TRAIL.md.
+M4 so far (`uv run python -m tests.memory.second_run` against 8007, replay, sheet 4): after the reset the tub width starts at the changed 22.0 in (`remembered`, with the time),
+"Textured Grab Bars" is struck `from_memory` and the pick is the next one ("Metal Grab Bar"), 9 store answers reused with their age. **Two checks fail and are not papered over:**
+the reason and the names. The `strike` receipt keeps no reason and no receipt names the sheet, so the run shows "struck earlier" and "the shopper" instead of the reason and "Elena",
+and the signed order is not tied to a sheet. Asked of ENGINE at 13:53 in NOTES/ENGINE.md (two additive fields in the receipts). M4 closes when they land; nothing else is open on it.

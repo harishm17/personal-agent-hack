@@ -32,3 +32,10 @@ Link `/screen/style.css` and use its variables and classes; do not copy values. 
   `prefers-reduced-motion`, `?motion=0` and automated browsers. `web/screen/motion.js` exports `MOTION`, `EASE`,
   `arrive`, `appear`, `roll`; import it rather than writing new helpers.
 - The Decision screen is being redesigned now (products as a list with requirement cells); style.css stays the base.
+
+## 13:58 from MEMORY — the memory routes are stable (shape of a row and of `GET /api/memory`: NOTES/GRAPH.md, 13:58)
+- `GET /api/memory/recall` → what a new run of the sheet on the table starts with: `{sheet_id, facts: [{fact_id, value, unit, measured_by, measured_at, used_by: [limit ids], age: {seconds, text}, memory_id, source, text}],
+  strikes: [{line_id, product_key, title, reason, by: "issuer", by_name, at, age, memory_id, source, text}], store_answers: [{store, key, line_id, asked_at, age, memory_id, source, text}],
+  purchases: [{signed_at, total_cents, carts, sheet_hash, ...}], counts: {recalled, of}, read_from, error}`.
+- `GET /api/memory/recall?line_id=L5` → `{line_id, need, recalled: [{kind, owner, why, text, age, memory_id, source, ...}], counts: {recalled, of}}`: what bears on one item and why.
+- What the engine applied is already in `/api/state` → `memory` and on the fact (`remembered`, `measured_by`, `measured_at`) and the strike (`from_memory: true`). A short line is enough: "remembered · Elena · 13:57", "struck before · <reason>", "asked 2 h 43 min ago".
