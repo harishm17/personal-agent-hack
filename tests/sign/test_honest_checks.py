@@ -73,4 +73,4 @@ def test_identity_is_never_implied(env):
 def test_a_sentence_that_differs_or_is_unsupported_is_counted_not_hidden():
     rows = [{"verdict": "verified"}] * 5 + [{"verdict": "conflict"}, {"verdict": "unsupported"}]
     assert text_for({"senso": {"status": "complete", "checks": rows}}, "list") == \
-        "Checked against the list: 5 of 7 verified, 1 differ from the list, 1 not supported by the list"
+        "Checked against the list: 5 of 7 verified, 1 differs from the list, 1 not supported by the list"
