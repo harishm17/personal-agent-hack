@@ -43,6 +43,14 @@ RECEIPT_PLACE = {
     "carts_updated": ("agent", "stores", "action", "carts", "cart"),
     "reader_switched": ("agent", "reader", "action", None, "reader"),
 }
+# The agent's own tool calls, as logged with their measured time (signoff.obs.recent): name -> (step, kind).
+# A name not listed is an action in the step in progress.
+TOOL_PLACE = {"figure_read": ("pages_read", "reading"), "check_run": ("checked", "check"),
+              "search_catalog": ("stores_searched", "action"), "ask_business": ("pages_read", "action"),
+              "create_cart": ("carts", "action")}
+# Steps whose results outlive a reset (cached evidence and its reading). The other steps are worked out again
+# for every run, so a record of theirs from before the current receipt chain began belongs to an earlier run.
+KEPT_ACROSS_RESETS = {"list_read", "stores_searched", "pages_read"}
 # What a signed request carried, by its own `type`.
 REQUEST_MARK = {"set_limit": "limit", "strike": "strike", "unstrike": "strike", "sign_sheet": "signature"}
 
@@ -283,6 +291,18 @@ def _atoms(src: dict) -> list:
             item={"title": words, "receipt": r.get("n"), "hash": r.get("hash"), "prev_hash": r.get("prev_hash"),
                   "body_hash": r.get("body_hash"), "actor": r.get("actor"), "key_id": r.get("key_id")})
 
+    # the agent's tool calls, each with the time it took
+    for c in src.get("tools") or []:
+        step, kind = TOOL_PLACE.get(c.get("name"), (None, "action"))
+        ok, name = c.get("success") is not False, _plain(str(c.get("name") or "tool call").replace(".", " "))
+        ms = c.get("duration_ms")
+        add(c.get("at"), step if _epoch(c.get("at")) is not None else None, kind, "tool", "agent", "agent",
+            name if ok else name + " failed", (name + "s") if ok else name + " failed", source="tools",
+            detail="measured" if ok else str(c.get("error") or "failed"), stopped=not ok, group=("tool", c.get("name"), ok),
+            duration_ms=int(round(ms)) if isinstance(ms, (int, float)) and not isinstance(ms, bool) else None,
+            item={"title": name, "status": None if ok else "failed", "quote": str(c.get("error") or ""),
+                  "at": c.get("at"), "ms": ms})
+
     # the reader gate's changes
     for h in (src.get("gate") or {}).get("history") or []:
         add(h.get("at"), None, "action", "gate", "records", "agent",
@@ -336,7 +356,7 @@ def _atoms(src: dict) -> list:
     return out
 
 
-def _events(atoms: list) -> list:
+def _events(atoms: list, run_started=None) -> tuple:
     """Atoms in time order (those without a time after them). An atom with no step of its own takes the step in
     progress at its time (`own_step` false: it happened during the step; such records of one kind are one event per
     step however far apart, and their span is not a duration). Atoms that share a `group` and a step, and follow each other within GAP_S, are one event."""
@@ -348,8 +368,11 @@ def _events(atoms: list) -> list:
             a["step"] = current
         else:
             current = a["step"]
+    # the run began with the receipt chain; a record within GAP_S before it is part of the same burst
+    kept = [a for a in timed if run_started is None or a["t"] >= run_started - GAP_S or a["step"] in KEPT_ACROSS_RESETS]
+    earlier = len(timed) - len(kept)
     open_groups, events = {}, []
-    for a in timed + [a for a in atoms if a["t"] is None]:
+    for a in kept + [a for a in atoms if a["t"] is None]:
         items = a.pop("items", None) or [a["item"]]
         key = (a["group"], a["step"]) if a["group"] else None
         g = open_groups.get(key) if key else None
@@ -358,21 +381,24 @@ def _events(atoms: list) -> list:
             g["_last"] = a["t"] if a["t"] is not None else g["_last"]
             g["_items"].extend(items)
             g["_verified"].append(a["verified"])
+            g["_measured"].append(a["duration_ms"])
             continue
         e = {k: a[k] for k in ("t", "step", "kind", "mark", "lane", "to_lane", "detail", "ref", "duration_ms",
                                "stopped", "facts", "source", "proof")}
         e["own_step"] = a.get("own_step", True)
         e.update(count=a["units"], _one=a["one"], _many=a["many"], _last=a["t"], _items=list(items),
-                 _verified=[a["verified"]])
+                 _verified=[a["verified"]], _measured=[a["duration_ms"]])
         events.append(e)
         if key:
             open_groups[key] = e
     out = []
     for n, e in enumerate(events, 1):
         seen, items, one, many, last = e.pop("_verified"), e.pop("_items"), e.pop("_one"), e.pop("_many"), e.pop("_last")
-        t = e.pop("t")
+        t, measured = e.pop("t"), [m for m in e.pop("_measured") if m is not None]
         spans = t is not None and last is not None and last > t
-        if e["duration_ms"] is None and spans and e["own_step"]:
+        if measured:                      # times that were measured add up
+            e["duration_ms"] = sum(measured)
+        elif spans and e["own_step"]:     # otherwise the time from the first record to the last
             e["duration_ms"] = int(round((last - t) * 1000))
         first = items[0] if items else {}
         out.append({"n": n, "at": _iso(t) if t is not None else None, "end_at": _iso(last) if spans else None,
@@ -386,8 +412,9 @@ def _events(atoms: list) -> list:
                     "proof": e["proof"], "stopped": e["stopped"], "facts": e["facts"], "source": e["source"],
                     "receipt": first.get("receipt") if e["source"] == "receipt" else None,
                     "hash": first.get("hash") if e["source"] == "receipt" else None,
+                    "timed": "measured" if measured else ("first to last" if e["duration_ms"] is not None else None),
                     "items": items[:ITEMS], "more": max(0, len(items) - ITEMS)})
-    return out
+    return out, earlier
 
 
 def _step_labels(state: dict) -> dict:
@@ -439,8 +466,8 @@ def build(src: dict) -> dict:
     """The feed. `src` is what `collect()` returns; every key may be missing."""
     src = src or {}
     state = src.get("state") or {}
-    events = _events(_atoms(src))
     chain = src.get("receipts") or []
+    events, earlier = _events(_atoms(src), _epoch(chain[0].get("at")) if chain else None)
     check = src.get("receipt_check") or {}
     bad = check.get("first_bad")
     held = len(chain) if check.get("verified") else (max(0, bad - 1) if isinstance(bad, int) else 0)
@@ -448,7 +475,7 @@ def build(src: dict) -> dict:
     sheet = state.get("sheet") or {}
     return {
         "sheet": {"id": sheet.get("id"), "title": sheet.get("title"), "invented": sheet.get("invented"),
-                  "items": len(state.get("lines") or [])},
+                  "items": len(state.get("lines") or []), "total_cents": state.get("total_cents")},
         "mode": state.get("mode"),
         "state_version": state.get("version"),
         "signed": bool((state.get("seal") or {}).get("signed")),
@@ -464,7 +491,8 @@ def build(src: dict) -> dict:
                     "kinds": {k: sum(1 for e in events if e["kind"] == k) for k in KINDS},
                     "messages_out": eg.get("messages"), "to_stores": eg.get("to_stores"),
                     "limits_to_stores": eg.get("limits_in_store_messages"), "blocked": eg.get("blocked"),
-                    "receipts": len(chain), "receipts_verified": held},
+                    "receipts": len(chain), "receipts_verified": held,
+                    "earlier_runs": earlier},
         "sources": src.get("sources") or [],
     }
 
@@ -499,6 +527,10 @@ def collect() -> dict:
         src["egress_summary"] = summary(rs)
         return rs
 
+    def _tools():
+        from signoff import obs
+        return obs.recent(2000)
+
     def _gate():
         from signoff.obs import gate
         return {"history": list(gate._s.get("history") or [])}
@@ -519,7 +551,7 @@ def collect() -> dict:
         from signoff.airbyte import api
         return api.status()
 
-    for name, fn in (("state", _state), ("receipts", _receipts), ("egress", _egress), ("gate", _gate),
+    for name, fn in (("state", _state), ("receipts", _receipts), ("egress", _egress), ("tools", _tools), ("gate", _gate),
                      ("senso", _senso), ("persona", _persona), ("relay", _relay), ("airbyte", _airbyte)):
         src[name] = read(name, fn)
     src["sources"] = sources
