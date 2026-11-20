@@ -60,7 +60,7 @@ def limit_rows(state: dict) -> list[tuple]:
             b = lim["bound"]
             bound = b["value"] if b["source"] == "issuer" else facts[b["fact"]]
             rows.append((lim["id"], line["id"], lim["name"], lim["op"], store[0] if store else None, shopper, bound,
-                         _unit(lim.get("unit")), lim.get("several"), state["version"]))
+                         _unit(lim.get("unit")), lim.get("several"), 0 if lim.get("unit_required") is False else 1, state["version"]))
     return rows
 
 
@@ -92,7 +92,7 @@ def _figure_rows(state: dict) -> tuple[list, list]:
                                  _unit(f.get("unit")), f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
                                  1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0,
                                  None if f.get("number_in_quote") is None else (1 if f.get("number_in_quote") else 0),
-                                 f.get("for_other_option")))
+                                 f.get("for_other_option") or f.get("disagree")))
                 for other in f.get("possible") or []:
                     if isinstance(other, (int, float)) and not isinstance(other, bool):
                         idx = seen[f["figure"]] = seen[f["figure"]] + 1
@@ -100,7 +100,7 @@ def _figure_rows(state: dict) -> tuple[list, list]:
                                          f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
                                          1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0,
                                          None if f.get("number_in_quote") is None else (1 if f.get("number_in_quote") else 0),
-                                         f.get("for_other_option")))
+                                         f.get("for_other_option") or f.get("disagree")))
     return pool_rows, fig_rows
 
 
@@ -139,7 +139,7 @@ def _write_now_locked(state: dict) -> None:
         _bulk(cur, "INSERT INTO figures (cand_id, figure, idx, kind, value, low, high, unit, quote, start_pos, end_pos,"
                    " extractor, span_found_in_text, unsure, number_in_quote, for_other_option)", fig_rows)
         cur.execute("DELETE FROM limits")
-        _bulk(cur, "INSERT INTO limits (limit_id, line_id, name, op, figure, shopper_sum, bound, unit, several, state_version)",
+        _bulk(cur, "INSERT INTO limits (limit_id, line_id, name, op, figure, shopper_sum, bound, unit, several, unit_required, state_version)",
               limit_rows(state))
         cur.execute("DELETE FROM strikes")
         _bulk(cur, "INSERT INTO strikes (line_id, product_key, reason)", [(k[0], k[1], v) for k, v in strikes.items()])

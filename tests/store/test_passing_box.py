@@ -63,6 +63,8 @@ def _roughen(figures, rnd):
         if roll < 0.15:
             f["unsure"] = True
             f["unsure_reason"] = "test: two different numbers on the page"
+        if 0.15 <= roll < 0.22:
+            f["disagree"] = "readers disagree: %g and %g" % (f.get("low") or 0, (f.get("high") or 0) * 0.8)  # the second reader read another number
         if roll > 0.93:
             f["unit"] = "cm"
         out.append(f)
@@ -176,6 +178,7 @@ def test_sql_tests_every_stated_value_and_every_option_on_sheet3(db):
         ("f", None, [fig({"product_id": "f"}, "spread", low=75, high=94)], False),                            # a spread tests both ends
         ("g", None, [], False),                                                                               # never stated
         ("h", None, [fig({"product_id": "h"}, "single", 50, number_in_quote=False)], False),                  # no number in its quote
+        ("i", None, [fig({"product_id": "i"}, "single", 80, disagree="readers disagree: 80 and 95 dB")], False),  # the two readers disagree: unclear
     ]
     for several, expect in ((None, [c[0] + (":" + c[1] if c[1] else "") for c in cases if c[3]]),
                             ("smallest", None), ("largest", None)):
@@ -187,6 +190,26 @@ def test_sql_tests_every_stated_value_and_every_option_on_sheet3(db):
         if expect is not None:
             assert got == sorted(expect), (several, got)
         elif several == "smallest":  # only the smallest stated value is tested: b (80), c (70), f (75) now pass
-            assert got == sorted(["a", "b", "c", "d:v1", "f"]), got
+            assert got == sorted(["a", "b", "c", "d:v1", "f"]), got  # i is blocked in every mode: the readers disagree
         else:  # largest: 80 passes (a), b 95 fails, c 85 passes, d:v2 94 fails, f 94 fails
             assert got == sorted(["a", "c", "d:v1"]), got
+
+
+@pytest.mark.live
+def test_a_count_limit_takes_a_bare_number_but_a_measure_does_not(db):
+    """`unit_required: false` (a count of crayons or sheets) accepts a figure with no unit; any other limit does not."""
+    import copy
+    sheet = copy.deepcopy(json.loads((ROOT / "sheets" / "sheet3.json").read_text()))
+    c2 = next(l for l in sheet["lines"] if l["id"] == "C2")
+    assert c2["limits"][0].get("unit_required") is False
+    def cand(pid, unit):
+        f = {"store": "s.com", "product_id": pid, "figure": "crayon_count", "kind": "single", "value": 24, "low": 24, "high": 24, "unit": unit,
+             "quote": "q", "start": 0, "end": 1, "extractor": "t", "span_found_in_text": True}
+        p = {"store": "s.com", "product_id": pid, "variant_id": None, "title": "t", "price_cents": 100, "product_key": "k" + pid, "url": "u"}
+        return {"id": "C2:s.com:" + pid, "product": p, "figures": [f], "status": "x", "picked": False}
+    for required, expect in ((False, ["bare", "ct"]), (True, ["ct"])):
+        lim = {**c2["limits"][0], "unit_required": required}
+        sh = {**sheet, "lines": [{**c2, "limits": [lim]}]}
+        state = {"version": 1, "sheet": sh, "lines": [{"line_id": "C2", "struck": [], "candidates": [cand("bare", None), cand("ct", "ct"), cand("cm", "cm")]}]}
+        records.write_sync(state)
+        assert sorted(r["product_id"] for r in passing.passing_box("C2")["rows"]) == sorted(expect), required

@@ -2,8 +2,11 @@
 at request time. A tool with no real call is absent (and listed under `absent` with the reason). Nothing here is invented: every
 number is a count or a status that the source returned.
 
-Row: {tool, job (five words or fewer), number, unit, detail, source, ok, basis}. `ok` is true when a real call succeeded in this
-process for this request; `basis` says plainly "live call just now", "this process since it started" or "saved run (<when>)".
+Row: {tool, job (five words or fewer), number, unit, detail, source, ok, live, agrees, basis}.
+  ok     the source answered and the number is what it returned (never "the check failed": that is `agrees`);
+  live   true when the number comes from a call made by this app just now or since it started; false for a saved run;
+  agrees for the SQL rows only: the statement's rows equal the engine's inside set (null for the other tools);
+  basis  one plain sentence on where the number comes from, for a viewer.
 """
 import asyncio
 import datetime
@@ -33,9 +36,10 @@ async def _get(app, path: str) -> dict | None:
         return None
 
 
-def _row(tool, job, number, unit, detail, source, ok, basis) -> dict:
+def _row(tool, job, number, unit, detail, source, ok, basis, live=True, agrees=None) -> dict:
     assert len(job.split()) <= 5, job
-    return {"tool": tool, "job": job, "number": number, "unit": unit, "detail": detail, "source": source, "ok": bool(ok), "basis": basis}
+    return {"tool": tool, "job": job, "number": number, "unit": unit, "detail": detail, "source": source, "ok": bool(ok),
+            "live": bool(live), "agrees": agrees, "basis": basis}
 
 
 def _line(state: dict, wanted: str | None) -> dict:
@@ -162,7 +166,7 @@ async def build(app, line_id: str | None = None) -> dict:
         rows.append(_row("SingleStore", "Candidates inside, in SQL", s["rows"], "candidates inside the limits",
                          "One SQL statement for %s %s: %d rows, %s the engine's inside set (%d); %d decision records over %d state versions."
                          % (line["line_id"], line.get("need", ""), s["rows"], "the same as" if s["same"] else "NOT the same as", s["engine"], s["decisions"], s["versions"]),
-                         "/api/sql/passing-box?line_id=%s" % line["line_id"], s["same"], "live query just now"))
+                         "/api/sql/passing-box?line_id=%s" % line["line_id"], True, "A query this app ran against SingleStore just now.", True, s["same"]))
     else:
         absent.append({"tool": "SingleStore", "why": sql.get("singlestore_error", "no result")})
     # Airbyte
@@ -171,8 +175,8 @@ async def build(app, line_id: str | None = None) -> dict:
         rows.append(_row("Airbyte", "Rows delivered to SingleStore", a["delivered"], "rows delivered",
                          "The same query on those rows returns %d candidates for %s: same: %s. Jobs %s, last sync %s." % (
                              a["rows"], line["line_id"], str(a["same"]).lower(), ", ".join(str(j) for j in (a["last_run_jobs"] or [])) or "n/a", a["last_synced_at"]),
-                         "/api/sql/passing-box?line_id=%s&source=airbyte" % line["line_id"], a["same"],
-                         "live query just now on rows delivered by saved jobs (last run %s)" % a["last_run_at"]))
+                         "/api/sql/passing-box?line_id=%s&source=airbyte" % line["line_id"], True,
+                         "A query this app ran just now, on rows that Airbyte's earlier sync jobs delivered (last run %s)." % a["last_run_at"], True, a["same"]))
     else:
         absent.append({"tool": "Airbyte", "why": sql.get("airbyte_error", "no result")})
     # Statsig
@@ -182,7 +186,7 @@ async def build(app, line_id: str | None = None) -> dict:
         rows.append(_row("Statsig", "Gate switches reading mode", ev.get("real_disagreements_caught", 0), "real disagreements caught",
                          "Gate %s is %s (%s); decision: %s. %s" % (gate["gate"], "on" if gate["value"] else "off", gate.get("deciding_reader"),
                                                                     gate.get("decision"), gate.get("decision_text") or ""),
-                         "/api/gate/status", True, "live: the gate was read %ss ago" % gate.get("last_polled_ago_s")))
+                         "/api/gate/status", True, "The gate was read from Statsig %s seconds ago; the numbers are the engine's own measurement." % gate.get("last_polled_ago_s"), True))
     else:
         absent.append({"tool": "Statsig", "why": "the gate is not being read" if gate else "no gate status"})
     # Amplitude
@@ -196,7 +200,7 @@ async def build(app, line_id: str | None = None) -> dict:
                          "%s; variant on the session now: %s (%d distinct variant sets seen on delivered events); %d tool calls recorded in the local log."
                          % (", ".join("%d %s" % (v, k) for k, v in sorted(by.items())) or "no breakdown", ", ".join("%s=%s" % (e["key"], e["variant"]) for e in cur),
                             len(seen), len(local)),
-                         "/api/obs/status", st.get("last_status") == 200, "this process since it started"))
+                         "/api/obs/status", st.get("last_status") == 200, "Events this app sent since it started; Amplitude answered %s." % st.get("last_status"), True))
     else:
         absent.append({"tool": "Amplitude", "why": "no event delivered in this process yet"})
     # Senso
@@ -208,7 +212,7 @@ async def build(app, line_id: str | None = None) -> dict:
         rows.append(_row("Senso", "Checks the sheet's sentences", n, "sentences checked",
                          "Against the order document%s%s; label: %s." % (" (version %s)" % doc.get("version_id") if doc.get("version_id") else "",
                                                                          " titled %r" % doc.get("title") if doc.get("title") else "", senso.get("label")),
-                         "/api/senso/checks", not senso.get("error"), "run for this sheet's hash, ran %s" % senso.get("ran_at")))
+                         "/api/senso/checks", not senso.get("error"), "Senso's check of this sheet, run at %s." % senso.get("ran_at"), True))
     else:
         absent.append({"tool": "Senso", "why": "no check has run for the current sheet"})
     # Superlinked SIE
@@ -223,7 +227,8 @@ async def build(app, line_id: str | None = None) -> dict:
                          "%s read %s pages (%s statements); %s read %s; the two read %s figures differently, %s only the reference found; %s embedding calls in the ledger."
                          % (sie["extractor"], sie.get("pages_read"), sie.get("statements"), ref.get("extractor"), ref.get("pages_read"),
                             (tr.get("strict_mode_measured") or {}).get("real_disagreements_caught"), (tr.get("strict_mode_measured") or {}).get("figures_blocked_that_only_the_reference_found"), embeds),
-                         "/api/state (readers, two_readers)", False, "saved run (%s)" % (state.get("readers") or {}).get("made_at")))
+                         "/api/state (readers, two_readers)", True,
+                         "The pages were read once, earlier (%s), and the answers saved; this is not a call made just now." % (state.get("readers") or {}).get("made_at"), False))
     else:
         absent.append({"tool": "Superlinked SIE", "why": "no second reader's run for this sheet"})
     # Persona
@@ -231,7 +236,7 @@ async def build(app, line_id: str | None = None) -> dict:
     if persona and persona.get("inquiry_id"):
         rows.append(_row("Persona", "Verifies the signer", 1, "identity inquiry",
                          "Inquiry %s: %s (%s)." % (persona["inquiry_id"], persona.get("status"), "sandbox" if persona.get("sandbox") else "production"),
-                         "/api/issuer/persona/status", bool(persona.get("verified")), "inquiry made in this run"))
+                         "/api/issuer/persona/status", True, "An identity inquiry started in this run; status %s." % persona.get("status"), True))
     else:
         absent.append({"tool": "Persona", "why": "no identity inquiry started"})
     # Firedrill
@@ -247,14 +252,15 @@ async def build(app, line_id: str | None = None) -> dict:
                          "Campaigns %s. Scores of the latest: %s. Re-run after the fix with every criterion met: %s." % (
                              ", ".join(x["id"][:8] for x in c), "; ".join("%s %s (threshold %s)" % (k, v["average"], v["threshold"]) for k, v in crit.items()) or "none",
                              "yes" if rerun else "no"),
-                         "evals/firedrill/*/report.txt", False, "saved runs (latest %s)" % last["saved"]))
+                         "evals/firedrill/*/report.txt", True,
+                         "The attacks were run earlier by Firedrill and the reports saved (latest %s); not run just now." % last["saved"], False))
     # Cognee
     cog = await _get(app, "/api/graph/cognee")
     if cog and cog.get("configured") and (cog.get("datasets") or cog.get("log")):
         rows.append(_row("Cognee", "Facts held by owner", len(cog.get("datasets") or {}), "datasets",
                          "Backend: %s; %d identities; %d writes refused of %d logged." % (cog.get("backend"), len(cog.get("identities") or {}),
                                                                                          len(cog.get("refused") or []), len(cog.get("log") or [])),
-                         "/api/graph/cognee", True, "live read just now"))
+                         "/api/graph/cognee", True, "Read from the memory service just now.", True))
     else:
         absent.append({"tool": "Cognee", "why": "no datasets or log entries held for this sheet"})
     return {"tools": rows, "absent": absent, "sheet": sheet_id, "line_id": line["line_id"], "at": datetime.datetime.now().astimezone().isoformat(timespec="seconds")}
