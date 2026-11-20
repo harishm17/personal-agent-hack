@@ -36,6 +36,28 @@ def span_found(figure, text):
     return 0 <= start < end <= len(text) and text[start:end] == quote
 
 
+def sentence_around(text, start, end, most=260):
+    """(sentence, a, b): the store's sentence holding the span, and where the span sits inside it.
+    A very long sentence is cut at word ends near the span and marked with ellipses."""
+    left = max(text.rfind(". ", 0, start) + 2 if text.rfind(". ", 0, start) >= 0 else 0,
+               text.rfind("\n", 0, start) + 1, text.rfind("? ", 0, start) + 2 if text.rfind("? ", 0, start) >= 0 else 0)
+    stops = [i for i in (text.find(". ", end - 1), text.find("\n", end), text.find("? ", end)) if i >= 0]
+    right = min(min(stops) + 1 if stops else len(text), len(text))
+    right = max(right, end)
+    head, tail = "", ""
+    if right - left > most:
+        room = max((most - (end - start)) // 2, 20)
+        if start - left > room:
+            cut = text.find(" ", start - room, start)
+            left, head = (cut + 1 if cut >= 0 else start - room), "… "
+        if right - end > room:
+            cut = text.rfind(" ", end, end + room)
+            right, tail = (cut if cut >= 0 else end + room), " …"
+    sentence = head + text[left:right].rstrip() + tail
+    a = len(head) + start - left
+    return sentence, a, a + (end - start)
+
+
 def deciding(fig, op):
     """A spread uses the end that could fail. An adjustable range uses the end that reaches furthest."""
     if fig["kind"] == "single":
@@ -86,6 +108,8 @@ def check(limit, product, figs, facts, sheet):
                       "figure": t["figure"], "value": v, "unit": fig["unit"], "kind": fig["kind"],
                       "low": fig["low"], "high": fig["high"], "quote": fig["quote"],
                       "start": fig["start"], "end": fig["end"]})
+        if fig.get("sentence"):
+            terms[-1].update(sentence=fig["sentence"], quote_in_sentence=fig["quote_in_sentence"])
         lhs += v
     b = limit["bound"]
     if b["source"] == "issuer":
@@ -191,8 +215,14 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
                         "text": "nothing to spare" if t["margin"] == 0 else "%g %s to spare" % (t["margin"], t["bound"]["unit"])}
         else:
             status, tightest = "open", None
-            reason = "no page states every figure" if not inside and any(c["status"] == "not_stated" for c in cands) \
-                else ("nothing inside the limits" if not inside else "nothing inside the limits states a delivery time")
+            if inside:
+                reason = "nothing inside the limits states a delivery time"
+            elif any(c["status"] == "outside" for c in cands):  # pages that state every figure exist, and all fail
+                reason = "nothing inside the limits"
+            elif any(c["status"] == "not_stated" for c in cands):
+                reason = "no page states every figure"
+            else:
+                reason = "nothing inside the limits"
         lines.append({"line_id": line["id"], "need": line["need"], "room": line["room"], "status": status,
                       "reason": reason, "pick": pick["id"] if pick else None, "tightest": tightest,
                       "why": {"total": len(cands), "inside": len(inside), "with_delivery_time": len(eligible),

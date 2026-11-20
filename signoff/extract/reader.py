@@ -3,20 +3,24 @@
 It is never asked for offsets and never asked whether a product is suitable. `spans.finish` turns a
 proposal into a record, and only code decides whether the quote is in the store's text.
 
-Model routing (env `SIGNOFF_READER_MODEL`): an id starting with `claude` goes to Anthropic (the `claude -p`
-command line until `ANTHROPIC_API_KEY` exists); any other id goes to Arcee's OpenAI-compatible endpoint.
+Model routing (env `SIGNOFF_READER_MODEL`): `sie:<model>` is a generative model on Superlinked SIE
+Serverless; `claude...` is Anthropic (the `claude -p` command line until `ANTHROPIC_API_KEY` exists);
+`arcee:<model>` or any other id is Arcee. SIE and Arcee are both OpenAI-compatible chat endpoints.
 """
 import json
+import logging
 import pathlib
 import subprocess
 import tempfile
+import time
 
 import httpx
 
 from signoff import config
 
-DEFAULT_MODEL = "zai-org/glm-5.3"
+DEFAULT_MODEL = "claude-sonnet-5-5"  # the reference reader (CONTRACT.md, amendment 11:25)
 ARCEE_URL = "https://api.arcee.ai/api/v1/chat/completions"
+SIE_URL = "https://api.superlinked.com/v1/chat/completions"
 
 # What each figure name means. A sheet may carry its own under "figures": {name: definition}.
 GLOSSARY = {
@@ -92,15 +96,19 @@ def parse(reply):
     return [f for f in figures if isinstance(f, dict)]
 
 
-def ask_arcee(model, system, user, timeout=120.0, max_tokens=4000):
-    response = httpx.post(ARCEE_URL, timeout=timeout,
-                          headers={"Authorization": "Bearer %s" % config.env("ARCEE_API_KEY")},
-                          json={"model": model, "temperature": 0, "max_tokens": max_tokens,
-                                "messages": [{"role": "system", "content": system},
-                                             {"role": "user", "content": user}]})
-    response.raise_for_status()
-    body = response.json()
-    return body["choices"][0]["message"].get("content") or "", body.get("usage") or {}
+def ask_openai_style(url, key, model, system, user, timeout=120.0, max_tokens=2000, tries=6):
+    """One chat completion. A cold SIE model answers 503 with Retry-After: wait and ask again."""
+    for attempt in range(tries):
+        response = httpx.post(url, timeout=timeout, headers={"Authorization": "Bearer %s" % key},
+                              json={"model": model, "temperature": 0, "max_tokens": max_tokens,
+                                    "messages": [{"role": "system", "content": system},
+                                                 {"role": "user", "content": user}]})
+        if response.status_code in (429, 503) and attempt < tries - 1:
+            time.sleep(min(float(response.headers.get("retry-after") or 2 * (attempt + 1)), 30.0))
+            continue
+        response.raise_for_status()
+        body = response.json()
+        return body["choices"][0]["message"].get("content") or "", body.get("usage") or {}
 
 
 _CLI_CWD = pathlib.Path(tempfile.gettempdir()) / "signoff-reader-cwd"
@@ -119,16 +127,60 @@ def ask_claude_cli(model, system, user, timeout=180.0):
     body = json.loads(done.stdout)
     if body.get("is_error"):
         raise RuntimeError("claude -p error: %s" % str(body.get("result"))[:300])
-    return body.get("result") or "", body.get("usage") or {}
+    return body.get("result") or "", dict(body.get("usage") or {}, cost_usd=body.get("total_cost_usd"))
 
 
-def ask(model, system, user):
-    """(reply text, usage, extractor name)."""
+API_CALL_CAP = 60  # per process: the API key has little credit; batch reads never use it
+_api_calls = {"made": 0, "capped_logged": False}
+log = logging.getLogger("signoff.reader")
+
+
+def ask_anthropic_api(model, system, user, max_tokens=4000):
+    """One Messages API call through the Anthropic SDK: no retries, no sampling parameters (current models
+    reject them), low effort because the task is short. A policy decline is re-run by the server on its
+    default fallback model; if it still declines, raise."""
+    import anthropic
+    _api_calls["made"] += 1
+    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY"), timeout=30.0, max_retries=0)
+    response = client.beta.messages.create(
+        model=model, max_tokens=max_tokens, system=system, messages=[{"role": "user", "content": user}],
+        output_config={"effort": "low"}, betas=["server-side-fallback-2026-07-01"], fallbacks="default")
+    if response.stop_reason == "refusal":
+        raise RuntimeError("the model declined this request")
+    text = "".join(block.text for block in response.content if block.type == "text")
+    usage = {"input_tokens": response.usage.input_tokens, "output_tokens": response.usage.output_tokens,
+             "via": "api", "served_by": response.model}
+    return text, usage
+
+
+def ask_anthropic(model, system, user, live=False):
+    """`claude -p`, always, for batch work. Only a live call (one a person is waiting on) may use the API
+    key, at most API_CALL_CAP times per process and never retried; any API failure falls back to `claude -p`."""
+    if live and config.have("ANTHROPIC_API_KEY") and config.env("SIGNOFF_ANTHROPIC_VIA") != "cli":
+        if _api_calls["made"] >= API_CALL_CAP:
+            if not _api_calls["capped_logged"]:
+                _api_calls["capped_logged"] = True
+                log.warning("Anthropic API call cap reached (%d calls in this process): using claude -p from now on",
+                            API_CALL_CAP)
+        else:
+            try:
+                return ask_anthropic_api(model, system, user)
+            except Exception as error:  # noqa: BLE001  (bad key, no credit, a rejected parameter, the network)
+                log.warning("Anthropic API call failed (%s): using claude -p for this one", type(error).__name__)
+    return ask_claude_cli(model, system, user)
+
+
+def ask(model, system, user, live=False):
+    """(reply text, usage, extractor name). `live=True` only for a call a person is waiting on."""
     if model.startswith("claude"):
-        text, usage = ask_claude_cli(model, system, user)
+        text, usage = ask_anthropic(model, system, user, live)
         return text, usage, "anthropic:%s" % model
-    text, usage = ask_arcee(model, system, user)
-    return text, usage, "arcee:%s" % model
+    if model.startswith("sie:"):
+        text, usage = ask_openai_style(SIE_URL, config.env("SIE_API_KEY"), model[4:], system, user)
+        return text, usage, model
+    name = model[6:] if model.startswith("arcee:") else model
+    text, usage = ask_openai_style(ARCEE_URL, config.env("ARCEE_API_KEY"), name, system, user)
+    return text, usage, "arcee:%s" % name
 
 
 def read(product, sheet, model=None, tries=2):

@@ -147,3 +147,9 @@ def test_routes():
     # no engine route can change a limit, strike a product or sign
     paths = {r.path for r in api.router.routes}
     assert paths == {"/api/state", "/api/events", "/api/shopper/fact", "/api/sheet/canonical", "/api/shopper/say"}
+
+
+def test_the_reader_can_be_switched_to_another_readers_run(tmp_path):
+    with pytest.raises(state.EngineError):
+        state.set_reader("sie:no-such-model")
+    assert state.set_reader(None)["mode"] == "fixture"

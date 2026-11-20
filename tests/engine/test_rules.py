@@ -113,3 +113,14 @@ def test_a_pick_up_line_skips_the_delivery_condition():
     assert l5["status"] == "pick_up" and l5["pick"] == "L5:fixture-store-b.example:fx-Q"
     assert state["total_cents"] == sum(c["product"]["price_cents"] for l in state["lines"] for c in l["candidates"]
                                        if c["picked"] and l["status"] != "pick_up")
+
+
+def test_the_sentence_around_a_span_holds_the_quote_at_the_stated_place():
+    text = "Shower Chair.\nA wide seat supports up to 300 lbs, giving you room. Seat height 16\" to 21\"."
+    start = text.index("300 lbs")
+    sentence, a, b = rules.sentence_around(text, start, start + 7)
+    assert sentence == "A wide seat supports up to 300 lbs, giving you room." and sentence[a:b] == "300 lbs"
+    long = "word " * 200 + "holds 300 lbs " + "word " * 200
+    start = long.index("300 lbs")
+    sentence, a, b = rules.sentence_around(long, start, start + 7)
+    assert len(sentence) < 300 and sentence[a:b] == "300 lbs" and sentence.startswith("… ") and sentence.endswith(" …")

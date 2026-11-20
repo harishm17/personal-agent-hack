@@ -25,8 +25,12 @@ def _refuse(error: state.EngineError):
 
 
 @router.get("/api/state")
-def get_state():
-    return Response(state.state_json(), media_type="application/json", headers={"Cache-Control": "no-store"})
+def get_state(request: Request):
+    headers = {"Cache-Control": "no-store", "Vary": "Accept-Encoding"}
+    if "gzip" in request.headers.get("accept-encoding", ""):
+        return Response(state.state_json(gzipped=True), media_type="application/json",
+                        headers=dict(headers, **{"Content-Encoding": "gzip"}))
+    return Response(state.state_json(), media_type="application/json", headers=headers)
 
 
 @router.get("/api/events")
@@ -68,5 +72,10 @@ def canonical():
 
 @router.post("/api/shopper/say")
 def shopper_say(body: Say):
-    from signoff.agent import chat
-    return chat.say(body.text)
+    """Always a 200 with `{reply, refused, tool_calls}`: a chat that cannot answer says so, it never errors."""
+    try:
+        from signoff.agent import chat
+        return chat.say(body.text)
+    except Exception as error:  # noqa: BLE001
+        return {"reply": "I can't answer right now (%s). Nothing on the sheet has changed, and I have no tool that "
+                         "could change it." % type(error).__name__, "refused": False, "tool_calls": [], "error": True}

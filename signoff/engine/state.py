@@ -5,14 +5,17 @@ read it, do not change it. Limits and strikes change only through `apply_issuer`
 calls after it has verified a signed request. Nothing here is reachable from a model.
 """
 import datetime
+import gzip
 import hashlib
 import json
 import os
 import pathlib
+import re
 import threading
+import time
 
 from signoff import config
-from signoff.engine import rules
+from signoff.engine import obs, rules
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 DATA, FIXTURES, SHEETS = ROOT / "data", ROOT / "fixtures", ROOT / "sheets"
@@ -66,14 +69,35 @@ def _load_pool():
 
 def _load_figures(pool, from_data):
     """Figures from data/figures (fixtures for the fixture pool). The span is checked again here, in code."""
-    if from_data:
+    run = DATA / "figures" / "_runs" / str(_s.get("reader")) if _s.get("reader") else None
+    if from_data and run is not None and run.is_dir():
+        figures = _read_dir(run)
+    elif from_data:
         figures = _read_dir(DATA / "figures") if (DATA / "figures").is_dir() else []
     else:
         figures = _read(FIXTURES / "figures.json")
     text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
     for f in figures:
-        f["span_found_in_text"] = rules.span_found(f, text.get((f["store"], f["product_id"])))
+        page = text.get((f["store"], f["product_id"]))
+        f["span_found_in_text"] = rules.span_found(f, page)
+        if f["span_found_in_text"]:  # the store's whole sentence, for the screen to show around the quote
+            sentence, a, b = rules.sentence_around(page, f["start"], f["end"])
+            f.update(sentence=sentence, quote_in_sentence=[a, b])
     return figures
+
+
+def _load_readers(from_data):
+    """Which reader decided, and how far the others agree with it (signoff.extract.score writes the file)."""
+    path = DATA / "figures" / "_runs" / "comparison.json"
+    if not from_data or not path.exists():
+        return None
+    try:
+        made = _read(path)
+        return {"reference": made["reference"], "measure": made["measure"], "note": made["note"],
+                "products": made["products"], "made_at": made["made_at"],
+                "readers": [{k: v for k, v in r.items() if k != "differences"} for r in made["readers"]]}
+    except (ValueError, KeyError):
+        return None
 
 
 def _load(keep_changes=False):
@@ -81,7 +105,8 @@ def _load(keep_changes=False):
     pool, answers = _load_pool()
     from_data = _has_data_pool() and not any(str(p["store"]).endswith(".example") for p in pool)
     mode = "fixture" if not from_data else ("replay" if config.mode() == "replay" else "live")
-    _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data), mode=mode, loaded=True)
+    _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data), mode=mode, loaded=True,
+              readers=_load_readers(from_data))
     if keep_changes and _s.get("sheet", {}).get("id") == sheet_id:
         return
     strikes_file = (DATA if from_data else FIXTURES) / "strikes.json"
@@ -162,13 +187,18 @@ def _attach(state):
                 c["action"] = {"type": "cart_created", "mode": cart.get("mode"), "cart_url": cart.get("cart_url"),
                                "cart_id": cart.get("cart_id"), "at": cart.get("created_at")}
     state["issuer_key"] = dict(_s["issuer_key"])
+    state["readers"] = _s.get("readers")
+    if _s.get("readers"):
+        used = next((f["extractor"] for f in _s["figures"]), _s["readers"]["reference"])
+        state["readers"] = dict(_s["readers"], deciding=used, switched=bool(_s.get("reader")))
     state["senso"] = list(_s.get("senso") or [])
     state["sheet_hash"] = hashlib.sha256(_canonical(state).encode()).hexdigest()
     state["seal"] = _seal(state, state["sheet_hash"])
     return state
 
 
-def _recompute(record=True):
+def _recompute(record=True, why="load"):
+    started = time.perf_counter()
     state = rules.build_state(_s["sheet"], _s["pool"], _s["figures"], _s["answers"], _s["strikes"], _s["mode"])
     _s["version"] += 1
     state["version"] = _s["version"]
@@ -176,6 +206,9 @@ def _recompute(record=True):
     _s["json"] = json.dumps(_s["state"]).encode()
     if record:
         _record(_s["state"])
+    obs.tool_call("check_run", {"why": why, "sheet_id": state["sheet"]["id"], "version": state["version"]},
+                  dict(state["counts"], total_cents=state["total_cents"], sheet_hash=state["sheet_hash"][:12]),
+                  True, obs.ms_since(started))
     return _s["state"]
 
 
@@ -223,10 +256,16 @@ def get_state() -> dict:
         return _s["state"]
 
 
-def state_json() -> bytes:
+def state_json(gzipped=False) -> bytes:
+    """The state as JSON bytes, made once per version. Gzipped it is about a tenth of the size, which matters
+    for the phone on the tunnel."""
     with _lock:
         _ensure()
-        return _s["json"]
+        if not gzipped:
+            return _s["json"]
+        if _s.get("gz_version") != _s["version"]:
+            _s.update(gz=gzip.compress(_s["json"], 5), gz_version=_s["version"])
+        return _s["gz"]
 
 
 def version() -> int:
@@ -263,7 +302,7 @@ def apply_issuer(action: dict) -> dict:
                                       "at": action.get("at") or _now()})
         else:
             raise EngineError("unknown issuer request type %r" % (kind,))
-        return _recompute()
+        return _recompute(why=kind)
 
 
 def set_shopper_fact(fact_id, value) -> dict:
@@ -274,7 +313,7 @@ def set_shopper_fact(fact_id, value) -> dict:
         if fact is None:
             raise EngineError("no shopper fact %r on this sheet" % (fact_id,), 404)
         fact["value"] = _number(value, fact.get("min"), fact.get("max"), fact_id)
-        return _recompute()
+        return _recompute(why="shopper_fact")
 
 
 def canonical_sheet() -> str:
@@ -318,6 +357,21 @@ def set_senso(checks: list) -> dict:
         return _recompute(record=False)
 
 
+def set_reader(name=None) -> dict:
+    """Not in the contract's list: which reader's figures count. `None` is the default (the reference reader's,
+    as combined in data/figures/); a name such as "sie:Qwen/Qwen3.8-27B-FP8" uses that reader's own run. For the
+    reader gate: the outcome to compare is `readers` in the state (agreement with the reference)."""
+    with _lock:
+        _ensure()
+        _open_for_changes()
+        slug = re.sub(r"[^A-Za-z0-9.]+", "-", name).strip("-") if name else None
+        if slug and not (DATA / "figures" / "_runs" / slug).is_dir():
+            raise EngineError("no run of reader %r under data/figures/_runs" % (name,), 404)
+        _s["reader"] = slug
+        _load(keep_changes=True)
+        return _recompute(why="set_reader")
+
+
 def reload_data() -> dict:
     """Reads pool, store answers and figures again; the issuer's limits, strikes and the seal are kept."""
     with _lock:
@@ -328,5 +382,7 @@ def reload_data() -> dict:
 def reset() -> dict:
     """Back to unsigned, no key, sheet as on disk."""
     with _lock:
+        _s["reader"] = None
         _load()
-        return _recompute()
+        obs.session(_s["sheet"]["id"])
+        return _recompute(why="reset")
