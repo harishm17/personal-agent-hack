@@ -15,7 +15,7 @@ import threading
 import time
 
 from signoff import config
-from signoff.engine import obs, rules
+from signoff.engine import obs, planted, rules
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 DATA, FIXTURES, SHEETS = ROOT / "data", ROOT / "fixtures", ROOT / "sheets"
@@ -111,6 +111,28 @@ def _load_readers(from_data):
         return None
 
 
+def _load_extras(pool, from_data):
+    """Display-only material beside the figures: instruction-like passages found on pages (each a span of the
+    page's text, checked again here) and the planted test page's own reading. None of it reaches the pick rule."""
+    out = {"instructions": {}, "planted": None}
+    folder = _dirs()[2]
+    if not from_data:
+        return out
+    text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
+    if (folder / "_instructions").is_dir():
+        for row in _read_dir(folder / "_instructions"):
+            page = text.get((row["store"], row["product_id"]))
+            kept = [{"quote": i["quote"], "start": i["start"], "end": i["end"], "found_by": i.get("found_by")}
+                    for i in row.get("instructions") or [] if rules.span_found(i, page)]
+            if kept:
+                out["instructions"][(row["store"], row["product_id"])] = kept
+    if config.env("SIGNOFF_PLANTED") != "off" and (folder / "_planted" / "figures.json").exists():
+        found = _read(folder / "_planted" / "instructions.json") if (folder / "_planted" / "instructions.json").exists() else []
+        out["planted"] = {"figures": _read(folder / "_planted" / "figures.json"),
+                          "instructions": [i for row in found for i in row.get("instructions") or []]}
+    return out
+
+
 def _load(keep_changes=False):
     sheet_id = _s.get("sheet_id") or os.environ.get("SIGNOFF_SHEET") or "sheet1"
     _s["sheet_id"] = sheet_id
@@ -118,7 +140,7 @@ def _load(keep_changes=False):
     from_data = _has_data_pool() and not any(str(p["store"]).endswith(".example") for p in pool)
     mode = "fixture" if not from_data else ("replay" if config.mode() == "replay" else "live")
     _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data), mode=mode, loaded=True,
-              readers=_load_readers(from_data))
+              readers=_load_readers(from_data), extras=_load_extras(pool, from_data))
     if keep_changes and (_s.get("sheet") or {}).get("id") == sheet_id:
         return
     strikes_file = (DATA if from_data else FIXTURES) / "strikes.json"
@@ -194,8 +216,12 @@ def _attach(state):
         for key in (check.get("candidate_id"), (check.get("store"), check.get("product_id"))):
             if key and key != (None, None):
                 by_candidate.setdefault(key, []).append(check)
+    extras = _s.get("extras") or {"instructions": {}, "planted": None}
     for line in state["lines"]:
         for c in line["candidates"]:
+            passages = extras["instructions"].get((c["product"]["store"], c["product"]["product_id"]))
+            if passages:
+                c["embedded_instructions"] = passages
             found = by_candidate.get(c["id"], []) + by_candidate.get((c["product"]["store"], c["product"]["product_id"]), [])
             if found:
                 c["senso"] = {"claims": found}
@@ -203,6 +229,14 @@ def _attach(state):
             if cart and c["picked"] and line["status"] in ("ready", "next_candidate"):
                 c["action"] = {"type": "cart_created", "mode": cart.get("mode"), "cart_url": cart.get("cart_url"),
                                "cart_id": cart.get("cart_id"), "at": cart.get("created_at")}
+    if extras["planted"]:  # worked out on the side, after the lines and picks above were made without it
+        made = planted.candidate(_s["sheet"], [dict(f) for f in extras["planted"]["figures"]],
+                                 extras["planted"]["instructions"], _s["answers"])
+        if made:
+            line = next(l for l in state["lines"] if l["line_id"] == made["line_id"])
+            made["cheaper_than_the_pick"] = bool(line["why"]["pick_price_cents"]) and \
+                made["candidate"]["product"]["price_cents"] < line["why"]["pick_price_cents"]
+            state["planted"] = made
     state["issuer_key"] = dict(_s["issuer_key"])
     state["readers"] = _s.get("readers")
     if _s.get("readers"):
