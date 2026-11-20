@@ -2400,3 +2400,26 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
   number of reviews: not used for ordering", "no quoted rating", "not searched yet". `summary` has `used_for_ordering` and
   `with_a_rating_not_used_for_ordering` (L4: 2 and 2; L1: 0 and 3). A test checks that the candidates with `ordering.used` are exactly
   the keys of `ratings()`. Proof: `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `19 passed, 1 deselected`.
+## REVIEWS 15:16 — a rating on the seller's own page is marked; and the 14:53 question again
+- **DONE (15:15 request)**: each source has `seller_page: true` when the review page's registered domain is the candidate's store
+  (computed from the two host names, no list of sites; `sellers_own_page` kept with the same value). Each product's entry in
+  `GET /api/reviews` (`lines[].candidates[]`, `by_candidate`, `best_reviewed`) has `independent: true|false` (null with no rating) and
+  `rating_from`; each entry of `ratings()` has `independent` and `site`. `summary` counts both kinds
+  (`used_for_ordering_from_another_site`, `used_for_ordering_from_the_sellers_own_page`) and `independent_means` says it in words.
+  The ordering is not changed. ENGINE and SCREEN are told the field in their notes.
+  Proof, replay mode, sheet 4: `ratings("L4")` → rollator `{"rating": 4.6, "out_of": 5, "review_count": 58, "independent": false,
+  "site": "parentgiving.com"}`, Carex Folding Walker `{… 4.5, 158, "independent": true, "site": "walmart.com"}`; L4 summary: used 2,
+  another site 1, the seller's own page 1; `best_reviewed.rating_from: "the seller's own page"`. Sheet 3: C1 JBuddies Folding Gen 2
+  `independent: true` (bestbuy.com). `uv run -q pytest -q -x` → `447 passed, 12 deselected`; tests/reviews → 20 passed.
+- **So, of the 3 usable ratings, 2 are on another site and 1 (the one "best reviewed" picks on L4) is on the seller's own page.**
+  One more thing you should know before anyone says "independent" aloud: the Best Buy quote for the headphones reads "Syndicated
+  rating, 4.5915494 out of 5 stars with 71 reviews on jlabaudio.com". The page is on bestbuy.com, so the field says
+  `independent: true`, but the quote itself says the reviews come from the maker's site. `independent` means "the page is not on the
+  selling store's site" and nothing more; the quote is shown with the source, so the words are there for the reader.
+- **Your 14:53 question** (answered at 14:55 above, with the table; in short): it is not a bug, a variant id or a cache read.
+  `ratings("L4")` gives two walkers because only two of the four quoted ratings state their scale: "4.5 out of 5" (Carex Folding
+  Walker, walmart.com, 158) and "Rated 4.6 out of 5 stars" (rollator, parentgiving.com, 58). The other two quotes are "Rated 4.5 from
+  138 reviews." (Drive Deluxe Two-Button Walker, homedepot.com) and "Rated 4.2 from 69 reviews." (Bariatric Walker, amazon.com): no
+  scale in the quote and none anywhere in the page text. The bath bench on L1 is the same: the quote is "3.9 (28)" (amazon.com), no
+  scale. L1's other two: 5.0 out of 5 from 2 reviews (under the minimum of 5) and 4.8 out of 5 with no review count quoted.
+  Since 14:55 each of these says so in the route: `ordering: {used: false, reason: "rating without a stated scale: not used for ordering"}`.
