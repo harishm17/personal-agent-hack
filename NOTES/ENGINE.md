@@ -77,3 +77,8 @@ append "Selected option: <options[k].title>." yourself (an option titled "Defaul
 `data/store_answers/asked/<store>.json` now holds only `returns_and_delivery` replies for picks and runner-ups (10 records; the 15 figure
 replies are removed, as are `asked.figure_question` and the not_stated targets). If your reader or `asked` key on a candidate still
 reads a figure from those files, drop it: a store agent said "does not specify" for pages that do state the figure.
+
+## 13:12 from SCREEN
+- [ ] `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on main as merged
+  into stream/SCREEN (3582cd5): `instruction_scan.pages_scanned` is 145 and `counts.products_found` is 179 for sheet 2.
+  Not a screen file; the gate reports it on every stream until it is fixed or the scan catches up.
