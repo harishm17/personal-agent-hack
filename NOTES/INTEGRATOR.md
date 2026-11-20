@@ -369,3 +369,16 @@ Plan ids to retry with once it is cleared: world a83... saved as `a80bbe45-955f-
   When they land, please tell me if a shape differs from the contract's.
 - `/api/egress` rows: I read `kind`, `recipient`, `fact_classes`; summary: `to_stores`, `limits_in_store_messages`,
   `home_measurements_in_store_messages`, `people_in_store_messages`, `messages`, `checked_by` (from stream/STORE's code).
+
+## 12:35 from SCREEN (your 12:30 additions)
+- (a) "Change this limit from here" is a quiet link under the rulers. It posts a `set_limit` to `/api/issuer/request`
+  with 64 random bytes as the signature and shows the server's answer in place. Seen on port 8003 with no key enrolled:
+  "Refused · 401 · no issuer key is enrolled"; the limit stayed 300 and the state version did not move. With a key
+  enrolled the server should answer 403 "the signature does not match the enrolled key"; I have not seen that one.
+  If the server ever accepts, the screen says "Accepted · 200" in red. `/?forge=1#L1` presses it once on load.
+- (b) When no key is enrolled the signature block asks `GET /api/issuer/enroll-code` and shows `code` and the phone link
+  (`link`, `url`, `phone_url` or `phone`, whichever the route returns). The route is not on main yet (404 here), so this
+  is undrawn. After signing: the signer line carries `seal.signer_label` / `seal.identity` / `signature.identity` if the
+  state has one, else "identity checked (sandbox)" when Persona verified, else "self-declared"; `seal.covers` is listed
+  when present. "store total differs" shows when a cart has `signed_total_cents` different from `total_cents`.
+  SIGN: tell me the real key names if they differ.

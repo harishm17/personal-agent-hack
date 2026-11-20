@@ -86,14 +86,15 @@ function apply() {
   render();
 }
 // Optional extras from their own routes; either may be missing, and the screen draws only what exists.
-const aux = { egress: null, gate: null, key: "" };
+const aux = { egress: null, gate: null, enroll: null, key: "" };
 let introUntil = 0;
 async function loadAux() {
   if (FIXTURE) return;
   const get = (url) => fetch(url, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
-  const [egress, gate] = await Promise.all([get("/api/egress?limit=5000"), get("/api/gate/status")]);
-  const key = JSON.stringify([egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, gate.history && gate.history.length]]);
-  aux.egress = egress; aux.gate = gate;
+  const needCode = state && !(state.issuer_key && state.issuer_key.enrolled) && !state.seal.signed;
+  const [egress, gate, enroll] = await Promise.all([get("/api/egress?limit=5000"), get("/api/gate/status"), needCode ? get("/api/issuer/enroll-code") : null]);
+  const key = JSON.stringify([egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, gate.history && gate.history.length], enroll]);
+  aux.egress = egress; aux.gate = gate; aux.enroll = enroll;
   if (key !== aux.key && state) {       // redraw quietly, and never in the middle of the opening motion
     aux.key = key;
     setTimeout(() => { last.quiet = true; render(); }, Math.max(0, introUntil - performance.now()));
@@ -104,11 +105,11 @@ let live = false;
 if (params.get("live") !== "0") {
   const events = new EventSource("/api/events");
   events.onopen = () => { live = true; };
-  events.onmessage = () => load().then(loadAux);
+  events.onmessage = () => load();
   events.onerror = () => { live = false; };
 }
 setInterval(() => { if (!live) load(); }, 2000);
-addEventListener("hashchange", () => { ui.drawer = null; ui.open.clear(); render(); });
+addEventListener("hashchange", () => { ui.drawer = null; ui.open.clear(); ui.forge = null; render(); });
 addEventListener("resize", () => { last.line = null; last.quiet = true; if (state) render(); });
 
 const lineId = () => (state.lines.find((l) => l.line_id === location.hash.slice(1)) || state.lines[0]).line_id;
@@ -345,6 +346,11 @@ function renderFlow(line, s) {
       ? `<button class="src-btn" data-toggle="${key}" aria-expanded="${ui.open.has(key)}">${source}</button>` : source}${o && o.matches === false ? " · changed" : ""}</span></div>
       ${sentence}<svg class="ruler" data-ruler="${i}" height="60"></svg></div>`;
   }).join("");
+  const forgeable = sheetLine.limits.find((l) => l.bound.source === "issuer");
+  const forged = ui.forge && ui.forge.line === line.line_id ? ui.forge : null;
+  const forge = !forgeable || state.seal.signed ? "" : forged
+    ? `<div class="refusal ${forged.ok ? "bad" : ""}" role="status">${esc(forged.text)}</div>`
+    : `<button class="link" data-forge="${esc(forgeable.id)}" title="Sends a change to ${esc(forgeable.name)} from this screen, without the approver's key">Change this limit from here</button>`;
   const chips3 = [s.outside.length ? `<button class="chip" data-toggle="outside" aria-expanded="${ui.open.has("outside")}">${s.outside.length} outside</button>` : "",
     s.struck.length ? `<span class="chip"><i class="od issuer"></i>${s.struck.length} struck</span>` : ""].join("");
   const outsideBy = new Map();
@@ -361,7 +367,7 @@ function renderFlow(line, s) {
         <div class="dots">${s.stated.map((c) => dot(c)).join("")}</div>${tray}</section>
       <section class="gate"><div class="gh"><span class="label">Inside limits</span><span class="n" data-k="n.inside">${s.inside.length}</span></div>${meter(s.inside.length)}
         <div class="by">${sheetLine.limits.length} limits</div>${s.stated.length ? rulers : ""}
-        <div class="chips">${chips3}</div>
+        <div class="chips">${chips3}</div>${forge}
         ${ui.open.has("outside") ? `<div class="more">${[...outsideBy].map(([k, n]) => `<b>${n}</b><span>${esc(k)}</span>`).join("")}</div>` : ""}</section>
       <section class="gate"><div class="gh"><span class="label">Pick</span><span class="n">${s.pick ? 1 : 0}</span></div>${meter(s.pick ? 1 : 0)}
         <div class="by"><i class="od shopper"></i>${esc(rule)}</div>
@@ -504,16 +510,27 @@ function renderSide(line, s) {
     const who = seal.signer || (sig.signer && sig.signer.name) || sheet.issuer.name, hash = seal.sheet_hash || sig.sheet_hash || "";
     const at = seal.signed_at || sig.at, time = at ? new Date(at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "";
     const status = persona.inquiry_id ? (persona.verified ? "checked" : words(persona.status || "started")) : "not checked";
+    // how the signer is known, from the state: the engine's own label when it gives one, else from the identity check
+    const identity = seal.signer_label || seal.identity || sig.identity || (sig.signer && (sig.signer.label || sig.signer.identity))
+      || (persona.verified ? "identity checked (sandbox)" : "self-declared");
+    const differs = (c) => c.signed_total_cents != null && c.total_cents != null && c.signed_total_cents !== c.total_cents;
     sign = `<section class="card sign signed"><div class="cap">Signature</div>
       <div class="row"><span class="who"><span class="tickmark">\u2713</span> Signed by ${esc(who)}</span><span>${time}</span></div>
+      <div class="muted small">${esc(identity)}</div>
       ${hash ? `<div class="row"><span class="muted">Sheet hash</span><code title="${esc(hash)}">${esc(hash.slice(0, 12))}</code></div>` : ""}
-      <div class="muted small">Covers limits, quotes, picks, total</div>
+      <div class="muted small">Covers ${esc(Array.isArray(seal.covers) && seal.covers.length ? seal.covers.map(words).join(", ") : "limits, quotes, picks, total")}</div>
       <div class="row"><span class="muted">Persona</span><span title="${esc(persona.inquiry_id || "")}">${esc(status)} \u00b7 sandbox</span></div>
       ${receiptsRow()}
-      ${(seal.carts || []).map((c) => `<div class="row cart"><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">${esc(c.store)} cart \u2197</a><span>${c.total_cents ? money(c.total_cents) : ""}</span></div>`).join("") || `<div class="muted">No cart link</div>`}</section>`;
+      ${(seal.carts || []).map((c) => `<div class="row cart"><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">${esc(c.store)} cart \u2197</a><span>${c.total_cents ? money(c.total_cents) : ""}</span></div>${differs(c) ? `<div class="refusal bad">store total differs · signed ${money(c.signed_total_cents)} · store ${money(c.total_cents)}</div>` : ""}`).join("") || `<div class="muted">No cart link</div>`}</section>`;
   } else {
+    const en = aux.enroll, enrolled = state.issuer_key && state.issuer_key.enrolled;
+    const link = en && (en.link || en.url || en.phone_url || en.phone);
     sign = `<section class="card sign"><div class="cap">Signature</div>
-      <div class="who">${esc(sheet.issuer.name)} must sign</div><div class="muted">No cart exists</div>${receiptsRow()}</section>`;
+      <div class="who">${esc(sheet.issuer.name)} must sign</div><div class="muted">No cart exists</div>
+      ${!enrolled && en && en.code ? `<div class="row"><span class="muted">Enrol code</span><code class="code">${esc(en.code)}</code></div>
+        ${link ? `<div class="row"><span class="muted">On the phone</span><a href="${esc(link)}" target="_blank" rel="noopener">${esc(String(link).replace(/^https?:\/\//, ""))}</a></div>` : ""}`
+        : enrolled ? `<div class="muted small">Approver's key enrolled</div>` : ""}
+      ${receiptsRow()}</section>`;
   }
   q("#side").innerHTML = card + sign;
 }
@@ -677,10 +694,34 @@ document.addEventListener("submit", async (e) => {
   load();
 });
 
+// ---------- a change to a limit sent from this screen, without the approver's key. The server's answer is shown as it came ----------
+async function forgeChange(limitId) {
+  const line = state.lines.find((l) => l.line_id === lineId());
+  const limit = state.sheet.lines.find((l) => l.id === line.line_id).limits.find((l) => l.id === limitId);
+  const payload = JSON.stringify({ type: "set_limit", sheet_id: state.sheet.id, seq: Date.now(), at: new Date().toISOString(), limit_id: limitId, value: limit.bound.min });
+  const sig = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(64)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  let text, ok = false;
+  try {
+    const res = await fetch("/api/issuer/request", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ payload, sig, key_id: (state.issuer_key && state.issuer_key.key_id) || "this-screen" }) });
+    const out = await res.json().catch(() => ({}));
+    ok = res.ok && out.ok !== false;
+    text = ok ? `Accepted · ${res.status}` : `Refused · ${res.status} · ${out.detail || out.error || "no reason given"}`;
+  } catch (error) {
+    text = "No answer from the server";
+  }
+  ui.forge = { line: line.line_id, text, ok };
+  last.quiet = true;
+  render();
+  fx.arrive(q(".refusal"), 0, 280, 3);
+  load();
+}
+
 // ---------- interaction ----------
 document.addEventListener("click", (e) => {
-  const t = e.target.closest("[data-toggle], [data-open], [data-close], [data-id]");
+  const t = e.target.closest("[data-toggle], [data-open], [data-close], [data-id], [data-forge]");
   if (!t || t.matches("input")) return;
+  if (t.dataset.forge) return forgeChange(t.dataset.forge);
   if (t.dataset.toggle) { ui.open.has(t.dataset.toggle) ? ui.open.delete(t.dataset.toggle) : ui.open.add(t.dataset.toggle); }
   else if (t.dataset.close !== undefined) ui.drawer = null;
   else ui.drawer = t.dataset.open || t.dataset.id;
@@ -710,4 +751,7 @@ document.addEventListener("mouseover", (e) => {
   tip.style.top = (r.bottom + 8) + "px";
 });
 
-load().then(loadAux);
+load().then(loadAux).then(() => {       // ?forge=1 uses the control once after loading, for a picture of the server's answer
+  const control = params.get("forge") === "1" && q("[data-forge]");
+  if (control) forgeChange(control.dataset.forge);
+});
