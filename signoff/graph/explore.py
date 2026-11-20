@@ -150,6 +150,19 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
         if key.startswith("talk:"):
             memory_of_talk[tuple(key.split(":")[-2:])] = mid
 
+    pick_id = next((p["id"] for p in products if p.get("picked")), None)
+    rows = [extra[i] for i in known]
+    about_pick = sorted((m for m in rows if m["about"] == pick_id), key=lambda m: str(m.get("at") or ""), reverse=True)[:2]
+    for m in rows:
+        m["own"] = m["about"].startswith("fact:") or m["label"] in ("struck before", "bought before") or m in about_pick
+    if rows:
+        only_stores = all(m["owner"] not in ("issuer", "shopper") for m in rows)
+        extra["memory:all"] = {"id": "memory:all", "kind": "memory", "group": True, "own": False, "owner": "the stores" if only_stores else "system",
+                               "label": "%d things the stores said before" % len(rows) if only_stores else "%d things remembered" % len(rows),
+                               "sub": "open to read", "text": "\n\n".join(str(m.get("text") or "") for m in rows), "about": item,
+                               "source": {"record": "memory_recall", "route": "/api/memory/recall?line_id=%s" % line_id, "rows": len(rows)}}
+        known.insert(0, "memory:all")
+
     # asking the store's agent: every message about one of this item's products, what the guard withheld, the reply
     asked, said = [], []
     for m in (talk or {}).get("messages") or []:
@@ -325,12 +338,12 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
     ]
     if event_ids:
         stages.insert(0, {"id": "event", "title": "What is known", "at": min((extra[i].get("at") or "" for i in event_ids if extra[i].get("at")), default=None),
-                          "caption": "%s held from %s; %d shape this order." % (_plural(fed + held_only, "fact"), _plural(len(context["messages"]), "message"), fed),
+                          "caption": "%s from %s; %d shape this order." % (_plural(fed + held_only, "fact"), _plural(len(context["messages"]), "message"), fed),
                           "node_ids_added": [i for i in event_ids if not i.startswith("sheet:")], "node_ids_set_aside": [], "reason_counts": {},
                           "dropped": context.get("dropped") or [], "refused_feeds": refused_feeds})
     if known:
         stages.insert(2 if event_ids else 1, {"id": "known", "title": "What it already knows", "at": None,
-                          "caption": "%s recalled, of %s held." % (_plural(len(known), "memory", "memories"), (recall.get("counts") or {}).get("of", len(known))),
+                          "caption": "%s recalled, of %s held." % (_plural(len(rows), "memory", "memories"), (recall.get("counts") or {}).get("of", len(rows))),
                           "node_ids_added": known, "node_ids_set_aside": [], "reason_counts": {}})
     left = len(products)
     for l in limits:
@@ -340,13 +353,13 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
             counts[aside[pid]["reason"]] = counts.get(aside[pid]["reason"], 0) + 1
         left -= len(out)
         stages.append({"id": "rule:" + l["id"], "title": "The rules", "at": None, "limit": l["id"], "rule": l["label"],
-                       "caption": "%s: %d set aside, %d left." % (str(l.get("sub") or l["label"]).capitalize(), len(out), left),
+                       "caption": "%s: %d set aside, %d left." % (str(l["sub"] if l.get("sub") and len(str(l["sub"]).split()) <= 4 else l["label"]).capitalize(), len(out), left),
                        "node_ids_added": [], "node_ids_set_aside": out, "reason_counts": counts})
     if asked:
         withheld = sum(len(extra[i]["removed"]) for i in asked)
         stopped = sum(1 for i in asked if extra[i]["stopped"])
         stages.append({"id": "asking", "title": "Asking the store", "at": min((extra[i].get("at") or "" for i in asked), default=None) or None,
-                       "caption": "%s to the store's agent; %s withheld; %d stopped." % (_plural(len(asked), "message"), _plural(withheld, "part"), stopped),
+                       "caption": "%s to the store; %s withheld; %d stopped." % (_plural(len(asked), "message"), _plural(withheld, "part"), stopped),
                        "node_ids_added": asked + said, "node_ids_set_aside": [], "reason_counts": {},
                        "row": sorted({extra[i]["product"] for i in asked})})
     if web_added:
@@ -362,11 +375,14 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
                    "caption": ("Signed: %s." % _plural(len(cart_ids), "cart") + " created") if seal.get("signed")
                    else "Nothing is bought until %s signs." % issuer.get("name"),
                    "node_ids_added": ["gate"] + cart_ids, "node_ids_set_aside": [], "reason_counts": {}})
+    # how long the run's own work spans, from the times its records carry (the event's messages are not the run)
+    times = sorted(datetime.datetime.fromisoformat(str(s["at"])) for s in stages if s.get("at") and s["id"] != "event")
+    run = {"from": times[0].isoformat(), "to": times[-1].isoformat(), "seconds": int((times[-1] - times[0]).total_seconds())} if len(times) > 1 else None
     nodes = [by_id[i] for i in people + [item] + facts + stores] + products + statements + limits + list(extra.values())
     return {"line_id": line_id, "need": line.get("need"), "nodes": nodes, "edges": edges, "stages": stages,
             "totals": {"products": len(products), "passing": len(passing), "set_aside": len(aside),
                        "pages": len({(cands[p["id"]].get("product") or {}).get("product_id") for p in products})},
-            "sources": sources, "reviews_available": reviews is not None, "recall_available": recall is not None, "talk_available": talk is not None,
-            "counts": {"memory": len(known), "message": len(asked), "reply": len(said),
+            "sources": sources, "run": run, "reviews_available": reviews is not None, "recall_available": recall is not None, "talk_available": talk is not None,
+            "counts": {"memory": len(rows), "message": len(asked), "reply": len(said),
                        "context_fact": fed + held_only, "context_fact_used": fed, "context_message": len((context or {}).get("messages") or [])},
             "context_available": context is not None}
