@@ -1,0 +1,2940 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://shop.carawayhome.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Caraway",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "shop.carawayhome.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "25862733906"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "25862733906"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4680290009170",
+   "title": "Sauce Pan",
+   "description": {
+    "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+   },
+   "url": "https://shop.carawayhome.com/products/sauce-pan",
+   "handle": "sauce-pan",
+   "price_range": {
+    "min": {
+     "amount": 13500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32601917423698",
+     "sku": "CW-SACP-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_cream_hero.jpg?v=1785827488"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601917423698:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601917456466",
+     "sku": "CW-SACP-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_gray_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601917456466:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601917489234",
+     "sku": "CW-SACP-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_perracotta_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601917489234:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601917522002",
+     "sku": "CW-SACP-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_sage_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601917522002:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601917554770",
+     "sku": "CW-SACP-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_navy_hero.jpg?v=1785827488"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601917554770:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39493908529234",
+     "sku": "CW-SACP-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_marigold_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39493908529234:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236846841938",
+     "sku": "CW-SACP-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_black_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236846841938:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236848021586",
+     "sku": "CW-SACP-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_white_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236848021586:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_cream_hero.jpg?v=1785827488",
+     "alt_text": "Caraway ceramic sauce pan in Cream with a matching lid."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "chord_origin: contentful",
+    "chord_origin_id: 4GOnXu35QMZUV5RMTJHuk0",
+    "cookware",
+    "cookware singles",
+    "customTag",
+    "TBYB",
+    "YGroup_cookware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159437488210",
+     "handle": "individual-cookware-products",
+     "title": "Single Cookware Pieces",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/166908461138",
+     "handle": "singles-cross-sells",
+     "title": "Single Cookware Pieces Cross-Sell",
+     "description": {
+      "html": "Cookware Set Fry Pan Saute Pan Sauce Pan Pot Holders Tea Towels"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6966179430482",
+   "title": "Mini Sauce Pan",
+   "description": {
+    "html": "Our Mini Sauce Pan allows for healthy cooking without harmful chemicals: use for solo mac-n-cheese night, sauce work, and more. Featuring a non-toxic ceramic coating, this 1.75 Quart non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid included."
+   },
+   "url": "https://shop.carawayhome.com/products/mini-sauce-pan",
+   "handle": "mini-sauce-pan",
+   "price_range": {
+    "min": {
+     "amount": 12500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40144570056786",
+     "sku": "CW-SAC1-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our Mini Sauce Pan allows for healthy cooking without harmful chemicals: use for solo mac-n-cheese night, sauce work, and more. Featuring a non-toxic ceramic coating, this 1.75 Quart non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid included."
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-sauce-pan_cream_hero.jpg?v=1784313503"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570056786:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570089554",
+     "sku": "CW-SAC1-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our Mini Sauce Pan allows for healthy cooking without harmful chemicals: use for solo mac-n-cheese night, sauce work, and more. Featuring a non-toxic ceramic coating, this 1.75 Quart non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid included."
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-sauce-pan_navy_hero.jpg?v=1784313515"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570089554:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570122322",
+     "sku": "CW-SAC1-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our Mini Sauce Pan allows for healthy cooking without harmful chemicals: use for solo mac-n-cheese night, sauce work, and more. Featuring a non-toxic ceramic coating, this 1.75 Quart non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid included."
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-sauce-pan_gray_hero.jpg?v=1784313525"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570122322:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570155090",
+     "sku": "CW-SAC1-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our Mini Sauce Pan allows for healthy cooking without harmful chemicals: use for solo mac-n-cheese night, sauce work, and more. Featuring a non-toxic ceramic coating, this 1.75 Quart non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid included."
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-sauce-pan_perracotta_hero.jpg?v=1784313534"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570155090:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570187858",
+     "sku": "CW-SAC1-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our Mini Sauce Pan allows for healthy cooking without harmful chemicals: use for solo mac-n-cheese night, sauce work, and more. Featuring a non-toxic ceramic coating, this 1.75 Quart non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid included."
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-sauce-pan_marigold_hero.jpg?v=1784313553"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570187858:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570220626",
+     "sku": "CW-SAC1-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our Mini Sauce Pan allows for healthy cooking without harmful chemicals: use for solo mac-n-cheese night, sauce work, and more. Featuring a non-toxic ceramic coating, this 1.75 Quart non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid included."
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-sauce-pan_sage_hero.jpg?v=1784313546"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570220626:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570253394",
+     "sku": "CW-SAC1-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our Mini Sauce Pan allows for healthy cooking without harmful chemicals: use for solo mac-n-cheese night, sauce work, and more. Featuring a non-toxic ceramic coating, this 1.75 Quart non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid included."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-sauce-pan_black_hero.jpg?v=1784616369"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570253394:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570286162",
+     "sku": "CW-SAC1-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our Mini Sauce Pan allows for healthy cooking without harmful chemicals: use for solo mac-n-cheese night, sauce work, and more. Featuring a non-toxic ceramic coating, this 1.75 Quart non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid included."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-sauce-pan_white_hero.jpg?v=1784616369"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570286162:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-sauce-pan_cream_hero.jpg?v=1784313503",
+     "alt_text": "Caraway ceramic mini sauce pan in Cream with a matching lid."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "cookware",
+    "YGroup_cookware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7165559406674",
+   "title": "Sauce Pan",
+   "description": {
+    "html": "Discover the cleanest way to take on simmering & stewing with Caraway\u2019s non-toxic Stainless Steel Sauce Pan. Perfect for cooking up grains, reducing sauces, and more. Featuring durable & lightweight 5-ply steel, this pan makes higher-heat cooking easier than ever, and cleaning a breeze. Lid included."
+   },
+   "url": "https://shop.carawayhome.com/products/stainless-steel-sauce-pan",
+   "handle": "stainless-steel-sauce-pan",
+   "price_range": {
+    "min": {
+     "amount": 16500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40545652539474",
+     "sku": "CW-SACP-201",
+     "title": "Stainless Steel",
+     "description": {
+      "html": "Discover the cleanest way to take on simmering & stewing with Caraway\u2019s non-toxic Stainless Steel Sauce Pan. Perfect for cooking up grains, reducing sauces, and more. Featuring durable & lightweight 5-ply steel, this pan makes higher-heat cooking easier than ever, and cleaning a breeze. Lid included."
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "Stainless Steel"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/stainless-steel-sauce-pan_stainless-steel_hero.jpg?v=1784589907"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40545652539474:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Material",
+     "values": [
+      {
+       "label": "Stainless Steel"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/stainless-steel-sauce-pan_stainless-steel_hero.jpg?v=1784589907",
+     "alt_text": "Caraway stainless steel sauce pan with a matching lid."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "cookware",
+    "cookware singles",
+    "stainless steel",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159437488210",
+     "handle": "individual-cookware-products",
+     "title": "Single Cookware Pieces",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/274065588306",
+     "handle": "stainless-steel",
+     "title": "Stainless Steel Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7438788034642",
+   "title": "1.8 qt Enameled Cast Iron Mini Sauce Pan",
+   "description": {
+    "html": "Enjoy convenient cast iron cooking with Caraway\u2019s 1.8 qt Enameled Cast Iron Mini Sauce Pan\u2014lightweight, durable, and intentionally sized for smaller servings. Featuring a 3-layer, non-toxic enamel coating, this compact sauce pan delivers exceptional heat retention, even cooking, and effortless cleanup\u2014for a lifetime of versatile, flavorful dishes."
+   },
+   "url": "https://shop.carawayhome.com/products/enameled-cast-iron-mini-sauce-pan",
+   "handle": "enameled-cast-iron-mini-sauce-pan",
+   "price_range": {
+    "min": {
+     "amount": 16500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41968758784082",
+     "sku": "CW-CIMS-101",
+     "title": "Cream",
+     "description": {
+      "html": "Enjoy convenient cast iron cooking with Caraway\u2019s 1.8 qt Enameled Cast Iron Mini Sauce Pan\u2014lightweight, durable, and intentionally sized for smaller servings. Featuring a 3-layer, non-toxic enamel coating, this compact sauce pan delivers exceptional heat retention, even cooking, and effortless cleanup\u2014for a lifetime of versatile, flavorful dishes."
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/enameled-cast-iron-mini-sauce-pan_cream_hero.jpg?v=1784590360"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41968758784082:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41968758816850",
+     "sku": "CW-CIMS-102",
+     "title": "Midnight Blue",
+     "description": {
+      "html": "Enjoy convenient cast iron cooking with Caraway\u2019s 1.8 qt Enameled Cast Iron Mini Sauce Pan\u2014lightweight, durable, and intentionally sized for smaller servings. Featuring a 3-layer, non-toxic enamel coating, this compact sauce pan delivers exceptional heat retention, even cooking, and effortless cleanup\u2014for a lifetime of versatile, flavorful dishes."
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Midnight Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/enameled-cast-iron-mini-sauce-pan_midnight-blue_hero.jpg?v=1784590360"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41968758816850:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41968758849618",
+     "sku": "CW-CIMS-103",
+     "title": "Gray",
+     "description": {
+      "html": "Enjoy convenient cast iron cooking with Caraway\u2019s 1.8 qt Enameled Cast Iron Mini Sauce Pan\u2014lightweight, durable, and intentionally sized for smaller servings. Featuring a 3-layer, non-toxic enamel coating, this compact sauce pan delivers exceptional heat retention, even cooking, and effortless cleanup\u2014for a lifetime of versatile, flavorful dishes."
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/enameled-cast-iron-mini-sauce-pan_gray_hero.jpg?v=1784590360"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41968758849618:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41968758882386",
+     "sku": "CW-CIMS-104",
+     "title": "Light Mist",
+     "description": {
+      "html": "Enjoy convenient cast iron cooking with Caraway\u2019s 1.8 qt Enameled Cast Iron Mini Sauce Pan\u2014lightweight, durable, and intentionally sized for smaller servings. Featuring a 3-layer, non-toxic enamel coating, this compact sauce pan delivers exceptional heat retention, even cooking, and effortless cleanup\u2014for a lifetime of versatile, flavorful dishes."
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Light Mist"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/enameled-cast-iron-mini-sauce-pan_light-mist_hero.jpg?v=1784590360"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41968758882386:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41968758915154",
+     "sku": "CW-CIMS-105",
+     "title": "Charcoal",
+     "description": {
+      "html": "Enjoy convenient cast iron cooking with Caraway\u2019s 1.8 qt Enameled Cast Iron Mini Sauce Pan\u2014lightweight, durable, and intentionally sized for smaller servings. Featuring a 3-layer, non-toxic enamel coating, this compact sauce pan delivers exceptional heat retention, even cooking, and effortless cleanup\u2014for a lifetime of versatile, flavorful dishes."
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Charcoal"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/enameled-cast-iron-mini-sauce-pan_charcoal_hero.jpg?v=1784590360"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41968758915154:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41968758947922",
+     "sku": "CW-CIMS-106",
+     "title": "Rust",
+     "description": {
+      "html": "Enjoy convenient cast iron cooking with Caraway\u2019s 1.8 qt Enameled Cast Iron Mini Sauce Pan\u2014lightweight, durable, and intentionally sized for smaller servings. Featuring a 3-layer, non-toxic enamel coating, this compact sauce pan delivers exceptional heat retention, even cooking, and effortless cleanup\u2014for a lifetime of versatile, flavorful dishes."
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Rust"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/enameled-cast-iron-mini-sauce-pan_rust_hero.jpg?v=1784590360"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41968758947922:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Midnight Blue"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Light Mist"
+      },
+      {
+       "label": "Charcoal"
+      },
+      {
+       "label": "Rust"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/enameled-cast-iron-mini-sauce-pan_cream_hero.jpg?v=1784590360",
+     "alt_text": "Caraway 1.8 qt enameled cast iron mini sauce pan in Cream with a matching lid."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "cast iron",
+    "cookware",
+    "YBlocklist"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/286389928018",
+     "handle": "cast-iron",
+     "title": "Enameled Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/287776309330",
+     "handle": "cx-warranty-cookware",
+     "title": "{CX Warranty} Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/287804981330",
+     "handle": "cx-warranty-enameled-cast-iron-cookware",
+     "title": "{CX Warranty} Enameled Cast Iron Cookware",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7165562323026",
+   "title": "Mini Sauce Pan",
+   "description": {
+    "html": "Mini but mighty, our 1.75qt Mini Sauce Pan is perfect for cooking smaller portions at higher temperatures. Featuring durable & lightweight stainless steel, this Mini Sauce Pan makes clean & compact cooking easier than ever before. Lid included."
+   },
+   "url": "https://shop.carawayhome.com/products/stainless-steel-mini-sauce-pan",
+   "handle": "stainless-steel-mini-sauce-pan",
+   "price_range": {
+    "min": {
+     "amount": 14500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40545656438866",
+     "sku": "CW-SAC1-201",
+     "title": "Stainless Steel",
+     "description": {
+      "html": "Mini but mighty, our 1.75qt Mini Sauce Pan is perfect for cooking smaller portions at higher temperatures. Featuring durable & lightweight stainless steel, this Mini Sauce Pan makes clean & compact cooking easier than ever before. Lid included."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "Stainless Steel"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/stainless-steel-mini-sauce-pan_stainless-steel_hero.jpg?v=1784589930"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40545656438866:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Material",
+     "values": [
+      {
+       "label": "Stainless Steel"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/stainless-steel-mini-sauce-pan_stainless-steel_hero.jpg?v=1784589930",
+     "alt_text": "Caraway stainless steel mini sauce pan with a matching lid."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "cookware",
+    "cookware singles",
+    "stainless steel",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159437488210",
+     "handle": "individual-cookware-products",
+     "title": "Single Cookware Pieces",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/274065588306",
+     "handle": "stainless-steel",
+     "title": "Stainless Steel Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4680289419346",
+   "title": "Saut\u00e9 Pan",
+   "description": {
+    "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+   },
+   "url": "https://shop.carawayhome.com/products/saute-pan",
+   "handle": "saute-pan",
+   "price_range": {
+    "min": {
+     "amount": 16500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32601915293778",
+     "sku": "CW-SUTP-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_cream_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601915293778:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601915326546",
+     "sku": "CW-SUTP-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_gray_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601915326546:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601915359314",
+     "sku": "CW-SUTP-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_perracotta_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601915359314:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601915392082",
+     "sku": "CW-SUTP-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_sage_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601915392082:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601915424850",
+     "sku": "CW-SUTP-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_navy_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601915424850:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39493909348434",
+     "sku": "CW-SUTP-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_marigold_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39493909348434:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236873220178",
+     "sku": "CW-SUTP-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 20500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_black_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236873220178:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236875251794",
+     "sku": "CW-SUTP-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 20500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_white_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236875251794:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_cream_hero.jpg?v=1785827494",
+     "alt_text": "Caraway ceramic saut\u00e9 pan in Cream with a matching lid."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "chord_origin: contentful",
+    "chord_origin_id: 3XIUtNaYlgCOXbBvjfoQQ6",
+    "cookware",
+    "cookware singles",
+    "customTag",
+    "TBYB",
+    "YGroup_cookware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159437488210",
+     "handle": "individual-cookware-products",
+     "title": "Single Cookware Pieces",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/166908461138",
+     "handle": "singles-cross-sells",
+     "title": "Single Cookware Pieces Cross-Sell",
+     "description": {
+      "html": "Cookware Set Fry Pan Saute Pan Sauce Pan Pot Holders Tea Towels"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7165562388562",
+   "title": "Minis Duo",
+   "description": {
+    "html": "Mini but mighty, our Stainless Steel Minis Duo is perfect for cooking smaller portions at higher temperatures. Featuring a lightweight 8\u201d Fry Pan, 1.75 qt Sauce Pan, and a bespoke storage organizer, the Minis Duo makes clean & compact cooking easier than ever before. Mini Sauce Pan lid included (does not fit Mini Fry Pan)."
+   },
+   "url": "https://shop.carawayhome.com/products/stainless-steel-minis-duo",
+   "handle": "stainless-steel-minis-duo",
+   "price_range": {
+    "min": {
+     "amount": 27000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 27000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 31500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 31500,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40545656537170",
+     "sku": "CW-MNFS-203",
+     "title": "Stainless Steel",
+     "description": {
+      "html": "Mini but mighty, our Stainless Steel Minis Duo is perfect for cooking smaller portions at higher temperatures. Featuring a lightweight 8\u201d Fry Pan, 1.75 qt Sauce Pan, and a bespoke storage organizer, the Minis Duo makes clean & compact cooking easier than ever before. Mini Sauce Pan lid included (does not fit Mini Fry Pan)."
+     },
+     "price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 31500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "Stainless Steel"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/stainless-steel-minis-duo_stainless-steel_hero.jpg?v=1784589933"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40545656537170:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Material",
+     "values": [
+      {
+       "label": "Stainless Steel"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/stainless-steel-minis-duo_stainless-steel_hero.jpg?v=1784589933",
+     "alt_text": "Caraway stainless steel minis duo."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "cookware",
+    "set",
+    "stainless steel",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/274065588306",
+     "handle": "stainless-steel",
+     "title": "Stainless Steel Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280345051218",
+     "handle": "gifts-for-dad",
+     "title": "Gifts for Dad",
+     "description": {
+      "html": "Give Dad a break from his endless collection of novelty socks and \u201cWorld\u2019s Best Dad\u201d mugs. Instead, upgrade his culinary game with Caraway\u2019s sleek, non-toxic kitchen products. Perfect for the dad who insists he \u201cdoesn\u2019t need directions,\u201d Caraway\u2019s user-friendly cookware will have him whipping up gourmet meals with the same confidence he has when assembling Ikea furniture\u2014minus the leftover screws. After all, the way to a man\u2019s heart is through his stomach, and Caraway ensures the journey is smooth and stylish."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6966179561554",
+   "title": "Minis Duo",
+   "description": {
+    "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+   },
+   "url": "https://shop.carawayhome.com/products/minis-duo",
+   "handle": "minis-duo",
+   "price_range": {
+    "min": {
+     "amount": 22500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 27000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 27000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 30000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40144570613842",
+     "sku": "CW-MNFS-101",
+     "title": "Cream",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_cream_hero.jpg?v=1784313600"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570613842:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570646610",
+     "sku": "CW-MNFS-102",
+     "title": "Navy",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_navy_hero.jpg?v=1784313609"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570646610:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570777682",
+     "sku": "CW-MNFS-104",
+     "title": "Sage",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_sage_hero.jpg?v=1784313637"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570777682:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570679378",
+     "sku": "CW-MNFS-103",
+     "title": "Gray",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_gray_hero.jpg?v=1784313619"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570679378:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570712146",
+     "sku": "CW-MNFS-105",
+     "title": "Perracotta",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_perracotta_hero.jpg?v=1784313628"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570712146:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570744914",
+     "sku": "CW-MNFS-106",
+     "title": "Marigold",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_marigold_hero.jpg?v=1784313646"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570744914:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570810450",
+     "sku": "CW-MNFS-201",
+     "title": "Black",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 30000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_black_hero.jpg?v=1784616384"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570810450:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570843218",
+     "sku": "CW-MNFS-202",
+     "title": "White",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 30000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_white_hero.jpg?v=1784616384"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570843218:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_cream_hero.jpg?v=1784313600",
+     "alt_text": "Caraway ceramic minis duo in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "cookware",
+    "set",
+    "YGroup_cookware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280345444434",
+     "handle": "20-off-iconics",
+     "title": "20% off Iconics",
+     "description": {
+      "html": "From June 17 - June 23, save 20% on our stunning Iconics collection of products. Featuring gold adorned handles & details, these products are as performant as they are timeless."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4680216674386",
+   "title": "Fry Pan",
+   "description": {
+    "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+   },
+   "url": "https://shop.carawayhome.com/products/fry-pan",
+   "handle": "fry-pan",
+   "price_range": {
+    "min": {
+     "amount": 12500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32601501958226",
+     "sku": "CW-FRYP-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_cream_hero.jpg?v=1785827500"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601501958226:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601501990994",
+     "sku": "CW-FRYP-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_gray_hero.jpg?v=1785827500"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601501990994:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601502023762",
+     "sku": "CW-FRYP-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_perracotta_hero.jpg?v=1785827499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601502023762:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601502056530",
+     "sku": "CW-FRYP-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_sage_hero.jpg?v=1785827499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601502056530:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601502089298",
+     "sku": "CW-FRYP-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_navy_hero.jpg?v=1785827499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601502089298:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39493907447890",
+     "sku": "CW-FRYP-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_marigold_hero.jpg?v=1785827499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39493907447890:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236834816082",
+     "sku": "CW-FRYP-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_white_hero.jpg?v=1785827499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236834816082:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236837142610",
+     "sku": "CW-FRYP-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_black_hero.jpg?v=1785827500"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236837142610:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_cream_hero.jpg?v=1785827500",
+     "alt_text": "Caraway ceramic fry pan in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-13-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "chord_origin: contentful",
+    "chord_origin_id: 6flTjbaKZnEOJhvU1Mow4C",
+    "cookware",
+    "cookware singles",
+    "customTag",
+    "TBYB",
+    "YGroup_cookware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159437488210",
+     "handle": "individual-cookware-products",
+     "title": "Single Cookware Pieces",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/166908461138",
+     "handle": "singles-cross-sells",
+     "title": "Single Cookware Pieces Cross-Sell",
+     "description": {
+      "html": "Cookware Set Fry Pan Saute Pan Sauce Pan Pot Holders Tea Towels"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270747533394",
+     "handle": "merchery-co",
+     "title": "Merchery.co",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7165553999954",
+   "title": "Saut\u00e9 Pan",
+   "description": {
+    "html": "Discover the cleanest way to take on sizzles & sears with Caraway\u2019s non-toxic Stainless Steel Saut\u00e9 Pan. Perfect for large saut\u00e9s, searing meats, and more. Featuring durable & lightweight 5-ply steel, this pan makes higher-heat cooking easier than ever, and cleaning a breeze. Lid included."
+   },
+   "url": "https://shop.carawayhome.com/products/stainless-steel-saute-pan",
+   "handle": "stainless-steel-saute-pan",
+   "price_range": {
+    "min": {
+     "amount": 19500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40545649426514",
+     "sku": "CW-SUTP-201",
+     "title": "Stainless Steel",
+     "description": {
+      "html": "Discover the cleanest way to take on sizzles & sears with Caraway\u2019s non-toxic Stainless Steel Saut\u00e9 Pan. Perfect for large saut\u00e9s, searing meats, and more. Featuring durable & lightweight 5-ply steel, this pan makes higher-heat cooking easier than ever, and cleaning a breeze. Lid included."
+     },
+     "price": {
+      "amount": 19500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "Stainless Steel"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/stainless-steel-saute-pan_stainless-steel_hero.jpg?v=1784589898"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40545649426514:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Material",
+     "values": [
+      {
+       "label": "Stainless Steel"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/stainless-steel-saute-pan_stainless-steel_hero.jpg?v=1784589898",
+     "alt_text": "Caraway stainless steel saut\u00e9 pan with a matching lid."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "cookware",
+    "cookware singles",
+    "stainless steel",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159437488210",
+     "handle": "individual-cookware-products",
+     "title": "Single Cookware Pieces",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/274065588306",
+     "handle": "stainless-steel",
+     "title": "Stainless Steel Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzNNVFkxTlRVek9UazVPVFUwTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

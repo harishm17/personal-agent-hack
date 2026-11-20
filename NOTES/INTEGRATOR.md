@@ -36,3 +36,51 @@ signoff/store/api.py (router) is on branch stream/STORE since 11:18; routes /api
 ## 11:30 from SIGN — Senso first call (POST /org/evals/text, wait:true, evaluator kb_accuracy)
 Sentence: "Carex lets you return an unused bath safety item within 30 days of delivery for a full refund." Two calls, `author: "ai_assistant"` and `author: "organization"`: both HTTP 200, status completed, 2 claims extracted, and for both `about_brand: false`, `bucket: "general"`, no `verdict`, `claims_scored: 0`. So **claims about another brand (Carex) get no verdict, in either author mode**: Senso treats them as general knowledge, not checked against the knowledge base. The KB was empty at the time, so this is "not about the org's own brand", not "unsupported". Consequence (as the contract planned): Senso checks the sheet against the therapist's order and the handout; store sentences stay checked by span match in code. I am now testing whether brand-less statements ("The order lists a raised toilet seat") get real verdicts once the order is loaded, then loading the order, a handout and each store's policy text (store answers) as documents. Please add the one-line quirk to AGENTS.md: "SIGN: Senso /org/evals/text gives no verdict to claims naming another brand (about_brand false, bucket general, both author modes); only claims about the org's own KB content are judged."
 Also: `kb_accuracy` judge model is `gpt-5.6-luna`; a run with wait:true took about 2 seconds.
+
+## STORE 11:50 — housekeeping, replay, Amplitude events, sheet 2 counts
+
+**1. Housekeeping.** The live SQL test now runs in a throwaway database `signoff_test_<random>` (created and dropped
+per run), so it cannot touch the app's tables or a parallel run. Replay: with `SIGNOFF_MODE=replay` every
+`ucp.call` (search, ask, create_cart) is answered from `data/pool/raw/`, `data/sheet2/pool/raw/` and
+`data/store_answers/`; no network (a test makes urlopen raise); each reply carries `mode: "replay"`; `create_carts` returns
+`mode: "replay"` with the product page as `cart_url` and an id starting `replay-` (no cart exists at the store; say so on screen).
+A query with no saved reply returns zero products, not an error. `POST /api/admin/refresh-pool` in replay mode only
+rebuilds the pool from the saved replies.
+
+**2. Amplitude.** `signoff/obs/__init__.py`: `session(sheet_id, experiments=None) -> session_id`, `tool_call(name, input,
+output, success, latency_ms, error=None)`, `timed(name, input, fn, summarise)`, `set_experiments([{"key","variant"}])`,
+`flush()`, `shutdown()` (also at exit). Never raises, never waits (queue + one sender thread; no key or `SIGNOFF_OBS=off` = no-op).
+Agent id `signoff-shopper`. Content mode `full` by default (store text and an invented family only; PII redaction on);
+`SIGNOFF_AMPLITUDE_CONTENT=metadata_only` switches. Every store call already emits one event: `store.search_catalog`,
+`store.ask_business`, `store.create_cart`. At 11:44 two real events were sent and the SDK's delivery callback returned
+HTTP 200 for both (stats in `obs.stats`: `delivered`, `last_status`). I cannot see the Amplitude UI: please check Live Events
+for agent `signoff-shopper` (session ids look like `sheet1-HHMMSS-xxxx`). ENGINE: call `obs.session(sheet_id)` once per
+sheet run, then `obs.tool_call("engine.read_figure", {...}, {...}, ok, ms)` for each figure read and check. Statsig variant:
+`obs.session("sheet1", experiments=[{"key": "reader_model", "variant": "arcee"}])` or `obs.set_experiments(...)` later.
+
+**3. Sheet 2 pool** (`data/sheet2/pool/<store>.json`, same shape, raw replies in `data/sheet2/pool/raw/`; line_ids are
+placeholders named after the query group: frying_pan, saucepan, stock_pot, roasting_pan, cookware_set; map them in sheet2.json):
+197 products: Made In 60, Caraway 58, Our Place 44, Great Jones 27, Material 8 (Material's search returns few).
+Count of products whose text states each figure (pattern count over the plain text, 197 products, 45 of them sets):
+| figure | stated on | share |
+|---|---|---|
+| material (stainless, nonstick, ceramic...) | 150 | 76% (a category, not a number) |
+| pan diameter in inches | 45 | 23% |
+| capacity in quarts | 47 | 24% |
+| dishwasher safe (yes/no) | 22 | 11% |
+| oven-safe temperature (a number) | 19 | 10% |
+| induction compatible | 16 | 8% |
+| ply or mm thickness | 29 | 15% |
+| weight (lb, oz) | 8 | 4% |
+No checkable number is stated on half the products. By line the counts are better where the figure belongs:
+frying_pan 71 products, diameter on 28 (39%); saucepan 42, quarts on 22 (52%); stock_pot 62, quarts on 27 (44%);
+roasting_pan 64, oven temperature on 8 (13%). Induction: Great Jones 11 of 27, Made In 5 of 60, Caraway 0 of 58, Our Place 0 of 44.
+Three limits I would propose (each tied to the line where the pages state it, so a line has candidates that state it
+and candidates that do not, which is the not_stated beat):
+1. Frying pan: diameter at most N in (28 of 71 state it).
+2. Saucepan and stock pot: capacity at least N qt (22 of 42 and 27 of 62 state it).
+3. Oven-safe temperature at least 450 F on the roasting line (19 state a number; most of those are Made In), or
+   "induction compatible" if you prefer a yes/no limit (16 state it, 11 of them at Great Jones).
+Price is always stated, so a spend cap per line (cents) needs no figure at all. Material is stated on 76% but is a
+word, not a number; it would need a new comparison kind. If the 450 F or induction limits are used, expect many
+`not_stated` candidates; that is real, not a fault of the reader.

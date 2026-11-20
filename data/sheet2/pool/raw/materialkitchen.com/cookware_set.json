@@ -1,0 +1,2549 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://materialkitchen.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Material",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "materialkitchen.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "23047781"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "23047781"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7990659809342",
+   "title": "The Clean Cook Set",
+   "description": {
+    "html": "Clean eating starts with what's on your counter, including your tools. Plant-based and free of permanent microplastics, The MK Free Board\u2122\ufe0f is the perfect pairing for The 8\" Knife, a balanced, sharp and safe knife that tackles almost every job you have in the kitchen. Easy to use, easy to care for and worry-free, these foundational tools make prep a breeze and clean-up a no-brainer. They're so good, you'll want to cook more."
+   },
+   "url": "https://materialkitchen.com/products/the-clean-prep-set",
+   "handle": "the-clean-prep-set",
+   "price_range": {
+    "min": {
+     "amount": 11800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11800,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15700,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15700,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42383666020414",
+     "sku": "BCCS26 - BL",
+     "title": "Shell / Cool Neutral",
+     "description": {
+      "html": "Clean eating starts with what's on your counter, including your tools. Plant-based and free of permanent microplastics, The MK Free Board\u2122\ufe0f is the perfect pairing for The 8\" Knife, a balanced, sharp and safe knife that tackles almost every job you have in the kitchen. Easy to use, easy to care for and worry-free, these foundational tools make prep a breeze and clean-up a no-brainer. They're so good, you'll want to cook more."
+     },
+     "price": {
+      "amount": 11800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Shell"
+      },
+      {
+       "name": "Knife Color",
+       "label": "Cool Neutral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/CleanCookSetShell_AB.png?v=1781100509"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42383666020414:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42884966416446",
+     "sku": "BCCS26 - BD",
+     "title": "Shell / Almost Black",
+     "description": {
+      "html": "Clean eating starts with what's on your counter, including your tools. Plant-based and free of permanent microplastics, The MK Free Board\u2122\ufe0f is the perfect pairing for The 8\" Knife, a balanced, sharp and safe knife that tackles almost every job you have in the kitchen. Easy to use, easy to care for and worry-free, these foundational tools make prep a breeze and clean-up a no-brainer. They're so good, you'll want to cook more."
+     },
+     "price": {
+      "amount": 11800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Shell"
+      },
+      {
+       "name": "Knife Color",
+       "label": "Almost Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/CleanCookSetShell_CN.png?v=1781100509"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42884966416446:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42383666085950",
+     "sku": "BCCS26 - TL",
+     "title": "Cloud / Cool Neutral",
+     "description": {
+      "html": "Clean eating starts with what's on your counter, including your tools. Plant-based and free of permanent microplastics, The MK Free Board\u2122\ufe0f is the perfect pairing for The 8\" Knife, a balanced, sharp and safe knife that tackles almost every job you have in the kitchen. Easy to use, easy to care for and worry-free, these foundational tools make prep a breeze and clean-up a no-brainer. They're so good, you'll want to cook more."
+     },
+     "price": {
+      "amount": 11800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Cloud"
+      },
+      {
+       "name": "Knife Color",
+       "label": "Cool Neutral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/CleanCookSetCloud_CN.png?v=1781100509"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42383666085950:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42884966449214",
+     "sku": "BCCS26 - TD",
+     "title": "Cloud / Almost Black",
+     "description": {
+      "html": "Clean eating starts with what's on your counter, including your tools. Plant-based and free of permanent microplastics, The MK Free Board\u2122\ufe0f is the perfect pairing for The 8\" Knife, a balanced, sharp and safe knife that tackles almost every job you have in the kitchen. Easy to use, easy to care for and worry-free, these foundational tools make prep a breeze and clean-up a no-brainer. They're so good, you'll want to cook more."
+     },
+     "price": {
+      "amount": 11800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Cloud"
+      },
+      {
+       "name": "Knife Color",
+       "label": "Almost Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/CleanCookSetCloud_AB.png?v=1781100509"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42884966449214:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42884966481982",
+     "sku": "BCCS26 - WL",
+     "title": "Ocean / Cool Neutral",
+     "description": {
+      "html": "Clean eating starts with what's on your counter, including your tools. Plant-based and free of permanent microplastics, The MK Free Board\u2122\ufe0f is the perfect pairing for The 8\" Knife, a balanced, sharp and safe knife that tackles almost every job you have in the kitchen. Easy to use, easy to care for and worry-free, these foundational tools make prep a breeze and clean-up a no-brainer. They're so good, you'll want to cook more."
+     },
+     "price": {
+      "amount": 11800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Ocean"
+      },
+      {
+       "name": "Knife Color",
+       "label": "Cool Neutral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/CleanCookSetOcean_CN.png?v=1781100510"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42884966481982:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42884966514750",
+     "sku": "BCCS26 - WD",
+     "title": "Ocean / Almost Black",
+     "description": {
+      "html": "Clean eating starts with what's on your counter, including your tools. Plant-based and free of permanent microplastics, The MK Free Board\u2122\ufe0f is the perfect pairing for The 8\" Knife, a balanced, sharp and safe knife that tackles almost every job you have in the kitchen. Easy to use, easy to care for and worry-free, these foundational tools make prep a breeze and clean-up a no-brainer. They're so good, you'll want to cook more."
+     },
+     "price": {
+      "amount": 11800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Ocean"
+      },
+      {
+       "name": "Knife Color",
+       "label": "Almost Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/CleanCookSetOcean_AB.png?v=1781100509"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42884966514750:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Board Color",
+     "values": [
+      {
+       "label": "Shell"
+      },
+      {
+       "label": "Cloud"
+      },
+      {
+       "label": "Ocean"
+      }
+     ]
+    },
+    {
+     "name": "Knife Color",
+     "values": [
+      {
+       "label": "Cool Neutral"
+      },
+      {
+       "label": "Almost Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/CleanCookSetCloud_AB.png?v=1781100509"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-3-2-5-3-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-25% off",
+    "discount qualified"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/82791563375",
+     "handle": "sets",
+     "title": "Sets",
+     "description": {
+      "html": "The modest instruments to which we owe every meal. Everything you need to slice, gather, cut, julienne, and scoop."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269223198782",
+     "handle": "gifts-under-150",
+     "title": "Gifts Under $150",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281129353278",
+     "handle": "black-friday-sale",
+     "title": "Up to 40% Off Sitewide",
+     "description": {
+      "html": "Shop our biggest sale event of the year \u2014 hurry, ends soon!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4439160225854",
+   "title": "The Trio of Knives",
+   "description": {
+    "html": "The three essential knives every cook needs, expertly crafted for smooth, confident chopping, courtesy of a full-tang design, razor sharp Japanese steel blade and grippy handle. With The 8\u201d Knife (your go-to chopping knife), The Serrated 6\u201d Knife (for silky bread and tomato slicing) and The Almost 4\u201d Knife (ideal for paring and small tasks), your kitchen is equipped for culinary projects big and small, setting the stage for leveled-up culinary prowess. As seen in Oprah\u2019s Favorite Things and The Strategist."
+   },
+   "url": "https://materialkitchen.com/products/the-trio-of-knives",
+   "handle": "the-trio-of-knives",
+   "price_range": {
+    "min": {
+     "amount": 17000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 22500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 22500,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31558461521982",
+     "sku": "VKB003 - D",
+     "title": "Almost Black",
+     "description": {
+      "html": "The three essential knives every cook needs, expertly crafted for smooth, confident chopping, courtesy of a full-tang design, razor sharp Japanese steel blade and grippy handle. With The 8\u201d Knife (your go-to chopping knife), The Serrated 6\u201d Knife (for silky bread and tomato slicing) and The Almost 4\u201d Knife (ideal for paring and small tasks), your kitchen is equipped for culinary projects big and small, setting the stage for leveled-up culinary prowess. As seen in Oprah\u2019s Favorite Things and The Strategist."
+     },
+     "price": {
+      "amount": 17000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Almost Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/products/KnifeTrio-AlmostBlack_e3745c41-9cc1-4111-8292-a8a9a0373550.png?v=1737137750"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/31558461521982:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/31558461620286",
+     "sku": "VKB003 - LT",
+     "title": "Cool Neutral",
+     "description": {
+      "html": "The three essential knives every cook needs, expertly crafted for smooth, confident chopping, courtesy of a full-tang design, razor sharp Japanese steel blade and grippy handle. With The 8\u201d Knife (your go-to chopping knife), The Serrated 6\u201d Knife (for silky bread and tomato slicing) and The Almost 4\u201d Knife (ideal for paring and small tasks), your kitchen is equipped for culinary projects big and small, setting the stage for leveled-up culinary prowess. As seen in Oprah\u2019s Favorite Things and The Strategist."
+     },
+     "price": {
+      "amount": 17000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cool Neutral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/products/KnifeTrio-CoolNeutral.png?v=1737137750"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/31558461620286:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Almost Black"
+      },
+      {
+       "label": "Cool Neutral"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/triosagesite.png?v=1762441375"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-8-39",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-24% off",
+    "bread knife",
+    "charity_Heart of Dinner",
+    "chef's knife",
+    "Cortina",
+    "discount qualified",
+    "go live",
+    "japanese steel",
+    "logicbroker",
+    "paring knife",
+    "waitlist_L2mgv9",
+    "YGroup_knives"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/261986254910",
+     "handle": "bestsellers",
+     "title": "Bestsellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262690897982",
+     "handle": "knives",
+     "title": "Knives",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281129353278",
+     "handle": "black-friday-sale",
+     "title": "Up to 40% Off Sitewide",
+     "description": {
+      "html": "Shop our biggest sale event of the year \u2014 hurry, ends soon!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8020094255166",
+   "title": "The MK Free Set",
+   "description": {
+    "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+   },
+   "url": "https://materialkitchen.com/products/the-mk-free-set",
+   "handle": "the-mk-free-set",
+   "price_range": {
+    "min": {
+     "amount": 6700,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6700,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9600,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9600,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50512927129662",
+     "sku": "BAB097 - TF",
+     "title": "Cloud / Tide",
+     "description": {
+      "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+     },
+     "price": {
+      "amount": 6700,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color 1",
+       "label": "Cloud"
+      },
+      {
+       "name": "Color 2",
+       "label": "Tide"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKDuoCloud_Tide.png?v=1771352901"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/50512927129662:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42492505849918",
+     "sku": "BAB097 - TT",
+     "title": "Cloud / Cloud",
+     "description": {
+      "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+     },
+     "price": {
+      "amount": 6700,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color 1",
+       "label": "Cloud"
+      },
+      {
+       "name": "Color 2",
+       "label": "Cloud"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKDuoCloud_Cloud.png?v=1771352902"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42492505849918:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42927826927678",
+     "sku": "BAB097 - TW",
+     "title": "Cloud / Ocean",
+     "description": {
+      "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+     },
+     "price": {
+      "amount": 6700,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color 1",
+       "label": "Cloud"
+      },
+      {
+       "name": "Color 2",
+       "label": "Ocean"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKFreeSetCloudOcean.png?v=1781552754"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42927826927678:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42492505882686",
+     "sku": "BAB097 - TA",
+     "title": "Cloud / Coral",
+     "description": {
+      "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+     },
+     "price": {
+      "amount": 6700,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color 1",
+       "label": "Cloud"
+      },
+      {
+       "name": "Color 2",
+       "label": "Coral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKDuoCloud_Coral.png?v=1771352901"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42492505882686:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/50512927096894",
+     "sku": "BAB097 - WF",
+     "title": "Ocean / Tide",
+     "description": {
+      "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+     },
+     "price": {
+      "amount": 6700,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color 1",
+       "label": "Ocean"
+      },
+      {
+       "name": "Color 2",
+       "label": "Tide"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKDuoOcean_Tide.png?v=1771352901"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/50512927096894:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42492506046526",
+     "sku": "BAB097 - WT",
+     "title": "Ocean / Cloud",
+     "description": {
+      "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+     },
+     "price": {
+      "amount": 6700,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color 1",
+       "label": "Ocean"
+      },
+      {
+       "name": "Color 2",
+       "label": "Cloud"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKDuoOcean_Cloud.png?v=1771352901"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42492506046526:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42927826894910",
+     "sku": "BAB097 - WW",
+     "title": "Ocean / Ocean",
+     "description": {
+      "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+     },
+     "price": {
+      "amount": 6700,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color 1",
+       "label": "Ocean"
+      },
+      {
+       "name": "Color 2",
+       "label": "Ocean"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKFreeSetOceanOcean.png?v=1781552755"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42927826894910:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42492506079294",
+     "sku": "BAB097 - WA",
+     "title": "Ocean / Coral",
+     "description": {
+      "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+     },
+     "price": {
+      "amount": 6700,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color 1",
+       "label": "Ocean"
+      },
+      {
+       "name": "Color 2",
+       "label": "Coral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKDuoOcean_Coral.png?v=1771352902"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42492506079294:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/50512927162430",
+     "sku": "BAB097 - BF",
+     "title": "Shell / Tide",
+     "description": {
+      "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+     },
+     "price": {
+      "amount": 6700,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color 1",
+       "label": "Shell"
+      },
+      {
+       "name": "Color 2",
+       "label": "Tide"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKDuoShell_Tide.png?v=1771352901"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/50512927162430:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42492505948222",
+     "sku": "BAB097 - BT",
+     "title": "Shell / Cloud",
+     "description": {
+      "html": "The better for you boards. A duo of plant-based boards you'll reach for daily, thanks to their non-porous and dishwasher-safe material. Messy, large jobs are perfect for The MK Free Board's expansive size and juice groove. Small daily tasks are where The Midi MK Free Board shines thanks to its versatile size and grippy silicone corners, making it perfect for slippery counters and cooking with young chefs."
+     },
+     "price": {
+      "amount": 6700,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color 1",
+       "label": "Shell"
+      },
+      {
+       "name": "Color 2",
+       "label": "Cloud"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKDuoShell_Cloud.png?v=1771352901"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42492505948222:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color 1",
+     "values": [
+      {
+       "label": "Cloud"
+      },
+      {
+       "label": "Ocean"
+      },
+      {
+       "label": "Shell"
+      }
+     ]
+    },
+    {
+     "name": "Color 2",
+     "values": [
+      {
+       "label": "Tide"
+      },
+      {
+       "label": "Cloud"
+      },
+      {
+       "label": "Ocean"
+      },
+      {
+       "label": "Coral"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MKDuoOcean_Cloud.png?v=1771352901",
+     "alt_text": "Two slim rectangular cutting boards with rounded corners and built-in handles, shown overlapping on a plain white background. One board is blue and one is silver."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-30% off",
+    "discount qualified"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/82791563375",
+     "handle": "sets",
+     "title": "Sets",
+     "description": {
+      "html": "The modest instruments to which we owe every meal. Everything you need to slice, gather, cut, julienne, and scoop."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261969150014",
+     "handle": "prep",
+     "title": "Prepware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269223198782",
+     "handle": "gifts-under-150",
+     "title": "Gifts Under $150",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281129353278",
+     "handle": "black-friday-sale",
+     "title": "Up to 40% Off Sitewide",
+     "description": {
+      "html": "Shop our biggest sale event of the year \u2014 hurry, ends soon!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6801632985150",
+   "title": "The Good Prep Set",
+   "description": {
+    "html": "Chop, slice and dice with confidence. The foundation of any kitchen: the right cutting board and a sharp knife. The Good Prep Set has you covered with our 100% plant-based cutting board (free of permanent micro-plastics, non-porous and dishwasher-safe) and our trio of three essential knives, including a perfectly balanced steel 8\" chef's knife, 6\" serrated knife and almost 4\" paring knife."
+   },
+   "url": "https://materialkitchen.com/products/the-good-prep-set",
+   "handle": "the-good-prep-set",
+   "price_range": {
+    "min": {
+     "amount": 19400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 27700,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 27700,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42192854777918",
+     "sku": "BGPSKLT - W",
+     "title": "Ocean / Cool Neutral",
+     "description": {
+      "html": "Chop, slice and dice with confidence. The foundation of any kitchen: the right cutting board and a sharp knife. The Good Prep Set has you covered with our 100% plant-based cutting board (free of permanent micro-plastics, non-porous and dishwasher-safe) and our trio of three essential knives, including a perfectly balanced steel 8\" chef's knife, 6\" serrated knife and almost 4\" paring knife."
+     },
+     "price": {
+      "amount": 19400,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Ocean"
+      },
+      {
+       "name": "Knives Color",
+       "label": "Cool Neutral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/The_Good_Prep_Set_PDP_Ocean_Cool_Neutral.png?v=1761840877"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42192854777918:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42888177188926",
+     "sku": "BGPSKD - W",
+     "title": "Ocean / Almost Black",
+     "description": {
+      "html": "Chop, slice and dice with confidence. The foundation of any kitchen: the right cutting board and a sharp knife. The Good Prep Set has you covered with our 100% plant-based cutting board (free of permanent micro-plastics, non-porous and dishwasher-safe) and our trio of three essential knives, including a perfectly balanced steel 8\" chef's knife, 6\" serrated knife and almost 4\" paring knife."
+     },
+     "price": {
+      "amount": 19400,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Ocean"
+      },
+      {
+       "name": "Knives Color",
+       "label": "Almost Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/GoodPrepSetOcean_ABTrio.png?v=1756225304"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42888177188926:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42192855171134",
+     "sku": "BGPSKLT - B",
+     "title": "Shell / Cool Neutral",
+     "description": {
+      "html": "Chop, slice and dice with confidence. The foundation of any kitchen: the right cutting board and a sharp knife. The Good Prep Set has you covered with our 100% plant-based cutting board (free of permanent micro-plastics, non-porous and dishwasher-safe) and our trio of three essential knives, including a perfectly balanced steel 8\" chef's knife, 6\" serrated knife and almost 4\" paring knife."
+     },
+     "price": {
+      "amount": 19400,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Shell"
+      },
+      {
+       "name": "Knives Color",
+       "label": "Cool Neutral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/The_Good_Prep_Set_PDP_Shell_Cool_Neutral.png?v=1761840934"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42192855171134:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42888177221694",
+     "sku": "BGPSKD - B",
+     "title": "Shell / Almost Black",
+     "description": {
+      "html": "Chop, slice and dice with confidence. The foundation of any kitchen: the right cutting board and a sharp knife. The Good Prep Set has you covered with our 100% plant-based cutting board (free of permanent micro-plastics, non-porous and dishwasher-safe) and our trio of three essential knives, including a perfectly balanced steel 8\" chef's knife, 6\" serrated knife and almost 4\" paring knife."
+     },
+     "price": {
+      "amount": 19400,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Shell"
+      },
+      {
+       "name": "Knives Color",
+       "label": "Almost Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/GoodPrepSetShell_ABTrio.png?v=1756225304"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42888177221694:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41889990508606",
+     "sku": "BGPSKLT - T",
+     "title": "Cloud / Cool Neutral",
+     "description": {
+      "html": "Chop, slice and dice with confidence. The foundation of any kitchen: the right cutting board and a sharp knife. The Good Prep Set has you covered with our 100% plant-based cutting board (free of permanent micro-plastics, non-porous and dishwasher-safe) and our trio of three essential knives, including a perfectly balanced steel 8\" chef's knife, 6\" serrated knife and almost 4\" paring knife."
+     },
+     "price": {
+      "amount": 19400,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Cloud"
+      },
+      {
+       "name": "Knives Color",
+       "label": "Cool Neutral"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/GoodPrepSetCloud_ABTrio.png?v=1756225304"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/41889990508606:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42888177254462",
+     "sku": "BGPSKD - T",
+     "title": "Cloud / Almost Black",
+     "description": {
+      "html": "Chop, slice and dice with confidence. The foundation of any kitchen: the right cutting board and a sharp knife. The Good Prep Set has you covered with our 100% plant-based cutting board (free of permanent micro-plastics, non-porous and dishwasher-safe) and our trio of three essential knives, including a perfectly balanced steel 8\" chef's knife, 6\" serrated knife and almost 4\" paring knife."
+     },
+     "price": {
+      "amount": 19400,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Board Color",
+       "label": "Cloud"
+      },
+      {
+       "name": "Knives Color",
+       "label": "Almost Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/GoodPrepSetCloud_ABTrio.png?v=1756225304"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42888177254462:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Board Color",
+     "values": [
+      {
+       "label": "Ocean"
+      },
+      {
+       "label": "Shell"
+      },
+      {
+       "label": "Cloud"
+      }
+     ]
+    },
+    {
+     "name": "Knives Color",
+     "values": [
+      {
+       "label": "Cool Neutral"
+      },
+      {
+       "label": "Almost Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/GoodPrepSetOcean_ABTrio.png?v=1756225304"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-30% off",
+    "discount qualified",
+    "logicbroker",
+    "set"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/82791563375",
+     "handle": "sets",
+     "title": "Sets",
+     "description": {
+      "html": "The modest instruments to which we owe every meal. Everything you need to slice, gather, cut, julienne, and scoop."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281129353278",
+     "handle": "black-friday-sale",
+     "title": "Up to 40% Off Sitewide",
+     "description": {
+      "html": "Shop our biggest sale event of the year \u2014 hurry, ends soon!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15462688129086",
+   "title": "The Matte Set",
+   "description": {
+    "html": "Understated, not unnoticed. The 20-piece Matte Set brings a quiet kind of polish to the table. Made from premium 18/10 stainless steel with a matte finish, the full set creates four complete place settings that look just as right with everyday ceramics as they do at a dinner party. Very good design. A refreshingly sensible price. No need to save these for the nice plates or the right guests. This first release is available in limited quantities."
+   },
+   "url": "https://materialkitchen.com/products/the-matte-set",
+   "handle": "the-matte-set",
+   "price_range": {
+    "min": {
+     "amount": 9500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/68071507230782",
+     "sku": "FS001 - R (Preorder)",
+     "title": "Default Title",
+     "description": {
+      "html": "Understated, not unnoticed. The 20-piece Matte Set brings a quiet kind of polish to the table. Made from premium 18/10 stainless steel with a matte finish, the full set creates four complete place settings that look just as right with everyday ceramics as they do at a dinner party. Very good design. A refreshingly sensible price. No need to save these for the nice plates or the right guests. This first release is available in limited quantities."
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Flatware_Matte_Set_PDP_1.png?v=1794236489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/68071507230782:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Flatware_Matte_Set_PDP_1.png?v=1794236489"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-10-6-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-Best Value",
+    "badge-new"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288384188478",
+     "handle": "tabletop",
+     "title": "Tabletop",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6742661333054",
+   "title": "The Table Knives",
+   "description": {
+    "html": "A NYT Gift Guide Pick and Wirecutter's Top Pick for Best Steak Knives. Seamlessly slice through turkey, steaks and squash with hand-finished German steel stainless blades and matte, stain-resistant, and ever-so-slightly grippy handle. Each set of four comes with a wooden holder, designed to stand upright on the counter or lay horizontally in a drawer. Don't miss it! The Table Knives often sell out, so we recommend acting fast when they're in stock."
+   },
+   "url": "https://materialkitchen.com/products/the-table-knives",
+   "handle": "the-table-knives",
+   "price_range": {
+    "min": {
+     "amount": 8800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8800,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 11000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40310812966974",
+     "sku": "KT004 - M",
+     "title": "Willow (Preorder)",
+     "description": {
+      "html": "A NYT Gift Guide Pick and Wirecutter's Top Pick for Best Steak Knives. Seamlessly slice through turkey, steaks and squash with hand-finished German steel stainless blades and matte, stain-resistant, and ever-so-slightly grippy handle. Each set of four comes with a wooden holder, designed to stand upright on the counter or lay horizontally in a drawer. Don't miss it! The Table Knives often sell out, so we recommend acting fast when they're in stock."
+     },
+     "price": {
+      "amount": 8800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Willow (Preorder)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/tablekniveswillow_1.png?v=1707841120"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/40310812966974:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41528188567614",
+     "sku": "KT004 - R",
+     "title": "Morel (Preorder)",
+     "description": {
+      "html": "A NYT Gift Guide Pick and Wirecutter's Top Pick for Best Steak Knives. Seamlessly slice through turkey, steaks and squash with hand-finished German steel stainless blades and matte, stain-resistant, and ever-so-slightly grippy handle. Each set of four comes with a wooden holder, designed to stand upright on the counter or lay horizontally in a drawer. Don't miss it! The Table Knives often sell out, so we recommend acting fast when they're in stock."
+     },
+     "price": {
+      "amount": 8800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Morel (Preorder)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/products/PDP-TableKnivesMorel.png?v=1762446448"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/41528188567614:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Willow (Preorder)"
+      },
+      {
+       "label": "Morel (Preorder)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/products/PDP-TableKnivesMorel.png?v=1762446448"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-10-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-20% off",
+    "badge-Pre-Order Now",
+    "bfcm-picks",
+    "Cortina",
+    "logicbroker"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/262690897982",
+     "handle": "knives",
+     "title": "Knives",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269157269566",
+     "handle": "bestsellers-high-aov",
+     "title": "Editor Loved",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/274877612094",
+     "handle": "new",
+     "title": "New Arrivals",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15462506790974",
+   "title": "The Bestsellers Set",
+   "description": {
+    "html": "Our most-recommended kitchen upgrades. In one set. The Bestsellers Set brings together three favorites for a reason: The Forever Peeler, The Table Knives and The MK Free Board. Small changes to the things you use all the time, and a surprisingly big difference in how you prep, cook and eat. A good place to start. An even better gift. The Forever Peeler makes quick work of produce with its weighted feel and replaceable blade. The Table Knives bring a clean, straight-edge cut to dinner. And the non-porous, dishwasher-safe MK Free Board offers a smarter alternative to wood and conventional fossil-based plastic. We\u2019ve put this combination together in limited quantities for the holiday season."
+   },
+   "url": "https://materialkitchen.com/products/the-best-seller-set",
+   "handle": "the-best-seller-set",
+   "price_range": {
+    "min": {
+     "amount": 15500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 20200,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20200,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/68021823635518",
+     "sku": "BBSS26 - RT",
+     "title": "Morel / Cloud",
+     "description": {
+      "html": "Our most-recommended kitchen upgrades. In one set. The Bestsellers Set brings together three favorites for a reason: The Forever Peeler, The Table Knives and The MK Free Board. Small changes to the things you use all the time, and a surprisingly big difference in how you prep, cook and eat. A good place to start. An even better gift. The Forever Peeler makes quick work of produce with its weighted feel and replaceable blade. The Table Knives bring a clean, straight-edge cut to dinner. And the non-porous, dishwasher-safe MK Free Board offers a smarter alternative to wood and conventional fossil-based plastic. We\u2019ve put this combination together in limited quantities for the holiday season."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Table Knives Color",
+       "label": "Morel"
+      },
+      {
+       "name": "MK Free Board Color",
+       "label": "Cloud"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Cloud_Morel_Peeler.png?v=1793653225"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/68021823635518:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/68021823668286",
+     "sku": "BBSS26 - RB",
+     "title": "Morel / Shell",
+     "description": {
+      "html": "Our most-recommended kitchen upgrades. In one set. The Bestsellers Set brings together three favorites for a reason: The Forever Peeler, The Table Knives and The MK Free Board. Small changes to the things you use all the time, and a surprisingly big difference in how you prep, cook and eat. A good place to start. An even better gift. The Forever Peeler makes quick work of produce with its weighted feel and replaceable blade. The Table Knives bring a clean, straight-edge cut to dinner. And the non-porous, dishwasher-safe MK Free Board offers a smarter alternative to wood and conventional fossil-based plastic. We\u2019ve put this combination together in limited quantities for the holiday season."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Table Knives Color",
+       "label": "Morel"
+      },
+      {
+       "name": "MK Free Board Color",
+       "label": "Shell"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Shell_Morel_Peeler.png?v=1793653225"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/68021823668286:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/68021823701054",
+     "sku": "BBSS26 - RW",
+     "title": "Morel / Ocean",
+     "description": {
+      "html": "Our most-recommended kitchen upgrades. In one set. The Bestsellers Set brings together three favorites for a reason: The Forever Peeler, The Table Knives and The MK Free Board. Small changes to the things you use all the time, and a surprisingly big difference in how you prep, cook and eat. A good place to start. An even better gift. The Forever Peeler makes quick work of produce with its weighted feel and replaceable blade. The Table Knives bring a clean, straight-edge cut to dinner. And the non-porous, dishwasher-safe MK Free Board offers a smarter alternative to wood and conventional fossil-based plastic. We\u2019ve put this combination together in limited quantities for the holiday season."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Table Knives Color",
+       "label": "Morel"
+      },
+      {
+       "name": "MK Free Board Color",
+       "label": "Ocean"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Ocean_Morel_Peeler.png?v=1793653224"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/68021823701054:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/68021823766590",
+     "sku": "BBSS26 - MT",
+     "title": "Willow / Cloud",
+     "description": {
+      "html": "Our most-recommended kitchen upgrades. In one set. The Bestsellers Set brings together three favorites for a reason: The Forever Peeler, The Table Knives and The MK Free Board. Small changes to the things you use all the time, and a surprisingly big difference in how you prep, cook and eat. A good place to start. An even better gift. The Forever Peeler makes quick work of produce with its weighted feel and replaceable blade. The Table Knives bring a clean, straight-edge cut to dinner. And the non-porous, dishwasher-safe MK Free Board offers a smarter alternative to wood and conventional fossil-based plastic. We\u2019ve put this combination together in limited quantities for the holiday season."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Table Knives Color",
+       "label": "Willow"
+      },
+      {
+       "name": "MK Free Board Color",
+       "label": "Cloud"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Cloud_Willow_Peeler.png?v=1793653224"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/68021823766590:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/68021823799358",
+     "sku": "BBSS26 - MB",
+     "title": "Willow / Shell",
+     "description": {
+      "html": "Our most-recommended kitchen upgrades. In one set. The Bestsellers Set brings together three favorites for a reason: The Forever Peeler, The Table Knives and The MK Free Board. Small changes to the things you use all the time, and a surprisingly big difference in how you prep, cook and eat. A good place to start. An even better gift. The Forever Peeler makes quick work of produce with its weighted feel and replaceable blade. The Table Knives bring a clean, straight-edge cut to dinner. And the non-porous, dishwasher-safe MK Free Board offers a smarter alternative to wood and conventional fossil-based plastic. We\u2019ve put this combination together in limited quantities for the holiday season."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Table Knives Color",
+       "label": "Willow"
+      },
+      {
+       "name": "MK Free Board Color",
+       "label": "Shell"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Shell_Willow_Peeler.png?v=1793653225"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/68021823799358:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/68021823832126",
+     "sku": "BBSS26 - MW",
+     "title": "Willow / Ocean",
+     "description": {
+      "html": "Our most-recommended kitchen upgrades. In one set. The Bestsellers Set brings together three favorites for a reason: The Forever Peeler, The Table Knives and The MK Free Board. Small changes to the things you use all the time, and a surprisingly big difference in how you prep, cook and eat. A good place to start. An even better gift. The Forever Peeler makes quick work of produce with its weighted feel and replaceable blade. The Table Knives bring a clean, straight-edge cut to dinner. And the non-porous, dishwasher-safe MK Free Board offers a smarter alternative to wood and conventional fossil-based plastic. We\u2019ve put this combination together in limited quantities for the holiday season."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Table Knives Color",
+       "label": "Willow"
+      },
+      {
+       "name": "MK Free Board Color",
+       "label": "Ocean"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Ocean_Willow_Peeler.png?v=1793653225"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/68021823832126:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Table Knives Color",
+     "values": [
+      {
+       "label": "Morel"
+      },
+      {
+       "label": "Willow"
+      }
+     ]
+    },
+    {
+     "name": "MK Free Board Color",
+     "values": [
+      {
+       "label": "Cloud"
+      },
+      {
+       "label": "Shell"
+      },
+      {
+       "label": "Ocean"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Shell_Willow_Peeler.png?v=1793653225"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-23% off"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/82791563375",
+     "handle": "sets",
+     "title": "Sets",
+     "description": {
+      "html": "The modest instruments to which we owe every meal. Everything you need to slice, gather, cut, julienne, and scoop."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15463152812094",
+   "title": "The Mirror Set",
+   "description": {
+    "html": "The good silverware (20 pieces, in fact). Every single day. With a polished, light-catching finish, The Mirror Set makes even a Tuesday-night dinner feel like someone put in a little effort. Twenty pieces of premium 18/10 stainless steel make four complete place settings, without the precious price tag. Good-looking enough for company. Practical enough for everyone else. This is flatware you\u2019ll want to put out, not put away. We\u2019re introducing it in limited quantities for the first release."
+   },
+   "url": "https://materialkitchen.com/products/the-mirror-set-1",
+   "handle": "the-mirror-set-1",
+   "price_range": {
+    "min": {
+     "amount": 9500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/68023206150206",
+     "sku": "FS001 - L (Preorder)",
+     "title": "Default Title",
+     "description": {
+      "html": "The good silverware (20 pieces, in fact). Every single day. With a polished, light-catching finish, The Mirror Set makes even a Tuesday-night dinner feel like someone put in a little effort. Twenty pieces of premium 18/10 stainless steel make four complete place settings, without the precious price tag. Good-looking enough for company. Practical enough for everyone else. This is flatware you\u2019ll want to put out, not put away. We\u2019re introducing it in limited quantities for the first release."
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Flatware_MirrorSetPDP_1.png?v=1793894923"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/68023206150206:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/Flatware_MirrorSetPDP_1.png?v=1793894923"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-10-6-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-Best Value",
+    "badge-new"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288384188478",
+     "handle": "tabletop",
+     "title": "Tabletop",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8039265959998",
+   "title": "Dinner Plate Set of 4",
+   "description": {
+    "html": "At the heart of Tortugaware\u2019s dinner plate lies the sculpted edge\u2014a distinctive form that engages the eye and welcomes the hand. Designed to feel extraordinary in the hands and to stack like sculptures, these modern stoneware dinner plates build undulating landscapes across the table. Each plate has a substantial clay body that gives it weight, presence, and durability for modern living. Microwave, dishwasher, and oven safe up to 300\u00b0F. Made in Mexico. MK Finds items are not eligible for discounts."
+   },
+   "url": "https://materialkitchen.com/products/dinner-plate-set-of-4",
+   "handle": "dinner-plate-set-of-4",
+   "price_range": {
+    "min": {
+     "amount": 27360,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 27360,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 28800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 28800,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42571211079742",
+     "sku": "TW-DIN-BONE-4",
+     "title": "Bone",
+     "description": {
+      "html": "At the heart of Tortugaware\u2019s dinner plate lies the sculpted edge\u2014a distinctive form that engages the eye and welcomes the hand. Designed to feel extraordinary in the hands and to stack like sculptures, these modern stoneware dinner plates build undulating landscapes across the table. Each plate has a substantial clay body that gives it weight, presence, and durability for modern living. Microwave, dishwasher, and oven safe up to 300\u00b0F. Made in Mexico. MK Finds items are not eligible for discounts."
+     },
+     "price": {
+      "amount": 27360,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Bone"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/TW-DIN-BONE-4.png?v=1774386781"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42571211079742:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42571211112510",
+     "sku": "TW-DIN-LICH-4",
+     "title": "Lichen",
+     "description": {
+      "html": "At the heart of Tortugaware\u2019s dinner plate lies the sculpted edge\u2014a distinctive form that engages the eye and welcomes the hand. Designed to feel extraordinary in the hands and to stack like sculptures, these modern stoneware dinner plates build undulating landscapes across the table. Each plate has a substantial clay body that gives it weight, presence, and durability for modern living. Microwave, dishwasher, and oven safe up to 300\u00b0F. Made in Mexico. MK Finds items are not eligible for discounts."
+     },
+     "price": {
+      "amount": 27360,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Lichen"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/TW-DIN-LICH-4.png?v=1774386163"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42571211112510:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42571211145278",
+     "sku": "TW-DIN-SOOT-4",
+     "title": "Soot",
+     "description": {
+      "html": "At the heart of Tortugaware\u2019s dinner plate lies the sculpted edge\u2014a distinctive form that engages the eye and welcomes the hand. Designed to feel extraordinary in the hands and to stack like sculptures, these modern stoneware dinner plates build undulating landscapes across the table. Each plate has a substantial clay body that gives it weight, presence, and durability for modern living. Microwave, dishwasher, and oven safe up to 300\u00b0F. Made in Mexico. MK Finds items are not eligible for discounts."
+     },
+     "price": {
+      "amount": 27360,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Soot"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/TW-DIN-SOOT-4.png?v=1774386163"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42571211145278:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42571211178046",
+     "sku": "TW-DIN-TIER-4",
+     "title": "Tierra",
+     "description": {
+      "html": "At the heart of Tortugaware\u2019s dinner plate lies the sculpted edge\u2014a distinctive form that engages the eye and welcomes the hand. Designed to feel extraordinary in the hands and to stack like sculptures, these modern stoneware dinner plates build undulating landscapes across the table. Each plate has a substantial clay body that gives it weight, presence, and durability for modern living. Microwave, dishwasher, and oven safe up to 300\u00b0F. Made in Mexico. MK Finds items are not eligible for discounts."
+     },
+     "price": {
+      "amount": 27360,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Tierra"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/TW-DIN-TIER-4.png?v=1774386781"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42571211178046:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Bone"
+      },
+      {
+       "label": "Lichen"
+      },
+      {
+       "label": "Soot"
+      },
+      {
+       "label": "Tierra"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/TW-DIN-BONE-4.png?v=1774386781"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-10-4-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-MK Finds",
+    "badge-Tortuga Forma",
+    "Shopify Collective",
+    "Tortuga Forma"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/286254596158",
+     "handle": "ceramics",
+     "title": "Ceramics",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7709801906238",
+   "title": "The Host Set",
+   "description": {
+    "html": "For the host who has everything. Almost. The Host Set pairs two of our most-loved table pieces: The Salt Sphere and The Resting Stone. One keeps the finishing salt close. The other gives serving spoons and small essentials somewhere beautiful to land. Both deserve to stay out long after the guests have gone. Back by popular demand. Not for long. We brought The Host Set back in a very limited quantity, and we don\u2019t expect it to stick around. If it\u2019s been on your list, this would be the time."
+   },
+   "url": "https://materialkitchen.com/products/the-host-set",
+   "handle": "the-host-set",
+   "price_range": {
+    "min": {
+     "amount": 10000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41435015970878",
+     "sku": "BMO - SG",
+     "title": "Walnut + Seaglass",
+     "description": {
+      "html": "For the host who has everything. Almost. The Host Set pairs two of our most-loved table pieces: The Salt Sphere and The Resting Stone. One keeps the finishing salt close. The other gives serving spoons and small essentials somewhere beautiful to land. Both deserve to stay out long after the guests have gone. Back by popular demand. Not for long. We brought The Host Set back in a very limited quantity, and we don\u2019t expect it to stick around. If it\u2019s been on your list, this would be the time."
+     },
+     "price": {
+      "amount": 10000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Walnut + Seaglass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MaterialObjectsBundle11_24-4.png?v=1732026998"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/41435015970878:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Walnut + Seaglass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/MaterialObjectsBundle11_24-4.png?v=1732026998"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/bu",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-23% off",
+    "discount qualified",
+    "logicbroker"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/82791563375",
+     "handle": "sets",
+     "title": "Sets",
+     "description": {
+      "html": "The modest instruments to which we owe every meal. Everything you need to slice, gather, cut, julienne, and scoop."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269223198782",
+     "handle": "gifts-under-150",
+     "title": "Gifts Under $150",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269735264318",
+     "handle": "bestsellers-no-bundles-rebuy",
+     "title": "Bestsellers - No Bundles (rebuy)",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281129353278",
+     "handle": "black-friday-sale",
+     "title": "Up to 40% Off Sitewide",
+     "description": {
+      "html": "Shop our biggest sale event of the year \u2014 hurry, ends soon!"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzNOekE1T0RBeE9UQTJNak00TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

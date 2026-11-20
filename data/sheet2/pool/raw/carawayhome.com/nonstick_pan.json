@@ -1,0 +1,4022 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://shop.carawayhome.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Caraway",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "shop.carawayhome.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "25862733906"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "25862733906"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/6966179496018",
+   "title": "Mini Fry Pan",
+   "description": {
+    "html": "Our Mini Fry Pan allows for healthy cooking without harmful chemicals: use for single-serve eggs or dinners for one to two. Featuring a non-toxic ceramic coating, this non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid not included."
+   },
+   "url": "https://shop.carawayhome.com/products/mini-fry-pan",
+   "handle": "mini-fry-pan",
+   "price_range": {
+    "min": {
+     "amount": 11500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40144570318930",
+     "sku": "CW-FRY8-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our Mini Fry Pan allows for healthy cooking without harmful chemicals: use for single-serve eggs or dinners for one to two. Featuring a non-toxic ceramic coating, this non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid not included."
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-fry-pan_cream_hero.jpg?v=1784313412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570318930:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570351698",
+     "sku": "CW-FRY8-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our Mini Fry Pan allows for healthy cooking without harmful chemicals: use for single-serve eggs or dinners for one to two. Featuring a non-toxic ceramic coating, this non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid not included."
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-fry-pan_navy_hero.jpg?v=1784313419"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570351698:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570384466",
+     "sku": "CW-FRY8-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our Mini Fry Pan allows for healthy cooking without harmful chemicals: use for single-serve eggs or dinners for one to two. Featuring a non-toxic ceramic coating, this non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid not included."
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-fry-pan_gray_hero.jpg?v=1784313429"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570384466:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570417234",
+     "sku": "CW-FRY8-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our Mini Fry Pan allows for healthy cooking without harmful chemicals: use for single-serve eggs or dinners for one to two. Featuring a non-toxic ceramic coating, this non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid not included."
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-fry-pan_perracotta_hero.jpg?v=1784313438"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570417234:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570450002",
+     "sku": "CW-FRY8-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our Mini Fry Pan allows for healthy cooking without harmful chemicals: use for single-serve eggs or dinners for one to two. Featuring a non-toxic ceramic coating, this non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid not included."
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-fry-pan_marigold_hero.jpg?v=1784313460"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570450002:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570482770",
+     "sku": "CW-FRY8-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our Mini Fry Pan allows for healthy cooking without harmful chemicals: use for single-serve eggs or dinners for one to two. Featuring a non-toxic ceramic coating, this non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid not included."
+     },
+     "price": {
+      "amount": 11500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-fry-pan_sage_hero.jpg?v=1784313451"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570482770:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570515538",
+     "sku": "CW-FRY8-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our Mini Fry Pan allows for healthy cooking without harmful chemicals: use for single-serve eggs or dinners for one to two. Featuring a non-toxic ceramic coating, this non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid not included."
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-fry-pan_black_hero.jpg?v=1784616384"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570515538:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570548306",
+     "sku": "CW-FRY8-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our Mini Fry Pan allows for healthy cooking without harmful chemicals: use for single-serve eggs or dinners for one to two. Featuring a non-toxic ceramic coating, this non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid not included."
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-fry-pan_white_hero.jpg?v=1784616384"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570548306:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/mini-fry-pan_cream_hero.jpg?v=1784313412",
+     "alt_text": "Caraway ceramic mini fry pan in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "cookware",
+    "YGroup_cookware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4680216674386",
+   "title": "Fry Pan",
+   "description": {
+    "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+   },
+   "url": "https://shop.carawayhome.com/products/fry-pan",
+   "handle": "fry-pan",
+   "price_range": {
+    "min": {
+     "amount": 12500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32601501958226",
+     "sku": "CW-FRYP-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_cream_hero.jpg?v=1785827500"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601501958226:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601501990994",
+     "sku": "CW-FRYP-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_gray_hero.jpg?v=1785827500"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601501990994:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601502023762",
+     "sku": "CW-FRYP-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_perracotta_hero.jpg?v=1785827499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601502023762:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601502056530",
+     "sku": "CW-FRYP-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_sage_hero.jpg?v=1785827499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601502056530:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601502089298",
+     "sku": "CW-FRYP-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_navy_hero.jpg?v=1785827499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601502089298:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39493907447890",
+     "sku": "CW-FRYP-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_marigold_hero.jpg?v=1785827499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39493907447890:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236834816082",
+     "sku": "CW-FRYP-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_white_hero.jpg?v=1785827499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236834816082:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236837142610",
+     "sku": "CW-FRYP-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our Non-Toxic Fry Pan allows for healthy cooking in the kitchen without harmful chemicals: use for slide-off-the-pan eggs, saut\u00e9ing veggies, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Lid is not included. Size: 10.5 in // 2.7 qt Weight: 2.8 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_black_hero.jpg?v=1785827500"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236837142610:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/fry-pan_cream_hero.jpg?v=1785827500",
+     "alt_text": "Caraway ceramic fry pan in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-13-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "chord_origin: contentful",
+    "chord_origin_id: 6flTjbaKZnEOJhvU1Mow4C",
+    "cookware",
+    "cookware singles",
+    "customTag",
+    "TBYB",
+    "YGroup_cookware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159437488210",
+     "handle": "individual-cookware-products",
+     "title": "Single Cookware Pieces",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/166908461138",
+     "handle": "singles-cross-sells",
+     "title": "Single Cookware Pieces Cross-Sell",
+     "description": {
+      "html": "Cookware Set Fry Pan Saute Pan Sauce Pan Pot Holders Tea Towels"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270747533394",
+     "handle": "merchery-co",
+     "title": "Merchery.co",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4680289419346",
+   "title": "Saut\u00e9 Pan",
+   "description": {
+    "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+   },
+   "url": "https://shop.carawayhome.com/products/saute-pan",
+   "handle": "saute-pan",
+   "price_range": {
+    "min": {
+     "amount": 16500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32601915293778",
+     "sku": "CW-SUTP-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_cream_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601915293778:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601915326546",
+     "sku": "CW-SUTP-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_gray_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601915326546:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601915359314",
+     "sku": "CW-SUTP-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_perracotta_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601915359314:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601915392082",
+     "sku": "CW-SUTP-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_sage_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601915392082:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601915424850",
+     "sku": "CW-SUTP-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_navy_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601915424850:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39493909348434",
+     "sku": "CW-SUTP-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_marigold_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39493909348434:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236873220178",
+     "sku": "CW-SUTP-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 20500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_black_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236873220178:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236875251794",
+     "sku": "CW-SUTP-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our non-toxic ceramic Saut\u00e9 Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for dishes with stock, dinner parties, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 11.8 in // 4.5 qt Weight (w/ lid): 6.8 lbs"
+     },
+     "price": {
+      "amount": 20500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_white_hero.jpg?v=1785827494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236875251794:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/saute-pan_cream_hero.jpg?v=1785827494",
+     "alt_text": "Caraway ceramic saut\u00e9 pan in Cream with a matching lid."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "chord_origin: contentful",
+    "chord_origin_id: 3XIUtNaYlgCOXbBvjfoQQ6",
+    "cookware",
+    "cookware singles",
+    "customTag",
+    "TBYB",
+    "YGroup_cookware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159437488210",
+     "handle": "individual-cookware-products",
+     "title": "Single Cookware Pieces",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/166908461138",
+     "handle": "singles-cross-sells",
+     "title": "Single Cookware Pieces Cross-Sell",
+     "description": {
+      "html": "Cookware Set Fry Pan Saute Pan Sauce Pan Pot Holders Tea Towels"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4680290009170",
+   "title": "Sauce Pan",
+   "description": {
+    "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+   },
+   "url": "https://shop.carawayhome.com/products/sauce-pan",
+   "handle": "sauce-pan",
+   "price_range": {
+    "min": {
+     "amount": 13500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32601917423698",
+     "sku": "CW-SACP-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_cream_hero.jpg?v=1785827488"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601917423698:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601917456466",
+     "sku": "CW-SACP-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_gray_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601917456466:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601917489234",
+     "sku": "CW-SACP-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_perracotta_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601917489234:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601917522002",
+     "sku": "CW-SACP-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_sage_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601917522002:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32601917554770",
+     "sku": "CW-SACP-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_navy_hero.jpg?v=1785827488"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/32601917554770:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39493908529234",
+     "sku": "CW-SACP-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 13500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_marigold_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39493908529234:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236846841938",
+     "sku": "CW-SACP-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_black_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236846841938:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40236848021586",
+     "sku": "CW-SACP-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our non-toxic 3 Quart Sauce Pan (lid included) allows for healthy cooking in the kitchen without harmful chemicals: use for risottos, soups, and more. Featuring a ceramic-coated interior, this durable non-stick pan makes cooking easier than ever, cleaning (dare we say) enjoyable, and adds a pop of color to any home. Size: 8.0 in // 3.0 qt Weight (w/ lid): 4.0 lbs"
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_white_hero.jpg?v=1785827489"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40236848021586:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/sauce-pan_cream_hero.jpg?v=1785827488",
+     "alt_text": "Caraway ceramic sauce pan in Cream with a matching lid."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "chord_origin: contentful",
+    "chord_origin_id: 4GOnXu35QMZUV5RMTJHuk0",
+    "cookware",
+    "cookware singles",
+    "customTag",
+    "TBYB",
+    "YGroup_cookware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159437488210",
+     "handle": "individual-cookware-products",
+     "title": "Single Cookware Pieces",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/166908461138",
+     "handle": "singles-cross-sells",
+     "title": "Single Cookware Pieces Cross-Sell",
+     "description": {
+      "html": "Cookware Set Fry Pan Saute Pan Sauce Pan Pot Holders Tea Towels"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7250182504530",
+   "title": "Stir Fry Pan",
+   "description": {
+    "html": "Our take on a wok, the Stir Fry Pan is an all purpose pan that features our signature non-stick, non-toxic ceramic coating. The high sloped walls allow you to spread food and concentrate heat onto different ingredients, cooking vegetables, grains, and proteins all at once. It\u2019s the perfect pan for cleaning out the fridge, so your favorite foods never go to waste. 12\u201d Glass Lid sold separately."
+   },
+   "url": "https://shop.carawayhome.com/products/ceramic-stir-fry-pan",
+   "handle": "ceramic-stir-fry-pan",
+   "price_range": {
+    "min": {
+     "amount": 14500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40776685420626",
+     "sku": "CW-VWOK-101",
+     "title": "Cream",
+     "description": {
+      "html": "Our take on a wok, the Stir Fry Pan is an all purpose pan that features our signature non-stick, non-toxic ceramic coating. The high sloped walls allow you to spread food and concentrate heat onto different ingredients, cooking vegetables, grains, and proteins all at once. It\u2019s the perfect pan for cleaning out the fridge, so your favorite foods never go to waste. 12\u201d Glass Lid sold separately."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/ceramic-stir-fry-pan_cream_hero.jpg?v=1784315101"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40776685420626:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40776685453394",
+     "sku": "CW-VWOK-102",
+     "title": "Navy",
+     "description": {
+      "html": "Our take on a wok, the Stir Fry Pan is an all purpose pan that features our signature non-stick, non-toxic ceramic coating. The high sloped walls allow you to spread food and concentrate heat onto different ingredients, cooking vegetables, grains, and proteins all at once. It\u2019s the perfect pan for cleaning out the fridge, so your favorite foods never go to waste. 12\u201d Glass Lid sold separately."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/ceramic-stir-fry-pan_navy_hero.jpg?v=1784315112"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40776685453394:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40776685486162",
+     "sku": "CW-VWOK-103",
+     "title": "Gray",
+     "description": {
+      "html": "Our take on a wok, the Stir Fry Pan is an all purpose pan that features our signature non-stick, non-toxic ceramic coating. The high sloped walls allow you to spread food and concentrate heat onto different ingredients, cooking vegetables, grains, and proteins all at once. It\u2019s the perfect pan for cleaning out the fridge, so your favorite foods never go to waste. 12\u201d Glass Lid sold separately."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/ceramic-stir-fry-pan_gray_hero.jpg?v=1784315125"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40776685486162:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40776685518930",
+     "sku": "CW-VWOK-104",
+     "title": "Sage",
+     "description": {
+      "html": "Our take on a wok, the Stir Fry Pan is an all purpose pan that features our signature non-stick, non-toxic ceramic coating. The high sloped walls allow you to spread food and concentrate heat onto different ingredients, cooking vegetables, grains, and proteins all at once. It\u2019s the perfect pan for cleaning out the fridge, so your favorite foods never go to waste. 12\u201d Glass Lid sold separately."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/ceramic-stir-fry-pan_sage_hero.jpg?v=1784315134"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40776685518930:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40776685551698",
+     "sku": "CW-VWOK-105",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our take on a wok, the Stir Fry Pan is an all purpose pan that features our signature non-stick, non-toxic ceramic coating. The high sloped walls allow you to spread food and concentrate heat onto different ingredients, cooking vegetables, grains, and proteins all at once. It\u2019s the perfect pan for cleaning out the fridge, so your favorite foods never go to waste. 12\u201d Glass Lid sold separately."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/ceramic-stir-fry-pan_perracotta_hero.jpg?v=1784315140"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40776685551698:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40776685584466",
+     "sku": "CW-VWOK-106",
+     "title": "Marigold",
+     "description": {
+      "html": "Our take on a wok, the Stir Fry Pan is an all purpose pan that features our signature non-stick, non-toxic ceramic coating. The high sloped walls allow you to spread food and concentrate heat onto different ingredients, cooking vegetables, grains, and proteins all at once. It\u2019s the perfect pan for cleaning out the fridge, so your favorite foods never go to waste. 12\u201d Glass Lid sold separately."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/ceramic-stir-fry-pan_marigold_hero.jpg?v=1784315150"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40776685584466:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40776685617234",
+     "sku": "CW-VWOK-201",
+     "title": "Black",
+     "description": {
+      "html": "Our take on a wok, the Stir Fry Pan is an all purpose pan that features our signature non-stick, non-toxic ceramic coating. The high sloped walls allow you to spread food and concentrate heat onto different ingredients, cooking vegetables, grains, and proteins all at once. It\u2019s the perfect pan for cleaning out the fridge, so your favorite foods never go to waste. 12\u201d Glass Lid sold separately."
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/ceramic-stir-fry-pan_black_hero.jpg?v=1784616442"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40776685617234:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40776685650002",
+     "sku": "CW-VWOK-202",
+     "title": "White",
+     "description": {
+      "html": "Our take on a wok, the Stir Fry Pan is an all purpose pan that features our signature non-stick, non-toxic ceramic coating. The high sloped walls allow you to spread food and concentrate heat onto different ingredients, cooking vegetables, grains, and proteins all at once. It\u2019s the perfect pan for cleaning out the fridge, so your favorite foods never go to waste. 12\u201d Glass Lid sold separately."
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/ceramic-stir-fry-pan_white_hero.jpg?v=1784616442"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40776685650002:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/ceramic-stir-fry-pan_cream_hero.jpg?v=1784315101",
+     "alt_text": "Caraway ceramic stir fry pan in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "cookware",
+    "cookware singles"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159437488210",
+     "handle": "individual-cookware-products",
+     "title": "Single Cookware Pieces",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6966179561554",
+   "title": "Minis Duo",
+   "description": {
+    "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+   },
+   "url": "https://shop.carawayhome.com/products/minis-duo",
+   "handle": "minis-duo",
+   "price_range": {
+    "min": {
+     "amount": 22500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 27000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 27000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 30000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40144570613842",
+     "sku": "CW-MNFS-101",
+     "title": "Cream",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_cream_hero.jpg?v=1784313600"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570613842:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570646610",
+     "sku": "CW-MNFS-102",
+     "title": "Navy",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_navy_hero.jpg?v=1784313609"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570646610:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570777682",
+     "sku": "CW-MNFS-104",
+     "title": "Sage",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_sage_hero.jpg?v=1784313637"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570777682:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570679378",
+     "sku": "CW-MNFS-103",
+     "title": "Gray",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_gray_hero.jpg?v=1784313619"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570679378:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570712146",
+     "sku": "CW-MNFS-105",
+     "title": "Perracotta",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_perracotta_hero.jpg?v=1784313628"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570712146:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570744914",
+     "sku": "CW-MNFS-106",
+     "title": "Marigold",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 22500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_marigold_hero.jpg?v=1784313646"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570744914:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570810450",
+     "sku": "CW-MNFS-201",
+     "title": "Black",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 30000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_black_hero.jpg?v=1784616384"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570810450:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40144570843218",
+     "sku": "CW-MNFS-202",
+     "title": "White",
+     "description": {
+      "html": "Designed for cooking smaller portions, this small-but-mighty duo is the perfect pair for your everyday recipes. Featuring a non-toxic ceramic coating, these non-stick pans make cooking easier than ever, cleaning (dare we say) enjoyable, and add a pop of color to any home."
+     },
+     "price": {
+      "amount": 27000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 30000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_white_hero.jpg?v=1784616384"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40144570843218:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/minis-duo_cream_hero.jpg?v=1784313600",
+     "alt_text": "Caraway ceramic minis duo in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "cookware",
+    "set",
+    "YGroup_cookware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280345444434",
+     "handle": "20-off-iconics",
+     "title": "20% off Iconics",
+     "description": {
+      "html": "From June 17 - June 23, save 20% on our stunning Iconics collection of products. Featuring gold adorned handles & details, these products are as performant as they are timeless."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6856551202898",
+   "title": "Muffin Pan",
+   "description": {
+    "html": "Our 12-cup Muffin Pan enables you to bake goods without any of the bads: use for blueberry muffins, egg-white bites, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+   },
+   "url": "https://shop.carawayhome.com/products/muffin-pan",
+   "handle": "muffin-pan",
+   "price_range": {
+    "min": {
+     "amount": 5500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39866602586194",
+     "sku": "BW-MFFN-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our 12-cup Muffin Pan enables you to bake goods without any of the bads: use for blueberry muffins, egg-white bites, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/muffin-pan_cream_hero.jpg?v=1785830412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602586194:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602618962",
+     "sku": "BW-MFFN-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our 12-cup Muffin Pan enables you to bake goods without any of the bads: use for blueberry muffins, egg-white bites, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/muffin-pan_sage_hero.jpg?v=1785830412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602618962:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602651730",
+     "sku": "BW-MFFN-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our 12-cup Muffin Pan enables you to bake goods without any of the bads: use for blueberry muffins, egg-white bites, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/muffin-pan_gray_hero.jpg?v=1785830412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602651730:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602684498",
+     "sku": "BW-MFFN-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our 12-cup Muffin Pan enables you to bake goods without any of the bads: use for blueberry muffins, egg-white bites, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/muffin-pan_marigold_hero.jpg?v=1785830412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602684498:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602717266",
+     "sku": "BW-MFFN-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our 12-cup Muffin Pan enables you to bake goods without any of the bads: use for blueberry muffins, egg-white bites, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/muffin-pan_navy_hero.jpg?v=1785830412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602717266:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602750034",
+     "sku": "BW-MFFN-SLA",
+     "title": "Slate",
+     "description": {
+      "html": "Our 12-cup Muffin Pan enables you to bake goods without any of the bads: use for blueberry muffins, egg-white bites, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/muffin-pan_slate_hero.jpg?v=1785830412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602750034:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602782802",
+     "sku": "BW-MFFN-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our 12-cup Muffin Pan enables you to bake goods without any of the bads: use for blueberry muffins, egg-white bites, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/muffin-pan_perracotta_hero.jpg?v=1785830412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602782802:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363311267922",
+     "sku": "BW-MFFN-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our 12-cup Muffin Pan enables you to bake goods without any of the bads: use for blueberry muffins, egg-white bites, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 7000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/muffin-pan_white_hero.jpg?v=1785830412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363311267922:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363311333458",
+     "sku": "BW-MFFN-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our 12-cup Muffin Pan enables you to bake goods without any of the bads: use for blueberry muffins, egg-white bites, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 7000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/muffin-pan_black_hero.jpg?v=1785830412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363311333458:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/muffin-pan_cream_hero.jpg?v=1785830412",
+     "alt_text": "Caraway ceramic muffin pan in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bakeware",
+    "ceramic",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263477461074",
+     "handle": "bakeware",
+     "title": "Bakeware",
+     "description": {
+      "html": "Caraway's non-toxic bakeware collection features ceramic-coated pans, including the best non-toxic cake pans, ensuring safe and healthy baking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7156479492178",
+   "title": "Square Griddle Pan",
+   "description": {
+    "html": "Clean cooking gets squared away with the Square Griddle Pan\u2013ideal for flipping burgers, eggs, pancakes, and everything in between. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Griddle features our signature non-stick coating for easy cooking & cleaning."
+   },
+   "url": "https://shop.carawayhome.com/products/square-griddle-pan",
+   "handle": "square-griddle-pan",
+   "price_range": {
+    "min": {
+     "amount": 15500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40523716001874",
+     "sku": "CW-FLGR-101",
+     "title": "Cream",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Griddle Pan\u2013ideal for flipping burgers, eggs, pancakes, and everything in between. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Griddle features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-griddle-pan_cream_hero.jpg?v=1784314690"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523716001874:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523716034642",
+     "sku": "CW-FLGR-102",
+     "title": "Navy",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Griddle Pan\u2013ideal for flipping burgers, eggs, pancakes, and everything in between. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Griddle features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-griddle-pan_navy_hero.jpg?v=1784314703"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523716034642:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523716067410",
+     "sku": "CW-FLGR-103",
+     "title": "Gray",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Griddle Pan\u2013ideal for flipping burgers, eggs, pancakes, and everything in between. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Griddle features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-griddle-pan_gray_hero.jpg?v=1784314715"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523716067410:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523716100178",
+     "sku": "CW-FLGR-104",
+     "title": "Sage",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Griddle Pan\u2013ideal for flipping burgers, eggs, pancakes, and everything in between. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Griddle features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-griddle-pan_sage_hero.jpg?v=1784314724"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523716100178:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523716132946",
+     "sku": "CW-FLGR-105",
+     "title": "Perracotta",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Griddle Pan\u2013ideal for flipping burgers, eggs, pancakes, and everything in between. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Griddle features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-griddle-pan_perracotta_hero.jpg?v=1784314737"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523716132946:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523716165714",
+     "sku": "CW-FLGR-106",
+     "title": "Marigold",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Griddle Pan\u2013ideal for flipping burgers, eggs, pancakes, and everything in between. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Griddle features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-griddle-pan_marigold_hero.jpg?v=1784314746"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523716165714:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523716198482",
+     "sku": "CW-FLGR-201",
+     "title": "Black",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Griddle Pan\u2013ideal for flipping burgers, eggs, pancakes, and everything in between. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Griddle features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 18500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-griddle-pan_black_hero.jpg?v=1784616401"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523716198482:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523716231250",
+     "sku": "CW-FLGR-202",
+     "title": "White",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Griddle Pan\u2013ideal for flipping burgers, eggs, pancakes, and everything in between. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Griddle features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 18500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-griddle-pan_white_hero.jpg?v=1784616401"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523716231250:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-griddle-pan_cream_hero.jpg?v=1784314690",
+     "alt_text": "Caraway ceramic square griddle pan in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "cookware",
+    "squareware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/287776309330",
+     "handle": "cx-warranty-cookware",
+     "title": "{CX Warranty} Cookware",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7156442726482",
+   "title": "Squareware Set",
+   "description": {
+    "html": "Clean cooking gets squared away with Caraway\u2019s non-toxic Squareware Set. Featuring our signature non-stick ceramic coating, these four spacious pans are perfect for recipes that need a bit more room. Sets include magnetic organizers to keep your cabinets tidy."
+   },
+   "url": "https://shop.carawayhome.com/products/squareware-set",
+   "handle": "squareware-set",
+   "price_range": {
+    "min": {
+     "amount": 59500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 69500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 81000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 95000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40523580670034",
+     "sku": "CW-SSET-101",
+     "title": "Cream",
+     "description": {
+      "html": "Clean cooking gets squared away with Caraway\u2019s non-toxic Squareware Set. Featuring our signature non-stick ceramic coating, these four spacious pans are perfect for recipes that need a bit more room. Sets include magnetic organizers to keep your cabinets tidy."
+     },
+     "price": {
+      "amount": 59500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 81000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/squareware-set_cream_hero.jpg?v=1784314998"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523580670034:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523580702802",
+     "sku": "CW-SSET-102",
+     "title": "Navy",
+     "description": {
+      "html": "Clean cooking gets squared away with Caraway\u2019s non-toxic Squareware Set. Featuring our signature non-stick ceramic coating, these four spacious pans are perfect for recipes that need a bit more room. Sets include magnetic organizers to keep your cabinets tidy."
+     },
+     "price": {
+      "amount": 59500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 81000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/squareware-set_navy_hero.jpg?v=1784315009"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523580702802:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40527283978322",
+     "sku": "CW-SSET-103",
+     "title": "Gray",
+     "description": {
+      "html": "Clean cooking gets squared away with Caraway\u2019s non-toxic Squareware Set. Featuring our signature non-stick ceramic coating, these four spacious pans are perfect for recipes that need a bit more room. Sets include magnetic organizers to keep your cabinets tidy."
+     },
+     "price": {
+      "amount": 59500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 81000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/squareware-set_gray_hero.jpg?v=1784315019"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40527283978322:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523580735570",
+     "sku": "CW-SSET-104",
+     "title": "Sage",
+     "description": {
+      "html": "Clean cooking gets squared away with Caraway\u2019s non-toxic Squareware Set. Featuring our signature non-stick ceramic coating, these four spacious pans are perfect for recipes that need a bit more room. Sets include magnetic organizers to keep your cabinets tidy."
+     },
+     "price": {
+      "amount": 59500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 81000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/squareware-set_sage_hero.jpg?v=1784315026"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523580735570:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523580768338",
+     "sku": "CW-SSET-105",
+     "title": "Perracotta",
+     "description": {
+      "html": "Clean cooking gets squared away with Caraway\u2019s non-toxic Squareware Set. Featuring our signature non-stick ceramic coating, these four spacious pans are perfect for recipes that need a bit more room. Sets include magnetic organizers to keep your cabinets tidy."
+     },
+     "price": {
+      "amount": 59500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 81000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/squareware-set_perracotta_hero.jpg?v=1784315039"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523580768338:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523580801106",
+     "sku": "CW-SSET-106",
+     "title": "Marigold",
+     "description": {
+      "html": "Clean cooking gets squared away with Caraway\u2019s non-toxic Squareware Set. Featuring our signature non-stick ceramic coating, these four spacious pans are perfect for recipes that need a bit more room. Sets include magnetic organizers to keep your cabinets tidy."
+     },
+     "price": {
+      "amount": 59500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 81000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/squareware-set_marigold_hero.jpg?v=1784315053"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523580801106:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523580833874",
+     "sku": "CW-SSET-201",
+     "title": "Black",
+     "description": {
+      "html": "Clean cooking gets squared away with Caraway\u2019s non-toxic Squareware Set. Featuring our signature non-stick ceramic coating, these four spacious pans are perfect for recipes that need a bit more room. Sets include magnetic organizers to keep your cabinets tidy."
+     },
+     "price": {
+      "amount": 69500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 95000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/squareware-set_black_hero.jpg?v=1784616385"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523580833874:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523580866642",
+     "sku": "CW-SSET-202",
+     "title": "White",
+     "description": {
+      "html": "Clean cooking gets squared away with Caraway\u2019s non-toxic Squareware Set. Featuring our signature non-stick ceramic coating, these four spacious pans are perfect for recipes that need a bit more room. Sets include magnetic organizers to keep your cabinets tidy."
+     },
+     "price": {
+      "amount": 69500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 95000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/squareware-set_white_hero.jpg?v=1784616385"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523580866642:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/squareware-set_cream_hero.jpg?v=1784314998",
+     "alt_text": "Caraway squareware set in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "cookware",
+    "set",
+    "squareware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/276227981394",
+     "handle": "sets",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280345444434",
+     "handle": "20-off-iconics",
+     "title": "20% off Iconics",
+     "description": {
+      "html": "From June 17 - June 23, save 20% on our stunning Iconics collection of products. Featuring gold adorned handles & details, these products are as performant as they are timeless."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7156481622098",
+   "title": "Square Grill Pan",
+   "description": {
+    "html": "Clean cooking gets squared away with the Square Grill Pan\u2013ideal for bringing barbecues indoors and adding grill lines to veggies, meats, & paninis. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Grill Pan features our signature non-stick coating for easy cooking & cleaning."
+   },
+   "url": "https://shop.carawayhome.com/products/square-grill-pan",
+   "handle": "square-grill-pan",
+   "price_range": {
+    "min": {
+     "amount": 15500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40523720163410",
+     "sku": "CW-GRPN-101",
+     "title": "Cream",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Grill Pan\u2013ideal for bringing barbecues indoors and adding grill lines to veggies, meats, & paninis. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Grill Pan features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-grill-pan_cream_hero.jpg?v=1784314790"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523720163410:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523720196178",
+     "sku": "CW-GRPN-102",
+     "title": "Navy",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Grill Pan\u2013ideal for bringing barbecues indoors and adding grill lines to veggies, meats, & paninis. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Grill Pan features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-grill-pan_navy_hero.jpg?v=1784314803"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523720196178:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523720228946",
+     "sku": "CW-GRPN-103",
+     "title": "Gray",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Grill Pan\u2013ideal for bringing barbecues indoors and adding grill lines to veggies, meats, & paninis. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Grill Pan features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-grill-pan_gray_hero.jpg?v=1784314816"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523720228946:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523720261714",
+     "sku": "CW-GRPN-104",
+     "title": "Sage",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Grill Pan\u2013ideal for bringing barbecues indoors and adding grill lines to veggies, meats, & paninis. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Grill Pan features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-grill-pan_sage_hero.jpg?v=1784314825"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523720261714:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523720294482",
+     "sku": "CW-GRPN-105",
+     "title": "Perracotta",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Grill Pan\u2013ideal for bringing barbecues indoors and adding grill lines to veggies, meats, & paninis. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Grill Pan features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-grill-pan_perracotta_hero.jpg?v=1784314835"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523720294482:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523720327250",
+     "sku": "CW-GRPN-106",
+     "title": "Marigold",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Grill Pan\u2013ideal for bringing barbecues indoors and adding grill lines to veggies, meats, & paninis. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Grill Pan features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 15500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-grill-pan_marigold_hero.jpg?v=1784314847"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523720327250:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523720360018",
+     "sku": "CW-GRPN-201",
+     "title": "Black",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Grill Pan\u2013ideal for bringing barbecues indoors and adding grill lines to veggies, meats, & paninis. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Grill Pan features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 18500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-grill-pan_black_hero.jpg?v=1784616416"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523720360018:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40523720392786",
+     "sku": "CW-GRPN-202",
+     "title": "White",
+     "description": {
+      "html": "Clean cooking gets squared away with the Square Grill Pan\u2013ideal for bringing barbecues indoors and adding grill lines to veggies, meats, & paninis. With nearly twice the amount of cooking space compared to Caraway's classic Fry Pan, the Square Grill Pan features our signature non-stick coating for easy cooking & cleaning."
+     },
+     "price": {
+      "amount": 18500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-grill-pan_white_hero.jpg?v=1784616416"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40523720392786:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/square-grill-pan_cream_hero.jpg?v=1784314790",
+     "alt_text": "Caraway ceramic square grill pan in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ceramic",
+    "cookware",
+    "squareware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170665410642",
+     "handle": "cookware",
+     "title": "Clean Cookware",
+     "description": {
+      "html": "Our non-toxic cookware collection provides a more stylish, healthier, and safer cooking experience for the modern home chef and the people they serve."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/287776309330",
+     "handle": "cx-warranty-cookware",
+     "title": "{CX Warranty} Cookware",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzNNVFUyTkRneE5qSXlNRGs0TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

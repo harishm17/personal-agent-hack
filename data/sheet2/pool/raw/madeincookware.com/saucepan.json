@@ -1,0 +1,3949 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://checkout.madeincookware.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Made In Cookware",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "checkout.madeincookware.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "21315111"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "21315111"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/11080503114",
+   "title": "Stainless Clad Saucepan",
+   "description": {
+    "html": "No matter your skill level, a well-made Saucepan is an integral part of your arsenal. Crafted in Italy, the Stainless Clad Saucepan offers heightened control over temperature and cooking speed, so you can maintain sauces, compotes, and reductions at a steady simmer and rest easy knowing they won\u2019t boil over. The Saucepan promises fluffy steamed rice, jammy boiled eggs, and sauces that refuse to break. The 5-ply construction also cleans up in seconds, because it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+   },
+   "url": "https://checkout.madeincookware.com/products/stainless-steel-sauce-pan",
+   "handle": "stainless-steel-sauce-pan",
+   "price_range": {
+    "min": {
+     "amount": 11900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 45900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 51700,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47127480714",
+     "sku": "COOK-2L-SCE-ISS",
+     "title": "2 QT / Stainless",
+     "description": {
+      "html": "No matter your skill level, a well-made Saucepan is an integral part of your arsenal. Crafted in Italy, the Stainless Clad Saucepan offers heightened control over temperature and cooking speed, so you can maintain sauces, compotes, and reductions at a steady simmer and rest easy knowing they won\u2019t boil over. The Saucepan promises fluffy steamed rice, jammy boiled eggs, and sauces that refuse to break. The 5-ply construction also cleans up in seconds, because it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_SaucePan_2qt-wLid_1x1_Hero.jpg?v=1742499608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/47127480714:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43261174349903",
+     "sku": "COOK-2L-SCE-ISS-G",
+     "title": "2 QT / Antique Brass",
+     "description": {
+      "html": "No matter your skill level, a well-made Saucepan is an integral part of your arsenal. Crafted in Italy, the Stainless Clad Saucepan offers heightened control over temperature and cooking speed, so you can maintain sauces, compotes, and reductions at a steady simmer and rest easy knowing they won\u2019t boil over. The Saucepan promises fluffy steamed rice, jammy boiled eggs, and sauces that refuse to break. The 5-ply construction also cleans up in seconds, because it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 13499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_SaucePan_2qt-wLid_AntiqueBrass--11.jpg?v=1751482692"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43261174349903:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161887834191",
+     "title": "2 QT / Wholesale - Stainless",
+     "description": {
+      "html": "No matter your skill level, a well-made Saucepan is an integral part of your arsenal. Crafted in Italy, the Stainless Clad Saucepan offers heightened control over temperature and cooking speed, so you can maintain sauces, compotes, and reductions at a steady simmer and rest easy knowing they won\u2019t boil over. The Saucepan promises fluffy steamed rice, jammy boiled eggs, and sauces that refuse to break. The 5-ply construction also cleans up in seconds, because it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Wholesale - Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_SaucePan_4qt-wLid_1x1_003.jpg?v=1762197922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161887834191:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161946161231",
+     "title": "2 QT / Wholesale - Antique Brass",
+     "description": {
+      "html": "No matter your skill level, a well-made Saucepan is an integral part of your arsenal. Crafted in Italy, the Stainless Clad Saucepan offers heightened control over temperature and cooking speed, so you can maintain sauces, compotes, and reductions at a steady simmer and rest easy knowing they won\u2019t boil over. The Saucepan promises fluffy steamed rice, jammy boiled eggs, and sauces that refuse to break. The 5-ply construction also cleans up in seconds, because it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Wholesale - Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_SaucePan_4qt-wLid_1x1_003.jpg?v=1762197922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161946161231:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47127481034",
+     "sku": "COOK-4L-SCE-SS-R2",
+     "title": "4 QT / Stainless",
+     "description": {
+      "html": "No matter your skill level, a well-made Saucepan is an integral part of your arsenal. Crafted in Italy, the Stainless Clad Saucepan offers heightened control over temperature and cooking speed, so you can maintain sauces, compotes, and reductions at a steady simmer and rest easy knowing they won\u2019t boil over. The Saucepan promises fluffy steamed rice, jammy boiled eggs, and sauces that refuse to break. The 5-ply construction also cleans up in seconds, because it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_SaucePan_4qt-wLid_1x1_003.jpg?v=1762197922"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/47127481034:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42763561992271",
+     "sku": "COOK-4L-SCE-ISS-G",
+     "title": "4 QT / Antique Brass",
+     "description": {
+      "html": "No matter your skill level, a well-made Saucepan is an integral part of your arsenal. Crafted in Italy, the Stainless Clad Saucepan offers heightened control over temperature and cooking speed, so you can maintain sauces, compotes, and reductions at a steady simmer and rest easy knowing they won\u2019t boil over. The Saucepan promises fluffy steamed rice, jammy boiled eggs, and sauces that refuse to break. The 5-ply construction also cleans up in seconds, because it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_SaucePan_4qt-wLid_AntiqueBrass_51ecfca0-74cf-4d3b-acf2-57b5aedc24d1.jpg?v=1744732244"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42763561992271:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42616403066959",
+     "sku": "DNU-SAUCESET",
+     "title": "6-Piece Set / Stainless",
+     "description": {
+      "html": "No matter your skill level, a well-made Saucepan is an integral part of your arsenal. Crafted in Italy, the Stainless Clad Saucepan offers heightened control over temperature and cooking speed, so you can maintain sauces, compotes, and reductions at a steady simmer and rest easy knowing they won\u2019t boil over. The Saucepan promises fluffy steamed rice, jammy boiled eggs, and sauces that refuse to break. The 5-ply construction also cleans up in seconds, because it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 45900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 51700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "6-Piece Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/6_piece_saucepan_set_5e6f95a6-506e-4343-a4e0-f028484456a2.jpg?v=1742499608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42616403066959:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40415900237903",
+     "sku": "COOK-15-SCE-SS",
+     "title": "1 QT / Stainless",
+     "description": {
+      "html": "No matter your skill level, a well-made Saucepan is an integral part of your arsenal. Crafted in Italy, the Stainless Clad Saucepan offers heightened control over temperature and cooking speed, so you can maintain sauces, compotes, and reductions at a steady simmer and rest easy knowing they won\u2019t boil over. The Saucepan promises fluffy steamed rice, jammy boiled eggs, and sauces that refuse to break. The 5-ply construction also cleans up in seconds, because it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "1 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/products/Web_P1_Stainless_SautePan_1QT_1x1_Hero.jpg?v=1742499608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40415900237903:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "2 QT"
+      },
+      {
+       "label": "4 QT"
+      },
+      {
+       "label": "6-Piece Set"
+      },
+      {
+       "label": "1 QT"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      },
+      {
+       "label": "Wholesale - Stainless"
+      },
+      {
+       "label": "Wholesale - Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_SaucePan_4qt-wLid_1x1_003.jpg?v=1762197922"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bmsm",
+    "Cleaner",
+    "collection-filter:cookware",
+    "Country-Italy",
+    "discounteligible",
+    "Filter-Stainless-Clad",
+    "indexing",
+    "internal",
+    "Logicbroker",
+    "PrimeSale",
+    "Stainless Clad",
+    "Stainless Clad Collection",
+    "Stainless Steel",
+    "Stainless-MC",
+    "YGroup_stainlessclad"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74378969167",
+     "handle": "stainless-clad",
+     "title": "Stainless Clad",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/175245721679",
+     "handle": "new-flexify",
+     "title": "Facebook: Flexify Feed",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261526126671",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7657894871119",
+   "title": "CeramiClad\u00ae 2.0 Non Stick Saucepan",
+   "description": {
+    "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+   },
+   "url": "https://checkout.madeincookware.com/products/ceramic-saucepan",
+   "handle": "ceramic-saucepan",
+   "price_range": {
+    "min": {
+     "amount": 13499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46447939682383",
+     "sku": "COOK-2L-SCE-ICC-BLK",
+     "title": "2 QT / Obsidian Black / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 13999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Obsidian Black"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/2026_Q3_CeramiClad_Black_2qt_Sauce_Pot_Back3q_Lid-Off.jpg?v=1787166842"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46447939682383:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42352614604879",
+     "sku": "COOK-2L-SCE-ICC",
+     "title": "2 QT / Sand / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 13499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_2qt_Sauce_Pan_007_cc566a07-846b-400a-a2f6-307095bbbf18.jpg?v=1762269550"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42352614604879:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43265933901903",
+     "sku": "COOK-2L-SCE-ICC-G",
+     "title": "2 QT / Sand / Antique Brass",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 13999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Ceramic_2qt_Sauce_Pan_AntiqueBrass--8.jpg?v=1751579831"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43265933901903:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46447942565967",
+     "sku": "COOK-4L-SCE-ICC-BLK",
+     "title": "4 QT / Obsidian Black / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Obsidian Black"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_2026_Q3_CeramiClad_Black_4qt_Sauce_Pan_Back3q_LidOff.jpg?v=1787248390"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46447942565967:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42352614637647",
+     "sku": "COOK-4L-SCE-ICC",
+     "title": "4 QT / Sand / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 15099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_4qt_Sauce_Pan_004_1441937a-5227-4df5-9157-eff62165cd04.jpg?v=1734646648"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42352614637647:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43265936031823",
+     "sku": "COOK-4L-SCE-ICC-G",
+     "title": "4 QT / Sand / Antique Brass",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Ceramic_4qt_Sauce_Pan_AntiqueBrass--8.jpg?v=1751579974"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43265936031823:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161845629007",
+     "title": "4 QT - Wholesale - AB / Sand / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT - Wholesale - AB"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_2qt_Sauce_Pan_007_cc566a07-846b-400a-a2f6-307095bbbf18.jpg?v=1762269550"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161845629007:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161860145231",
+     "title": "2 QT - Wholesale - AB / Sand / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT - Wholesale - AB"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_2qt_Sauce_Pan_007_cc566a07-846b-400a-a2f6-307095bbbf18.jpg?v=1762269550"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161860145231:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46756898111567",
+     "sku": "COOK-2L-SCE-ICC-SGE",
+     "title": "2 QT / Sage / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 13999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Sage"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_2qt_Sauce_Pan_007_cc566a07-846b-400a-a2f6-307095bbbf18.jpg?v=1762269550"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46756898111567:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46756898144335",
+     "sku": "COOK-4L-SCE-ICC-SGE",
+     "title": "4 QT / Sage / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with a proprietary high-performance ceramic non stick coating that is free from harmful chemicals. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the non stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad\u2122 Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Sage"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_CeramiClad_4qt_Saute_Sage_Back3q_LidSide_HIRES.jpg?v=1795112447"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46756898144335:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "2 QT"
+      },
+      {
+       "label": "4 QT"
+      },
+      {
+       "label": "4 QT - Wholesale - AB"
+      },
+      {
+       "label": "2 QT - Wholesale - AB"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Obsidian Black"
+      },
+      {
+       "label": "Sand"
+      },
+      {
+       "label": "Sage"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_2qt_Sauce_Pan_007_cc566a07-846b-400a-a2f6-307095bbbf18.jpg?v=1762269550"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "CeramiClad Collection",
+    "discounteligible",
+    "Logicbroker",
+    "SAMPLESALE_202510"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173933527119",
+     "handle": "non-stick",
+     "title": "Non Stick",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280769757263",
+     "handle": "non-stick-carbon-cast-iron",
+     "title": "Non Stick + Carbon + Cast Iron",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/509269082142",
+   "title": "Stainless Clad Saucier",
+   "description": {
+    "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+   },
+   "url": "https://checkout.madeincookware.com/products/saucier",
+   "handle": "saucier",
+   "price_range": {
+    "min": {
+     "amount": 13999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 45900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 51700,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39945063792719",
+     "sku": "COOK-2L-SAU-ISS",
+     "title": "2 QT / Stainless",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 13999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_2_qt_Saucier-Back3qLidOn.jpg?v=1726858599"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39945063792719:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45132063670351",
+     "sku": "COOK-2L-SAU-ISS-G",
+     "title": "2 QT / Antique Brass",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/image_20.png?v=1776887858"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45132063670351:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46053971787855",
+     "title": "2 QT / Brushed Copper",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/ChatGPT_Image_Jul_14_2026_12_36_17_PM.png?v=1784050867"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46053971787855:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/12396728975439",
+     "sku": "COOK-3L-SAUCE-SS",
+     "title": "3 QT / Stainless",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_Saucier_3qt-wLid_1x1_Hero.jpg?v=1762197932"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/12396728975439:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42763558781007",
+     "sku": "COOK-3L-SAUCE-ISS-G",
+     "title": "3 QT / Antique Brass",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Saucier_3qt-wLid_AntiqueBrass--14_345fa22f-b3bb-46ef-81f1-250826e2560d.jpg?v=1744731083"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42763558781007:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46022921715791",
+     "sku": "COOK-3L-SAUCE-ISS-RG",
+     "title": "3 QT / Brushed Copper",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 16999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/ChatGPT_Image_Jul_13_2026_10_46_51_AM.png?v=1783966363"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46022921715791:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39604606730319",
+     "sku": "COOK-5L-SAU-ISS",
+     "title": "5 QT / Stainless",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 17499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_Saucier_5qt-wLid_1x1_Hero.jpg?v=1719872135"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39604606730319:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45131901993039",
+     "sku": "COOK-5L-SAU-ISS-G",
+     "title": "5 QT / Antique Brass",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 17499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Saucier_5qt-wLid_Hero_Antique_Brass_HIRES_PRODUCT_1.jpg?v=1776887230"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45131901993039:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46053972443215",
+     "title": "5 QT / Brushed Copper",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/ChatGPT_Image_Jul_14_2026_12_32_09_PM.png?v=1784050868"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46053972443215:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44470431678543",
+     "sku": "KIT-2-SAUCE-ISS",
+     "title": "Set / Stainless",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted in Italy from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 26999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 33800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Frame3_2.jpg?v=1770831051"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/44470431678543:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "2 QT"
+      },
+      {
+       "label": "3 QT"
+      },
+      {
+       "label": "5 QT"
+      },
+      {
+       "label": "Set"
+      },
+      {
+       "label": "6-Piece Set LEGACY"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      },
+      {
+       "label": "Brushed Copper"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_Saucier_3qt-wLid_1x1_Hero.jpg?v=1762197932"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Seller",
+    "bmsm",
+    "Cleaner",
+    "collection-filter:cookware",
+    "Country-Italy",
+    "discounteligible",
+    "Filter-Stainless-Clad",
+    "gifts",
+    "indexing",
+    "internal",
+    "Logicbroker",
+    "mds-indexing",
+    "Stainless Clad",
+    "Stainless Clad Collection",
+    "Stainless Steel",
+    "Stainless-MC",
+    "YGroup_stainlessclad"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74378969167",
+     "handle": "stainless-clad",
+     "title": "Stainless Clad",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/86848864335",
+     "handle": "best-sellers",
+     "title": "Most Popular",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/175245721679",
+     "handle": "new-flexify",
+     "title": "Facebook: Flexify Feed",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261526126671",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4822895984719",
+   "title": "ProCoat Non Stick Saucepan",
+   "description": {
+    "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved Non Stick Saucepan will make in your kitchen."
+   },
+   "url": "https://checkout.madeincookware.com/products/non-stick-saucepan",
+   "handle": "non-stick-saucepan",
+   "price_range": {
+    "min": {
+     "amount": 12900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32696616878159",
+     "sku": "COOK-4L-SCE-NS",
+     "title": "4 QT / Graphite",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved Non Stick Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_NonStickSaucepan-4qt-wLid_Graphite_1x1_Hero_c89122a7-cf1f-4ad3-a69d-bce59e52f94e.jpg?v=1740005972"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/32696616878159:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40747761205327",
+     "sku": "COOK-4L-SCE-MB-ITA",
+     "title": "4 QT / Harbour Blue",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved Non Stick Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_NonStickSaucepan_4qt-wLid_HarbourBlue_1x1_Hero.jpg?v=1740005972"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40747761205327:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40499727892559",
+     "sku": "COOK-4L-SCE-CH",
+     "title": "4 QT / Champagne",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved Non Stick Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Champagne"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/products/Web_P1_Non_Stick_Sauce_4qt_1x1_Hero_e475a668-8e89-4370-8402-906869dc894a.jpg?v=1740005972"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40499727892559:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32696616845391",
+     "sku": "COOK-2L-SCE-NS",
+     "title": "2 QT / Graphite",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved Non Stick Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_NonStickSaucepan-2qt-wLid_Graphite_1x1_Hero.jpg?v=1762198085"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/32696616845391:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40747764645967",
+     "sku": "COOK-2L-SCE-MB-ITA",
+     "title": "2 QT / Harbour Blue",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved Non Stick Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 15900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_NonStickSaucepan_4qt-wLid_HarbourBlue_1x1_Hero.jpg?v=1740005972"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40747764645967:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40415868026959",
+     "sku": "COOK-15LID-SCE-PE",
+     "title": "1 QT / Graphite",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved Non Stick Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 12900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "1 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/products/Web_P1_Non_Stick_Saute_HarborBlue_1qt_1x1_Hero_3e51b847-7569-4322-9ce8-735453ddf41e.jpg?v=1740005972"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40415868026959:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40415867994191",
+     "sku": "COOK-15LID-SCE-MB",
+     "title": "1 QT / Harbour Blue",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Full cladding all the way up the walls of the Saucepan ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved Non Stick Saucepan will make in your kitchen."
+     },
+     "price": {
+      "amount": 12900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "1 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/products/Web_P1_Non_Stick_Saute_HarborBlue_1qt_1x1_Hero.jpg?v=1740005972"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40415867994191:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "4 QT"
+      },
+      {
+       "label": "2 QT"
+      },
+      {
+       "label": "1 QT"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Graphite"
+      },
+      {
+       "label": "Harbour Blue"
+      },
+      {
+       "label": "Champagne"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_NonStickSaucepan-2qt-wLid_Graphite_1x1_Hero.jpg?v=1762198085"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bmsm",
+    "collection-filter:cookware",
+    "Country-Italy",
+    "discounteligible",
+    "Filter-Non-Stick",
+    "Filter-Stainless-Clad",
+    "indexing",
+    "internal",
+    "Logicbroker",
+    "Memorial Day",
+    "non-stick",
+    "YGroup_nonstick"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173933527119",
+     "handle": "non-stick",
+     "title": "Non Stick",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/175245721679",
+     "handle": "new-flexify",
+     "title": "Facebook: Flexify Feed",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261526126671",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262005850191",
+     "handle": "summer-sale",
+     "title": "Summer Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7045084512335",
+   "title": "Enameled Cast Iron Saucepan",
+   "description": {
+    "html": "The world\u2019s finest enameled cast iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. A Dutch Oven in miniature, the Saucepan mirrors the heat retention and durability characteristic of all our Enameled Cast Iron Cookware. On the stove, its ability to circulate heat evenly makes it easy to simmer and reduce sauces and gravies\u2014otherwise, take it outside to make BBQ sauce, baked beans, and more right on the grill. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Perfect your beurre blanc, b\u00e9arnaise, and more in the Enameled Cast Iron Saucepan."
+   },
+   "url": "https://checkout.madeincookware.com/products/cast-iron-saucepan",
+   "handle": "cast-iron-saucepan",
+   "price_range": {
+    "min": {
+     "amount": 13999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40687388983375",
+     "sku": "COOK-ECI-2L-SCE-BLU",
+     "title": "2 QT / Harbour Blue",
+     "description": {
+      "html": "The world\u2019s finest enameled cast iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. A Dutch Oven in miniature, the Saucepan mirrors the heat retention and durability characteristic of all our Enameled Cast Iron Cookware. On the stove, its ability to circulate heat evenly makes it easy to simmer and reduce sauces and gravies\u2014otherwise, take it outside to make BBQ sauce, baked beans, and more right on the grill. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Perfect your beurre blanc, b\u00e9arnaise, and more in the Enameled Cast Iron Saucepan."
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_SaucePan_2qt_HarbourBlue_1x1_Hero.jpg?v=1762200430"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40687388983375:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40687389048911",
+     "sku": "COOK-ECI-2L-SCE-LIN",
+     "title": "2 QT / Antique White",
+     "description": {
+      "html": "The world\u2019s finest enameled cast iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. A Dutch Oven in miniature, the Saucepan mirrors the heat retention and durability characteristic of all our Enameled Cast Iron Cookware. On the stove, its ability to circulate heat evenly makes it easy to simmer and reduce sauces and gravies\u2014otherwise, take it outside to make BBQ sauce, baked beans, and more right on the grill. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Perfect your beurre blanc, b\u00e9arnaise, and more in the Enameled Cast Iron Saucepan."
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Antique White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_SaucePan_2qt_White_1x1_Hero.jpg?v=1719867597"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40687389048911:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40687389016143",
+     "sku": "COOK-ECI-2L-SCE-RED",
+     "title": "2 QT / Made In Red",
+     "description": {
+      "html": "The world\u2019s finest enameled cast iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. A Dutch Oven in miniature, the Saucepan mirrors the heat retention and durability characteristic of all our Enameled Cast Iron Cookware. On the stove, its ability to circulate heat evenly makes it easy to simmer and reduce sauces and gravies\u2014otherwise, take it outside to make BBQ sauce, baked beans, and more right on the grill. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Perfect your beurre blanc, b\u00e9arnaise, and more in the Enameled Cast Iron Saucepan."
+     },
+     "price": {
+      "amount": 13999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Made In Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_SaucePan_2qt_Red_1x1_Hero.jpg?v=1719867582"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40687389016143:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40810933321807",
+     "sku": "COOK-ECI-2L-SCE-WGGD",
+     "title": "2 QT / Willow Green",
+     "description": {
+      "html": "The world\u2019s finest enameled cast iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. A Dutch Oven in miniature, the Saucepan mirrors the heat retention and durability characteristic of all our Enameled Cast Iron Cookware. On the stove, its ability to circulate heat evenly makes it easy to simmer and reduce sauces and gravies\u2014otherwise, take it outside to make BBQ sauce, baked beans, and more right on the grill. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Perfect your beurre blanc, b\u00e9arnaise, and more in the Enameled Cast Iron Saucepan."
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Willow Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Enamel_Cast_Iron_2.5qt_SaucePan_Willow_Green-Hero-LidClosed.jpg?v=1757351711"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40810933321807:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42171305001039",
+     "sku": "COOK-ECI-2L-SCE-ORNG",
+     "title": "2 QT / Blood Orange",
+     "description": {
+      "html": "The world\u2019s finest enameled cast iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. A Dutch Oven in miniature, the Saucepan mirrors the heat retention and durability characteristic of all our Enameled Cast Iron Cookware. On the stove, its ability to circulate heat evenly makes it easy to simmer and reduce sauces and gravies\u2014otherwise, take it outside to make BBQ sauce, baked beans, and more right on the grill. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Perfect your beurre blanc, b\u00e9arnaise, and more in the Enameled Cast Iron Saucepan."
+     },
+     "price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Blood Orange"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_EnamelCastIron_2qt_Saucepan_BloodOrange-6583.jpg?v=1727203540"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42171305001039:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40810932731983",
+     "sku": "COOK-ECI-2L-SCE-BC",
+     "title": "2 QT / Ruby Red",
+     "description": {
+      "html": "The world\u2019s finest enameled cast iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. A Dutch Oven in miniature, the Saucepan mirrors the heat retention and durability characteristic of all our Enameled Cast Iron Cookware. On the stove, its ability to circulate heat evenly makes it easy to simmer and reduce sauces and gravies\u2014otherwise, take it outside to make BBQ sauce, baked beans, and more right on the grill. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Perfect your beurre blanc, b\u00e9arnaise, and more in the Enameled Cast Iron Saucepan."
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Ruby Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_ECI_2qt_Saucepan_Ruby_Red-Hero-Closed.jpg?v=1769801210"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40810932731983:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44425955278927",
+     "sku": "COOK-ECI-2L-SCE-MARI",
+     "title": "2 QT / Marigold Yellow",
+     "description": {
+      "html": "The world\u2019s finest enameled cast iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. A Dutch Oven in miniature, the Saucepan mirrors the heat retention and durability characteristic of all our Enameled Cast Iron Cookware. On the stove, its ability to circulate heat evenly makes it easy to simmer and reduce sauces and gravies\u2014otherwise, take it outside to make BBQ sauce, baked beans, and more right on the grill. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Perfect your beurre blanc, b\u00e9arnaise, and more in the Enameled Cast Iron Saucepan."
+     },
+     "price": {
+      "amount": 13999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Marigold Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_ECI_2qt_Saucepan_Marigold-Hero-Closed.jpg?v=1769801219"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/44425955278927:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "2 QT"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Harbour Blue"
+      },
+      {
+       "label": "Antique White"
+      },
+      {
+       "label": "Made In Red"
+      },
+      {
+       "label": "Willow Green"
+      },
+      {
+       "label": "Blood Orange"
+      },
+      {
+       "label": "Ruby Red"
+      },
+      {
+       "label": "Marigold Yellow"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_SaucePan_2qt_HarbourBlue_1x1_Hero.jpg?v=1762200430"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bmsm",
+    "discounteligible",
+    "Enameled Cast Iron Collection",
+    "Logicbroker",
+    "no-search",
+    "sanity-indexing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261358157903",
+     "handle": "summer",
+     "title": "Summer Collection",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271379759183",
+     "handle": "enameled-cast-iron",
+     "title": "Enameled Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/276970635343",
+     "handle": "low-stock-items",
+     "title": "Low Stock Items",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8121151455311",
+   "title": "Stainless Saucier Set",
+   "description": {
+    "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+   },
+   "url": "https://checkout.madeincookware.com/products/saucier-set",
+   "handle": "saucier-set",
+   "price_range": {
+    "min": {
+     "amount": 26999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 42900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 33800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 50700,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44495821701199",
+     "sku": "KIT-2-SAUCE-ISS",
+     "title": "2 QT + 3 QT / Stainless",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 26999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 33800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "2 QT + 3 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Frame3_2_cd2be2bb-3d67-48b0-91dd-faf07c6beeef.jpg?v=1771516420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/44495821701199:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46038595600463",
+     "title": "2 QT + 3 QT / Antique Brass",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 33800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "2 QT + 3 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Frame3_2_cd2be2bb-3d67-48b0-91dd-faf07c6beeef.jpg?v=1771516420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46038595600463:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45078293741647",
+     "sku": "KIT-4-SAU-SS",
+     "title": "3 QT + 5 QT / Stainless",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 28999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 37800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "3 QT + 5 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_3qt_5qt.jpg?v=1775852682"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45078293741647:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46038595633231",
+     "sku": "KIT-4-SAU-SS-AB",
+     "title": "3 QT + 5 QT / Antique Brass",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 28999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 37800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "3 QT + 5 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Saucier_3qt-wLid_5qt-wLid_AntiqueBrass_Set__WEB_Hero.jpg?v=1785180740"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46038595633231:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45032117567567",
+     "sku": "KIT-6-SAU-ISS",
+     "title": "Saucepan Set / Stainless",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 50700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "Saucepan Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/6_piece_saucepan_set_b4a71af0-7e86-4be7-b872-4f0b7f65fe8e.jpg?v=1740584653"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45032117567567:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46038595665999",
+     "title": "Saucepan Set / Antique Brass",
+     "description": {
+      "html": "From b\u00e9chamel to velout\u00e9, the Saucier is designed for smooth, fully emulsified sauces. Dishes like risotto and gumbo, which require constant agitation, benefit from the Saucier\u2019s cornerless bottom, which guides the whisk and promotes circulation. Like the rest of our Stainless Clad Cookware, ours is crafted from 5 layers of metal for improved heat conduction and distribution. It heats evenly and responds instantly to temperature changes, giving more control when saut\u00e9ing, deglazing, and reducing. It also cleans up in seconds, as it prevents the hot spots that lead to stuck-on messes. A rolled rim allows you to pour sauces without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 42900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 33800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "Saucepan Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Frame3_2_cd2be2bb-3d67-48b0-91dd-faf07c6beeef.jpg?v=1771516420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46038595665999:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Upgrade & Save",
+     "values": [
+      {
+       "label": "2 QT + 3 QT"
+      },
+      {
+       "label": "3 QT + 5 QT"
+      },
+      {
+       "label": "Saucepan Set"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Frame3_2_cd2be2bb-3d67-48b0-91dd-faf07c6beeef.jpg?v=1771516420"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Stainless-MC"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638761551",
+     "handle": "klaviyo-site-only",
+     "title": "Klaviyo Site only",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7657891004495",
+   "title": "CeramiClad\u00ae 2.0 Non Stick Saucier",
+   "description": {
+    "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Ceramic coating. The result is an even-heating stainless base with a frictionless cooking surface that's easy to clean. Full cladding all the way up the walls of the Saucier ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad Saucier will make in your kitchen."
+   },
+   "url": "https://checkout.madeincookware.com/products/ceramic-saucier",
+   "handle": "ceramic-saucier",
+   "price_range": {
+    "min": {
+     "amount": 15999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 18900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42352611393615",
+     "sku": "COOK-3L-SAU-ICC",
+     "title": "3 QT / Sand / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Ceramic coating. The result is an even-heating stainless base with a frictionless cooking surface that's easy to clean. Full cladding all the way up the walls of the Saucier ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad Saucier will make in your kitchen."
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_3qt_Saucier_004.jpg?v=1734646941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42352611393615:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161859817551",
+     "sku": "COOK-3L-SAU-ICC-G",
+     "title": "3 QT / Sand / Antique Brass",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Ceramic coating. The result is an even-heating stainless base with a frictionless cooking surface that's easy to clean. Full cladding all the way up the walls of the Saucier ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad Saucier will make in your kitchen."
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Ceramic_3qt_Saucier_AntiqueBrass--10.jpg?v=1768239213"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161859817551:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46447824437327",
+     "sku": "COOK-3L-SAU-ICC-BLK",
+     "title": "3 QT / Obsidian Black / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Ceramic coating. The result is an even-heating stainless base with a frictionless cooking surface that's easy to clean. Full cladding all the way up the walls of the Saucier ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad Saucier will make in your kitchen."
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Obsidian Black"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/2026_Q3_CeramiClad_Black_3qt_Saucier_Back3q-LidOff.jpg?v=1787161959"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46447824437327:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/68244918435919",
+     "sku": "COOK-3L-SAU-ICC-SGE",
+     "title": "3 QT / Sage / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Ceramic coating. The result is an even-heating stainless base with a frictionless cooking surface that's easy to clean. Full cladding all the way up the walls of the Saucier ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad Saucier will make in your kitchen."
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Sage"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_CeramiClad_3qt_Saucier_Sage_Back3q_LidOff_HIRES.jpg?v=1795111137"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/68244918435919:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161838780495",
+     "title": "3 QT - Wholesale - Stainless / Sand / Stainless",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Ceramic coating. The result is an even-heating stainless base with a frictionless cooking surface that's easy to clean. Full cladding all the way up the walls of the Saucier ensures fully-cooked sauces without hot bottoms and cold tops, while the no-stick surface cleans in seconds\u2014even for caramel. A flared lip promotes easy, mess-free pours, while our ergonomic and hollow Stay Cool Handle\u2122 keeps the heat on your sauce and off your hand. Discover the difference our chef-loved CeramiClad Saucier will make in your kitchen."
+     },
+     "price": {
+      "amount": 18900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3 QT - Wholesale - Stainless"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_3qt_Saucier_002.jpg?v=1762269549"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161838780495:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "3 QT"
+      },
+      {
+       "label": "3 QT - Wholesale - Stainless"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Sand"
+      },
+      {
+       "label": "Obsidian Black"
+      },
+      {
+       "label": "Sage"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_3qt_Saucier_002.jpg?v=1762269549"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "CeramiClad Collection",
+    "discounteligible",
+    "Logicbroker",
+    "SAMPLESALE_202510"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/173933527119",
+     "handle": "non-stick",
+     "title": "Non Stick",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280769757263",
+     "handle": "non-stick-carbon-cast-iron",
+     "title": "Non Stick + Carbon + Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/11080124298",
+   "title": "Stainless Clad Saute Pan",
+   "description": {
+    "html": "Equally useful for roasting, braising, simmering, saut\u00e9ing, and shallow frying, chefs love Saute Pans for their versatility. Ours are crafted in Italy from 5 layers of metal for improved heat conduction and distribution, ideal for building flavor in one-pan meals. The Saute Pan\u2019s wide surface area and shallow depth increases both the rate of evaporation and the quality of searing, while its straight walls make turning all that fond into pan sauce far tidier than it would be in a frying pan. The 5-ply construction also cleans up in seconds, because it prevents hot spots and stuck-on messes. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+   },
+   "url": "https://checkout.madeincookware.com/products/stainless-steel-saute-pan",
+   "handle": "stainless-steel-saute-pan",
+   "price_range": {
+    "min": {
+     "amount": 11999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46064373039183",
+     "sku": "COOK-15L-SAUCE-ISS",
+     "title": "1.75 QT / Stainless",
+     "description": {
+      "html": "Equally useful for roasting, braising, simmering, saut\u00e9ing, and shallow frying, chefs love Saute Pans for their versatility. Ours are crafted in Italy from 5 layers of metal for improved heat conduction and distribution, ideal for building flavor in one-pan meals. The Saute Pan\u2019s wide surface area and shallow depth increases both the rate of evaporation and the quality of searing, while its straight walls make turning all that fond into pan sauce far tidier than it would be in a frying pan. The 5-ply construction also cleans up in seconds, because it prevents hot spots and stuck-on messes. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "1.75 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_1qt_Saute_Pan-Back3q_7495cff7-2632-49a7-9c4c-70330f8c273d.jpg?v=1784642156"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46064373039183:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44266996042",
+     "sku": "COOK-4L-STE-ISS",
+     "title": "3.5 QT / Stainless",
+     "description": {
+      "html": "Equally useful for roasting, braising, simmering, saut\u00e9ing, and shallow frying, chefs love Saute Pans for their versatility. Ours are crafted in Italy from 5 layers of metal for improved heat conduction and distribution, ideal for building flavor in one-pan meals. The Saute Pan\u2019s wide surface area and shallow depth increases both the rate of evaporation and the quality of searing, while its straight walls make turning all that fond into pan sauce far tidier than it would be in a frying pan. The 5-ply construction also cleans up in seconds, because it prevents hot spots and stuck-on messes. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 16499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3.5 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_SautePan_3.5qt-wLid_1x1_004.jpg?v=1784642064"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/44266996042:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40863780700239",
+     "sku": "COOK-4L-STE-ISS-G",
+     "title": "3.5 QT / Antique Brass",
+     "description": {
+      "html": "Equally useful for roasting, braising, simmering, saut\u00e9ing, and shallow frying, chefs love Saute Pans for their versatility. Ours are crafted in Italy from 5 layers of metal for improved heat conduction and distribution, ideal for building flavor in one-pan meals. The Saute Pan\u2019s wide surface area and shallow depth increases both the rate of evaporation and the quality of searing, while its straight walls make turning all that fond into pan sauce far tidier than it would be in a frying pan. The 5-ply construction also cleans up in seconds, because it prevents hot spots and stuck-on messes. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 16499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3.5 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_SautePan_3.5qt-wLid_004_HIRES.jpg?v=1784642104"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40863780700239:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "1.75 QT"
+      },
+      {
+       "label": "3.5 QT"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_SautePan_3.5qt-wLid_1x1_Hero.jpg?v=1762197921"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-12",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bmsm",
+    "Cleaner",
+    "collection-filter:cookware",
+    "Country-Italy",
+    "discounteligible",
+    "Filter-Stainless-Clad",
+    "indexing",
+    "internal",
+    "Logicbroker",
+    "mds-indexing",
+    "PrimeSale",
+    "Saute",
+    "Saute Pan",
+    "Stainless Clad",
+    "Stainless Clad Collection",
+    "Stainless Steel",
+    "Stainless-MC",
+    "YGroup_stainlessclad"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74378969167",
+     "handle": "stainless-clad",
+     "title": "Stainless Clad",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/175245721679",
+     "handle": "new-flexify",
+     "title": "Facebook: Flexify Feed",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261526126671",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261997002831",
+     "handle": "frying-pans",
+     "title": "Frying Pans",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7815433158735",
+   "title": "Small Spaces Set",
+   "description": {
+    "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces Set has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan, Saucier, and Saucepan\u2014plus their corresponding lids, this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA, and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+   },
+   "url": "https://checkout.madeincookware.com/products/small-spaces-set",
+   "handle": "small-spaces-set",
+   "price_range": {
+    "min": {
+     "amount": 36099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 37999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 46700,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 49700,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43474875940943",
+     "sku": "KIT-5-FSS-ISS",
+     "title": "Stainless / Stainless",
+     "description": {
+      "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces Set has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan, Saucier, and Saucepan\u2014plus their corresponding lids, this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA, and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+     },
+     "price": {
+      "amount": 37999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "Stainless"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_Stainless_Bundle_F5F6F2_Background_a9b73b94-f8cd-4b6a-b53e-ac9e570e6d95.jpg?v=1764355546"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43474875940943:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43474875973711",
+     "sku": "KIT-5-FSS-ISS-G",
+     "title": "Stainless / Antique Brass",
+     "description": {
+      "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces Set has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan, Saucier, and Saucepan\u2014plus their corresponding lids, this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA, and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+     },
+     "price": {
+      "amount": 37999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "Stainless"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_Stainless_Brass_Handle_Bundle_F5F6F2_Background.jpg?v=1754416119"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43474875973711:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43474876006479",
+     "sku": "KIT-5-FSS-ICC",
+     "title": "CeramiClad\u00ae / Stainless",
+     "description": {
+      "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces Set has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan, Saucier, and Saucepan\u2014plus their corresponding lids, this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA, and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+     },
+     "price": {
+      "amount": 36099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 49700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "CeramiClad\u00ae"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_CeramiClad_Bundle_F5F6F2_Background.jpg?v=1754416130"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43474876006479:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43474876039247",
+     "sku": "KIT-5-FSS-CC-G",
+     "title": "CeramiClad\u00ae / Antique Brass",
+     "description": {
+      "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces Set has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan, Saucier, and Saucepan\u2014plus their corresponding lids, this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA, and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+     },
+     "price": {
+      "amount": 36099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 49700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "CeramiClad\u00ae"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/CeramiClad_5p_Set_AntiqueBrass--4_copy.jpg?v=1755789552"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43474876039247:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Material",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "CeramiClad\u00ae"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_Stainless_Bundle_copy.jpg?v=1754071623"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Hero Bundle",
+    "Stainless-MC"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/439299018",
+     "handle": "main-bundles",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4394367844431",
+   "title": "Stainless Clad Butter Warmer",
+   "description": {
+    "html": "This Butter Warmer is the uncontested favorite among our chef customers\u2014which is appropriate, considering we made it at their request. It\u2019s designed specifically for melting, infusing, and browning butter, but is equally handy for reducing sauce, reheating coffee, and making chili crisp. Crafted in Italy, each Stainless Clad Butter Warmer is constructed from 5 layers of metals for even heat conduction and distribution, so you can coax out the caramelized notes of browned butter without burning the milk solids. Its Saucepan-like proportions further encourage gentle, even cooking and simmering of liquids. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+   },
+   "url": "https://checkout.madeincookware.com/products/butter-warmer",
+   "handle": "butter-warmer",
+   "price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 10900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 21800,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31395314466895",
+     "sku": "COOK-1L-SCE-ISS-KP",
+     "title": "3/4 QT / Stainless",
+     "description": {
+      "html": "This Butter Warmer is the uncontested favorite among our chef customers\u2014which is appropriate, considering we made it at their request. It\u2019s designed specifically for melting, infusing, and browning butter, but is equally handy for reducing sauce, reheating coffee, and making chili crisp. Crafted in Italy, each Stainless Clad Butter Warmer is constructed from 5 layers of metals for even heat conduction and distribution, so you can coax out the caramelized notes of browned butter without burning the milk solids. Its Saucepan-like proportions further encourage gentle, even cooking and simmering of liquids. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3/4 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/butter_warmer_w_lid.png?v=1779392259"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/31395314466895:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/67631019524175",
+     "sku": "COOK-1L-SCE-ISS-G",
+     "title": "3/4 QT / Antique Brass",
+     "description": {
+      "html": "This Butter Warmer is the uncontested favorite among our chef customers\u2014which is appropriate, considering we made it at their request. It\u2019s designed specifically for melting, infusing, and browning butter, but is equally handy for reducing sauce, reheating coffee, and making chili crisp. Crafted in Italy, each Stainless Clad Butter Warmer is constructed from 5 layers of metals for even heat conduction and distribution, so you can coax out the caramelized notes of browned butter without burning the milk solids. Its Saucepan-like proportions further encourage gentle, even cooking and simmering of liquids. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 10900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3/4 QT"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Frame378.png?v=1791580675"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/67631019524175:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/67661251215439",
+     "sku": "KIT-4-1L-SCE-ISS",
+     "title": "Duo Set / Stainless",
+     "description": {
+      "html": "This Butter Warmer is the uncontested favorite among our chef customers\u2014which is appropriate, considering we made it at their request. It\u2019s designed specifically for melting, infusing, and browning butter, but is equally handy for reducing sauce, reheating coffee, and making chili crisp. Crafted in Italy, each Stainless Clad Butter Warmer is constructed from 5 layers of metals for even heat conduction and distribution, so you can coax out the caramelized notes of browned butter without burning the milk solids. Its Saucepan-like proportions further encourage gentle, even cooking and simmering of liquids. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 21800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Duo Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/StainlessButterWarmer2-Pack.jpg?v=1791580648"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/67661251215439:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/67661251248207",
+     "sku": "KIT-4-1L-SCE-ISS-G",
+     "title": "Duo Set / Antique Brass",
+     "description": {
+      "html": "This Butter Warmer is the uncontested favorite among our chef customers\u2014which is appropriate, considering we made it at their request. It\u2019s designed specifically for melting, infusing, and browning butter, but is equally handy for reducing sauce, reheating coffee, and making chili crisp. Crafted in Italy, each Stainless Clad Butter Warmer is constructed from 5 layers of metals for even heat conduction and distribution, so you can coax out the caramelized notes of browned butter without burning the milk solids. Its Saucepan-like proportions further encourage gentle, even cooking and simmering of liquids. A rolled rim allows you to pour without spilling, and our hollow Stay Cool Handle\u2122 keeps your hands safe. Discover the difference that over-engineered cookware makes in your most-loved meals."
+     },
+     "price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 21800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Duo Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Frame379.png?v=1791580624"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/67661251248207:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "3/4 QT"
+      },
+      {
+       "label": "Duo Set"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/butter_warmer_w_lid.png?v=1779392259"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Cleaner",
+    "collection-filter:cookware",
+    "Country-Italy",
+    "discounteligible",
+    "Filter-Stainless-Clad",
+    "indexing",
+    "internal",
+    "Logicbroker",
+    "mds-indexing",
+    "Memorial Day",
+    "PrimeSale",
+    "Stainless Clad",
+    "Stainless Steel",
+    "Stainless-MC",
+    "YGroup_stainlessclad"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/175245721679",
+     "handle": "new-flexify",
+     "title": "Facebook: Flexify Feed",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261526126671",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262005850191",
+     "handle": "summer-sale",
+     "title": "Summer Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzBNemswTXpZM09EUTBORE14TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}
