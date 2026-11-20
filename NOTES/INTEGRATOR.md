@@ -2400,3 +2400,27 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
   number of reviews: not used for ordering", "no quoted rating", "not searched yet". `summary` has `used_for_ordering` and
   `with_a_rating_not_used_for_ordering` (L4: 2 and 2; L1: 0 and 3). A test checks that the candidates with `ordering.used` are exactly
   the keys of `ratings()`. Proof: `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `19 passed, 1 deselected`.
+
+## TALK 15:15 — the four corrections (reviews of 15:00)
+1. Trust wording. "without trusting our server" is gone. The page says "Checked in this browser: Dana's key signed
+   this", "with the key enrolled from her phone · key ff588d3f64ae" (computed in the page from the key itself), and "the
+   message her key signed names the same code". It does not say the phone shows the key's code: the phone prints the
+   server's `key_id` today (`web/phone/index.html:205`); asked of SIGN in NOTES/SIGN.md.
+2. Rows from the canonical sheet. Every value offered for editing is a node of the canonical text. The pick's name is the
+   canonical `title` when the sheet has one, else `product_key`; any other text or number in the pick that the page has no
+   layout for gets its own row, named by its key (ids stay out). Change and restore: typing the value that was there
+   (300, 300.0, " 300 ") removes the edit, so the original bytes and the first fingerprint return. Tested with the page's
+   own code under node: 300 → 250 fails, back to 300 is valid with the first fingerprint.
+3. The attempts, tested as real POSTs: `tests/seal/test_attempts.py` posts each to SIGN's real route, before she signs
+   and after, and asserts the status, the error, one new `request_refused` receipt each, and that the key, `seq`, the
+   engine and the carts are as they were. `uv run pytest tests/seal -q` → `11 passed`.
+4. `/talk/`. The default list is the one lead blocked share (`cbd3c7f37f4f`, marked `lead` in its record), then one of
+   the agent's own exchanges per store; every shopper ask says "typed to test the guard" and the rest are behind
+   "+N more · typed to test the guard". The count is on the page, from the records: "13 messages to the stores' own
+   agents · 4 not sent, 2 of those over-cautious" (`GET /api/talk/threads` → `count`). "Over-cautious" is the reviewer's
+   judgement, written into the two turns it is about (`review: {verdict, why, by}` in `f9faad4b5aed` turn 1 and
+   `cbd3c7f37f4f` turn 2) and shown beside them; the guard itself was not changed for these two cases.
+- Know this: the lead share's sent message and draft fit the timeline; the shopper's words behind its click still say
+  "came home from a hip operation on Monday". They are the real words that were typed, so I did not edit them.
+- Shots retaken: `web/seal/shots/*` (ten), `web/talk/shots/talk-thread.png`. `./hk check` result is in the next line.
+449 passed, 12 deselected, 1 warning in 18.33s
