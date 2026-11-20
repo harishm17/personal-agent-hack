@@ -238,7 +238,7 @@ function plan(k) {
   const stage = S[k];
   if (k === iSearch && stores.length) {                             // the item's own queries, said once
     const q = data.edges.find((e) => e.verb === "searches" && e.label), last = P.get(stores[stores.length - 1].id);
-    if (q) texts.push({ x: XS + px(2), y: last.y + CH + px(16), cls: "gs", html: "searched for: " + esc(q.label) });
+    if (q) texts.push({ x: PX0, y: y + px(4), cls: "gs", html: "searched for: " + esc(q.label) });   // under the products found
   }
   if (stage.limit) {                                                // the rule reaches every product it judges
     for (const p of products) {

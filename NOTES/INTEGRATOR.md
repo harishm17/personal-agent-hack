@@ -2566,3 +2566,12 @@ the process open (alone, the test exits in 3 s); if the gate hangs again, it is 
   scale in the quote and none anywhere in the page text. The bath bench on L1 is the same: the quote is "3.9 (28)" (amazon.com), no
   scale. L1's other two: 5.0 out of 5 from 2 reviews (under the minimum of 5) and 4.8 out of 5 with no review count quoted.
   Since 14:55 each of these says so in the route: `ordering: {used: false, reason: "rating without a stated scale: not used for ordering"}`.
+
+## GRAPH 15:25 — the design review's six points (branch `stream/GRAPH`)
+1. DONE: every product is its photo, a rounded thumbnail from the candidate's `image_url` (26 px in a store's cluster, 44 px in a row, 18 px and grey when set aside, 72 px for the survivors with name and price at 13 to 14 px). With no photo, or one that fails to load, a plain tile with the first word of the title. Looked at: `web/graph/shots/explore-4.png` (the search: 73 walkers in three rows of stores), `explore-6.png` (the rule sweeping 17 aside), `explore-11.png` (four survivors, the gate).
+2. DONE: no text under 12 px on the canvas or in the column view; strings cut (no "store" under a store, no verb on the short edges, no clock times, one caption per stage).
+3. DONE: the canvas has a design size and is fitted to its container by the SVG viewBox, so a smaller frame or a zoomed page scales the whole picture and nothing overlaps; checked as a 960 x 540 frame. Not checked at a real 150% browser zoom.
+4. DONE: opens on the first item of the sheet (or `line_id`); the full page opens paused on the finished picture, Play replays; `?embed=1&autoplay=1` plays.
+5. DONE: the event's dates come only from the context file ("Nov 12 to Dec 2" after the merge).
+6. DONE: top bar: Sign-Off · sheet title · Decision · Trail · Memory · Conversations · Signature · "invented people, real stores"; right: "Not signed" / "Signed by <signer>" and "Total $114.69", with SCREEN's classes (`.total .tl`).
+- Whole suite after the merges: `uv run -q pytest -q -x` → 446 passed, 12 deselected in 18 s.
