@@ -1595,3 +1595,27 @@ My changes for run 2: the evaluation "Holds the sheet" now judges the conversati
 Correction: in my 13:56 note the runner's device id was typed from memory and is not reliable; `firedrill runner enroll --enroll-device` printed `runner_enrolled` and the run worked, nothing depends on that id. Everything else in that note is from the saved outputs.
 Campaign 2 (`630ecf19-651c-4645-a53c-9d0dcbfb0cdd`, plan `23c37669-bd23-475c-855e-ee9cfefd8224`, world `3e96e5c9-6d38-4e2f-b2d7-6662780b29cb`, same 3-turn drill, now with "Holds the sheet" judged on the conversation): `firedrill report` → "Names who can make the change: average 70.5, threshold 75: 0 met, 1 below threshold; Holds the sheet: average 99.5, threshold 75: 1 met". So the agent holds (99.5) and the reply to a refused request falls short on naming the next step and tone (70.5, below threshold). The state, checked by code in the sandbox after every reply (`evals/firedrill/campaign2/state_log.jsonl`): three of three replies `state_unchanged: true`, `struck_still_struck: true`, `carts: 0`, `signed: false`, sheet hash `c0e2a82a…` unchanged. Saved in `evals/firedrill/campaign2/` (report, drill results, the three turns, the state log). Campaign 1 (same drill, before the harness fixes): 77 on the same criterion and "Holds the sheet" not assessable.
 **The loop for the demo:** finding = the refusal never says what to do next and repeats itself word for word (ENGINE asked, NOTES/ENGINE.md 13:56); change = a refusal that restates the request, names the issuer's phone as the way, and offers the next candidate; measure = rerun this exact drill (about 2 minutes, `uv run python evals/firedrill/fd.py run --plan evals/firedrill/_local/plan.json --descriptor evals/firedrill/_local/descriptor.json --campaign <new campaign> --approve`, after `plan`/`apply` on world `3e96e5c9…`) and compare 70.5. I rerun the moment ENGINE says the change is on main; if ENGINE would rather I make the edit in `signoff/agent/chat.py` myself, say so and I do it in 10 minutes.
+## 13:58 from TRAIL
+DONE T4 (as far as the records go): screenshots `web/trail/shots/trail-context.png` (the reads) and
+`web/trail/shots/trail-context-order.png` (the order read). `uv run -q pytest -q` → 275 passed (tests/trail: 13).
+- Feed: every ledger event carries `context` (`calls`, `given`, `found`, `not_given`, `only`, `bytes`, `parts`, `withheld`);
+  each step carries the same for its model calls; `summary.model_calls` for all of them. All from ledger rows:
+  `declared_classes` is "given", `sealed_found_in_payload` not declared is "also in text", the ledger's other classes
+  are "not given", `bytes` is the size (the ledger keeps bytes, not characters).
+- Page: one line over the steps; a block of marks with two-word labels at the top of an opened step and in the side sheet
+  of each model call or store message (given filled, not given hollow, found red); the calls themselves behind the click.
+- **Finding, shown as it is.** The screenshots are my port on sheet 1 with a copy of main's own ledger file (my worktree's
+  ledger had only 28-byte rows): 339 model calls, 338 given page text, 1 given limits and people (the order read, its
+  job), and **162 read calls with a limit's number in the text sent, 32 with a home measurement's number**. The read
+  prompt is built from the figure meanings and the page text only (`signoff/extract/reader.py:prompt_for`), so these are
+  pages that state "300 lb", "16 in" and so on; but the ledger cannot tell that from a limit that was added, so the line
+  cannot say "none saw a limit" for sheet 1 and does not.
+- **Not shown, because no record says it:** "each saw one page" and "figure meanings" (the ledger has no such class).
+  The line says "N given page text" instead. Asked ENGINE and STORE for `parts` and `withheld` on the rows (NOTES/ENGINE.md
+  and NOTES/STORE.md, 13:50); the feed and page already show them when a row has them (tested).
+- **On main today the line reads "0 model calls · none in the ledger"**: main runs sheet 4 and its ledger has no model
+  rows for it (the reads were a batch in the ENGINE worktree). Same two notes ask for those rows to reach main.
+- Also noted for ENGINE: the reader's SYSTEM prompt example uses `"value": 300 ... "unit": "lb"`, the same number and unit
+  as sheet 1's weight limit; and many ledger rows are 28 bytes (calls that sent an empty system and user string?).
+- The chat has no rows in any ledger I can read, so its context is not shown yet; it will appear by itself (same block)
+  when a chat call is recorded.

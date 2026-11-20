@@ -127,3 +127,37 @@ def test_a_slow_source_is_read_once_and_then_held():
     first = feed._held("t", lambda: calls.append(1) or {"n": len(calls)})
     again = feed._held("t", lambda: calls.append(1) or {"n": len(calls)})
     assert first == {"n": 1} and again == {"n": 1} and len(calls) == 1
+
+
+def test_context_of_model_calls_comes_from_the_ledger_rows_and_a_found_limit_is_shown():
+    read = dict(declared_classes=["product", "store_text"])
+    rows = [ledger(1, "2026-11-20T11:30:00-08:00", "anthropic:x", "read figures from one store page", "model",
+                   ["product", "store_text"], bytes=4000, sealed_found_in_payload=[], **read),
+            ledger(2, "2026-11-20T11:30:02-08:00", "anthropic:x", "read figures from one store page", "model",
+                   ["limit", "product", "store_text"], bytes=5000, sealed_found_in_payload=["limit: 300 lb"], **read),
+            ledger(3, "2026-11-20T11:20:00-08:00", "anthropic:x", "read the limits from the written order", "model",
+                   ["limit", "order", "person"], bytes=6000, declared_classes=["limit", "order", "person"],
+                   sealed_found_in_payload=["limit: 300 lb"])]
+    out = build(egress=rows, egress_classes=["limit", "home_measurement", "person", "order", "store_text", "product", "price", "none"])
+    reads = next(e for e in out["events"] if e["step"] == "pages_read")
+    c = reads["context"]
+    assert c["calls"] == 2 and [(g["id"], g["calls"]) for g in c["given"]] == [("store_text", 2), ("product", 2)]
+    assert [(f["id"], f["calls"], f["matches"]) for f in c["found"]] == [("limit", 1, ["300 lb"])]
+    assert [n["id"] for n in c["not_given"]] == ["order", "home_measurement", "person", "price"] and c["only"] == 1
+    assert c["bytes"] == {"min": 4000, "median": 5000, "max": 5000, "total": 9000}
+    order = next(e for e in out["events"] if e["step"] == "list_read")["context"]
+    assert [g["id"] for g in order["given"]] == ["order", "limit", "person"] and order["found"] == []
+    assert out["steps"][2]["context"]["calls"] == 2 and out["steps"][0]["context"]["calls"] == 1
+    total = out["summary"]["model_calls"]
+    assert total["calls"] == 3 and total["only"] == 1
+    assert all("_rows" not in e for e in out["events"])
+
+
+def test_the_senders_own_parts_and_withheld_lists_are_passed_through_when_a_row_has_them():
+    rows = [ledger(1, "2026-11-20T11:30:00-08:00", "anthropic:x", "read figures from one store page", "model",
+                   ["store_text"], declared_classes=["store_text"], sealed_found_in_payload=[],
+                   parts=[{"name": "page text", "chars": 3900, "pages": 1}, {"name": "figure meanings", "chars": 400}],
+                   withheld=["limits", "prices"])]
+    c = build(egress=rows)["events"][0]["context"]
+    assert c["parts"] == [{"name": "page text", "calls": 1, "chars": 3900}, {"name": "figure meanings", "calls": 1, "chars": 400}]
+    assert c["withheld"] == [{"name": "limits", "calls": 1}, {"name": "prices", "calls": 1}]
