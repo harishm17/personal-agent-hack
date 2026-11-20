@@ -5,14 +5,14 @@ import re
 import sys
 import concurrent.futures as cf
 
-from signoff.store import ucp
+from signoff import config
+from signoff.store import replay, ucp
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 RAW = ROOT / "data" / "pool" / "raw"
 
 
-def raw_path(store: str, query: str) -> pathlib.Path:
-    return RAW / store / (re.sub(r"[^a-z0-9]+", "_", query.lower()).strip("_") + ".json")
+raw_path = replay.raw_path
 
 
 def fetch_raw(sheet_path: str = "sheets/sheet1.json", force: bool = False) -> dict:
@@ -20,6 +20,8 @@ def fetch_raw(sheet_path: str = "sheets/sheet1.json", force: bool = False) -> di
     jobs = [(s, q) for s in sheet["stores"] for line in sheet["lines"] for q in line["queries"]]
 
     def one(job):
+        if config.mode() == "replay":
+            return job, "replay: not fetched"
         store, q = job
         p = raw_path(store, q)
         if p.exists() and not force:

@@ -33,5 +33,5 @@ def create_carts(picks: list[dict]) -> list[dict]:
             total = totals[-1].get("amount")
         out.append({"store": store, "cart_id": c.get("id"), "cart_url": url, "total_cents": total,
                     "created_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
-                    "mode": config.mode()})
+                    "mode": "replay" if r.get("mode") == "replay" else config.mode()})
     return out
