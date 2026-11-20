@@ -108,7 +108,7 @@ const O = () => V("order", "order"), LIM = () => V("limit", "limit");
 const shopperName = () => (state && state.sheet && state.sheet.shopper && state.sheet.shopper.name) || "the shopper";
 let keyRec = null;      // { privateKey, jwk, key_id|null, seq }
 let issuer = null;      // { enrolled, key_id, name, persona, senso }
-let state = null, persona = null, canon = null;
+let state = null, persona = null, canon = null, notice = "", lastSheetId = null;
 let tab = "sheet", signed = false, busy = false, openLimit = null;
 let lastKey = null, armedUntil = 0, signNote = "";
 const shown = new Set();   // limit ids whose order sentence is open
@@ -163,6 +163,8 @@ async function boot() {
     if (id === issuer.key_id) { keyRec.key_id = id; await kvSet("key", keyRec); }
   }
   await loadState();
+  lastSheetId = state.sheet.id;
+  if (keyRec.was && !mine()) notice = "A new run started: scan the code on the laptop again.";
   startEvents();
   render();
 }
@@ -186,7 +188,7 @@ function startEvents() {
   const refetch = async () => {
     if (pending) { again = true; return; }
     pending = true;
-    try { await loadState(); renderLive(); } catch (e) { /* offline blip */ }
+    try { await loadState(); await refreshIssuer(); if (runChanged()) render(); else renderLive(); } catch (e) { /* offline blip */ }
     pending = false; if (again) { again = false; refetch(); }
   };
   try { const evt = new EventSource("/api/events"); evt.onmessage = refetch; } catch (e) { /* polling below */ }
@@ -201,6 +203,14 @@ function head() {
   $("#who").textContent = issuer.name + " · key " + issuer.key_id.slice(0, 6) + (signed ? " · signed" : "");
 }
 function labelNav() { const a = document.querySelector('nav button[data-tab="adjust"]'), l = document.querySelector('nav button[data-tab="lines"]'); if (a) a.textContent = "Adjust a " + LIM(); if (l) l.textContent = V("items", "Items"); }
+/* A reset or a switch of the sheet on the laptop wipes the enrolment: say so plainly, never a silent broken state. */
+function runChanged() {
+  let changed = false;
+  if (keyRec && keyRec.key_id && !issuer.enrolled) { notice = "A new run started: scan the code on the laptop again."; keyRec.key_id = null; keyRec.seq = 0; kvSet("key", keyRec); changed = true; }
+  else if (keyRec && keyRec.key_id && issuer.enrolled && keyRec.key_id !== issuer.key_id) { notice = "A new run started with another phone: " + issuer.name + "'s phone signs now."; keyRec.key_id = null; kvSet("key", keyRec); changed = true; }
+  if (state && state.sheet && lastSheetId && state.sheet.id !== lastSheetId) { lastSheetId = state.sheet.id; if (!notice) notice = "The sheet changed: a new run started."; lastKey = null; changed = true; }
+  return changed;
+}
 function render() {
   const name = state && state.sheet && state.sheet.issuer ? state.sheet.issuer.name : "";
   head();
@@ -219,7 +229,7 @@ function renderLive() {
 function renderEnrol(name) {
   $("#nav").hidden = true;
   $("#who").textContent = "";
-  show(`<div class="card"><div class="need">Use this phone to sign</div>
+  show(`<div class="card">${notice ? `<div class="need" role="alert">${esc(notice)}</div>` : ""}<div class="need">Use this phone to sign</div>
     <div class="sub">A key was made in this browser and cannot leave it. Only requests signed with it can change the sheet or create carts.</div>
     <label class="stack"><span class="cap">Name on the seal</span><input type="text" id="nm" value="${esc(name)}" autocomplete="name"></label>
     <label class="stack"><span class="cap">Code from the laptop</span><input type="text" id="code" value="${esc(new URLSearchParams(location.search).get("code") || "")}" autocomplete="off" autocapitalize="off" inputmode="text"></label>
@@ -230,7 +240,7 @@ function renderEnrol(name) {
       const r = await fetch("/api/issuer/enroll", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ public_key_jwk: keyRec.jwk, name: $("#nm").value, code: $("#code").value.trim() }) });
       const body = await r.json();
       if (!r.ok) throw new Error(body.detail || r.status);
-      keyRec.key_id = body.key_id; keyRec.seq = 0; await kvSet("key", keyRec);
+      keyRec.key_id = body.key_id; keyRec.seq = 0; keyRec.was = true; notice = ""; await kvSet("key", keyRec);
       history.replaceState(null, "", location.pathname);
       await refreshIssuer(); await loadState(); render();
     } catch (e) { toast("Not enrolled: " + e.message); $("#enrol").disabled = false; }
@@ -239,7 +249,7 @@ function renderEnrol(name) {
 function renderNotMine() {
   $("#nav").hidden = true;
   $("#who").textContent = "";
-  show(`<div class="card"><div class="need">${esc(issuer.name)}'s phone signs</div>
+  show(`<div class="card">${notice ? `<div class="need" role="alert">${esc(notice)}</div>` : ""}<div class="need">${esc(issuer.name)}'s phone signs</div>
     <div class="sub">This phone can look but not sign. To start over, reset from the laptop and enrol this phone instead.</div></div>`, true);
 }
 /* limit helpers: the numbers come from the canonical sheet, the wording and the order's sentence from the sheet file */
@@ -290,6 +300,7 @@ function sensoLine() {
   const s = (issuer && issuer.senso) || {};
   if (s.configured === false) return { text: "Senso is not connected", rows: [] };
   const fresh = s.for_hash && s.for_hash === serverHashNow();
+  if (!sensoRunning && !fresh && s.error && !s.running) return { text: "not checked: Senso not reachable", rows: [] };
   if (sensoRunning || !fresh) return { text: "Checking the sheet against the " + O() + "…", rows: [] };
   const rows = s.checks || [], ok = rows.filter((r) => r.verdict === "verified").length;
   if (!rows.length) return { text: "Nothing to check against the " + O() + " yet", rows };
@@ -308,6 +319,25 @@ async function ensureSenso() {
   sensoRunning = false;
   if (tab === "sheet" && !busy) renderSheet();
 }
+/* senso-seal-text:start */
+function sensoSealText(sg, word) {
+  const s = sg && sg.senso, o = word || "order";
+  if (!s) return "not checked: no Senso result on this signature";
+  if (s.status === "pending") return "Senso check still running";
+  if (s.status === "not_connected") return "not checked: Senso is not connected";
+  if (s.status === "unavailable") return "not checked: Senso not reachable";
+  if (s.status !== "complete") return "not checked";
+  const rows = s.checks || [];
+  if (!rows.length) return "nothing to check against the " + o;
+  const n = (v) => rows.filter((r) => r.verdict === v).length;
+  const ok = n("verified"), bad = n("error"), diff = n("conflict"), unsup = rows.length - ok - bad - diff;
+  const vs = {};
+  rows.forEach((r) => { if (r.source && r.source.version_id) vs[r.source.version_id] = r.source.version_num || String(r.source.version_id).slice(0, 8); });
+  const ids = Object.keys(vs), ver = ids.length === 1 ? " (version " + vs[ids[0]] + ")" : "";
+  return "Checked against the " + o + ver + ": " + ok + " of " + rows.length + " verified" + (diff ? ", " + diff + (diff === 1 ? " differs" : " differ") + " from the " + o : "") +
+    (unsup ? ", " + unsup + " not supported by the " + o : "") + (bad ? ", " + bad + " not checked (Senso did not answer)" : "");
+}
+/* senso-seal-text:end */
 function renderSheet() {
   const seal = state.seal || {};
   if (signed) {
@@ -319,7 +349,7 @@ function renderSheet() {
       <div class="card"><div class="cap">Checks</div>
       <div class="sub">${(() => { const q = (seal.signature && seal.signature.persona) || {}; return q.inquiry_id ? esc(q.label || "") + " · " + esc(q.inquiry_id) + " · " + esc(q.status || "") + " · sandbox" : "identity not checked"; })()}</div>
       ${seal.signature && seal.signature.relay ? `<div class="sub">Live human: ${esc(seal.signature.relay.result)} (sandbox: a sandbox claim passes with nobody present)</div>` : ""}
-      <div class="sub">${seal.signature && seal.signature.senso && seal.signature.senso.status === "pending" ? "Senso check still running" : "Checked against the " + O()}</div></div>
+      <div class="sub">${esc(sensoSealText(seal.signature, O()))}</div></div>
       <div class="sub">To start over, reset from the laptop.</div>`);
     return;
   }
