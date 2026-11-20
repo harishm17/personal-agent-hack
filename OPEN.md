@@ -40,6 +40,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | E29 | the shopper may choose any candidate that passes (`POST /api/shopper/choose`); `picked_by` in the state and the canonical sheet; refused for anything not inside; WONTDO if over fifteen minutes | open |
 | E30 | the shopper chooses the ordering among the products that pass: `cheapest`, `best_reviewed`, `best_value` (`POST /api/shopper/pick_rule {id}`); each rule is one sort key, stated on the line (`why.rule`, how many had a quoted rating); ratings come from the reviews cache only; the hash already covers the rule (the builder, 14:24) | open |
 | E31 | an order's rule may be a preference, not a requirement: a line's optional `preferences` (same shape as a limit), checked with the same function on figures already read; never changes whether a product passes; among those that pass, more preferences met come first; each candidate carries `preferences: [{id, label, status}]`; under the hash (the builder, 14:24) | open |
+| E32 | a fourth ordering, `most_popular`: the most reviews counted, from the same quoted review counts (the builder, 14:31) | open |
 | E19 | receipts for every state change; `GET /api/receipts/verify` | ok |
 | E20 | seal race, hash covers pick rule, delivery quotes, quantity, currency, variant; scope; `degraded` | ok |
 
@@ -130,6 +131,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | K2 | the guard, in code: a sharing rule per kind of fact and recipient from the sheet; every outbound message checked for sealed values and for health, person, money and address spans (a small Superlinked model finds them, code decides); blocked spans removed or the message refused; every decision in the outbound ledger | open |
 | K3 | a real blocked share: the shopper asks the agent to tell a store something sealed; the draft, what was removed and what was sent are recorded | open |
 | K4 | `/talk/`: each store conversation as a thread (sent, withheld, the store agent's reply quoted), in the product's visual system; `GET /api/talk/threads` | open |
+| K5 | `/seal/`, the signature shown: who holds what (the key stays on the phone; the agent holds none), what the signature covers (every rule, measurement, store quote, pick, price and the ordering, flowing into one fingerprint, beside what a signature over a cart alone covers), and "change one thing": the viewer's own browser recomputes the fingerprint and checks the real signature with the approver's public key, and an edited copy fails; real records only (the builder, 14:31; built by the TALK thread) | open |
 
 ## GRAPH (the memory as a knowledge graph, on Cognee)
 | id | item | status |
@@ -138,6 +140,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | H2 | Cognee holds it: a dataset per owner with its permissions; a write to the issuer's dataset by the shopper's side is refused and shown | open |
 | H4 | `/graph/` leads with the run as a workflow graph: each step a node with its tool and its real count, products shown by name moving along it and leaving at the rule they fail; the knowledge graph of one decision below it | open |
 | H3 | `GET /api/graph?line_id=` (nodes and edges for one item, with which backend answered) and `/graph/` drawing it quietly | open |
+| H5 | `/graph/` opens on the run explored as a graph that grows: the order, the searches, every product found as a node, each rule sweeping the products that fail it aside with the reason, web review searches attaching ratings to those that pass, the ranking by the chosen ordering, the signature as the last gate before a cart; Play and step; every node clickable to its text and source; real records only (the builder, 14:31) | open |
 
 ## REVIEWS (what the web says, quoted with its source)
 | id | item | status |
