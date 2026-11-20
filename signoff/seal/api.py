@@ -65,11 +65,26 @@ def events(receipts: list, seal: dict) -> list:
                 if checked:
                     ok = sum(1 for c in checked if c["lines_checked"])
                     out.append({"at": carts[0].get("created_at") or r["at"], "from": "stores", "to": "agent", "bad": ok < len(checked),
-                                "text": "cart lines compared with the signed picks · %d of %d match" % (ok, len(checked))})
+                                "text": "cart lines match the signed picks · %d of %d" % (ok, len(checked))})
     for e in out:
         e.pop("what", None)
         e.pop("count", None)
     return out
+
+
+def summary(canonical: str, sheet_hash: str | None, name: str | None) -> dict:
+    """The one line for every place the signing shows: counted from the canonical sheet itself, with the fingerprint's
+    short code (the first twelve hex characters in fours). The phone and the screen can compute the same from their own
+    copy of the canonical sheet and its hash; the rule is in NOTES/SCREEN.md and NOTES/SIGN.md."""
+    lines = json.loads(canonical)["lines"]
+    picks = [l["pick"] for l in lines if l.get("pick")]
+    n = {"limits": sum(len(l["limits"]) for l in lines),
+         "quotes": sum(len(p["quotes"]) + (1 if p["delivery"].get("quote") else 0) for p in picks),
+         "picks": len(picks), "total_cents": json.loads(canonical)["total_cents"]}
+    word = lambda k, one: "%d %s" % (n[k], one if n[k] == 1 else one + "s")  # noqa: E731
+    return {**n, "code": _short(sheet_hash),
+            "text": "%s signs: %s · %s · %s · $%.2f" % (name or "The approver", word("limits", "limit"), word("quotes", "quote"),
+                                                        word("picks", "pick"), n["total_cents"] / 100)}
 
 
 def compose(state: dict, canonical: str, key, receipts: list, identity_required: bool) -> dict:
@@ -82,6 +97,7 @@ def compose(state: dict, canonical: str, key, receipts: list, identity_required:
         "shopper": {"name": (sheet.get("shopper") or {}).get("name")},
         "mode": state.get("mode"),
         "canonical": canonical, "sheet_hash": state.get("sheet_hash"), "covers": seal.get("covers") or [],
+        "summary": summary(canonical, state.get("sheet_hash"), (sheet.get("issuer") or {}).get("name")),
         "signed": bool(seal.get("signed")), "current": seal.get("current") if sig else None,
         "signature": sig and {"payload": sig.get("payload"), "sig": sig.get("sig"), "seq": sig.get("seq"),
                               "sheet_hash": sig.get("sheet_hash"), "at": sig.get("signed_at") or sig.get("at"),

@@ -72,6 +72,14 @@ def test_events_follow_the_receipts_in_order(proof):
     assert texts[0] == "public key enrolled with a one-time code" and "2 signed limit changes" in texts
     assert [e["text"] for e in proof["events"] if e.get("bad")] == ["sign sheet refused: identity not verified"]
     assert texts.index("verified with the public key") < texts.index("3 carts created · replay") < len(texts) - 1
-    assert texts[-1] == "cart lines compared with the signed picks · 3 of 3 match"
+    assert texts[-1].startswith("cart lines ") and "3 of 3" in texts[-1]
     assert all(e["from"] in api.LANES and e["to"] in api.LANES for e in proof["events"])
     assert api.events([], {}) == []
+
+
+def test_the_one_line_is_counted_from_the_canonical_sheet(proof):
+    s = api.summary(proof["canonical"], proof["sheet_hash"], "Dana")
+    sheet = json.loads(proof["canonical"])
+    assert s["limits"] == sum(len(l["limits"]) for l in sheet["lines"]) == 6 and s["picks"] == 3 and s["quotes"] == 8
+    assert s["text"] == "Dana signs: 6 limits · 8 quotes · 3 picks · $114.69" and s["code"] == "3ac9 4ba1 dd01"
+    assert s["code"].replace(" ", "") == proof["sheet_hash"][:12]

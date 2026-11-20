@@ -8,7 +8,7 @@ const clock = (at) => (at ? new Date(at).toLocaleTimeString("en-GB") : "");
 const short = (h) => (h || "").slice(0, 12).replace(/(.{4})(?=.)/g, "$1 ");
 const money = (cents) => "$" + (cents / 100).toFixed(2);
 const P = new URLSearchParams(location.search);
-const ui = { key: "", proof: null, groups: [], nodes: new Map(), edits: new Map(), real: null, now: null, editing: null, cartOnly: P.get("view") === "cart", played: false };
+const ui = { key: "", proof: null, groups: [], nodes: new Map(), edits: new Map(), real: null, now: null, editing: null, cartOnly: P.get("view") === "cart", played: P.has("still") };  // ?still: no arrival motion
 const LANE = { phone: 2, agent: 3, stores: 4 };
 const OPS = { ">=": "≥", "<=": "≤", "==": "=", ">": ">", "<": "<" };
 const ICON = {
@@ -66,7 +66,7 @@ function partHtml(p) {
 function renderRows() {
   const all = ui.groups.flatMap((g) => g.rows);
   q("#rows").className = "cols" + (ui.cartOnly ? " cartonly" : "");
-  q("#rows").innerHTML = `<div class="cap">2 · What the signature covers</div>` + ui.groups.map((g) => `<div class="grp"><h2>${esc(g.title)}</h2>${g.rows.map((r) => {
+  q("#rows").innerHTML = `<div class="cap">What the signature covers</div>` + ui.groups.map((g) => `<div class="grp"><h2>${esc(g.title)}</h2>${g.rows.map((r) => {
     const ids = [...(r.parts || []), ...(r.parts2 || [])].map((p) => p.id);
     const body = r.text ? `<span class="muted">${esc(r.text)}</span>` : `${r.lead ? esc(r.lead) + " " : ""}${(r.parts || []).map(partHtml).join(" · ")}${r.unit ? " " + esc(r.unit) : ""}${r.parts2 ? ` ${esc(r.lead2)} ${r.parts2.map(partHtml).join("")}` : ""}`;
     return `<div class="rw ${r.cart ? "cart" : ""} ${ids.some((id) => ui.edits.has(id)) ? "changed" : ""}"><i class="od ${r.owner}"></i><span class="lb">${esc(r.label)}</span><span class="vs">${body}${r.tail ? `<span class="tail">${esc(r.tail)}</span>` : ""}</span></div>`;
@@ -92,6 +92,7 @@ function renderCheck() {
   const onPhone = real.signedFingerprint || real.fingerprint;  // the phone computes it from the same canonical text
   const same = r.fingerprint === onPhone;
   q("#codes").innerHTML = `<span class="code ${same ? "" : "off"}" title="${esc(r.fingerprint)}">${esc(short(r.fingerprint))}</span>
+    <span class="sum">${esc(p.summary.text)}</span>
     <span class="phone">${ICON.phone}<span>${esc(who)}'s phone ${p.signed ? "showed" : "shows"} ${same ? "the same code" : `<code>${esc(short(onPhone))}</code>`}</span></span>`;
   const restore = edited ? `<button class="link" id="restore">Restore</button>` : "";
   let html;
@@ -139,7 +140,7 @@ function renderLanes() {
     return `<div class="lg ev ${ui.played ? "" : "play"}" style="--i:${i};--a:${Math.min(a, b)};--n:${Math.abs(a - b) + 1}">${t}<span class="go ${b > a ? "r" : "l"} ${e.bad ? "bad" : ""}"><i></i><span>${esc(e.text)}</span></span></div>`;
   });
   if (!p.signed) events.push(`<div class="lg ev gate ${ui.played ? "" : "play"}" style="--i:${p.events.length};--a:4"><time></time><span class="at"><i class="dot"></i>cart gate closed: no signature</span></div>`);
-  q("#lanes").innerHTML = `<div class="cap">1 · Who holds what</div>
+  q("#lanes").innerHTML = `<div class="cap">Who holds what</div>
     <div class="lg head"><span></span>
       <div class="lane"><b>${esc(who)}'s phone</b>${p.public_key ? holds("priv", ICON.key, "private key") : holds("none", ICON.key, "no key yet")}<span class="cap">made on the phone, never leaves it</span></div>
       <div class="lane"><b>Sign-Off, the agent</b>${p.public_key ? holds("", ICON.key, "public key " + p.public_key.key_id.slice(0, 8)) : holds("none", ICON.key, "no public key")}<span class="cap">can check a signature, cannot make one</span></div>
@@ -171,10 +172,10 @@ async function load() {
   ui.proof = proof;
   ui.groups = build(proof);
   ui.real = await check(proof, proof.canonical);
-  const preset = P.get("edit");  // ?edit=300:250 changes the first value shown as 300 to 250 (for a link or a screenshot)
+  const preset = P.get("edit");  // ?edit=300~250 changes the first value shown as 300 to 250 (for a link or a screenshot)
   if (preset && !ui.preset) {
     ui.preset = true;
-    const [from, to] = preset.split(":");
+    const [from, to] = preset.split("~");
     const hit = [...ui.nodes.keys()].find((id) => String(original(id)) === from);
     if (hit !== undefined) { commit(hit, to); renderTop(); renderLanes(); return; }
   }
