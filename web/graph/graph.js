@@ -233,6 +233,7 @@ function sourceLine(s) {
   if (s.record === "store_page") return `<a class="link" href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.url).replace(/^https?:\/\/(www\.)?/, ""))}</a>${span} · read ${esc(clock(s.fetched_at))}`;
   if (s.record === "context") return `${s.from_label ? esc(s.from_label) + " · " + esc(s.channel || "") + " · " + esc(String(s.at || "").slice(0, 10)) + " " + esc(clock(s.at)) + " · " : ""}<code>${esc(s.file)}</code>${s.pointer ? " · <code>" + esc(s.pointer) + "</code>" : ""}${span}`;
   if (s.record === "talk") return `conversation <code>${esc(s.thread)}</code> · message ${esc(s.n)} · ${esc(clock(s.at))} · <a class="link" href="/talk/">conversations</a>`;
+  if (s.record === "memory_recall") return `${esc(s.rows)} rows · <code>${esc(s.route)}</code>`;
   if (s.record === "web_page") return `<a class="link" href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.url).replace(/^https?:\/\/(www\.)?/, "").slice(0, 60))}</a> · read ${esc(clock(s.fetched_at))}`;
   if (s.record === "ledger") return `outbound ledger · rows ${esc((s.rows || []).join(", "))} · <a class="link" href="/trail/">trail</a>`;
   if (s.record === "memory") return `memory <code>${esc(s.memory_id)}</code> · ${s.hash ? "receipt <code>" + esc(String(s.hash).slice(0, 12)) + "</code>" : "<code>" + esc(s.file || "") + "</code>"} · ${esc(clock(s.at))}`;
