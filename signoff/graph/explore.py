@@ -362,11 +362,14 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
                    "caption": ("Signed: %s." % _plural(len(cart_ids), "cart") + " created") if seal.get("signed")
                    else "Nothing is bought until %s signs." % issuer.get("name"),
                    "node_ids_added": ["gate"] + cart_ids, "node_ids_set_aside": [], "reason_counts": {}})
+    # how long the run's own work spans, from the times its records carry (the event's messages are not the run)
+    times = sorted(datetime.datetime.fromisoformat(str(s["at"])) for s in stages if s.get("at") and s["id"] != "event")
+    run = {"from": times[0].isoformat(), "to": times[-1].isoformat(), "seconds": int((times[-1] - times[0]).total_seconds())} if len(times) > 1 else None
     nodes = [by_id[i] for i in people + [item] + facts + stores] + products + statements + limits + list(extra.values())
     return {"line_id": line_id, "need": line.get("need"), "nodes": nodes, "edges": edges, "stages": stages,
             "totals": {"products": len(products), "passing": len(passing), "set_aside": len(aside),
                        "pages": len({(cands[p["id"]].get("product") or {}).get("product_id") for p in products})},
-            "sources": sources, "reviews_available": reviews is not None, "recall_available": recall is not None, "talk_available": talk is not None,
+            "sources": sources, "run": run, "reviews_available": reviews is not None, "recall_available": recall is not None, "talk_available": talk is not None,
             "counts": {"memory": len(known), "message": len(asked), "reply": len(said),
                        "context_fact": fed + held_only, "context_fact_used": fed, "context_message": len((context or {}).get("messages") or [])},
             "context_available": context is not None}

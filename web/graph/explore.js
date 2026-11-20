@@ -333,7 +333,7 @@ function go(k, instant = false) {
   cancelAnimationFrame(X.raf);
   dress(k, target);
   X.hooks.onStage(S[k], k, S.length);
-  const t0 = performance.now(), ms = instant || !X.motion ? 0 : 750;
+  const t0 = performance.now(), ms = instant || !X.motion ? 0 : X.ms || 750;
   const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
   let frames = 0;
   const frame = () => {
@@ -371,13 +371,14 @@ export const stage = () => X?.k ?? 0;
 export const step = (d) => X && go(X.k + d);
 export const jump = (k, instant) => X && go(k, instant);
 export const playing = () => !!X?.timer;
-export function play(on) {
+export function play(on, every = 1700) {
   if (!X) return;
   clearInterval(X.timer); X.timer = null;
   if (on) {
     X.motion = true;                                                // pressing Play asks for motion
+    X.ms = Math.min(1100, Math.round(every * 0.45));
     if (X.k >= X.data.stages.length - 1) go(0, true);
-    X.timer = setInterval(() => { if (X.k >= X.data.stages.length - 1) { play(false); X.hooks.onStage(X.data.stages[X.k], X.k, X.data.stages.length); } else go(X.k + 1); }, 1700);
+    X.timer = setInterval(() => { if (X.k >= X.data.stages.length - 1) { play(false); X.hooks.onStage(X.data.stages[X.k], X.k, X.data.stages.length); } else go(X.k + 1); }, every);
   }
 }
 export function select(id) { if (X) { X.sel = id; X.els.forEach((x, i) => x.classList.toggle("sel", i === id)); } }

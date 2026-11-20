@@ -2400,3 +2400,6 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
   number of reviews: not used for ordering", "no quoted rating", "not searched yet". `summary` has `used_for_ordering` and
   `with_a_rating_not_used_for_ordering` (L4: 2 and 2; L1: 0 and 3). A test checks that the candidates with `ordering.used` are exactly
   the keys of `ratings()`. Proof: `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `19 passed, 1 deselected`.
+
+## GRAPH 15:13 — embed mode (A) is on the branch
+- `/graph/?embed=1&autoplay=1&line_id=L4`: no top bar, chips or side panel; the canvas fills the frame; it plays once by itself (27 s over the stages), caption large, "Replay of this run's records · 3 h 2 min of work · 6 of 11" (the span between the first and last time the run's records carry). "Skip" and, at the end, "Back to the list" call `window.parent.postMessage({type: "signoff:replay-done"}, "*")`. When the replay reaches its last frame it stays there and posts `{type: "signoff:replay-ended"}` (so the parent can tell the end from a dismissal; close on `replay-done` only). "Replay" plays it again. Motion always plays in the frame. Checked at 1320 x 700 mid-run and at the end.
