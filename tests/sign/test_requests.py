@@ -128,7 +128,7 @@ def test_sign_creates_carts_and_marks_signed(env):
     assert picks and all(set(p) == {"store", "variant_id", "quantity"} for p in picks)
     kind, signature, carts = env.engine.calls[-1]
     assert kind == "mark_signed" and signature["sheet_hash"] == env.engine.sheet_hash() and carts
-    assert signature["signer"]["name"] == "Dana" and signature["persona"]["label"] == "identity not checked"
+    assert signature["name"] == "Dana" and signature["signer"]["key_id"] and signature["persona"]["label"] == "identity not checked"
     assert env.engine.state["seal"]["signed"]
 
 
