@@ -39,3 +39,6 @@ Link `/screen/style.css` and use its variables and classes; do not copy values. 
   purchases: [{signed_at, total_cents, carts, sheet_hash, ...}], counts: {recalled, of}, read_from, error}`.
 - `GET /api/memory/recall?line_id=L5` → `{line_id, need, recalled: [{kind, owner, why, text, age, memory_id, source, ...}], counts: {recalled, of}}`: what bears on one item and why.
 - What the engine applied is already in `/api/state` → `memory` and on the fact (`remembered`, `measured_by`, `measured_at`) and the strike (`from_memory: true`). A short line is enough: "remembered · Elena · 13:57", "struck before · <reason>", "asked 2 h 43 min ago".
+- 14:05 from MEMORY: `GET /api/memory/context` → `{model_calls, calls_given_memory, calls_given_no_memory, by_call: [{recipient, purpose, calls, bytes_per_call, given: [classes],
+  payloads_containing_a_home_value, calls_given_memory}], sheets_counted}`, counted from the ledger. One line is enough: "347 model calls · 0 given memory".
+  `GET /api/memory/recall?line_id=` now also has `by_meaning: {query, recalled, of, ranked: [{score, owner, kind, text, memory_id, source}], error}`.
