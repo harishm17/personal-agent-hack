@@ -401,6 +401,53 @@ def _load_extras(pool, from_data):
     return out
 
 
+def _apply_memory(sheet, strikes, pool):
+    """On a fresh start of a sheet (reset, use_sheet) the engine asks `signoff.memory.recall(sheet)`, if that
+    module is there, for what is remembered, and applies exactly two things:
+    - home measurements for the sheet's own shopper facts: the fact takes the remembered value and gains
+      `remembered: true`, `measured_by`, `measured_at` (a value outside the fact's range is not applied);
+    - earlier strikes by product key with their reasons, loaded as strikes with `from_memory: true`: they are
+      under the hash like any strike and are undone only by a signed unstrike.
+    Nothing else in the pick path reads memory. Memory never raises into the engine: a failure is named in
+    `degraded`. Returns what was applied and what was ignored, for the state."""
+    try:
+        from signoff import memory
+        recall = getattr(memory, "recall", None)
+        if recall is None:
+            return None
+        recalled = recall(copy.deepcopy(sheet)) or {}
+    except Exception as error:  # noqa: BLE001
+        health.note("memory", "what was remembered could not be read (%s); the sheet starts as on disk" % type(error).__name__)
+        return None
+    health.clear("memory")
+    out = {"facts": [], "strikes": [], "ignored": []}
+    facts = {f["id"]: f for f in sheet.get("shopper_facts") or []}
+    for item in recalled.get("facts") or []:
+        fact, value = facts.get(item.get("fact_id")), item.get("value")
+        if fact is None or isinstance(value, bool) or not isinstance(value, (int, float)) or \
+                not (fact.get("min", value) <= value <= fact.get("max", value)):
+            out["ignored"].append({"fact_id": item.get("fact_id"), "why": "not a measurement of this sheet, or outside its range"})
+            continue
+        fact.update(value=value, remembered=True, measured_by=item.get("measured_by"), measured_at=item.get("measured_at"))
+        out["facts"].append({"fact_id": fact["id"], "value": value, "measured_by": item.get("measured_by"),
+                             "measured_at": item.get("measured_at")})
+    lines = {line["id"] for line in sheet["lines"]}
+    for item in recalled.get("strikes") or []:
+        line_id, key = item.get("line_id"), item.get("product_key")
+        on_line = [l for l in ([line_id] if line_id in lines else sorted(lines))
+                   if any(p.get("product_key") == key and l in (p.get("line_ids") or []) for p in pool)]
+        if not key or not on_line:
+            out["ignored"].append({"product_key": key, "why": "no such product on this sheet's lines"})
+            continue
+        for l in on_line:
+            if not any(k["line_id"] == l and k["product_key"] == key for k in strikes):
+                strikes.append({"line_id": l, "product_key": key, "by": item.get("by") or "issuer",
+                                "reason": str(item.get("reason") or "").strip() or "struck earlier",
+                                "at": item.get("at") or _now(), "from_memory": True})
+                out["strikes"].append({"line_id": l, "product_key": key, "reason": item.get("reason")})
+    return out
+
+
 def _load(keep_changes=False):
     sheet_id = _s.get("sheet_id") or os.environ.get("SIGNOFF_SHEET") or "sheet1"
     _s["sheet_id"] = sheet_id
@@ -453,6 +500,7 @@ def _load(keep_changes=False):
     _s.update(sheet=sheet,
               strikes=_read(strikes_file) if strikes_file.exists() else [],
               seal=None, issuer_key={"enrolled": False, "key_id": None, "persona": None})
+    _s["memory"] = _apply_memory(sheet, _s["strikes"], _s["pool"])
 
 
 def _limit(limit_id):
@@ -649,6 +697,8 @@ def _attach(state):
         line["why"].update(outside=mine["outside"], unclear=mine["unclear"], not_stated=mine["not_stated"])
     state["counts"].update(candidates=sum(tally.values()), outside=tally["outside"], unclear=tally["unclear"],
                            not_stated=tally["not_stated"])
+    if _s.get("memory"):
+        state["memory"] = _s["memory"]  # what was applied from memory at the start of this run, and what was ignored
     state["degraded"] = health.all()  # every fallback in use is named here; empty when all is well
     try:
         state["receipts"] = receipts.summary()
