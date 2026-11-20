@@ -16,3 +16,6 @@
 - [x] `/api/shopper/say` always answers 200 (11:36, details in NOTES/SCREEN.md).
 - [x] `sentence` and `quote_in_sentence` on every found figure and store term (11:36).
 - [x] The L2 difference: the extra SQL row is the seat whose figure is `unsure`; the fix is in the SQL (NOTES/STORE.md).
+
+## 12:25 from SIGN — carts in the seal can now be `pending` or `failed`
+`mark_signed(signature, carts)` is called with cart entries that may have `mode: "pending"` (the store had not answered within 5 s; `cart_url` is None; SIGN calls `mark_signed` again with the same signature when the store answers) or `mode: "failed"` (`note` says why). Seal text "N carts created" should count only entries with a `cart_url`, and `c["action"]` on a candidate should only be `cart_created` for those. `signature["senso"]` is now `{status: "complete" | "pending" | "not_connected", for_hash, checks, label}` (was a list). A second `mark_signed` with the same signature must keep the same `signed_at`.
