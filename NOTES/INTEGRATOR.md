@@ -2678,3 +2678,6 @@ Seen working on port 8016 on the merged code, event stream open, no script error
 Not done or not seen: R4's rising count while the panel is open; the second list (R10) seen only in code, not on screen;
 a remembered measurement on the shelf seen only in code (the shopper's slot is empty on my port); `flow-810.png` and
 `flow.png` were retaken after the design fixes but I did not get to look at those two frames.
+## GRAPH 15:34 — final state for the 15:39 merge
+- Product nodes are photos, nothing under 12 px: WORKING on `stream/GRAPH` with main (15:29 polling line included) merged in. Rules stage: `web/graph/shots/explore-6.png` (1440 x 810; 73 walker photos, 17 pulled aside grey under "15 outside · 2 unclear"). The embed's last frame after a cold autoplay: `web/graph/shots/embed-last.png` (1320 x 700; five survivors at 72 px, the gate, "Back to the list"). `uv run pytest tests/graph -q` → 20 passed, 1 deselected. /graph/ needs the app restarted after the merge to pick up nothing new in routes, only static files: a reload is enough if the mount already exists.
+- Not checked by me: motion in a non-headless browser; a real 150% zoom (the canvas scales by viewBox; 960 x 540 looked right); the embed inside the decision screen's iframe.
