@@ -154,11 +154,11 @@ def context(rows: list) -> dict:
             continue
         key = (row.get("recipient"), row.get("purpose"))
         c = calls.setdefault(key, {"recipient": key[0], "purpose": key[1], "calls": 0, "bytes": 0, "given": set(),
-                                   "calls_with_a_home_measurement": 0})
+                                   "payloads_containing_a_home_value": 0})
         c["calls"] += 1
         c["bytes"] += row.get("bytes") or 0
         c["given"] |= set(row.get("fact_classes") or []) - {"none"}
-        c["calls_with_a_home_measurement"] += any(str(h).startswith("home_measurement") for h in row.get("sealed_found_in_payload") or [])
+        c["payloads_containing_a_home_value"] += any(str(h).startswith("home_measurement") for h in row.get("sealed_found_in_payload") or [])
     out = []
     for c in calls.values():
         from_memory = c["purpose"] == PURPOSE_INDEX

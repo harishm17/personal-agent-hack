@@ -48,7 +48,11 @@ def recall(line_id: str | None = None):
 
 @router.get("/api/memory/context")
 def context():
-    """What each model call of this sheet's run was given, and that none but the embedding of memories was given memory."""
+    """What each model call behind this sheet was given, and that none but the embedding of memories was given memory.
+    A sheet that uses another sheet's readings (`data_from`) counts that sheet's calls too."""
     import importlib
     egress = importlib.import_module("signoff.obs.egress")  # the package also has a function of that name
-    return dict(meaning.context(egress.rows()), sheet_id=_active_sheet().get("id"))
+    sheet = _active_sheet()
+    sheets = sorted({sheet.get("id"), sheet.get("data_from") or sheet.get("id")})
+    rows = [r for r in egress.rows("all") if r.get("sheet", "sheet1") in sheets]
+    return dict(meaning.context(rows), sheet_id=sheet.get("id"), sheets_counted=sheets)

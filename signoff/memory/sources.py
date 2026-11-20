@@ -79,8 +79,10 @@ def _titles() -> dict:
 
 def chains() -> dict:
     """Every chain file on disk: `{chain id: {id, file, receipts, verified}}`. A chain kept in memory only has no
-    record on disk and yields no memory."""
+    record on disk and yields no memory; a run that keeps no receipts on disk (SIGNOFF_RECEIPTS=memory) reads none."""
     out = {}
+    if not receipts._to_disk():
+        return out
     for path in sorted(receipts.FOLDER.glob("*.jsonl")) if receipts.FOLDER.is_dir() else []:
         held = _cached(path, _jsonl)
         if held is None:

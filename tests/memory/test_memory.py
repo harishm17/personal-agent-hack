@@ -145,6 +145,14 @@ def test_a_row_put_in_the_store_by_hand_is_never_recalled_and_is_shown_as_not_pr
     assert [r["id"] for r in held["rows"] if not r["proved"]] == ["m_forged"]
 
 
+def test_a_run_that_keeps_no_receipts_on_disk_remembers_nothing_from_them(records, sheet, monkeypatch):
+    receipts.start("sheet sheet4")
+    _measure(22.5)
+    assert len(memory.recall(sheet)["facts"]) == 1
+    monkeypatch.setenv("SIGNOFF_RECEIPTS", "memory")
+    assert memory.recall(sheet)["facts"] == []
+
+
 def test_recall_never_raises(records, monkeypatch):
     assert memory.recall(None)["error"] is None
     monkeypatch.setattr(store, "sync", lambda **_: 1 / 0)
@@ -200,7 +208,7 @@ def test_the_context_count_says_which_model_calls_were_given_memory():
     told = meaning.context(rows)
     assert (told["model_calls"], told["calls_given_memory"], told["calls_given_no_memory"]) == (4, 1, 3)
     reader = told["by_call"][0]
-    assert (reader["calls"], reader["calls_given_memory"], reader["given"], reader["calls_with_a_home_measurement"]) == (
+    assert (reader["calls"], reader["calls_given_memory"], reader["given"], reader["payloads_containing_a_home_value"]) == (
         3, 0, ["product", "store_text"], 0)
 
 
