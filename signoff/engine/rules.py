@@ -12,12 +12,33 @@ ALIASES = {
     "qt": "qt", "qts": "qt", "qt.": "qt", "quart": "qt", "quarts": "qt", "l": "L", "liter": "L", "liters": "L",
     "litre": "L", "litres": "L", "°f": "°F", "f": "°F", "fahrenheit": "°F", "degrees f": "°F",
     "°c": "°C", "c": "°C", "celsius": "°C", "oz": "oz", "ounce": "oz", "ounces": "oz",
+    "gpf": "gpf", "gallons per flush": "gpf", "gallon per flush": "gpf", "gal/flush": "gpf", "g.p.f.": "gpf",
+    "gpm": "gpm", "gallons per minute": "gpm", "gallon per minute": "gpm", "gal/min": "gpm", "g.p.m.": "gpm",
+    "lpf": "Lpf", "l/flush": "Lpf", "liters per flush": "Lpf", "litres per flush": "Lpf",
+    "lpm": "Lpm", "l/min": "Lpm", "liters per minute": "Lpm", "litres per minute": "Lpm",
 }
 TO_BASE = {("cm", "in"): 1 / 2.54, ("mm", "in"): 1 / 25.4, ("ft", "in"): 12.0, ("in", "cm"): 2.54,
            ("kg", "lb"): 2.2046226, ("oz", "lb"): 1 / 16, ("lb", "kg"): 1 / 2.2046226,
-           ("L", "qt"): 1.0566882, ("qt", "L"): 1 / 1.0566882}
+           ("L", "qt"): 1.0566882, ("qt", "L"): 1 / 1.0566882,
+           ("Lpf", "gpf"): 1 / 3.785411784, ("gpf", "Lpf"): 3.785411784,
+           ("Lpm", "gpm"): 1 / 3.785411784, ("gpm", "Lpm"): 3.785411784}
 FAMILY = {"lb": "weight", "kg": "weight", "oz": "weight", "in": "length", "cm": "length", "mm": "length",
-          "ft": "length", "qt": "volume", "L": "volume", "°F": "temperature", "°C": "temperature"}
+          "ft": "length", "qt": "volume", "L": "volume", "°F": "temperature", "°C": "temperature",
+          "gpf": "volume per flush", "Lpf": "volume per flush", "gpm": "flow", "Lpm": "flow"}
+OPS = (">=", "<=", "==")
+PICK_RULES = ("cheapest_with_delivery_time", "cheapest")
+
+
+def validate_sheet(sheet):
+    """A sheet the rules cannot run is refused when it is loaded, with the reason: an unknown comparison or an
+    unknown pick rule is an error, never quietly treated as something else."""
+    for line in sheet["lines"]:
+        for limit in line["limits"]:
+            if limit.get("op") not in OPS:
+                raise ValueError("limit %s has the comparison %r; the rules know %s" % (limit.get("id"), limit.get("op"), ", ".join(OPS)))
+    rule = (sheet.get("pick_rule") or {}).get("id")
+    if rule not in PICK_RULES:
+        raise ValueError("the sheet's pick rule %r is not one the rules know (%s)" % (rule, ", ".join(PICK_RULES)))
 
 
 def unit_name(unit):
@@ -69,10 +90,18 @@ def sentence_around(text, start, end, most=260):
     return sentence, a, a + (end - start)
 
 
-def deciding(fig, op):
-    """A spread uses the end that could fail. An adjustable range uses the end that reaches furthest."""
+def deciding(fig, op, bound=None):
+    """A spread uses the end that could fail. An adjustable range uses the end that reaches furthest.
+    For an equality the end that could fail is the one further from the value to be matched; an adjustable
+    range that takes in that value is set to it."""
     if fig["kind"] == "single":
         return fig["value"]
+    if op == "==":
+        if fig["kind"] == "adjustable" and bound is not None and fig["low"] <= bound <= fig["high"]:
+            return bound
+        if bound is None:
+            return fig["high"]
+        return fig["low"] if abs(fig["low"] - bound) >= abs(fig["high"] - bound) else fig["high"]
     if fig["kind"] == "spread":
         return fig["low"] if op == ">=" else fig["high"]
     return fig["high"] if op == ">=" else fig["low"]
@@ -97,6 +126,16 @@ def usable(fig, limit_unit):
 
 
 def check(limit, product, figs, facts, sheet):
+    op = limit["op"]
+    if op not in OPS:
+        raise ValueError("limit %s has the comparison %r; the rules know %s" % (limit.get("id"), op, ", ".join(OPS)))
+    b = limit["bound"]
+    if b["source"] == "issuer":
+        bound = {"owner": "issuer", "owner_name": sheet["issuer"]["name"], "value": b["value"], "unit": limit["unit"]}
+    else:
+        f = facts[b["fact"]]
+        bound = {"owner": "shopper", "owner_name": sheet["shopper"]["name"], "fact": f["id"], "label": f["short"],
+                 "value": f["value"], "unit": f["unit"]}
     terms, lhs, missing, why_missing, adjustable = [], 0.0, None, None, None
     for t in limit["terms"]:
         if t["source"] == "shopper":
@@ -112,7 +151,7 @@ def check(limit, product, figs, facts, sheet):
             terms.append({"owner": "store", "owner_name": product["store"], "label": t["figure"].replace("_", " "),
                           "figure": t["figure"], "value": None, "unit": limit["unit"]})
             continue
-        v = deciding(fig, limit["op"])
+        v = deciding(fig, op, bound["value"] if len(limit["terms"]) == 1 else None)
         if fig["kind"] == "adjustable":
             adjustable = fig
         terms.append({"owner": "store", "owner_name": product["store"], "label": t["figure"].replace("_", " "),
@@ -122,32 +161,30 @@ def check(limit, product, figs, facts, sheet):
         if fig.get("sentence"):
             terms[-1].update(sentence=fig["sentence"], quote_in_sentence=fig["quote_in_sentence"])
         lhs += v
-    b = limit["bound"]
-    if b["source"] == "issuer":
-        bound = {"owner": "issuer", "owner_name": sheet["issuer"]["name"], "value": b["value"], "unit": limit["unit"]}
-    else:
-        f = facts[b["fact"]]
-        bound = {"owner": "shopper", "owner_name": sheet["shopper"]["name"], "fact": f["id"], "label": f["short"],
-                 "value": f["value"], "unit": f["unit"]}
-    out = {"limit_id": limit["id"], "name": limit["name"], "terms": terms, "op": limit["op"], "bound": bound}
+    out = {"limit_id": limit["id"], "name": limit["name"], "terms": terms, "op": op, "bound": bound}
     if missing:
         out.update({"lhs": None, "expr": None, "pass": False, "margin": None, "state": "not_stated",
                     "missing_figure": missing})
         if why_missing != "never stated on the page":
             out["missing_why"] = why_missing
         return out
-    ok = lhs >= bound["value"] if limit["op"] == ">=" else lhs <= bound["value"]
-    margin = round(lhs - bound["value"] if limit["op"] == ">=" else bound["value"] - lhs, 2)
     shown = " + ".join("%g" % t["value"] for t in terms)
-    expr = ("%s = %g %s %g" % (shown, lhs, limit["op"], bound["value"])) if len(terms) > 1 else \
-        "%g %s %g" % (lhs, limit["op"], bound["value"])
+    expr = ("%s = %g %s %g" % (shown, lhs, op, bound["value"])) if len(terms) > 1 else \
+        "%g %s %g" % (lhs, op, bound["value"])
+    if op == "==":  # a point on the ruler, not a side: 0 when it matches, otherwise how far off, as a negative
+        ok = abs(lhs - bound["value"]) < 1e-9
+        margin = 0.0 if ok else round(-abs(lhs - bound["value"]), 2)
+        out.update({"lhs": round(lhs, 2), "expr": expr, "pass": ok, "margin": margin, "state": "pass" if ok else "fail"})
+        return out
+    ok = lhs >= bound["value"] if op == ">=" else lhs <= bound["value"]
+    margin = round(lhs - bound["value"] if op == ">=" else bound["value"] - lhs, 2)
     if adjustable and ok:  # an adjustable range passes only when the limit lies inside it
-        others = lhs - deciding(adjustable, limit["op"])
+        others = lhs - deciding(adjustable, op)
         low, high = adjustable["low"] + others, adjustable["high"] + others
         ok = low <= bound["value"] <= high
         if not ok:  # the range reaches past the limit but cannot be set to it
             expr = "%g within %g to %g" % (bound["value"], low, high)
-            margin = round(-abs(low - bound["value"] if limit["op"] == ">=" else bound["value"] - high), 2)
+            margin = round(-abs(low - bound["value"] if op == ">=" else bound["value"] - high), 2)
     out.update({"lhs": round(lhs, 2), "expr": expr, "pass": ok, "margin": margin, "state": "pass" if ok else "fail"})
     return out
 
@@ -212,7 +249,11 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
                 "strike": strike, "action": None, "picked": False})
         inside = [c for c in cands if c["status"] == "inside"]
         local = line["fulfilment"] == "pick_up_locally"  # nothing is shipped, so no delivery time is needed
-        eligible = sorted((c for c in inside if local or c["arrival"]["status"] == "stated"),
+        rule = (sheet.get("pick_rule") or {}).get("id", "cheapest_with_delivery_time")
+        if rule not in PICK_RULES:
+            raise ValueError("the sheet's pick rule %r is not one the rules know (%s)" % (rule, ", ".join(PICK_RULES)))
+        needs_time = rule == "cheapest_with_delivery_time" and not local
+        eligible = sorted((c for c in inside if not needs_time or c["arrival"]["status"] == "stated"),
                           key=lambda c: (c["product"]["price_cents"], c["id"]))
         pick = eligible[0] if eligible else None
         inside_n += len(inside)
@@ -223,7 +264,8 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
             ready += 1 if status in ("ready", "next_candidate") else 0
             t = sorted(pick["checks"], key=lambda c: c["margin"])[0]
             tightest = {"limit_id": t["limit_id"], "name": t["name"], "margin": t["margin"], "unit": t["bound"]["unit"],
-                        "text": "nothing to spare" if t["margin"] == 0 else "%g %s to spare" % (t["margin"], t["bound"]["unit"])}
+                        "text": "matches exactly" if t["op"] == "==" else "nothing to spare" if t["margin"] == 0
+                        else "%g %s to spare" % (t["margin"], t["bound"]["unit"])}
         else:
             status, tightest = "open", None
             if inside:
@@ -236,7 +278,9 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
                 reason = "nothing inside the limits"
         lines.append({"line_id": line["id"], "need": line["need"], "room": line["room"], "status": status,
                       "reason": reason, "pick": pick["id"] if pick else None, "tightest": tightest,
-                      "why": {"total": len(cands), "inside": len(inside), "with_delivery_time": len(eligible),
+                      "why": {"total": len(cands), "inside": len(inside),
+                              "with_delivery_time": len(eligible) if rule == "cheapest_with_delivery_time" else
+                              sum(1 for c in inside if c["arrival"]["status"] == "stated"),
                               "rule": sheet["pick_rule"]["label"],
                               "pick_price_cents": pick["product"]["price_cents"] if pick else None},
                       "struck": struck, "candidates": cands})

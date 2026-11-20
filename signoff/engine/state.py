@@ -121,10 +121,16 @@ def _load_readers(from_data):
         return None
 
 
+def _order_file(sheet_id):
+    """Where the limits read from a sheet's order are cached: data/order/derived.json for sheet1 (the contract's
+    path), data/figures/<sheet>/_order/derived.json for any other sheet."""
+    return DATA / "order" / "derived.json" if sheet_id == "sheet1" else DATA / "figures" / sheet_id / "_order" / "derived.json"
+
+
 def _load_order(sheet_id, from_data):
     """The limits as the agent read them from the written order (signoff.extract.order writes the file). Each
     quote is looked up again here in the order's own text. Shown beside the sheet; the engine runs on the sheet."""
-    path = DATA / "order" / "derived.json"
+    path = _order_file(sheet_id)
     if not from_data or not path.exists():
         return None
     try:
@@ -220,7 +226,7 @@ def _load_variants(pool, from_data):
 def _load_extras(pool, from_data):
     """Display-only material beside the figures: instruction-like passages found on pages (each a span of the
     page's text, checked again here) and the planted test page's own reading. None of it reaches the pick rule."""
-    out = {"instructions": {}, "planted": None, "asked": {}, "delivery_replies": {}}
+    out = {"instructions": {}, "planted": None, "asked": {}, "delivery_replies": {}, "scan": None}
     folder = _dirs()[2]
     if not from_data:
         return out
@@ -244,14 +250,27 @@ def _load_extras(pool, from_data):
                     health.note("product replies", "replies about a product's delivery and returns could not be parsed "
                                 "(%s); the store's general answer is shown instead" % type(error).__name__)
     text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
-    if (folder / "_instructions").is_dir():
+    if (folder / "_instructions").is_dir():  # the scan of the real pages for text addressed to software
+        scanned, examples = 0, []
         for row in _read_dir(folder / "_instructions"):
             page = text.get((row["store"], row["product_id"]))
+            if page is None:
+                continue  # a page that is no longer in the pool
+            scanned += 1
             kept = [{"quote": i["quote"], "start": i["start"], "end": i["end"], "found_by": i.get("found_by")}
                     for i in row.get("instructions") or [] if rules.span_found(i, page)]
             if kept:
                 out["instructions"][(row["store"], row["product_id"])] = kept
-    if config.env("SIGNOFF_PLANTED") != "off" and (folder / "_planted" / "figures.json").exists():
+                examples += [{"quote": k["quote"], "store": row["store"], "product_id": row["product_id"],
+                              "product": row.get("title"), "found_by": k["found_by"]} for k in kept]
+        out["scan"] = {"pages_scanned": scanned, "pages_in_pool": len(pool), "instructions_found": len(examples),
+                       "examples": examples[:10],
+                       "text": "%d pages scanned, %d instruction%s to an agent found" % (
+                           scanned, len(examples), "" if len(examples) == 1 else "s")}
+    # The invented test page is off unless asked for: SIGNOFF_PLANTED=1 (sheet 1 only). What the state shows by
+    # default is the scan of the real pages above.
+    if config.env("SIGNOFF_PLANTED") == "1" and _s.get("sheet_id", "sheet1") == "sheet1" and \
+            (folder / "_planted" / "figures.json").exists():
         found = _read(folder / "_planted" / "instructions.json") if (folder / "_planted" / "instructions.json").exists() else []
         out["planted"] = {"figures": _read(folder / "_planted" / "figures.json"),
                           "instructions": [i for row in found for i in row.get("instructions") or []]}
@@ -271,7 +290,12 @@ def _load(keep_changes=False):
     if keep_changes and (_s.get("sheet") or {}).get("id") == sheet_id:
         return
     strikes_file = (DATA if from_data else FIXTURES) / "strikes.json"
-    _s.update(sheet=_read(SHEETS / (sheet_id + ".json")),
+    sheet = _read(SHEETS / (sheet_id + ".json"))
+    try:
+        rules.validate_sheet(sheet)
+    except ValueError as error:
+        raise EngineError("sheets/%s.json cannot be run: %s" % (sheet_id, error), 500) from error
+    _s.update(sheet=sheet,
               strikes=_read(strikes_file) if strikes_file.exists() else [],
               seal=None, issuer_key={"enrolled": False, "key_id": None, "persona": None})
 
@@ -387,7 +411,7 @@ def _attach(state):
         for key in (check.get("candidate_id"), (check.get("store"), check.get("product_id"))):
             if key and key != (None, None):
                 by_candidate.setdefault(key, []).append(check)
-    extras = _s.get("extras") or {"instructions": {}, "planted": None, "asked": {}}
+    extras = _s.get("extras") or {"instructions": {}, "planted": None, "asked": {}, "scan": None}
     beyond = set()
     for line in state["lines"]:
         for c in line["candidates"]:
@@ -407,6 +431,8 @@ def _attach(state):
             if cart and c["picked"] and line["status"] in ("ready", "next_candidate"):
                 c["action"] = {"type": "cart_created", "mode": cart.get("mode"), "cart_url": cart.get("cart_url"),
                                "cart_id": cart.get("cart_id"), "at": cart.get("created_at")}
+    if extras.get("scan"):
+        state["instruction_scan"] = extras["scan"]
     if extras["planted"]:  # worked out on the side, after the lines and picks above were made without it
         made = planted.candidate(_s["sheet"], [dict(f) for f in extras["planted"]["figures"]],
                                  extras["planted"]["instructions"], _s["answers"])

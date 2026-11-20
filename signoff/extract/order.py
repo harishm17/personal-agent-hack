@@ -19,11 +19,13 @@ import argparse
 import datetime
 import hashlib
 import json
+import os
 import pathlib
 import re
 import sys
 
 from signoff import config
+from signoff.engine import rules
 from signoff.extract import reader, spans
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -39,7 +41,8 @@ name the thing ordered, and every limit the order sets on it. A limit is:
   or {"source": "home", "measurement": "<measurement id>"}. Usually one term; two when the order adds a
   home measurement to a store figure.
 - "op": ">=" when the order says at least, reach, hold, or that the product must take in something as
-  large as a home measurement; "<=" when the product must fit inside or pass through something.
+  large as a home measurement; "<=" when the order says at most, or that the product must fit inside or pass
+  through something; "==" when the order says the product must match or equal something.
 - "bound": {"kind": "number", "value": <number>, "unit": "<unit as written>"} when the order gives a
   number, or {"kind": "home", "measurement": "<measurement id>"} when the order compares with a
   measurement of the home and gives no number.
@@ -54,6 +57,15 @@ Answer with one JSON object and nothing else:
 {"title": "<the order's own first words that name it>", "issuer": "<who ordered, as written>",
  "items": [{"item": 1, "need": "...", "limits": [{"terms": [...], "op": ">=", "bound": {...}, "quote": "..."}],
             "fulfilment": null}]}"""
+
+
+def doc_of(sheet):
+    """The order document of a sheet, as a path from the repository root: the sheet's `order_doc`, or sheet 1's."""
+    return sheet.get("order_doc") or str(DOC.relative_to(ROOT))
+
+
+def out_of(sheet_id):
+    return OUT if sheet_id == "sheet1" else ROOT / "data" / "figures" / sheet_id / "_order" / "derived.json"
 
 
 def vocabulary(sheet):
@@ -118,7 +130,6 @@ def same_as_sheet(derived, limit):
 
 def derive(text, sheet, model=None):
     """The order read once: (document dict for derived.json)."""
-    from signoff.engine import rules
     model = model or config.env("SIGNOFF_READER_MODEL") or reader.DEFAULT_MODEL
     user = "%s\n\nThe order, between the markers:\n<<<ORDER\n%s\nORDER>>>" % (vocabulary(sheet), text)
     reply, usage, extractor = reader.ask(model, SYSTEM, user, purpose="read the limits from the written order",
@@ -153,11 +164,13 @@ def derive(text, sheet, model=None):
                 fact = facts[bound["measurement"]]  # the rule comes from the order; the value comes from the home
                 row.update(unit=fact["unit"], bound={"source": "shopper", "fact": fact["id"]},
                            measurement={"id": fact["id"], "label": fact["label"], "source": "from the home"})
-            usable = terms and row["bound"] and row["op"] in (">=", "<=") and row["span_found_in_text"] and \
+            usable = terms and row["bound"] and row["op"] in rules.OPS and row["span_found_in_text"] and \
                 row.get("value_in_quote", True) and not proposed.get("unmapped")
             match = None
             if usable and line:
-                match = next((l for l in line["limits"] if term_key(l["terms"]) == term_key(terms)), None)
+                same_terms = [l for l in line["limits"] if term_key(l["terms"]) == term_key(terms)]
+                # two limits on the same measure (an upper and a lower one) are told apart by their comparison
+                match = next((l for l in same_terms if l["op"] == row["op"]), same_terms[0] if len(same_terms) == 1 else None)
             if match:
                 row.update(limit_id=match["id"], name=match["name"], equals_sheet=same_as_sheet(row, match))
             if not usable or not match:
@@ -166,7 +179,7 @@ def derive(text, sheet, model=None):
                 limits.append(row)
     in_sheet = [l["id"] for line in sheet["lines"] for l in line["limits"]]
     derived_ids = [r["limit_id"] for r in limits]
-    return {"doc": str(DOC.relative_to(ROOT)), "doc_sha256": hashlib.sha256(text.encode()).hexdigest(),
+    return {"doc": doc_of(sheet), "doc_sha256": hashlib.sha256(text.encode()).hexdigest(),
             "title": obj.get("title"), "issuer": obj.get("issuer"), "sheet_id": sheet["id"],
             "derived_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "extractor": extractor,
             "limits": limits, "fulfilment": fulfilment, "not_usable": unmapped,
@@ -177,14 +190,14 @@ def derive(text, sheet, model=None):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--doc", default=str(DOC))
-    ap.add_argument("--sheet", default="sheet1")
-    ap.add_argument("--out", default=str(OUT))
+    ap.add_argument("--doc", default=None, help="default: the sheet's order_doc")
+    ap.add_argument("--sheet", default=os.environ.get("SIGNOFF_SHEET") or "sheet1")
+    ap.add_argument("--out", default=None, help="default: data/order/derived.json, or data/figures/<sheet>/_order/")
     ap.add_argument("--force", action="store_true", help="read the order again even if its text has not changed")
     args = ap.parse_args(argv)
-    text = pathlib.Path(args.doc).read_text()
     sheet = json.loads((ROOT / "sheets" / (args.sheet + ".json")).read_text())
-    out = pathlib.Path(args.out)
+    text = pathlib.Path(args.doc or ROOT / doc_of(sheet)).read_text()
+    out = pathlib.Path(args.out or out_of(args.sheet))
     if out.exists() and not args.force:
         held = json.loads(out.read_text())
         if held.get("doc_sha256") == hashlib.sha256(text.encode()).hexdigest():

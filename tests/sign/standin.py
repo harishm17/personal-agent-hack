@@ -9,11 +9,12 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 
 
 class FakeEngine:
-    def __init__(self):
+    def __init__(self, state_fn=None):
+        self.state_fn = state_fn
         self.reset()
 
     def reset(self):
-        self.state = json.loads((ROOT / "fixtures" / "state.json").read_text())
+        self.state = self.state_fn() if self.state_fn else json.loads((ROOT / "fixtures" / "state.json").read_text())
         self.held = False
         self.calls = []
         self.issuer_key = None
