@@ -22,7 +22,7 @@ function cellHtml(row, col, c) {
   const id = `${row.id}|${col.id}`, on = sel === id ? " sel" : "";
   const parts = [];
   if (c.stopped) parts.push(`<span class="lv stopped" data-part="stopped">stopped <i>${c.stopped}</i></span>`);
-  if (c.found) parts.push(`<span class="lv found" data-part="found">found <i>${c.found}</i></span>`);
+  if (c.found) parts.push(`<span class="lv found" data-part="found"><i>${c.found}</i> not declared</span>`);
   if (c.sent) parts.push(`<span class="lv sent" data-part="sent">sent <i>${c.sent}</i></span>`);
   if (!parts.length) parts.push(c.state === "never" ? `<span class="lv never">never</span>` : `<span class="lv unknown">not recorded</span>`);
   return `<button class="lc${on}" data-cell="${esc(id)}">${parts.join("")}</button>`;
@@ -66,7 +66,7 @@ function render(move) {
   if (move && MOTION && open) {          // the panel opens: rows arrive in turn, and what was stopped is struck through
     [...root.querySelectorAll(".lr")].forEach((n, i) => n.animate([{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }],
       { duration: 300, delay: i * 40, easing: "cubic-bezier(.2, .7, .2, 1)", fill: "backwards" }));
-    [...root.querySelectorAll(".lv.stopped")].forEach((n, i) => n.animate([{ backgroundSize: "0% 1px" }, { backgroundSize: "100% 1px" }],
+    [...root.querySelectorAll(".lv.stopped")].forEach((n, i) => n.animate([{ opacity: 0.2 }, { opacity: 1 }],
       { duration: 600, delay: 500 + i * 80, easing: "cubic-bezier(.4, 0, .2, 1)", fill: "backwards" }));
   }
 }
@@ -78,18 +78,18 @@ export function update(el, next) {
   if (now === drawn) return;
   drawn = now;
   data = next;
-  el.hidden = !next;
-  if (next) render(false);
+  el.hidden = !next || !open;
+  if (next && open) render(false);
 }
 
 document.addEventListener("click", (ev) => {
   if (!root || !data) return;
-  const toggle = ev.target.closest("[data-left-toggle]"), cell = ev.target.closest("#left [data-cell]");
+  const toggle = ev.target.closest("[data-left-toggle], [data-left-open]"), cell = ev.target.closest("#left [data-cell]");
   if (toggle) {
-    open = !open;
+    open = toggle.hasAttribute("data-left-open") ? true : !open;
     sel = null;
-    render(true);
-    if (open) root.scrollIntoView({ block: "nearest", behavior: MOTION ? "smooth" : "auto" });
+    root.hidden = !open;
+    if (open) { render(true); root.scrollIntoView({ block: "start", behavior: MOTION ? "smooth" : "auto" }); }
   } else if (cell) {
     sel = sel === cell.dataset.cell || !cell.dataset.cell ? null : cell.dataset.cell;
     render(false);

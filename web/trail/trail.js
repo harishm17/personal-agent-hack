@@ -49,16 +49,17 @@ const brief = (detail) => String(detail || "").split(" · ").map((part) => {
 const records = (e) => e.items.length + e.more;
 
 // ---------- top bar and band ----------
-function renderTop() {
+function renderTop() {      // the same bar as the decision screen: name, sheet, the five views, what is invented; then signed and the total
   const s = feed.sheet || {};
   const mode = feed.mode === "fixture" ? "fixture data" : feed.mode === "replay" ? "replay of cached store data" : "";
-  const meta = [s.items ? `${s.items} items` : "", s.invented ? "invented" : "", mode].filter(Boolean).join(" · ");
+  const meta = [s.invented ? "invented people" + (feed.mode === "fixture" ? "" : ", real stores") : (s.items ? `${s.items} items` : ""), mode].filter(Boolean).join(" · ");
   $("#top").innerHTML = `<span class="brand">Sign-Off</span>
+    <span class="sheet">${esc(s.title || "")}</span>
     <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/" aria-current="page">Trail</a><a href="/graph/">Memory</a><a href="/talk/">Conversations</a><a href="/seal/">Signature</a></nav>
-    <span class="sheet">${esc(s.title || "")}</span><span class="meta">${esc(meta)}</span>
+    <span class="meta">${esc(meta)}</span>
     <span class="grow"></span>
-    <span class="pill ${feed.signed ? "signed" : ""}">${feed.signed ? "Signed " + clock(feed.signed_at, 5) : "Not signed"}</span>
-    ${typeof s.total_cents === "number" ? `<span class="total">$${(s.total_cents / 100).toFixed(2)}</span>` : ""}`;
+    <a class="pill ${feed.signed ? "signed" : ""}" href="/seal/" title="The signature, on its own page">${feed.signed ? "Signed" : "Not signed"}</a>
+    ${typeof s.total_cents === "number" ? `<span class="total"><span class="tl">Total</span> $${(s.total_cents / 100).toFixed(2)}</span>` : ""}`;
 }
 
 /** A number with its tick. `ok` true: a black tick; false: a red cross; null: nothing to vouch for yet. */
@@ -135,13 +136,14 @@ function contextLine() {
   const c = feed.summary.model_calls;
   if (!c) return "";
   const declared = (id) => (c.given.find((g) => g.id === id) || {}).calls || 0, found = (id) => (c.found.find((f) => f.id === id) || {}).calls || 0;
+  const n = (v, words) => (v ? `<b>${v}</b> ${words}` : "");
   const parts = [`<b>${c.calls}</b> model call${c.calls === 1 ? "" : "s"}`];
   if (c.calls) {
-    parts.push(`<b>${declared("store_text")}</b> given page text`);
-    parts.push(declared("limit") || found("limit") ? [declared("limit") ? `<b>${declared("limit")}</b> given limits` : "", found("limit") ? `<b class="hit">${found("limit")}</b> with a limit's number in the text` : ""].filter(Boolean).join(" · ") : "none saw a limit");
-    parts.push(declared("person") || found("person") ? `<b>${declared("person") + found("person")}</b> saw a person's name` : "none saw a person");
+    const held = [n(declared("limit"), "given a limit"), n(declared("home_measurement"), "given a home measurement"), n(declared("person"), "given a name")].filter(Boolean);
+    parts.push(n(declared("store_text"), "given page text"), ...(held.length ? held : ["none given a limit, a measurement or a name"]));
+    if (found("limit") || found("home_measurement") || found("person")) parts.push(`<b class="hit">${found("limit") + found("home_measurement") + found("person")}</b> held one the caller did not declare`);
   } else parts.push("none in the ledger");
-  return `<div class="ctxline">${parts.join('<span class="sep">·</span>')}</div>`;
+  return `<div class="ctxline">${parts.filter(Boolean).join('<span class="sep">·</span>')}</div>`;
 }
 
 function renderSteps(fresh = new Set()) {
