@@ -463,3 +463,27 @@ So "the reading model has no tools; its output is typed and span-checked" is tru
   `counts.store_agent_stated_beyond_page` is **0**, and `counts.store_agent_asked` is 25 products. That is the honest number: the stores'
   agents know no more than their pages. The 10 returns-and-delivery replies are attached verbatim with `answered: null` (not a figure).
 - The files are cached from STORE's branch copy; after you merge stream/STORE the same command re-reads only what changed.
+
+## 12:18 from ENGINE — the "better agent": the position rule is on for every reader, with before and after in `readers`
+- **The rule (code, `signoff/extract/spans.py`):** when a figure's quote is a labelled list of dimensions (`(h x w x d): A x B x C`,
+  `28.5"W x 17.5"D`, `23.5”W x 20”L x 32”H`), the number must sit at the position the store labels as that dimension (w for a width,
+  h for a height, l for a length). Otherwise the figure is marked unsure with the reason **"position in a dimension string does not
+  match the label"** and does not count. It runs in `spans.finish` for every new read and again when the engine loads figures, so it
+  covers the cached runs of every reader without re-reading. `SIGNOFF_POSITION_RULE=off` turns it off (used by the test).
+- **What changed and why it helped, from code** (`/api/state` → `readers.position_rule` and each reader's `position_rule`
+  `{rule, caught, before, after}`; file `data/figures/_runs/comparison.json`):
+  | reader | caught by the rule | lets inside that the reference does not: before → after | figures counted: before → after |
+  |---|---|---|---|
+  | `sie:Qwen/Qwen3.8-27B-FP8` | Carex Portable Shower Bench: width read as 14.75, position 3 of 3, labelled `d`, expected `w` | 12 → 11 | 188 → 187 |
+  | Sonnet reference | none (0 of its 26 dimension-list figures) | n/a | 173 → 173 |
+  | Sonnet, second pass | none | 2 → 2 | 173 → 173 |
+  | `sie:urchade/gliner_multi-v2.1` | none (it quotes single numbers, not the list) | 9 → 9 | 153 → 153 |
+  With the gate on and the rule on, the bench is "not stated: overall width position in a dimension string does not match the
+  label" instead of inside the tub limit with `14.75 <= 21.5`. Qwen's statement after: "same number on 170 of 172 figures both
+  readers found; the reference alone found 1, this reader alone found 15".
+- **What it does not fix, said plainly:** Qwen's L2 pick still differs (it counts the "5 to 5.5" seat the reference marked unsure) and
+  it still lets 11 products inside that the reference does not, all of them figures the reference declined to count (unlabelled
+  "Width: 24”", a seat height where the page gives two ranges, and so on). The rule removes the one outright misread; it is not a
+  reason to turn the gate on.
+- Each reader also has `inside_only_with_reference` now (the other direction). Tests: the rule on or off leaves the reference's picks,
+  hash, total and counts identical; with Qwen deciding the bench goes from inside (rule off) to not stated (rule on).
