@@ -17,6 +17,9 @@ const quoted = (e) => `${esc(e.text.slice(0, e.quote[0]))}<mark>${esc(e.text.sli
 const clip = (s, n) => (s.length > n ? s.slice(0, n).replace(/\s+\S*$/, "") + " …" : s);
 
 let root = null, flow = null, drawn = "", pos = 6, playing = false, timer = null, started = 0, left = 0, ticker = null;
+// Records that arrive while the replay is running, or paused part-way, wait here: a refresh never restarts or moves
+// a run that is being watched. They are drawn when the run ends or when someone moves it by hand.
+let paused = false, queued = null;
 
 function html(f) {
   const { order, home, page } = f.said, m = f.model;
@@ -206,13 +209,14 @@ function stop() {
   playing = false;
 }
 function advance() {
-  if (pos >= 6) { stop(); show(false); return; }
+  if (pos >= 6) { stop(); paused = false; if (!flush()) show(false); return; }
   pos += 1;
   started = performance.now();
   show(true);
   timer = setTimeout(advance, SECONDS[pos] * 1000);
 }
 function play() {
+  paused = false;
   if (!MOTION) { pos = 6; show(false); return; }
   if (pos >= 6) pos = -1;
   playing = true;
@@ -222,11 +226,13 @@ function play() {
 function pause() {
   left = Math.max(0, SECONDS[pos] * 1000 - (performance.now() - started));
   stop();
+  paused = true;
   root.getAnimations({ subtree: true }).forEach((a) => a.pause());
   show(false);
 }
 function resume() {
   playing = true;
+  paused = false;
   root.getAnimations({ subtree: true }).forEach((a) => a.play());
   started = performance.now() - (SECONDS[pos] * 1000 - left);
   ticker = setInterval(clock, 250);
@@ -235,7 +241,9 @@ function resume() {
 }
 function go(to) {
   stop();
+  paused = false;
   root.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+  flush();
   pos = Math.max(0, Math.min(6, to));
   started = performance.now();
   show(true);
@@ -249,22 +257,35 @@ function fit() {
   scale.style.height = stage.offsetHeight * k + "px";
 }
 
-/** Draws the view into `el` from `feed.flow`. Redraws only when the records behind it changed. */
-export function update(el, f) {
-  root = el;
-  const now = JSON.stringify(f || null);
-  if (now === drawn) return;
+function draw(f, now) {
   drawn = now;
   flow = f;
-  if (!f) { el.hidden = true; return; }
-  el.hidden = false;
-  stop();
-  el.innerHTML = html(f);
+  if (!f) { root.hidden = true; return; }
+  root.hidden = false;
+  root.innerHTML = html(f);
   fit();
   drawLines();
   fit();
   show(false);
-  for (const img of el.querySelectorAll("img")) img.addEventListener("load", () => { fit(); drawLines(); show(false); }, { once: true });
+  for (const img of root.querySelectorAll("img")) img.addEventListener("load", () => { fit(); drawLines(); show(false); }, { once: true });
+}
+/** Draws what arrived while the replay was running, if anything did. */
+function flush() {
+  if (!queued) return false;
+  const q = queued;
+  queued = null;
+  draw(q.f, q.now);
+  return true;
+}
+
+/** Draws the view into `el` from `feed.flow`. Redraws only when the records behind it changed, and never while the
+ *  replay is playing or paused part-way: then the newer records wait until the run ends. */
+export function update(el, f) {
+  root = el;
+  const now = JSON.stringify(f || null);
+  if (now === drawn) { queued = null; return; }
+  if (playing || paused) { queued = { f, now }; return; }
+  draw(f, now);
 }
 
 document.addEventListener("click", (ev) => {

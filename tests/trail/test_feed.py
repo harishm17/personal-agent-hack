@@ -201,7 +201,7 @@ def test_what_left_is_read_from_the_ledger_and_the_guard_and_never_claims_what_n
     rule = {"may": ["product", "need_by"], "sealed": ["limit", "home_measurement", "person", "health"]}
     out = left.build(sheet, None, rows, messages, rule, {"health": "health detail", "limit": "order limit"})
     cell = lambda c, col: out["cells"][c][col]
-    assert [c["id"] for c in out["columns"]] == ["anthropic:x", "senso", "agents"]
+    assert [c["id"] for c in out["columns"]] == ["agents", "anthropic:x", "senso"]
     assert cell("store_text", "anthropic:x")["state"] == "sent" and cell("store_text", "anthropic:x")["sent"] == 2
     assert cell("limit", "anthropic:x")["state"] == "found" and cell("limit", "anthropic:x")["found_items"][0]["match"] == "300 lb"
     assert cell("limit", "senso")["state"] == "sent" and cell("person", "senso")["state"] == "never"
@@ -214,3 +214,10 @@ def test_what_left_is_read_from_the_ledger_and_the_guard_and_never_claims_what_n
     row = {r["id"]: r for r in out["rows"]}
     assert row["limit"]["example"] == "300 lb" and row["health"]["example"] == "280 lb" and row["person"]["example"] == "Dana, Elena"
     assert left.build({}, None, [], [])["rows"] == []
+    held = {"classes": {"health": "never leaves", "home": "never leaves", "schedule": "the need-by date may travel"},
+            "facts": [{"class": "health", "quote": "hip replacement is scheduled"}, {"class": "home", "label": "Tub", "value": "21.5 in"}]}
+    with_file = left.build(sheet, None, rows, messages, rule, {}, held)
+    first = with_file["rows"][:3]
+    assert [r["id"] for r in first] == ["health", "home_measurement", "need_by"]       # the file's classes, in its order
+    assert first[0]["example"] == "hip replacement is scheduled" and first[0]["travel"] == "never leaves"
+    assert first[1]["example"] == "Tub: 21.5 in" and with_file["cells"]["health"]["agents"]["state"] == "stopped"

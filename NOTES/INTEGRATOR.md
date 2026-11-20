@@ -2162,6 +2162,32 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
 5. Top bar: Decision · Trail · Memory · Conversations · Signature (`/`, `/trail/`, `/graph/`, `/talk/`, `/seal/`).
 Also in this commit: T6's route `GET /api/trail/left` and its panel, collapsed to its one line under the figure; the
 open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` are retaken.
+
+## 14:53 from TRAIL
+DONE T6: "What left, and what never did" is on `/trail/`, directly under the figure: one line always visible, one click
+opens the matrix (`/trail/#left` opens it already open). Route `GET /api/trail/left` (read-only, in my router;
+`signoff/trail/left.py`). `uv run -q pytest -q` → 400 passed (tests/trail: 16).
+Real totals, as the page states them on port 8016 (sheet 4, replay mode, with a copy of main's own ledger file taken at
+14:44 plus what my server sent since): **108 payloads to 5 recipients · 50 carried a limit, a measurement or a name, none
+to a store · 15 held one the sender did not declare · 31 stopped at the guard** (in 7 of 13 messages to 3 stores' agents;
+4 of the 13 were refused outright).
+What the matrix shows, and it does embarrass us where the records do:
+- the stores' agents: product name and need-by date sent (9 each); order limit, home measurement, a person and a health
+  detail **stopped** (6, 4, 6, 6 messages), each cell opening the guard's record with the removed words;
+- Senso: the order's limit **sent** in 34 payloads and the order in 58 (the sender declares them: Senso checks the sheet's
+  sentences against the order); a person's name **found** in 2 payloads the sender did not declare (red);
+- the database (singlestore): everything sent, and a person's name **found** in 13 of 13 writes though not declared (red);
+- analytics (amplitude, statsig): limit, measurement and name **never** (18 and 9 payloads checked by the ledger's
+  search); the other classes "not recorded", because the ledger's search cannot find them and the sender declared none.
+Rows come from the guard's rule and marks and the ledger's classes that occur; each has one real value from the run.
+A cell opens the ledger rows behind it (time, purpose, payload hash) or the guard's messages. Opening the panel strikes
+the stopped cells through. Screenshots I looked at: `web/trail/shots/left-0.png` (open, 1440 x 810), `left-1.png` (a
+"found" cell: names in the database writes), `left-2.png` (a "stopped" cell: the guard's removed words), `left-3.png`
+(a "never" cell), `left-150-0.png` (960 x 540).
+Not in it: columns for the reading model, the small reader, the stores' search and the web search, because main's ledger
+for sheet 4 has no rows to them (the reads ran as a batch elsewhere; noted for ENGINE at 13:50). They appear by
+themselves when rows exist. Two things for their owners: TALK's guard classed "at least 300 lbs" as a health detail in
+one message; STORE/SIGN: the database writes and two Senso payloads carry names the sender does not declare.
 ## TALK 14:48 — K5 status and what will not make it
 - Read the code first. Corrections to the brief's summary, which the page will follow:
   - The phone does not sign the bare hash. It signs a JSON message (`payload`): `type: "sign_sheet"`, the sheet id, `seq`,
@@ -2245,3 +2271,16 @@ open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` 
 - Step 3 DONE: `web/seal` is on main, so the bar on / is Decision · Trail · Memory · Conversations · Signature, and the
   "Not signed" chip links to /seal/.
 - My port's rule is back on "cheapest".
+## 14:58 from TRAIL — the replay no longer moves when a record arrives; T6 rows from the sheet's context file
+- **Replay and live records.** A refresh that arrives while the replay is playing, or paused part-way, is held and drawn
+  when the run ends or when someone moves it by hand (rail, step buttons). Seen on port 8016 with the event stream open
+  (`/trail/`, no `live=0`): pressed Play, sent `POST /api/admin/reset` to my own port at about 3 s and again at about
+  10 s; the clock read step 3 at 0:06, step 4 at 0:13, step 5 at 0:16, step 6 at 0:20, step 7 at 0:23 and ended at 0:24
+  with the button back to "Play". The figure also no longer carries memory's ages, which changed its records every minute.
+- **T6 rows.** When `sheets/<sheet id>_context.json` exists, its `classes` come first, in its order, each with the words
+  of its first fact as the example and its travel rule as the row's tooltip: health detail, a person, home measurement,
+  order limit, need-by date; then the classes only the ledger knows (product name, page text, the order, prices). The
+  file's "home" and "schedule" are the ledger's and guard's "home_measurement" and "need_by" (one small table of the two
+  names in `signoff/trail/left.py`). Screenshots `web/trail/shots/left-context-0.png` and `left-context-1.png`. Totals
+  at this moment with a copy of main's ledger: 107 payloads to 5 recipients · 49 carried a limit, a measurement or a
+  name, none to a store · 22 held one the sender did not declare · 31 stopped at the guard. `uv run -q pytest -q` → 427 passed.
