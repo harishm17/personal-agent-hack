@@ -15,7 +15,7 @@ import threading
 import time
 
 from signoff import config
-from signoff.engine import obs, planted, rules
+from signoff.engine import obs, planted, receipts, rules
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 DATA, FIXTURES, SHEETS = ROOT / "data", ROOT / "fixtures", ROOT / "sheets"
@@ -296,6 +296,10 @@ def _attach(state):
     state["sheet"], order = _with_order(state["sheet"])
     if order:
         state["order"] = order
+    try:
+        state["receipts"] = receipts.summary()
+    except Exception:  # noqa: BLE001  (the chain is a record; it never stops a change)
+        state["receipts"] = {"count": None, "verified": None, "last_hash": None}
     state["issuer_key"] = dict(_s["issuer_key"])
     state["readers"] = _s.get("readers")
     if _s.get("readers"):
@@ -326,6 +330,11 @@ def _ensure():
     if not _s["loaded"]:
         _load()
         _recompute(record=False)
+
+
+def _key_id(action):
+    signer = action.get("signer")
+    return action.get("key_id") or (signer.get("key_id") if isinstance(signer, dict) else None)
 
 
 def _open_for_changes():
@@ -397,8 +406,11 @@ def apply_issuer(action: dict) -> dict:
             bound = limit["bound"]
             if bound["source"] != "issuer":
                 raise EngineError("%s is bounded by a measurement of the shopper's, not by an issuer value" % limit["id"])
+            was = bound["value"]
             bound["value"] = _number(action.get("value"), bound.get("min"), bound.get("max"), limit["id"])
             limit["set_at"] = action.get("at") or _now()
+            receipts.append("limit_set", "issuer", _key_id(action), action,
+                            {"limit_id": limit["id"], "from": was, "to": bound["value"], "unit": limit["unit"]})
         elif kind in ("strike", "unstrike"):
             line_id, key = action.get("line_id"), action.get("product_key")
             if not any(l["id"] == line_id for l in _s["sheet"]["lines"]):
@@ -410,6 +422,8 @@ def apply_issuer(action: dict) -> dict:
                 _s["strikes"].append({"line_id": line_id, "product_key": key, "by": "issuer",
                                       "reason": str(action.get("reason") or "").strip() or "no reason given",
                                       "at": action.get("at") or _now()})
+            receipts.append("strike" if kind == "strike" else "unstrike", "issuer", _key_id(action), action,
+                            {"line_id": line_id, "product_key": key})
         else:
             raise EngineError("unknown issuer request type %r" % (kind,))
         return _recompute(why=kind)
@@ -422,7 +436,10 @@ def set_shopper_fact(fact_id, value) -> dict:
         fact = next((f for f in _s["sheet"]["shopper_facts"] if f["id"] == fact_id), None)
         if fact is None:
             raise EngineError("no shopper fact %r on this sheet" % (fact_id,), 404)
+        was = fact["value"]
         fact["value"] = _number(value, fact.get("min"), fact.get("max"), fact_id)
+        receipts.append("shopper_fact", "shopper", None, {"fact_id": fact_id, "value": value},
+                        {"fact_id": fact_id, "from": was, "to": fact["value"], "unit": fact["unit"]})
         return _recompute(why="shopper_fact")
 
 
@@ -449,6 +466,11 @@ def mark_signed(signature: dict, carts: list) -> dict:
         text = "Signed by %s at %s. %d cart%s created." % (name, str(at)[11:16] or at, n, "" if n == 1 else "s")
         _s["seal"] = {"signed": True, "text": text, "sheet_hash": _s["state"]["sheet_hash"],
                       "signature": signature, "carts": carts, "signed_at": at, "signer": name}
+        receipts.append("signed", "issuer", _key_id(signature), signature,
+                        {"sheet_hash": _s["state"]["sheet_hash"], "signer": name, "total_cents": _s["state"]["total_cents"]})
+        receipts.append("carts_created", "system", _key_id(signature), carts,
+                        {"sheet_hash": _s["state"]["sheet_hash"],
+                         "carts": [{k: c.get(k) for k in ("store", "cart_id", "total_cents", "mode")} for c in carts]})
         return _recompute()
 
 
@@ -478,8 +500,10 @@ def set_reader(name=None) -> dict:
         slug = re.sub(r"[^A-Za-z0-9.]+", "-", name).strip("-") if name else None
         if slug and not (_dirs()[2] / "_runs" / slug).is_dir():
             raise EngineError("no run of reader %r under data/figures/_runs" % (name,), 404)
+        was = _s.get("reader")
         _s["reader"] = slug
         _load(keep_changes=True)
+        receipts.append("reader_switched", "system", None, {"reader": name}, {"from": was or "reference", "to": slug or "reference"})
         return _recompute(why="set_reader")
 
 
@@ -492,6 +516,7 @@ def use_sheet(sheet_id: str) -> dict:
             raise EngineError("no sheet %r" % (sheet_id,), 404)
         _s.update(sheet_id=sheet_id, reader=None, sheet=None)
         _load()
+        receipts.start("sheet %s" % sheet_id)
         obs.session(sheet_id)
         return _recompute(why="use_sheet")
 
@@ -520,6 +545,7 @@ def reset() -> dict:
     with _lock:
         _s["reader"] = None
         _load()
+        receipts.start("reset")
         try:
             from signoff.agent import chat
             chat.forget()

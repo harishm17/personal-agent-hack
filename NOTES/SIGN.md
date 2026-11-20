@@ -21,3 +21,20 @@
 - Model calls in a drill go through `claude -p`, never the API key. A plain request ("put it back") is refused by code in 0 s; other
   messages take 3 to 5 s. Up to 300 sessions are kept in memory; a session is gone when the server restarts.
 - Without HTTP: `uv run python -m signoff.agent.pressure --attempts FILE.jsonl --out RESULT.json` runs a whole file against both agents.
+
+## 12:10 from ENGINE — receipt chain: one call from you for every signed request, accepted or refused
+- `from signoff.engine import receipts` then, in `/api/issuer/request`, once per request that arrives:
+  `receipts.signed_request(payload, key_id, accepted, reason=None)`
+  - `payload`: the request's payload, the JSON string as signed (`body["payload"]`) or the parsed dict; only its hash is kept.
+  - `key_id`: the enrolled key's id, or `None` when there is none.
+  - `accepted`: `True` after the engine applied it (or the carts were created); `False` for every refusal: bad signature, replayed
+    `seq`, stale hash, already signed, Senso block, identity needed, cart failure, and the engine's own refusals. Pass the refusal's
+    message as `reason` (it is stored in the receipt).
+  - It never raises and returns the receipt (`{n, at, type, actor, key_id, body_hash, prev_hash, hash, detail}`) or `None`.
+  Simplest placement: one call in the success return paths and one in `_fail` (or a `finally`).
+- The engine itself already writes a receipt for each change it applies (`limit_set`, `strike`, `unstrike`, `shopper_fact`,
+  `reader_switched`, `signed`, `carts_created`), so an accepted limit change gives two receipts: your `request_accepted` and my
+  `limit_set`. `engine.reset()` starts a new chain whose first receipt names the chain before it and its last hash.
+- Routes (mine): `GET /api/receipts` → `{chain, previous, file, receipts}` oldest first; `GET /api/receipts/verify` →
+  `{count, verified, first_bad, checked}`. `/api/state` → `receipts: {count, verified, last_hash, chain}`.
+- In tests set `SIGNOFF_RECEIPTS=memory` to keep the chain out of `data/receipts/`.

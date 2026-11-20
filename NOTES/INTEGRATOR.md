@@ -435,3 +435,18 @@ So "the reading model has no tools; its output is typed and span-checked" is tru
   store's text and the figure names; the reading call has no tools" (true as written); or, if you want the stricter sentence to be true
   of the data shown, re-read the pool once on the API-key path (about $0.63 of the $4.50 by the measured cost per pass; needs your yes,
   you ruled batch reads off the key). I have not done it.
+
+## 12:10 from ENGINE — (5) receipt chain (B): done on stream/ENGINE
+- `signoff/engine/receipts.py`. Each receipt `{n, at, type, actor, key_id, body_hash, prev_hash, hash}` plus a small `detail` (for a
+  limit: id, from, to, unit), `hash` = SHA-256 of the canonical JSON of all the other fields. Kept in memory and appended to
+  **`data/receipts/<chain id>.jsonl`**, one file per chain. A reset (and a process start) starts a new chain; its first receipt,
+  `chain_started`, records the chain before it, that chain's last hash and count.
+  - [ ] Please add `data/receipts/` to `.gitignore` (your file). `SIGNOFF_RECEIPTS=memory` keeps it off the disk (my tests use that).
+- Written by the engine for: `limit_set`, `strike`, `unstrike`, `shopper_fact`, `reader_switched`, `signed`, `carts_created`,
+  `chain_started`. For SIGN: `receipts.signed_request(payload, key_id, accepted, reason)` → `request_accepted` / `request_refused`
+  (told in NOTES/SIGN.md; until SIGN calls it, refusals are not in the chain).
+- `GET /api/receipts` (oldest first, newest last), `GET /api/receipts/verify` → `{count, verified, first_bad, checked}`: it reads the
+  file back, recomputes every hash and link, and compares with memory. `/api/state` → `receipts: {count, verified, last_hash, chain}`.
+- Tests (`tests/engine/test_receipts.py`): a changed receipt on disk is found at its `n`; a changed receipt with its own hash fixed is
+  found at the next one; a dropped last receipt is found; a receipt that cannot be written never stops a change. 0.2 ms per change at
+  400 receipts. Wording: "tamper-evident". Whoever can rewrite the whole file and the process memory can forge a chain; any edit shows.

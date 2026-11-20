@@ -83,6 +83,20 @@ def shopper_say(body: Say):
                          "could change it." % type(error).__name__, "refused": False, "tool_calls": [], "error": True}
 
 
+@router.get("/api/receipts")
+def get_receipts():
+    """The receipt chain, oldest first (the newest is last): every change applied and every signed request."""
+    from signoff.engine import receipts
+    return receipts.chain()
+
+
+@router.get("/api/receipts/verify")
+def verify_receipts():
+    """Reads the chain back from disk and recomputes every hash and link: `{count, verified, first_bad}`."""
+    from signoff.engine import receipts
+    return receipts.verify()
+
+
 # --- drill sessions: the chat on a private sheet, for pressure attempts that must not touch the live one ---
 _drills, _drill_lock = {}, threading.Lock()
 
