@@ -1,45 +1,53 @@
 {
   "id": "sheet3",
-  "title": "What Leo may buy",
+  "title": "Room 12 class supplies",
   "invented": true,
-  "invented_note": "Invented parent and teenager, invented rules. Real stores, real product text, real carts.",
+  "invented_note": "Invented teacher, room parent and class list. Real stores, real product text, real carts.",
   "order_doc": "sheets/sheet3_order.txt",
-  "issuer": {"id": "maya", "name": "Maya", "role": "parent", "role_label": "parent, wrote the rules and pays", "invented": true},
-  "shopper": {"id": "leo", "name": "Leo", "role": "shopper", "role_label": "teenager, shops for himself", "invented": true},
-  "stores": ["jlab.com", "purosound.com", "onanoff.com", "skullcandy.com", "hiboy.com", "gotrax.com", "alaninu.com", "guayaki.com"],
+  "issuer": {"id": "alvarez", "name": "Ms. Alvarez", "role": "teacher", "role_label": "3rd-grade teacher, wrote the list", "invented": true},
+  "shopper": {"id": "dev", "name": "Dev", "role": "shopper", "role_label": "room parent, buys the class set with the class fund", "invented": true},
+  "stores": ["purosound.com", "onanoff.com", "jlab.com", "skullcandy.com", "bazicproducts.com", "ooly.com", "yoobi.com", "schoolsupplyboxes.com", "bluesummitsupplies.com", "pencils.com", "mrpen.com"],
   "need_by": "2026-12-04",
-  "pick_rule": {"id": "cheapest", "label": "cheapest inside the rules", "set_by": "shopper"},
+  "pick_rule": {"id": "cheapest", "label": "cheapest that meets the list", "set_by": "shopper"},
   "units": {
     "dB": ["db", "dba", "decibel", "decibels"],
-    "mph": ["mph", "mi/h", "miles per hour"],
-    "mg": ["mg", "milligram", "milligrams"]
+    "count": ["ct", "ct.", "count", "pack", "pk", "pc", "pcs", "piece", "pieces", "crayons", "colors", "colours", "pencils"],
+    "sheets": ["sheet", "sheets"]
   },
   "figures": {
     "max_volume": "how loud the headphones can play, in decibels (dB), as the page states it. A page that states more than one level or mode (a limited mode and a louder one) states several values: report each.",
-    "top_speed": "the scooter's top speed, in miles per hour (mph).",
-    "caffeine": "the caffeine in one can or serving, in milligrams (mg)."
+    "crayon_count": "how many crayons are in one box, as the page states it (for example 24 count, 24 crayons, 24 colors).",
+    "sheet_count": "how many sheets of paper the notebook has, as the page states it. Pages are not sheets.",
+    "pencil_count": "how many pencils are in one pack, as the page states it."
   },
   "shopper_facts": [],
   "lines": [
     {
-      "id": "K1", "need": "headphones", "room": "for school", "fulfilment": "cart",
-      "queries": ["headphones", "wireless headphones", "kids headphones"],
+      "id": "C1", "need": "headphones", "room": "computer time", "fulfilment": "cart", "quantity": 24,
+      "queries": ["headphones", "kids headphones", "wireless headphones"],
       "limits": [
-        {"id": "K1.volume", "name": "volume limit", "label": "no louder than", "terms": [{"source": "store", "figure": "max_volume"}], "op": "<=", "several": "largest", "bound": {"source": "issuer", "value": 85, "min": 70, "max": 100, "step": 1}, "unit": "dB", "set_by": "issuer", "issuer_role": "parent", "set_at": "2026-11-20T13:30:00-08:00"}
+        {"id": "C1.volume", "name": "volume limit", "label": "no louder than", "terms": [{"source": "store", "figure": "max_volume"}], "op": "<=", "several": "largest", "bound": {"source": "issuer", "value": 85, "min": 70, "max": 100, "step": 1}, "unit": "dB", "set_by": "issuer", "issuer_role": "teacher", "set_at": "2026-11-20T13:30:00-08:00"}
       ]
     },
     {
-      "id": "K2", "need": "electric scooter", "room": "for getting to school", "fulfilment": "cart",
-      "queries": ["electric scooter", "electric scooter for teens"],
+      "id": "C2", "need": "crayons", "room": "art", "fulfilment": "cart", "quantity": 24,
+      "queries": ["crayons", "crayons 24"],
       "limits": [
-        {"id": "K2.speed", "name": "top speed", "label": "no faster than", "terms": [{"source": "store", "figure": "top_speed"}], "op": "<=", "bound": {"source": "issuer", "value": 15, "min": 8, "max": 25, "step": 0.5}, "unit": "mph", "set_by": "issuer", "issuer_role": "parent", "set_at": "2026-11-20T13:30:00-08:00"}
+        {"id": "C2.count", "name": "crayons in a box", "label": "exactly", "terms": [{"source": "store", "figure": "crayon_count"}], "op": "==", "bound": {"source": "issuer", "value": 24, "min": 8, "max": 64, "step": 8}, "unit": "count", "set_by": "issuer", "issuer_role": "teacher", "set_at": "2026-11-20T13:30:00-08:00"}
       ]
     },
     {
-      "id": "K3", "need": "energy drink", "room": "for practice", "fulfilment": "cart",
-      "queries": ["energy drink"],
+      "id": "C3", "need": "notebook", "room": "writing", "fulfilment": "cart", "quantity": 24,
+      "queries": ["composition notebook", "spiral notebook", "notebook"],
       "limits": [
-        {"id": "K3.caffeine", "name": "caffeine", "label": "caffeine at most", "terms": [{"source": "store", "figure": "caffeine"}], "op": "<=", "bound": {"source": "issuer", "value": 100, "min": 0, "max": 300, "step": 10}, "unit": "mg", "set_by": "issuer", "issuer_role": "parent", "set_at": "2026-11-20T13:30:00-08:00"}
+        {"id": "C3.sheets", "name": "sheets", "label": "at least", "terms": [{"source": "store", "figure": "sheet_count"}], "op": ">=", "bound": {"source": "issuer", "value": 70, "min": 40, "max": 200, "step": 10}, "unit": "sheets", "set_by": "issuer", "issuer_role": "teacher", "set_at": "2026-11-20T13:30:00-08:00"}
+      ]
+    },
+    {
+      "id": "C4", "need": "pencils", "room": "writing", "fulfilment": "cart", "quantity": 24,
+      "queries": ["pencils", "#2 pencils"],
+      "limits": [
+        {"id": "C4.count", "name": "pencils in a pack", "label": "at least", "terms": [{"source": "store", "figure": "pencil_count"}], "op": ">=", "bound": {"source": "issuer", "value": 12, "min": 6, "max": 48, "step": 6}, "unit": "count", "set_by": "issuer", "issuer_role": "teacher", "set_at": "2026-11-20T13:30:00-08:00"}
       ]
     }
   ]
