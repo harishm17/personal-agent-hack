@@ -40,7 +40,11 @@ class FakeEngine:
         self.state["version"] += 1
         return {"version": self.state["version"]}
 
-    def mark_signed(self, signature, carts):
+    def mark_signed(self, signature, carts, signed_hash=None):
+        if signed_hash is not None and signed_hash != self.state.get("sheet_hash", self.sheet_hash()) and signed_hash != self.sheet_hash():
+            err = ValueError("the sheet moved since this hash was signed")
+            err.status = 409
+            raise err
         self.calls.append(("mark_signed", signature, carts))
         self.state["seal"] = {"signed": True, "text": "Signed", "sheet_hash": signature["sheet_hash"],
                               "signature": signature, "carts": carts}

@@ -192,14 +192,16 @@ function renderEnrol(name) {
   $("#main").innerHTML = `<div class="item"><div class="need">Use this phone to sign</div>
     <div class="sub">A key was made in this browser and cannot leave it. Only requests signed with it can change the sheet or create carts.</div>
     <div class="label">Name on the seal</div><input type="text" id="nm" value="${esc(name)}" autocomplete="name">
+    <div class="label">Code from the laptop</div><input type="text" id="code" value="${esc(new URLSearchParams(location.search).get("code") || "")}" autocomplete="off" autocapitalize="off" inputmode="text">
     <div class="btns"><button class="act primary big" id="enrol">Enrol this phone</button></div></div>`;
   $("#enrol").onclick = async () => {
     $("#enrol").disabled = true;
     try {
-      const r = await fetch("/api/issuer/enroll", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ public_key_jwk: keyRec.jwk, name: $("#nm").value }) });
+      const r = await fetch("/api/issuer/enroll", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ public_key_jwk: keyRec.jwk, name: $("#nm").value, code: $("#code").value.trim() }) });
       const body = await r.json();
       if (!r.ok) throw new Error(body.detail || r.status);
       keyRec.key_id = body.key_id; keyRec.seq = 0; await kvSet("key", keyRec);
+      history.replaceState(null, "", location.pathname);
       await refreshIssuer(); await loadState(); render();
     } catch (e) { toast("Not enrolled: " + e.message); $("#enrol").disabled = false; }
   };
@@ -209,16 +211,8 @@ function renderNotMine() {
   $("#who").textContent = "another phone signs";
   $("#main").innerHTML = `<div class="item"><div class="need">${esc(issuer.name)}'s phone is enrolled</div>
     <div class="sub">This phone can look but not sign. After a rehearsal reset, reload to enrol it instead.</div></div>
-    <details class="item"><summary>Rehearsal</summary><div class="btns"><button class="act danger" id="reset">Reset: unsigned, no key</button></div></details>`;
-  $("#reset").onclick = resetAll;
+    <div class="item sub">To start over, reset from the laptop.</div>`;
 }
-async function resetAll() {
-  if (!confirm("Reset to unsigned, with no enrolled key? Use only between rehearsals.")) return;
-  await fetch("/api/admin/reset", { method: "POST" });
-  keyRec.key_id = null; keyRec.seq = 0; await kvSet("key", keyRec);
-  await refreshIssuer(); await loadState(); render();
-}
-
 /* limit helpers */
 function sheetLine(id) { return state.sheet.lines.find((x) => x.id === id); }
 function limitText(l) {
@@ -267,11 +261,10 @@ function renderSheet() {
     main.innerHTML = `<div class="label">Signed</div><div class="big-v">${esc(who)}</div>
       <div class="sub">${esc((seal.signature && seal.signature.at) || "")}</div>
       <div class="hash" style="margin-top:6px">${esc(seal.sheet_hash || "")}</div>
-      <div class="label">Carts</div><ul class="plain">${(seal.carts || []).map((c) => `<li><div class="row"><span>${esc(c.store)}</span><span class="num">${money(c.total_cents)}</span></div>${c.cart_url ? `<a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> <span class="sub">${esc(c.mode || "")}</span>` : `<span class="sub">${c.mode === "pending" ? "still being created at the store" : "not created: " + esc(c.note || "")}</span>`}</li>`).join("")}</ul>
+      <div class="label">Carts</div><ul class="plain">${(seal.carts || []).map((c) => `<li><div class="row"><span>${esc(c.store)}</span><span class="num">${money(c.total_cents)}</span></div>${c.total_differs ? `<div class="sub" style="color:var(--bad)">${esc(c.note)}</div>` : ""}${c.cart_url ? `<a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> <span class="sub">${esc(c.mode || "")}</span>` : `<span class="sub">${c.mode === "pending" ? "still being created at the store" : "not created: " + esc(c.note || "")}</span>`}</li>`).join("")}</ul>
       <div class="label">Checks</div><div class="sub">${(() => { const q = (seal.signature && seal.signature.persona) || {}; return q.inquiry_id ? esc(q.label || "") + " · " + esc(q.inquiry_id) + " · " + esc(q.status || "") + " · sandbox" : "identity not checked"; })()}</div>
       <div class="sub">${seal.signature && seal.signature.senso && seal.signature.senso.status === "pending" ? "Senso check still running" : "Checked against the order"}</div>
-      <div class="btns"><button class="act danger" id="reset">Reset for rehearsal</button></div>`;
-    $("#reset").onclick = resetAll;
+      <div class="label">Rehearsal</div><div class="sub">To start over, reset from the laptop.</div>`;
     return;
   }
   const per = persona || (issuer && issuer.persona) || { label: "identity not checked" };

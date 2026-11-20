@@ -8,6 +8,7 @@ from __future__ import annotations
 import importlib
 import inspect
 import json
+import secrets
 import threading
 import time
 from datetime import datetime, timezone
@@ -92,7 +93,7 @@ def _push_issuer_key(engine) -> None:
 async def enroll(request: Request):
     body = await _json(request)
     try:
-        key = keystore.enroll(body.get("public_key_jwk"), str(body.get("name") or ""), _now())
+        key = keystore.enroll(body.get("public_key_jwk"), str(body.get("name") or ""), _now(), str(body.get("code") or ""))
     except Refused as error:
         return _fail(error)
     try:
@@ -100,6 +101,31 @@ async def enroll(request: Request):
     except Exception:  # noqa: BLE001
         pass
     return {"ok": True, "key_id": key.key_id}
+
+
+def _laptop_only(request: Request) -> bool:
+    """True for a request from the laptop running the app, or one carrying X-Admin-Token. A request that came through
+    the public tunnel (proxy headers, or a client address that is not loopback) is refused. GET routes are not covered
+    by the app's admin guard, so this route checks for itself."""
+    h = request.headers
+    token = config.env("SIGNOFF_ADMIN_TOKEN") or ""
+    given = h.get("x-admin-token") or ""
+    if token and given and secrets.compare_digest(given, token):
+        return True
+    if h.get("cf-connecting-ip") or h.get("cf-ray") or h.get("x-forwarded-for"):
+        return False
+    host = request.client.host if request.client else ""
+    return host in ("127.0.0.1", "::1", "localhost", "testclient")
+
+
+@router.get("/api/issuer/enroll-code")
+def enroll_code(request: Request):
+    """The one-time code that enrolling the approver's phone needs, and the link that carries it. Laptop only:
+    through the tunnel this answers 403 `local_only`. A new code after every reset."""
+    if not _laptop_only(request):
+        return JSONResponse({"error": "local_only", "detail": "The enrolment code is shown on the laptop."}, status_code=403)
+    url = config.public_url() or "http://localhost:8800"
+    return {"code": keystore.code, "enrolled": bool(keystore.key), "url": "%s/phone/?code=%s" % (url, keystore.code)}
 
 
 @router.get("/api/issuer/status")
@@ -156,6 +182,26 @@ def _picks(state: dict) -> list[dict]:
 _late: dict = {}  # the signed record, so a cart that answers after the seal can still be added to it
 
 
+def _check_totals(carts: list[dict], picks: list[dict], state: dict) -> list[dict]:
+    """The store's cart total against the signed total, per store. A difference is shown on the cart ("store total
+    differs", both numbers), never hidden and never re-priced."""
+    price = {}
+    for line in state["lines"]:
+        for c in line["candidates"]:
+            price[(c["product"]["store"], c["product"]["variant_id"])] = c["product"]["price_cents"]
+    signed = {}
+    for p in picks:
+        signed[p["store"]] = signed.get(p["store"], 0) + price.get((p["store"], p["variant_id"]), 0) * int(p.get("quantity", 1))
+    out = []
+    for c in carts:
+        c = dict(c, signed_total_cents=signed.get(c["store"]))
+        if c.get("total_cents") is not None and c["signed_total_cents"] is not None and c["total_cents"] != c["signed_total_cents"]:
+            c["total_differs"] = True
+            c["note"] = "store total differs: signed $%.2f, store $%.2f" % (c["signed_total_cents"] / 100, c["total_cents"] / 100)
+        out.append(c)
+    return out
+
+
 def _carts_within(picks: list[dict], budget: float) -> list[dict]:
     """One thread per store, one try each, answers within `budget` seconds in all. A store that has not answered gets
     a `pending` entry (its thread goes on and the entry is filled in when it answers); a store that errors gets a
@@ -207,7 +253,7 @@ def _late_fill(store: str, got: dict) -> None:
     with ctx["lock"]:
         carts = [c for c in ctx["carts"] if not (c["store"] == store and c["mode"] == "pending")]
         if got.get("carts"):
-            carts += got["carts"]
+            carts += _check_totals(got["carts"], ctx["picks"], ctx["state"])
         else:
             carts.append({"store": store, "cart_id": None, "cart_url": None, "total_cents": None, "created_at": _now(),
                           "mode": "failed", "note": "the store answered with an error (%s)" % got.get("error")})
@@ -231,7 +277,8 @@ def _handle_request(body: dict):
             engine = get_engine()
             state = engine.get_state()
             prev_seq = keystore.key.last_seq if keystore.key else None
-            payload = verify_request(keystore, body, sheet_id=state["sheet"]["id"], current_hash=engine.sheet_hash())
+            snap_hash = state.get("sheet_hash") or engine.sheet_hash()  # the hash of the very state the picks come from
+            payload = verify_request(keystore, body, sheet_id=state["sheet"]["id"], current_hash=snap_hash)
             if state["seal"].get("signed"):
                 raise Refused("already_signed", "the sheet is signed; reset to sign again", 409)
             _check_action(payload, state)
@@ -252,12 +299,22 @@ def _handle_request(body: dict):
             if not any(c["mode"] in ("pending",) or c.get("cart_url") for c in carts):
                 raise Refused("cart_failed", "no store created a cart (%s); nothing is signed" % "; ".join(c.get("note", "") for c in carts), 502, retry_ok=True)
             at = _now()
-            signature = {"name": signer["name"], "signer": signer, "at": at, "signed_at": at, "sheet_hash": payload["sheet_hash"], "sig": body["sig"],
+            basis = "identity checked, sandbox" if who.get("verified") else "self-declared"
+            carts = _check_totals(carts, picks, state)
+            signature = {"name": "%s (%s)" % (signer["name"], basis), "name_basis": basis, "signer": signer, "at": at, "signed_at": at, "sheet_hash": payload["sheet_hash"], "sig": body["sig"],
                          "payload": body["payload"], "seq": payload["seq"], "persona": who,
                          "senso": {"status": gate["status"], "for_hash": gate.get("for_hash"), "checks": gate["checks"],
                                    "label": "Senso check still running" if gate["status"] == "pending" else None}}
-            result = engine.mark_signed(signature, carts)
-            _late["ctx"] = {"engine": engine, "signature": signature, "carts": carts, "lock": threading.Lock()}
+            try:
+                mark = engine.mark_signed
+                result = mark(signature, carts, signed_hash=payload["sheet_hash"]) if "signed_hash" in inspect.signature(mark).parameters \
+                    else mark(signature, carts)
+            except ValueError as error:  # the engine saw the sheet move while the carts were being made
+                if getattr(error, "status", None) == 409:
+                    raise Refused("sheet_moved", "the sheet changed while signing; nothing is signed. Carts made for the old sheet: %s"
+                                  % ", ".join(c["cart_url"] for c in carts if c.get("cart_url")) , 409, retry_ok=True) from error
+                raise
+            _late["ctx"] = {"engine": engine, "signature": signature, "carts": carts, "lock": threading.Lock(), "picks": picks, "state": state}
             receipt("sign_sheet", "accepted", "", {"sheet_hash": payload["sheet_hash"]})
             return {"ok": True, "applied": "sign_sheet", "carts": carts, "senso": gate["status"], "version": _version(result, engine)}
         except Refused as error:
