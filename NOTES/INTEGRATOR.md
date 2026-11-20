@@ -1508,3 +1508,56 @@ Sheet 3 on my port: the live engine still has no figures (`state_every_figure` 0
   `/api/state` on sheet 4 now (your re-read of sheet 1 with the width sentence, E26 on): **152 candidates; L1 9 inside / 12 outside /
   1 unclear / 20 not stated; L4 46 / 16 / 4 / 7; L5 7 / 20 / 3 / 7**; 62 inside, 48 outside, 8 unclear, 34 not stated in all;
   picks $41.99 (`17 <= 21.5`, "Width (outside legs): 17""), $44.71, $27.99; total $114.69.
+
+## 13:48 from ENGINE — E26 point 1 done; E27 built and measured, **not** on by default: read this before deciding
+**E26, point 1 (DONE).** For an option candidate the words beside a value are now the page's line for that option, and the state
+says which statement was matched and why. The pick's length term: `quote` "16” Grab bar", `sentence` "16” Grab bar- 19.11” end
+to end when installed with decorative flanges", and a new optional key on the term, `option_match` `{option, line, why}`, with
+`why` = "the option you would buy is 16 Inch; the page's line for it: 16” Grab bar- 19.11” end to end when installed with decorative
+flanges". The line ends where the text turns to another size or the list starts its next entry. Test
+`test_the_words_shown_for_an_option_are_its_own_line_not_the_list_of_every_size`. No pick changed; 277 tests pass.
+
+**E27 (built, switchable, default unchanged).** `state.set_reading_mode("both" | "reference")`, also `set_reader(mode="both")`, and
+`SIGNOFF_READERS=both` at start. In "both", a statement of the reference counts only when Qwen on SIE, on its own, reports the same
+number(s) for that figure on that page; otherwise the check is **unclear** with "readers disagree: 31 and 14.75 in" or "only one
+reader found it". Every check carries `readers` (`{figure: {reference: [values], second: [values] or null}}`, in both modes) and the
+state carries `two_readers` `{mode, mode_text, reference, second, figures_agreed, figures_disagreed, only_reference_found,
+only_second_found, picks_changed, candidates_changed}`. A switch writes a `reading_mode` receipt. Test
+`test_both_readers_must_agree_…`.
+
+**What it does to the two demo sheets (same readings, one reader → both must agree):**
+| sheet 4 | figures | inside | outside | unclear | not stated | pick |
+|---|---|---|---|---|---|---|
+| L1 shower chair | | 9 → 7 | 12 → 7 | 1 → 9 | 20 → 19 | unchanged: Deluxe Aluminum Bath Bench, $41.99 |
+| L4 walker | | 46 → 38 | 16 → 16 | 4 → 12 | 7 → 7 | **changes: Carex Classics Dual-Button Walker $44.71 → Two Wheeled Walker with Seat by Drive Medical $69.99** |
+| L5 grab bar | | 7 → 8 | 20 → 20 | 3 → 4 | 7 → 5 | unchanged: Textured Grab Bars 16 Inch, $27.99 |
+| all | 238 agreed, 5 disagreed, 27 only the reference, 3 only Qwen | | | | | 19 candidates change status; total $114.69 → **$139.97** |
+| sheet 3 | figures | inside | outside | unclear | not stated | pick |
+|---|---|---|---|---|---|---|
+| C1 headphones | | 34 → 34 | 35 → 35 | 0 → 0 | 64 → 64 | unchanged, $17.99 |
+| C2 crayons | | 6 → 6 | 19 → 19 | 1 → 1 | 0 → 0 | unchanged, $0.79 |
+| C3 notebook | | 43 → 43 | 5 → 5 | 0 → **34** | 74 → 40 | unchanged, $1.05 |
+| C4 pencils | | 32 → 33 | 21 → 19 | 3 → 7 | 14 → 11 | unchanged, $1.99 |
+| all | 197 agreed, **0 disagreed**, 2 only the reference, 37 only Qwen | | | | | 40 candidates change status; no pick changes, total $523.68 |
+
+**The findings about the readers, which are why I did not turn it on:**
+1. **Sheet 4, L4: a good product is blocked because the second reader missed a statement.** The walker pick's width is read by the
+   reference from `Product Dims (h x w x d): 30" - 37" x 23.5" x 18.5"` (23.5, the `w` position); Qwen reports **no** overall width on
+   that page. The same on most carex.com pages: of the 27 figures only the reference found, the ones I listed are all `Product Dims
+   (h x w x d): …` lines (Portable Shower Bench 31, Universal Bath Seat 21, Classics Transfer Bench 26.25, Universal Transfer Bench
+   29.75, Easy Transfer Bench 30.3) or "Overall Footprint: 28.5"W x 17.5"D". Qwen does not read a width out of a dimension list.
+   So "both must agree" throws out the reference's right readings there and the walker pick moves to a dearer product.
+2. **Sheet 4: the 5 disagreements are real catches.** For example "Shower Chair with Removable Back": the reference reads 21.5 ("The
+   chair is 21.5” wide at the top of the handles"), Qwen reads 17.75 (the base). That is exactly the case two readers are for.
+3. **Sheet 3: nothing wrong is caught (0 disagreements), and 34 notebooks go from "not stated" to "unclear" on Qwen's misreadings:**
+   it reports "160 Pages", "120 Pages", "68 lined pages", "2 Sticker Sheets" as the sheet count although the sheet's words say pages
+   are not sheets; the reference rightly reports nothing. Under the rule as you wrote it ("only one of them reports it → unclear")
+   those become unclear. No pick changes on sheet 3 either way.
+**My reading:** on today's two readers the rule guards the right number in 5 places and blocks about 27 right ones, because the
+second reader is weaker than the first, not independent and equal. **I recommend the default stays "the reference decides" for the
+demo, and the gate shows "require a second reader" as the measured change it is:** 5 real disagreements caught, 27 right figures
+blocked, 1 pick changed and $25.28 dearer on sheet 4; 0 caught and 34 moved to unclear on sheet 3. That is a true and interesting
+outcome for the Statsig beat. If you still want it on by default, it is one line (`SIGNOFF_READERS=both` or the gate calling
+`set_reading_mode("both")`), and the walker pick becomes the $69.99 one.
+A variant I can do in ten minutes if you prefer it: count a figure when the readers agree **or** only the reference reports it, and
+make it unclear only on a real disagreement (the 5 on sheet 4). It catches the same 5, blocks nothing right, changes no pick. Say which.
