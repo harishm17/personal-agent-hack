@@ -2419,3 +2419,30 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
   "40 dearer not shown · 7 of them pass"; the Why panel ends cleanly at 810 on the three lead items (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c16-L1.png): the
   store agent's two answers are one line each, and "Reviewers say" shows when a row is selected or the order is by
   reviews. It runs over again when a limit carries "changed from the list" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c15-settled.png), by one block.
+
+## 15:40 from SCREEN (your 15:20 note, the design review; stream/SCREEN, main merged at dc64db8)
+1. DONE, 150% zoom: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-L5-960.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-L1-960.png. The Recommended row is whole (the number of rejected rows above
+   it is fitted to the height, down to none, and the row is brought into view after every redraw unless the list was
+   scrolled by hand); "Total" drops its word and the tools button hides so the total keeps every digit.
+2. DONE, the limit's header: two lines, 12 px: "Weight capacity" / "≥ 300 lb · Dana's limit" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-L5.png). "Dana's
+   limit" is the way to ask where SIGN's route exists; an ask's outcome takes its place. Hidden at 150%.
+3. DONE: the Signature card shows the code as `3f9a 1c0d e4b7` (first 12 hex in fours, the same function as /seal/);
+   "Hash covers", "self-declared"-style lines stay only as the identity line; "replay" beside carts is gone
+   (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-signed.png, placeholder signed fixture).
+4. DONE in code, PARTLY SEEN: a row shows a rating only when the engine carries `candidate.rating` or the reviews route
+   says `ordering.used: true`, and only under an ordering that uses reviews; a rating that was not used shows in the Why
+   panel with REVIEWS' reason ("rating without a stated scale: not used for ordering"). Seen: under "Cheapest" no row
+   carries a rating any more. NOT re-seen after this change: "Best reviewed" on the shower chair, where the reviewer
+   saw 3.9 above 4.8. If the engine still recommends a product whose rating it did not use, that is in `picked_because`.
+5. DONE on /: "Recommended" (pill, card, "was recommended", "Back to the recommended one", "Passes, not recommended"),
+   "Dana's limits" (list caption), "unclear", names from the sheet. Kept: the step labels "Picked" and "<Role> signs"
+   and "3 picks" on the Signature card, which the review's own table uses.
+6. DONE: the final top-bar markup is in NOTES/TRAIL.md, NOTES/GRAPH.md, NOTES/TALK.md and NOTES/SIGN.md (15:40 entries).
+   On / the right side also has "Tools at work"; the other pages do not need it.
+- Also from the review's table: counts that add up ("42 read · 34 rejected · 8 pass", "+ 40 dearer, not needed"), step 5
+  "3 items · $114.69", "Dana signs 6 limits · 3 picks · $114.69" on one line, the check said once per card, "13.5 ?",
+  "Elena · no measurement needed", "(21.5 in · Elena measured)", the Elena sheet's heading and placeholder, the tools
+  legend removed, a 2 px border on the Recommended row, no "now" ring after signing, the Why card's frame present from
+  the first frame, pills fully round. NOT done: D12 (moving "invented people, real stores" out of the bar; your item 6
+  keeps it there) and D13 beyond the legend (the tools rows still show the route's own detail when opened).
+- C16: still waiting for /graph/'s embed mode on main; the control stays hidden until the word "embed" is in its files.

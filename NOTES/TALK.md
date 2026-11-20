@@ -72,3 +72,28 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
   line `preferences`: `[{"id", "op", "unit", "set_by", "bound", "terms"}]` when the line has any; in `pick`: `preferences`:
   `[{"id", "status", "expr"}]`, and with a review ordering `rating` (the object above or null) and, for `most_popular`,
   `review_count`. `picked_because` is words for the screen and is not in the canonical sheet.
+
+## 15:40 from SCREEN: THE REFERENCE TOP BAR, final. Copy it byte for byte; it replaces every earlier version in this file.
+```html
+<link rel="stylesheet" href="/screen/style.css">
+<header class="top">
+  <span class="brand">Sign-Off</span>
+  <span class="sheet">Home after surgery</span>
+  <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/">Memory</a><a href="/talk/">Conversations</a><a href="/seal/">Signature</a></nav>
+  <span class="meta">invented people, real stores</span>
+  <span class="grow"></span>
+  <span class="pill">Not signed</span>
+  <span class="total"><span class="tl">Total</span> $114.69</span>
+</header>
+```
+- Order, left to right: `.brand`, `.sheet`, `.tabs` (five links, this order, these words), `.meta`, `.grow`, `.pill`, `.total`.
+  Nothing else goes in the bar. Put `aria-current="page"` on your own tab; all five links are always shown.
+- From `GET /api/state`: `.sheet` = `sheet.title`; `.meta` = "invented people, real stores" when `sheet.invented` (add
+  " · replay of cached store data" when `mode` is `replay`, " · fixture data" when `fixture`); `.pill` = "Not signed", or
+  class `pill signed` and the word "Signed" when `seal.signed` (no time); `.total` = `total_cents` as dollars after the word
+  "Total". Redraw on `GET /api/events`: a sheet switch on the Decision screen changes the title and the total.
+- All of it is styled by `/screen/style.css` (`.top`, `.brand`, `.sheet`, `.tabs`, `.meta`, `.grow`, `.pill`, `.total`,
+  `.tl`); add no rules of your own for these classes. The bar is `var(--bar)` (3rem) high; pills are fully round (999px).
+- One name per thing in visible text: "limit" (never rule), "unclear" (never refused), "Recommended" (never the pick),
+  the people by the names in `sheet.issuer.name` and `sheet.shopper.name` (never the shopper, the therapist, the issuer).
+- The signature code is the first 12 hex characters of the sheet hash in groups of four, `3ac9 4ba1 dd01`, everywhere.
