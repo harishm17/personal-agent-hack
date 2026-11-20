@@ -163,8 +163,9 @@ function plan(k) {
   }
 
   if (asking) {
-    const LANE = px(24), MW = px(84), RW = px(64), xp = PX0 + px(40), spine = xp + RB + px(24), xm = spine + px(14);
+    const LANE = px(24), MW = px(84), RW = px(64), xp = PX0 + px(18), spine = xp + RB + px(12), xm = spine + px(10);
     const storeX = W - CW, xr2 = storeX - RW - px(36), xg = (xm + MW + xr2) / 2;
+    const room = xg - (xm + MW), shown = Math.max(1, Math.floor((2 * room - px(30)) / px(62)));   // how many withheld parts fit on the line
     let ly = YROW - px(46), kept = 0;
     const top = ly;
     for (const pid of S[iAsk].row || []) {
@@ -179,14 +180,13 @@ function plan(k) {
         P.set(m.id, { x: xm, y: ly, o: 1, w: MW, h: px(18) });
         lines.push({ raw: [spine, y9, xm, y9], cls: "" }, { raw: [xm + MW, y9, xg, y9], cls: m.stopped ? "fails" : "lit" });
         // what the guard withheld sits on the guard line, struck
-        if (chips.length) texts.push({ x: xg, y: y9 + px(3.5), cls: "chip on mid", html: chips.slice(0, 2).map((c) => esc(short(c.text, 10))).join(" · ") + (chips.length > 2 ? ` +${chips.length - 2}` : "") });
+        if (chips.length) texts.push({ x: xg, y: y9 + px(3.5), cls: "chip on mid", html: chips.slice(0, shown).map((c) => esc(short(c.text, 10))).join(" · ") + (chips.length > shown ? ` +${chips.length - shown}` : "") });
         const r = data.nodes.find((n) => n.kind === "reply" && n.message === m.id);
         if (r) {
           P.set(r.id, { x: xr2, y: ly, o: 1, w: RW, h: px(18) });
           kept += r.remembered ? 1 : 0;
           lines.push({ raw: [xg, y9, xr2, y9], cls: "lit" }, { raw: [xr2 + RW, y9, storeX, cy], cls: "lit" });
-        } else if (m.stopped) texts.push({ x: xg + px(76), y: y9 + px(3.5), cls: "stop", html: "stopped" });
-        else lines.push({ raw: [xg, y9, storeX, cy], cls: "lit" });
+        } else if (!m.stopped) lines.push({ raw: [xg, y9, storeX, cy], cls: "lit" });
         ly += LANE;
       }
       ly += px(12);
@@ -257,7 +257,7 @@ function plan(k) {
   } else if (webbed) {
     searched.forEach((id) => { const p = P.get(id); if (p.big) texts.push({ x: p.x, y: p.y - RB - px(7), cls: "pn mid", html: esc(short(nodes.get(id).label, 13)) }); });
   }
-  if (asking) (S[iAsk].row || []).forEach((id) => { const p = P.get(id); texts.push({ x: p.x, y: p.y + RB + px(14), cls: "pn mid", html: esc(short(nodes.get(id).label, 13)) }); });
+  if (asking) (S[iAsk].row || []).forEach((id) => { const p = P.get(id); texts.push({ x: p.x + RB, y: p.y + RB + px(14), cls: "pn end", html: esc(short(nodes.get(id).label, 16)) }); });
   return { P, lines, texts };
 }
 
