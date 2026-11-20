@@ -36,6 +36,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | E25 | `POST /api/admin/use-sheet` (laptop only): switch the running sheet, reset the run, start a new receipt chain; `GET /api/sheets` lists them | ok |
 | E26 | an option row must not be given a statement about a different option (Vive Textured Grab Bars: the 18 Inch and 36 Inch options read as 12 in); such a row is `unclear`; all option rows on sheets 4 and 3 re-checked | open |
 | E27 | a figure counts only when two independent readers report the same value (reference and Qwen on SIE); otherwise `unclear` ("readers disagree", "only one reader found it"); a switch the gate drives; effect on sheets 4 and 3 reported before it is the default; cut at 14:05 if not feasible | open |
+| E28 | two hooks for memory: on reset and use-sheet the engine applies what `signoff.memory.recall(sheet)` returns (home measurements marked remembered; earlier strikes marked from memory, still under the hash); nothing else in the pick path changes | open |
 | E19 | receipts for every state change; `GET /api/receipts/verify` | ok |
 | E20 | seal race, hash covers pick rule, delivery quotes, quantity, currency, variant; scope; `degraded` | ok |
 
@@ -103,6 +104,14 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | T2 | `/trail/`: the seven steps as a timeline, events one line each, side sheet with quote and hash | open |
 | T4 | context per model call made visible from the ledger: given (one page, figure meanings) and not given (limits, prices, other pages, the order, people); one summary line with real counts | open |
 | T3 | the decision screen's visual system; no dots, no arrows | open |
+
+## MEMORY
+| id | item | status |
+|---|---|---|
+| M1 | the memory store: every memory has an owner, a kind, the receipt that created it and a time; written only from real records (the receipt chain), never from model text | open |
+| M2 | recall on a new run: the home's measurements, the approver's earlier strikes with their reasons, the stores' answers with their age; `GET /api/memory`, optional `memory` key for the screen | open |
+| M3 | recall by meaning for an item (SIE embeddings, SingleStore vector search filtered by owner), shown as "N recalled of M", with what was given to which model call | open |
+| M4 | a second run shown working: after a signed run, a reset keeps what was learned and a struck product stays out without anyone striking it again | open |
 
 ## AIRBYTE / RELAY thread
 | id | item | status |
