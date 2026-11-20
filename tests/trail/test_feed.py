@@ -1,4 +1,6 @@
 """The trail feed: built from records only, never raises, and every event names one of seven steps and five kinds."""
+import pytest
+
 from signoff.trail import feed
 
 RECEIPTS = [
@@ -115,6 +117,7 @@ def test_a_blocked_store_message_is_stopped():
     assert e["stopped"] and e["verified"] is False and e["step"] == "stores_searched" and e["label"] == "1 message blocked"
 
 
+@pytest.mark.live      # collect() reads the live sources, and memory's shelf asks the database
 def test_collect_never_raises_and_names_each_source():
     src = feed.collect()
     assert {s["id"] for s in src["sources"]} >= {"state", "receipts", "egress"}

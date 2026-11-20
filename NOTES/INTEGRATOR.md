@@ -2416,3 +2416,12 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
    is given the limit, so it names the page-reading call. `web/trail/shots/flow-810.png` retaken.
 `uv run -q pytest -q tests/trail` → 16 passed. Not on today's main ledger, so not seen as columns: the stores' search and
 the web search (no rows to them for sheet 4); a test covers `exa.ai` landing under "Outside parties".
+
+## 15:17 from TRAIL — the gate was not exiting in any stream; likely my test, now fixed (please merge this one first)
+At 15:13 `uv run -q pytest -q` printed "446 passed" in my worktree and then did not exit (2 min 27 s when I stopped it);
+at the same moment the gate was hung in STORE, ENGINE, TALK, SCREEN and REVIEWS as well. `tests/trail/test_feed.py::
+test_collect_never_raises_and_names_each_source` calls `feed.collect()`, which since T5 reads memory's shelf
+(`signoff.memory.api.memory()`: the database, and it starts memory's background indexing). That is a real outside
+service inside the default gate, in every stream that has merged main. I marked that test `@pytest.mark.live`.
+After the change: `uv run -q pytest -q` → 445 passed, 13 deselected, exited in 16.5 s. I did not prove the thread that held
+the process open (alone, the test exits in 3 s); if the gate hangs again, it is not this test.
