@@ -2139,3 +2139,20 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
 5. Top bar: Decision · Trail · Memory · Conversations · Signature (`/`, `/trail/`, `/graph/`, `/talk/`, `/seal/`).
 Also in this commit: T6's route `GET /api/trail/left` and its panel, collapsed to its one line under the figure; the
 open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` are retaken.
+## TALK 14:48 — K5 status and what will not make it
+- Read the code first. Corrections to the brief's summary, which the page will follow:
+  - The phone does not sign the bare hash. It signs a JSON message (`payload`): `type: "sign_sheet"`, the sheet id, `seq`,
+    the phone's time and `sheet_hash`, the SHA-256 the phone itself computed from the canonical sheet it displayed
+    (`web/phone/index.html:129`, `:182`). ECDSA P-256 with SHA-256 over the message's UTF-8 bytes, raw r||s, base64url.
+  - The canonical sheet holds no product title; the pick is named by `product_key`, store, product and variant ids.
+  - Main has no signature and no enrolled key at this moment (14:40), and a signature is kept in memory only: a restart of
+    main drops it. The page says "nothing is signed yet" in that state; it never shows a saved or sample signature.
+  - Verification happens before the carts are made; the receipt that records it (`request_accepted`) is written after.
+- Done so far on `stream/TALK`: `GET /api/seal/proof` (`signoff/seal/api.py`, read-only: the exact canonical string, the
+  signed message, the signature, the public key, the events from the receipt chain, the carts). Two real proofs saved from
+  my port for the tests (`tests/seal/proof-signed.json`, `proof-unsigned.json`: replay mode, signed with the kit's
+  `demo/signer.py`, Persona sandbox inquiry approved through SIGN's simulate route).
+- Will make it: the three parts, the in-browser check with WebCrypto, the editable copy, the test, shots, tab notes.
+- Will not make it: drawn flow lines from each row into the fingerprint (the rows sit beside it instead); a replay
+  control for the lanes (they are drawn in order with their times). Parts 2 and 3 share one card: the rows on the left
+  are the editable copy, the fingerprint and the check are on the right, so a change and its result are seen together.
