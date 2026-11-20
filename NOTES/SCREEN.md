@@ -213,3 +213,8 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
 - New on every candidate of `GET /api/reviews` and in `by_candidate[id]`: `ordering: {used, reason}`. When `used` is false and the
   row shows a rating, show `reason` beside it, quietly: "rating without a stated scale: not used for ordering" (also: under the
   minimum of 5 reviews; no review count stated). Then the row and the engine's "rated N" tell the same story. Never add "/5" yourself.
+## REVIEWS 15:16
+- Every source in `GET /api/reviews` now has `seller_page: true|false` (the old `sellers_own_page` stays, same value). Every candidate
+  (and `by_candidate[id]`, and `best_reviewed`) has `independent: true|false|null` and `rating_from`: "the seller's own page" or
+  "another site" (null when there is no rating). Where a rating is shown with `independent: false`, please add "on the seller's own
+  page" beside the site: "4.6 · 58 reviews · parentgiving.com, the seller's own page".

@@ -225,7 +225,8 @@ def test_ratings_reads_the_cache_only_and_states_its_minimum():
     page("Bolt Folding Walker", "5.0 out of 5 stars", 5.0, 4, "b.example")   # below the minimum of reviews
     page("Crest Folding Walker", "Rated 4.9", 4.9, 80, "c.example")          # the page writes no scale
     page("Dune Folding Walker", "4.9 out of 5 stars", 4.9, 900, "d.example")  # does not pass the order
-    assert package.ratings("L4", line) == {"L4:a": {"rating": 4.2, "out_of": 5, "review_count": 300}}
+    assert package.ratings("L4", line) == {"L4:a": {"rating": 4.2, "out_of": 5, "review_count": 300,
+                                                    "independent": True, "site": "a.example"}}
     assert package.MINIMUM_REVIEWS == reviews.MINIMUM_REVIEWS == 5 and "MINIMUM_REVIEWS (5)" in package.ratings.__doc__
     assert package.ratings("no such line") == {}
     out = reviews.for_line(line)
@@ -251,3 +252,23 @@ def test_a_second_quote_with_the_scale_reaches_the_reply():
     reviews._save(TITLE, saved)
     got = reviews.product_reviews(TITLE)
     assert (got["rating"], got["out_of"], got["review_count"]) == (4.5915494, 5, 71)
+
+
+def test_a_rating_on_the_sellers_own_page_is_marked_and_still_ordered_the_same():
+    assert reviews.same_seller("parentgiving.com", "parentgiving.com") and reviews.same_seller("reviews.shop.example", "www.shop.example")
+    assert reviews.same_seller("shop.example.co.uk", "example.co.uk") and not reviews.same_seller("other.co.uk", "example.co.uk")
+    assert not reviews.same_seller("walmart.com", "carex.com") and not reviews.same_seller("", "carex.com")
+    title, text = "Crest Folding Walker", "Crest Folding Walker\nRated 4.6 out of 5 stars\nBased on 58 reviews\n"
+    said = {"about": {"quote": title}, "rating": {"quote": "Rated 4.6 out of 5 stars", "value": 4.6, "out_of": 5},
+            "review_count": {"quote": "Based on 58 reviews", "value": 58}}
+    url = "https://www.shop.example/products/crest"
+    reviews._save(title, entry(title, [{"title": title, "url": url, "text": text}], {url: said}))
+    line = {"line_id": "L4", "need": "walker", "candidates": [candidate("L4:c", title, 6000, store="shop.example")]}
+    out = reviews.for_line(line)
+    row = out["candidates"][0]
+    assert row["independent"] is False and row["rating_from"] == "the seller's own page"
+    assert all(s["seller_page"] is True for s in row["sources"])
+    assert out["ratings"]["L4:c"] == {"rating": 4.6, "out_of": 5, "review_count": 58, "independent": False, "site": "shop.example"}
+    assert out["best_reviewed"]["candidate_id"] == "L4:c" and out["best_reviewed"]["independent"] is False
+    line["candidates"][0]["product"]["store"] = "elsewhere.example"   # the same page, sold by another store
+    assert reviews.for_line(line)["ratings"]["L4:c"]["independent"] is True

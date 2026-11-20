@@ -189,6 +189,20 @@ def site_of(url):
     return host[4:] if host.startswith("www.") else host
 
 
+def registered_domain(host):
+    """The name a site is registered under, from the host alone: its last two labels, or its last three when the
+    host ends in a two-letter country code under a short second-level label (example.co.uk). No list of sites."""
+    labels = [l for l in str(host or "").lower().strip(".").split(".") if l]
+    if len(labels) >= 3 and len(labels[-1]) == 2 and len(labels[-2]) <= 3:
+        return ".".join(labels[-3:])
+    return ".".join(labels[-2:])
+
+
+def same_seller(site, store):
+    """The review page is on the site of the store that sells the product: the two registered domains are the same."""
+    return bool(site) and bool(store) and registered_domain(site) == registered_domain(site_of("//" + str(store)) or store)
+
+
 def _number(v):
     return isinstance(v, (int, float)) and not isinstance(v, bool)
 
@@ -385,6 +399,7 @@ def product_reviews(title, store=None, errors=None):
     query = query_for(title)
     if entry is None:
         return {"found": False, "searched": False, "query": query, "rating": None, "out_of": None, "review_count": None,
+                "rating_site": None, "independent": None, "rating_from": None,
                 "sentence": None, "sources": [], "dropped": [], "note": "not searched yet"}
     pages, sources, dropped = [], [], []
     for result in entry["reply"].get("results", []):
@@ -416,18 +431,19 @@ def product_reviews(title, store=None, errors=None):
                 dropped.append({"url": url, "site": site, "reason": "the page states no rating, count or reviewer sentence"})
             continue
         shown, _ = page_title(result)
-        own = bool(store) and (site == store or site.endswith("." + store))
+        own = same_seller(site, store)
         matched_by = "the seller's own page" if own else "name only: the page calls it %r" % rated_as[:120]
         page = {"site": site, "url": url, "page_title": shown, "rated_as": rated_as, "fetched_at": entry["fetched_at"], "kept": kept,
-                "sellers_own_page": own, "matched_by": matched_by}
+                "seller_page": own, "sellers_own_page": own, "matched_by": matched_by}
         pages.append(page)
         for what, span in kept.items():
             sources.append({"site": site, "url": url, "page_title": shown, "rated_as": rated_as, "what": what, "quote": span["quote"],
                             "start": span["start"], "end": span["end"], "value": span.get("value"),
                             "out_of": span.get("out_of"), "fetched_at": entry["fetched_at"],
-                            "span_found_in_text": True, "sellers_own_page": own, "matched_by": matched_by})
+                            "span_found_in_text": True, "seller_page": own, "sellers_own_page": own, "matched_by": matched_by})
     out = {"found": bool(sources), "searched": True, "query": query, "fetched_at": entry["fetched_at"],
-           "rating": None, "out_of": None, "review_count": None, "rating_site": None, "sentence": None,
+           "rating": None, "out_of": None, "review_count": None, "rating_site": None, "independent": None,
+           "rating_from": None, "sentence": None,
            "sources": sources, "dropped": dropped, "reader": entry.get("reader"), "key_used": entry.get("key_used"),
            "ledger_row": (entry.get("ledger") or {}).get("n")}
     # the headline: the page that states both a rating and how many reviews it rests on, most reviews first
@@ -439,7 +455,9 @@ def product_reviews(title, store=None, errors=None):
     if head:
         r = head["kept"]["rating"]
         n = head["kept"].get("review_count", {}).get("value")
-        out.update(rating=r["value"], out_of=r["out_of"], review_count=n, rating_site=head["site"])
+        out.update(rating=r["value"], out_of=r["out_of"], review_count=n, rating_site=head["site"],
+                   independent=not head["seller_page"],
+                   rating_from="the seller's own page" if head["seller_page"] else "another site")
     said = next((p for p in ([head] if head else []) + pages if "sentence" in p["kept"]), None)
     if said:
         out["sentence"] = {"quote": said["kept"]["sentence"]["quote"], "site": said["site"], "url": said["url"],
@@ -470,6 +488,9 @@ def rankable(row):
     return row.get("rating") is not None and row.get("out_of") == 5 and (row.get("review_count") or 0) >= MINIMUM_REVIEWS
 
 
+INDEPENDENT = ("independent: true when the page the rating is quoted from is on another site than the store selling "
+               "the product (registered domains compared); false when it is the seller's own page, a different kind "
+               "of evidence. It is stated, and it does not change the ordering.")
 NO_SCALE = "rating without a stated scale: not used for ordering"
 
 
@@ -528,6 +549,7 @@ def for_line(line, errors=None):
         b = eligible[0]
         best = {"candidate_id": b["candidate_id"], "title": b["title"], "store": b["store"], "price_cents": b["price_cents"],
                 "rating": b["rating"], "out_of": b["out_of"], "review_count": b["review_count"], "site": b["rating_site"],
+                "independent": b["independent"], "rating_from": b["rating_from"],
                 "is_the_current_pick": b["picked"],
                 "why": "%s; the highest among the %d passing product%s with a quoted rating out of five and at least %d reviews" % (
                     b["note"], len(eligible), "" if len(eligible) == 1 else "s", MINIMUM_REVIEWS),
@@ -535,7 +557,8 @@ def for_line(line, errors=None):
                                "body": {"line_id": line["line_id"], "candidate_id": b["candidate_id"]}}}
     searched = [r for r in rows if r["searched"]]
     return {"line_id": line["line_id"], "need": line.get("need"), "candidates": rows,
-            "ratings": {r["candidate_id"]: {"rating": float(r["rating"]), "out_of": 5, "review_count": int(r["review_count"])}
+            "ratings": {r["candidate_id"]: {"rating": float(r["rating"]), "out_of": 5, "review_count": int(r["review_count"]),
+                                            "independent": r["independent"], "site": r["rating_site"]}
                         for r in eligible},
             "ratings_rule": RATINGS_RULE,
             "best_reviewed": best,
@@ -546,6 +569,9 @@ def for_line(line, errors=None):
                         "with_reviews": sum(1 for r in rows if r["found"]),
                         "with_a_rating": sum(1 for r in rows if r["rating"] is not None),
                         "used_for_ordering": len(eligible),
+                        "used_for_ordering_from_another_site": sum(1 for r in eligible if r["independent"]),
+                        "used_for_ordering_from_the_sellers_own_page": sum(1 for r in eligible if not r["independent"]),
+                        "independent_means": INDEPENDENT,
                         "with_a_rating_not_used_for_ordering": sum(1 for r in rows if r["rating"] is not None and not rankable(r)),
                         "no_reviews_found": sum(1 for r in searched if not r["found"]),
                         "minimum_reviews": MINIMUM_REVIEWS, "tie_break": TIE_BREAK, "name_rule": NAME_RULE,

@@ -180,3 +180,11 @@ Still on main as of 14:20: the same one-sentence refusal for every message. Fire
             title, line["need"], issuer, k["reason"], who, how, issuer, none, after)
 ```
 and for `change_limit`: "You asked me to change a limit. I can't: …; ask <issuer> to move it from there." and for `make_cart`/`sign`: "…ask <issuer> to sign the sheet on her phone" without a pronoun (use the name). All text stays decided by code in 0 s, names from the sheet. If the integrator says I may edit the file (`./hk own SIGN --add signoff/agent/chat.py`), I apply it myself in five minutes and rerun the drill; otherwise tell me when it is on main and I rerun (about 3 minutes) and write the 70.5 → ? line.
+## REVIEWS 15:16
+- `signoff.reviews.ratings(line_id)` entries have two more keys, additive (your `_quoted_ratings` passes them through unchanged):
+  `{"rating", "out_of": 5, "review_count", "independent": true|false, "site": "<the page's site>"}`. `independent: false` means the
+  rating is quoted from the seller's own page (the review page's registered domain is the candidate's store); `true` means another site.
+- For `picked_because`: when the pick's entry has `independent: false`, please say "on the seller's own page", for example
+  "best reviewed: 4.6 of 5 from 58 reviews on the seller's own page (parentgiving.com)"; when `true`, "on <site>". It describes the
+  evidence only: it does not change which candidates are in the map or their order, and nothing here asks you to change the ordering.
+- On sheet 4 today: L4 rollator `independent: false` (parentgiving.com), L4 Carex Folding Walker `independent: true` (walmart.com).
