@@ -50,8 +50,11 @@ def test_status_route_reports_the_last_run(monkeypatch):
     app = FastAPI()
     app.include_router(api.router)
     body = TestClient(app).get("/api/airbyte/status").json()
-    assert body["last"]["rows"]["airbyte_pool"] == 111
-    assert body["last"]["jobs"][0]["job_id"] == 5
+    assert body["source"] == "File (HTTPS)" and body["destination"] == "MySQL (local staging)"
+    assert body["copy"] == "copied to SingleStore by signoff.airbyte.sync"
+    job = body["last"]["jobs"][0]
+    assert (job["job_id"], job["rows_synced"], job["rows_copied_to_singlestore"], job["duration"]) == (5, 111, 111, "PT1M")
+    assert "copied to SingleStore by signoff.airbyte.sync" in body["last"]["lines"][0]
 
 
 @pytest.mark.live

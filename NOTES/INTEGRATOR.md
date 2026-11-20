@@ -342,6 +342,18 @@ Plan ids to retry with once it is cleared: world a83... saved as `a80bbe45-955f-
   `signoff.airbyte.pool.load()["pool"]`: same shape as `data/pool/*.json`.
 - Step 4 done: the order is a third Airbyte source (job 11, 12 rows, table `airbyte_order_limits`); `signoff.airbyte.order.load()` returns it as "proposed, from the order". Whole run with three jobs: 109 s.
 
+## AIRBYTE 12:05 — one command, short-lived tunnel, status wording
+- `uv run python -m signoff.airbyte.sync` now does everything (about 2 to 3 minutes): starts the staging container if it
+  is down, the export server and a tunnel, runs the three jobs, copies to SingleStore, records the run (with the tunnel's
+  address, which is closed again at the end) and stops the server and tunnel. No tunnel or file server of mine is left
+  running; `data/order/export_url.txt` is gone. `GET /api/airbyte/status` gives `source` "File (HTTPS)", `destination`
+  "MySQL (local staging)", `copy` "copied to SingleStore by signoff.airbyte.sync", per job `job_id`, `rows_synced`,
+  `duration`, `rows_copied_to_singlestore`, and one plain sentence per job in `last.lines`.
+- Demo it: run `POST /api/airbyte/sync` (or the command) a few minutes before, then show `/api/airbyte/status` and the row counts in SingleStore.
+- Say: "the stores' product pages and the therapist's order are exported files; Airbyte moves them into a staging database;
+  a small step of ours copies them into SingleStore, and the passing-box query runs on those rows."
+- Do not say Airbyte wrote to SingleStore directly (it cannot: its MySQL destination fails against SingleStore), and do not
+  say the sync is live at demo time: it is run beforehand, and the status shows its job ids and times.
 ## 12:02 from SCREEN
 - Static pass of the flow view is on `stream/SCREEN`: `/` is now the app layout (top bar, item rail, four gates
   Read / State the figures / Inside limits / Pick with one ruler per limit, pick card and signature block on the right);
@@ -563,3 +575,7 @@ Correction to my 12:02 note: the three-scenario world is `a80bbe45-955f-48e0-996
 3. **Seal race.** The picks and the hash check now come from one state snapshot (`state["sheet_hash"]`), and `mark_signed(signature, carts, signed_hash=…)` is called with the signed hash when ENGINE's function accepts that argument (checked by `inspect`); a 409 from it becomes the refusal `sheet_moved` ("the sheet changed while signing; nothing is signed", with the cart links already made listed) and the same signed request may be sent again. Test: the sheet moves during cart creation, nothing is signed. If ENGINE exposes the signed picks for a hash, I will switch to it.
 4. **Cart total.** After the carts come back each store's `total_cents` is compared with the sum of that store's picked prices in the signed state; a difference sets `total_differs: true`, `signed_total_cents` and `note: "store total differs: signed $A, store $B"` on that cart, which the phone's seal shows in red. Nothing is re-priced. (On the real run earlier both stores matched to the cent: parentgiving 22,897 and carex 7,581.) SCREEN: the seal's cart list should show `note` when `total_differs` is true.
 Order done as you asked: sign-tap cap, 1, 2, 3, then phone (review-and-sign, done and committed; I have not yet re-driven the final page in a browser) and the Persona gate (done). Firedrill: retry loop still running, no other time on it.
+## AIRBYTE 12:32 — Relay is built; one thing a human must try
+- Built: `signoff/relay/` (core.py, api.py, `node/relay.mjs` with `@persona/sdk-node` 0.5.1; run `npm install` in `signoff/relay/node/` on a fresh checkout, `node_modules/` is already ignored), `web/relay/index.html` (embedded widget `@persona/relay` 0.2.2 from jsDelivr; no bundler), `tests/relay/` (live test passes). Tell SIGN is in `NOTES/SIGN.md`: `signoff.relay.status()` for the `relay` key.
+- Server path run end to end against the sandbox key: create session, issue Privacy Pass, redeem claim. Claim payload fields: `claim_type`, `claim_result` ("passed"), `methodology[]` (each `method` "live_selfie", `result`); redemption also returns `tokenConsumed`. The signature record gets only `{claim_type, result, sandbox, at}`.
+- Honest limits: (1) in sandbox Persona simulates the claim, so redemption returns "passed" even when nobody has used the widget; the server cannot tell. The "a person tapped" evidence is the widget's `onComplete` on the phone, which only the page sees. (2) I could not complete the widget step in the headless preview browser (the checkbox renders and posts to Persona, no verification step opened; it probably needs a camera), so `onComplete` is untested. The page has a quiet "I finished the check" fallback that redeems anyway. Someone should tap it once on a real phone over the tunnel before this is shown. (3) A 30-minute session; the key is read through config and only handed to the node helper's environment; the production key is never read.
