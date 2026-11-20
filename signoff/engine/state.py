@@ -15,7 +15,7 @@ import threading
 import time
 
 from signoff import config
-from signoff.engine import health, obs, planted, receipts, rules
+from signoff.engine import health, obs, options, paths, planted, receipts, rules
 from signoff.extract import spans
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -51,13 +51,9 @@ def _read_dir(folder):
 
 
 def _dirs(sheet_id=None):
-    """(pool, store answers, figures) folders of a sheet. sheet1 is data/pool, data/store_answers, data/figures;
-    another sheet keeps the STORE stream's files under data/<sheet>/ and its figures under data/figures/<sheet>."""
-    sheet_id = sheet_id or _s.get("sheet_id") or "sheet1"
-    if sheet_id == "sheet1":
-        return DATA / "pool", DATA / "store_answers", DATA / "figures"
-    pool = pathlib.Path(os.environ["SIGNOFF_POOL_DIR"]) if os.environ.get("SIGNOFF_POOL_DIR") else DATA / sheet_id / "pool"
-    return pool, pool.parent / "store_answers", DATA / "figures" / sheet_id
+    """(pool, store answers, figures) folders of a sheet, by the one rule in `signoff.engine.paths`."""
+    where = paths.of(sheet_id or _s.get("sheet_id") or "sheet1", DATA)
+    return where["pool"], where["answers"], where["figures"]
 
 
 def _has_data_pool():
@@ -65,19 +61,20 @@ def _has_data_pool():
 
 
 def _load_pool():
-    """Pool and store answers through the STORE stream's loader; the same fallback when it is not there."""
+    """Pool and store answers: through the STORE stream's loader for a sheet kept in the top-level folders, read
+    from the sheet's own folder otherwise. Every option on sale becomes its own row (rule 2)."""
     pool_dir, answers_dir, _ = _dirs()
-    if (_s.get("sheet_id") or "sheet1") == "sheet1":
+    if pool_dir == DATA / "pool":
         try:
             from signoff.store import pool as store_pool
             pool, answers = store_pool.load()
             health.clear("pool loader")
-            return list(pool), list(answers)
+            return options.expand(list(pool)), list(answers)
         except Exception as error:  # noqa: BLE001  (it failed: read the files directly, and say so)
             health.note("pool loader", "signoff.store.pool.load() failed (%s); the pool and store answers were read "
                         "straight from the files" % type(error).__name__)
     if _has_data_pool():
-        return _read_dir(pool_dir), _read_dir(answers_dir) if answers_dir.is_dir() else []
+        return options.expand(_read_dir(pool_dir)), _read_dir(answers_dir) if answers_dir.is_dir() else []
     return _read(FIXTURES / "pool.json"), _read(FIXTURES / "store_answers.json")
 
 
@@ -99,8 +96,9 @@ def _load_figures(pool, from_data, variants=None):
             f["span_found_in_text"] = rules.span_found(f, page)
         else:
             spans.ready(f, page)
-        if f["span_found_in_text"] and variants.get((f["store"], f["product_id"])):
-            spans.apply_option_rule(f, variants[(f["store"], f["product_id"])])
+        option = variants.get((f["store"], f["product_id"], f.get("variant_id")))
+        if f["span_found_in_text"] and option:
+            spans.apply_option_rule(f, option)
         if f["span_found_in_text"]:  # the store's whole sentence, for the screen to show around the quote
             sentence, a, b = rules.sentence_around(page, f["start"], f["end"])
             f.update(sentence=sentence, quote_in_sentence=[a, b])
@@ -121,9 +119,8 @@ def _load_readers(from_data):
 
 
 def _order_file(sheet_id):
-    """Where the limits read from a sheet's order are cached: data/order/derived.json for sheet1 (the contract's
-    path), data/figures/<sheet>/_order/derived.json for any other sheet."""
-    return DATA / "order" / "derived.json" if sheet_id == "sheet1" else DATA / "figures" / sheet_id / "_order" / "derived.json"
+    """Where the limits read from a sheet's order are cached (see `signoff.engine.paths`)."""
+    return paths.of(sheet_id, DATA)["order"]
 
 
 def _load_order(sheet_id, from_data):
@@ -184,47 +181,37 @@ def _with_order(sheet):
 
 
 def _load_variants(pool, from_data):
-    """What each product's store said about its options, from the store's own reply as STORE cached it
-    (data/<pool>/raw/): the title of the variant in the pool (the one a cart would hold), the currency, and
-    how many variants are on sale. `{(store, product_id): {...}}`; empty when the raw replies are not there."""
-    raw = _dirs()[0] / "raw"
-    if from_data and not raw.is_dir():
-        health.note("variants", "the stores' raw replies are not in this checkout; variant title, currency and the "
-                    "number of variants are not shown, and the signed pick names the variant by id only")
-    if not from_data or not raw.is_dir():
+    """What the store says about each candidate's option: `{(store, product_id, variant_id): {...}}`. The option's
+    title, how many options are on sale and the other options' names come from the pool row; the currency from
+    the store's own reply as STORE cached it (raw/), USD being what every store here answers in."""
+    if not from_data:
         return {}
-    health.clear("variants")
-    seen = {}
-    for path in sorted(raw.glob("*/*.json")):
-        try:
-            for product in _read(path).get("products") or []:
-                seen.setdefault((path.parent.name, product.get("id")), product)
-        except (ValueError, AttributeError, OSError):
-            continue
-    out = {}
+    currency, raw = {}, _dirs()[0] / "raw"
+    if raw.is_dir():
+        for path in sorted(raw.glob("*/*.json")):
+            try:
+                for product in _read(path).get("products") or []:
+                    for v in product.get("variants") or []:
+                        if (v.get("price") or {}).get("currency"):
+                            currency[(path.parent.name, product.get("id"), v.get("id"))] = v["price"]["currency"]
+            except (ValueError, AttributeError, OSError):
+                continue
+    out, unknown = {}, 0
     for p in pool:
-        product = seen.get((p["store"], p["product_id"]))
-        if not product:
-            if p.get("variant_title") is not None:  # the pool row says it itself
-                listed = p.get("variants") if isinstance(p.get("variants"), int) else len(p.get("variants") or []) or 1
-                out[(p["store"], p["product_id"])] = {
-                    "variant_title": p.get("variant_title"), "currency": p.get("currency") or "USD",
-                    "variant_price_cents": p.get("price_cents"), "variants": listed, "variants_listed": listed,
-                    "option_labels": [], "other_option_labels": []}
-            continue
-        variants = product.get("variants") or []
-        chosen = next((v for v in variants if v.get("id") == p["variant_id"]), None)
-        if chosen is None:
-            continue
-        on_sale = [v for v in variants if (v.get("availability") or {}).get("available", True)]
-        mine = [o.get("label") for o in chosen.get("options") or [] if o.get("label")]
-        others = sorted({o.get("label") for v in variants if v is not chosen for o in v.get("options") or []
-                         if o.get("label") and o.get("label") not in mine})
-        out[(p["store"], p["product_id"])] = {
-            "variant_title": chosen.get("title"), "currency": (chosen.get("price") or {}).get("currency"),
-            "variant_price_cents": (chosen.get("price") or {}).get("amount"),
-            "variants": len(on_sale), "variants_listed": len(variants),
-            "option_labels": mine, "other_option_labels": others}
+        key = (p["store"], p["product_id"], p.get("variant_id"))
+        listed = [o for o in p.get("options") or [] if o.get("available", True)]
+        others = sorted({str(o.get("title")) for o in listed if o.get("variant_id") != p.get("variant_id") and o.get("title")})
+        if key not in currency and not p.get("currency"):
+            unknown += 1
+        out[key] = {"variant_title": p.get("variant_title"), "currency": p.get("currency") or currency.get(key),
+                    "variant_price_cents": p.get("price_cents"), "variants": max(len(listed), 1),
+                    "variants_listed": max(len(p.get("options") or []), 1),
+                    "option_labels": [p["variant_title"]] if p.get("variant_title") and others else [],
+                    "other_option_labels": others, "image_url": p.get("image_url")}
+    if unknown:
+        health.note("currency", "%d candidates have no currency in the store's reply; the signed pick names none for them" % unknown)
+    else:
+        health.clear("currency")
     return out
 
 
@@ -235,32 +222,29 @@ def _load_extras(pool, from_data):
     folder = _dirs()[2]
     if not from_data:
         return out
-    if (folder / "_asked").is_dir():  # what the store's own agent replied; each quote looked up again in the reply
-        keep = ("figure", "question", "reply", "quote", "start", "end", "value", "low", "high", "kind", "unit",
-                "answered", "asked_at", "role", "extractor", "unsure_reason")
-        for row in _read_dir(folder / "_asked"):
-            found = rules.span_found(row, row.get("reply"))
-            shown = {k: row.get(k) for k in keep if row.get(k) is not None or k in ("quote", "start", "end", "value", "unit", "answered")}
-            if row.get("answered") and not found:
-                shown["answered"] = False
+    replies = paths.of(_s.get("sheet_id") or "sheet1", DATA)["replies"]
+    if replies.is_dir():  # what each store's own agent replied about delivery and returns of a product, verbatim
+        for row in _read_dir(replies):
+            if not row.get("reply"):
+                continue
+            shown = {k: row.get(k) for k in ("question", "reply", "asked_at", "role") if row.get(k) is not None}
             out["asked"].setdefault((row["store"], row["product_id"]), []).append(shown)
-            if row.get("answered") is None and row.get("reply"):  # a reply about this product's delivery and returns
-                try:
-                    from signoff.store import ask as store_ask
-                    parsed = store_ask.parse_reply(row["store"], row.get("question"), row["reply"], row.get("asked_at"))
-                    out["delivery_replies"][(row["store"], row["product_id"])] = {
-                        "delivery": parsed["delivery"], "returns": parsed["returns"], "asked_at": row.get("asked_at"),
-                        "question": row.get("question")}
-                except Exception as error:  # noqa: BLE001  (shown in the state under `degraded`, never silent)
-                    health.note("product replies", "replies about a product's delivery and returns could not be parsed "
-                                "(%s); the store's general answer is shown instead" % type(error).__name__)
-    text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
+            try:
+                from signoff.store import ask as store_ask
+                parsed = store_ask.parse_reply(row["store"], row.get("question"), row["reply"], row.get("asked_at"))
+                out["delivery_replies"][(row["store"], row["product_id"])] = {
+                    "delivery": parsed["delivery"], "returns": parsed["returns"], "asked_at": row.get("asked_at"),
+                    "question": row.get("question")}
+            except Exception as error:  # noqa: BLE001  (shown in the state under `degraded`, never silent)
+                health.note("product replies", "replies about a product's delivery and returns could not be parsed "
+                            "(%s); the store's general answer is shown instead" % type(error).__name__)
+    text = {(p["store"], p["product_id"]): options.page_text(p) for p in pool}  # the page every option shares
     if (folder / "_instructions").is_dir():  # the scan of the real pages for text addressed to software
         scanned, examples = 0, []
         for row in _read_dir(folder / "_instructions"):
             page = text.get((row["store"], row["product_id"]))
-            if page is None:
-                continue  # a page that is no longer in the pool
+            if page is None or row.get("text_sha") != hashlib.sha256(page.encode()).hexdigest()[:16]:
+                continue  # a page that is no longer in the pool, or whose text has changed since it was scanned
             scanned += 1
             kept = [{"quote": i["quote"], "start": i["start"], "end": i["end"], "found_by": i.get("found_by")}
                     for i in row.get("instructions") or [] if rules.span_found(i, page)]
@@ -268,13 +252,14 @@ def _load_extras(pool, from_data):
                 out["instructions"][(row["store"], row["product_id"])] = kept
                 examples += [{"quote": k["quote"], "store": row["store"], "product_id": row["product_id"],
                               "product": row.get("title"), "found_by": k["found_by"]} for k in kept]
-        out["scan"] = {"pages_scanned": scanned, "pages_in_pool": len(pool), "instructions_found": len(examples),
+        out["scan"] = {"pages_scanned": scanned, "pages_in_pool": len({(p["store"], p["product_id"]) for p in pool}),
+                       "instructions_found": len(examples),
                        "examples": examples[:10],
                        "text": "%d pages scanned, %d instruction%s to an agent found" % (
                            scanned, len(examples), "" if len(examples) == 1 else "s")}
     # The invented test page is off unless asked for: SIGNOFF_PLANTED=1 (sheet 1 only). What the state shows by
     # default is the scan of the real pages above.
-    if config.env("SIGNOFF_PLANTED") == "1" and _s.get("sheet_id", "sheet1") == "sheet1" and \
+    if config.env("SIGNOFF_PLANTED") == "1" and _s.get("sheet_id") == planted.SHEET_ID and \
             (folder / "_planted" / "figures.json").exists():
         found = _read(folder / "_planted" / "instructions.json") if (folder / "_planted" / "instructions.json").exists() else []
         out["planted"] = {"figures": _read(folder / "_planted" / "figures.json"),
@@ -379,10 +364,12 @@ def _attach(state):
     for line in state["lines"]:
         for c in line["candidates"]:
             key = (c["product"]["store"], c["product"]["product_id"])
-            facts = variants.get(key)
+            facts = variants.get(key + (c["product"]["variant_id"],))
             c["product"]["quantity"] = 1
             if facts:
                 c["product"].update(variant_title=facts["variant_title"], currency=facts["currency"])
+                if facts.get("image_url"):
+                    c["product"]["image_url"] = facts["image_url"]  # the store's own picture; not under the hash
                 c["variants"] = facts["variants"]
                 c["variant"] = {"title": facts["variant_title"], "options": facts["option_labels"],
                                 "on_sale": facts["variants"], "listed": facts["variants_listed"],
@@ -417,15 +404,11 @@ def _attach(state):
             if key and key != (None, None):
                 by_candidate.setdefault(key, []).append(check)
     extras = _s.get("extras") or {"instructions": {}, "planted": None, "asked": {}, "scan": None}
-    beyond = set()
     for line in state["lines"]:
         for c in line["candidates"]:
             asked = extras.get("asked", {}).get((c["product"]["store"], c["product"]["product_id"]))
             if asked:  # display only: nothing below reads it, and the pick was made before this point
                 c["asked"] = asked
-                on_page = {f["figure"] for f in c["figures"] if f.get("span_found_in_text") and not f.get("unsure")}
-                if any(a.get("answered") and a["figure"] not in on_page for a in asked):
-                    beyond.add((c["product"]["store"], c["product"]["product_id"]))
             passages = extras["instructions"].get((c["product"]["store"], c["product"]["product_id"]))
             if passages:
                 c["embedded_instructions"] = passages
@@ -446,16 +429,10 @@ def _attach(state):
             made["cheaper_than_the_pick"] = bool(line["why"]["pick_price_cents"]) and \
                 made["candidate"]["product"]["price_cents"] < line["why"]["pick_price_cents"]
             state["planted"] = made
-    if extras.get("asked"):
-        rows = [a for group in extras["asked"].values() for a in group]
-        about_figures = [a for a in rows if a.get("answered") is not None]
+    if extras.get("asked"):  # the stores' own agents are asked about delivery and returns only
         replies = extras.get("delivery_replies") or {}
-        state["counts"]["store_agent_asked"] = len(extras["asked"])
-        state["counts"]["store_agent_stated_beyond_page"] = len(beyond)
-        state["counts"]["store_agent"] = {  # what the stores' own agents did say, for the tile
-            "questions": len(rows), "about_a_figure": len(about_figures),
-            "figures_stated": sum(1 for a in about_figures if a.get("answered")),
-            "about_delivery_and_returns": len(rows) - len(about_figures),
+        state["counts"]["store_agent"] = {
+            "questions": sum(len(group) for group in extras["asked"].values()), "products_asked": len(extras["asked"]),
             "delivery_time_stated": sum(1 for r in replies.values() if r["delivery"].get("stated")),
             "returns_answered": sum(1 for r in replies.values() if r["returns"].get("quote"))}
     state["sheet"], order = _with_order(state["sheet"])
@@ -464,6 +441,15 @@ def _attach(state):
     held = _s.get("signing")
     if held and time.time() < held["until"]:
         state["signing"] = {"in_progress": True, "sheet_hash": held["sheet_hash"], "since": held["since"]}
+    tally = {"inside": 0, "outside": 0, "unclear": 0, "not_stated": 0, "struck": 0}
+    for line in state["lines"]:
+        mine = {k: 0 for k in tally}
+        for c in line["candidates"]:
+            mine[c["status"]] += 1
+            tally[c["status"]] += 1
+        line["why"].update(outside=mine["outside"], unclear=mine["unclear"], not_stated=mine["not_stated"])
+    state["counts"].update(candidates=sum(tally.values()), outside=tally["outside"], unclear=tally["unclear"],
+                           not_stated=tally["not_stated"])
     state["degraded"] = health.all()  # every fallback in use is named here; empty when all is well
     try:
         state["receipts"] = receipts.summary()

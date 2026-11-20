@@ -294,7 +294,8 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
     for f in figures:
         by_product.setdefault((f["store"], f["product_id"]), []).append(f)
     ans = {a["store"]: a for a in answers}
-    lines, found, every, inside_n, ready = [], len(pool), 0, 0, 0
+    # products found are pages; a product sold in several options is one page and several candidates
+    lines, found, every, inside_n, ready = [], len({(p["store"], p["product_id"]) for p in pool}), 0, 0, 0
     for line in sheet["lines"]:
         struck = [s for s in strikes if s["line_id"] == line["id"]]
         struck_by_key = {s["product_key"]: s for s in struck}

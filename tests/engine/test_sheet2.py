@@ -33,7 +33,10 @@ def test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched(both):
     two = state.use_sheet("sheet2")
     assert two["sheet"]["title"] == "Bathroom remodel" and [l["line_id"] for l in two["lines"]] == ["T1", "T2", "T3", "T4"]
     assert two["counts"]["products_found"] > 100 and two["mode"] == "live" and two["degraded"] == []
-    assert "planted" not in two and two["instruction_scan"]["pages_scanned"] == two["counts"]["products_found"]
+    assert "planted" not in two
+    # pages are products; candidates are the options on sale. The scan reads pages.
+    assert two["counts"]["products_found"] <= two["counts"]["candidates"]
+    assert two["instruction_scan"]["pages_in_pool"] == two["counts"]["products_found"]
     back = state.use_sheet("sheet1")
     assert (back["sheet_hash"], back["total_cents"], [l["pick"] for l in back["lines"]]) == before
 

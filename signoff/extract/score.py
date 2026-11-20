@@ -122,9 +122,9 @@ def measure(name, rows, log, mine, ref, titles, is_reference):
         "figures_both_state": len(both), "same_numbers": len(both) - len(differ),
         "only_reference_states": sum(1 for k in ref["stated"] if k not in mine["stated"]),
         "only_this_reader_states": sum(1 for k in mine["stated"] if k not in ref["stated"]),
-        "disagreements": [dict(row(k, mine), reference_values=sorted(ref["stated"][k]["numbers"]),
+        "disagreements": [dict(row(k, mine["stated"]), reference_values=sorted(ref["stated"][k]["numbers"]),
                                reference_quote=ref["stated"][k]["quotes"][0]) for k in sorted(differ, key=str)],
-        "extra": [row(k, mine) for k in sorted((k for k in mine["stated"] if k not in ref["stated"]), key=str)],
+        "extra": [row(k, mine["stated"]) for k in sorted((k for k in mine["stated"] if k not in ref["stated"]), key=str)],
         "picks_changed": None if is_reference else [
             {"line_id": line, "with_reference": ref["picks"][line], "with_this_reader": pick}
             for line, pick in mine["picks"].items() if (pick or {}).get("title") != (ref["picks"][line] or {}).get("title")],

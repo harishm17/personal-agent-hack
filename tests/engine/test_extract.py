@@ -82,24 +82,15 @@ def row(name, value, **over):
     return dict(base, **over)
 
 
-def test_the_reference_reader_decides_and_agreement_is_recorded():
+def test_the_reference_readers_statements_are_kept_and_agreement_is_noted():
     out = combine.combine([("ref", [row("ref", 300)]), ("b", [row("b", 300)])], [("e", [row("e", 300)])])
-    assert out[0]["extractor"] == "ref" and out[0]["agreed_by"] == ["ref", "b"]
-    assert out[0]["also_marked_by"][0]["extractor"] == "e"
+    assert out[0]["extractor"] == "ref" and out[0]["agreed_by"] == ["ref", "b", "e"]
     out = combine.combine([("ref", [row("ref", 300)]), ("b", [row("b", 350)])])
-    assert out[0]["value"] == 300 and out[0]["agreed_by"] == ["ref"] and len(out[0]["readers"]) == 2
-    assert combine.combine([("ref", []), ("b", [row("b", 350)])]) == []  # the reference reports nothing: no figure
-    unsure = combine.combine([("ref", [row("ref", 300, unsure=True, unsure_reason="two sizes")]), ("b", [row("b", 300)])])
-    assert unsure[0]["unsure"] and "agreed_by" not in unsure[0]
-
-
-def test_under_the_agree_policy_a_figure_counts_only_when_the_readers_match():
-    both = [("a", [row("a", 300)]), ("b", [row("b", 300)])]
-    assert combine.counted(combine.combine(both, policy="agree")[0])
-    differ = combine.combine([("a", [row("a", 300)]), ("b", [row("b", 350)])], policy="agree")[0]
-    assert differ["unsure"] and "readers differ" in differ["unsure_reason"]
-    alone = combine.combine([("a", [row("a", 300)]), ("b", [])], policy="agree")[0]
-    assert alone["unsure"] and "only a reports it" in alone["unsure_reason"]
+    assert out[0]["value"] == 300 and out[0]["agreed_by"] == ["ref"]
+    assert combine.combine([("ref", []), ("b", [row("b", 350)])]) == []  # the reference states nothing: no record
+    # a page that states a figure twice keeps both statements: every stated value is tested downstream
+    twice = combine.combine([("ref", [row("ref", 300), row("ref", 350, quote="q2")]), ("b", [row("b", 300)])])
+    assert [r["value"] for r in twice] == [300, 350] and twice[1]["agreed_by"] == ["ref"]
 
 
 def test_only_a_live_call_uses_the_api_key_and_it_is_capped_with_the_command_line_as_fallback(monkeypatch):
@@ -123,11 +114,10 @@ def test_only_a_live_call_uses_the_api_key_and_it_is_capped_with_the_command_lin
     assert calls[-1] == "cli" and calls.count("api failed") == 1 and reader._api_calls["capped_logged"]
 
 
-def test_a_record_without_its_number_agrees_with_nothing_and_does_not_break_the_comparison():
-    empty = row("ref", None, unsure=True, unsure_reason="no number was reported")
+def test_a_record_without_its_number_agrees_with_nothing_and_does_not_break_combining():
+    empty = row("ref", None)
     out = combine.combine([("ref", [empty]), ("b", [row("b", 300)])], [("e", [row("e", 300)])])
-    assert out[0]["unsure"] and "also_marked_by" not in out[0] and "agreed_by" not in out[0]
-    assert combine.same(empty, row("b", 300)) is False
+    assert len(out) == 1 and "agreed_by" not in out[0]
 
 
 def test_units_come_from_the_sheets_limit_so_another_sheet_needs_no_code():
