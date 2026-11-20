@@ -104,7 +104,7 @@ function renderHead({ line, index }) {
   const { issuer, shopper } = state.sheet;
   const mode = state.mode === "fixture" ? "FIXTURE DATA" : state.mode === "replay" ? "REPLAY OF CACHED STORE DATA" : "";
   const title = line ? cap(line.need) : state.sheet.title;
-  const sub = line ? `line ${index + 1} of ${state.lines.length}` : `${state.lines.length} lines`;
+  const sub = line ? `<a href="#sheet" title="The whole sheet. Key: 0">line ${index + 1} of ${state.lines.length}</a>` : `${state.lines.length} lines`;
   $("head").innerHTML = `
     <h1>${esc(title)}</h1>
     <span class="sub">${sub}${state.sheet.invented ? " · invented people" : ""}</span>
@@ -113,12 +113,10 @@ function renderHead({ line, index }) {
     <span class="key shopper">${esc(shopper.name)} stated</span>
     <span class="key store">store's words</span>
     <span class="key unknown">not stated</span>
-    <button id="sheetbtn" aria-pressed="${!line}" title="The whole sheet. Key: 0">Sheet</button>
     <button id="elena" aria-pressed="${!!line && ui.panel === "shopper"}" title="${esc(shopper.name)}'s measurements and her chat with the agent. Key: E">${esc(shopper.name)}</button>
     ${SIM ? `<button id="simbtn" class="simbtn" aria-pressed="${ui.panel === "sim"}">SIMULATION</button>` : ""}
     ${mode ? `<span class="badge">${mode}</span>` : ""}`;
   $("elena").onclick = () => togglePanel("shopper");
-  $("sheetbtn").onclick = () => { location.hash = line ? "sheet" : lineId(); };
   if (SIM) $("simbtn").onclick = () => togglePanel("sim");
 }
 
@@ -234,9 +232,9 @@ function renderShopperPanel({ sheetLine }) {
   $("side").innerHTML = `<div class="panel">
     <h2 class="shopper">${esc(shopper.name)}, the shopper${shopper.invented ? " (invented)" : ""}: her measurements and her words</h2>
     ${facts.map((f) => slider("shopper", f.id, f.label, f.value, f.unit, f.min, f.max, f.step)).join("") || '<div class="none">This line uses none of her measurements.</div>'}
-    <form id="say"><input id="sayText" autocomplete="off" aria-label="Say something to the agent" placeholder="Say something to the agent…">
+    <form id="say"><input id="sayText" name="say" type="text" autocomplete="off" aria-label="Say something to the agent" placeholder="Say something to the agent…">
       <button type="submit">Send</button></form>
-    <div id="reply">${last ? chatHtml(last) : `She cannot move a limit or bring back a struck product. Try asking.`}</div></div>`;
+    <div id="reply" aria-live="polite">${last ? chatHtml(last) : `She cannot move a limit or bring back a struck product. Try asking.`}</div></div>`;
   wireSliders();
   $("say").onsubmit = say;
 }
@@ -323,10 +321,9 @@ function renderTiles({ line }) {
     const body = l.tightest
       ? `<span class="status">${esc(head)}${price}</span><span data-k="tile.${l.line_id}">✓ ${esc(l.tightest.text)}</span>`
       : `<span class="wrap"><b class="status">${esc(head)}:</b> ${esc(l.reason || "nothing proposed")}</span>`;
-    return `<button class="tile ${l.status}" data-line="${l.line_id}" aria-current="${l.line_id === line.line_id}">
-      <span class="need">${esc(l.need)}</span>${body}</button>`;
+    return `<a class="tile ${l.status}" href="#${l.line_id}" aria-current="${l.line_id === line.line_id}">
+      <span class="need">${esc(l.need)}</span>${body}</a>`;
   }).join("");
-  for (const tile of document.querySelectorAll(".tile")) tile.onclick = () => { location.hash = tile.dataset.line; };
 }
 
 // ---------- the whole sheet: the counts and six large tiles ----------
@@ -346,15 +343,14 @@ function renderSheet() {
     const p = pickOf(l);
     const tally = Object.keys(dots).map((k) => [k, l.candidates.filter((x) => x.status === k).length]).filter(([, n]) => n)
       .map(([k, n]) => `<span class="tally"><i class="d ${k}"></i>${n} ${dots[k]}</span>`).join("");
-    return `<button class="tile bigtile ${l.status}" data-line="${l.line_id}">
+    return `<a class="tile bigtile ${l.status}" href="#${l.line_id}">
       <span class="need">${esc(l.need)}</span>
       <span class="status">${esc(STATUS[l.status] || l.status)}${p && l.status !== "pick_up" ? `<i>${money(p.product.price_cents)}</i>` : ""}</span>
       <span class="wrap" data-k="big.${l.line_id}">${l.tightest ? `✓ ${esc(l.tightest.text)} on ${esc(l.tightest.name)}` : esc(cap(l.reason || "nothing proposed"))}</span>
       <span class="store">${p ? esc(p.product.store) : "&nbsp;"}</span>
       <span class="wrap tallies">${tally || "no product found yet"}</span>
-    </button>`;
+    </a>`;
   }).join("")}</div>`;
-  for (const tile of document.querySelectorAll(".bigtile")) tile.onclick = () => { location.hash = tile.dataset.line; };
 }
 
 // ---------- the seal ----------
