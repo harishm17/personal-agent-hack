@@ -316,3 +316,28 @@ Done (all in `evals/firedrill/`, sandbox agent `signoff/sign/firedrill_agent.py`
 1. In the Firedrill web app (app.firedrill.run) open Billing: check the credit balance is not 0 and that the event code was applied (the hacker guide says the extra credits arrive as 1,500, or 2,500 if redeemed early), and under Billing → Builders that his seat is assigned (an error `billing_builder_assignment_required` is the documented seat problem; ours is a different code but the same screen shows the state).
 2. If that is fine, ask Firedrill staff in the room (Newton Asare or Kiran Das) about `native_participant_capacity_exceeded` on workspace "Harish Manoharan's workspace"; it may need them to raise the simulated-participant capacity of the free workspace or it may be a platform-wide queue.
 Plan ids to retry with once it is cleared: world a83... saved as `a80bbe45-955f-48e0-9960-27e2b7a7a2f6` (3 drills), single-drill world `a283df37-d160-40f0-98f4-0b9be35822f7`. I retry `firedrill plan` + `apply` every few minutes and will start the campaign the moment apply passes. If it is not cleared by 12:30, my fallback is to take the Firedrill-style personas' pressure from a separate fresh model session (not ENGINE, not the builder) so ENGINE's harness gets its 40 attempts, and say plainly in the demo that the Firedrill campaign did not run.
+## AIRBYTE 11:55 — first sync ran; the stores' pool and answers arrive through Airbyte
+- Done: `uv run python -m signoff.airbyte.sync` exports the pool and answers, runs two Airbyte jobs through the
+  API, copies the delivered records into SingleStore, and records the run. Last run: pool job 7 (111 rows,
+  59 s) and answers job 8 (3 rows, 29 s); whole run 73 s; 111 rows in `signoff.airbyte_pool`, equal to
+  `data/pool/*.json` (checked by `uv run pytest -m live tests/airbyte`).
+- Tables in database `signoff` (same columns as `pool`, plus `airbyte_job_id`, `airbyte_synced_at`; `line_ids` is
+  a JSON array, so `PASSING_BOX_SQL` runs on `airbyte_pool` by changing the table name): `airbyte_pool`,
+  `airbyte_store_answers`, `airbyte_runs` (one row per run).
+- App side: `signoff.airbyte.pool.load() -> dict | None` (`via`, `job_id`, `synced_at`, `rows`, `pool`,
+  `store_answers`; never raises). Router `signoff.airbyte.api` is optional: `GET /api/airbyte/status`,
+  `POST /api/airbyte/sync` (starts a background run, takes about 75 s). Not mounted on main by me.
+- Path, and why: Airbyte 2.5.0 has no SingleStore destination, and its MySQL destination fails against
+  SingleStore (`LOAD DATA` with "Separators which are not distinct"). So Airbyte writes into a local MySQL
+  container (`airbyte-staging`, port 3307, throwaway) and `sync.py` copies Airbyte's raw records into SingleStore.
+  The typed table Airbyte builds in MySQL nulls strings over ~510 characters, so the copy reads the raw
+  `_airbyte_data` records instead.
+- Moving parts that must be running for a sync (not for reading): Airbyte (8900), container `airbyte-staging`,
+  `python -m signoff.airbyte.serve` (port 8005) and a quick tunnel `cloudflared tunnel --url
+  http://127.0.0.1:8005` (the File source takes only HTTPS). The tunnel address is in
+  `data/order/export_url.txt` (not committed; a new tunnel needs a new address there or in `AIRBYTE_EXPORT_URL`).
+  The tunnel serves only `data/order/` (public store text and the invented order). Reading
+  `airbyte_pool` needs none of them.
+- To mount: add `signoff.airbyte.api` is already in `OPTIONAL_ROUTERS`. To read from Airbyte rows, use
+  `signoff.airbyte.pool.load()["pool"]`: same shape as `data/pool/*.json`.
+- Step 4 done: the order is a third Airbyte source (job 11, 12 rows, table `airbyte_order_limits`); `signoff.airbyte.order.load()` returns it as "proposed, from the order". Whole run with three jobs: 109 s.
