@@ -23,6 +23,7 @@ from datetime import datetime, timezone
 import httpx
 
 from signoff import config
+from signoff.sign import audit
 
 BASE = "https://apiv2.senso.ai/api/v1"
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -143,6 +144,7 @@ def load_documents(sheet: dict | str | None = None) -> dict:
             sha = hashlib.sha256(d["text"].encode()).hexdigest()[:12]
             if reg.get(d["key"], {}).get("sha") == sha:
                 continue
+            audit.egress("senso", "load a document into the knowledge base: " + d["title"], d["text"], ["store_text"] if d["key"].startswith("store:") else ["order", "limit"])
             r = client.post(BASE + "/org/kb/raw", json={"title": d["title"], "text": d["text"]})
             if r.status_code == 409:
                 reg[d["key"]] = {**reg.get(d["key"], {}), "sha": sha, "title": d["title"], "note": "already in the knowledge base"}
@@ -269,6 +271,7 @@ def judge(client: httpx.Client, s: dict) -> dict:
 
 def _judge_once(client: httpx.Client, s: dict) -> dict:
     row = {k: s.get(k) for k in ("kind", "blocks", "sentence", "line_id", "candidate_id", "store", "product_id", "moved_from_order")}
+    audit.egress("senso", "check one sentence of the sheet against the order", s["sentence"], ["order", "limit"] if s.get("kind") == "limit" else ["order"])
     try:
         r = client.post(BASE + "/org/evals/text", json={"text": s["sentence"], "evaluator": "kb_accuracy", "author": "organization",
                                                          "wait": True, "label": "signoff-" + (s.get("line_id") or "sheet")})
@@ -308,6 +311,10 @@ def run_checks(state: dict, current_hash: str | None = None) -> dict:
         with httpx.Client(headers=_headers(), timeout=120) as client, futures.ThreadPoolExecutor(6) as pool:
             rows = list(pool.map(lambda s: judge(client, s), sentences))
         set_checks(rows, current_hash)
+        tally = {v: sum(1 for r in rows if r["verdict"] == v) for v in {r["verdict"] for r in rows}}
+        audit.receipt("senso_checked", "senso", None, [r["sentence"] for r in rows],
+                      {"for_hash": current_hash, "sentences": len(rows), "verdicts": tally,
+                       "blocking": [r["sentence"] for r in rows if r.get("blocks") and r["verdict"] in blocking_verdicts()]})
     finally:
         with _lock:
             _meta["running_for"] = None

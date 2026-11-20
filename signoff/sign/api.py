@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 
 from signoff import config
 
-from . import handcheck, persona, senso
+from . import audit, handcheck, persona, senso
 from .verify import KeyStore, Refused, verify_request
 
 router = APIRouter()
@@ -85,11 +85,13 @@ async def enroll(request: Request):
     try:
         key = keystore.enroll(body.get("public_key_jwk"), str(body.get("name") or ""), _now(), str(body.get("code") or ""))
     except Refused as error:
+        audit.receipt("enrolment_refused", "issuer", None, {"name": str(body.get("name") or "")}, {"refused_because": error.code})
         return _fail(error)
     try:
         _push_issuer_key(get_engine())
     except Exception:  # noqa: BLE001
         pass
+    audit.receipt("enrolled", "issuer", key.key_id, key.jwk, {"name": key.name, "key_id": key.key_id})
     return {"ok": True, "key_id": key.key_id}
 
 
