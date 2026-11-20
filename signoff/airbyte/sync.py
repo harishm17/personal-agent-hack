@@ -146,8 +146,11 @@ def load_into_singlestore(results: list[dict]) -> dict:
             if r["status"] != "succeeded":
                 continue
             table, cols = r["stream"], COLUMNS[r["stream"]]
-            sc.execute(f"SELECT {', '.join(cols)} FROM {table}")
-            rows = [_clean(table, x) for x in sc.fetchall()]
+            # The raw records Airbyte delivered (`_airbyte_data`). The typed table the MySQL destination
+            # builds from them nulls strings over about 510 characters, so it is not used.
+            sc.execute(f"SELECT _airbyte_data FROM airbyte_internal.{STAGING['database']}_raw__stream_{table}")
+            records = [json.loads(x[0]) if isinstance(x[0], (str, bytes)) else x[0] for x in sc.fetchall()]
+            rows = [_clean(table, [rec.get(c) for c in cols]) for rec in records]
             tc.execute(f"DELETE FROM {table}")
             sql = (f"INSERT INTO {table} ({', '.join(cols)}, airbyte_job_id, airbyte_synced_at) "
                    f"VALUES ({', '.join(['%s'] * len(cols))}, %s, NOW())")

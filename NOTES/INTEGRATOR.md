@@ -36,3 +36,29 @@ signoff/store/api.py (router) is on branch stream/STORE since 11:18; routes /api
 ## 11:30 from SIGN — Senso first call (POST /org/evals/text, wait:true, evaluator kb_accuracy)
 Sentence: "Carex lets you return an unused bath safety item within 30 days of delivery for a full refund." Two calls, `author: "ai_assistant"` and `author: "organization"`: both HTTP 200, status completed, 2 claims extracted, and for both `about_brand: false`, `bucket: "general"`, no `verdict`, `claims_scored: 0`. So **claims about another brand (Carex) get no verdict, in either author mode**: Senso treats them as general knowledge, not checked against the knowledge base. The KB was empty at the time, so this is "not about the org's own brand", not "unsupported". Consequence (as the contract planned): Senso checks the sheet against the therapist's order and the handout; store sentences stay checked by span match in code. I am now testing whether brand-less statements ("The order lists a raised toilet seat") get real verdicts once the order is loaded, then loading the order, a handout and each store's policy text (store answers) as documents. Please add the one-line quirk to AGENTS.md: "SIGN: Senso /org/evals/text gives no verdict to claims naming another brand (about_brand false, bucket general, both author modes); only claims about the org's own KB content are judged."
 Also: `kb_accuracy` judge model is `gpt-5.6-luna`; a run with wait:true took about 2 seconds.
+
+## AIRBYTE 11:55 — first sync ran; the stores' pool and answers arrive through Airbyte
+- Done: `uv run python -m signoff.airbyte.sync` exports the pool and answers, runs two Airbyte jobs through the
+  API, copies the delivered records into SingleStore, and records the run. Last run: pool job 7 (111 rows,
+  59 s) and answers job 8 (3 rows, 29 s); whole run 73 s; 111 rows in `signoff.airbyte_pool`, equal to
+  `data/pool/*.json` (checked by `uv run pytest -m live tests/airbyte`).
+- Tables in database `signoff` (same columns as `pool`, plus `airbyte_job_id`, `airbyte_synced_at`; `line_ids` is
+  a JSON array, so `PASSING_BOX_SQL` runs on `airbyte_pool` by changing the table name): `airbyte_pool`,
+  `airbyte_store_answers`, `airbyte_runs` (one row per run).
+- App side: `signoff.airbyte.pool.load() -> dict | None` (`via`, `job_id`, `synced_at`, `rows`, `pool`,
+  `store_answers`; never raises). Router `signoff.airbyte.api` is optional: `GET /api/airbyte/status`,
+  `POST /api/airbyte/sync` (starts a background run, takes about 75 s). Not mounted on main by me.
+- Path, and why: Airbyte 2.5.0 has no SingleStore destination, and its MySQL destination fails against
+  SingleStore (`LOAD DATA` with "Separators which are not distinct"). So Airbyte writes into a local MySQL
+  container (`airbyte-staging`, port 3307, throwaway) and `sync.py` copies Airbyte's raw records into SingleStore.
+  The typed table Airbyte builds in MySQL nulls strings over ~510 characters, so the copy reads the raw
+  `_airbyte_data` records instead.
+- Moving parts that must be running for a sync (not for reading): Airbyte (8900), container `airbyte-staging`,
+  `python -m signoff.airbyte.serve` (port 8005) and a quick tunnel `cloudflared tunnel --url
+  http://127.0.0.1:8005` (the File source takes only HTTPS). The tunnel address is in
+  `data/order/export_url.txt` (not committed; a new tunnel needs a new address there or in `AIRBYTE_EXPORT_URL`).
+  The tunnel serves only `data/order/` (public store text and the invented order). Reading
+  `airbyte_pool` needs none of them.
+- To mount: add `signoff.airbyte.api` is already in `OPTIONAL_ROUTERS`. To read from Airbyte rows, use
+  `signoff.airbyte.pool.load()["pool"]`: same shape as `data/pool/*.json`.
+- Next from me: the order as a third source (step 4) unless you say otherwise.
