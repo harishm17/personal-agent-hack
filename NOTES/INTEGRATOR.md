@@ -1572,3 +1572,5 @@ written for MEMORY in NOTES/MEMORY.md (they had not posted one in NOTES/ENGINE.m
 - Status of the last three: **DONE E26** (both halves, 13:48 and 14:00 notes), **E27 built, measured and reported at 14:00, waiting
   for your decision on the default** (my recommendation: leave "the reference decides" on and show "require a second reader" as the
   gate's measured change), **DONE E28**.
+- Correction of two references in the note above: my E26 notes are headed 13:42 (the rule and the re-check) and 13:48 (point 1), and
+  the E27 report is the one headed 13:48, not "14:00". Earlier notes of mine also cite times a few minutes off; the headings are right.
