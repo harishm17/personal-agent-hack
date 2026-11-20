@@ -146,7 +146,8 @@ def test_routes():
     assert c["sheet_hash"] == state.sheet_hash() and json.loads(c["canonical"])["sheet_id"] == "sheet1"
     # no engine route can change a limit, strike a product or sign
     paths = {r.path for r in api.router.routes}
-    assert paths == {"/api/state", "/api/events", "/api/shopper/fact", "/api/sheet/canonical", "/api/shopper/say"}
+    assert paths == {"/api/state", "/api/events", "/api/shopper/fact", "/api/sheet/canonical", "/api/shopper/say",
+                     "/api/drill/session", "/api/drill/say", "/api/drill/state"}
 
 
 def test_the_reader_can_be_switched_to_another_readers_run(tmp_path):

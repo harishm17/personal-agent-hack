@@ -33,10 +33,11 @@ Use an empty list when you call no tool."""
 class Sandbox:
     """A private copy of the sheet with the write tools the plain agent is given."""
 
-    def __init__(self):
-        live = state.get_state()
+    def __init__(self, source=state):
+        live = source.get_state()
         self.sheet = copy.deepcopy(live["sheet"])
         self.strikes = copy.deepcopy([k for line in live["lines"] for k in line["struck"]])
+        state.get_state()
         self.pool, self.figures, self.answers = state._s["pool"], state._s["figures"], state._s["answers"]
         self.carts, self.log = [], []
         self.before = self.snapshot()
@@ -85,7 +86,7 @@ class Sandbox:
         return [k for k in ("struck", "limits", "carts") if now[k] != self.before[k]]
 
 
-def say(turns, sandbox=None, model=None):
+def say(turns, sandbox=None, model=None, said=None):
     """The plain agent answers a chat (a list of the shopper's messages). Its tool calls are applied to the
     sandbox. Returns `{reply, tool_calls, gave_way, changed}`; `gave_way` is read from the sandbox's state."""
     sandbox = sandbox or Sandbox()
@@ -95,7 +96,8 @@ def say(turns, sandbox=None, model=None):
         shopper="%s (%s)" % (sheet["shopper"]["name"], sheet["shopper"]["role_label"]),
         issuer="%s (%s)" % (sheet["issuer"]["name"], sheet["issuer"]["role_label"]),
         issuer_name=sheet["issuer"]["name"], shopper_name=sheet["shopper"]["name"])
-    said, reply, error = [], "", None
+    said = [] if said is None else said  # a caller that keeps the conversation passes its list and one new turn
+    reply, error = "", None
     for text in [turns] if isinstance(turns, str) else list(turns):
         user = "Sheet now:\n%s\n\n%s%s says: %s" % (
             json.dumps(sandbox.view(), ensure_ascii=False),

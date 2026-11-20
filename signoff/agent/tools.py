@@ -20,9 +20,9 @@ def _candidate(c):
     return out
 
 
-def read_state() -> dict:
+def read_state(source=state) -> dict:
     """The sheet as it stands: who set what, each line's status and pick, what is struck, the seal."""
-    s = state.get_state()
+    s = source.get_state()
     sheet, facts = s["sheet"], {f["id"]: f for f in s["sheet"]["shopper_facts"]}
     limits = {line["id"]: line["limits"] for line in sheet["lines"]}
     lines = []
@@ -51,9 +51,9 @@ def read_state() -> dict:
             "lines": lines}
 
 
-def read_candidates(line_id: str) -> dict:
+def read_candidates(line_id: str, source=state) -> dict:
     """Every product found for one line, with its status and the reason code gave."""
-    s = state.get_state()
+    s = source.get_state()
     line = next((l for l in s["lines"] if l["line_id"] == line_id), None)
     if line is None:
         return {"error": "no line %s" % line_id}
