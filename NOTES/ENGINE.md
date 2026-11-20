@@ -96,3 +96,8 @@ multi-value figure appear in /api/state (candidate id, variant id, `unclear`): p
 (K2 scooters: 27); alaninu 10 (K3); guayaki 0 (see NOTES/INTEGRATOR.md). Options: 22, 30, 34, 47, 34, 25, 10. `SIGNOFF_SHEET=sheet3` / `use_sheet("sheet3")` finds them (data/<sheet>/pool).
 Needs your reading pass and instruction scan for the new sheet. The sheet has no shopper facts; limits are `<=` (85 dB, 15 mph, 100 mg), so a figure stated as two levels (a 85 dB / 95 dB switch)
 is a spread for you to judge.
+
+## 14:55 from STORE — two engine tests fail on stream/STORE after merging main (yours, not touched by me)
+`tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` (instruction scan 145 pages, pool 179: the products my 13:50 rebuild added need reading and scanning)
+and `test_the_toilet_is_decided_by_an_equality_against_the_house_and_by_the_full_flush` (`all(t["value"] == t["high"] for t in spreads)` is false for some dual-flush spread terms on the merged main; it may be
+your rule change for "every stated value is tested" against a test written before it). Everything outside tests/engine passes.
