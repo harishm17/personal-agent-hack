@@ -1,0 +1,149 @@
+import json
+import pathlib
+import time
+
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from signoff.engine import api, state
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
+
+
+@pytest.fixture(autouse=True)
+def fixture_inputs(monkeypatch, tmp_path):
+    """The fixture pool, whatever is in data/ on this machine."""
+    monkeypatch.setattr(state, "DATA", tmp_path)
+    monkeypatch.setattr(state, "_load_pool", lambda: (json.loads((ROOT / "fixtures" / "pool.json").read_text()),
+                                                      json.loads((ROOT / "fixtures" / "store_answers.json").read_text())))
+    monkeypatch.setattr(state, "_record", lambda s: None)
+    state.reset()
+    yield
+    state._s["loaded"] = False
+
+
+def line(s, line_id):
+    return next(l for l in s["lines"] if l["line_id"] == line_id)
+
+
+def includes(got, want, path="state"):
+    """Every key and value of the fixture is in the live state; the live state may add keys."""
+    if isinstance(want, dict):
+        for k, v in want.items():
+            assert k in got, "%s.%s missing" % (path, k)
+            includes(got[k], v, "%s.%s" % (path, k))
+    elif isinstance(want, list):
+        assert len(got) == len(want), path
+        for i, (g, w) in enumerate(zip(got, want)):
+            includes(g, w, "%s[%d]" % (path, i))
+    else:
+        assert got == want, path
+
+
+def test_live_state_has_the_shape_and_values_of_the_fixture():
+    want = json.loads((ROOT / "fixtures" / "state.json").read_text())
+    want.pop("version")
+    includes(json.loads(state.state_json()), want)
+    assert state.get_state()["mode"] == "fixture"
+
+
+def test_a_limit_change_through_apply_issuer_moves_the_l2_pick():
+    assert line(state.get_state(), "L2")["pick"] == "L2:fixture-store-a.example:fx-A"
+    v, h = state.get_state()["version"], state.sheet_hash()
+    after = state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 425})
+    assert line(after, "L2")["pick"] == "L2:fixture-store-c.example:fx-D"
+    assert after["version"] > v and state.sheet_hash() != h
+    back = state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 300})
+    assert line(back, "L2")["pick"] == "L2:fixture-store-a.example:fx-A" and state.sheet_hash() == h
+
+
+def test_limits_are_refused_outside_their_range_or_when_they_are_not_the_issuers():
+    for action in ({"type": "set_limit", "limit_id": "L2.capacity", "value": 5000},
+                   {"type": "set_limit", "limit_id": "L2.capacity", "value": "300"},
+                   {"type": "set_limit", "limit_id": "L1.tub", "value": 30},
+                   {"type": "set_limit", "limit_id": "L9.none", "value": 300},
+                   {"type": "strike", "line_id": "L2", "product_key": "not in the pool", "reason": "x"},
+                   {"type": "create_cart"}):
+        with pytest.raises(state.EngineError):
+            state.apply_issuer(action)
+
+
+def test_strike_and_unstrike():
+    s = state.apply_issuer({"type": "strike", "line_id": "L2", "product_key": "fixture a", "reason": "seat too soft"})
+    l2 = line(s, "L2")
+    assert l2["status"] == "next_candidate" and l2["pick"] == "L2:fixture-store-c.example:fx-D"
+    assert l2["struck"][0]["reason"] == "seat too soft" and l2["candidates"][0]["status"] == "struck"
+    s = state.apply_issuer({"type": "unstrike", "line_id": "L2", "product_key": "fixture a"})
+    assert line(s, "L2")["status"] == "ready" and line(s, "L2")["pick"] == "L2:fixture-store-a.example:fx-A"
+
+
+def test_shopper_fact_changes_the_sum_and_is_hers_to_change():
+    s = state.set_shopper_fact("toilet_rim_height", 14.0)  # 14 + 5 = 19 >= 19: nothing to spare
+    assert line(s, "L2")["tightest"]["text"] == "nothing to spare"
+    s = state.set_shopper_fact("toilet_rim_height", 13.5)  # 13.5 + 5 = 18.5: A is out, D (5 in) is out too
+    assert line(s, "L2")["pick"] is None
+    with pytest.raises(state.EngineError):
+        state.set_shopper_fact("toilet_rim_height", 40)
+    with pytest.raises(state.EngineError):
+        state.set_shopper_fact("L2.capacity", 200)
+
+
+def test_signing_seals_the_hash_and_freezes_the_sheet():
+    h = state.sheet_hash()
+    assert state.apply_issuer({"type": "sign_sheet", "sheet_hash": h})["seal"]["signed"] is False
+    with pytest.raises(state.EngineError):
+        state.apply_issuer({"type": "sign_sheet", "sheet_hash": "0" * 64})
+    carts = [{"store": "fixture-store-a.example", "cart_id": "c1", "cart_url": "https://fixture-store-a.example/cart/c1",
+              "total_cents": 1, "created_at": "2026-11-20T14:00:00-08:00", "mode": "fixture"}]
+    s = state.mark_signed({"key_id": "k1", "name": "Dana", "at": "2026-11-20T14:00:00-08:00"}, carts)
+    assert s["seal"]["signed"] and s["seal"]["sheet_hash"] == h and s["seal"]["current"] is True
+    assert s["seal"]["text"] == "Signed by Dana at 14:00. 1 cart created."
+    picked = [c for l in s["lines"] for c in l["candidates"] if c["picked"] and c["action"]]
+    assert picked and all(c["action"]["cart_url"].endswith("/cart/c1") for c in picked)
+    with pytest.raises(state.EngineError) as refused:
+        state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 425})
+    assert refused.value.status == 409
+    s = state.reset()
+    assert s["seal"] == {"signed": False, "text": "Not signed. No cart exists at any store.", "sheet_hash": None,
+                         "signature": None, "carts": []}
+
+
+def test_reset_puts_the_sheet_back_as_on_disk():
+    state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 425})
+    state.set_shopper_fact("toilet_rim_height", 16.0)
+    state.set_issuer_key({"enrolled": True, "key_id": "k1"})
+    assert state.get_state()["issuer_key"]["enrolled"] is True
+    s = state.reset()
+    assert s["issuer_key"]["enrolled"] is False
+    assert s["sheet"] == json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+
+
+def test_reload_keeps_the_issuers_changes():
+    state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 425})
+    s = state.reload_data()
+    assert line(s, "L2")["pick"] == "L2:fixture-store-c.example:fx-D"
+
+
+def test_recompute_is_fast_enough_for_a_slider():
+    start = time.perf_counter()
+    for i in range(20):
+        state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 300 + 25 * (i % 5)})
+    assert (time.perf_counter() - start) / 20 < 0.05
+
+
+def test_routes():
+    app = FastAPI()
+    app.include_router(api.router)
+    client = TestClient(app)
+    s = client.get("/api/state").json()
+    assert len(s["lines"]) == 6 and s["seal"]["signed"] is False
+    assert client.post("/api/shopper/fact", json={"fact_id": "toilet_rim_height", "value": 14.0}).json()["ok"]
+    assert client.get("/api/state").json()["version"] == s["version"] + 1
+    assert client.post("/api/shopper/fact", json={"fact_id": "nope", "value": 1}).status_code == 404
+    assert client.post("/api/shopper/fact", json={"fact_id": "toilet_rim_height", "value": 99}).status_code == 400
+    c = client.get("/api/sheet/canonical").json()
+    assert c["sheet_hash"] == state.sheet_hash() and json.loads(c["canonical"])["sheet_id"] == "sheet1"
+    # no engine route can change a limit, strike a product or sign
+    paths = {r.path for r in api.router.routes}
+    assert paths == {"/api/state", "/api/events", "/api/shopper/fact", "/api/sheet/canonical", "/api/shopper/say"}

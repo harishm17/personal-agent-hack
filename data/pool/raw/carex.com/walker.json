@@ -1,0 +1,1817 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://carex.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Carex",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "carex.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "24065048681"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "24065048681"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4121082069097",
+   "title": "Carex Step 'N Rest\u00ae Rolling Walker",
+   "description": {
+    "html": "The Step 'N Rest Rolling Walker offers large 6\" wheels to make getting around easier. The seat adjusts to three height positions of 18\", 21\" or 23\" to accommodate most users. Lockable hand brakes offer safety, and the padded seat and backrest provide comfort during use. A convenient storage area is located beneath the seat to hold personal items safely. Lightweight and easy-to-fold design is ideal for travel and storage\u2014quick tool-free assembly. Seat height quickly adjusts to 18\", 21\" or 23\". The ultimate height-adjustable rollator offers three seat heights for maximum comfort while seated. Height adjustable handles from 29.5\" to 39\". Having the proper height on a mobility walker is essential. The wrong height can cause the user injury. Easily adjust the handle height for a safe and comfortable push. A lightweight walker at 14 lbs. The lightweight aluminum rollator makes it easy to push while offering a stable support aid. The durable construction means it can be used daily without any wear or tear. Padded seat and backrest for comfort. We've combined durability with comfort into this mobility aid. Its wide padded seat provides a comfortable place to sit, and the backrest offers back support. Lockable brakes ensure the rollator walker won't move when seated. Over-sized 6\" wheels for increased maneuverability. The aluminum rollator's large wheels provide a smooth glide and make it easy to roll on multiple indoor terrains. Convenient storage area holds personal items. Hide and store personal items under the seat in the suitable storage area. Its large size can hold cell phones, purses, notebooks, and more. Folds up for storage and travel. The aluminum rollator features an easy-to-fold design for quick and painless storage. Its slim size when folded makes it easy to store in small spaces such as closets and car trunks. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Diethylhexyl phthalate (DEHP), which is known to the State of California to cause cancer or birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 6\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Package Dims (h x w x d): 21.63\" x 21.25\" x 6.13\" Package Weight: 17.8 lbs Product Weight: 14.5 lbs Weight Capacity: 300 lbs. Color: Navy, Black, Pink Product Dims (h x w x d): 29.50\" - 39.00\" x 22.5\" x 29\" Instruction Manual Warnings/Precautions"
+   },
+   "url": "https://carex.com/products/carex-step-n-rest-rolling-walker",
+   "handle": "carex-step-n-rest-rolling-walker",
+   "price_range": {
+    "min": {
+     "amount": 17791,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17791,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 17999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30988992020585",
+     "sku": "FGA22300 0000",
+     "title": "Navy",
+     "description": {
+      "html": "The Step 'N Rest Rolling Walker offers large 6\" wheels to make getting around easier. The seat adjusts to three height positions of 18\", 21\" or 23\" to accommodate most users. Lockable hand brakes offer safety, and the padded seat and backrest provide comfort during use. A convenient storage area is located beneath the seat to hold personal items safely. Lightweight and easy-to-fold design is ideal for travel and storage\u2014quick tool-free assembly. Seat height quickly adjusts to 18\", 21\" or 23\". The ultimate height-adjustable rollator offers three seat heights for maximum comfort while seated. Height adjustable handles from 29.5\" to 39\". Having the proper height on a mobility walker is essential. The wrong height can cause the user injury. Easily adjust the handle height for a safe and comfortable push. A lightweight walker at 14 lbs. The lightweight aluminum rollator makes it easy to push while offering a stable support aid. The durable construction means it can be used daily without any wear or tear. Padded seat and backrest for comfort. We've combined durability with comfort into this mobility aid. Its wide padded seat provides a comfortable place to sit, and the backrest offers back support. Lockable brakes ensure the rollator walker won't move when seated. Over-sized 6\" wheels for increased maneuverability. The aluminum rollator's large wheels provide a smooth glide and make it easy to roll on multiple indoor terrains. Convenient storage area holds personal items. Hide and store personal items under the seat in the suitable storage area. Its large size can hold cell phones, purses, notebooks, and more. Folds up for storage and travel. The aluminum rollator features an easy-to-fold design for quick and painless storage. Its slim size when folded makes it easy to store in small spaces such as closets and car trunks. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Diethylhexyl phthalate (DEHP), which is known to the State of California to cause cancer or birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 6\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Package Dims (h x w x d): 21.63\" x 21.25\" x 6.13\" Package Weight: 17.8 lbs Product Weight: 14.5 lbs Weight Capacity: 300 lbs. Color: Navy, Black, Pink Product Dims (h x w x d): 29.50\" - 39.00\" x 22.5\" x 29\" Instruction Manual Warnings/Precautions"
+     },
+     "price": {
+      "amount": 17791,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGA223000000_Hero_04182024_2500x2500_33be408e-3fbb-4464-b921-bfb95aea5098.jpg?v=1744827658"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30988992020585:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/30988992053353",
+     "sku": "FGA62200 0000",
+     "title": "Black",
+     "description": {
+      "html": "The Step 'N Rest Rolling Walker offers large 6\" wheels to make getting around easier. The seat adjusts to three height positions of 18\", 21\" or 23\" to accommodate most users. Lockable hand brakes offer safety, and the padded seat and backrest provide comfort during use. A convenient storage area is located beneath the seat to hold personal items safely. Lightweight and easy-to-fold design is ideal for travel and storage\u2014quick tool-free assembly. Seat height quickly adjusts to 18\", 21\" or 23\". The ultimate height-adjustable rollator offers three seat heights for maximum comfort while seated. Height adjustable handles from 29.5\" to 39\". Having the proper height on a mobility walker is essential. The wrong height can cause the user injury. Easily adjust the handle height for a safe and comfortable push. A lightweight walker at 14 lbs. The lightweight aluminum rollator makes it easy to push while offering a stable support aid. The durable construction means it can be used daily without any wear or tear. Padded seat and backrest for comfort. We've combined durability with comfort into this mobility aid. Its wide padded seat provides a comfortable place to sit, and the backrest offers back support. Lockable brakes ensure the rollator walker won't move when seated. Over-sized 6\" wheels for increased maneuverability. The aluminum rollator's large wheels provide a smooth glide and make it easy to roll on multiple indoor terrains. Convenient storage area holds personal items. Hide and store personal items under the seat in the suitable storage area. Its large size can hold cell phones, purses, notebooks, and more. Folds up for storage and travel. The aluminum rollator features an easy-to-fold design for quick and painless storage. Its slim size when folded makes it easy to store in small spaces such as closets and car trunks. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Diethylhexyl phthalate (DEHP), which is known to the State of California to cause cancer or birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 6\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Package Dims (h x w x d): 21.63\" x 21.25\" x 6.13\" Package Weight: 17.8 lbs Product Weight: 14.5 lbs Weight Capacity: 300 lbs. Color: Navy, Black, Pink Product Dims (h x w x d): 29.50\" - 39.00\" x 22.5\" x 29\" Instruction Manual Warnings/Precautions"
+     },
+     "price": {
+      "amount": 17791,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGA622000000_Hero_04162025_2500x2500_5f588830-3666-491d-a6a8-881adccfd32d.jpg?v=1746811847"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30988992053353:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/30988992086121",
+     "sku": "FGA61700 0000",
+     "title": "Pink",
+     "description": {
+      "html": "The Step 'N Rest Rolling Walker offers large 6\" wheels to make getting around easier. The seat adjusts to three height positions of 18\", 21\" or 23\" to accommodate most users. Lockable hand brakes offer safety, and the padded seat and backrest provide comfort during use. A convenient storage area is located beneath the seat to hold personal items safely. Lightweight and easy-to-fold design is ideal for travel and storage\u2014quick tool-free assembly. Seat height quickly adjusts to 18\", 21\" or 23\". The ultimate height-adjustable rollator offers three seat heights for maximum comfort while seated. Height adjustable handles from 29.5\" to 39\". Having the proper height on a mobility walker is essential. The wrong height can cause the user injury. Easily adjust the handle height for a safe and comfortable push. A lightweight walker at 14 lbs. The lightweight aluminum rollator makes it easy to push while offering a stable support aid. The durable construction means it can be used daily without any wear or tear. Padded seat and backrest for comfort. We've combined durability with comfort into this mobility aid. Its wide padded seat provides a comfortable place to sit, and the backrest offers back support. Lockable brakes ensure the rollator walker won't move when seated. Over-sized 6\" wheels for increased maneuverability. The aluminum rollator's large wheels provide a smooth glide and make it easy to roll on multiple indoor terrains. Convenient storage area holds personal items. Hide and store personal items under the seat in the suitable storage area. Its large size can hold cell phones, purses, notebooks, and more. Folds up for storage and travel. The aluminum rollator features an easy-to-fold design for quick and painless storage. Its slim size when folded makes it easy to store in small spaces such as closets and car trunks. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Diethylhexyl phthalate (DEHP), which is known to the State of California to cause cancer or birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 6\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Package Dims (h x w x d): 21.63\" x 21.25\" x 6.13\" Package Weight: 17.8 lbs Product Weight: 14.5 lbs Weight Capacity: 300 lbs. Color: Navy, Black, Pink Product Dims (h x w x d): 29.50\" - 39.00\" x 22.5\" x 29\" Instruction Manual Warnings/Precautions"
+     },
+     "price": {
+      "amount": 17791,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGA617000000_Hero_05172024_2500x2500_fca4698a-662e-4f31-a6dc-27e6564cca5e.jpg?v=1746811847"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30988992086121:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Pink"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGA223000000_Hero_04182024_2500x2500_33be408e-3fbb-4464-b921-bfb95aea5098.jpg?v=1744827658",
+     "alt_text": "Carex Step 'N Rest\u00ae Rolling Walker - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Color_Black",
+    "Color_Blue",
+    "Color_Pink",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "HipInjury",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Level of Independence_Struggling",
+    "Material_Aluminum",
+    "Number of Wheels_Four",
+    "Product Category_Mobility",
+    "Product Type_Rollator",
+    "Size of Wheels_6\"",
+    "Weight Capacity_250 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150218014825",
+     "handle": "mobility-aids-products-and-accessories",
+     "title": "Mobility Aids, Products and Accessories",
+     "description": {
+      "html": "Empower your independence with the right mobility device. Being able to move is critical to having a good quality of life. Mobility issues can prevent you from it. Our wide range of mobility equipment is specially crafted to provide comfortable support, stability, and ease of use. We offer walking aids such as canes for one-handed stability and support. Our walkers and rollators provide dual-sided walking assistance for those needing more help. And for the most support, our wheelchairs and scooters are excellent choices to keep you moving without standing. Our personal mobility devices are here to give you more freedom, confidence and increase your quality of life. Can't decide? Take our mobility aid quiz for a personalized recommendation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121082658921",
+   "title": "Carex Trio Rolling Walker",
+   "description": {
+    "html": "Maintain your active lifestyle in comfort with the Trio Rolling Walker. Its unique slim design allows you to move around quickly, indoors, and out. It comes equipped with locking hand brakes for safety, as well as a large carry bag to store personal items. This rolling walker is lightweight and folds quickly for convenient storage in the trunk or behind the car seat\u2014quick, tool-free assembly. Lightweight, three-wheeled walker easily maneuvers in tight spaces. The unique three-wheel design enables the folding walker to move around in tight spaces and make tight turns easily. Collapses quickly for storage and transport. The folding rollator makes storage in compact spaces such as car trunks easy and convenient. It's easy to fold for quick storage with no struggle. Storage bag for personal items. Take your personal items with you by storing them in the mobility aids storage bag. Easily store your phone, books, purse, and more. Height-adjustable handles. Easily adjust the rollators handle height with just the push of a button. The height can be adjusted 31.75\" to 38\". A 10 lbs lightweight rollator. At just 10 pounds, getting around with this mobility walker is comfortable. Its lightweight means you won't ever get tired using it or struggle to store it. 7-inch wheels with locking brakes. The aluminum folding walker sports 7\" wheels to make getting around on multiple surfaces easier. Its locking brakes means you can leave it anywhere without it rolling away. Durable design for continuous use. Its high-grade aluminum construction means it can be used over and over again without braking. The 300 lbs weight capacity lets the user rely on the heavy-duty rollator without worry. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Diethylhexyl phthalate (DEHP), which is known to the State of California to cause cancer or birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 7\" Seat: N/A Backrest: N/A Brakes: Yes Storage Bag: Yes Package Weight: 15.4 lbs Product Weight: 10 lbs Weight Capacity: 300 lbs. Color: Blue Vein Product Dims (h x w x d): 31.75\" - 38.00\" x 25.5\" x 22\" YOUTUBE VIDEO: The Carex A333 Trio Rolling Walker Instruction Manual Warnings/Precautions"
+   },
+   "url": "https://carex.com/products/carex-trio-rolling-walker",
+   "handle": "carex-trio-rolling-walker",
+   "price_range": {
+    "min": {
+     "amount": 15434,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15434,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15434,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15434,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41894371065961",
+     "sku": "FGA333C1 0000",
+     "title": "Blue",
+     "description": {
+      "html": "Maintain your active lifestyle in comfort with the Trio Rolling Walker. Its unique slim design allows you to move around quickly, indoors, and out. It comes equipped with locking hand brakes for safety, as well as a large carry bag to store personal items. This rolling walker is lightweight and folds quickly for convenient storage in the trunk or behind the car seat\u2014quick, tool-free assembly. Lightweight, three-wheeled walker easily maneuvers in tight spaces. The unique three-wheel design enables the folding walker to move around in tight spaces and make tight turns easily. Collapses quickly for storage and transport. The folding rollator makes storage in compact spaces such as car trunks easy and convenient. It's easy to fold for quick storage with no struggle. Storage bag for personal items. Take your personal items with you by storing them in the mobility aids storage bag. Easily store your phone, books, purse, and more. Height-adjustable handles. Easily adjust the rollators handle height with just the push of a button. The height can be adjusted 31.75\" to 38\". A 10 lbs lightweight rollator. At just 10 pounds, getting around with this mobility walker is comfortable. Its lightweight means you won't ever get tired using it or struggle to store it. 7-inch wheels with locking brakes. The aluminum folding walker sports 7\" wheels to make getting around on multiple surfaces easier. Its locking brakes means you can leave it anywhere without it rolling away. Durable design for continuous use. Its high-grade aluminum construction means it can be used over and over again without braking. The 300 lbs weight capacity lets the user rely on the heavy-duty rollator without worry. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Diethylhexyl phthalate (DEHP), which is known to the State of California to cause cancer or birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 7\" Seat: N/A Backrest: N/A Brakes: Yes Storage Bag: Yes Package Weight: 15.4 lbs Product Weight: 10 lbs Weight Capacity: 300 lbs. Color: Blue Vein Product Dims (h x w x d): 31.75\" - 38.00\" x 25.5\" x 22\" YOUTUBE VIDEO: The Carex A333 Trio Rolling Walker Instruction Manual Warnings/Precautions"
+     },
+     "price": {
+      "amount": 15434,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15434,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGA333000000_Prod1_1000x1000_885e63ce-26c2-4749-a8f7-9229e7dc38dc.jpg?v=1706806046"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/41894371065961:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41894371098729",
+     "sku": "FGE816C0 0000",
+     "title": "Pink",
+     "description": {
+      "html": "Maintain your active lifestyle in comfort with the Trio Rolling Walker. Its unique slim design allows you to move around quickly, indoors, and out. It comes equipped with locking hand brakes for safety, as well as a large carry bag to store personal items. This rolling walker is lightweight and folds quickly for convenient storage in the trunk or behind the car seat\u2014quick, tool-free assembly. Lightweight, three-wheeled walker easily maneuvers in tight spaces. The unique three-wheel design enables the folding walker to move around in tight spaces and make tight turns easily. Collapses quickly for storage and transport. The folding rollator makes storage in compact spaces such as car trunks easy and convenient. It's easy to fold for quick storage with no struggle. Storage bag for personal items. Take your personal items with you by storing them in the mobility aids storage bag. Easily store your phone, books, purse, and more. Height-adjustable handles. Easily adjust the rollators handle height with just the push of a button. The height can be adjusted 31.75\" to 38\". A 10 lbs lightweight rollator. At just 10 pounds, getting around with this mobility walker is comfortable. Its lightweight means you won't ever get tired using it or struggle to store it. 7-inch wheels with locking brakes. The aluminum folding walker sports 7\" wheels to make getting around on multiple surfaces easier. Its locking brakes means you can leave it anywhere without it rolling away. Durable design for continuous use. Its high-grade aluminum construction means it can be used over and over again without braking. The 300 lbs weight capacity lets the user rely on the heavy-duty rollator without worry. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Diethylhexyl phthalate (DEHP), which is known to the State of California to cause cancer or birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 7\" Seat: N/A Backrest: N/A Brakes: Yes Storage Bag: Yes Package Weight: 15.4 lbs Product Weight: 10 lbs Weight Capacity: 300 lbs. Color: Blue Vein Product Dims (h x w x d): 31.75\" - 38.00\" x 25.5\" x 22\" YOUTUBE VIDEO: The Carex A333 Trio Rolling Walker Instruction Manual Warnings/Precautions"
+     },
+     "price": {
+      "amount": 15434,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15434,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGE816C00000_Web_Images-01.jpg?v=1729283421"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/41894371098729:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Pink"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGA333000000_Prod1_1000x1000_885e63ce-26c2-4749-a8f7-9229e7dc38dc.jpg?v=1706806046",
+     "alt_text": "Carex Trio Rolling Walker"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Color_Blue Flame",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "HipInjury",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Level of Independence_Struggling",
+    "Material_Aluminum",
+    "Number of Wheels_Three",
+    "Product Category_Mobility",
+    "Product Type_Rollator",
+    "Size of Wheels_7\"",
+    "Weight Capacity_250 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150218014825",
+     "handle": "mobility-aids-products-and-accessories",
+     "title": "Mobility Aids, Products and Accessories",
+     "description": {
+      "html": "Empower your independence with the right mobility device. Being able to move is critical to having a good quality of life. Mobility issues can prevent you from it. Our wide range of mobility equipment is specially crafted to provide comfortable support, stability, and ease of use. We offer walking aids such as canes for one-handed stability and support. Our walkers and rollators provide dual-sided walking assistance for those needing more help. And for the most support, our wheelchairs and scooters are excellent choices to keep you moving without standing. Our personal mobility devices are here to give you more freedom, confidence and increase your quality of life. Can't decide? Take our mobility aid quiz for a personalized recommendation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121081970793",
+   "title": "Carex Rolling Walker",
+   "description": {
+    "html": "This top of the line aluminum folding walker features oversized 8\" wheels, making it easier to get around. The lockable handbrakes offer safety, and the padded seat and backrest provide comfort during use. A convenient storage area under the seat safely holds your personal items. The walker folds easily for storage and transport, and the assembly is quick and tool-free. A folding and lightweight rollator. At a weight of just 17.5 lbs, this mobility walker makes getting around convenient and easy. The folding rollator folds up for quick and easy storage in tight spaces such as the trunk of your car. Added storage for personal items. The aluminum rollator offers even more convenience with a storage area located under the padded seat. Its three compartments means you can store a wide array of items, including a lunchbox, books, and even a small travel mug\u2014no more worrying about leaving anything behind. Locking hand brakes for added safety. The rollator with seat features locking hand brakes to hold the mobility aid in place. This means you can sit down comfortably without having to worry about rolling. Height adjustable handles. The handles adjust 33.75\" to 36.5\" to meet a wide array of heights for comfort. Comfortable padded seat and backrest. Sit in comfort with the help of the padded seat and backrest. The added comfort makes long-term use easy and doable. Oversized 8\" wheels for increased maneuverability. Large wheel rollators offer more ease of use and flexibility. The 8\" wheels make handling multiple terrains easier than traditional, smaller wheeled rollators. Made of durable aluminum. The heavy-duty rollator's aluminum construction gives it a weight capacity of 300 lbs. Comes with a storage bag. Fold the rollator up and store it in the convenient bag when not in use. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Diethylhexyl phthalate (DEHP), which is known to the State of California to cause cancer or birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 8\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Package Dims (h x w x d): 23.75\" x 21\" x 9\" Package Weight: 20.5 lbs Product Weight: 17.5 lbs Weight Capacity: 300 lbs. Color: Burgundy Product Dims (h x w x d): 33.75\" - 36.5\" x 26\" x 27\" Instruction Manual Packaging Insert Precautions(English) Packaging Insert Precautions(Spanish)"
+   },
+   "url": "https://carex.com/products/carex-rolling-walker",
+   "handle": "carex-rolling-walker",
+   "price_range": {
+    "min": {
+     "amount": 20688,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20688,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226632835177",
+     "sku": "FGA22200 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "This top of the line aluminum folding walker features oversized 8\" wheels, making it easier to get around. The lockable handbrakes offer safety, and the padded seat and backrest provide comfort during use. A convenient storage area under the seat safely holds your personal items. The walker folds easily for storage and transport, and the assembly is quick and tool-free. A folding and lightweight rollator. At a weight of just 17.5 lbs, this mobility walker makes getting around convenient and easy. The folding rollator folds up for quick and easy storage in tight spaces such as the trunk of your car. Added storage for personal items. The aluminum rollator offers even more convenience with a storage area located under the padded seat. Its three compartments means you can store a wide array of items, including a lunchbox, books, and even a small travel mug\u2014no more worrying about leaving anything behind. Locking hand brakes for added safety. The rollator with seat features locking hand brakes to hold the mobility aid in place. This means you can sit down comfortably without having to worry about rolling. Height adjustable handles. The handles adjust 33.75\" to 36.5\" to meet a wide array of heights for comfort. Comfortable padded seat and backrest. Sit in comfort with the help of the padded seat and backrest. The added comfort makes long-term use easy and doable. Oversized 8\" wheels for increased maneuverability. Large wheel rollators offer more ease of use and flexibility. The 8\" wheels make handling multiple terrains easier than traditional, smaller wheeled rollators. Made of durable aluminum. The heavy-duty rollator's aluminum construction gives it a weight capacity of 300 lbs. Comes with a storage bag. Fold the rollator up and store it in the convenient bag when not in use. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Diethylhexyl phthalate (DEHP), which is known to the State of California to cause cancer or birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 8\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Package Dims (h x w x d): 23.75\" x 21\" x 9\" Package Weight: 20.5 lbs Product Weight: 17.5 lbs Weight Capacity: 300 lbs. Color: Burgundy Product Dims (h x w x d): 33.75\" - 36.5\" x 26\" x 27\" Instruction Manual Packaging Insert Precautions(English) Packaging Insert Precautions(Spanish)"
+     },
+     "price": {
+      "amount": 20688,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-carex-rolling-walker-28288219512937.jpg?v=1679943781"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226632835177:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-carex-rolling-walker-28288219512937.jpg?v=1679943781",
+     "alt_text": "Carex Rolling Walker - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Color_Burgundy",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "HipInjury",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Level of Independence_Struggling",
+    "Material_Aluminum",
+    "Number of Wheels_Four",
+    "Product Category_Mobility",
+    "Product Type_Rollator",
+    "Size of Wheels_8\"",
+    "Weight Capacity_250 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150218014825",
+     "handle": "mobility-aids-products-and-accessories",
+     "title": "Mobility Aids, Products and Accessories",
+     "description": {
+      "html": "Empower your independence with the right mobility device. Being able to move is critical to having a good quality of life. Mobility issues can prevent you from it. Our wide range of mobility equipment is specially crafted to provide comfortable support, stability, and ease of use. We offer walking aids such as canes for one-handed stability and support. Our walkers and rollators provide dual-sided walking assistance for those needing more help. And for the most support, our wheelchairs and scooters are excellent choices to keep you moving without standing. Our personal mobility devices are here to give you more freedom, confidence and increase your quality of life. Can't decide? Take our mobility aid quiz for a personalized recommendation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121093374057",
+   "title": "Carex Explorer\u00ae Walker with Wheels",
+   "description": {
+    "html": "Stay active and independent with the Carex Explorer Folding Walker. This medical walker has all the features needed to stay on the go. It's a lightweight aluminum walker with 5\" wheels for smooth rolling. Its organizer bag has multiple pockets for convenient storage. The wheels and glides help users walk naturally without being lifted. The adult walker with wheels is height adjustable from 30\" to 38\". No assembly is needed. Height is adjustable from 30\" to 38\". Peg holes allow the walker to be adjusted easily. Push the adjustment buttons in and slide the aluminum walker tubes up or down. Quickly folds and locks in place for storage. The compact walker is perfect for travel. It folds using two buttons for storage in tight spaces. 5\" wheels and glides included. The portable walker never has to be lifted. Users push it to move forward with minimal effort. No need to pick it up to move. Features a walker organizer bag with multiple pockets. Take your items with you. The convenient bag lets you take your personal items with you. Weighs only 9 pounds. This compact travel walker is perfect for those with weak strength. Users can push and carry it effortlessly for daily use. It's ideal for elderly persons, the disabled, and anyone in need of walking support. Supports up to 300 lbs. The durable two-wheel walker comes ready for daily use. The solid aluminum materials make it dependable and rugged for long-term use. No assembly required. The basic walker comes ready to be used. No need for tools or a lengthy assembly process. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including medical supplies walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right walker? Where To Buy Seat: No Backrest: No Weight Capacity: 300 lbs. Wheels: 5\" Closure: One Button Package Dims (h x w x d): 18\" x 22\" x 5\" Package Weight: 9 lbs. Product Dims (h x w x d): 30\" - 38\" x 24\" x 19\" Product Weight: 7.6 lbs. Color: Blue Instruction Manual (PDF)"
+   },
+   "url": "https://carex.com/products/carex-explorer-walker-with-wheels",
+   "handle": "carex-explorer-walker-with-wheels",
+   "price_range": {
+    "min": {
+     "amount": 12803,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12803,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226763612265",
+     "sku": "FGA86790 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Stay active and independent with the Carex Explorer Folding Walker. This medical walker has all the features needed to stay on the go. It's a lightweight aluminum walker with 5\" wheels for smooth rolling. Its organizer bag has multiple pockets for convenient storage. The wheels and glides help users walk naturally without being lifted. The adult walker with wheels is height adjustable from 30\" to 38\". No assembly is needed. Height is adjustable from 30\" to 38\". Peg holes allow the walker to be adjusted easily. Push the adjustment buttons in and slide the aluminum walker tubes up or down. Quickly folds and locks in place for storage. The compact walker is perfect for travel. It folds using two buttons for storage in tight spaces. 5\" wheels and glides included. The portable walker never has to be lifted. Users push it to move forward with minimal effort. No need to pick it up to move. Features a walker organizer bag with multiple pockets. Take your items with you. The convenient bag lets you take your personal items with you. Weighs only 9 pounds. This compact travel walker is perfect for those with weak strength. Users can push and carry it effortlessly for daily use. It's ideal for elderly persons, the disabled, and anyone in need of walking support. Supports up to 300 lbs. The durable two-wheel walker comes ready for daily use. The solid aluminum materials make it dependable and rugged for long-term use. No assembly required. The basic walker comes ready to be used. No need for tools or a lengthy assembly process. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including medical supplies walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right walker? Where To Buy Seat: No Backrest: No Weight Capacity: 300 lbs. Wheels: 5\" Closure: One Button Package Dims (h x w x d): 18\" x 22\" x 5\" Package Weight: 9 lbs. Product Dims (h x w x d): 30\" - 38\" x 24\" x 19\" Product Weight: 7.6 lbs. Color: Blue Instruction Manual (PDF)"
+     },
+     "price": {
+      "amount": 12803,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/61T6-NdsD4L._AC_SL1500.jpg?v=1679940347"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226763612265:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/61T6-NdsD4L._AC_SL1500.jpg?v=1679940347",
+     "alt_text": "Carex Explorer\u00ae Walker with Wheels - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Closure_One Button",
+    "Color_Blue/Black",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Height Range_30\" to 38\"",
+    "Level of Independence_Coping",
+    "Material_Aluminum",
+    "Product Category_Mobility",
+    "Product Type_Walker",
+    "Walkers",
+    "Weight Capacity_300 LBS",
+    "Weight_9.4 LBS",
+    "Wheel Size_5\"",
+    "Wheels_Yes",
+    "Width_24\""
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150218014825",
+     "handle": "mobility-aids-products-and-accessories",
+     "title": "Mobility Aids, Products and Accessories",
+     "description": {
+      "html": "Empower your independence with the right mobility device. Being able to move is critical to having a good quality of life. Mobility issues can prevent you from it. Our wide range of mobility equipment is specially crafted to provide comfortable support, stability, and ease of use. We offer walking aids such as canes for one-handed stability and support. Our walkers and rollators provide dual-sided walking assistance for those needing more help. And for the most support, our wheelchairs and scooters are excellent choices to keep you moving without standing. Our personal mobility devices are here to give you more freedom, confidence and increase your quality of life. Can't decide? Take our mobility aid quiz for a personalized recommendation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121082298473",
+   "title": "Carex Crosstour Rolling Walker",
+   "description": {
+    "html": "Bring increased independence and mobility assistance with the Crosstour Rolling Walker. It features a lightweight aluminum frame and locking brakes for safety. The height is adjustable, and the sleek side-folding design provides for easy transport and storage. It comes with a bonus cane holder and a large storage bag with a carrying strap that can be removed. A classic looking euro rollator. Stand out from the crowd with the classic feel and look of the euro-style design. Its sleek color and futuristic aesthetic is perfect for anyone wanting to be different. A lightweight walker for an easy push and storage. The aluminum rollator features a lightweight, durable, and dependable build making it easy for those with weak strength. Easy-to-use side-folding design. Easily store the folding walker in tight spaces, including closets and car trunks. The engineered easy to fold design makes storage quick and painless. Height adjustable 34\" to 38\". Having the wrong height for a rollator can cause injuries. The aluminum rollator can be height adjusted and is perfect for those up to 6'4\" tall. Locking brakes for use when seating. The added safety of locking brakes means you won't have to worry about the mobility walker rolling while seated. Large 8\" front wheels for superior maneuverability. The extra-large eight-inch front wheels mean a smooth glide both indoor and outdoor on multiple surfaces. 300 lb. weight capacity. The rollator with seat is a durable and dependable aluminum rollator ideal for those in need of something to use daily. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Bisphenol A (BPA), which is known to the State of California to cause birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 8\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Product Weight: 14 lbs Weight Capacity: 300 lbs. Color: Silver/Black Product Dims (h x w x d): 33.75\" - 36.5\" x 26\" x 27\" A230-00 Cross tour Rolling Walker Instructions (PDF)"
+   },
+   "url": "https://carex.com/products/carex-crosstour-rolling-walker",
+   "handle": "carex-crosstour-rolling-walker",
+   "price_range": {
+    "min": {
+     "amount": 19999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226636308585",
+     "sku": "FGA23000 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Bring increased independence and mobility assistance with the Crosstour Rolling Walker. It features a lightweight aluminum frame and locking brakes for safety. The height is adjustable, and the sleek side-folding design provides for easy transport and storage. It comes with a bonus cane holder and a large storage bag with a carrying strap that can be removed. A classic looking euro rollator. Stand out from the crowd with the classic feel and look of the euro-style design. Its sleek color and futuristic aesthetic is perfect for anyone wanting to be different. A lightweight walker for an easy push and storage. The aluminum rollator features a lightweight, durable, and dependable build making it easy for those with weak strength. Easy-to-use side-folding design. Easily store the folding walker in tight spaces, including closets and car trunks. The engineered easy to fold design makes storage quick and painless. Height adjustable 34\" to 38\". Having the wrong height for a rollator can cause injuries. The aluminum rollator can be height adjusted and is perfect for those up to 6'4\" tall. Locking brakes for use when seating. The added safety of locking brakes means you won't have to worry about the mobility walker rolling while seated. Large 8\" front wheels for superior maneuverability. The extra-large eight-inch front wheels mean a smooth glide both indoor and outdoor on multiple surfaces. 300 lb. weight capacity. The rollator with seat is a durable and dependable aluminum rollator ideal for those in need of something to use daily. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. WARNING: This product can expose you to chemicals including Bisphenol A (BPA), which is known to the State of California to cause birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Wheel Size: 8\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Product Weight: 14 lbs Weight Capacity: 300 lbs. Color: Silver/Black Product Dims (h x w x d): 33.75\" - 36.5\" x 26\" x 27\" A230-00 Cross tour Rolling Walker Instructions (PDF)"
+     },
+     "price": {
+      "amount": 19999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/CarexCrosstourRollingWalker_WhiteBG_Lifestyle.jpg?v=1681153116"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226636308585:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/CarexCrosstourRollingWalker_WhiteBG_Lifestyle.jpg?v=1681153116",
+     "alt_text": "Carex Crosstour Rolling Walker"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Color_Silver",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "HipInjury",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Level of Independence_Struggling",
+    "Material_Aluminum",
+    "Number of Wheels_Four",
+    "Product Category_Mobility",
+    "Product Type_Rollator",
+    "Size of Wheels_8\"",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150218014825",
+     "handle": "mobility-aids-products-and-accessories",
+     "title": "Mobility Aids, Products and Accessories",
+     "description": {
+      "html": "Empower your independence with the right mobility device. Being able to move is critical to having a good quality of life. Mobility issues can prevent you from it. Our wide range of mobility equipment is specially crafted to provide comfortable support, stability, and ease of use. We offer walking aids such as canes for one-handed stability and support. Our walkers and rollators provide dual-sided walking assistance for those needing more help. And for the most support, our wheelchairs and scooters are excellent choices to keep you moving without standing. Our personal mobility devices are here to give you more freedom, confidence and increase your quality of life. Can't decide? Take our mobility aid quiz for a personalized recommendation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121081806953",
+   "title": "Carex Steel Rolling Walker",
+   "description": {
+    "html": "The Steel Rolling Walker features a padded seat and backrest that provide comfort during use. The 6\" wheels with lockable handbrakes make maneuvering easy. Includes a convenient storage area under the seat to safely hold your personal items. The walker folds for storage and transport, and the assembly is quick and tool-free. Padded seat and backrest for comfort while seated. The Carex steel rollator was designed to be comfortable for sitting long periods. The 12\" padded seat offers ample room for anyone in need of a long-term solution. Storage bag for easy storage. Hold your personal items under the mobility walker's seat. The large storage area can easily hold items such as cell phones, laptops, books, and more. 6\" wheels for easy maneuvering. The four-wheel rollator is easy to turn and push with smooth, gliding six-inch wheels. Perfect for multiple indoor surfaces. Made of durable steel. The heavy-duty walker's steel frame ensures it can withstand long-term use without any wear and tear. The mobility aid can hold up to 350 lbs, which makes it great for bariatric patients. Locking hand brakes for added safety. The handgrips easily lock up when needed to ensure the rollator with seat stays put when seated. Folds up for quick storage and transportation. No need to worry about finding a large area to store the rollator. The folding walker can be stored in compact spaces such as the trunk of a car for transportation. Height adjustable handles. The rollator walker with seat handles can be adjusted from 33.75\" to 34.5\u201d to match the user's height. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. Where To Buy Wheel Size: 8\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Product Weight: 17.5 lbs Weight Capacity: 350 lbs. Color: Blue Product Dims (h x w x d): 25\" x 23\" x 21.5\" Instruction Manual (PDF)"
+   },
+   "url": "https://carex.com/products/carex-steel-rolling-walker",
+   "handle": "carex-steel-rolling-walker",
+   "price_range": {
+    "min": {
+     "amount": 12999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226630312041",
+     "sku": "FGA22100 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Steel Rolling Walker features a padded seat and backrest that provide comfort during use. The 6\" wheels with lockable handbrakes make maneuvering easy. Includes a convenient storage area under the seat to safely hold your personal items. The walker folds for storage and transport, and the assembly is quick and tool-free. Padded seat and backrest for comfort while seated. The Carex steel rollator was designed to be comfortable for sitting long periods. The 12\" padded seat offers ample room for anyone in need of a long-term solution. Storage bag for easy storage. Hold your personal items under the mobility walker's seat. The large storage area can easily hold items such as cell phones, laptops, books, and more. 6\" wheels for easy maneuvering. The four-wheel rollator is easy to turn and push with smooth, gliding six-inch wheels. Perfect for multiple indoor surfaces. Made of durable steel. The heavy-duty walker's steel frame ensures it can withstand long-term use without any wear and tear. The mobility aid can hold up to 350 lbs, which makes it great for bariatric patients. Locking hand brakes for added safety. The handgrips easily lock up when needed to ensure the rollator with seat stays put when seated. Folds up for quick storage and transportation. No need to worry about finding a large area to store the rollator. The folding walker can be stored in compact spaces such as the trunk of a car for transportation. Height adjustable handles. The rollator walker with seat handles can be adjusted from 33.75\" to 34.5\u201d to match the user's height. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. Where To Buy Wheel Size: 8\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Product Weight: 17.5 lbs Weight Capacity: 350 lbs. Color: Blue Product Dims (h x w x d): 25\" x 23\" x 21.5\" Instruction Manual (PDF)"
+     },
+     "price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/CarexSteelRollingWalker.jpg?v=1710874233"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226630312041:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/CarexSteelRollingWalker.jpg?v=1710874233",
+     "alt_text": "A blue steel rolling walker with a seat"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Color_Blue",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "HipInjury",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Level of Independence_Struggling",
+    "Material_Steel",
+    "Number of Wheels_Four",
+    "Product Category_Mobility",
+    "Product Type_Rollator",
+    "Size of Wheels_6\"",
+    "Weight Capacity_350 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150218014825",
+     "handle": "mobility-aids-products-and-accessories",
+     "title": "Mobility Aids, Products and Accessories",
+     "description": {
+      "html": "Empower your independence with the right mobility device. Being able to move is critical to having a good quality of life. Mobility issues can prevent you from it. Our wide range of mobility equipment is specially crafted to provide comfortable support, stability, and ease of use. We offer walking aids such as canes for one-handed stability and support. Our walkers and rollators provide dual-sided walking assistance for those needing more help. And for the most support, our wheelchairs and scooters are excellent choices to keep you moving without standing. Our personal mobility devices are here to give you more freedom, confidence and increase your quality of life. Can't decide? Take our mobility aid quiz for a personalized recommendation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121092784233",
+   "title": "Carex Uplift Walker",
+   "description": {
+    "html": "Get help sitting, standing, and walking with the Carex Uplift Walker. The walker for adults is height adjustable from 30\" to 37\" for various heights. An easy single-button design allows the lightweight walker to fold for easy transport and storage. Its matte silver finish with a blue crossbar adds a sense of flare. Height is adjustable from 30\" to 37\". The aluminum walker allows users to adjust its height for a more comfortable and safe fit. Easily folds for storage and transportation. Take the portable walker with you while traveling. The compact walker quickly folds via the single button design for quick storage. Assists in sitting, standing, and walking. The walker with arm support features four grips to assist users with both sitting and standing. The lower handles offer support when standing and sitting. 250 lbs weight capacity. The heavy-duty walker was made to last. Its durable design makes it perfect for daily use. Added non-slip rubber tips add even more stability. Stylish and sleek. This medical walker is ideal for anyone wanting a sense of style from their walker. Its matte silver finish and blue crossbar make it stand out from other basic walkers. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including medical supplies walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right walker? Where To Buy Seat: No Backrest: No Weight Capacity: 250 lbs. Wheels: N/A Closure: One Button Product Weight: 6 lbs. Package Weight: 6.6 lbs. Product Dims (h x w x d): 30\" - 37\" x 19.5\" x 20\" Color: Matte Silver & Blue Instruction Manual (PDF)"
+   },
+   "url": "https://carex.com/products/carex-uplift-walker",
+   "handle": "carex-uplift-walker",
+   "price_range": {
+    "min": {
+     "amount": 7100,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7100,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226755125353",
+     "sku": "FGA849C0 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Get help sitting, standing, and walking with the Carex Uplift Walker. The walker for adults is height adjustable from 30\" to 37\" for various heights. An easy single-button design allows the lightweight walker to fold for easy transport and storage. Its matte silver finish with a blue crossbar adds a sense of flare. Height is adjustable from 30\" to 37\". The aluminum walker allows users to adjust its height for a more comfortable and safe fit. Easily folds for storage and transportation. Take the portable walker with you while traveling. The compact walker quickly folds via the single button design for quick storage. Assists in sitting, standing, and walking. The walker with arm support features four grips to assist users with both sitting and standing. The lower handles offer support when standing and sitting. 250 lbs weight capacity. The heavy-duty walker was made to last. Its durable design makes it perfect for daily use. Added non-slip rubber tips add even more stability. Stylish and sleek. This medical walker is ideal for anyone wanting a sense of style from their walker. Its matte silver finish and blue crossbar make it stand out from other basic walkers. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including medical supplies walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right walker? Where To Buy Seat: No Backrest: No Weight Capacity: 250 lbs. Wheels: N/A Closure: One Button Product Weight: 6 lbs. Package Weight: 6.6 lbs. Product Dims (h x w x d): 30\" - 37\" x 19.5\" x 20\" Color: Matte Silver & Blue Instruction Manual (PDF)"
+     },
+     "price": {
+      "amount": 7100,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-walker-carex-uplift-walker-28288256868457.png?v=1679948198"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226755125353:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-walker-carex-uplift-walker-28288256868457.png?v=1679948198",
+     "alt_text": "Carex Uplift Walker - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Closure_One Button",
+    "Color_Matte Silver/Blue",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Folding_Yes",
+    "Height Range_30\" to 37\"",
+    "Level of Independence_Coping",
+    "Material_Steel",
+    "Product Category_Mobility",
+    "Product Type_Walker",
+    "Walkers",
+    "Weight Capacity_250 LBS",
+    "Weight_6 LBS",
+    "Wheels_No",
+    "Width_19.5\""
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150218014825",
+     "handle": "mobility-aids-products-and-accessories",
+     "title": "Mobility Aids, Products and Accessories",
+     "description": {
+      "html": "Empower your independence with the right mobility device. Being able to move is critical to having a good quality of life. Mobility issues can prevent you from it. Our wide range of mobility equipment is specially crafted to provide comfortable support, stability, and ease of use. We offer walking aids such as canes for one-handed stability and support. Our walkers and rollators provide dual-sided walking assistance for those needing more help. And for the most support, our wheelchairs and scooters are excellent choices to keep you moving without standing. Our personal mobility devices are here to give you more freedom, confidence and increase your quality of life. Can't decide? Take our mobility aid quiz for a personalized recommendation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121082757225",
+   "title": "Carex Classics Rolling Walker",
+   "description": {
+    "html": "The Classics Rolling Walker has lockable handbrakes for safety and a padded seat and backrest that provide comfort during use. The convenient storage area under the seat holds personal items securely. Folds quickly and easily for storage and transport. No assembly required. Padded seat and backrest for comfort. This rollator walker with seat was designed with comfort in mind. Its padded seat and backrest make long-term sitting comfortable and doable. Height adjustable handles. Easily adjust the handles to meet your height requirements. The handles can be adjusted from 30\" to 36\" for short and tall users. Having the right height is essential when selecting a mobility walker. Locking hand brakes for safety while sitting. The lightweight rollator with seat adds even more comfort and safety with locking brakes\u2014no need to worry about it rolling while sitting down. Easy to fold and store. The aluminum folding walker makes storing and transporting the folding rollator convenient. Convenient seat storage area holds personal items. The storage bag located under the padded seat makes carrying items easier. Store a wide array of items, including cell phones, books, laptops, and more\u2014no more worrying about what to take with you. 6\" wheels for increased maneuverability. Its large six-inch wheels make navigating indoors. The large wheels provide an easy turning solution for added comfort. A heavy-duty rollator. The aluminum rollator is lightweight and durable. It can hold up to 250 lbs making is a reliable source of support. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. Where To Buy Wheel Size: 8\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Product Weight: 13.5 lbs Weight Capacity: 250 lbs. Color: Blue Product Dims (h x w x d): 30-36\" x 25\" x 20\" Instruction Manual (PDF)"
+   },
+   "url": "https://carex.com/products/carex-classics-rolling-walker",
+   "handle": "carex-classics-rolling-walker",
+   "price_range": {
+    "min": {
+     "amount": 12235,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12235,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226642501737",
+     "sku": "FGA33577 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Classics Rolling Walker has lockable handbrakes for safety and a padded seat and backrest that provide comfort during use. The convenient storage area under the seat holds personal items securely. Folds quickly and easily for storage and transport. No assembly required. Padded seat and backrest for comfort. This rollator walker with seat was designed with comfort in mind. Its padded seat and backrest make long-term sitting comfortable and doable. Height adjustable handles. Easily adjust the handles to meet your height requirements. The handles can be adjusted from 30\" to 36\" for short and tall users. Having the right height is essential when selecting a mobility walker. Locking hand brakes for safety while sitting. The lightweight rollator with seat adds even more comfort and safety with locking brakes\u2014no need to worry about it rolling while sitting down. Easy to fold and store. The aluminum folding walker makes storing and transporting the folding rollator convenient. Convenient seat storage area holds personal items. The storage bag located under the padded seat makes carrying items easier. Store a wide array of items, including cell phones, books, laptops, and more\u2014no more worrying about what to take with you. 6\" wheels for increased maneuverability. Its large six-inch wheels make navigating indoors. The large wheels provide an easy turning solution for added comfort. A heavy-duty rollator. The aluminum rollator is lightweight and durable. It can hold up to 250 lbs making is a reliable source of support. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. Where To Buy Wheel Size: 8\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Product Weight: 13.5 lbs Weight Capacity: 250 lbs. Color: Blue Product Dims (h x w x d): 30-36\" x 25\" x 20\" Instruction Manual (PDF)"
+     },
+     "price": {
+      "amount": 12235,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-carex-classics-rolling-walker-28288420184169.png?v=1679936903"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226642501737:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-carex-classics-rolling-walker-28288420184169.png?v=1679936903",
+     "alt_text": "Carex Classics Rolling Walker - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Color_Blue",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "HipInjury",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Level of Independence_Struggling",
+    "Material_Aluminum",
+    "Number of Wheels_Four",
+    "Product Category_Mobility",
+    "Product Type_Rollator",
+    "Size of Wheels_6\"",
+    "Weight Capacity_250 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150218014825",
+     "handle": "mobility-aids-products-and-accessories",
+     "title": "Mobility Aids, Products and Accessories",
+     "description": {
+      "html": "Empower your independence with the right mobility device. Being able to move is critical to having a good quality of life. Mobility issues can prevent you from it. Our wide range of mobility equipment is specially crafted to provide comfortable support, stability, and ease of use. We offer walking aids such as canes for one-handed stability and support. Our walkers and rollators provide dual-sided walking assistance for those needing more help. And for the most support, our wheelchairs and scooters are excellent choices to keep you moving without standing. Our personal mobility devices are here to give you more freedom, confidence and increase your quality of life. Can't decide? Take our mobility aid quiz for a personalized recommendation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121093439593",
+   "title": "Carex Folding Walker",
+   "description": {
+    "html": "The Carex Folding Walker offers a dependable source of support for walking. It features marked peg holes for height adjustment from 30\" to 37\". The portable walker quickly folds for quick storage or transportation anywhere. Its sides are detachable for storage in even tighter spaces. The lightweight medical walker weighs just six lbs making it easy to carry. Easily folds for transportation. Take the compact walker anywhere you go. The easy fold-up walker fits in tight spaces such as car trunks for the avid traveler. Remove the sides to store in even tighter spaces. Height is adjustable from 30\" to 37\". Having the proper height is essential for any mobility aid. Marked peg holes on the basic walker allow users to adjust the height to their liking and needs easily. Weighs only 6 lbs. Having a lightweight aluminum walker is vital for those with weak strength. The affordable walker is comfortable to push, lightweight, and makes getting around easier. Supports up to 300 lbs. While compact in size, the fold-up mobility walker offers a dependable source of support. Its metal construction makes it able to withstand daily use without quick wear and tear. Tool-free assembly. No need to worry about a long assembly with this lightweight walker. Assembly takes only a few minutes with no tools needed. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including medical supplies walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right walker? WARNING: This product can expose you to chemicals including Bisphenol A (BPA), which is known to the State of California to cause birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Seat: No Backrest: No Weight Capacity: 300 lbs. Closure: Dual Button Wheels: n/a Package Dims (h x w x d): 22\" x 16.4\" x 4.9\" Package Weight: 6.6 lbs. Product Dims (h x w x d): 20\" x 18\" x 3.5\" Product Weight: 6.6 lbs. Color: Silver"
+   },
+   "url": "https://carex.com/products/carex-folding-walker",
+   "handle": "carex-folding-walker",
+   "price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226763677801",
+     "sku": "FGA86900 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Carex Folding Walker offers a dependable source of support for walking. It features marked peg holes for height adjustment from 30\" to 37\". The portable walker quickly folds for quick storage or transportation anywhere. Its sides are detachable for storage in even tighter spaces. The lightweight medical walker weighs just six lbs making it easy to carry. Easily folds for transportation. Take the compact walker anywhere you go. The easy fold-up walker fits in tight spaces such as car trunks for the avid traveler. Remove the sides to store in even tighter spaces. Height is adjustable from 30\" to 37\". Having the proper height is essential for any mobility aid. Marked peg holes on the basic walker allow users to adjust the height to their liking and needs easily. Weighs only 6 lbs. Having a lightweight aluminum walker is vital for those with weak strength. The affordable walker is comfortable to push, lightweight, and makes getting around easier. Supports up to 300 lbs. While compact in size, the fold-up mobility walker offers a dependable source of support. Its metal construction makes it able to withstand daily use without quick wear and tear. Tool-free assembly. No need to worry about a long assembly with this lightweight walker. Assembly takes only a few minutes with no tools needed. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including medical supplies walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right walker? WARNING: This product can expose you to chemicals including Bisphenol A (BPA), which is known to the State of California to cause birth defects or other reproductive harm. For more information, visit www.P65Warnings.ca.gov. Where To Buy Seat: No Backrest: No Weight Capacity: 300 lbs. Closure: Dual Button Wheels: n/a Package Dims (h x w x d): 22\" x 16.4\" x 4.9\" Package Weight: 6.6 lbs. Product Dims (h x w x d): 20\" x 18\" x 3.5\" Product Weight: 6.6 lbs. Color: Silver"
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-carex-folding-walker-28288257425513.png?v=1679940863"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226763677801:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-carex-folding-walker-28288257425513.png?v=1679940863",
+     "alt_text": "Carex Folding Walker - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Closure_Two Button",
+    "Color_Silver/Gray",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Height Range_30\" to 37\"",
+    "Level of Independence_Coping",
+    "Material_Aluminum",
+    "Product Category_Mobility",
+    "Product Type_Walker",
+    "Walkers",
+    "Weight Capacity_300 LBS",
+    "Weight_6 LBS",
+    "Wheels_No",
+    "Width_18\""
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150218014825",
+     "handle": "mobility-aids-products-and-accessories",
+     "title": "Mobility Aids, Products and Accessories",
+     "description": {
+      "html": "Empower your independence with the right mobility device. Being able to move is critical to having a good quality of life. Mobility issues can prevent you from it. Our wide range of mobility equipment is specially crafted to provide comfortable support, stability, and ease of use. We offer walking aids such as canes for one-handed stability and support. Our walkers and rollators provide dual-sided walking assistance for those needing more help. And for the most support, our wheelchairs and scooters are excellent choices to keep you moving without standing. Our personal mobility devices are here to give you more freedom, confidence and increase your quality of life. Can't decide? Take our mobility aid quiz for a personalized recommendation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4285426991209",
+   "title": "ProBasics Junior Rollator with 6-inch Wheels",
+   "description": {
+    "html": "The ProBasics Junior Rollator with seat is designed to fit individuals of shorter stature with a focus on style and affordability. Constructed of lightweight aluminum, the heavy-duty walker offers excellent maneuverability and stability. It's equipped with easy-to-operate ergonomic hand brakes, a removable padded backrest, and a water-resistant nylon pouch. The rolling walker easily folds for storage and transport with a built-in fold strap and can support up to 250 pounds. Made of lightweight aluminum for those with weak strength. At a weight of just 12 lbs, this aluminum rollator is perfect for those that need something lightweight and easy to push. Available in blue or burgundy. Select from two colors to match your personal style. Comfortable padded seat and removable backrest. When selecting the ideal rolling walker, comfort is essential. This mobility walker features a padded seat and backrest for comfortable sitting. The removable back support offers more options for sitting. Easy-to-operate ergonomic hand brakes. Those with weak hands or arthritis won't have to worry with this rollator. The handgrips are comfortable, easy to use, and designed for those with a weak grip. Height-adjustable for a custom fit. Having the right height is essential with rollators. The handles can be adjusted to match the user's height. The height is adjustable from 29\" to 34\". Folds up for quick storage and transport. The folding walker can easily be folded up and fits in tight spaces such as the trunk of a car. This folding rollator is ideal for traveling and those with an active lifestyle. Features a water-resistant storage bag. Under the seat storage allows the user to store personal items, including cell phones, laptops, books, and more. No need to worry about leaving items behind. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. Where To Buy Wheel Size: 6\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Product Weight: 12 lbs Weight Capacity: 250 lbs. Color: Burgundy, Blue Product Dims (h x w x d): 32\" x 23\" x 8\""
+   },
+   "url": "https://carex.com/products/probasics-junior-rollator-with-6-inch-wheels",
+   "handle": "probasics-junior-rollator-with-6-inch-wheels",
+   "price_range": {
+    "min": {
+     "amount": 7499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 30598,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 30598,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30875590426729",
+     "sku": "RLAJ6BG",
+     "title": "Burgundy",
+     "description": {
+      "html": "The ProBasics Junior Rollator with seat is designed to fit individuals of shorter stature with a focus on style and affordability. Constructed of lightweight aluminum, the heavy-duty walker offers excellent maneuverability and stability. It's equipped with easy-to-operate ergonomic hand brakes, a removable padded backrest, and a water-resistant nylon pouch. The rolling walker easily folds for storage and transport with a built-in fold strap and can support up to 250 pounds. Made of lightweight aluminum for those with weak strength. At a weight of just 12 lbs, this aluminum rollator is perfect for those that need something lightweight and easy to push. Available in blue or burgundy. Select from two colors to match your personal style. Comfortable padded seat and removable backrest. When selecting the ideal rolling walker, comfort is essential. This mobility walker features a padded seat and backrest for comfortable sitting. The removable back support offers more options for sitting. Easy-to-operate ergonomic hand brakes. Those with weak hands or arthritis won't have to worry with this rollator. The handgrips are comfortable, easy to use, and designed for those with a weak grip. Height-adjustable for a custom fit. Having the right height is essential with rollators. The handles can be adjusted to match the user's height. The height is adjustable from 29\" to 34\". Folds up for quick storage and transport. The folding walker can easily be folded up and fits in tight spaces such as the trunk of a car. This folding rollator is ideal for traveling and those with an active lifestyle. Features a water-resistant storage bag. Under the seat storage allows the user to store personal items, including cell phones, laptops, books, and more. No need to worry about leaving items behind. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. Where To Buy Wheel Size: 6\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Product Weight: 12 lbs Weight Capacity: 250 lbs. Color: Burgundy, Blue Product Dims (h x w x d): 32\" x 23\" x 8\""
+     },
+     "price": {
+      "amount": 7499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 30598,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Burgundy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-burgundy-probasics-junior-rollator-with-6-inch-wheels-28288359268457.png?v=1679950031"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30875590426729:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/30875590492265",
+     "sku": "RLAJ6BL",
+     "title": "Blue",
+     "description": {
+      "html": "The ProBasics Junior Rollator with seat is designed to fit individuals of shorter stature with a focus on style and affordability. Constructed of lightweight aluminum, the heavy-duty walker offers excellent maneuverability and stability. It's equipped with easy-to-operate ergonomic hand brakes, a removable padded backrest, and a water-resistant nylon pouch. The rolling walker easily folds for storage and transport with a built-in fold strap and can support up to 250 pounds. Made of lightweight aluminum for those with weak strength. At a weight of just 12 lbs, this aluminum rollator is perfect for those that need something lightweight and easy to push. Available in blue or burgundy. Select from two colors to match your personal style. Comfortable padded seat and removable backrest. When selecting the ideal rolling walker, comfort is essential. This mobility walker features a padded seat and backrest for comfortable sitting. The removable back support offers more options for sitting. Easy-to-operate ergonomic hand brakes. Those with weak hands or arthritis won't have to worry with this rollator. The handgrips are comfortable, easy to use, and designed for those with a weak grip. Height-adjustable for a custom fit. Having the right height is essential with rollators. The handles can be adjusted to match the user's height. The height is adjustable from 29\" to 34\". Folds up for quick storage and transport. The folding walker can easily be folded up and fits in tight spaces such as the trunk of a car. This folding rollator is ideal for traveling and those with an active lifestyle. Features a water-resistant storage bag. Under the seat storage allows the user to store personal items, including cell phones, laptops, books, and more. No need to worry about leaving items behind. NOTE: Rollators ARE NOT intended to be used as transportation devices. If you're in need of a transportation aid, we advise using a wheelchair or transport chair for maximum safety. Trust in Carex for all your mobility aid needs. For over 35 years, we've been the leader in mobility aids, including rolling walkers. Our wide selection, satisfaction guarantee, and product warranty mean you're well covered with your mobility aid purchase. All of our products are designed to improve, enable, and keep our customers independent. If you're not happy, we'll make it right. Need help selecting the right mobility aid? Read our Mobility Aid Buyer's Guide. We'll cover the many forms of mobility aids, the pros and cons of each, and how to make the right decision. Where To Buy Wheel Size: 6\" Seat: Padded Backrest: Padded Brakes: Yes Storage Bag: Yes Product Weight: 12 lbs Weight Capacity: 250 lbs. Color: Burgundy, Blue Product Dims (h x w x d): 32\" x 23\" x 8\""
+     },
+     "price": {
+      "amount": 7499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 30598,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-blue-probasics-junior-rollator-with-6-inch-wheels-28288424640617.png?v=1679949955"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30875590492265:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Burgundy"
+      },
+      {
+       "label": "Blue"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-blue-probasics-junior-rollator-with-6-inch-wheels-28288424640617.png?v=1679949955",
+     "alt_text": "ProBasics Junior Rollator with 6-inch Wheels - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-5-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_ProBasics",
+    "Color_Blue",
+    "Color_Burgundy",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Level of Independence_Struggling",
+    "Material_Aluminum",
+    "Number of Wheels_Four",
+    "Product Category_Mobility",
+    "Product Type_Rollator",
+    "Size of Wheels_6\"",
+    "Weight Capacity_250 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125615721",
+     "handle": "probasics",
+     "title": "ProBasics Mobility Aids and Equipment",
+     "description": {
+      "html": "ProBasics is a premier home medical equipment brand built to be durable. ProBasics is known for its exceptional value providing a range of wheelchairs, rollators, and other mobility products. It offers a wide selection including transport chairs and rolling walkers with features such as elevated leg support, foldable, large wheels and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150218014825",
+     "handle": "mobility-aids-products-and-accessories",
+     "title": "Mobility Aids, Products and Accessories",
+     "description": {
+      "html": "Empower your independence with the right mobility device. Being able to move is critical to having a good quality of life. Mobility issues can prevent you from it. Our wide range of mobility equipment is specially crafted to provide comfortable support, stability, and ease of use. We offer walking aids such as canes for one-handed stability and support. Our walkers and rollators provide dual-sided walking assistance for those needing more help. And for the most support, our wheelchairs and scooters are excellent choices to keep you moving without standing. Our personal mobility devices are here to give you more freedom, confidence and increase your quality of life. Can't decide? Take our mobility aid quiz for a personalized recommendation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150244130921",
+     "handle": "rollators-and-walkers",
+     "title": "Rollators and Walkers",
+     "description": {
+      "html": "Empower your independence with the perfect rollator to get you around. Are you looking for a mobility aid that provides walking support and stability? Our collection of rolling walkers, also known as 4 wheel walkers, offers a range of choices to meet your needs and preferences. With features like lightweight aluminum construction, compact folding for storage, seats for resting, baskets for carrying essentials, and brakes for added safety, our collection has something for everyone. Imagine taking a break whenever you need it, with the comfort of a seat and the convenience of a basket to carry your belongings. Or, imagine the peace of mind that comes with a heavy-duty rolling walker, designed to support a higher weight capacity and provide added stability. Whatever your needs, our collection has a rolling walker to help you accomplish your goals. Browse our collection of rolling walkers today and find the perfect mobility aid for you. With options like four-wheeled walkers, lightweight rollators, and foldable walkers, you're sure to find a suitable fit for your lifestyle. Don't wait \u2013 start enjoying the support and stability you deserve today!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzBNamcxTkRJMk9Ua3hNakE1TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}
