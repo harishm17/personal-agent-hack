@@ -231,7 +231,7 @@ def _num(v) -> str:
     return "%g" % v
 
 
-UNIT_WORDS = {"gpf": "gallons per flush", "gpm": "gallons per minute", "in": "inches", "lb": "lb"}
+UNIT_WORDS = {"gpf": "gallons per flush", "gpm": "gallons per minute", "in": "inches", "lb": "lb", "dB": "decibels", "sheets": "sheets", "count": ""}
 OPS = {">=": "at least", "<=": "at most", "==": "equal to"}
 
 
@@ -239,10 +239,60 @@ def _article(word: str) -> str:
     return "an" if word[:1].lower() in "aeiou" else "a"
 
 
+def _order_text(sheet: dict) -> str:
+    f = ROOT / sheet["order_doc"] if sheet.get("order_doc") else DOCS / "order.txt"
+    try:
+        return f.read_text()
+    except OSError:
+        return ""
+
+
+def _block(text: str, heading: str) -> list[str]:
+    """The sentences under a heading in the order document, up to the next blank line."""
+    out, on = [], False
+    for line in text.splitlines():
+        if line.strip().lower().startswith(heading.lower()):
+            on = True
+            continue
+        if on:
+            if not line.strip():
+                if out:
+                    break
+                continue
+            out.append(line.strip())
+    return out
+
+
+def _fit_value(sentence: str, old, new) -> str | None:
+    """The order's own sentence with the value the issuer has set now; None if the old value is not in it."""
+    o, n = _num(old), _num(new)
+    if o == n:
+        return sentence
+    import re as _re
+    hit = _re.search(r"(?<![\d.])%s(?![\d.])" % _re.escape(o), sentence)
+    return (sentence[:hit.start()] + n + sentence[hit.end():]) if hit else None
+
+
 def sentences_for(state: dict) -> list[dict]:
-    """Sentences for the active sheet's lines that will be bought or picked up, built from the sheet itself
-    (line need and room, limit name, operator, value and unit) and written as terms (see the module note)."""
+    """Sentences for the active sheet's lines that will be bought or picked up. They are the order document's own
+    sentences (its "In short" block for each line, its "Limits, one per sentence" block for each limit, matched by
+    position, with the value the issuer has set now) so the wording is the order's, whatever the sheet; a sheet
+    whose document does not line up gets sentences built from the sheet's words instead."""
     sheet = {l["id"]: l for l in state["sheet"]["lines"]}
+    text = _order_text(state["sheet"])
+    line_sentences = _block(text, "In short, our order requires")
+    limit_sentences = _block(text, "Limits, one per sentence")
+    sheet_lines = state["sheet"]["lines"]
+    all_limits = [l for L in sheet_lines for l in L["limits"]]
+    issuer_limits = [l for l in all_limits if l["bound"]["source"] == "issuer"]
+    by_line = dict(zip([L["id"] for L in sheet_lines], line_sentences)) if len(line_sentences) == len(sheet_lines) else {}
+    if len(limit_sentences) == len(all_limits):
+        by_limit = dict(zip([l["id"] for l in all_limits], limit_sentences))
+    elif len(limit_sentences) == len(issuer_limits):
+        by_limit = dict(zip([l["id"] for l in issuer_limits], limit_sentences))
+    else:
+        by_limit = {}
+    originals = {l["id"]: (l.get("from_order") or {}).get("value") for l in all_limits}
     out = []
     for line in state["lines"]:
         if line["status"] not in ("ready", "next_candidate", "pick_up") or not line.get("pick"):
@@ -255,8 +305,12 @@ def sentences_for(state: dict) -> list[dict]:
             if b["source"] != "issuer":
                 continue
             fo = limit.get("from_order")
+            sentence = None
+            if limit["id"] in by_limit:
+                old = originals.get(limit["id"])
+                sentence = _fit_value(by_limit[limit["id"]], old if old is not None else b["value"], b["value"])
             out.append({**base, "kind": "limit", "blocks": False, "moved_from_order": bool(fo and fo.get("matches") is False),
-                        "sentence": _limit_sentence(line["need"], limit, b["value"])})
+                        "sentence": sentence or _limit_sentence(line["need"], limit, b["value"])})
         need = ORDER_NAME.get(line["need"], line["need"])
         if line["status"] == "pick_up":
             how = re.match(r"must be (.+?);", sheet[line["line_id"]].get("fulfilment_note") or "")
@@ -265,7 +319,7 @@ def sentences_for(state: dict) -> list[dict]:
                             _article(need), need, " to be " + how.group(1) if how else "")})
         else:
             out.append({**base, "kind": "order", "blocks": True,
-                        "sentence": "Our order requires %s %s for the %s." % (_article(need), need, line["room"])})
+                        "sentence": by_line.get(line["line_id"]) or "Our order requires %s %s for the %s." % (_article(need), need, line["room"])})
         # The store's own words, verbatim and without its name (a claim that names another brand gets no verdict).
         # Shown with the verdict, not blocking by default: the judge is not steady on policy text from several stores.
         if not STORE_SENTENCES:
