@@ -39,8 +39,16 @@ def slug(name):
     return re.sub(r"[^A-Za-z0-9.]+", "-", name).strip("-")
 
 
-def pool_files(folder=None):
-    for candidate in (folder, os.environ.get("SIGNOFF_POOL_DIR"), ROOT / "data" / "pool"):
+def sheet_dirs(sheet_id):
+    """(pool folder, figures folder) of a sheet: sheet1 is data/pool and data/figures; any other sheet keeps its
+    pool under data/<sheet>/pool (the STORE stream's) and its figures under data/figures/<sheet>."""
+    if sheet_id == "sheet1":
+        return ROOT / "data" / "pool", ROOT / "data" / "figures"
+    return ROOT / "data" / sheet_id / "pool", ROOT / "data" / "figures" / sheet_id
+
+
+def pool_files(folder=None, sheet_id="sheet1"):
+    for candidate in (folder, os.environ.get("SIGNOFF_POOL_DIR"), sheet_dirs(sheet_id)[0]):
         if candidate and any(pathlib.Path(candidate).glob("*.json")):
             return sorted(pathlib.Path(candidate).glob("*.json"))
     return []
@@ -57,12 +65,12 @@ def text_key(product, model, sheet=None):
 
 def read_one(product, sheet, model, assume_unit):
     started = time.time()
-    asked = reader.wanted_figures(product, sheet)
+    asked, units = reader.wanted_figures(product, sheet), reader.figure_units(sheet)
     if model == gliner.EXTRACTOR:
-        proposals, extractor, usage = gliner.read(product, asked)
+        proposals, extractor, usage = gliner.read(product, asked, units)
     else:
         proposals, extractor, usage, asked = reader.read(product, sheet, model)
-    figures = [spans.finish(p, product, extractor, assume_unit) for p in proposals]
+    figures = [spans.finish(p, product, extractor, assume_unit, units.get(p.get("figure"))) for p in proposals]
     obs.tool_call("figure_read", {"store": product["store"], "product_id": product["product_id"], "reader": extractor,
                                   "asked": asked},
                   {"figures": [{"figure": f["figure"], "kind": f["kind"], "value": f["value"], "low": f["low"],
@@ -134,15 +142,16 @@ def run(files, sheet, deciding, out, evidence=(), policy="first", workers=8, lim
 
 def refresh(workers=8):
     """For the app, after the pool was refetched: read what changed, combine, compare, reload the engine."""
-    sheet = json.loads((ROOT / "sheets" / ((os.environ.get("SIGNOFF_SHEET") or "sheet1") + ".json")).read_text())
-    files = pool_files()
-    if not files:
-        return {"products": 0, "errors": ["no data/pool"]}
-    evidence = [gliner.EXTRACTOR] if config.have("SIE_API_KEY") else []
-    summary = run(files, sheet, readers(), ROOT / "data" / "figures", evidence, workers=workers, quiet=True)
     from signoff.engine import state
+    sheet_id = state.get_state()["sheet"]["id"]
+    sheet = json.loads((ROOT / "sheets" / (sheet_id + ".json")).read_text())
+    files, out = pool_files(sheet_id=sheet_id), sheet_dirs(sheet_id)[1]
+    if not files:
+        return {"products": 0, "errors": ["no pool for %s" % sheet_id]}
+    evidence = [gliner.EXTRACTOR] if config.have("SIE_API_KEY") else []
+    summary = run(files, sheet, readers(), out, evidence, workers=workers, quiet=True)
     from signoff.extract import score
-    score.write(ROOT / "data" / "figures")
+    score.write(out)
     state.reload_data()
     return summary
 
@@ -150,8 +159,9 @@ def refresh(workers=8):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--pool-dir", default=None, help="default: $SIGNOFF_POOL_DIR, then data/pool")
-    ap.add_argument("--out", default=str(ROOT / "data" / "figures"))
+    ap.add_argument("--out", default=None, help="default: data/figures, or data/figures/<sheet> for another sheet")
     ap.add_argument("--sheet", default=os.environ.get("SIGNOFF_SHEET") or "sheet1")
+    ap.add_argument("--sheet-file", default=None, help="a sheet file outside sheets/ (for a draft)")
     ap.add_argument("--reader", action="append", help="a reader (repeatable, the first decides); default: the configured ones")
     ap.add_argument("--policy", choices=("agree", "first"), default=config.env("SIGNOFF_READER_POLICY") or "first")
     ap.add_argument("--no-evidence", action="store_true", help="skip the SIE extract pass")
@@ -163,11 +173,13 @@ def main(argv=None):
                     help="read every product once more with the first reader, into _runs/<reader>-pass2, to "
                          "measure how far the reference agrees with itself; the engine's figures are not touched")
     args = ap.parse_args(argv)
-    files = pool_files(args.pool_dir)
+    default_out = str(sheet_dirs(args.sheet)[1])
+    args.out = args.out or default_out
+    files = pool_files(args.pool_dir, args.sheet)
     if not files:
         files = [ROOT / "fixtures" / "pool.json"]
-        print("no data/pool yet: reading fixtures/pool.json", file=sys.stderr)
-    sheet = json.loads((ROOT / "sheets" / (args.sheet + ".json")).read_text())
+        print("no pool for %s yet: reading fixtures/pool.json" % args.sheet, file=sys.stderr)
+    sheet = json.loads(pathlib.Path(args.sheet_file or ROOT / "sheets" / (args.sheet + ".json")).read_text())
     deciding = args.reader or readers()
     if args.second_pass:
         errors = []
@@ -184,7 +196,7 @@ def main(argv=None):
         gliner.warm()
     summary = run(files, sheet, deciding, args.out, evidence, args.policy, args.workers, args.limit, args.force,
                   args.assume_unit)
-    if args.out == str(ROOT / "data" / "figures") and not args.limit:
+    if args.out == default_out and not args.limit:
         from signoff.extract import score
         summary["comparison"] = str(score.write(args.out))
     print(json.dumps(summary))

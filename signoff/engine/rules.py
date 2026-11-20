@@ -9,8 +9,15 @@ ALIASES = {
     "in": "in", "in.": "in", "inch": "in", "inches": "in", '"': "in", "”": "in", "″": "in",
     "cm": "cm", "centimeter": "cm", "centimeters": "cm", "mm": "mm", "millimeters": "mm",
     "kg": "kg", "kgs": "kg", "kilograms": "kg", "ft": "ft", "feet": "ft", "foot": "ft",
+    "qt": "qt", "qts": "qt", "qt.": "qt", "quart": "qt", "quarts": "qt", "l": "L", "liter": "L", "liters": "L",
+    "litre": "L", "litres": "L", "°f": "°F", "f": "°F", "fahrenheit": "°F", "degrees f": "°F",
+    "°c": "°C", "c": "°C", "celsius": "°C", "oz": "oz", "ounce": "oz", "ounces": "oz",
 }
-TO_BASE = {("cm", "in"): 1 / 2.54, ("mm", "in"): 1 / 25.4, ("ft", "in"): 12.0, ("kg", "lb"): 2.2046226}
+TO_BASE = {("cm", "in"): 1 / 2.54, ("mm", "in"): 1 / 25.4, ("ft", "in"): 12.0, ("in", "cm"): 2.54,
+           ("kg", "lb"): 2.2046226, ("oz", "lb"): 1 / 16, ("lb", "kg"): 1 / 2.2046226,
+           ("L", "qt"): 1.0566882, ("qt", "L"): 1 / 1.0566882}
+FAMILY = {"lb": "weight", "kg": "weight", "oz": "weight", "in": "length", "cm": "length", "mm": "length",
+          "ft": "length", "qt": "volume", "L": "volume", "°F": "temperature", "°C": "temperature"}
 
 
 def unit_name(unit):
@@ -24,6 +31,10 @@ def convert(value, unit, to):
         return None
     if unit == to:
         return value
+    if (unit, to) == ("°C", "°F"):
+        return round(value * 9 / 5 + 32, 1)
+    if (unit, to) == ("°F", "°C"):
+        return round((value - 32) * 5 / 9, 1)
     factor = TO_BASE.get((unit, to))
     return None if factor is None else round(value * factor, 2)
 

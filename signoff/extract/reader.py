@@ -85,11 +85,25 @@ def wanted_figures(product, sheet):
     return names
 
 
+def figure_units(sheet):
+    """{figure name: the unit of the limit it is summed into}, from the sheet."""
+    out = {}
+    for line in sheet["lines"]:
+        for limit in line["limits"]:
+            for term in limit["terms"]:
+                if term["source"] == "store":
+                    out.setdefault(term["figure"], limit["unit"])
+    return out
+
+
 def prompt_for(product, names, sheet):
     meanings = dict(GLOSSARY, **(sheet.get("figures") or {}))
     asked = "\n".join("- %s: %s" % (n, meanings.get(n, n.replace("_", " "))) for n in names)
-    return "Figures to report:\n%s\n\nProduct page text, between the markers:\n<<<TEXT\n%s\nTEXT>>>" % (
-        asked, product.get("text") or "")
+    units = sorted({u for n, u in figure_units(sheet).items() if n in names and u not in ("lb", "in")})
+    more = ("\nOn this sheet a unit may also be one of: %s (and the metric unit of the same kind). Report it as "
+            "written.\n" % ", ".join(units)) if units else ""
+    return "Figures to report:\n%s\n%s\nProduct page text, between the markers:\n<<<TEXT\n%s\nTEXT>>>" % (
+        asked, more, product.get("text") or "")
 
 
 def parse(reply):

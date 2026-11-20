@@ -235,3 +235,19 @@ are now kept per sheet hash: after a reset the checks that were run on the sheet
 limit moves, the last checks stay visible with `senso_current: false` until SIGN runs them again. Test: `test_reset_is_complete_...`.
 After the reading change: 111 products, 67 state every figure, 41 inside, 5 of 6 lines ready. Agreement with the reference:
 Qwen on SIE 170 of 173 (98.3%), the reference's own second pass 167 of 173 (96.5%), SIE extract alone 119 of 173 (68.8%).
+
+## 11:50 from ENGINE — a second sheet runs today (step 4 of my brief), if you want it
+- The engine, the reader and the comparison now take everything about a sheet from its file: lines, limits, units (qt, L, °F, °C and
+  oz are understood beside lb and in; code converts within a kind and refuses across kinds) and the meaning of each figure (a
+  `figures` map in the sheet). Another sheet's pool is read from `data/<sheet>/pool/`, its store answers from
+  `data/<sheet>/store_answers/`, its figures from `data/figures/<sheet>/`. No line of code names a product kind.
+- Proved on STORE's cookware pool with a draft sheet of mine, `tests/engine/sheet2_draft.json` ("Shared kitchen": frying pan diameter
+  at least 10 in and no wider than the member's burner; saucepan at least 2 qt; stock pot at least 6 qt; issuer and shopper invented and
+  labelled). Read once by Sonnet and cached in `data/figures/sheet2/`: 197 products, 59 state every figure, 35 inside the limits;
+  switching sheets takes 7 ms. On these short pages all three readers agree with the reference on its 55 counted figures.
+- To turn it on: `cp tests/engine/sheet2_draft.json sheets/sheet2.json` (edit names and limits as you like; if a figure name or its
+  meaning changes, run `uv run python -m signoff.extract.run --sheet sheet2`), then `SIGNOFF_SHEET=sheet2` at start or
+  `signoff.engine.state.use_sheet("sheet2")` at run time (`use_sheet("sheet1")` goes back; one sheet at a time).
+- [ ] Missing for picks: `data/sheet2/store_answers/<store>.json` (STORE). Without a stated delivery time every line reads
+  "nothing inside the limits states a delivery time": 9 frying pans, 12 saucepans and 14 stock pots are inside and none is picked.
+- A real bug this found and fixed: the reader comparison crashed on a record that had no number (`combine.same`); test added.

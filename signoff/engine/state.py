@@ -49,31 +49,42 @@ def _read_dir(folder):
     return rows
 
 
+def _dirs(sheet_id=None):
+    """(pool, store answers, figures) folders of a sheet. sheet1 is data/pool, data/store_answers, data/figures;
+    another sheet keeps the STORE stream's files under data/<sheet>/ and its figures under data/figures/<sheet>."""
+    sheet_id = sheet_id or _s.get("sheet_id") or "sheet1"
+    if sheet_id == "sheet1":
+        return DATA / "pool", DATA / "store_answers", DATA / "figures"
+    return DATA / sheet_id / "pool", DATA / sheet_id / "store_answers", DATA / "figures" / sheet_id
+
+
 def _has_data_pool():
-    return any((DATA / "pool").glob("*.json"))
+    return any(_dirs()[0].glob("*.json"))
 
 
 def _load_pool():
     """Pool and store answers through the STORE stream's loader; the same fallback when it is not there."""
-    try:
-        from signoff.store import pool as store_pool
-        pool, answers = store_pool.load()
-        return list(pool), list(answers)
-    except Exception:  # noqa: BLE001  (module not merged yet, or it failed: read the files directly)
-        pass
+    pool_dir, answers_dir, _ = _dirs()
+    if (_s.get("sheet_id") or "sheet1") == "sheet1":
+        try:
+            from signoff.store import pool as store_pool
+            pool, answers = store_pool.load()
+            return list(pool), list(answers)
+        except Exception:  # noqa: BLE001  (module not merged yet, or it failed: read the files directly)
+            pass
     if _has_data_pool():
-        answers = _read_dir(DATA / "store_answers") if (DATA / "store_answers").is_dir() else []
-        return _read_dir(DATA / "pool"), answers
+        return _read_dir(pool_dir), _read_dir(answers_dir) if answers_dir.is_dir() else []
     return _read(FIXTURES / "pool.json"), _read(FIXTURES / "store_answers.json")
 
 
 def _load_figures(pool, from_data):
     """Figures from data/figures (fixtures for the fixture pool). The span is checked again here, in code."""
-    run = DATA / "figures" / "_runs" / str(_s.get("reader")) if _s.get("reader") else None
+    folder = _dirs()[2]
+    run = folder / "_runs" / str(_s.get("reader")) if _s.get("reader") else None
     if from_data and run is not None and run.is_dir():
         figures = _read_dir(run)
     elif from_data:
-        figures = _read_dir(DATA / "figures") if (DATA / "figures").is_dir() else []
+        figures = _read_dir(folder) if folder.is_dir() else []
     else:
         figures = _read(FIXTURES / "figures.json")
     text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
@@ -88,7 +99,7 @@ def _load_figures(pool, from_data):
 
 def _load_readers(from_data):
     """Which reader decided, and how far the others agree with it (signoff.extract.score writes the file)."""
-    path = DATA / "figures" / "_runs" / "comparison.json"
+    path = _dirs()[2] / "_runs" / "comparison.json"
     if not from_data or not path.exists():
         return None
     try:
@@ -101,13 +112,14 @@ def _load_readers(from_data):
 
 
 def _load(keep_changes=False):
-    sheet_id = os.environ.get("SIGNOFF_SHEET") or "sheet1"
+    sheet_id = _s.get("sheet_id") or os.environ.get("SIGNOFF_SHEET") or "sheet1"
+    _s["sheet_id"] = sheet_id
     pool, answers = _load_pool()
     from_data = _has_data_pool() and not any(str(p["store"]).endswith(".example") for p in pool)
     mode = "fixture" if not from_data else ("replay" if config.mode() == "replay" else "live")
     _s.update(pool=pool, answers=answers, figures=_load_figures(pool, from_data), mode=mode, loaded=True,
               readers=_load_readers(from_data))
-    if keep_changes and _s.get("sheet", {}).get("id") == sheet_id:
+    if keep_changes and (_s.get("sheet") or {}).get("id") == sheet_id:
         return
     strikes_file = (DATA if from_data else FIXTURES) / "strikes.json"
     _s.update(sheet=_read(SHEETS / (sheet_id + ".json")),
@@ -371,11 +383,24 @@ def set_reader(name=None) -> dict:
         _ensure()
         _open_for_changes()
         slug = re.sub(r"[^A-Za-z0-9.]+", "-", name).strip("-") if name else None
-        if slug and not (DATA / "figures" / "_runs" / slug).is_dir():
+        if slug and not (_dirs()[2] / "_runs" / slug).is_dir():
             raise EngineError("no run of reader %r under data/figures/_runs" % (name,), 404)
         _s["reader"] = slug
         _load(keep_changes=True)
         return _recompute(why="set_reader")
+
+
+def use_sheet(sheet_id: str) -> dict:
+    """Not in the contract's list: puts another sheet file on the table (one sheet at a time), as after a reset.
+    The engine has no line of code about what a sheet is for: lines, limits, units and figure names come from
+    `sheets/<id>.json`, the products from that sheet's pool."""
+    with _lock:
+        if not (SHEETS / (str(sheet_id) + ".json")).exists():
+            raise EngineError("no sheet %r" % (sheet_id,), 404)
+        _s.update(sheet_id=sheet_id, reader=None, sheet=None)
+        _load()
+        obs.session(sheet_id)
+        return _recompute(why="use_sheet")
 
 
 def reload_data() -> dict:

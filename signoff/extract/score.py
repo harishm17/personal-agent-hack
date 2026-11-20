@@ -32,7 +32,8 @@ def load_run(folder):
     index = {}
     for r in rows:
         index.setdefault((r["store"], r["product_id"], r["figure"]), r)
-    name = log[0]["extractor"] if log else (rows[0]["extractor"] if rows else folder.name)
+    name = next((r["extractor"] for r in log if r.get("extractor") not in (None, "none")),
+                rows[0]["extractor"] if rows else folder.name)
     if folder.name.endswith("-pass2"):
         name += " (second pass)"
     return name, index, log
@@ -59,9 +60,9 @@ def measure(name, index, log, reference):
     different = [k for k in ref if k in counted and not combine.same(ref[k], counted[k])]
     missing = [k for k in ref if k not in counted]
     extra = [k for k in counted if k not in ref]
-    products = {(r["store"], r["product_id"]) for r in log}
+    products = {(r["store"], r["product_id"]) for r in log if r.get("asked")}
     clean = products - {k[:2] for k in different + missing + extra}
-    seconds = [r["seconds"] for r in log if r.get("seconds") is not None]
+    seconds = [r["seconds"] for r in log if r.get("seconds") is not None and r.get("asked")]
     return {
         "extractor": name, "products_read": len(products),
         "figures_reported": len(index),
@@ -102,7 +103,7 @@ def compare(figures=FIGURES, reference=None):
             "reference": ref[0], "measure": "agreement with the reference reader on the same products",
             "note": "Agreement, not accuracy: no person read these pages. A figure counts when its quote is "
                     "found in the store's text and the reader did not mark it unsure.",
-            "products": len({(r["store"], r["product_id"]) for r in ref[2]}), "readers": readers}
+            "products": len({(r["store"], r["product_id"]) for r in ref[2] if r.get("asked")}), "readers": readers}
 
 
 def write(figures=FIGURES, reference=None):
