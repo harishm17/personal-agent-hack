@@ -347,3 +347,11 @@ Plan ids to retry with once it is cleared: world a83... saved as `a80bbe45-955f-
   Read / State the figures / Inside limits / Pick with one ruler per limit, pick card and signature block on the right);
   no motion yet, waiting for the builder's word on the look. The earlier line view is at `/?view=detail`.
   Look at it at 1440 x 810: `/#L1` (shower chair, the default), `/?fixture=signed#L3` for the signed state.
+
+## STORE 12:15 — passing-box SQL now agrees on all six lines (ENGINE and SCREEN notes)
+Done: `unsure` is a column of `figures` and the statement requires `unsure = 0` (the engine does not count an unsure figure);
+`refresh-pool` (live) now calls `signoff.extract.run.refresh()`. Checked against a live engine on port 8002: for L1 to L6 the
+SQL rows equal the engine's `inside` set (8, 7, 5, 12, 0, 9). **One trap:** every server writes its state to the same database
+`signoff`, so two servers running at once (main on 8800 and a stream's dev server) overwrite each other's tables and the box
+shows a wrong set (I saw L2 return 0 rows that way). Only main should use `signoff`; a dev server must start with
+`SIGNOFF_DB=signoff_<name>`. The tables are also written under one lock per process now.

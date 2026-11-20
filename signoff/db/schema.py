@@ -10,7 +10,7 @@ TABLES = {
     "figures": """CREATE ROWSTORE TABLE IF NOT EXISTS figures (
         store VARCHAR(80) NOT NULL, product_id VARCHAR(120) NOT NULL, figure VARCHAR(60) NOT NULL,
         kind VARCHAR(20), value DOUBLE, low DOUBLE, high DOUBLE, unit VARCHAR(10), quote TEXT,
-        start_pos INT, end_pos INT, extractor VARCHAR(60), span_found_in_text TINYINT,
+        start_pos INT, end_pos INT, extractor VARCHAR(60), span_found_in_text TINYINT, unsure TINYINT DEFAULT 0,
         PRIMARY KEY (store, product_id, figure))""",
     # one row per limit of the current state: shopper_sum is the sum of the shopper-fact terms, bound is resolved
     "limits": """CREATE ROWSTORE TABLE IF NOT EXISTS limits (
@@ -46,6 +46,10 @@ def ensure() -> None:
         cur = c.cursor()
         for ddl in TABLES.values():
             cur.execute(ddl)
+        try:  # tables made before the `unsure` column existed
+            cur.execute("ALTER TABLE figures ADD COLUMN unsure TINYINT DEFAULT 0")
+        except Exception:  # noqa: BLE001  (duplicate column: already there)
+            pass
     finally:
         c.close()
     _done.add(conn.DB)

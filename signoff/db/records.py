@@ -64,7 +64,16 @@ def sync_pool(cur, pool: list) -> None:
     cur.execute("REPLACE INTO meta (k, v) VALUES ('pool_fp', %s)", (fp,))
 
 
+_write_lock = threading.Lock()
+
+
 def _write_now(state: dict) -> None:
+    """One writer at a time in this process (the background worker and a request must not interleave)."""
+    with _write_lock:
+        _write_now_locked(state)
+
+
+def _write_now_locked(state: dict) -> None:
     schema.ensure()
     from signoff.store import pool as pool_mod
     c = conn.connect()
@@ -80,14 +89,14 @@ def _write_now(state: dict) -> None:
                     figs[(f["store"], f["product_id"], f["figure"])] = (
                         f["store"], f["product_id"], f["figure"], f["kind"], f.get("value"), f.get("low"), f.get("high"),
                         f.get("unit"), f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
-                        1 if f.get("span_found_in_text") else 0)
+                        1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0)
                 pr = cand["product"]
                 decisions.append((state["version"], cand["id"], line["line_id"], pr["store"], pr["product_id"],
                                   pr["product_key"], cand["status"], cand.get("reason"), 1 if cand.get("picked") else 0,
                                   pr["price_cents"], json.dumps(cand)))
         cur.execute("DELETE FROM figures")
         _bulk(cur, "INSERT INTO figures (store, product_id, figure, kind, value, low, high, unit, quote,"
-                   " start_pos, end_pos, extractor, span_found_in_text)", list(figs.values()))
+                   " start_pos, end_pos, extractor, span_found_in_text, unsure)", list(figs.values()))
         cur.execute("DELETE FROM limits")
         _bulk(cur, "INSERT INTO limits (limit_id, line_id, name, op, figure, shopper_sum, bound, unit, state_version)",
               limit_rows(state))

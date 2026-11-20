@@ -13,7 +13,7 @@ SELECT p.store, p.product_id, p.title, p.price_cents, p.product_key
 FROM pool p
 JOIN limits l ON l.line_id = %(line_id)s
 LEFT JOIN figures f ON f.store = p.store AND f.product_id = p.product_id
-                   AND f.figure = l.figure AND f.span_found_in_text = 1
+                   AND f.figure = l.figure AND f.span_found_in_text = 1 AND f.unsure = 0
 WHERE JSON_ARRAY_CONTAINS_STRING(p.line_ids, %(line_id)s)
   AND p.product_key NOT IN (SELECT product_key FROM strikes WHERE line_id = %(line_id)s)
 GROUP BY p.store, p.product_id, p.title, p.price_cents, p.product_key
