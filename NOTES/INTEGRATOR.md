@@ -15,3 +15,11 @@ Products per store and line (title rules in signoff/store/build_pool.py; every q
 - Persona: PERSONA_API_KEY gave "Must be authenticated" on its first call and PERSONA_TEMPLATE_ID is not in the keys file. The Persona step is built to work without them and says "identity not checked". Needed from the builder: a sandbox API key and an Inquiry template id (`itmpl_...`).
 - Senso: SENSO_API_KEY is not in the keys file; `/api/senso/checks` answers "not connected" until it is.
 - Optional hook for the engine (additive, not a contract change): if `signoff.engine.state` defines `set_issuer_key(info: dict)`, SIGN calls it after enrol and after reset with `{enrolled, key_id, name, persona}`, so `GET /api/state` can show `issuer_key`. Also `GET /api/issuer/status` returns the same for the phone.
+
+## STORE 11:25 — same product at a second store: none found
+Only Carex is sold at two of our stores. parentgiving.com's "Carex Economy Raised Toilet Seat 5-1/2in" has no match at
+carex.com: its search for that title returns other Carex seats, SKUs differ (parentgiving 206682_EA vs carex FGB3xxxx),
+and the pages disagree (adds 5 in and "Securing Method: Locking" against 5.5 in and "Locking: No" on the closest one).
+Giving two products one product_key on a guess would be invented, so every product_key is unique. Drop "the same one
+from another store" from the demo. A strike still holds for the whole product_key; to show it across stores we need sheet 2.
+signoff/store/api.py (router) is on branch stream/STORE since 11:18; routes /api/sql/passing-box, /api/admin/refresh-pool.
