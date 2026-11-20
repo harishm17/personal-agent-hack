@@ -268,3 +268,45 @@ Qwen on SIE 170 of 173 (98.3%), the reference's own second pass 167 of 173 (96.5
   agent's return sentence is shown on every line of that store, also the bed rail ("An opened bath seat's return..."):
   the engine sets `undo` per store, not per product kind. If `undo.applies_to` can say whether it covers this line, the
   screen will hide it when it does not.
+## STORE 12:05 — Statsig gate, and Amplitude end to end
+**Gate.** `signoff/obs/gate.py` (started by `signoff/store/api.py` on import, not under pytest; off with `SIGNOFF_GATE=off`).
+Polls `sie_reader` every 3 s with the server secret (statsig_python_core). On a change: `engine.state.set_reader(...)`
+(Qwen reader when on, `None` = Sonnet when off), `obs.set_experiments([{"key":"sie_reader","variant":"sie-qwen"|"sonnet"}])`,
+one `gate.changed` tool-call event with `before`, `after` (both arms' numbers) and `kept` ("kept" when the arm agrees with the
+reference on at least 95% of figures and states every figure on at least as many products; else "switch back"; code decides).
+Nothing happens once the sheet is signed (checked every poll; an engine refusal is recorded, never raised).
+`GET /api/gate/status`: `gate`, `value`, `arm`, `deciding_reader`, `source`, `changed_at`, `history`, `verdict`, `polling`,
+`gate_exists_in_statsig`, `error`, and `outcome.arms.{sonnet,sie-qwen}` with agreement, figures_counted, same_as_reference,
+cost, seconds_per_product_median and `state_every_figure` out of 111 (counted from each reader's own run: Sonnet 64, Qwen 81;
+the engine's own count agrees: 64 with Sonnet deciding, 81 after set_reader to Qwen).
+**Console key needed.** The gate does not exist yet (`get_feature_gate_list()` is empty; `check_gate` is false). Creating
+or flipping a gate needs a Statsig CONSOLE API key: the Console API answered 403 "This endpoint only accepts an active
+CONSOLE key, but a SERVER key was sent". The keys file has only STATSIG_SERVER_SECRET and STATSIG_CLIENT_KEY. So either the
+builder creates a gate named `sie_reader` by hand (Feature Gates, new gate, a rule passing 0% or 100%, environment
+development) or adds `STATSIG_CONSOLE_API_KEY` and I create it. Until then, for rehearsals only:
+`POST /api/gate/override {"value": true|false|null}` uses Statsig's own local `override_gate`; the status shows
+`source: "local override"` while it is set (say so on screen if it is ever used). I flipped it on and off against the live
+engine: pick inputs changed to the Qwen figures (state_every_figure 64 to 81) and back.
+**Amplitude end to end** (my own server on port 8002, same code as main; main on 8800 does not have the new routes or this
+fix yet, and I did not touch its issuer key). `GET /api/obs/status` shows the counters. Start, then admin reset, enroll of a
+throwaway key, signed `set_limit` L2.capacity 400, admin reset: 7 tool-call events (check_run per recompute, plus the store
+and reset events) queued and sent, all 7 plus the 2 session-end events delivered, Amplitude HTTP 200, 0 dropped, no error.
+Two bugs fixed on the way: ending a session raised "'bool' object is not callable" (the SDK's `track_session_end` method is
+shadowed by its constructor flag; I now end the session through its context exit), and events sat in the SDK buffer until
+shutdown (the sender now flushes after 3 idle seconds). After you merge, `GET /api/obs/status` on 8800 will print the same.
+Still needs a human: look at Live Events in Amplitude for agent `signoff-shopper` (events `[Agent] Tool Call` named
+check_run, store.search_catalog, store.ask_business, gate.changed, ...).
+
+## STORE 12:10 — what the builder adds to the Statsig gate
+The gate reader sees the gate: `get_feature_gate_list()` returns `['sie_reader']`, id type `userID`, rule `default`, value
+false (checked with the server secret just now). The poller picks up a change within about 13 seconds (SDK sync 10 s, my poll 3 s).
+**User id checked:** `signoff-demo` (the same id on every Amplitude event).
+**Rule to add (Feature Gates > sie_reader > Add new rule):**
+- Name: `everyone` (any name).
+- Criteria: **Everyone** (the "Everyone" condition, not a user-id list).
+- Pass percentage: **100%** to turn it on, i.e. the SIE Qwen reader decides. Edit the rule to 0% (or delete the rule) to switch back to Sonnet.
+- Environments: must include **Development** (the reader runs with environment `development`); simplest is to leave
+  "All environments" selected. Then save and, if the console shows a draft, **Apply/Enable** the change; the gate must be enabled.
+- ID type stays User ID.
+To demo it: change the percentage 100 to 0 (or back) in the console; within about 13 s `GET /api/gate/status` shows the new
+`value`, `arm`, `deciding_reader`, and Amplitude records one `gate.changed` event. Nothing switches once the sheet is signed.

@@ -146,7 +146,9 @@ def _end_session():
     global _sess
     if _sess is not None:
         try:
-            _sess.track_session_end()
+            # Session.track_session_end is shadowed by its constructor flag; entering and leaving the context emits the end
+            _sess.__enter__()
+            _sess.__exit__(None, None, None)
         except Exception as e:  # noqa: BLE001
             stats["last_error"] = type(e).__name__ + ": " + str(e)[:160]
         _sess = None
@@ -192,8 +194,18 @@ def _handle(item: tuple) -> None:
 
 
 def _run() -> None:
+    flushed = 0
     while not _closing:
-        item = _q.get()
+        try:
+            item = _q.get(timeout=3)
+        except queue.Empty:  # idle: hand what Amplitude's buffer holds to the network, without waiting for it
+            if _ai is not None and stats["sent"] != flushed:
+                flushed = stats["sent"]
+                try:
+                    _ai.flush()
+                except Exception as e:  # noqa: BLE001
+                    stats["last_error"] = type(e).__name__ + ": " + str(e)[:160]
+            continue
         try:
             _handle(item)
         except Exception as e:  # noqa: BLE001
