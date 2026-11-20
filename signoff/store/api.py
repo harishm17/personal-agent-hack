@@ -6,7 +6,7 @@ import threading
 import sys
 import time
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from signoff import config
 from signoff.db import passing, records
@@ -137,3 +137,15 @@ if "pytest" not in sys.modules and config.mode() != "replay":
 def obs_events(n: int = 200, session_id: str | None = None, sheet_id: str | None = None):
     """The local log of tool-call events (name, at, duration_ms, success), oldest first; the audit trail reads this."""
     return {"events": obs.recent(max(1, min(n, 5000)), session_id, sheet_id)}
+
+
+@router.get("/api/tools")
+async def tools_at_work(request: Request, line_id: str | None = None):
+    """One row per tool that did real work in this run, each with one true number read from its owner's route or file now."""
+    from signoff.obs import tools
+    return await tools.build(request.app, line_id)
+
+
+if "pytest" not in sys.modules and config.mode() != "replay":
+    from signoff.obs import tools as _tools
+    _tools.prewarm()
