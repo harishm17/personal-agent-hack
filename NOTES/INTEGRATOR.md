@@ -1375,3 +1375,39 @@ The 5 left are real: "Each set comes with 12 and 24 crayons" (page states both 1
   SIE extract alone 143 of 363. On these pages the SIE readers are well behind the reference; keep the gate on the reference.
 - DONE E13 (reported 13:23) and E14 (reported 13:23, bed-rail line corrected at 13:31). DONE E18 (words sent 13:02, bed-rail entry
   reworded 13:23). Still yours: `figures` in `sheets/sheet1.json`; `several` on T1.flush and the vanity words in `sheets/sheet2.json`.
+
+## 13:30 from ENGINE — DONE E24, DONE E25: sheet 4 holds on my branch (`SIGNOFF_SHEET=sheet4`); two decisions for you inside
+- DONE E24: `data_from` in `signoff/engine/paths.py` (`data_sheet`): pool, raw replies, store answers, figures, the scan and the
+  reader comparison come from the named sheet; the order document and `derived.json` are the sheet's own
+  (`data/figures/sheet4/_order/`). Nothing was fetched or re-read for sheet 4. `python -m signoff.extract.order --sheet sheet4` →
+  **6 of 6 limits equal to the sheet**. State: mode live, 92 products, **153 candidates** (options), order "matches the sheet on 6 of
+  6 limits", "92 pages scanned, 0 instructions to an agent found", `degraded` none.
+- DONE E25: `POST /api/admin/use-sheet {"sheet_id"}` (resets the run, starts a new receipt chain that names the last one; 404 for an
+  unknown sheet; I added nothing to your guard list) and `GET /api/sheets` → `{active, sheets: [{id, title, items, show, issuer,
+  shopper}], not_shown}` listing the sheets whose file has `"show": true` (none has it yet: set it on 4 and 3). Switching takes
+  about 50 ms, a reset about 30 ms (it was 600 ms: my code re-read the keys file once per figure; fixed).
+| sheet 4 line | candidates | inside | outside | unclear | not stated | pick and price |
+|---|---|---|---|---|---|---|
+| L1 shower chair | 43 | 13 | 11 | 2 | 17 | parentgiving.com, Deluxe Aluminum Bath Bench by Drive (Gray), **$41.99**: `350 >= 300`, width passes |
+| L4 walker | 73 | 47 | 16 | 4 | 6 | carex.com, Carex Classics Dual-Button Walker, **$44.71**: `300 >= 300`, `23.5 <= 28` ("Product Dims (h x w x d): 30" - 37" x 23.5" x 18.5"") |
+| L5 grab bar | 37 | 7 | 22 | 1 | 7 | **open: "nothing inside the limits states a delivery time"** |
+Total $86.70 for the two picked lines; 67 inside, 49 outside, 7 unclear, 30 not stated in all.
+- [ ] **Decide, L5:** all 7 grab bars inside the limits are at vivehealth.com (Textured Grab Bars 16 Inch $27.99, `440 >= 300`,
+  `16 >= 16`; Metal Grab Bar 16" $33.99 in five finishes; Textured 24 Inch $34.99), and vivehealth.com states no delivery time, so
+  under sheet 4's rule the line is open. In sheet 1 this line was `pick_up_locally`; sheet 4 makes it `cart`. Options: leave it
+  open (true, and a good line to show: "the store states no delivery time"); set `"fulfilment": "pick_up_locally"` on L5 (pick:
+  the $27.99 bar, not carted); or the pick rule `cheapest` for the sheet. Nothing in code changes for any of them.
+  What you saw at 13:27 (17 cheaper rejections, the Chrome Ultra Grip at 75 lb): with options as candidates L5 has 22 outside,
+  most of them the 12 in options (`12 >= 16` false) and the 75 and 250 lb bars.
+- [ ] **Decide, the words for `overall_width` (sheet 1 is the data sheet, so the words go in `sheets/sheet1.json`, and sheet 4's copy
+  for consistency):** the new prompt asks for every statement, and on the L1 pick the reader returned two for overall width:
+  `Width (outside legs): 17"` and `Seat Dimensions: 20"W x 14.5"D x 15.75"-19.75"H`. Both pass 21.5, so the pick is right, but the sum
+  shown is `20 <= 21.5` **with the seat's dimensions as its quote**, which is not the overall width. Add one sentence to the meaning:
+  "The seat's own width, the width between the arms, a depth and a height are other measures: do not report them." I am testing
+  those words on the 116 shower chair and walker pages in scratch now and will tell you the result before you change the file.
+- A fix that came out of this: each value put to a test is now shown with the quote of the statement it was read from (it used to
+  show the first statement's quote beside another statement's number). Test `test_the_words_shown_beside_a_value_are_those_of…`.
+- Accessories: STORE's rule **is** applied to sheet 1's pool and lets both through; the exact reasons are in NOTES/STORE.md. On
+  sheet 4 only "Replacement Leg Tips" ($15.00, L1) remains, shown as "weight capacity never stated on the page"; it cannot be picked.
+- Sheet 3 was reported at 13:40 (all five probes as expected). E15, E12, E16 are done (13:23 note).
+- [ ] From my 13:40 note, still yours: `"unit_required": false` on sheet 3's three count limits (unclear 42 → 5, no pick changes).

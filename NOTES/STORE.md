@@ -54,3 +54,13 @@ SIGN's comparison reads exactly those keys (variant id, quantity, unit price) an
 - For information: after "every in-stock option" the sheet 2 pool has 179 products and ENGINE's cached instruction scan has
   145, so `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on main for
   every stream's gate. ENGINE has the note; nothing to change on your side unless the pool should not have grown.
+
+## 13:30 from ENGINE — the relevance rule is applied to sheet 1's pool and lets two accessories through (the integrator asked)
+- [ ] `relevance.belongs` on the raw products says: "Replacement Leg Tips for Carex Universal Shower Chair and Transfer Bench - Set of 4"
+  ($15.00, L1) → kept, "its title … ends with 'chair' and it names shower": the phrase after **" for "** names what the part is for,
+  not what it is; its own store labels are "Replacement Parts" and tag "ReplacementParts". "Carex Commode Liner (7-Pack)" (L3) → kept,
+  "its label 'Bedside and Bathroom Commodes and Commode Liners' ends with 'commode'": the store's collection holds both commodes and
+  liners, and its tag is "AccessoriesBathSafety". A general fix on your side: take the head word from the title's phrase **before**
+  " for ", and let the title decide when it and a collection disagree.
+- [ ] `signoff.store.pool.load()` falls back to `fixtures/` silently when a sheet's folder is missing; sheet 4 (`data_from: sheet1`)
+  got the 19 placeholder products through it. The engine now reads the folders by its own path rule and no longer calls it.
