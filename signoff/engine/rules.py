@@ -48,7 +48,123 @@ def declare_units(sheet):
 
 _BUILT_IN, _BUILT_IN_FAMILY = frozenset(ALIASES), frozenset(FAMILY)
 OPS = (">=", "<=", "==")
-PICK_RULES = ("cheapest_with_delivery_time", "cheapest")
+PICK_RULES = ("cheapest_with_delivery_time", "cheapest", "best_reviewed", "best_value", "most_popular")
+RATING_RULES = ("best_reviewed", "best_value", "most_popular")  # those that order by what reviewers are quoted as saying
+WITHIN = 0.3  # stars on a five-star scale: how far under the best quoted rating "best value" still looks
+
+
+def within_of(sheet):
+    w = (sheet.get("pick_rule") or {}).get("within", WITHIN)
+    if isinstance(w, bool) or not isinstance(w, (int, float)) or w < 0:
+        raise ValueError("the pick rule's `within` is %r; it must be a number of stars, 0 or more" % (w,))
+    return w
+
+
+def pick_rules(within=WITHIN):
+    """The orderings a shopper may choose among the products that pass, with the words shown for each."""
+    return [{"id": "cheapest", "label": "cheapest inside the limits"},
+            {"id": "best_reviewed", "label": "best reviewed among those that pass"},
+            {"id": "best_value", "label": "best value: cheapest within %g stars of the best rated" % within},
+            {"id": "most_popular", "label": "most reviewed among those that pass"},
+            {"id": "cheapest_with_delivery_time", "label": "cheapest that states a delivery time"}]
+
+
+def stars(quoted):
+    """A quoted rating on a five-star scale, or None. A rating is used only as quoted, with the scale it was
+    quoted on: one without a scale cannot be compared with the others and is not guessed."""
+    if not isinstance(quoted, dict):
+        return None
+    r, out_of = quoted.get("rating"), quoted.get("out_of")
+    if any(isinstance(v, bool) or not isinstance(v, (int, float)) for v in (r, out_of)) or out_of <= 0 or not 0 <= r <= out_of:
+        return None
+    return r * 5.0 / out_of
+
+
+def review_count(quoted):
+    """How many reviews were counted, as quoted, or None when no count was quoted."""
+    n = quoted.get("review_count") if isinstance(quoted, dict) else None
+    return n if isinstance(n, int) and not isinstance(n, bool) and n >= 0 else None
+
+
+def pick_order(rule, within, passing, ratings, met):
+    """A pick rule is one sort key over the candidates that pass; the first in that order is the pick.
+    Returns (key, {candidate id: stars or None}, the best quoted rating or None). More preferences met come
+    first under every rule; a product with no quoted rating follows the rated ones, by price."""
+    star = {c["id"]: stars(ratings.get(c["id"])) for c in passing}
+    best = max((s for s in star.values() if s is not None), default=None)
+
+    def price(c):
+        return (c["product"]["price_cents"], c["id"])
+
+    def reviews(c):
+        return review_count(ratings.get(c["id"])) or 0
+
+    if rule == "most_popular":
+        def by_rule(c):
+            n = review_count(ratings.get(c["id"]))
+            return ((1, 0, 0) if n is None else (0, -n, -(star[c["id"]] or 0))) + price(c)
+    elif rule == "best_reviewed":
+        def by_rule(c):
+            s = star[c["id"]]
+            return ((1, 0, 0) if s is None else (0, -s, -reviews(c))) + price(c)
+    elif rule == "best_value":
+        def by_rule(c):
+            s = star[c["id"]]
+            return ((2,) if s is None else (0,) if s >= best - within - 1e-9 else (1,)) + price(c)
+    else:
+        by_rule = price
+    return (lambda c: (-met.get(c["id"], 0),) + by_rule(c)), star, best
+
+
+def rating_words(quoted):
+    r, out_of, n = quoted["rating"], quoted["out_of"], quoted.get("review_count")
+    return "rated %g%s%s" % (r, "" if out_of == 5 else " out of %g" % out_of,
+                             " from %d review%s" % (n, "" if n == 1 else "s") if isinstance(n, int) and not isinstance(n, bool) else "")
+
+
+def picked_because(rule, within, pick, passing, ratings, star, best, met, preferences, needs_time):
+    """Why the rule's pick is the pick, in one clause the screen can print."""
+    s = star.get(pick["id"])
+    if rule == "most_popular":
+        n = review_count(ratings.get(pick["id"]))
+        if n is None:
+            clause = "cheapest that passes; %s" % ("it has no quoted review count" if any(
+                review_count(ratings.get(c["id"])) is not None for c in passing) else "none of them has a quoted review count")
+        else:
+            clause = "%d review%s%s, the most that passes" % (n, "" if n == 1 else "s", "" if s is None else
+                                                              " (%s)" % rating_words(dict(ratings[pick["id"]], review_count=None)))
+    elif rule in RATING_RULES and best is None:
+        clause = "cheapest that passes; none of them has a quoted rating"
+    elif rule in RATING_RULES and s is None:
+        clause = "cheapest that passes; it has no quoted rating"
+    elif rule == "best_reviewed":
+        clause = "%s, the highest that passes" % rating_words(ratings[pick["id"]])
+    elif rule == "best_value" and s >= best - 1e-9:
+        clause = "%s, the best rated that passes and the cheapest within %g stars of it" % (rating_words(ratings[pick["id"]]), within)
+    elif rule == "best_value" and s >= best - within - 1e-9:
+        clause = "cheapest within %g stars of the best rated (%g against %g)" % (within, round(s, 2), round(best, 2))
+    elif rule == "best_value":
+        clause = "cheapest of those rated (%g against %g)" % (round(s, 2), round(best, 2))
+    else:
+        clause = "cheapest that passes and states a delivery time" if needs_time else "cheapest that passes"
+    mine = met.get(pick["id"], 0)
+    if preferences and mine and any(met.get(c["id"], 0) < mine for c in passing):
+        clause += ", among those that meet %s" % ("the preference" if len(preferences) == 1 else
+                                                 "%d of the %d preferences" % (mine, len(preferences)))
+    return clause
+
+
+PREFERENCE_STATUS = {"pass": "met", "fail": "not_met", "unclear": "unclear", "not_stated": "not_stated"}
+
+
+def preference(checked):
+    """A preference is checked by the same function as a limit; only what is done with the result differs."""
+    out = {"id": checked["limit_id"], "label": checked["name"], "status": PREFERENCE_STATUS[checked["state"]],
+           "value": checked.get("lhs"), "expr": checked.get("expr"),
+           "quote": next((t["quote"] for t in checked["terms"] if t.get("quote")), None)}
+    if checked.get("unclear_why"):
+        out["why"] = checked["unclear_why"]
+    return out
 
 
 def validate_sheet(sheet):
@@ -58,12 +174,13 @@ def validate_sheet(sheet):
         q = line.get("quantity", 1)
         if isinstance(q, bool) or not isinstance(q, int) or q < 1:
             raise ValueError("line %s has the quantity %r; it must be a whole number of at least 1" % (line.get("id"), q))
-        for limit in line["limits"]:
+        for limit in line["limits"] + (line.get("preferences") or []):
             if limit.get("op") not in OPS:
                 raise ValueError("limit %s has the comparison %r; the rules know %s" % (limit.get("id"), limit.get("op"), ", ".join(OPS)))
     rule = (sheet.get("pick_rule") or {}).get("id")
     if rule not in PICK_RULES:
         raise ValueError("the sheet's pick rule %r is not one the rules know (%s)" % (rule, ", ".join(PICK_RULES)))
+    within_of(sheet)
 
 
 def unit_name(unit):
@@ -335,7 +452,7 @@ def usable_rank(f):
     return (0 if f.get("span_found_in_text") else 2) + (1 if f.get("unsure") else 0)
 
 
-def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
+def build_state(sheet, pool, figures, answers, strikes, mode="fixture", ratings=None):
     facts = {f["id"]: f for f in sheet["shopper_facts"]}
     figs = figure_index(figures, pool)
     several_rows = {}
@@ -344,12 +461,14 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
     by_product = {}
     for f in figures:
         by_product.setdefault((f["store"], f["product_id"]), []).append(f)
+    quoted = ratings or {}  # {candidate id: {rating, out_of, review_count}}, only what somebody quoted
     ans = {a["store"]: a for a in answers}
     # products found are pages; a product sold in several options is one page and several candidates
     lines, found, every, inside_n, ready = [], len({(p["store"], p["product_id"]) for p in pool}), 0, 0, 0
     for line in sheet["lines"]:
         struck = [s for s in strikes if s["line_id"] == line["id"]]
         struck_by_key = {s["product_key"]: s for s in struck}
+        preferences = line.get("preferences") or []
         cands = []
         for p in pool:
             if line["id"] not in p["line_ids"]:
@@ -386,18 +505,29 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
                             "quote": d.get("quote"), "days_low": d.get("days_low"), "days_high": d.get("days_high")},
                 "undo": a.get("returns"), "senso": None, "status": status, "reason": reason,
                 "strike": strike, "action": None, "picked": False})
+            if preferences:  # checked like a limit, shown beside the checks, and never part of the status above
+                cands[-1]["preferences"] = [preference(check(wish, p, figs, facts, sheet)) for wish in preferences]
+            if stars(quoted.get(cands[-1]["id"])) is not None:
+                cands[-1]["rating"] = {k: quoted[cands[-1]["id"]].get(k) for k in ("rating", "out_of", "review_count")}
+            if review_count(quoted.get(cands[-1]["id"])) is not None:  # a count is quoted with or without a rating's scale
+                cands[-1]["review_count"] = review_count(quoted[cands[-1]["id"]])
         inside = [c for c in cands if c["status"] == "inside"]
         local = line["fulfilment"] == "pick_up_locally"  # nothing is shipped, so no delivery time is needed
         rule = (sheet.get("pick_rule") or {}).get("id", "cheapest_with_delivery_time")
         if rule not in PICK_RULES:
             raise ValueError("the sheet's pick rule %r is not one the rules know (%s)" % (rule, ", ".join(PICK_RULES)))
         needs_time = rule == "cheapest_with_delivery_time" and not local
-        eligible = sorted((c for c in inside if not needs_time or c["arrival"]["status"] == "stated"),
-                          key=lambda c: (c["product"]["price_cents"], c["id"]))
+        eligible = [c for c in inside if not needs_time or c["arrival"]["status"] == "stated"]
+        met = {c["id"]: sum(1 for w in c.get("preferences", ()) if w["status"] == "met") for c in eligible}
+        order, star, best = pick_order(rule, within_of(sheet), eligible, quoted, met)
+        eligible.sort(key=order)
         pick = eligible[0] if eligible else None
         inside_n += len(inside)
         if pick:
             pick["picked"] = True
+            if ratings is not None:
+                pick["picked_because"] = picked_because(rule, within_of(sheet), pick, eligible, quoted, star, best, met,
+                                                        preferences, needs_time)
             status = "pick_up" if local else ("next_candidate" if struck else "ready")
             reason = line.get("fulfilment_note") if status == "pick_up" else None
             ready += 1 if status in ("ready", "next_candidate") else 0
@@ -425,6 +555,23 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
                               "rule": sheet["pick_rule"]["label"],
                               "pick_price_cents": pick["product"]["price_cents"] if pick else None},
                       "struck": struck, "candidates": cands})
+        why = lines[-1]["why"]
+        if rule in RATING_RULES:  # the label actually applied: how many of those that pass anyone has rated
+            counted = rule == "most_popular"  # this one orders by the count of reviews, the others by the rating
+            rated = sum(1 for c in eligible if review_count(quoted.get(c["id"])) is not None) if counted else \
+                sum(1 for s in star.values() if s is not None)
+            name = "most reviewed" if counted else "best reviewed" if rule == "best_reviewed" else \
+                "best value (cheapest within %g stars of the best rated)" % within_of(sheet)
+            what = "a quoted review count" if counted else "a quoted rating"
+            why["rated"] = rated
+            why["rule"] = "%s: nothing passes" % name if not eligible else (
+                "%s: %d of %d that pass ha%s %s" % (name, rated, len(eligible), "s" if rated == 1 else "ve", what)
+                if rated else "%s: none of the %d that pass has %s, so the cheapest is shown" % (name, len(eligible), what))
+        if preferences:
+            full = sum(1 for c in eligible if met[c["id"]] == len(preferences))
+            why["preferences"] = "%d of %d that pass meet%s %s" % (
+                full, len(eligible), "s" if full == 1 else "",
+                "the preference" if len(preferences) == 1 else "all %d preferences" % len(preferences))
     quantity = {line["id"]: line.get("quantity", 1) for line in sheet["lines"]}  # how many of the pick the list asks for
     total = sum(c["product"]["price_cents"] * quantity[l["line_id"]] for l in lines for c in l["candidates"]
                 if c["picked"] and l["status"] in ("ready", "next_candidate"))
