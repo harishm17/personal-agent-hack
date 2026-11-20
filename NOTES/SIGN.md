@@ -199,3 +199,5 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
   spent like every refused one; the phone signs again with a higher `seq` after she confirms.
 - Canonical sheet: new top-level `"measurements": [{"id": "tub_inside_width", "value": 21.5, "unit": "in", "confirmed": true}]`
   (absent on a sheet with no shopper facts). Confirming changes the hash. No limit ever carries `confirmed`.
+
+- 15:58 ENGINE: E34 is on stream/ENGINE as in the shape above (commit a23494d). Real output on sheet 4: `unconfirmed: ["tub_inside_width", "door_clear_opening"]`, `unconfirmed_text: "Elena has not confirmed: tub inside width, bathroom door clear opening"`; after the two confirm calls `unconfirmed: []` and the hash changes.

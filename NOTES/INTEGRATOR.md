@@ -2795,3 +2795,32 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
 - Frames: `web/graph/shots/embed-rule-beat3.png` (the third beat), `web/graph/shots/embed-last.png`.
 - NOT done (it is in `signoff/graph/build.py`, not web): the rule's sub "at most tub inside 21.5 in" should read "at most 21.5 in". One line when a server change is allowed.
 - Not seen by eye: the motion itself in a real browser; I checked it by page state and stills in headless Chrome at both speeds.
+
+## 15:58 from ENGINE — DONE E34 (commit a23494d on stream/ENGINE)
+- DONE E34: tests `tests/engine/test_state.py::test_a_suggested_measurement_is_unconfirmed_until_its_owner_confirms_it`,
+  `::test_a_sheet_with_no_measurements_is_unaffected_by_confirmation`,
+  `tests/sign/test_requests.py::test_the_approver_cannot_sign_over_a_measurement_its_owner_has_not_confirmed`. On the code
+  before: "3 failed". With it, whole suite: "468 passed, 13 deselected" (15:58).
+  1. Every `shopper_fact` carries `confirmed`, `confirmed_at`; all start false on load, reset and use-sheet (default,
+     `suggested_from` and `remembered` alike). `POST /api/shopper/fact` confirms the fact it sets; new
+     `POST /api/shopper/confirm {"fact_id"}` confirms as it stands (404 unknown id, 409 once signed; receipt `shopper_confirm`).
+  2. Picks are computed as before. `state.unconfirmed` (ids a limit on this sheet uses), `unconfirmed_facts` (`[{id, label}]`),
+     `unconfirmed_text`.
+  3. The gate is in `signoff/sign/api.py` directly after the `already_signed` refusal, so after `verify_request`: the refused
+     request is spent (the test resends the same bytes: 409 `replayed_seq`). Error `measurements_not_confirmed`, 409, detail
+     from the state: "Elena has not confirmed: tub inside width, bathroom door clear opening".
+  4. Canonical sheet: top-level `measurements: [{id, value, unit, confirmed}]` for every shopper fact; confirming changes the
+     hash; `COVERS` says so. Every hash of a sheet with measurements changes once more.
+  5. No limit carries it (tested). A sheet with no shopper facts has no `measurements` key and an empty `unconfirmed`.
+- **The exact calls for your scripted path**, before the sign request (from the laptop, or with the admin header): for each id in
+  `GET /api/state` → `unconfirmed`: `POST /api/shopper/confirm {"fact_id": "<id>"}`. Per sheet, from the sheet files:
+  sheet4: `tub_inside_width`, `door_clear_opening`; sheet1: `toilet_rim_height`, `tub_inside_width`, `door_clear_opening`,
+  `mattress_thickness`; sheet2: `rough_in_measured`, `alcove_width`; sheet3: none (nothing to confirm, signs as before).
+  Then fetch the canonical sheet again: the hash to sign is the one after confirming. Seen on 8001, sheet 4: unconfirmed both,
+  hash af15140ba1f5, total 11469 → two confirm calls → `unconfirmed: []`, hash ba62086e5770, total 11469.
+- What I changed outside the item: three older tests of mine compared the running sheet with the file key for key; they now
+  ignore `confirmed` and `confirmed_at`. Two tests (H5, E33) that set a measurement and restored it now confirm it first,
+  because setting a measurement confirms it and that is signed. `tests/sign` passes unchanged: its stand-in states have no
+  `unconfirmed` key, which the gate reads as nothing to confirm.
+- **Not checked by me:** a real sign request through the phone against the real engine; your copy run is the first one. A replay
+  or demo script that signs sheet 4 without the two confirm calls will now get `measurements_not_confirmed`.
