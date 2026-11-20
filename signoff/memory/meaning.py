@@ -20,7 +20,7 @@ RECIPIENT = "sie:" + MODEL
 PURPOSE_INDEX = "memory: embed the sentences of memories"
 PURPOSE_QUERY = "embed one item's need, to rank memories against it"
 _lock = threading.Lock()
-_s = {"dim": None, "indexing": False, "error": None, "indexed_at": None, "ready": set()}
+_s = {"dim": None, "indexing": False, "error": None, "last": None, "ready": set()}
 _queries = {}
 
 
@@ -73,8 +73,9 @@ def index(timeout_s=600.0) -> dict:
                                 [(m["id"], MODEL, json.dumps(v)) for m, v in zip(new, vectors)])
             conn.commit()
         store._in_db(work)
-    _s.update(error=None, indexed_at=time.time())
-    return {"indexed": len([m for m in memories if m["id"] in have]) + len(new), "of": len(memories), "added": len(new)}
+    done = {"indexed": len([m for m in memories if m["id"] in have]) + len(new), "of": len(memories), "added": len(new)}
+    _s["last"] = dict(done, at=time.strftime("%Y-%m-%dT%H:%M:%S%z"))
+    return done
 
 
 def warm(sheet: dict, timeout_s=300.0) -> int:
@@ -99,15 +100,18 @@ def index_in_background(sheet: dict | None = None) -> None:
         try:
             index()
             warm(sheet or {})
+            _s["error"] = None
         except Exception as error:  # noqa: BLE001
-            _s["error"] = "%s" % type(error).__name__
+            _s["error"] = "%s at %s" % (type(error).__name__, time.strftime("%H:%M:%S"))
         finally:
             _s["indexing"] = False
     threading.Thread(target=run, daemon=True, name="memory-index").start()
 
 
 def status() -> dict:
-    return {"model": MODEL, "indexing": _s["indexing"], "error": _s["error"], "table": _vec_table()}
+    """`last` is the last finished pass (`indexed` of `of` memories have a vector); `error` is the last pass's failure."""
+    return {"model": MODEL, "indexing": _s["indexing"], "last": _s.get("last"), "needs_embedded": len(_queries),
+            "error": _s["error"], "table": _vec_table()}
 
 
 def need_of(sheet: dict, line_id: str):

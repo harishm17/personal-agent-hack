@@ -1936,3 +1936,29 @@ DONE T5: the replay at the top of `/trail/`, on stream/TRAIL at 33d630a (merged 
 Proof: `web/trail/shots/flow.png`, `flow-810.png`, `flow-step4-bypass.png`, `flow-step5-guard.png`, `flow-step7-memory.png`;
 details in my 14:18 note. Open inside T5, written down: the second-run opening has no motion of its own; the frame
 says "prompt builder" and "no ledger rows" until the read calls' rows are in main's ledger.
+
+## 14:16 from MEMORY — the exact sequence to see the second run on main at 15:15 (M4)
+Main is live on sheet 4 and its chain says "process start", which names no sheet. Step 1 puts the sheet on the table so the receipts name it (then the cards say "Elena" and "Dana").
+**One command does steps 1 to 5 and prints the checks** (no signature, so no cart and no identity check; it enrols a throwaway key as Dana, which the reset in step 5 forgets, so enrol the phone after it):
+```
+uv run python -m tests.memory.second_run http://127.0.0.1:8800 no-sign
+```
+The same by hand (use the phone for step 3 if it is enrolled; a signature in step 3 also fills the "bought" slot):
+1. `curl -s -X POST localhost:8800/api/admin/use-sheet -H 'content-type: application/json' -d '{"sheet_id":"sheet4"}'`
+2. `curl -s -X POST localhost:8800/api/shopper/fact -H 'content-type: application/json' -d '{"fact_id":"tub_inside_width","value":22.5}'` (or drag the tub width on the screen)
+3. On the phone, as Dana: strike the grab bar's pick with a reason. (Optional: sign.)
+4. `curl -s localhost:8800/api/memory` → `shelf`: slot `shopper` has 1 card, "Elena measured the tub inside width: 22.5 in."; slot `approver` has 1 card, "Dana struck <product> from the grab bar."; slot `stores` has the saved answers and the stores' agents' replies (16 on my port); slot `bought` has 1 card only if she signed. `counts.not_proved` is 0.
+5. `curl -s -X POST localhost:8800/api/admin/reset`
+6. `curl -s localhost:8800/api/state` → what to see:
+   - `sheet.shopper_facts[0]`: `"value": 22.5, "remembered": true, "measured_by": "Elena", "measured_at": "<time of step 2>"` (the sheet file says 21.5);
+   - `memory`: `{"facts": [{"fact_id": "tub_inside_width", "value": 22.5, ...}], "strikes": [{"line_id": "L5", "product_key": "...", ...}], "ignored": []}`;
+   - line `L5`: `struck` holds the product with `"from_memory": true` and `"by": "issuer"`; `pick` is the next grab bar that passes, not the struck one;
+   - `seal.signed` false, `issuer_key.enrolled` false, `receipts.chain` a new id: it is a new run, and nobody struck anything in it.
+7. `curl -s localhost:8800/api/memory` → the same cards, older (`age.text`); `curl -s 'localhost:8800/api/memory/recall?line_id=L5'` → `recalled` has the strike with `why: "struck from this item before, by a signed request"`, and `by_meaning.ranked` puts it at or near the top (the first call after an idle spell may say `pending`; ask again).
+What you will **not** see yet: the reason. The strike shows `"reason": "struck earlier"` until ENGINE adds `"reason"` to the strike receipt's `detail` (asked 13:53; one line). The script prints `FAIL  with the approver's reason` until then, and passes after it with no change on my side.
+Afterwards main keeps both memories for every later run, which is the point, and matters for the demo:
+- only two grab bars pass on sheet 4. Strike once: the pick moves to the other one. Strike both and the line has no pick.
+- to put main back: set the width again (`POST /api/shopper/fact` with 21.5; the newest measurement wins) and send a signed unstrike from the phone. To start with an empty shelf instead, move `data/receipts/*.jsonl` aside: without its receipt a memory is not recalled (the rows stay in the table, counted under `not_proved`, never on the shelf).
+Seen on 8007 at 14:13 with this exact command (`no-sign`): 6 of 6 checks it can pass today pass; the reason fails as said. Saved states of the full run with a signature: `data/memory/second_run/run1.json`, `run2.json`.
+Also since my last note: a store's own agent's reply in TALK's saved conversations (`data/talk/threads/`) is now a `store_answer` memory owned by that store (key `talk:<product>:<thread>:<turn>`, `source.turn`);
+what our agent drafted or sent is never in a memory (`test_what_a_stores_own_agent_replied_is_the_stores_memory_and_what_we_wrote_is_not`). `./hk check` → PASS.
