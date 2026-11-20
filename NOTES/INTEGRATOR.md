@@ -829,3 +829,38 @@ DONE S9: `/api/gate/status` has `decision` ("switched back" when the gate is off
 DONE S10: `data/obs/events.jsonl`, `signoff.obs.recent(n, session_id, sheet_id)`, `GET /api/obs/events`; test `test_events_are_kept_in_a_local_log_with_timings`.
 DONE S11: answered in the 12:45 entry ("Your Amplitude question, from the code"): only `shopper_say`'s input (the shopper's typed text) can carry a home measurement, a limit value or a name; the order's text never rides along; default content mode is `metadata_only` (verified with the SDK's own event object: Tool Input and Tool Output are dropped); `full` mode redacts any event whose payload contains a sealed value. Ledger rows record exactly what each mode sends.
 DONE S12: replay mode answers search, ask and cart for sheet 2 from `data/sheet2/pool/raw/`, `data/sheet2/store_answers/` and the pool, no network (test below). 
+
+## STORE 14:10 — S13, S14, S15
+DONE S13 (Amplitude). Every session now carries the gate's arm from its first event: `obs.session()` attaches `[{"key": "sie_reader", "variant": "<arm>"}]`
+(the gate sets the arm; before it says anything the arm is "sonnet"), so ENGINE's `obs.session()` at reset gets it too, and the gate adds it to a
+running session when it flips. **Procedure run on my port 8002 in replay mode** (`SIGNOFF_MODE=replay`, sheet 1, real Amplitude key): for each arm
+(gate on, then off): `POST /api/admin/reset`, enrol a throwaway key, a signed `set_limit`, a signed `sign_sheet` (two replay carts: parentgiving and carex,
+`mode: "replay"`), then a final reset. `GET /api/obs/status` after each step; the last one, after both arms: **queued 46, sent 34 tool-call events,
+delivered 41 (34 tool calls and 7 `[Agent] Session End`), dropped 0, last_status 200, no error.** (Before the idle-flush fix at 12:05 events waited for
+shutdown; that is why the 13:25 run delivered 2.) Event counts by name from the SDK callback: `[Agent] Tool Call` 34, `[Agent] Session End` 7.
+Tool names in that run (local log): `check_run` 27, `gate.changed` 4, `store.create_cart` 4; replay mode reads no pages and the run did no chat, so
+`figure_read`, `shopper_say`, `store.search_catalog` and `store.ask_business` did not occur in it (they do in live runs; same function). **Both arms exist in
+Amplitude**: the experiments seen on delivered events were `sie_reader:sonnet` and `sie_reader:sie-qwen`.
+**Where the builder looks (nobody has confirmed it in the UI yet; the callback proves Amplitude answered 200, not that the page shows it):** in the
+Amplitude project that belongs to the key `AMPLITUDE_AI_API_KEY`, open **Agent Analytics** (the Agents / AI section) and pick the agent **`signoff-shopper`**;
+or open **Data > Live Events** (a user lookup works too: user id **`signoff-demo`**) and filter event type **`[Agent] Tool Call`** or **`[Agent] Session End`**.
+Event properties: `[Agent] Agent ID` = signoff-shopper; `[Agent] Tool Name` = check_run | gate.changed | store.create_cart | store.search_catalog |
+store.ask_business | figure_read | shopper_say | read_state | read_candidates; `[Agent] Tool Success`; `[Agent] Latency Ms`; `[Agent] Session ID` (looks like
+`sheet1-125619-2f82`); `[Agent] Content Mode` = metadata_only (no input or output text is sent); the arm: **`[Agent] Experiment Key` = sie_reader,
+`[Agent] Experiment Variant` = sonnet or sie-qwen, `[Agent] Experiments` = ["sie_reader:sonnet"]**. To see the loop: chart `[Agent] Tool Call` count by
+`[Agent] Experiment Variant`, or filter the `gate.changed` events. Events from this afternoon's runs are labelled with the sheet in the session id only.
+DONE S14 (the verdict). `GET /api/gate/status` recomputes it on every call from the two readers' run files and the engine's own rules (`rules.build_state` with each arm's
+figures on the current limits); it will change by itself when ENGINE's re-read changes the run files. Rule, in code: **kept** unless the small reader ever reads the same quote to a
+different number than the reference (then "switched back" / "switch back advised"); the extra figures it reads are not held against it, they are counted and listed with the
+candidates they move inside the limits. Fields: `decision`, `decision_text`, `decided_by` ("code, from the two readers' run files"), `recorded_in` ("Amplitude (event gate.changed...)"),
+`evidence` {products_accepted, small_accepts_more, inside_limits, picks_differ_on, disagreements, figures_in_disagreement, inside_only_small_reader, inside_only_reference, per_page
+(median seconds and cost per page for both), example}. No line says Amplitude decided it. **Numbers right now (sheet 1, 132 products, ENGINE's run files as of 14:05):**
+sonnet 57 products state every figure, sie-qwen 67; inside the limits 38 against 45; same-quote disagreements **0** (the 3 of 13:00 are gone after ENGINE's re-read), extra reads 14,
+reference-only reads 2; the small reader's extra reads move 7 candidates inside, none the other way; picks differ on L2; per page: Sonnet 3.0 s median and $0.0059, Qwen 6.1 s
+and 74 SIE credits. So the code now says **kept** on those files. I did not assume it: the same code said "switched back" an hour ago. The 7 candidates and 14 extra reads are the
+list for the hand check (`evidence.figures_in_disagreement.small_only`, `evidence.inside_only_small_reader`). Sheet 2's numbers appear when its figures exist.
+DONE S15 (about 15 minutes): `GET /api/sql/passing-box?line_id=L1&source=airbyte` runs the identical statement with `FROM signoff.airbyte_pool` (Airbyte's delivery, same columns), also
+runs it on the direct table, and returns `rows`, `direct_rows`, `same`, `only_in_airbyte`, `only_in_direct` and `airbyte` {rows, jobs, first/last synced_at, rows_also_in_the_app_pool,
+app_pool_rows, note}. Today on sheet 1: L1 8 against 8, L2 7 against 7, L4 13 against 13, `same: true`. `source=airbyte` is honest about staleness: the table holds 256 rows from two jobs
+(20:02 and 20:49 UTC); since then the pool was rebuilt (options, the new relevance rule), so for products added or dropped since the answers can differ until the next Airbyte sync
+(`python -m signoff.airbyte.sync`, which also now exports the active sheet). Say "the app's own query ran on rows Airbyte delivered at <time>", and re-sync before the demo if the pool changes.
