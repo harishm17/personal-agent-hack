@@ -3,6 +3,10 @@
   "sheet": "sheet4",
   "invented": true,
   "invented_note": "Invented family, hospital and messages. This is the context a personal agent would hold about the event before any shopping starts; it is typed in here, not read from anyone's mail or calendar.",
+  "held_by": {
+    "who": "elena",
+    "note": "This is the family's agent. It holds what the family wrote or was sent: the hospital's emails to Elena, the family chat, and her messages with the therapist. It holds nothing from the hospital's or the therapist's own records; the patient's weight comes from Elena, not from a chart."
+  },
   "event": {
     "id": "surgery",
     "label": "Rosa's hip replacement",
@@ -84,7 +88,7 @@
       "to": "elena",
       "channel": "message",
       "at": "2026-11-20T10:20:00-08:00",
-      "text": "I saw Rosa today. She weighs 280 lb, so everything she puts her weight on must be rated for at least 300 lb. I have not seen the house, so please measure the tub and the bathroom door. I will send the written order this morning."
+      "text": "I saw Rosa today for her assessment. I have not seen the house, so please measure the tub and the bathroom door. What does she weigh now?"
     },
     {
       "id": "m6",
@@ -93,7 +97,16 @@
       "to": "dana",
       "channel": "message",
       "at": "2026-11-20T10:41:00-08:00",
-      "text": "The tub is 21.5 inches wide inside and the bathroom door opening is 28 inches."
+      "text": "About 280 lb. The tub is 21.5 inches wide inside and the bathroom door opening is 28 inches."
+    },
+    {
+      "id": "m7",
+      "from": "dana",
+      "from_label": "Dana",
+      "to": "elena",
+      "channel": "message",
+      "at": "2026-11-20T10:55:00-08:00",
+      "text": "Then everything she puts her weight on must be rated for at least 300 lb. I will send the written order this morning."
     }
   ],
   "facts": [
@@ -187,13 +200,13 @@
     },
     {
       "id": "patient_weight",
-      "label": "Rosa weighs 280 lb",
+      "label": "Rosa weighs about 280 lb",
       "value": 280,
       "unit": "lb",
       "class": "health",
-      "owner": "dana",
-      "source": "m5",
-      "quote": "She weighs 280 lb",
+      "owner": "elena",
+      "source": "m6",
+      "quote": "About 280 lb",
       "feeds": [
         {
           "to": "/lines/0/limits/0",
@@ -208,8 +221,8 @@
           "verb": "is why"
         }
       ],
-      "start": 18,
-      "end": 35
+      "start": 0,
+      "end": 12
     },
     {
       "id": "rated_300",
@@ -218,7 +231,7 @@
       "unit": "lb",
       "class": "limit",
       "owner": "dana",
-      "source": "m5",
+      "source": "m7",
       "quote": "must be rated for at least 300 lb",
       "feeds": [
         {
@@ -227,8 +240,8 @@
           "equals": true
         }
       ],
-      "start": 74,
-      "end": 107
+      "start": 39,
+      "end": 72
     },
     {
       "id": "not_seen_house",
@@ -244,8 +257,8 @@
           "verb": "is why Elena measures"
         }
       ],
-      "start": 109,
-      "end": 183
+      "start": 37,
+      "end": 111
     },
     {
       "id": "tub_width",
@@ -263,8 +276,8 @@
           "equals": true
         }
       ],
-      "start": 0,
-      "end": 34
+      "start": 14,
+      "end": 48
     },
     {
       "id": "door_opening",
@@ -282,8 +295,8 @@
           "equals": true
         }
       ],
-      "start": 39,
-      "end": 77
+      "start": 53,
+      "end": 91
     }
   ],
   "reading": "Each fact is an exact quote from one message, with its offsets. `feeds` points into the sheet (a JSON pointer); `equals: true` means code must find the same value there, else the edge is drawn as a disagreement. A fact with no `feeds` is held and not used for this order."
