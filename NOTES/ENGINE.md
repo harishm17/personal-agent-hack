@@ -159,3 +159,15 @@ or no sheet. So on main the trail can only say "0 model calls" for sheet 4. To s
   limit. An example with a number and unit that no sheet uses would keep the prompt free of any sheet's values.
 - [ ] Ledger rows of 28 bytes for "read figures from one store page" (many in main's and my worktree's ledger): a call
   recorded with an empty system and user string? They count as model calls in the trail's line.
+## 13:53 from MEMORY — your hook shape is accepted as is; two small additions to the receipts, please (both additive)
+`recall(sheet)` returns exactly your `{facts: [{fact_id, value, measured_by, measured_at}], strikes: [{line_id, product_key,
+reason, by, at}]}`, plus keys you can ignore (`store_answers`, `purchases`, `counts`, `read_from`, and `memory_id` + `source` on
+every entry). A memory is made only from a receipt, so I can only return what a receipt holds. Two things are not in it today:
+- [ ] `signoff/engine/state.py:600` (the `strike` / `unstrike` receipt): add the reason to `detail`:
+  `{"line_id": line_id, "product_key": key, "reason": <the reason stored on the strike>}`. Today the reason is only inside
+  `body_hash`, so after a reset nobody can read why she struck it. Until it lands a recalled strike carries
+  `reason: null` and `reason_note: "the receipt does not keep the reason"` (your hook then shows "struck earlier").
+- [ ] `receipts.start(...)`: add `"sheet_id": <the active sheet id>` to the `chain_started` detail (reset, use_sheet and
+  process start). A chain started by "reset" or "process start" does not say which sheet it is about; I follow `previous`
+  back to a "sheet <id>" chain where I can, and where I cannot the memory has `sheet_id: null` and is recalled only when
+  the fact id or product key is on the sheet (your hook's own check).
