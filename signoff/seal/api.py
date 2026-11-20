@@ -45,8 +45,12 @@ def events(receipts: list, seal: dict) -> list:
                 out.append({"at": r["at"], "from": "phone", "to": "agent", "text": what, "what": what, "count": 1})
         elif kind == "request_refused":
             why = str(d.get("refused_because") or "").split(":")[0].replace("_", " ")
-            out.append({"at": r["at"], "from": "agent", "to": "agent", "bad": True,
-                        "text": "%s refused: %s" % ((d.get("request") or "request").replace("_", " "), why)})
+            text = "%s refused: %s" % ((d.get("request") or "request").replace("_", " "), why)
+            if out and out[-1].get("what") == text:  # the same refusal again: one line with a count
+                out[-1]["count"] += 1
+                out[-1].update(at=r["at"], text="%s · %d times" % (text, out[-1]["count"]))
+            else:
+                out.append({"at": r["at"], "from": "agent", "to": "agent", "bad": True, "text": text, "what": text, "count": 1})
         elif kind == "request_accepted" and d.get("request") == "sign_sheet":
             sent = None
             try:
@@ -87,6 +91,13 @@ def summary(canonical: str, sheet_hash: str | None, name: str | None) -> dict:
                                                         word("picks", "pick"), n["total_cents"] / 100)}
 
 
+def refused(receipts: list) -> list:
+    """Every request the server refused in this run, from the receipt chain: [{n, at, request, why}]."""
+    return [{"n": r.get("n"), "at": r["at"], "request": (r.get("detail") or {}).get("request"),
+             "why": (r.get("detail") or {}).get("refused_because")}
+            for r in receipts if r.get("type") in ("request_refused", "enrolment_refused")]
+
+
 def compose(state: dict, canonical: str, key, receipts: list, identity_required: bool) -> dict:
     """The proof from the engine's state, the canonical sheet, SIGN's enrolled key (or None) and the receipt chain."""
     seal, sheet = state.get("seal") or {}, state["sheet"]
@@ -106,7 +117,7 @@ def compose(state: dict, canonical: str, key, receipts: list, identity_required:
         "public_key": key and {"jwk": key.jwk, "key_id": key.key_id, "name": key.name, "enrolled_at": key.enrolled_at},
         "algorithm": ALGORITHM,
         "identity": {"required": identity_required, **{k: (key.persona if key else {}).get(k) for k in ("status", "verified", "sandbox")}},
-        "events": events(receipts, seal),
+        "events": events(receipts, seal), "refused": refused(receipts),
         "carts": [{"store": c.get("store"), "total_cents": c.get("total_cents"), "signed_total_cents": c.get("signed_total_cents"),
                    "lines": len(c.get("lines") or []), "lines_checked": c.get("lines_checked"), "mode": c.get("mode")}
                   for c in seal.get("carts", [])],
