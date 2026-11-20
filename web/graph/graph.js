@@ -28,7 +28,7 @@ const STATUS = { inside: "meets the order", outside: "outside", unclear: "unclea
 
 let data = null, cognee = null, answer = null, stamp = "", sel = params.get("node"), line = params.get("line_id");
 // Two views of one item: the run growing as a graph (the default), and the five-column detail of the decision.
-let whole = false;
+let whole = false, showAnswer = false;
 let view = params.get("view") === "detail" ? "detail" : "explore", xdata = null, xkey = "", opened = false;
 const active = () => (view === "explore" && xdata?.nodes ? xdata : data);
 
@@ -129,7 +129,10 @@ function drawExplore() {
   $("#ctl").hidden = false;
   controls();
   if (!$("#heads").innerHTML) $("#heads").innerHTML = `<span class="st"><b>&nbsp;</b></span>`;
-  if (!xdata?.stages) { $("#stage").innerHTML = ""; $("#heads").innerHTML = ""; return; }
+  if (!xdata?.stages) {                                               // said, never a blank canvas
+    $("#stage").innerHTML = `<p class="muted" style="padding:1rem 0">${esc(xdata?.error || "The run's records could not be read.")}</p>`;
+    $("#heads").innerHTML = ""; xkey = ""; return;
+  }
   const key = JSON.stringify([xdata, innerWidth, innerHeight]);
   if (key === xkey) return;
   const same = xkey && JSON.parse(xkey)[0].line_id === xdata.line_id;
@@ -222,7 +225,7 @@ function renderBand() {
   $("#band").innerHTML = `${chips}<span class="grow"></span>
     <span class="legend" title="The mark shows whose knowledge it is">${who}</span>
     <span class="pill" title="${esc(data.backend_note)}">Graph: the run's records</span>
-    <span class="pill ${answer?.answered ? "signed" : ""}">${answer?.answered ? "Answer: Cognee" : "Cognee: no answer"}</span>`;
+    <button class="pill ${answer?.answered ? "signed" : ""}" data-answer>${answer?.answered ? "Answer: Cognee" : "Cognee: no answer"}</button>`;
 }
 
 function sourceLine(s) {
@@ -250,6 +253,7 @@ function quoted(n) {
 }
 
 function renderSide() {
+  document.body.classList.toggle("open", !!sel || showAnswer);
   const src = active(), el = $("#side"), nodes = new Map(src.nodes.map((n) => [n.id, n]));
   const n = nodes.get(sel);
   if (sel === "fold") {
@@ -294,12 +298,17 @@ function renderSide() {
     ? `<li><span class="no">✕</span><span class="grow">${esc(data.people[refused.identity] || refused.identity)}'s key writes to ${esc(data.people[refused.dataset_owner] || refused.dataset_owner)}'s dataset</span><span class="when">refused</span></li>` : "";
   const own = refused && (cognee?.log || []).filter((e) => e.action === "write" && e.accepted && e.identity === refused.dataset_owner && e.dataset_owner === refused.dataset_owner).slice(-1)[0];
   const ok = own ? `<li><span class="yes">✓</span><span class="grow">${esc(data.people[own.identity] || own.identity)}'s key writes to ${esc(data.people[own.identity] || own.identity)}'s dataset</span><span class="when">accepted</span></li>` : "";
-  el.innerHTML = `<div class="cap">Asked of Cognee</div><h2>What decides the ${esc(need)}, and from whom?</h2>${body}
+  el.innerHTML = `<div class="cap">Asked of Cognee<button class="x" data-close aria-label="Close">×</button></div><h2>What decides the ${esc(need)}, and from whom?</h2>${body}
     <hr><div class="cap">One dataset per owner</div><ul>${perm}${ok}</ul>
 `;
 }
 
-function render() { if (EMBED) { view = "explore"; draw(); return; } renderTop(); renderBand(); draw(); renderSide(); }
+function render() {
+  if (EMBED) { view = "explore"; draw(); return; }
+  // on the run the canvas takes the whole width; the side panel opens over it for a node or for Cognee's answer
+  document.body.classList.toggle("run", view === "explore");
+  renderTop(); renderBand(); draw(); renderSide();
+}
 
 async function load() {
   const q = line ? `?line_id=${encodeURIComponent(line)}` : "";
@@ -323,12 +332,13 @@ document.addEventListener("click", (e) => {
   if (e.target.closest("[data-again]")) { renderStage.told = false; XP.jump(0, true); XP.play(true, Math.round(27000 / xdata.stages.length)); return; }
   const chip = e.target.closest("[data-line]"), node = e.target.closest("[data-id]"), seg = e.target.closest("[data-view]");
   if (e.target.closest("[data-whole]")) { whole = !whole; renderSide(); return; }
+  if (e.target.closest("[data-answer]")) { showAnswer = !showAnswer; sel = null; XP.select(null); renderSide(); return; }
   if (seg) { view = seg.dataset.view; sel = null; XP.play(false); render(); return; }
   if (e.target.closest("[data-play]")) { XP.play(!XP.playing()); e.target.closest("[data-play]").textContent = XP.playing() ? "Pause" : "Play"; return; }
   if (e.target.closest("[data-step]")) { XP.play(false); XP.step(Number(e.target.closest("[data-step]").dataset.step)); return; }
   if (e.target.closest("#ctl") || (view === "explore" && e.target.closest("#stage"))) return;   // the canvas handles its own clicks
   if (chip) { XP.play(false); line = chip.dataset.line; sel = null; stamp = ""; params.delete("stage"); history.replaceState(null, "", `?line_id=${line}`); load(); return; }
-  if (e.target.closest("[data-close]")) sel = null;
+  if (e.target.closest("[data-close]")) { sel = null; showAnswer = false; XP.select(null); }
   else if (node) sel = sel === node.dataset.id ? null : node.dataset.id;
   else if (e.target.closest("#stage")) sel = null;
   else return;
