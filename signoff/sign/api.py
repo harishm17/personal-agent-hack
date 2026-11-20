@@ -457,27 +457,52 @@ def _senso_run_now(engine) -> None:
         engine.set_senso(senso.checks()["checks"])
 
 
+def _watch_tick(mem: dict, now: float | None = None) -> str:
+    """One look at the running sheet. Returns what it did, for the tests. A new sheet on the table gets its order
+    document into Senso first (a no-op when it is already there), then a run once the hash has been steady for the
+    debounce; so verdicts for the active sheet exist when the app starts and after every switch, before any phone opens."""
+    if not senso.configured():
+        return "not configured"
+    engine = get_engine()
+    state = engine.get_state()
+    sid, h = state["sheet"]["id"], engine.sheet_hash()
+    now = time.time() if now is None else now
+    if sid != mem.get("sheet"):
+        mem["sheet"], mem["hash"] = sid, None
+        try:
+            senso.load_documents(state["sheet"])
+            senso.wait_processed(timeout=30)
+        except Exception as error:  # noqa: BLE001
+            senso._meta["error"] = type(error).__name__
+    if h != mem.get("hash"):
+        first_look = mem.get("hash") is None            # a sheet just came on the table: check it at once
+        mem["hash"], mem["changed_at"] = h, (now - DEBOUNCE_S if first_look else now)
+    if state["seal"].get("signed"):
+        return "signed"
+    if senso.checks()["for_hash"] == h or senso.running_for() is not None:
+        return "current"
+    if now - mem["changed_at"] < DEBOUNCE_S and not senso.kicked():
+        return "waiting"
+    _senso_run_now(engine)
+    return "ran"
+
+
 def _watch() -> None:
-    last, changed_at = None, 0.0
+    mem: dict = {}
     while True:
         time.sleep(0.4)
         try:
-            if not senso.configured():
-                continue
-            engine = get_engine()
-            h = engine.sheet_hash()
-            now = time.time()
-            if h != last:
-                last, changed_at = h, now
-            if senso.checks()["for_hash"] == h or senso.running_for() is not None:
-                continue
-            if now - changed_at < DEBOUNCE_S and not senso.kicked():
-                continue
-            _senso_run_now(engine)
+            _watch_tick(mem)
         except Exception as error:  # noqa: BLE001
             senso._meta["error"] = type(error).__name__
             senso._kick.clear()
             time.sleep(2)
+
+
+@router.on_event("startup")
+def _start_senso_watcher() -> None:
+    """The check runs once when the app starts and on every sheet switch, not only when a phone asks."""
+    ensure_watcher()
 
 
 def ensure_watcher() -> None:
