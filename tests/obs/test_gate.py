@@ -1,70 +1,80 @@
 from signoff import obs
 from signoff.obs import gate
 
+MEASURED = {"mode": "both must agree", "real_disagreements_caught": 5, "figures_blocked_that_only_the_reference_found": 27,
+            "figures_only_the_second_reader_found": 3, "figures_agreed": 238, "candidates_changed": 19, "moved_to_unclear": 18,
+            "picks_changed": [{"line_id": "L4", "one_reader": {"title": "Walker A", "price_cents": 4471},
+                               "both_must_agree": {"title": "Walker B", "price_cents": 6999}}],
+            "total_cents_one_reader": 11469, "total_cents_both_must_agree": 13997}
+
 
 class FakeEngine:
-    def __init__(self, signed=False):
-        self.signed, self.reader, self.calls = signed, None, []
+    def __init__(self, signed=False, measured=MEASURED):
+        self.signed, self.mode, self.calls, self.measured = signed, "disagreement blocks", [], measured
 
     def get_state(self):
-        return {"seal": {"signed": self.signed}, "counts": {"state_every_figure": 1},
-                "readers": {"deciding": self.reader or "anthropic:claude-sonnet-5-5", "readers": []}}
+        return {"seal": {"signed": self.signed}, "counts": {},
+                "two_readers": {"mode": self.mode, "reference": "ref", "second": "sec", "strict_mode_measured": self.measured},
+                "readers": {"readers": [{"extractor": "ref", "pages_read": 10, "seconds_per_page_median": 3.0, "cost": {"usd_total": 1}},
+                                        {"extractor": "sec", "pages_read": 10, "seconds_per_page_median": 6.0, "cost": {"sie_credits_total": 9}}]}}
 
-    def set_reader(self, name=None):
-        self.calls.append(name)
-        self.reader = name
+    def set_reading_mode(self, mode):
+        self.calls.append(mode)
+        self.mode = mode
 
 
 def _fresh(monkeypatch, eng):
     monkeypatch.setattr(gate, "_engine", lambda: eng)
     monkeypatch.setattr(gate, "_override", None)
     monkeypatch.setattr(gate, "_save_history", lambda: None)
-    gate._s.update(value=False, arm="sonnet", changed_at=None, history=[], refused=None, error=None)
+    gate._s.update(value=False, arm="disagreement-blocks", changed_at=None, history=[], refused=None, error=None)
     events, exps = [], []
     monkeypatch.setattr(obs, "tool_call", lambda *a, **k: events.append(a))
     monkeypatch.setattr(obs, "set_experiments", lambda e: exps.append(e))
     return events, exps
 
 
-def test_gate_on_switches_reader_tags_arm_and_logs_one_event(monkeypatch):
+def test_gate_on_switches_the_reading_mode_tags_the_arm_and_logs_one_event(monkeypatch):
     eng = FakeEngine()
     events, exps = _fresh(monkeypatch, eng)
     gate.set_override(True)
-    assert eng.calls == ["sie:Qwen/Qwen3.8-27B-FP8"]
-    assert exps == [[{"key": "sie_reader", "variant": "sie-qwen"}]]
-    assert [e[0] for e in events] == ["gate.changed"] and set(events[0][2]) >= {"before", "after"}
-    gate.set_override(True)  # no change, no second event
+    assert eng.calls == ["both must agree"] and exps == [[{"key": "sie_reader", "variant": "both-must-agree"}]]
+    assert [e[0] for e in events] == ["gate.changed"] and set(events[0][2]) >= {"before", "after", "decision"}
+    gate.set_override(True)
     assert len(events) == 1
     gate.set_override(False)
-    assert eng.calls[-1] is None and exps[-1][0]["variant"] == "sonnet" and len(events) == 2
+    assert eng.calls[-1] == "disagreement blocks" and exps[-1][0]["variant"] == "disagreement-blocks" and len(events) == 2
 
 
 def test_no_switch_after_signing(monkeypatch):
     eng = FakeEngine(signed=True)
     events, exps = _fresh(monkeypatch, eng)
     gate.set_override(True)
-    assert eng.calls == [] and events == [] and gate._s["arm"] == "sonnet"
+    assert eng.calls == [] and events == [] and gate._s["arm"] == "disagreement-blocks"
 
 
 def test_engine_refusal_never_raises(monkeypatch):
     eng = FakeEngine()
-    eng.set_reader = lambda name=None: (_ for _ in ()).throw(RuntimeError("refused"))
+    eng.set_reading_mode = lambda mode: (_ for _ in ()).throw(RuntimeError("refused"))
     events, exps = _fresh(monkeypatch, eng)
     gate.set_override(True)
-    assert gate._s["refused"] and gate._s["arm"] == "sonnet"
+    assert gate._s["refused"] and gate._s["arm"] == "disagreement-blocks"
 
 
-def test_the_verdict_comes_from_disagreement_on_the_same_quote_not_from_counts(monkeypatch):
-    monkeypatch.setitem(gate._s, "history", [{"at": "t", "value": True, "arm": "sie-qwen"}])
-    evid = {"products_accepted": {"sonnet": 67, "sie-qwen": 81, "of": 111}, "small_accepts_more": 14,
-            "inside_only_small_reader": [{"candidate": "c"}] * 3,
-            "disagreements": {"different_value": 3, "small_only": 15, "reference_only": 0}}
-    assert gate.verdict_from(evid) == "switch back"
-    assert gate.decision(evid, False)["decision"] == "switched back"
-    assert gate.decision(evid, True)["decision"] == "switch back advised (the gate is on)"
-    t = gate.decision(evid, False)
-    assert "3 quote(s)" in t["text"] and "Amplitude" not in t["text"] and t["decided_by"].startswith("code")
-    extra_only = dict(evid, disagreements={"different_value": 0, "small_only": 15, "reference_only": 0})
-    assert gate.verdict_from(extra_only) == "kept" and gate.decision(extra_only, True)["decision"] == "kept"
-    assert gate.decision(extra_only, False)["decision"] == "not adopted"
-    assert gate.verdict_from({}) is None
+def test_the_verdict_is_decided_from_what_the_strict_mode_costs_in_what_is_bought(monkeypatch):
+    eng = FakeEngine()
+    _fresh(monkeypatch, eng)
+    monkeypatch.setitem(gate._s, "history", [{"at": "t", "value": True, "arm": "both-must-agree"}])
+    ev = gate.evidence()
+    assert ev["real_disagreements_caught"] == 5 and ev["extra_cost_cents"] == 2528 and ev["per_page"]["second"]["seconds_median"] == 6.0
+    assert gate.verdict_from(ev) == "switch back"
+    off, on = gate.decision(ev, False), gate.decision(ev, True)
+    assert off["decision"] == "switched back" and on["decision"] == "switch back advised (the gate is on)"
+    assert "caught 5 real disagreements" in off["text"] and "L4" in off["text"] and "$25.28 more" in off["text"]
+    assert "Amplitude" not in off["text"] and off["decided_by"].startswith("code")
+    free = dict(MEASURED, picks_changed=[], total_cents_both_must_agree=11469)
+    eng2 = FakeEngine(measured=free)
+    _fresh(monkeypatch, eng2)
+    ev2 = gate.evidence()
+    assert gate.verdict_from(ev2) == "kept" and gate.decision(ev2, True)["decision"] == "kept" and gate.decision(ev2, False)["decision"] == "not adopted"
+    assert gate.verdict_from({}) is None and gate.verdict_from({"error": "x"}) is None

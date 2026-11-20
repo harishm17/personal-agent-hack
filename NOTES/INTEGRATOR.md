@@ -1620,6 +1620,19 @@ DONE T4 (as far as the records go): screenshots `web/trail/shots/trail-context.p
 - The chat has no rows in any ledger I can read, so its context is not shown yet; it will appear by itself (same block)
   when a chat call is recorded.
 
+## 14:10 from TRAIL
+T5, part 1 (the static key frame) is committed on stream/TRAIL: 27f14b7. Screenshot `web/trail/shots/flow.png` (1440 x 810,
+sheet 4 on port 8016, replay mode). `uv run -q pytest -q` → 280 passed. It sits at the top of `/trail/`; the timeline is
+below it as the record. All content is from `feed.flow` (new, `signoff/trail/flow.py`), which reads the live state: the
+order's sentences (the one with the issuer's number marked), the home measurement the item uses, the picked product's page
+with the sentences that state its figures, the figure meanings from the sheet, both comparisons with margins, the nearest
+cheaper product that was refused with its reason, the pick and its rule, the signature row, the question to the store's
+agent and its reply. Lines are computed from where the things are, so the bypass ends on the pills' own edges and never
+touches the frame. The frame's caption says "prompt builder" until the ledger rows carry `parts`.
+Quiet two-word cards where no record exists yet: "no ledger rows" (what stayed outside the call), "no guard record",
+"No memory record" (`/api/talk/threads` and `/api/memory` answer 404 on main).
+The replay engine (play, pause, step, the rail as scrubber, space and arrow keys, 24 s) is in the same commit but I have
+not yet watched it frame by frame; that is next.
 ## 13:59 from ENGINE — DONE E27: three reading modes, "disagreement blocks" is the default
 - Modes in the state, named as you asked: `reference`, `disagreement blocks` (default), `both must agree` (strict, for the gate).
   `two_readers.modes` lists them with one sentence each; `two_readers.strict_mode_measured` keeps the strict mode's outcome,
@@ -1824,3 +1837,53 @@ ok    the signed order is remembered
   itself sends. The saved threads carry their own record (draft, removed, sent, reply) and the page reads those.
 - For STORE (noted in NOTES/STORE.md): `egress.CLASSES` has no `health`, `money`, `address`, so those kinds appear in a
   row's purpose text, not in `fact_classes`.
+
+## 14:35 from SCREEN (your 14:10 note; main merged at 123d154; gate 350 passed)
+- DONE C12: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-L5.png (items 1 to 3), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-nowat.png (item 6), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c12-confirm.png (item 5). By item:
+  1. An unclear row gives the engine's reason in the result: "✕ unclear · option says 36 in, page describes 12, 16, 24 in"
+     (from the check's `unclear_why`; "two values" / "no unit stated" when the engine gives none).
+  2. The fold line is a summary of the folded rows by which limit failed, with the extreme value, for any item:
+     "14 cheaper above: 9 under 16 in (lowest 12 in) · 4 under 300 lb (lowest 75 lb) · 1 unclear". It opens on click.
+     Groups: under / over / not a bound (per limit), never state it, unclear, struck.
+  3. Singular and plural: items, limits, stores, pages, "1 cheaper one rejected", "1 dearer one also passes", receipts.
+  4. No request that can answer 404 is made any more. The optional routes (tools, sheets, trail, egress, gate, enrol
+     code) are asked for only when `/openapi.json` lists them; the favicon request is gone (an empty icon link); the two
+     HEAD probes of `/graph/` and `/talk/`, repeated every 5 s, are gone. That last one was the 404.
+     ONE THING I NEED FROM YOU: please add `"pages": ["trail", "talk", "graph", ...]` to `GET /api/health` in
+     signoff/app.py (the folders that are mounted). Until then the Conversations tab shows when the talk router is loaded
+     (its page is in the repo) and the Memory tab stays hidden, because I cannot tell whether `web/graph` is served
+     without asking for it (it is not on main at 123d154). With `pages` both follow what is served.
+  5. Switching from the title menu asks once when the sheet is signed or a phone is enrolled: "Switching starts a new
+     run. It clears the phone's enrolment." with Stay / Switch. Checked by clicking it with a key enrolled.
+  6. When a limit change moves the pick to another store, "now at carex.com" shows beside "Why this one" for the three
+     seconds the old pick says "was picked". Checked with a really signed request (shower chair capacity 300 → 400:
+     parentgiving.com → carex.com, $47.11).
+- C13, written, NOT seen with real data: `GET /api/tools` is not on main (not in /openapi.json), so the "Tools at work"
+  button stays hidden. When the route exists a quiet button appears in the top bar and opens a drawer, one row per tool:
+  name, one number, two or three words, the detail and the route on click. Sample from placeholder rows:
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c13-tools-sample.png (`/?fixture=1&tools=1`). Keys I read, STORE please confirm: a list, or `{tools: [...]}`, of
+  `{name, number, words, route, detail}` (also accepted: `tool`/`id`, `value`/`count`, `label`/`text`, `source`, `note`).
+- C10 was reported DONE at 14:10. C11 ("choose this one"): not started; no route for it is in /openapi.json.
+## TALK 14:12 — K4 done; all four items closed
+- DONE K4: `/talk/` (`web/talk/index.html`, `talk.js`, `talk.css`, on `/screen/style.css` with the same top bar and a
+  Conversations tab) and `GET /api/talk/threads`. Looked at, 1440 x 810, on port 8008 with the real threads:
+  `web/talk/shots/talk-thread.png` (the sent message, the withheld marks, the reply with the answering words marked, the
+  refused follow-up), `talk-withheld.png` (the removed words behind the click, struck in the draft), `talk-agent.png`
+  (an agent thread with its follow-up), `talk-refused.png` (an ask that was not sent). `curl -s localhost:8008/api/talk/threads`
+  → keys `sheet, title, rule, marks, threads, messages`; 6 threads, 10 messages.
+- For TRAIL's guard row: the flat `messages` shape is in NOTES/TRAIL.md (14:10), with one real entry. Lead row: `cbd3c7f37f4f:1`.
+- Checks: `uv run pytest tests/talk -q` → `52 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`.
+- To merge: `signoff/talk/**`, `tests/talk/**`, `data/talk/**`, `web/talk/**`, NOTES. Nothing outside those paths is touched.
+  On main, after the merge, `/talk/` and the route show the six saved threads with no call to anyone (they are read from
+  `data/talk/threads/sheet4/`). In replay mode a new ask answers `status: "not_saved"` and calls nobody.
+- Not done, say if you want it: conversations for sheet 3 (its eleven stores were not asked; main is on sheet 4), and an
+  ask box on the page (the route is `POST /api/talk/ask {store, product_id?, text}`, laptop only).
+- Quirks for the AGENTS.md log (yours to add; the file is outside my paths):
+  - TALK 14:00: the span model (`urchade/gliner_multi-v2.1`, label "person name") marks the word "I" as a person at about
+    0.62. Code drops a marked span with under three letters or digits (`guard.MIN_CHARS`).
+  - TALK 14:01: `Qwen/Qwen3.8-27B-FP8` at temperature 0 can return a text with `[…]` gaps unchanged when asked to rewrite it;
+    stating the task with one neutral example fixed it on the real texts. Code refuses any message that still has a gap.
+  - TALK 13:57: `signoff.obs.egress` is the function; the ledger module is `signoff.obs._egress_module`. A script outside
+    pytest needs `PYTHONPATH=.` or `python -m`.
+  - TALK 14:02: a store's agent answers a request as a question: asked to "arrange expedited shipping", parentgiving.com's
+    agent replied "Nothing has been arranged". `ask_business` reads the store's information; it does nothing.
