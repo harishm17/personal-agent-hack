@@ -2605,3 +2605,12 @@ the process open (alone, the test exits in 3 s); if the gate hangs again, it is 
   says "Cheapest that passes; none of them has a quoted rating" (the engine's words); the 3.9 appears only in the card
   as "★ 3.9 (28 on amazon.com)" with REVIEWS' reason that it was not used (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-best-reviewed-L1.png).
 - Step 4's sublabel is "34 rejected" (it was cut once the replay control took its place in the bar).
+
+## 15:36 from SCREEN (your 15:28 addition)
+- `suggested_from`, WRITTEN, NOT SEEN WITH REAL DATA: no home measurement carries the field on main yet and no shape is in
+  NOTES/SCREEN.md, so I built against your message. Where it is present the line under the item's title reads
+  "Elena · the home: tub inside 21.5 in · from <from_label>, Nov 20" (the date from `at`), the quoted sentence on hover and
+  under the measurement in Elena's sheet; with `matches: false` it reads "· changed by Elena since the message". Without
+  the field the line is as before. I print `from_label` as the engine gives it rather than "her message": the sheet
+  gives no pronoun, so if the label should read "her message" the engine can send exactly that.
+  Seen on placeholder values only: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/msg-1.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/msg-0.png (`/?fixture=1&msg=1`, `msg=0`).

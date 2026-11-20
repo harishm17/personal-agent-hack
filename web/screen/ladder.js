@@ -100,6 +100,10 @@ async function loadAux() {
       if (p) p.picked_because = byPrice() ? "the cheapest that passes" : "rated 4.7 from 212 reviews, the highest that passes";
       last.quiet = true; render();
     }
+    if (params.get("msg") && state && !state.sheet.shopper_facts.some((f) => f.suggested_from)) {
+      state.sheet.shopper_facts.forEach((f, i) => { f.suggested_from = { message_id: "sample", from_label: "the sample message", at: "2026-11-20T10:41:00-08:00", quote: "Sample message: I measured it this morning.", matches: params.get("msg") === "1" || i > 0 }; });
+      last.quiet = true; render();
+    }
     if (params.get("tools") === "1" && state && !aux.tools) { aux.tools = { tools: [
       { name: "SingleStore", number: 1, words: "statement, 9 rows, same as the screen", route: "/api/sql/passing-box", detail: "Sample row: the one statement returns the rows the engine shows as passing." },
       { name: "Statsig", number: 1, words: "gate checked, reader switched back", route: "/api/gate/status", detail: "Sample row." },
@@ -409,7 +413,7 @@ function renderDoc(current) {
   const { issuer, shopper } = state.sheet;
   const home = (limit) => {                           // a requirement that points at the house carries the measurement beside it
     const f = limit.bound.source === "shopper" && state.sheet.shopper_facts.find((x) => x.id === limit.bound.fact);
-    const who = f && f.remembered ? ` · ${shopper.name} measured` : "";
+    const who = f && f.suggested_from ? "" : f && f.remembered ? ` · ${shopper.name} measured` : "";      // where it came from is said once, under the item's title
     return f ? ` <span class="home" title="from the home: ${esc(f.label)}">(${g(f.value)} ${esc(f.unit)}${esc(who)})</span>` : "";
   };
   q("#doc").innerHTML = `<div class="cap">${esc(issuer.name)}'s limits</div>
@@ -468,6 +472,15 @@ async function choose(candidateId, anchor) {
     ui.show = null;
     await load();
   } catch (error) { toast(anchor, `Not chosen <span class="code2">${esc(clip(error.message, 60))}</span>`); }
+}
+
+/** Where a home measurement came from, when the state says (`suggested_from`): the sender's own label and the date, or that it was changed since. */
+function fromMessage(f) {
+  const m = f.suggested_from;
+  if (!m) return "";
+  const who = state.sheet.shopper.name, at = m.at ? new Date(m.at) : null;
+  const date = at && !isNaN(at) ? ", " + at.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+  return m.matches === false ? ` · changed by ${who} since the message` : ` · from ${m.from_label || who + "'s message"}${date}`;
 }
 
 // ---------- centre: the candidates, cheapest first ----------
@@ -567,8 +580,8 @@ function renderList(line, pick) {
       ${failing.length ? (ui.open.has("above") ? failing.map(row).join("") : wasRows(failing) + `<button class="more" data-toggle="above" title="Show these rows"><b>${failing.length} ${failing.length === 1 ? "does" : "do"} not pass:</b> ${esc(foldSummary(failing))}</button>`) : ""}`;
   }
   const facts = factsOfLine(sheetLineOf(line)), shopper = state.sheet.shopper;
-  const homeLine = `<button class="homeline" data-open="shopper" title="${esc(shopper.name)}'s measurements and questions to the agent"><b>${esc(shopper.name)}</b>${facts.length
-    ? ` · the home: ${facts.map((f) => `${esc(f.short || f.label)} <span data-k="home.${f.id}">${g(f.value)} ${esc(f.unit)}</span>`).join(" · ")}` : " · no measurement needed"}</button>`;
+  const homeLine = `<button class="homeline" data-open="shopper" title="${esc(facts.map((f) => (f.suggested_from && f.suggested_from.quote ? `“${f.suggested_from.quote}”` : "")).filter(Boolean).join(" ") || shopper.name + "'s measurements and questions to the agent")}"><b>${esc(shopper.name)}</b>${facts.length
+    ? ` · the home: ${facts.map((f) => `${esc(f.short || f.label)} <span data-k="home.${f.id}">${g(f.value)} ${esc(f.unit)}</span>${esc(fromMessage(f))}`).join(" · ")}` : " · no measurement needed"}</button>`;
   q("#list").innerHTML = `<div class="lhd"><div class="lht"><h1>${esc(cap(line.need))}</h1>${seg}</div><p class="sub">${sub}</p>${homeLine}</div>
     <div class="hd" style="--n:${limits.length}"><span></span><span>Product</span><span>Price</span>${heads}<span>Result</span></div>
     <div class="rows" id="rows">${body}</div>`;
@@ -744,7 +757,7 @@ function shopperSheet(el, line) {
   el.dataset.for = "shopper:" + line.line_id;
   const sheetLine = sheetLineOf(line), shopper = state.sheet.shopper, facts = factsOfLine(sheetLine), turn = ui.chat[ui.chat.length - 1];
   el.innerHTML = `${closeBtn}<h2>${esc(shopper.name)}</h2><p>${esc(cap(shopper.role_label || ""))}</p>
-    ${facts.length ? `<h3>From the home</h3>` + facts.map((f) => slider("fact", f.id, f.label, f.value, f.unit, f)).join("") : ""}
+    ${facts.length ? `<h3>From the home</h3>` + facts.map((f) => slider("fact", f.id, f.label, f.value, f.unit, f) + (f.suggested_from && f.suggested_from.quote ? `<p class="small">“${esc(f.suggested_from.quote)}”${esc(fromMessage(f))}</p>` : "")).join("") : ""}
     ${SIM ? `<h3>Simulation only, not ${esc(state.sheet.issuer.name)}'s phone</h3>` + sheetLine.limits.filter((l) => l.bound.source === "issuer").map((l) => slider("limit", l.id, l.label, l.bound.value, l.unit, l.bound)).join("") : ""}
     <form id="say"><input id="sayText" name="say" type="text" autocomplete="off" aria-label="Message to the agent" placeholder="Ask about this item…"><button class="btn" type="submit">Send</button></form>
     <div id="reply" aria-live="polite">${turn ? chatHtml(turn) : ""}</div>`;
