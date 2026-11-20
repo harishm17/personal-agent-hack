@@ -28,8 +28,8 @@ const last = { line: null, pick: null, signed: null, quiet: false };
 const aux = { egress: null, gate: null, enroll: null, trail: null, sheets: null, pages: {}, key: "" };
 // The last two tabs show only when their page is served: from /api/health's `pages` when it has that key; until then
 // from the routers it lists, for the pages known to be in the repo (asking for a page that is not there would log a 404).
-const TABS = [["/", "Decision"], ["/trail/", "Trail"], ["/graph/", "Memory", "signoff.graph.api"], ["/talk/", "Conversations", "signoff.talk.api"]];
-const KNOWN_PAGES = new Set(["/talk/"]);
+const TABS = [["/", "Decision"], ["/trail/", "Trail"], ["/graph/", "Memory", "signoff.graph.api"], ["/talk/", "Conversations", "signoff.talk.api"], ["/seal/", "Signature", "signoff.talk.api"]];
+const KNOWN_PAGES = new Set(["/talk/", "/graph/"]);      // pages that are in the repo on main; /seal/ joins when its folder lands, or at once through `pages`
 let introUntil = 0;
 
 if (SIM) {
@@ -88,13 +88,13 @@ function apply() {
 async function loadAux() {
   if (FIXTURE) {     // ?fixture=..&menu=1: a sample of the sheet menu, to look at it without the route
     if (params.get("c14") && state && !state.pick_rules) {
-      state.pick_rules = [{ id: "cheapest", label: "cheapest that meets the list" }, { id: "best_reviewed", label: "best reviewed among those that pass" }, { id: "best_value", label: "best value among those that pass" }];
+      state.pick_rules = [{ id: "cheapest", label: "cheapest that meets the list" }, { id: "best_reviewed", label: "best reviewed among those that pass" }, { id: "most_popular", label: "Most reviewed" }, { id: "best_value", label: "best value among those that pass" }];
       state.sheet.pick_rule = { ...state.sheet.pick_rule, id: params.get("c14") === "1" ? "cheapest" : params.get("c14") };
       const line = theLine(), pass = line.candidates.filter((c) => c.status === "inside").sort((a, b) => a.product.price_cents - b.product.price_cents);
-      pass.forEach((c, i) => { c.rating = { value: [4.1, 4.7, 4.4, 3.9][i % 4], count: [58, 212, 96, 12][i % 4], source: "sample site", quote: "Sample review text for the layout.", url: "#" }; });
+      pass.forEach((c, i) => { c.rating = { found: true, rating: [4.1, 4.7, 4.4, 3.9][i % 4], out_of: 5, review_count: [58, 212, 96, 12][i % 4], rating_site: "sample.example", sentence: { quote: "Sample review text for the layout.", site: "sample.example", url: "#" } }; });
       if (pass[1]) pass[1].preferences = [{ id: "sample", label: "Sample preference: 100 sheets if they have them", status: "met" }];
       (sheetLineOf(line).preferences = [{ id: "sample", name: "sheets", label: "100 if they have them", terms: [], op: ">=", bound: { source: "issuer", value: 100 }, unit: "sheets", from_order: { quote: "100 sheets if they have them.", value: 100 } }]);
-      if (!byPrice()) { const best = [...pass].sort((a, b) => b.rating.value - a.rating.value)[0]; pass.forEach((c) => { c.picked = c === best; }); line.pick = best.id; }
+      if (!byPrice()) { const best = [...pass].sort((a, b) => b.rating.rating - a.rating.rating)[0]; pass.forEach((c) => { c.picked = c === best; }); line.pick = best.id; }
       const p = pickOf(line);
       if (p) p.picked_because = byPrice() ? "the cheapest that passes" : "rated 4.7 from 212 reviews, the highest that passes";
       last.quiet = true; render();
@@ -117,8 +117,8 @@ async function loadAux() {
   aux.tools = has("/api/tools") ? await get("/api/tools") : null;
   if (has("/api/reviews") && state) {
     const id = theLine().line_id, got = await get("/api/reviews?line_id=" + encodeURIComponent(id));
-    const list = Array.isArray(got) ? got : got && (got.reviews || got.ratings || got.rows || got.items);
-    aux.reviews = { line: id, rows: Array.isArray(list) ? list : [] };
+    const list = Array.isArray(got) ? got : got && (got.candidates || got.reviews || got.rows);
+    aux.reviews = { line: id, rows: Array.isArray(list) ? list : [], offer: (got && got.best_reviewed) || null };
   }
   const needCode = state && !(state.issuer_key && state.issuer_key.enrolled) && !state.seal.signed;
   const opt = (path, url) => (has(path) ? get(url || path) : null);
@@ -275,7 +275,8 @@ function renderTop() {
     <span class="meta">${[n_(state.lines.length, "item", "items"), sheet.invented ? "invented people" + real : "", ...mode].filter(Boolean).join(" · ")}</span>
     <span class="grow"></span>
     ${toolRows().length ? `<button class="toolsbtn" data-open="tools" aria-expanded="${ui.drawer === "tools"}">Tools at work</button>` : ""}
-    <span class="pill ${seal.signed ? "signed" : ""}">${seal.signed ? "Signed " + time : "Not signed"}</span>
+    ${aux.pages["/seal/"] ? `<a class="pill ${seal.signed ? "signed" : ""}" href="/seal/" title="The signature, on its own page">${seal.signed ? "Signed " + time : "Not signed"}</a>`
+      : `<span class="pill ${seal.signed ? "signed" : ""}">${seal.signed ? "Signed " + time : "Not signed"}</span>`}
     <span class="total" data-k="total">${money(state.total_cents)}</span>`;
 }
 
@@ -391,15 +392,18 @@ function renderDoc(current) {
 // ---------- ordering, ratings, preferences (all optional: each part is drawn only when the state or its route carries it) ----------
 const ruleId = () => (state.sheet.pick_rule && state.sheet.pick_rule.id) || "cheapest";
 const byPrice = () => !Array.isArray(state.pick_rules) || /^cheapest/.test(ruleId());
-/** A product's rating, from the candidate itself or from GET /api/reviews for this item: {value, count, source, quote, url}. */
+/** What reviewers say of a product, from GET /api/reviews for this item (or the candidate itself): only what a page states. */
 function ratingOf(c) {
   const list = aux.reviews && aux.reviews.line === c.order_line.id ? aux.reviews.rows : [];
-  const r = c.rating || c.review || list.find((x) => x.candidate_id === c.id || (x.product_id === c.product.product_id && (!x.store || x.store === c.product.store) && (!x.variant_id || x.variant_id === c.product.variant_id)));
-  if (!r) return null;
-  const value = r.value ?? r.rating ?? r.stars ?? r.average, count = r.count ?? r.reviews ?? r.review_count ?? r.n;
-  return value == null ? null : { value: +value, count, source: r.source || r.site || r.from || "", quote: r.quote || r.text || "", url: r.url || r.link || "" };
+  const r = c.rating && typeof c.rating === "object" ? c.rating : list.find((x) => x.candidate_id === c.id);
+  if (!r || r.found === false) return null;
+  const value = r.rating ?? r.value, sentence = r.sentence || {}, first = (r.sources || [])[0] || {};
+  if (value == null && !sentence.quote && !r.quote) return null;
+  return { value: value == null ? null : +value, outOf: r.out_of ?? null, count: r.review_count ?? r.count ?? null, source: r.rating_site || r.source || sentence.site || "",
+    quote: sentence.quote || r.quote || "", url: sentence.url || r.url || first.url || "", site: sentence.site || first.site || "", matched: first.matched_by || "", note: r.note || "" };
 }
-const ratingText = (r) => `${(+r.value).toFixed(1)}${r.count != null ? ` · ${n_(r.count, "review", "reviews")}` : ""}${r.source ? ` · ${r.source}` : ""}`;
+/** "4.6/5 · 58 reviews · parentgiving.com": the scale only when the page wrote one, the count only when it gave one. */
+const ratingText = (r) => (r.value == null ? "" : `${+(+r.value).toFixed(1)}${r.outOf ? "/" + g(r.outOf) : ""}${r.count != null ? ` · ${n_(r.count, "review", "reviews")}` : ""}${r.source ? ` · ${r.source}` : ""}`);
 const prefsMet = (c) => (c.preferences || []).filter((x) => x.status === "met");
 /** The order of the rows under the active rule: the engine's own rank when it gives one, else price, or the rule's key among those that pass. */
 function ordered(line) {
@@ -468,7 +472,7 @@ function rowHtml(c, line, pick, limits) {
   const option = c.product.variant_title && !/^default/i.test(c.product.variant_title) ? `${c.product.variant_title} · ` : "";
   const img = c.product.image_url ? `<img src="${esc(c.product.image_url)}" alt="" loading="lazy" width="44" height="44" onerror="this.outerHTML='<span class=ph></span>'">` : `<span class="ph" aria-hidden="true"></span>`;
   const r = c.status === "inside" ? ratingOf(c) : null, met = c.status === "inside" ? prefsMet(c) : [];
-  const extra = (r ? `<small class="rate">${esc(ratingText(r))}</small>` : "") + (met.length ? `<small class="tag pref" title="${esc(met.map((x) => x.label).join("; "))}">preferred</small>` : "");
+  const extra = (r && r.value != null ? `<small class="rate">${esc(ratingText(r))}</small>` : "") + (met.length ? `<small class="tag pref" title="${esc(met.map((x) => x.label).join("; "))}">preferred</small>` : "");
   const result = v.kind === "pick" ? `<span class="res"><span class="pickd" title="${esc(v.why || "")}">✓ ${esc(v.text)}</span>${extra}</span>`
     : v.kind === "also" ? `<span class="res also">✓ ${esc(v.text)}${extra}</span>`
     : `<span class="res no" title="${esc(v.why || "")}">✕ ${esc(v.text)}${v.extra ? ` <span class="faint">${esc(v.extra)}</span>` : ""}</span>`;
@@ -578,8 +582,9 @@ const canChoose = (line, c) => !c.picked && c.status === "inside" && !state.seal
 function extrasHtml(c) {
   const met = prefsMet(c), r = ratingOf(c);
   return (met.length ? `<div class="pair"><div class="ph2"><span>Preferred</span><span class="okw">✓ ${n_(met.length, "preference", "preferences")} met</span></div>${met.map((x) => `<div class="qt">${esc(x.label)}</div>`).join("")}</div>` : "")
-    + (r ? `<div class="pair"><div class="ph2"><span>Reviews</span><span class="greyw">${esc(ratingText(r))}</span></div>
-        ${r.quote ? `<div class="k">a reviewer wrote</div><div class="qt">“${esc(clip(r.quote, 140))}”</div>` : ""}${r.url ? `<a class="link" href="${esc(r.url)}" target="_blank" rel="noopener">where this is from ↗</a>` : ""}</div>` : "");
+    + (r ? `<div class="pair"><div class="ph2"><span>Reviewers say</span><span class="greyw">${esc(ratingText(r))}</span></div>
+        ${r.quote ? `<div class="qt">“${esc(clip(r.quote, 140))}”</div>` : ""}
+        ${r.url ? `<div class="k"><a class="link" href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.site || "the page")} ↗</a>${r.matched ? ` · matched by ${esc(clip(r.matched, 70))}` : ""}</div>` : ""}</div>` : "");
 }
 
 /** Small quiet tags beside the list's sentence: the document's version at Senso, and whether the limit was changed since. */

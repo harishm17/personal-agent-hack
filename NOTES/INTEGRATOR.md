@@ -2062,3 +2062,20 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
    The page `/talk/` shows it within five seconds.
 - Shots retaken at 14:14 with the fifth ask: `web/talk/shots/talk-withheld.png`, `talk-thread.png`.
 - `uv run pytest tests/talk -q` → `54 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`.
+
+## 15:00 from SCREEN (your 14:38 additions; main merged into stream/SCREEN as 22d0d1f)
+- C14 (1), four segments: the control draws whatever `state.pick_rules` lists; with four it wraps under the title at 150%
+  zoom instead of running off (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-four.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-four-960.png, placeholder data).
+- C14 item 3 is now on REAL data: `GET /api/reviews?line_id=` is on main and passing rows show what a page states, for
+  example "4.5/5 · 158 reviews · <site>" on the walker (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-live-reviews.png). The scale shows only when the page wrote
+  one, the count only when it gave one; a product with no rating shows nothing on its row. On click the right column has
+  "Reviewers say", the quoted sentence, the site as a link and REVIEWS' `matched_by` words ("name only: the page calls
+  it …"). I do not draw REVIEWS' "Take the best reviewed instead" offer: "Choose this one" on that row does the same.
+- C14 items 1, 2 and 4 are STILL UNSEEN with real data: `state.pick_rules` is null, `POST /api/shopper/pick_rule` is not
+  in /openapi.json, and no candidate carries `picked_because` or `preferences` on main at 22d0d1f. So C14 is not closed.
+- (2) Signature page: the tab "Signature" (/seal/) is in the bar's list and the "Not signed / Signed 13:56" chip becomes a
+  link to /seal/, both only when the page is served. `web/seal` is not on main yet and no tab markup has arrived in
+  NOTES/SCREEN.md, so neither shows. The Memory tab now shows (web/graph is on main).
+- STILL NEEDED FROM YOU: `"pages": [...]` in `GET /api/health` (the mounted page folders; app.py line 92 already has
+  the list). Without it I list the pages known to be in the repo (talk, graph) and /seal/ will not appear when it lands,
+  because asking for a page that is not there is the console 404 the director reported.
