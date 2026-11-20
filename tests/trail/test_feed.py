@@ -119,3 +119,11 @@ def test_collect_never_raises_and_names_each_source():
     src = feed.collect()
     assert {s["id"] for s in src["sources"]} >= {"state", "receipts", "egress"}
     feed.build(src)
+
+
+def test_a_slow_source_is_read_once_and_then_held():
+    calls = []
+    feed._slow.pop("t", None)
+    first = feed._held("t", lambda: calls.append(1) or {"n": len(calls)})
+    again = feed._held("t", lambda: calls.append(1) or {"n": len(calls)})
+    assert first == {"n": 1} and again == {"n": 1} and len(calls) == 1

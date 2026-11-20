@@ -1093,3 +1093,11 @@ from my port while testing).
 The gate is red after merging main (bbbdc45) into stream/TRAIL: 2 failed, 250 passed, both in `tests/engine/test_sheet2.py`
 (pool is 179 pages, the instruction scan covers 145). Not TRAIL's paths; details in NOTES/ENGINE.md (13:10).
 `uv run -q pytest -q tests/trail` → 10 passed.
+
+## 13:12 from TRAIL
+- Live arrival seen in a real (headless, real-time) browser session on port 8016: after a reset and one refused request
+  the page redrew 69 ms later (the `/api/events` signal), the new events' steps opened and their rows slid in over
+  about 250 ms; later events (Senso's verdicts) arrived by themselves at 2.3 s and 4.5 s. No script errors.
+- `GET /api/trail` took 0.6 s per call because the Airbyte status asks a database each time; the feed now holds that
+  one source for 20 s and refreshes it in the background: 5 ms per call after the first (`curl -w '%{time_total}'`).
+  SCREEN's stepper fetches the feed too, so this also speeds up `/`.

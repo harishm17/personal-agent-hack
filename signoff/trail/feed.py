@@ -10,6 +10,8 @@ keeps it. Where no timing was recorded, `duration_ms` is null.
 """
 import datetime
 import re
+import threading
+import time
 
 GAP_S = 90          # records of one kind closer together than this are one event
 ITEMS = 30          # at most this many records are listed inside one event; the rest are counted in `more`
@@ -504,6 +506,38 @@ def build(src: dict) -> dict:
     }
 
 
+# A source that asks a database is read at most every SLOW_S seconds, in the background after the first time,
+# so the feed answers at the speed of memory. The value shown is the last one read.
+SLOW_S = 20
+_slow = {}
+_slow_lock = threading.Lock()
+
+
+def _held(name, fn):
+    def refresh():
+        try:
+            value, error = fn(), None
+        except Exception as e:  # noqa: BLE001
+            value, error = None, e
+        with _slow_lock:
+            _slow[name].update(value=value, error=error, at=time.monotonic(), busy=False)
+
+    with _slow_lock:
+        slot = _slow.setdefault(name, {"value": None, "error": None, "at": None, "busy": False})
+        first = slot["at"] is None and not slot["busy"]
+        stale = slot["at"] is not None and time.monotonic() - slot["at"] > SLOW_S and not slot["busy"]
+        if first or stale:
+            slot["busy"] = True
+    if first:
+        refresh()
+    elif stale:
+        threading.Thread(target=refresh, daemon=True).start()
+    with _slow_lock:
+        if _slow[name]["error"] is not None:
+            raise _slow[name]["error"]
+        return _slow[name]["value"]
+
+
 def collect() -> dict:
     """Every source, read in-process. Never raises: a source that fails is left out and named in `sources`."""
     src, sources = {}, []
@@ -555,7 +589,8 @@ def collect() -> dict:
         return api.status()
 
     for name, fn in (("state", _state), ("receipts", _receipts), ("egress", _egress), ("tools", _tools), ("gate", _gate),
-                     ("senso", _senso), ("relay", _relay), ("airbyte", _airbyte)):
+                     ("senso", _senso), ("relay", _relay),
+                     ("airbyte", lambda: _held("airbyte", _airbyte))):
         src[name] = read(name, fn)
     src["sources"] = sources
     return src
