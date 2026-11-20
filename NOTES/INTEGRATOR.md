@@ -1837,6 +1837,44 @@ ok    the signed order is remembered
   itself sends. The saved threads carry their own record (draft, removed, sent, reply) and the page reads those.
 - For STORE (noted in NOTES/STORE.md): `egress.CLASSES` has no `health`, `money`, `address`, so those kinds appear in a
   row's purpose text, not in `fact_classes`.
+## REVIEWS 14:20 — R1, R2, R3 on `stream/REVIEWS` (commits d64fd18, 332b5b0 and the one carrying this note)
+- **DONE R1**: `signoff/reviews/reviews.py`. For the six cheapest `inside` candidates of a line, one Exa search per distinct title
+  (query = the title + " review", nothing else), cached under `data/reviews/<title>-<hash of the query>.json` (14 files, committed, so
+  replay needs no network). The reader (`sie:Qwen/Qwen3.8-27B-FP8`) proposes; code keeps a rating, a count or one sentence only when
+  the quote is in the page's text at its offsets and the number is written in the quote. Proof, live at 14:16 from this checkout:
+  `POST :8010/api/reviews/fetch {"line_id":"L4"}` → 6 searches, key_used EXA_API_KEY, then
+  `GET :8010/api/reviews` → `L1 considered 6 searched 6 with_reviews 3 with_a_rating 3 none 3`, `L4 … with_reviews 6 with_a_rating 4 none 0`,
+  `L5 … with_reviews 0 none 6`. `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `15 passed, 1 deselected`; `-m live` → `1 passed`.
+  Cost of all of today's searches: $0.098 (from the replies' own `costDollars`).
+- **What code refused, so you can say it aloud**: the first run kept "4.8 (786 ratings)" for Vive's "Textured Grab Bars" from a
+  roundup page; the rating belonged to another maker's bar. Fixed in general, not for that page: the reader must quote the name the
+  page gives to the product it rates, and code requires that name to hold every word of the product's title. That page is now
+  dropped ("what the page rates is named …"), and L5 honestly has "no reviews found" for all six. Also general: a scale the page
+  does not write is not supplied ("Rated 4.5 from 138 reviews" is kept as 4.5 with `out_of: null`, and cannot be "best reviewed");
+  "0 / 5 · 0 reviews" is no rating; one number cannot be both the rating and its scale.
+- **The limit that remains, stated in every reply (`summary.limit_of_the_name_rule`)**: a page on another site is matched by name
+  only. A title that names no maker can match another maker's product of the same name: Vive's "Bariatric Walker with Wheels"
+  matched Amazon's "AireMed Bariatric Walker with 5" Wheels". Each source carries `rated_as` and `matched_by` so the screen shows it.
+  The pool has no maker field (`product_key` is the title), so code cannot do better today. Do not claim reviews are verified to be
+  of the same product; say "matched by name".
+- **DONE R2**: `signoff/reviews/api.py` (`router`; already in OPTIONAL_ROUTERS, POST prefix already guarded). `GET /api/reviews?line_id=L4`
+  and `GET /api/reviews` (all lines + `by_candidate`); `POST /api/reviews/fetch {line_id}`. Proof: `:8010/api/health` lists
+  `signoff.reviews.api`; `GET :8010/api/reviews?line_id=NOPE` → 404; the POST with `x-forwarded-for` → 403 `local_only`.
+  "Best reviewed among those that pass" is offered, never applied: minimum 5 reviews and the scale stated; tie-break "highest quoted
+  rating as a share of its scale; then more reviews; then lower price; then candidate id" (both in the reply). On sheet 4: L4 offers
+  the Drive rollator (4.6 of 5, 58 reviews, the seller's own page, $119.99; the pick stays the $44.71 Carex walker); L1 and L5 offer
+  nothing and say why. The module never writes engine state (a test checks the engine's version does not move). Shape sent to
+  SCREEN in NOTES/SCREEN.md. I added no `reviews` block inside `/api/state`: that is ENGINE's; `by_candidate` is keyed by candidate id.
+- **DONE R3**: every search goes through `obs.egress("exa.ai", "search the web for reviews of one product", body, ["product"])`; the
+  reader's calls go through `reader.ask` (ledger rows to `sie:…`). `GET :8010/api/reviews/log` →
+  `14 searches; only titles: True; hash ok: True; sealed: []; keys: ['EXA_API_KEY']`. Route and shape sent to TRAIL and GRAPH.
+- **For you to decide**: (1) main's own ledger has no Exa rows, because the searches ran here and the cache answers on main. If you
+  want the rows in main's `/api/egress` for the demo, delete one line's cache files on main and `POST /api/reviews/fetch` there
+  (about $0.04 and 20 s for a line); otherwise `/api/reviews/log` shows the rows as they were written. (2) The ledger's `kind_of`
+  calls exa.ai a "sponsor service"; I did not know whether Exa is a sponsor, change the word if it is not. (3) Sheet 3 is not
+  searched; one POST per line does it. (4) The backup key was never needed; `key_used` in every reply names the key that answered.
+- Quirks, for the AGENTS.md log if my edit there is refused: Exa returns `title: ""` for some pages (YouTube): the first line of the
+  text is used as the title, and the reply says so. Many pages state a rating with no scale. A search costs $0.007, about 1.5 s.
 
 ## 14:18 from TRAIL
 T5 on stream/TRAIL, ready to merge. `uv run -q pytest -q` → 352 passed (tests/trail: 15). Seen on port 8016 (sheet 4, replay

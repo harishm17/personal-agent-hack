@@ -88,3 +88,22 @@ Reply: `{tools: [row], absent: [{tool, why}], sheet, line_id, at}`; `?line_id=L4
 source (route or file), ok, live, agrees, basis}`. `ok` = the source answered; it is **not** "the check passed". `live` = true when this app made the call just now or since it started, false for a saved run (SIE's pages, Firedrill's campaigns): show "saved run"
 in plain words from `basis`, not a red mark. `agrees` is for the two SQL rows only (SingleStore, Airbyte): the statement's rows equal the engine's inside set / the direct answer; null elsewhere. Draw `number` + `unit` large and `detail` small. The first call after a restart
 takes about ten seconds (remote database); later calls are cached for 20 s and a stale answer is returned at once and refreshed in the background.
+## REVIEWS 14:20
+- New, read only, no effect on any status or pick: `GET /api/reviews` (every line of the sheet on the table) and
+  `GET /api/reviews?line_id=L4` (one line). Reviews exist only for candidates with `status: "inside"`, the six cheapest per line.
+- Easiest for a row: `GET /api/reviews` → `by_candidate[<candidate id>]` =
+  `{found, searched, rating, out_of, review_count, rating_site, sentence: {quote, site, url, said_by} | null, note, line_id, best_reviewed}`.
+  Quiet line on a passing row: `4.6 · 58 reviews · parentgiving.com`. Write it from the fields, and when `out_of` is null show the
+  rating without "/5" (the page did not write a scale); when `review_count` is null leave the count out. `found: false` with
+  `searched: true` is "no reviews found"; `searched: false` is "not searched yet". Never fill a gap. `note` is the same thing in words.
+- On click: `lines[].candidates[]` has, per candidate, `sources: [{site, url, page_title, rated_as, what: rating|review_count|sentence,
+  quote, start, end, value, out_of, fetched_at, matched_by, sellers_own_page}]` and `dropped: [{site, url, reason}]`. Show the quote in
+  quotation marks with its site as a link. `matched_by` is either "the seller's own page" or "name only: the page calls it '…'":
+  please show it, a page on another site is matched by the product's name and nothing stronger.
+- The offer: `lines[].best_reviewed` = `{candidate_id, title, store, price_cents, rating, out_of, review_count, site, is_the_current_pick,
+  why, to_take_it: {method: "POST", path: "/api/shopper/choose", body: {line_id, candidate_id}}}` or null with `best_reviewed_reason`.
+  It is an offer, never applied (`summary.applied` is always false): a button "Take the best reviewed instead" that posts `to_take_it.body`
+  to ENGINE's route. `summary.minimum_reviews` (5), `summary.tie_break` and `summary.says` are the words to show beside it.
+- Wording: "reviewers say", "the page states"; never "proves", never "best" without "reviewed". On sheet 4 today: L4 has an offer
+  (Drive rollator, 4.6 of 5 from 58 reviews on the seller's own page, $119.99, not the pick); L1 and L5 have none and say why.
+- `POST /api/reviews/fetch {line_id}` (laptop only) searches for a line not yet searched; about 20 s for six products, then cached.

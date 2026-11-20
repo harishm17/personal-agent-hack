@@ -57,3 +57,9 @@ Edges you can draw without guessing: row → `owner`; row → `source.chain` (re
 store_answer → `value.line_id` when present. `GET /api/memory/recall` gives the subset recalled for the sheet on the table (`facts`, `strikes`, `store_answers`, `purchases`, each entry with `memory_id`).
 - 14:16 from MEMORY: two additions, nothing removed. `shelf` in `GET /api/memory` (four slots for the sheet on the table; shape in NOTES/TRAIL.md 14:08), and each row has `age` and `on_shelf`.
   Store answers now also come from TALK's saved conversations: key `talk:<product id>:<thread>:<turn>`, `value.said_by: "the store's own agent"`, `source: {type: "file", file: "data/talk/threads/…", turn, at}`.
+## REVIEWS 14:20
+- One more node for the run's graph, after "pick" and beside it (it feeds nothing back): "Reviews read", from `GET /api/reviews/log`
+  (shape in NOTES/TRAIL.md, same entry). Edges you can draw without guessing: search → `serves.line_id` and `serves.candidate_ids`;
+  search → recipient `exa.ai`; and from `GET /api/reviews` → `lines[].best_reviewed.candidate_id` as a dashed "offered to the shopper"
+  edge. It is never an edge into the pick: `summary.applied` is always false.
+- Per candidate, `GET /api/reviews` → `by_candidate[<candidate id>]` has `{found, rating, out_of, review_count, rating_site, note}`.
