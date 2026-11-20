@@ -56,11 +56,24 @@ async function load() {
     if (text === raw) return;
     raw = text;
     server = JSON.parse(text);
+    if (FIXTURE && params.get("sample") === "1") sampleKeys(server);
     apply();
   } catch (error) {
     if (!state) q("#main").innerHTML = `<p class="wait">Waiting for the engine…</p>`;
   }
 }
+/** ?fixture=1&sample=1 only: placeholder values for the optional keys, to see the layout. Never applied to engine data. */
+function sampleKeys(st) {
+  const says = { "weight capacity": ["Every item he sits on or leans on must hold at least 300 lb.", 300], "finished seat height": ["The finished toilet seat must be at least 19 inches from the floor.", 19],
+    "seat height": ["The commode seat must reach at least 19 inches.", 19], "bar length": ["A screw-mounted grab bar at least 16 inches long.", 16] };
+  for (const line of st.sheet.lines) for (const limit of line.limits) {
+    const hit = says[limit.name];
+    if (hit && limit.bound.source === "issuer") limit.from_order = { doc: "order.txt", quote: hit[0], value: hit[1], matches: limit.bound.value === hit[1], version_id: "sample-v1" };
+  }
+  st.order = { doc: "order.txt", title: "Sample order (fixture)", limits_derived: 9, limits_matching: 9, delivered_by: "sample" };
+  st.receipts = { count: 14, verified: 14 };
+}
+
 function apply() {
   state = SIM && (Object.keys(ui.sim.limits).length || Object.keys(ui.sim.facts).length || ui.sim.strikes.length) ? simulate(server, ui.sim) : server;
   render();
@@ -283,8 +296,12 @@ function renderFlow(line, s) {
   // column 3: one ruler per limit
   const rulers = sheetLine.limits.map((limit, i) => {
     const b = limit.bound, owner = b.source === "issuer" ? "issuer" : "shopper";
-    return `<div class="grp"><div class="lab"><span><i class="od ${owner}"></i>${esc(names[owner])} · ${esc(limit.name)}</span></div>
-      <svg class="ruler" data-ruler="${i}" height="60"></svg></div>`;
+    const o = limit.from_order, key = "order:" + limit.id, source = owner === "shopper" ? "from the home" : o ? "from the order" : "the limit";
+    const cut = o && o.quote ? figureSpan(o.quote, { value: o.value ?? b.value }) : null;
+    const sentence = cut && ui.open.has(key) ? `<div class="quote">“${esc(o.quote.slice(0, cut[0]))}<mark>${esc(o.quote.slice(cut[0], cut[1]))}</mark>${esc(o.quote.slice(cut[1]))}”</div>` : "";
+    return `<div class="grp"><div class="lab"><span><i class="od ${owner}"></i>${esc(cap(limit.name))} · ${cut
+      ? `<button class="src-btn" data-toggle="${key}" aria-expanded="${ui.open.has(key)}">${source}</button>` : source}${o && o.matches === false ? " · changed" : ""}</span></div>
+      ${sentence}<svg class="ruler" data-ruler="${i}" height="60"></svg></div>`;
   }).join("");
   const chips3 = [s.outside.length ? `<button class="chip" data-toggle="outside" aria-expanded="${ui.open.has("outside")}">${s.outside.length} outside</button>` : "",
     s.struck.length ? `<span class="chip"><i class="od issuer"></i>${s.struck.length} struck</span>` : ""].join("");
@@ -298,14 +315,14 @@ function renderFlow(line, s) {
       <section class="gate"><div class="gh"><span class="label">Read</span><span class="n" data-k="n.read">${s.all.length}</span></div>${meter(s.all.length)}
         <div class="by">${stores.length} stores</div>${read}</section>
       <section class="gate"><div class="gh"><span class="label">State the figures</span><span class="n" data-k="n.stated">${s.stated.length}</span></div>${meter(s.stated.length)}
-        <div class="by"><i class="od store"></i>the store's words</div>
+        <div class="by"><i class="od store"></i>the store states</div>
         <div class="dots">${s.stated.map((c) => dot(c)).join("")}</div>${tray}</section>
       <section class="gate"><div class="gh"><span class="label">Inside limits</span><span class="n" data-k="n.inside">${s.inside.length}</span></div>${meter(s.inside.length)}
         <div class="by">${sheetLine.limits.length} limits</div>${s.stated.length ? rulers : ""}
         <div class="chips">${chips3}</div>
         ${ui.open.has("outside") ? `<div class="more">${[...outsideBy].map(([k, n]) => `<b>${n}</b><span>${esc(k)}</span>`).join("")}</div>` : ""}</section>
       <section class="gate"><div class="gh"><span class="label">Pick</span><span class="n">${s.pick ? 1 : 0}</span></div>${meter(s.pick ? 1 : 0)}
-        <div class="by"><i class="od shopper"></i>${esc(names.shopper)} · ${esc(rule)}</div>
+        <div class="by"><i class="od shopper"></i>${esc(rule)}</div>
         ${s.inside.length ? `<svg class="ruler" data-ruler="price" height="60"></svg>` : `<div class="muted">Nothing proposed</div>`}
         <div class="chips">${s.noDelivery.length ? `<span class="chip">${s.noDelivery.length} no delivery time</span>` : ""}</div></section>
     </div>`;
@@ -360,6 +377,14 @@ function drawRuler(svg, items, tick, fmt) {
   svg.innerHTML = out;
 }
 
+/** Small quiet tags beside the order's sentence: Senso's version of the document, and whether the limit was changed since. */
+function orderTags(order, ch) {
+  const senso = (Array.isArray(state.senso) ? state.senso : []).find((r) => r && (r.limit_id === ch.limit_id) && (r.version_id || r.content_id)) || {};
+  const id = order.version_id || order.content_id || senso.version_id || senso.content_id;
+  return (order.matches === false ? `<span class="tag">changed from the order</span>` : "")
+    + (id ? `<span class="tag" title="Senso ${esc(id)}">Senso ${esc(String(id).slice(0, 8))}</span>` : "");
+}
+
 /** The part of the store's sentence that carries the figure, with the figure marked. */
 function fragment(term, max = 30) {
   const text = term.quote || "";
@@ -384,14 +409,22 @@ function renderSide(line, s) {
   const { sheet, seal } = state, p = s.pick;
   let card;
   if (p) {
+    const limits = state.sheet.lines.find((l) => l.id === line.line_id).limits;
+    const src = (label, html, tag = "") => `<div class="src"><span class="faint">${label}</span><span class="frag">${html}</span>${tag}</div>`;
     const evidence = p.checks.map((ch, i) => {
-      const term = ch.terms.find((t) => t.owner === "store");
+      const limit = limits.find((l) => l.id === ch.limit_id) || {}, order = limit.from_order;
       const all = s.stated.map((c) => c.checks[i].lhs).concat([ch.bound.value]);
       const dom = niceDomain(all), pc = (v) => Math.max(0, Math.min(100, ((v - dom.lo) / (dom.hi - dom.lo)) * 100));
       const a = pc(Math.min(ch.lhs, ch.bound.value)), b = pc(Math.max(ch.lhs, ch.bound.value));
-      return `<div class="ev"><div class="row"><span>${esc(cap(ch.name))}</span><span class="margin"><span class="tickmark">✓</span> ${esc(marginText(ch))}</span></div>
-        <div class="frag">${term ? fragment(term) : ""}</div>
-        <div class="bar" title="${esc(ch.expr)}"><i class="fill" style="left:${a}%;width:${b - a}%"></i><i class="lim ${ch.bound.owner}" style="left:${pc(ch.bound.value)}%"></i><i class="val" style="left:${pc(ch.lhs)}%"></i></div></div>`;
+      const home = (part) => src("from the home", `${esc(part.label)} <mark>${num(part.value, part.unit)} ${esc(part.unit)}</mark>`);
+      // the limit's side: the order's own sentence (when the engine has derived it), or the home measurement
+      const top = ch.bound.owner === "shopper" ? home(ch.bound)
+        : order && order.quote ? src("the order says", fragment({ quote: order.quote, value: order.value ?? ch.bound.value }, 26)) : "";
+      const rows = ch.terms.map((t) => t.owner === "shopper" ? home(t) : t.quote ? src("the store states", fragment(t, 26)) : "").join("");
+      return `<div class="ev"><div class="row"><span>${esc(cap(ch.name))} ${order ? orderTags(order, ch) : ""}</span><span class="margin"><span class="tickmark">✓</span> ${esc(marginText(ch))}</span></div>
+        ${top}
+        <div class="bar" title="${esc(ch.expr)}"><i class="fill" style="left:${a}%;width:${b - a}%"></i><i class="lim ${ch.bound.owner}" style="left:${pc(ch.bound.value)}%"></i><i class="val" style="left:${pc(ch.lhs)}%"></i></div>
+        ${rows}</div>`;
     }).join("");
     card = `<section class="card"><div class="cap">Pick</div><h2 title="${esc(p.product.title)}">${esc(p.product.title)}</h2>
       <div class="row"><span class="muted"><i class="od store"></i>${esc(p.product.store)}</span><span class="price" data-k="pick.price">${money(p.product.price_cents)}</span></div>
