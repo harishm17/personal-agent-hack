@@ -12,6 +12,7 @@ Import note: `signoff.obs.egress` is the function (`obs.egress(...)`); this modu
 import datetime
 import hashlib
 import json
+import os
 import pathlib
 import re
 import threading
@@ -34,7 +35,7 @@ def _active_sheet() -> tuple[str, dict | None]:
         sid = sheetctx.active_id()
         return sid, sheetctx.sheet(sid)
     except Exception:  # noqa: BLE001
-        return "sheet1", None
+        return os.environ.get("SIGNOFF_SHEET") or "unknown", None
 
 
 def _sheet_values() -> dict:

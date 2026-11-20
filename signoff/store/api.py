@@ -121,7 +121,8 @@ def egress_ledger(limit: int = 500, sheet: str | None = None):
 def _warm() -> None:
     try:
         from signoff.store import ucp
-        ucp.warm(json.loads((ROOT / "sheets" / "sheet1.json").read_text())["stores"])
+        from signoff.store import sheetctx
+        ucp.warm(sheetctx.sheet()["stores"])
     except Exception:  # noqa: BLE001
         pass
 
