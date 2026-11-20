@@ -1763,3 +1763,38 @@ order. The only call that carries memory is the embedding of the memories' own s
   the test suites that set `memory` get nothing remembered, so a demo run on a laptop cannot change another stream's test.
 - Quirks for the log (AGENTS.md is yours): SIE `Qwen/Qwen3-Embedding-4B` timed out cold at 60 s, answered in 7.7 s on the next call and 0.2 s warm, so warm it before the demo
   (`GET /api/memory` starts the indexing in the background); `r[0]["dense"]` is a numpy array. `from signoff.obs import egress` is a function, the module is `importlib.import_module("signoff.obs.egress")`.
+## TALK 14:04 — the time box holds; K1, K2, K3 are on `stream/TALK`, K4 follows by 14:40
+- DONE K1: `signoff/talk/` (talk.py, writer.py). A Superlinked model (`Qwen/Qwen3.8-27B-FP8`) writes our message from a
+  purpose and the product; the store's own agent answers through `ucp.ask_business`; the model marks the answering
+  words (kept only if found in the reply word for word); one follow-up carries the short thread. Real run, 13:58, sheet 4,
+  the three picks: `uv run python -m signoff.talk.run --sheet sheet4 --state http://localhost:8800/api/state` →
+  parentgiving.com, carex.com, vivehealth.com: 6 real calls (3 first messages, 3 follow-ups), spaced 3 s, saved in
+  `data/talk/threads/sheet4/*.json`. A saved purpose or message is not asked again; replay mode asks nothing
+  (`status: "not_saved"` when it was never asked). No cart or checkout tool is called anywhere in `signoff/talk/`.
+- DONE K2: `signoff/talk/guard.py`, `uv run pytest tests/talk -q` → `51 passed`. The rule is data (`sharing` on the
+  sheet, default below). Check (a): the sheet's sealed values by match (a limit or home measurement in digits or words,
+  with or without its unit; names; roles). Check (b): spans from `urchade/gliner_multi-v2.1` (Superlinked `extract`);
+  code keeps a span only with true offsets, score ≥ 0.5 and a sealed kind. Cut, rewritten once, checked again; a rewrite
+  that still carries a sealed part or a gap mark is not sent. Each decision is a ledger row (`talk guard: withheld …` or
+  `talk guard: refused, not sent …`, the second with `blocked: true`); a sent message also gets the store client's own row.
+- DONE K3: `POST /api/talk/ask` on my port, three real asks to parentgiving.com about the bath bench, all kept:
+  1. 14:00 `f9faad4b5aed`: 5 parts cut; refused, because the span model marked the word "I" as a person in the rewrite.
+     Nothing was sent. Fixed in code as a general rule: a marked span of under three letters or digits states no fact.
+  2. 14:01 `1553b09d0333`: 5 parts cut; refused, because the writer returned the gaps unchanged. Nothing was sent.
+  3. 14:02 `cbd3c7f37f4f`: 7 parts cut ("My mother", "280 lbs", "hip surgery", "300 lbs", "21.5 inches", "therapist",
+     "Dana"); sent: "Please arrange for expedited shipping of the Deluxe Aluminum Bath Bench by Drive to ensure it
+     arrives by December 2, 2026. Could you also confirm if an opened item can be returned?"; the store agent's real
+     reply begins "Nothing has been arranged, and the store's information does not specify expedited shipping…". The
+     follow-up tried to ask about 300 lbs and 21.5 inches and was refused.
+- For you (sheets are yours). Exact text, the same in `sheets/sheet4.json` and `sheets/sheet3.json`, top level:
+  `"sharing": {"store": ["product", "need_by", "delivery_region"]},`
+  `"delivery_region": "California",`
+  Kinds a rule may list: product, need_by, delivery_region, limit, home_measurement, person, health, money, address.
+  A kind not listed for a recipient is sealed for it. Without `sharing` the code uses exactly this default, and the
+  route says so (`rule.source: "default"`). Without `delivery_region` the agent is not told a region and names none.
+- For you (app.py is yours): nothing to add. `signoff.talk.api` is already in OPTIONAL_ROUTERS and `/talk` is mounted.
+  `POST /api/talk/run` (laptop only) runs the agent's questions for the picks of the active sheet; saved ones cost nothing.
+- Know this: the ledger file is per checkout (`data/egress/` is ignored), so main's ledger gets rows only for what main
+  itself sends. The saved threads carry their own record (draft, removed, sent, reply) and the page reads those.
+- For STORE (noted in NOTES/STORE.md): `egress.CLASSES` has no `health`, `money`, `address`, so those kinds appear in a
+  row's purpose text, not in `fact_classes`.

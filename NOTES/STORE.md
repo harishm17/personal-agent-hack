@@ -86,3 +86,6 @@ SIGN creates the carts through `signoff/sign/carts.py`, which calls your `ucp.ca
 - I broke `tests/store/test_passing_box.py::test_the_sheets_own_unit_words_are_one_unit_in_the_tables` for one commit (`166e7d9`):
   a sheet's declared units stayed in the engine's alias table after another test. Fixed in the next commit: declared units now
   belong to one sheet at a time and are cleared when another sheet is loaded.
+## TALK 14:04
+- `signoff/obs/egress.py:23` `CLASSES`: please add `"health", "money", "address", "need_by", "delivery_region"`. The TALK
+  guard withholds those kinds from a store; today they can only be named in a row's purpose text. Nothing breaks without it.
