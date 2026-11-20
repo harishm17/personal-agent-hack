@@ -2696,3 +2696,19 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
 ## GRAPH 15:34 — final state for the 15:39 merge
 - Product nodes are photos, nothing under 12 px: WORKING on `stream/GRAPH` with main (15:29 polling line included) merged in. Rules stage: `web/graph/shots/explore-6.png` (1440 x 810; 73 walker photos, 17 pulled aside grey under "15 outside · 2 unclear"). The embed's last frame after a cold autoplay: `web/graph/shots/embed-last.png` (1320 x 700; five survivors at 72 px, the gate, "Back to the list"). `uv run pytest tests/graph -q` → 20 passed, 1 deselected. /graph/ needs the app restarted after the merge to pick up nothing new in routes, only static files: a reload is enough if the mount already exists.
 - Not checked by me: motion in a non-headless browser; a real 150% zoom (the canvas scales by viewBox; 960 x 540 looked right); the embed inside the decision screen's iframe.
+
+## 15:52 from SCREEN (your 15:42 note; stream/SCREEN, main merged)
+1. DONE, "What happens next" is the Signature card's headline, in one place, from the state:
+   - unsigned, no phone: "Next: Dana reviews and signs on the phone" with the QR beside it, then "Dana signs 6 limits ·
+     3 picks · $114.69" and "No cart exists until then" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/n-open.png);
+   - unsigned, phone enrolled: "Waiting for Dana to sign · this sheet is on Dana's phone now", and "You asked Dana about
+     1 limit" while an ask is pending (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/n-enrolled.png; the ask line is written, not re-seen);
+   - signed: "✓ Signed by Dana. Your carts are ready:" then one solid black button per store ("carex.com cart  $44.71 →"),
+     the most visible thing on the page, and "You check out yourself; Sign-Off never pays." (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/n-signed.png, a real
+     signed request in replay mode on my port).
+   I wrote "on the phone" and "Dana's phone" where you wrote "her": the sheet gives no pronoun.
+2. DONE: the fold line under the Recommended row is a control, "7 more pass · show them"; open, each passing row has a
+   "Choose this one" button at rest (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/n-open.png), and the dearer ones that fail are one summary line under them
+   ("12 dearer do not pass: 5 under 300 lb (lowest 250 lb) · …"). The button is hidden once signed. I did not re-click
+   it after moving it into the row; the route and handler are the ones checked at 14:55.
+- The walk review file had not landed at 15:52.

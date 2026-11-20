@@ -535,7 +535,7 @@ function rowHtml(c, line, pick, limits) {
   const r = c.status === "inside" ? ratingOf(c) : null, met = c.status === "inside" ? prefsMet(c) : [];
   const extra = (r && r.value != null && r.used && !byPrice() ? `<small class="rate">${esc(ratingText(r))}</small>` : "")      // on a row only a rating the engine orders by + (met.length ? `<small class="tag pref" title="${esc(met.map((x) => x.label).join("; "))}">preferred</small>` : "");
   const result = v.kind === "pick" ? `<span class="res"><span class="pickd" title="${esc(v.why || "")}">✓ ${esc(v.text)}</span>${extra}</span>`
-    : v.kind === "also" ? `<span class="res also">✓ ${esc(v.text)}${extra}</span>`
+    : v.kind === "also" ? `<span class="res also">✓ ${esc(v.text)}${extra}${canChoose(line, c) ? `<span class="choosebtn" role="button" tabindex="0" data-choose="${esc(c.id)}">Choose this one</span>` : ""}</span>`
     : `<span class="res no" title="${esc(v.why || "")}">✕ ${esc(v.text)}${v.extra ? ` <span class="faint">${esc(v.extra)}</span>` : ""}</span>`;
   const was = ui.was && ui.was.id === c.id && !c.picked ? `<span class="was">was recommended</span>` : "";
   return `<button class="rowx ${c.picked ? "picked" : v.kind === "also" ? "also" : "rej"}${c.id === ui.show ? " shown" : ""}${was ? " waspick" : ""}" data-id="${esc(c.id)}" style="--n:${limits.length}">${was}
@@ -582,7 +582,15 @@ function renderList(line, pick) {
     body = `${fold ? `<button class="more" data-toggle="above" title="Show these rows"><b>${fold - pinned.length} cheaper above:</b> ${esc(foldSummary(before.slice(0, fold).filter((c) => !pinned.includes(c))))}</button>` : ""}
       ${pinned.map(row).join("")}${before.slice(fold).map(row).join("")}
       ${pick ? row(pick) : (rows.length ? `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>` : "")}
-      ${after.length ? (ui.open.has("below") ? after.map(row).join("") : wasRows(after) + `<button class="more" data-toggle="below">+ ${after.length} dearer, not needed</button>`) : ""}`;
+      ${(() => {
+        if (!after.length) return "";
+        const pass = after.filter((c) => c.status === "inside"), fail = after.filter((c) => c.status !== "inside");
+        const failLine = fail.length ? (ui.open.has("belowfail") ? fail.map(row).join("")
+          : `<button class="more" data-toggle="belowfail" title="Show these rows"><b>${fail.length} dearer ${fail.length === 1 ? "does" : "do"} not pass:</b> ${esc(foldSummary(fail))}</button>`) : "";
+        if (!pass.length) return wasRows(after) + failLine;
+        return ui.open.has("below") ? pass.map(row).join("") + `<button class="more ctl" data-toggle="below">Hide them</button>` + failLine
+          : wasRows(after) + `<button class="more ctl" data-toggle="below"><b>${pass.length} more ${pass.length === 1 ? "passes" : "pass"}</b> · <u>show ${pass.length === 1 ? "it" : "them"}</u></button>` + failLine;
+      })()}`;
   } else {
     const showN = ui.open.has("below") ? after.length : Math.max(0, fit - 1), hidden = after.slice(showN);
     body = `${pick ? row(pick) : `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>`}
@@ -716,29 +724,33 @@ function whatIsSigned() {
 }
 
 function signatureHtml() {
-  const { sheet, seal } = state;
+  const { sheet, seal } = state, name = esc(sheet.issuer.name);
   if (!seal.signed) {
     const en = aux.enroll, enrolled = state.issuer_key && state.issuer_key.enrolled;
     const link = en && (en.url || en.link || en.phone_url || en.phone), qr = !enrolled && link ? qrSvg(link) : "";
-    return `<section class="card sign"><div class="cap">Signature</div>
-      <div class="signs"><b>${esc(sheet.issuer.name)} signs</b> ${whatIsSigned()}</div>
-      <div class="muted small">${enrolled ? "Phone enrolled" : "From the phone"} · no cart exists yet</div>
-      ${!enrolled && en && en.code ? `<div class="enrol">${qr ? `<a class="qr" href="${esc(link)}" target="_blank" rel="noopener" aria-label="Open the phone page">${qr}</a>` : ""}
-        <div class="muted small"><div>Scan to enrol the phone</div><div>code <span class="code">${esc(en.code)}</span></div></div></div>` : ""}
+    const pending = ((aux.asks && aux.asks.asks) || []).filter((x) => x.status === "pending").length;
+    // one place says what happens next, in plain words
+    const next = enrolled ? `<b>Waiting for ${name} to sign</b> · this sheet is on ${name}'s phone now` : `<b>Next:</b> ${name} reviews and signs on the phone`;
+    return `<section class="card sign"><div class="cap">What happens next</div>
+      <div class="enrol">${qr && en && en.code ? `<a class="qr" href="${esc(link)}" target="_blank" rel="noopener" aria-label="Open the phone page" title="Scan to open ${name}'s page on a phone · code ${esc(en.code)}">${qr}</a>` : ""}
+        <div><div class="next">${next}</div>${pending ? `<div class="muted small">You asked ${name} about ${n_(pending, "limit", "limits")}</div>` : ""}
+        ${!enrolled && en && en.code ? `<div class="muted small">Scan to open it · code <span class="code">${esc(en.code)}</span></div>` : ""}</div></div>
+      <div class="signs"><b>${name} signs</b> ${whatIsSigned()}</div>
+      <div class="muted small">No cart exists until then</div>
       ${receiptsRow()}</section>`;
   }
   const sig = seal.signature || {}, persona = sig.persona || (state.issuer_key && state.issuer_key.persona) || {};
   const who = (sig.signer && sig.signer.name) || String(seal.signer || sheet.issuer.name).replace(/\s*\(.*\)\s*$/, ""), hash = seal.sheet_hash || sig.sheet_hash || "";
-  const at = seal.signed_at || sig.at, time = at ? new Date(at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "";
   // how the signer is known, from the state: the server's own label when it gives one, else from the identity check
   const identity = persona.verified ? persona.label || "identity checked (sandbox)" : sig.name_basis || seal.signer_label || seal.identity || sig.identity || "self-declared";
-  const covers = Array.isArray(seal.covers) && seal.covers.length ? seal.covers.map(words) : [];
   const differs = (c) => c.signed_total_cents != null && c.total_cents != null && c.signed_total_cents !== c.total_cents;
-  return `<section class="card sign signed"><div class="cap">Signature</div>
-    <div class="row part"><span class="who"><span class="tickmark">✓</span> Signed by ${esc(who)}</span></div>
-    <div class="muted small part">${esc(identity)}</div>
-    ${hash ? `<div class="row part"><span class="muted">Code</span><code class="fp" title="${esc(hash)}">${esc(hash.slice(0, 12).replace(/(.{4})(?=.)/g, "$1 "))}</code></div>` : ""}
-    ${(seal.carts || []).map((c) => `<div class="row part cart"><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">${esc(c.store)} cart ↗</a><span>${c.total_cents ? money(c.total_cents) : ""}</span></div>${differs(c) ? `<div class="badw small part">store total differs · signed ${money(c.signed_total_cents)} · store ${money(c.total_cents)}</div>` : ""}`).join("") || `<div class="muted part">No cart link came back</div>`}
+  const carts = seal.carts || [];
+  // the carts are the action once signed: the most visible thing on the page
+  return `<section class="card sign signed"><div class="cap">What happens next</div>
+    <div class="next part"><span class="tickmark">✓</span> <b>Signed by ${esc(who)}.</b> ${carts.length ? `Your ${carts.length === 1 ? "cart is" : "carts are"} ready:` : "No cart link came back."}</div>
+    ${carts.map((c) => `<a class="cartbtn part" href="${esc(c.cart_url)}" target="_blank" rel="noopener"><span>${esc(c.store)} cart</span><span>${c.total_cents ? money(c.total_cents) + " " : ""}→</span></a>${differs(c) ? `<div class="badw small part">store total differs · signed ${money(c.signed_total_cents)} · store ${money(c.total_cents)}</div>` : ""}`).join("")}
+    ${carts.length ? `<div class="muted small part">You check out yourself; Sign-Off never pays.</div>` : ""}
+    <div class="row part muted small"><span>${esc(identity)}</span>${hash ? `<span>code <code class="fp" title="${esc(hash)}">${esc(hash.slice(0, 12).replace(/(.{4})(?=.)/g, "$1 "))}</code></span>` : ""}</div>
     ${receiptsRow()}</section>`;
 }
 
@@ -1062,6 +1074,7 @@ document.addEventListener("click", (e) => {
 addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !q("#replay").hidden) return closeReplay();
   if (e.key === "Escape" && (ui.drawer || ui.show || ui.menu)) { ui.drawer = null; ui.show = null; ui.menu = false; last.quiet = true; render(); }
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("choosebtn")) { e.preventDefault(); return choose(e.target.dataset.choose, e.target); }
   if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("ask")) { e.preventDefault(); e.target.click(); }
   if (e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey || !state) return;
   if (e.key === "e") { e.preventDefault(); ui.drawer = ui.drawer === "shopper" ? null : "shopper"; last.quiet = true; render(); q("#sayText")?.focus(); }
