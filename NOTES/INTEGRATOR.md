@@ -2305,7 +2305,64 @@ one message; STORE/SIGN: the database writes and two Senso payloads carry names 
   second quote is used only if code finds it on the page with the rating and the scale in it (10 pages asked, 1 changed: Best Buy).
   (2) When the reader rounds ("4.6" for the page's "4.5915494"), the page's own number is kept, with `value_as_reported` beside it.
   `best_reviewed` and `ratings()` now use one rule (out of five, at least 5 reviews); the tie-break text is updated in the reply.
+## SIGN 15:12 — H3, H6, H2 closed (each test failed first); G23 and judge item 20 done
+- DONE H3: `POST /api/issuer/persona/start` is closed (401 `unsigned`, never starts anything). Starting the identity check is a signed request, type `persona_start`, on `/api/issuer/request`, so only the enrolled phone can; a new inquiry while a check has passed answers 409 `identity_already_verified` and leaves the passed record as it was. Proof: `uv run pytest tests/sign/test_approver_holes.py -q` (open call refused, forged start refused, passed check not replaced); live on port 8004 with the real sandbox key: the phone's "check identity" button made inquiry `inq_At7PFzGY2Aq5FUp5tCtVvmENXjsceb`, and `curl -X POST localhost:8004/api/issuer/persona/start` → 401.
+- DONE H6: `armed()` in `web/phone/index.html`: the second Sign tap counts only when the hash is the one that was on screen at the first tap; `loadState` voids the armed state the moment the hash changes. Test: `test_the_sign_button_is_armed_only_for_the_sheet_she_saw` (the function run in node: same hash true, other hash false, expired false).
+- DONE H2: wrong enrolment codes are counted per caller from outside (client address behind the tunnel), never for the laptop, and a wrong code never reaches the key store, so its global lock cannot fire; the laptop always enrols with the code it shows and `GET /api/issuer/enroll-code` is never blocked. The code is twelve hex characters (48 bits; `SignKeyStore` in `signoff/sign/api.py`). Tests: `test_wrong_codes_lock_the_caller_not_the_laptop`, `test_the_laptop_is_never_locked_and_can_always_show_a_fresh_code`, `test_the_code_is_too_long_to_guess`. I did NOT edit the lock in `signoff/sign/verify.py` (ENGINE's file for H4): it is now unreachable from the route, and can be deleted later.
+- verify.py, one line, said now so the merge is no surprise: the `TYPES` tuple at line 24 now also lists `decline_ask` and `persona_start` (nothing else in that file is touched). If ENGINE's H4 change conflicts there, take both.
+- DONE G23: shapes were written first in NOTES/SCREEN.md (15:06). `POST /api/shopper/ask-change`, `GET /api/asks` (and `asks` inside `/api/issuer/status`); the ask is a record only; accepting is the existing signed `set_limit` carrying `ask_id` (same seq, same `limit_set` receipt, plus `limit_change_asked` and `limit_change_settled`); declining is a signed `decline_ask`. Proof: `uv run pytest tests/sign/test_asks.py -q` → 11 passed (an ask changes no limit and no hash; the range and step are checked; one pending ask per limit; accept changes the limit exactly as her own change does; a decline changes nothing and names who declined; an unsigned or forged decline is refused; after sealing an ask is refused; an ask from outside the laptop gets 403 `local_only` from the app's guard; reset clears). Live in a real browser on port 8004: ask 250 lb instead of 300 → the card; tapping Accept → `GET /api/asks` says `accepted`, "Dana changed it to 250", the limit is 250, the chain shows `limit_change_asked` (3), `limit_set` (5), `limit_change_settled` (6), `request_accepted` (7), `receipts/verify` → verified. Screenshot at 390 x 844: `evals/phone_screens/sheet4/08-ask-card-390x844.png`. Not done: a screenshot of the Decline path and of the settled card on SCREEN's side.
+- DONE judge item 20: `/phone/` without a code now says "This phone holds the signing key."
+- G22 fix found on the way: ENGINE's `pick_rule.set_by` is the shopper's name once she chose it, and the sheet's default carries the literal "shopper"; the phone now says "Elena asked for …" only when `set_by` equals her name, so the default reads "Pick rule: cheapest that meets the order".
+- `uv run pytest tests/sign -q` → 130 passed. After merging main at 15:20 I rerun it (hashes change with H1).
 
+## 15:18 from ENGINE — H1, H5, H4 fixed on stream/ENGINE (commits 5af2cd0 and the one after), each with a test that fails before the fix
+Proof that they fail before: with `state.py` and `verify.py` as they were, `pytest -k "name_the_approver or one_fingerprint or
+refused_as_stale"` → "3 failed"; with the fixes the whole suite → "430 passed, 12 deselected" (15:17).
+- DONE H1: each pick in the canonical sheet carries `title`; `COVERS` says "product name". Test:
+  `tests/engine/test_state.py::test_the_name_the_approver_reads_is_under_the_hash` (another name on the same ids → another hash).
+- DONE H5: `state._one_form`: a whole number has one form (16.0 and 16 are both written 16), applied in `_number` (every limit
+  and measurement that arrives) and over the whole canonical sheet (every number in it, whatever the sheet file wrote). Test:
+  `tests/engine/test_state.py::test_one_value_has_one_fingerprint_however_it_arrived`: L5.length 16.0 → 20 → 16, L2.capacity
+  300 → 325.0 → 300.0, and a home measurement changed and restored each return the first hash and the first text.
+- DONE H4: `signoff/sign/verify.py`: the sequence number is recorded as soon as the signature and the number hold, before the
+  wrong-sheet and stale-hash checks. Test: `tests/sign/test_requests.py::test_a_sign_request_refused_as_stale_is_spent_and_never_accepted_later`
+  (signed for A, sheet to B, refused `stale_hash`, sheet back to A, same bytes → 409 `replayed_seq`, no cart, not signed; a new
+  tap with a higher number is accepted).
+  **Not closed, and not mine to close:** the reviewer's second half of H4. `signoff/sign/api.py:407` still sets `last_seq` back
+  for a refusal marked `retry_ok` (`identity_not_verified`, a store that failed), so that same request may be sent again;
+  `tests/sign/test_persona.py:72` relies on it ("the very same signed request goes through"). Removing it is one line in SIGN's
+  file plus that test; your permission covered verify.py only, so I left it. Say the word and I do it.
+- **Every field shown at signing, against the canonical sheet** (phone: `web/phone/index.html` `itemCard`, `limitRowC`,
+  `prefRowC`, the pick-rule line):
+  | shown | in the canonical sheet |
+  |---|---|
+  | need, line status, pick up locally | `lines[].need`, `status`, `fulfilment` |
+  | product name | `pick.title` (new, H1) |
+  | store, product id, variant, variant name | `pick.store`, `product_id`, `variant_id`, `product_key`, `variant_title` |
+  | price, quantity, currency, line amount, total | `pick.price_cents`, `quantity`, `currency`; `total_cents` |
+  | each check as a sum | `pick.checks[].expr` |
+  | the store's sentences | `pick.quotes` |
+  | delivery sentence, day range, needed by | `pick.delivery` |
+  | each limit: number, unit, comparison, who set it | `limits[].bound`, `unit`, `op`, `set_by` |
+  | each limit's words ("weight capacity", "at least") | `limits[].name`, `limits[].label` (new: the phone takes the label from the state) |
+  | struck products and the reason typed | `struck`; `strike_reasons` (new) |
+  | the ordering, its label, `within`, who asked for it | `pick_rule.id`, `label`, `within` (best value), `set_by` (new: the phone prints "Elena asked for …" from it) |
+  | preferences and the pick's result | `lines[].preferences`, `pick.preferences` |
+  | who picked | `lines[].picked_by` |
+  | rating, review count under a review ordering | `pick.rating`, `pick.review_count` |
+  **Shown and still not under the hash, left so on purpose, your call:** the order's own sentence beside a limit and "changed from
+  the order" (`from_order`, read from the order document; the Senso check is what ties the sheet to that document); the identity
+  label and the Senso verdicts (they are in the signature record, made after the hash); on the laptop only: picture, page link,
+  the return-policy sentence (`undo`), `picked_because` (words made from fields that are covered), products not picked,
+  fetch time.
+- All real hashes change (title, name, label, set_by, number form). **No fixture needed regenerating:** `fixtures/state.json` is
+  the rules' output and holds no hash (`seal.sheet_hash` is null; its equality test passes unchanged);
+  `web/screen/fixture-state.json` pins no hash value that I can find (grep for a quoted `sheet_hash` with hex digits: nothing);
+  `tests/sign` uses its own stand-in canonical text. I changed two older assertions of mine that spelled the canonical
+  `pick_rule` and a preference in full.
+- One change of shape you merged at 14:50: when the shopper changes the ordering, `sheet.pick_rule.set_by` is now `"shopper"`
+  (the role, as sheets 3 and 4 write it), not her name. The phone compares it with "shopper" to print "Elena asked for …", so
+  with the name that line never showed.
 ## 15:20 from SCREEN (your 15:05 correction; stream/SCREEN, main merged as bb68be4)
 - C15, the read-only half DONE: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c15-L5.png. The "change" / "try to change" link and its refusal are removed from the
   laptop. Under each of the approver's limits the header reads "Dana's limit · phone only" (hover: "it changes only from
@@ -2446,3 +2503,93 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
   the first frame, pills fully round. NOT done: D12 (moving "invented people, real stores" out of the bar; your item 6
   keeps it there) and D13 beyond the legend (the tools rows still show the route's own detail when opened).
 - C16: still waiting for /graph/'s embed mode on main; the control stays hidden until the word "embed" is in its files.
+## STORE 15:20 — the four items of the 15:15 note (REVIEW items 3 and 10)
+**1. Amplitude: DONE, and what was true.** Delivery does not stop: events this process hands over are confirmed. The live instance (port 8800, restarted 15:06) answers `/api/obs/status` with queued 3, sent 2, delivered 2, dropped 0, last_status 200: it had made 2 tool calls since the restart. The "287 logged locally" is the shared file `data/obs/events.jsonl`, which every process (tests, other
+streams' runs, earlier runs) appends to: not the same population. In isolation: 300 rapid tool calls, 300 delivered after 6 idle seconds (checked now). Two real defects found and fixed: (a) the session was named `sheet1` whatever sheet ran: engine events arrive before anyone calls `obs.session`, and the fallback was a literal; it is now named from the active sheet (`sheet4-151347-9174`) and a change of sheet starts a new session; (b) the sender flushed only when the queue went idle for 3 s, so a run that never pauses could wait: it now also flushes every 5 s while busy.
+The local log rows now carry `pid`, and the drawer row counts like with like: "N events confirmed by Amplitude from this app since it started ... This app made X tool calls since it started and handed Y to Amplitude; the local log also holds calls from earlier runs and other processes." Test: `test_the_session_is_named_from_the_active_sheet_and_a_new_sheet_starts_a_new_one`.
+**2. Airbyte row: DONE.** One number from the job records: the jobs of the last sync **for the data the app runs on** (the run record has `sheet_id`; sheet 4 runs on sheet 1's data): "147 rows synced in Airbyte's last sync of sheet1" = jobs 24 (132 pool), 23 (3 store answers), 25 (12 order limits), at 21:09 UTC. If the newest sync were for another sheet the row says "NOT the data the app runs on: that sync was for sheet2, the app runs on sheet1". The 311 was the table's size (sheet 1's 132 plus sheet 2's 179 products from the two syncs). The same SQL statement on Airbyte's rows is still in the detail: 46 candidates for L4, same as the direct answer.
+**3. `ask.py` "California address": DONE.** `question_for(need, region=None)` names a region only when the sheet gives one (`delivery_region` in the sheet file; none of the four does), so the question reads "If I order a walker today, how many days will delivery take? And can an opened walker be returned, and is there any fee?". Saved answers keep the question they were asked with. Test `test_no_region_is_hard_coded_in_the_question`.
+**4. Nouns: DONE.** Every row has `unit` as a noun phrase and a `headline` "number unit" built from it, for example "46 candidates pass the limits in one SQL statement", "147 rows synced in Airbyte's last sync of sheet1", "1 events confirmed by Amplitude from this app since it started", "197 pages read by the second reader (saved run)", "2 attack campaigns run by Firedrill (saved reports)", "6 datasets of facts held, by owner", "5 figures the two readers read differently, caught by the gate's strict mode", "N sentences of the sheet checked against the order", "1 identity inquiry started for the signer". (A candidate is a product, or one of its options when a product is sold in several.) Test `test_every_row_says_what_its_number_counts`.
+SCREEN: draw `headline` instead of `number` + `unit` side by side; `unit` alone is now a long phrase.
+## 15:13 from TRAIL — the reviewer's two wording facts (items 3 and 8)
+1. **The matrix has two groups of column, with a heading each**: "Outside parties" and "Our own services". The split is
+   from the ledger's own records: a store (kind "store"), a store's agent (the guard's records) or a recipient recorded
+   by its web domain (the web search, `exa.ai`) is an outside party; a model called by provider and name, the database,
+   the order check and analytics are our own services. The line now says each group's own numbers and claims nothing
+   about the second: on port 8016 with a copy of main's ledger at 15:12, "outside parties: 9 payloads, 0 carried a limit,
+   a measurement or a name · 31 stopped at the guard · our own services: 133 payloads, 64 carried one, 29 not declared".
+   No "never leaves" anywhere; a row's tooltip is the context file's own words ("not sent to a store or a store's agent").
+   Screenshot `web/trail/shots/left-groups.png`.
+2. **The figure's headline is exact from the records**: "Never enters the page-reading call". It says "a model call" only
+   when the ledger has model calls and none of them was given, or found to hold, a limit or a home measurement
+   (`signoff/trail/flow.py:_never_enters`); today the embedding call was given a home measurement and the order reader
+   is given the limit, so it names the page-reading call. `web/trail/shots/flow-810.png` retaken.
+`uv run -q pytest -q tests/trail` → 16 passed. Not on today's main ledger, so not seen as columns: the stores' search and
+the web search (no rows to them for sheet 4); a test covers `exa.ai` landing under "Outside parties".
+
+## 15:17 from TRAIL — the gate was not exiting in any stream; likely my test, now fixed (please merge this one first)
+At 15:13 `uv run -q pytest -q` printed "446 passed" in my worktree and then did not exit (2 min 27 s when I stopped it);
+at the same moment the gate was hung in STORE, ENGINE, TALK, SCREEN and REVIEWS as well. `tests/trail/test_feed.py::
+test_collect_never_raises_and_names_each_source` calls `feed.collect()`, which since T5 reads memory's shelf
+(`signoff.memory.api.memory()`: the database, and it starts memory's background indexing). That is a real outside
+service inside the default gate, in every stream that has merged main. I marked that test `@pytest.mark.live`.
+After the change: `uv run -q pytest -q` → 445 passed, 13 deselected, exited in 16.5 s. I did not prove the thread that held
+the process open (alone, the test exits in 3 s); if the gate hangs again, it is not this test.
+## TALK 15:15 — the four corrections (reviews of 15:00)
+1. Trust wording. "without trusting our server" is gone. The page says "Checked in this browser: Dana's key signed
+   this", "with the key enrolled from her phone · key ff588d3f64ae" (computed in the page from the key itself), and "the
+   message her key signed names the same code". It does not say the phone shows the key's code: the phone prints the
+   server's `key_id` today (`web/phone/index.html:205`); asked of SIGN in NOTES/SIGN.md.
+2. Rows from the canonical sheet. Every value offered for editing is a node of the canonical text. The pick's name is the
+   canonical `title` when the sheet has one, else `product_key`; any other text or number in the pick that the page has no
+   layout for gets its own row, named by its key (ids stay out). Change and restore: typing the value that was there
+   (300, 300.0, " 300 ") removes the edit, so the original bytes and the first fingerprint return. Tested with the page's
+   own code under node: 300 → 250 fails, back to 300 is valid with the first fingerprint.
+3. The attempts, tested as real POSTs: `tests/seal/test_attempts.py` posts each to SIGN's real route, before she signs
+   and after, and asserts the status, the error, one new `request_refused` receipt each, and that the key, `seq`, the
+   engine and the carts are as they were. `uv run pytest tests/seal -q` → `11 passed`.
+4. `/talk/`. The default list is the one lead blocked share (`cbd3c7f37f4f`, marked `lead` in its record), then one of
+   the agent's own exchanges per store; every shopper ask says "typed to test the guard" and the rest are behind
+   "+N more · typed to test the guard". The count is on the page, from the records: "13 messages to the stores' own
+   agents · 4 not sent, 2 of those over-cautious" (`GET /api/talk/threads` → `count`). "Over-cautious" is the reviewer's
+   judgement, written into the two turns it is about (`review: {verdict, why, by}` in `f9faad4b5aed` turn 1 and
+   `cbd3c7f37f4f` turn 2) and shown beside them; the guard itself was not changed for these two cases.
+- Know this: the lead share's sent message and draft fit the timeline; the shopper's words behind its click still say
+  "came home from a hip operation on Monday". They are the real words that were typed, so I did not edit them.
+- Shots retaken: `web/seal/shots/*` (ten), `web/talk/shots/talk-thread.png`. `./hk check` result is in the next line.
+449 passed, 12 deselected, 1 warning in 18.33s
+## GRAPH 15:13 — embed mode (A) is on the branch
+- `/graph/?embed=1&autoplay=1&line_id=L4`: no top bar, chips or side panel; the canvas fills the frame; it plays once by itself (27 s over the stages), caption large, "Replay of this run's records · 3 h 2 min of work · 6 of 11" (the span between the first and last time the run's records carry). "Skip" and, at the end, "Back to the list" call `window.parent.postMessage({type: "signoff:replay-done"}, "*")`. When the replay reaches its last frame it stays there and posts `{type: "signoff:replay-ended"}` (so the parent can tell the end from a dismissal; close on `replay-done` only). "Replay" plays it again. Motion always plays in the frame. Checked at 1320 x 700 mid-run and at the end.
+
+## GRAPH 15:17 — polish (B) on the branch; shots re-taken (`web/graph/shots/explore-1.png` … `-11.png`, 1440 x 810)
+- B4 DONE: in the last two stages the five survivors take the centre at twice the size with photo, name, price and rating; the gate is larger and beside the pick; the other passing options are a quiet block under them; the set-aside bands are one quiet row at the bottom ("15 outside · 2 unclear · 1 outside · 2 unclear · 7 not stated" with their dots). The stores leave the canvas at the ranking (they have done their part).
+- B1 DONE: asking the store: the asked product → one spine → each message → ONE guard line → the store's own node (moved to the end of the lanes); a stopped message's line ends at the guard, in red; the withheld parts from the record sit on the guard line, struck by the lane's own line (as many as fit, then "+n"); a reply sits between the guard and the store; "2 replies remembered" once, under the lanes. No clock times, nothing overlapping at 1440 x 810 or in a 1320 x 700 frame (checked on the shower chair too: 6 messages, 3 stopped).
+- B3 DONE: the event is the root, top-left in every stage, joined to the family's column under it (Elena, the measurement, the need-by date); Dana's order sits below, her rules at the top right.
+- B2 DONE: one node, "9 things the stores said before" (its text is all nine; "11 things remembered" when a measurement is among them), plus on their own only the measurement or strike recalled and at most two that are about the pick. `counts.memory` is still the real number recalled.
+- B5 DONE: the three headings come from `sources` in the reply and sit over the same things in every stage; the long edge from the measurement to its rule is gone, so no edge crosses a heading. "stated by the stores" is over the store nodes.
+- B6 DONE: no clock times in captions; every caption is under ten words ("10 facts from 7 messages; 6 shape this order.", "At least 300 lb: 17 set aside, 56 left.", "Passes the door: 10 set aside, 46 left.", "3 messages to the store; 3 parts withheld; 1 stopped.").
+- Full page: Cognee's answer is its first sentence with "the whole answer".
+- Not checked: 150% zoom; a real (non-headless) browser's motion; the embed inside your iframe (only at 1320 x 700 as its own window).
+## REVIEWS 15:16 — a rating on the seller's own page is marked; and the 14:53 question again
+- **DONE (15:15 request)**: each source has `seller_page: true` when the review page's registered domain is the candidate's store
+  (computed from the two host names, no list of sites; `sellers_own_page` kept with the same value). Each product's entry in
+  `GET /api/reviews` (`lines[].candidates[]`, `by_candidate`, `best_reviewed`) has `independent: true|false` (null with no rating) and
+  `rating_from`; each entry of `ratings()` has `independent` and `site`. `summary` counts both kinds
+  (`used_for_ordering_from_another_site`, `used_for_ordering_from_the_sellers_own_page`) and `independent_means` says it in words.
+  The ordering is not changed. ENGINE and SCREEN are told the field in their notes.
+  Proof, replay mode, sheet 4: `ratings("L4")` → rollator `{"rating": 4.6, "out_of": 5, "review_count": 58, "independent": false,
+  "site": "parentgiving.com"}`, Carex Folding Walker `{… 4.5, 158, "independent": true, "site": "walmart.com"}`; L4 summary: used 2,
+  another site 1, the seller's own page 1; `best_reviewed.rating_from: "the seller's own page"`. Sheet 3: C1 JBuddies Folding Gen 2
+  `independent: true` (bestbuy.com). `uv run -q pytest -q -x` → `447 passed, 12 deselected`; tests/reviews → 20 passed.
+- **So, of the 3 usable ratings, 2 are on another site and 1 (the one "best reviewed" picks on L4) is on the seller's own page.**
+  One more thing you should know before anyone says "independent" aloud: the Best Buy quote for the headphones reads "Syndicated
+  rating, 4.5915494 out of 5 stars with 71 reviews on jlabaudio.com". The page is on bestbuy.com, so the field says
+  `independent: true`, but the quote itself says the reviews come from the maker's site. `independent` means "the page is not on the
+  selling store's site" and nothing more; the quote is shown with the source, so the words are there for the reader.
+- **Your 14:53 question** (answered at 14:55 above, with the table; in short): it is not a bug, a variant id or a cache read.
+  `ratings("L4")` gives two walkers because only two of the four quoted ratings state their scale: "4.5 out of 5" (Carex Folding
+  Walker, walmart.com, 158) and "Rated 4.6 out of 5 stars" (rollator, parentgiving.com, 58). The other two quotes are "Rated 4.5 from
+  138 reviews." (Drive Deluxe Two-Button Walker, homedepot.com) and "Rated 4.2 from 69 reviews." (Bariatric Walker, amazon.com): no
+  scale in the quote and none anywhere in the page text. The bath bench on L1 is the same: the quote is "3.9 (28)" (amazon.com), no
+  scale. L1's other two: 5.0 out of 5 from 2 reviews (under the minimum of 5) and 4.8 out of 5 with no review count quoted.
+  Since 14:55 each of these says so in the route: `ordering: {used: false, reason: "rating without a stated scale: not used for ordering"}`.

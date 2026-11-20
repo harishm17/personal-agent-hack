@@ -30,7 +30,7 @@ def read(line_id: str | None = None):
     out = [reviews.for_line(line) for line in lines]
     if line_id:
         return out[0]
-    short = ("found", "searched", "rating", "out_of", "review_count", "rating_site", "sentence", "note", "ordering")
+    short = ("found", "searched", "rating", "out_of", "review_count", "rating_site", "independent", "rating_from", "sentence", "note", "ordering")
     return {"sheet": (state.get("sheet") or {}).get("id"), "lines": out, "minimum_reviews": reviews.MINIMUM_REVIEWS,
             "ratings_rule": reviews.RATINGS_RULE,
             "ratings": {cid: r for line in out for cid, r in line["ratings"].items()},

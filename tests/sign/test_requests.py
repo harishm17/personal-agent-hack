@@ -220,3 +220,22 @@ def test_an_unsigned_request_gets_one_answer_whether_or_not_a_key_is_enrolled(en
     phone_after_reset = post(env, env.phone.request("set_limit", **LIMIT))
     assert phone_after_reset.json()["error"] == "no_key"
     assert env.engine.calls == []
+
+
+def test_a_sign_request_refused_as_stale_is_spent_and_never_accepted_later(env):
+    """The reviewer's sequence (H4): signed for hash A, the sheet moves to B, the request is refused; the sheet
+    returns to A and the same bytes are sent again. Nobody tapped, so nothing is signed and no cart exists."""
+    hash_a = env.engine.sheet_hash()
+    body = env.phone.request("sign_sheet", sheet_hash=hash_a)        # she tapped once, for A
+    was = env.engine.state["total_cents"]
+    env.engine.state["total_cents"] = was + 100                        # the sheet moves to B without her
+    assert env.engine.sheet_hash() != hash_a
+    refused = post(env, body)
+    assert refused.status_code == 409 and refused.json()["error"] == "stale_hash"
+    env.engine.state["total_cents"] = was                              # and back to A
+    assert env.engine.sheet_hash() == hash_a
+    again = post(env, body)                                            # the same bytes, no new tap
+    assert again.status_code == 409 and again.json()["error"] == "replayed_seq"
+    assert env.cart.calls == [] and not env.engine.get_state()["seal"].get("signed")
+    fresh = post(env, env.phone.request("sign_sheet", sheet_hash=hash_a))   # a new tap, a higher number: accepted
+    assert fresh.status_code == 200 and fresh.json()["applied"] == "sign_sheet"

@@ -5,7 +5,12 @@
 import * as XP from "/graph/explore.js";
 
 const params = new URLSearchParams(location.search);
-const MOTION = params.get("motion") !== "0" && !matchMedia("(prefers-reduced-motion: reduce)").matches && !navigator.webdriver;
+// ?embed=1: the replay alone, for a frame over the decision screen. It plays once by itself and tells its parent when
+// the viewer is done ({type: "signoff:replay-done"} on Skip and on Back to the list; "signoff:replay-ended" when it ends).
+const EMBED = params.get("embed") === "1";
+if (EMBED) document.body.classList.add("embed");
+const MOTION = EMBED || (params.get("motion") !== "0" && !matchMedia("(prefers-reduced-motion: reduce)").matches && !navigator.webdriver);
+const tell = (type) => { try { window.parent.postMessage({ type }, "*"); } catch (e) { /* no parent to tell */ } };
 const LIVE = params.get("live") !== "0";
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -34,6 +39,7 @@ const clock = (at) => (at ? String(at).slice(11, 16) : "");
 function dur(s) {
   if (s == null) return "";
   s = Math.round(s);
+  if (s >= 3600) return Math.floor(s / 3600) + " h" + (Math.round((s % 3600) / 60) ? " " + Math.round((s % 3600) / 60) + " min" : "");
   return s < 60 ? s + " s" : Math.floor(s / 60) + " min" + (s % 60 ? " " + (s % 60) + " s" : "");
 }
 
@@ -91,15 +97,29 @@ function curve(a, b) {
 
 function controls() {
   // drawn before the canvas is measured, so the canvas keeps its height
-  if ($("#scrub")) return;
+  if ($("#scrub") || $("[data-done]")) return;
+  if (EMBED) {
+    $("#ctl").innerHTML = `<span class="cap" id="rlabel">Replay of this run's records</span><span class="grow"></span>
+      <button class="chip" data-again hidden>Replay</button><button class="chip" data-done>Skip</button>`;
+    return;
+  }
   $("#ctl").innerHTML = `<button class="chip" data-play>Play</button><button class="chip" data-step="-1" aria-label="Back">‹</button><button class="chip" data-step="1" aria-label="Next">›</button>
     <input type="range" id="scrub" min="0" max="1" step="1" aria-label="Stage"><span class="cap" id="count">1 of 1</span>`;
   $("#scrub").addEventListener("input", (e) => { XP.play(false); XP.jump(Number(e.target.value)); });
 }
 
 function renderStage(s, k, n) {
-  $("#heads").innerHTML = `<span class="st"><b>${esc(s.title)}</b>${esc(s.caption)}${s.at ? `<i>${esc(clock(s.at))}</i>` : ""}</span>`;
+  $("#heads").innerHTML = `<span class="st"><b>${esc(s.title)}</b>${esc(s.caption)}</span>`;
   controls();
+  if (EMBED) {
+    const span = xdata?.run?.seconds;
+    $("#rlabel").textContent = "Replay of this run's records" + (span ? " · " + dur(span) + " of work" : "") + ` · ${k + 1} of ${n}`;
+    const ended = k === n - 1 && !XP.playing();
+    $("[data-done]").textContent = ended ? "Back to the list" : "Skip";
+    $("[data-again]").hidden = !ended;
+    if (ended && !renderStage.told) { renderStage.told = true; tell("signoff:replay-ended"); }
+    return;
+  }
   $("#scrub").max = n - 1; $("#scrub").value = k;
   $("#count").textContent = `${k + 1} of ${n}`;
   $("[data-play]").textContent = XP.playing() ? "Pause" : "Play";
@@ -118,7 +138,8 @@ function drawExplore() {
   const asked = params.get("stage"), last = xdata.stages.length - 1;
   const at = same ? XP.stage() : asked != null ? Number(asked) : MOTION ? 0 : last;
   XP.mount($("#stage"), xdata, { onSelect: (id) => { sel = id; renderSide(); }, onStage: renderStage }, { stage: at, motion: MOTION });
-  if (!same && asked == null && MOTION) XP.play(true);
+  // in a frame the whole run takes about half a minute; on the page a stage is shorter
+  if (!same && asked == null && MOTION && (!EMBED || params.get("autoplay") !== "0")) XP.play(true, EMBED ? Math.round(27000 / xdata.stages.length) : undefined);
 }
 
 function draw() {
@@ -212,6 +233,7 @@ function sourceLine(s) {
   if (s.record === "store_page") return `<a class="link" href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.url).replace(/^https?:\/\/(www\.)?/, ""))}</a>${span} · read ${esc(clock(s.fetched_at))}`;
   if (s.record === "context") return `${s.from_label ? esc(s.from_label) + " · " + esc(s.channel || "") + " · " + esc(String(s.at || "").slice(0, 10)) + " " + esc(clock(s.at)) + " · " : ""}<code>${esc(s.file)}</code>${s.pointer ? " · <code>" + esc(s.pointer) + "</code>" : ""}${span}`;
   if (s.record === "talk") return `conversation <code>${esc(s.thread)}</code> · message ${esc(s.n)} · ${esc(clock(s.at))} · <a class="link" href="/talk/">conversations</a>`;
+  if (s.record === "memory_recall") return `${esc(s.rows)} rows · <code>${esc(s.route)}</code>`;
   if (s.record === "web_page") return `<a class="link" href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.url).replace(/^https?:\/\/(www\.)?/, "").slice(0, 60))}</a> · read ${esc(clock(s.fetched_at))}`;
   if (s.record === "ledger") return `outbound ledger · rows ${esc((s.rows || []).join(", "))} · <a class="link" href="/trail/">trail</a>`;
   if (s.record === "memory") return `memory <code>${esc(s.memory_id)}</code> · ${s.hash ? "receipt <code>" + esc(String(s.hash).slice(0, 12)) + "</code>" : "<code>" + esc(s.file || "") + "</code>"} · ${esc(clock(s.at))}`;
@@ -262,7 +284,7 @@ function renderSide() {
   const parts = (answer?.parts?.length ? answer.parts : [{ owner: "system", text: answer?.answer || "" }])
     .map((p) => ({ owner: p.owner, text: String(p.text || "").replace(/\*\*/g, "").trim() })).filter((p) => p.text);
   const first = (t) => { const line = t.split("\n")[0]; return line.split(/(?<=[.!?])\s+/)[0] || line; };
-  const brief = parts.filter((p) => !/^I could not find/i.test(p.text)).slice(0, 3).map((p) => ({ owner: p.owner, text: first(p.text) }));
+  const brief = parts.filter((p) => !/^I could not find/i.test(p.text)).slice(0, 1).map((p) => ({ owner: p.owner, text: first(p.text) }));
   const body = answer?.answered
     ? `<p class="quote answer">${(whole ? parts : brief).map((p) => `${dot(p.owner)}${esc(p.text)}`).join("\n\n")}</p>
        <div class="cap">Answered by Cognee<button class="link more" data-whole>${whole ? "shorter" : "the whole answer"}</button></div>`
@@ -276,7 +298,7 @@ function renderSide() {
 `;
 }
 
-function render() { renderTop(); renderBand(); draw(); renderSide(); }
+function render() { if (EMBED) { view = "explore"; draw(); return; } renderTop(); renderBand(); draw(); renderSide(); }
 
 async function load() {
   const q = line ? `?line_id=${encodeURIComponent(line)}` : "";
@@ -296,6 +318,8 @@ async function load() {
 }
 
 document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-done]")) { XP.play(false); tell("signoff:replay-done"); return; }
+  if (e.target.closest("[data-again]")) { renderStage.told = false; XP.jump(0, true); XP.play(true, Math.round(27000 / xdata.stages.length)); return; }
   const chip = e.target.closest("[data-line]"), node = e.target.closest("[data-id]"), seg = e.target.closest("[data-view]");
   if (e.target.closest("[data-whole]")) { whole = !whole; renderSide(); return; }
   if (seg) { view = seg.dataset.view; sel = null; XP.play(false); render(); return; }
@@ -318,4 +342,4 @@ document.addEventListener("keydown", (e) => {
 const renderStageLabel = () => { const b = $("[data-play]"); if (b) b.textContent = XP.playing() ? "Pause" : "Play"; };
 addEventListener("resize", () => data && draw());
 load();
-if (LIVE) setInterval(load, 4000);
+if (LIVE && !EMBED) setInterval(load, 4000);
