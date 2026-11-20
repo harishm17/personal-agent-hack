@@ -8,7 +8,7 @@ Sign-Off shops real stores to someone else's written order: it buys nothing it c
 at all until that person signs.
 
 ## Opening and closing, word for word
-- **Opening (15 s):** "A patient comes home after surgery. His therapist wrote what the house needs; his
+- **Opening (15 s):** "A patient comes home after surgery. Her therapist wrote what the house needs; her
   daughter shops. The therapist has never seen the house, and the daughter has never bought any of this.
   Sign-Off shops three real stores to that written order, and buys nothing until the therapist signs."
 - **Closing (15 s):** "It read every page, rejected what it could not quote, and waited for the person who
