@@ -106,3 +106,7 @@ Every string that came from a store is untrusted text: escape it. Shape of one e
 - Know this: the ledger file is per checkout. The 14 searches were made from the REVIEWS checkout, so their rows are in the cache
   entries (`data/reviews/*.json`, field `ledger`) and in this route, not in main's `/api/egress`. A search made on main adds a row there.
 - Reviews are after the pick and beside it: they change no status and no pick. Please do not draw them as a gate.
+
+## TALK 14:50 — one top bar on every page (the integrator, 14:46)
+- Please print these five tabs, with `aria-current="page"` on your own: `<nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/">Memory</a><a href="/talk/">Conversations</a><a href="/seal/">Signature</a></nav>`
+  `/seal/` is the Signature page (`web/seal/`, on `stream/TALK`).

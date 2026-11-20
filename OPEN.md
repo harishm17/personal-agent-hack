@@ -88,6 +88,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | G15 | Senso: resolve and show the `version_id` of the order document beside each verdict (rows carry `content_id` only) | ok |
 | G16 | `PERSONA_REQUIRED` on by default for the demo sheet once G7 works; Relay's sandbox passes with nobody present: say "sandbox" beside it | ok |
 | G22 | the phone names the ordering the shopper chose and lists the order's preferences as preferences; the sheet 3 order check passes with its preference sentence | open |
+| G23 | the shopper asks, the approver decides: `POST /api/shopper/ask-change`, `GET /api/asks`, a card on the phone with Accept (her existing signed limit change, linked by `ask_id`) and Decline (signed); an ask changes no limit and no hash; records for the trail (the builder, 15:02: "then why the option in the first place") | open |
 
 ## SCREEN
 | id | item | status |
@@ -105,6 +106,8 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | C12 | the demo director's six fixes (unclear rows say why; the fold line summarises what it folds; plurals; the 404; a warning before switching sheets; "now at <store>" when a pick moves) | open |
 | C13 | a "Tools at work" drawer from `GET /api/tools` | open |
 | C14 | an ordering control on the decision screen (Cheapest · Best reviewed · Best value) that moves the pick; the pick labelled "Recommended" with its one-line reason; a quiet rating on passing rows; a "preferred" mark on rows that meet a preference (E30, E31, R4) | open |
+| C15 | no control on the laptop that can only fail: the "change" link on limits removed; limits read as the approver's, read-only; "Ask Dana" with a value and a note when the route exists, and its state on the limit (waiting, changed, declined) (the builder, 15:02) | open |
+| C16 | "Replay the run" on the decision screen: the step bar's control opens an overlay that plays how the agent got here (the graph's embed mode) once and returns to the list; never on page load; hidden when the embed is unavailable (the builder, 15:09) | open |
 | C8 | Detail view, dots, rulers, trays and tiles removed | open |
 
 ## TRAIL
@@ -146,6 +149,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | H6 | the exploration also shows what the agent already knew and whom it asked: recalled memories as nodes with owner and age (measurement, earlier strike, earlier purchase, what a store said), the patient's facts from the order as sealed nodes that explain a limit and never travel, and the conversation with the store's agent with the guard's removed parts on the edge; `memory_rows` no longer 0 in `/api/graph` (the builder, 14:38) | open |
 | H7 | the surgery as an event the agent already holds, at the root of the graph: `sheets/sheet4_context.json` (invented messages; each fact an exact quote with offsets; `feeds` pointers into the sheet, `equals` checked by code); facts that feed the order light up (discharge date sets the need-by date, 280 lb is why 300 lb, Dana has not seen the house so Elena measures), facts that do not (who drops off, who picks up) stay dim as "held, not used for this order"; each with its sharing class (the builder, 14:45) | open |
 | H8 | the limits are prescribed, never derived: in the graph a limit's only source is the order its author wrote and signs; the event context feeds the date, who is at the house and the measurements, and no limit (the builder, 14:58) | open |
+| H9 | `/graph/?embed=1&autoplay=1`: canvas only, plays once in about 25 to 30 s, large captions, "Replay of this run's records", posts `signoff:replay-done`; and the six polish points from the integrator's 15:07 screenshots (overlap in the store stage, store answers folded, the event as the root, survivors and gate large, headings, no clock times) | open |
 
 ## REVIEWS (what the web says, quoted with its source)
 | id | item | status |
@@ -184,6 +188,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I17 | the judge review of 14:43 (`NOTES/REVIEW-judge-1440.md`, 21 items): 1, 2, 5 to 12, 15, 21 to SCREEN; 3, 4, 13, 14 to TRAIL; 16, 17 to GRAPH; 18, 19 to TALK; 20 to SIGN; each checked on main at 15:20; his run of show weighed against the builder's asks when DEMO.md is rewritten | open |
 | I18 | three independent reviewers at 15:00 going through everything: the approver path attacked on a copy; every page for design at 1440 x 810 and 150%; the whole story and the day's decisions for coherence and true claims; findings routed and checked (the builder, 14:58) | open |
 | I19 | the demo's spine is the approver: the laptop's change refused, the ordering changed by the shopper appearing on the phone before she signs, the signature, carts for exactly the signed picks, one value changed and the check failing; DEMO.md rewritten on that at 15:20 | open |
+| I20 | the approver review's six holes (`NOTES/REVIEW-approver-1500.md`): H1, H4, H5 to ENGINE; H2, H3, H6 to SIGN; each with a failing test first; checked on main before the demo | open |
 | I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
 ## The builder

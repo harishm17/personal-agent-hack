@@ -1,6 +1,6 @@
 // Signature: draws GET /api/seal/proof and checks the signature here, in this browser (verify.js, WebCrypto).
 // Nothing on this page writes anything: an edit changes a copy of the canonical text held in the page.
-import { check, scan, splice, jsonString } from "/seal/verify.js";
+import { check, scan, splice, jsonString, sha256, hex } from "/seal/verify.js";
 
 const q = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -8,7 +8,7 @@ const clock = (at) => (at ? new Date(at).toLocaleTimeString("en-GB") : "");
 const short = (h) => (h || "").slice(0, 12).replace(/(.{4})(?=.)/g, "$1 ");
 const money = (cents) => "$" + (cents / 100).toFixed(2);
 const P = new URLSearchParams(location.search);
-const ui = { key: "", proof: null, groups: [], nodes: new Map(), edits: new Map(), real: null, now: null, editing: null, cartOnly: P.get("view") === "cart", played: P.has("still") };  // ?still: no arrival motion
+const ui = { tried: {}, trying: false, key: "", proof: null, groups: [], nodes: new Map(), edits: new Map(), real: null, now: null, editing: null, cartOnly: P.get("view") === "cart", played: P.has("still") };  // ?still: no arrival motion
 const LANE = { phone: 2, agent: 3, stores: 4 };
 const OPS = { ">=": "≥", "<=": "≤", "==": "=", ">": ">", "<": "<" };
 const ICON = {
@@ -76,7 +76,7 @@ function renderRows() {
   const strip = (lit) => `<span class="strip">${all.map((r) => `<i class="${lit(r) ? "on" : ""}"></i>`).join("")}</span>`;
   const cart = all.filter((r) => r.cart).length;
   q("#cover").innerHTML = `<button class="cv" id="cartview" aria-pressed="${ui.cartOnly}"><span>A signature over the cart covers</span><b>${cart} of ${all.length} rows</b>${strip((r) => r.cart)}</button>
-    <div class="cv"><span>This signature covers</span><b>${all.length} of ${all.length} rows</b>${strip(() => true)}</div>`;
+    <div class="cv"><span>${ui.proof.signed ? "This signature covers" : "A signature here will cover"}</span><b>${all.length} of ${all.length} rows</b>${strip(() => true)}</div>`;
 }
 
 // ---------- the fingerprint and the check ----------
@@ -92,8 +92,8 @@ function renderCheck() {
   const onPhone = real.signedFingerprint || real.fingerprint;  // the phone computes it from the same canonical text
   const same = r.fingerprint === onPhone;
   q("#codes").innerHTML = `<span class="code ${same ? "" : "off"}" title="${esc(r.fingerprint)}">${esc(short(r.fingerprint))}</span>
-    <span class="sum">${esc(p.summary.text)}</span>
-    <span class="phone">${ICON.phone}<span>${esc(who)}'s phone ${p.signed ? "showed" : "shows"} ${same ? "the same code" : `<code>${esc(short(onPhone))}</code>`}</span></span>`;
+    <span class="phone">${ICON.phone}<span>${esc(who)}'s phone ${p.signed ? "showed" : p.public_key ? "shows" : "will show"} ${same ? "the same code" : `<code>${esc(short(onPhone))}</code>`}</span></span>`;
+  q("#sum").textContent = p.summary.text;
   const restore = edited ? `<button class="link" id="restore">Restore</button>` : "";
   let html;
   if (!p.signature || !p.public_key) {
@@ -130,7 +130,58 @@ function commit(id, text) {
   recompute();
 }
 
-// ---------- 1. who holds what ----------
+// ---------- attempts without her: real requests to the real route, the server's own answers ----------
+// Every attempt is a POST to /api/issuer/request, the one route that can change a limit or make a cart. None carries
+// a signature her key made, so the server refuses each before anything changes; it writes a receipt for each refusal.
+const b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+function firstRule() {
+  const t = scan(ui.proof.canonical);
+  for (const ln of t.items.lines.items) for (const m of ln.items.limits.items) if (m.items.set_by.value === "issuer") return { id: m.items.id.value, value: m.items.bound.value, unit: m.items.unit.value };
+  return null;
+}
+function tries() {
+  const p = ui.proof, rule = firstRule(), lower = rule && Math.round(rule.value * 5 / 6);
+  return [
+    { id: "nosig", label: "Ask for carts with no signature", sent: "sign_sheet · no signature" },
+    { id: "newkey", label: "Sign with a key made in this browser", sent: "sign_sheet · a new P-256 key, never enrolled" },
+    { id: "replay", label: "Replay her signed request", sent: p.signature ? `the same bytes again · seq ${p.signature.seq}` : "no signed request in this run yet", off: !p.signature },
+    { id: "limit", label: "Change her limit from the laptop", sent: rule ? `set_limit ${rule.id} ${rule.value} → ${lower} ${rule.unit} · no signature` : "no limit of hers on this sheet", off: !rule, rule, lower },
+  ];
+}
+async function attempt(t) {
+  const p = ui.proof, enrolled = p.public_key && p.public_key.key_id;
+  const base = (type) => ({ type, sheet_id: p.sheet.id, seq: Date.now(), at: new Date().toISOString() });  // the phone's own layout
+  let body;
+  if (t.id === "nosig") body = { payload: JSON.stringify({ ...base("sign_sheet"), sheet_hash: p.sheet_hash }), key_id: enrolled || null };
+  if (t.id === "limit") body = { payload: JSON.stringify({ ...base("set_limit"), limit_id: t.rule.id, value: t.lower }), key_id: enrolled || null };
+  if (t.id === "replay") body = { payload: p.signature.payload, sig: p.signature.sig, key_id: p.signature.key_id };
+  if (t.id === "newkey") {
+    const pair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]);
+    const jwk = await crypto.subtle.exportKey("jwk", pair.publicKey);
+    const payload = JSON.stringify({ ...base("sign_sheet"), sheet_hash: p.sheet_hash });
+    const sig = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, pair.privateKey, new TextEncoder().encode(payload));
+    body = { payload, sig: b64u(sig), key_id: enrolled || hex(await sha256(jwk.x + "." + jwk.y)).slice(0, 16) };  // it claims to be her key
+  }
+  const res = await fetch("/api/issuer/request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  let answer = {};
+  try { answer = await res.json(); } catch (e) { answer = {}; }
+  ui.tried[t.id] = { status: res.status, error: answer.error, detail: answer.detail, through: res.ok || answer.ok === true, at: new Date() };
+  ui.key = "";
+  await load();
+}
+function renderTries() {
+  const p = ui.proof, n = p.refused.length;
+  q("#tries").innerHTML = `<div class="lead"><span>Try to get a cart without her.</span><span class="muted">The agent can read, search and compare. It cannot approve.</span><span class="grow"></span><span class="pill">${n} ${n === 1 ? "attempt" : "attempts"} refused in this run</span></div>` +
+    tries().map((t) => {
+      const r = ui.tried[t.id];
+      const got = !r ? "" : r.through
+        ? `<span class="got through">${r.status} · NOT refused: tell the integrator</span>`
+        : `<span class="got"><code>${r.status}</code><span>${esc(r.error || "")} · ${esc(r.detail || "")}</span><time>${r.at.toLocaleTimeString("en-GB")}</time></span>`;
+      return `<div class="try"><button data-try="${t.id}" ${t.off || ui.trying ? "disabled" : ""}>${esc(t.label)}</button><span class="sent">${esc(t.sent)}</span>${got}</div>`;
+    }).join("");
+}
+
+// ---------- who holds what ----------
 function renderLanes() {
   const p = ui.proof, who = p.approver.name || "the approver", carts = p.carts.length;
   const holds = (cls, icon, text) => `<span class="holds ${cls}">${icon}${esc(text)}</span>`;
@@ -167,7 +218,7 @@ async function load() {
   if (text === ui.key) return;
   const proof = JSON.parse(text);
   if (!ui.proof || proof.canonical !== ui.proof.canonical) { ui.edits.clear(); ui.editing = null; }  // a new sheet: the copy starts again
-  if (ui.proof && proof.events.length !== ui.proof.events.length) ui.played = false;
+  if (ui.proof && proof.events.length !== ui.proof.events.length && !P.has("still")) ui.played = false;
   ui.key = text;
   ui.proof = proof;
   ui.groups = build(proof);
@@ -177,11 +228,17 @@ async function load() {
     ui.preset = true;
     const [from, to] = preset.split("~");
     const hit = [...ui.nodes.keys()].find((id) => String(original(id)) === from);
-    if (hit !== undefined) { commit(hit, to); renderTop(); renderLanes(); return; }
+    if (hit !== undefined) { commit(hit, to); renderTop(); renderTries(); renderLanes(); return; }
   }
   renderTop();
+  renderTries();
   renderLanes();
   await recompute();
+  const run = P.get("try");  // ?try=nosig,newkey,replay,limit makes those attempts once, in order (for a link or a screenshot)
+  if (run && !ui.ran) {
+    ui.ran = true;
+    for (const id of run.split(",")) { const t = tries().find((x) => x.id === id); if (t && !t.off) await attempt(t); }
+  }
 }
 
 document.addEventListener("click", (e) => {
@@ -189,6 +246,12 @@ document.addEventListener("click", (e) => {
   if (val) { ui.editing = Number(val.dataset.id); renderRows(); }
   if (e.target.closest("#restore")) { ui.edits.clear(); ui.editing = null; recompute(); }
   if (e.target.closest("#cartview")) { ui.cartOnly = !ui.cartOnly; renderRows(); }
+  const tryButton = e.target.closest("[data-try]");
+  if (tryButton && !ui.trying) {
+    ui.trying = true;
+    attempt(tries().find((t) => t.id === tryButton.dataset.try)).catch((error) => { ui.tried[tryButton.dataset.try] = { status: "no answer", error: String(error), through: false, at: new Date() }; })
+      .finally(() => { ui.trying = false; renderTries(); });
+  }
 });
 document.addEventListener("keydown", (e) => {
   if (!e.target.matches("#rows input")) return;

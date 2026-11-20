@@ -55,7 +55,7 @@ function html() {
   if (!data.rows.length || !data.columns.length) return head + `<div class="lm"><span class="faint">no outbound records</span></div>`;
   const cols = `grid-template-columns: minmax(17rem, 1.6fr) repeat(${data.columns.length}, minmax(6rem, 1fr));`;
   const header = `<div class="lr hd" style="${cols}"><span></span>${data.columns.map((c) => `<span class="lcol" title="${esc(c.members.join(", "))}"><b>${esc(c.label)}</b><i>${esc(c.kind)} · ${c.payloads}</i></span>`).join("")}</div>`;
-  const rows = data.rows.map((r) => `<div class="lr" style="${cols}"><span class="lrow">${dot(r.owner)}<b>${esc(r.label)}</b><i>${esc(r.example)}</i></span>${data.columns.map((c) => cellHtml(r, c, data.cells[r.id][c.id])).join("")}</div>`).join("");
+  const rows = data.rows.map((r) => `<div class="lr" style="${cols}"><span class="lrow" title="${esc(r.travel || "")}">${dot(r.owner)}<b>${esc(r.label)}</b><i>${esc(r.example)}</i></span>${data.columns.map((c) => cellHtml(r, c, data.cells[r.id][c.id])).join("")}</div>`).join("");
   return `${head}<div class="lm">${header}${rows}</div>${detail()}`;
 }
 
