@@ -115,14 +115,16 @@ function marked(text, quote) {
   return i < 0 ? esc(t) : `${esc(t.slice(0, i))}<mark>${esc(q)}</mark>${esc(t.slice(i + q.length))}`;
 }
 
-function itemHtml(it) {
+function itemHtml(it, e) {
   const src = it.link ? `<a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.source || "source")}</a>` : esc(it.source || "");
   const meta = [it.about ? esc(it.about) : "", src, esc(it.price || ""), it.by ? "read by " + esc(String(it.by).split(":").pop()) : "",
     it.bytes != null ? `${it.bytes} bytes` : "", (it.facts || []).map((f) => esc(f.replace(/_/g, " "))).join(", ")].filter(Boolean).join(" · ");
   const status = it.status ? ` <span class="g">· ${esc(it.status)}</span>` : "";
-  return `<div class="it">${it.title ? `<div class="ti">${esc(it.title)}${status}</div>` : ""}
-    ${it.quote ? `<q>${esc(it.quote)}</q>` : ""}${meta ? `<div class="meta">${meta}</div>` : ""}
-    ${it.hash ? `<code title="SHA-256">${esc(it.hash)}</code>` : ""}</div>`;
+  const title = it.title && it.title.toLowerCase() !== e.label.toLowerCase() ? `<div class="ti">${esc(it.title)}${status}</div>` : "";
+  const hashes = [["hash", it.hash], ["previous", it.prev_hash], ["request", it.body_hash]].filter(([, v]) => v)
+    .map(([k, v]) => `<span>${k}</span><code>${esc(v)}</code>`).join("");
+  return `<div class="it">${title}${it.quote ? `<q>${esc(it.quote)}</q>` : ""}${meta ? `<div class="meta">${meta}</div>` : ""}
+    ${hashes ? `<div class="hashes" title="SHA-256">${hashes}</div>` : ""}</div>`;
 }
 
 /** The receipt before and after an event: by number for a receipt, by time for anything else with a time. */
@@ -151,14 +153,15 @@ function renderSheet() {
   const facts = [
     ["when", [clock(e.at), e.end_at ? "to " + clock(e.end_at) : "", dur(e.duration_ms)].filter(Boolean).join(" · ")],
     ["from", e.lane === e.to_lane ? lane(e.lane) : `${lane(e.lane)}, to ${lane(e.to_lane)}`],
-    ["records", String(records(e)) + (e.verified_count != null && e.proof ? ` · ${e.verified_count} ${e.proof}` : "")],
+    ["records", String(records(e))],
+    ["checked", e.verified_count != null && e.proof ? `${e.verified_count} of ${e.source === "receipt" ? 1 : records(e)} · ${e.proof}` : ""],
     ["ref", e.ref || ""],
   ].filter(([, v]) => v).map(([k, v]) => `<span>${k}</span><div>${esc(v)}</div>`).join("");
   el.innerHTML = `<div class="cap">${icon(e.stopped ? "stop" : e.kind)}${cap(e.kind)} · ${esc(step.label || "")}<button class="x" data-close aria-label="Close">${CROSS}</button></div>
     <h2 class="${e.stopped ? "stop" : ""}">${esc(e.label)}</h2>
     ${e.detail ? `<p class="detail">${esc(e.detail)}</p>` : ""}
     <div class="facts">${facts}</div>
-    <div class="items">${e.items.map(itemHtml).join("")}</div>
+    <div class="items">${e.items.map((it) => itemHtml(it, e)).join("")}</div>
     ${e.more ? `<div class="more">and ${e.more} more</div>` : ""}
     ${nearHtml(e)}`;
 }

@@ -175,12 +175,12 @@ def _atoms(src: dict) -> list:
                 "order sentences", detail=o.get("title") or "", ref=f.get("doc"), source="order", facts=["order"],
                 group=("order_sentence",), verified=_yes(f.get("span_found_in_text")), proof="quoted in the order",
                 item={"title": line.get("need") or "", "quote": f.get("quote") or "", "source": f.get("doc")})
-            value = _span(None, None, f.get("value")) or ((f.get("measurement") or {}).get("label") or "")
+            value = " ".join(x for x in (_span(None, None, f.get("value")), f.get("unit") or lim.get("unit") or "") if x) \
+                if f.get("value") is not None else "(%s)" % ((f.get("measurement") or {}).get("label") or "a measurement")
             add(o.get("derived_at"), "list_read", "reading", "limit", "reader", "agent", "limit read", "limits read",
                 detail=str(f.get("extractor") or "").split(":")[-1], source="order", group=("order_limit",),
                 verified=_yes(f.get("matches")), proof="match the sheet",
-                item={"title": " ".join(x for x in (lim.get("label") or lim.get("name") or "", value,
-                                                    f.get("unit") or lim.get("unit") or "") if x),
+                item={"title": " ".join(x for x in (lim.get("label") or lim.get("name") or "", value) if x),
                       "quote": f.get("quote") or "", "about": line.get("need") or "", "by": f.get("extractor")})
 
     # per line: pages and answers from the stores (evidence), figures (reading), comparisons and the pick (check)
@@ -338,7 +338,8 @@ def _atoms(src: dict) -> list:
 
 def _events(atoms: list) -> list:
     """Atoms in time order (those without a time after them). An atom with no step of its own takes the step in
-    progress at its time (`own_step` false: it happened during the step, and its time is not counted as the step's). Atoms that share a `group` and a step, and follow each other within GAP_S, are one event."""
+    progress at its time (`own_step` false: it happened during the step; such records of one kind are one event per
+    step however far apart, and their span is not a duration). Atoms that share a `group` and a step, and follow each other within GAP_S, are one event."""
     timed = sorted((a for a in atoms if a["t"] is not None), key=lambda a: a["t"])
     current = STEP_IDS[0]
     for a in timed:
@@ -352,7 +353,7 @@ def _events(atoms: list) -> list:
         items = a.pop("items", None) or [a["item"]]
         key = (a["group"], a["step"]) if a["group"] else None
         g = open_groups.get(key) if key else None
-        if g is not None and (a["t"] is None or g["_last"] is None or a["t"] - g["_last"] <= GAP_S):
+        if g is not None and (a["t"] is None or g["_last"] is None or not g["own_step"] or a["t"] - g["_last"] <= GAP_S):
             g["count"] += a["units"]
             g["_last"] = a["t"] if a["t"] is not None else g["_last"]
             g["_items"].extend(items)
@@ -371,7 +372,7 @@ def _events(atoms: list) -> list:
         seen, items, one, many, last = e.pop("_verified"), e.pop("_items"), e.pop("_one"), e.pop("_many"), e.pop("_last")
         t = e.pop("t")
         spans = t is not None and last is not None and last > t
-        if e["duration_ms"] is None and spans:
+        if e["duration_ms"] is None and spans and e["own_step"]:
             e["duration_ms"] = int(round((last - t) * 1000))
         first = items[0] if items else {}
         out.append({"n": n, "at": _iso(t) if t is not None else None, "end_at": _iso(last) if spans else None,
