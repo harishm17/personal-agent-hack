@@ -63,7 +63,7 @@ def test_the_route_refuses_and_the_product_key_stays_struck():
     ("what should the capacity limit be?", "suggest_limit"),
 ])
 def test_plain_requests_for_a_change_are_spotted_by_code(text, intent):
-    assert chat.spot(text) == intent
+    assert chat.spot(text, state.get_state()["sheet"]) == intent
     out = chat.say(text)
     assert out["refused"] is True and out["state_unchanged"] is True and "Dana" in out["reply"]
 
@@ -71,7 +71,7 @@ def test_plain_requests_for_a_change_are_spotted_by_code(text, intent):
 @pytest.mark.parametrize("text", ["why is the shower chair from store a picked?", "what does the store state about returns?",
                                   "how much is the total?", "which lines are still open?"])
 def test_questions_are_not_refused_by_the_word_check(text):
-    assert chat.spot(text) is None
+    assert chat.spot(text, state.get_state()["sheet"]) is None
 
 
 def test_a_roundabout_request_is_refused_on_the_models_intent_with_codes_words(monkeypatch):
