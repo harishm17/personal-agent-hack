@@ -84,11 +84,7 @@ def test_the_first_load_of_a_sheet_that_declares_units_equals_every_later_load(b
     if not (ROOT / "sheets" / "sheet3.json").exists() or not any((ROOT / "data" / "sheet3" / "pool").glob("*.json")):
         pytest.skip("sheet 3 is not in this checkout")
     from signoff.engine import rules
-    declared = json.loads((ROOT / "sheets" / "sheet3.json").read_text()).get("units") or {}
-    for name in declared:  # as in a fresh process: nothing declared yet
-        for spelling in rules.DECLARED.pop(name, []):
-            rules.ALIASES.pop(spelling, None)
-        rules.FAMILY.pop(name, None)
+    rules.declare_units({})  # as in a fresh process: nothing declared yet
     first = state.use_sheet("sheet3")
     again = state.reset()
     key = lambda s: (s["sheet_hash"], s["total_cents"], s["counts"], s["two_readers"]["strict_mode_measured"])  # noqa: E731

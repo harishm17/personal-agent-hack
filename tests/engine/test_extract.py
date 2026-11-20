@@ -222,11 +222,10 @@ def test_a_sheet_declares_its_own_units_and_no_code_names_them():
                              "quote": "Volume limiting: Yes (85 dB). Unlimited mode plays at 95 dB"}, page, "any", target_unit="dB")
         assert (both["low"], both["high"], both["unit"]) == (85, 95, "dB")
         assert [n["family"] for n in spans.quote_numbers("85 dB and 20 hours and 15 mph")] == ["dB", "other unit", "mph"]
+        rules.declare_units({"units": {"qtx": ["qtx"]}})  # another sheet: the first one's units are gone
+        assert rules.unit_name("decibels") is None and rules.unit_name("qtx") == "qtx" and rules.unit_name("lbs") == "lb"
     finally:
-        for name in sheet["units"]:
-            for spelling in rules.DECLARED.pop(name, []):
-                rules.ALIASES.pop(spelling, None)
-            rules.FAMILY.pop(name, None)
+        rules.declare_units({})
 
 
 def test_a_grade_number_and_a_number_joined_to_a_word_are_not_rival_quantities():
