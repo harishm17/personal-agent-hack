@@ -431,3 +431,35 @@ design partner; personalagentprotocol.org).
   sells the same toilet as T0338W (12 in rough-in, $299) and T0338W-10 (10 in, $349).
 - **The audit trail gets its own stream, TRAIL** (`streams/TRAIL.md`): `/trail/`, the run as a sequence
   diagram drawn from the receipt chain, the outbound ledger and the other real records.
+
+## Amendment 13:10 — the audit: we were over-restricting. Three general rules replace it
+An independent reviewer read all 47 `not_stated` candidates and all 20 `unsure` figures of sheet 1 against
+the store text. **In 28 of 47 the "missing" figure is on the page**; only 19 pages truly lack it. All 20
+unsure figures are real statements with the right number. One `outside` of 8 read is wrong. Three picks
+change. The quote check itself is sound (188 of 188 quotes found; no wrong number in anything read). So
+the headline "N pages never state the figure" was mostly our own strictness, and it is withdrawn until
+re-measured. Causes: an unsure figure was treated as absent; the reader's prompt demanded an "exact
+measure"; only the cheapest option of a product was read; an adjustable range had to contain the bound.
+The fix is general, with no rule for any product, format or store (the builder: no overfitting):
+1. **Every value the page states is tested.** A figure may carry several stated values (a spread, two
+   mentions, an unclear label). If every one passes the limit, the candidate is inside on that limit; if
+   every one fails, outside; if they differ, it is `unclear` ("page states both"), a status of its own.
+   `unsure` no longer means absent.
+2. **Every option on sale is judged.** A product is read once per in-stock option, the option's name
+   being part of the text ("Selected option: 18 Inch"); each option is its own candidate with its own
+   price and variant id; the pick is the cheapest candidate that passes. STORE's pool carries every
+   in-stock option.
+3. **A limit is compared as written.** "At least" and "at most" pass when a stated setting or value
+   meets them (an adjustable seat that can reach 19 in passes "must reach at least 19 in"); only an
+   equality or "fits" needs the exact figure. The comparison comes from the order's own sentence.
+Also: a number with a label and no unit is `unclear` ("no unit stated"), not absent. Figure meanings live
+in the sheet (`figures`), in the order's own words; the reader's built-in glossary goes. Statuses of a
+candidate are now `inside`, `outside`, `unclear`, `not_stated`, `struck`. The three counts are shown
+separately: truly absent, stated but unclear, outside. Store agents answered "does not specify" for
+pages that do state the figure, so "the store's agent" is used for delivery and returns only.
+Removed as fitted to today's examples: the planted page's wording in the scan prompt and pattern; the
+brand list in `store/build_pool.py`; per-product-type word lists and the hard-coded question in
+`store/sheet2.py`; every hard-coded `sheet1` path (one path rule for all sheets); the fixture fallbacks
+in `signoff/app.py` and `extract/run.py`. "168 of 168 agreement" is not shown.
+After the three rules: both sheets are re-read and re-counted, and the integrator reads a sample of
+`not_stated` and `unclear` by hand before any count is said aloud.
