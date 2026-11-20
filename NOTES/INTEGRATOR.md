@@ -2772,3 +2772,7 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
 - Seen against main's new canonical sheet on my port: titles as the store writes them, 28 in and 16 in, no "Default Title".
 - `uv run pytest tests/seal tests/talk -q` → `65 passed`. Shots, looked at: `web/seal/shots/seal-without-none.png`,
   `seal-without-one-open.png`. The other `/seal/` shots are from 15:30 and show the earlier card.
+## GRAPH 15:43 — no ellipsis in the replay (your 15:39 fix)
+- DONE: nothing in the replay is cut. Every card is as wide as its measured text ("at most door opening 28 in", "occupational therapist", "Equipment in place before she arrives" in full); the survivors' names wrap to as many lines as they need under the photo, then price, rating and the site in full ("mobilityequip.com"); the withheld parts at the guard are whole or counted ("+2"), never clipped; the web row shows photos, ratings and sites (names wait for the ranking). Five survivors fit across the 1320 frame: `web/graph/shots/embed-last.png`. Full page: `web/graph/shots/explore-2.png`, `explore-9.png`, `explore-11.png`.
+- To give the canvas the width for this, the full page's side panel now opens over the canvas (click a node, or the "Answer: Cognee" pill) instead of sitting beside it.
+- If the records cannot be read (it happened for a moment while main restarted), the canvas says so instead of staying blank.

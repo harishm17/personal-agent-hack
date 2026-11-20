@@ -9,9 +9,29 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<
 const ownerClass = (o) => (o === "issuer" || o === "shopper" ? o : o === "system" || o === "web" ? "" : "store");
 const short = (s, n) => (String(s || "").length > n ? String(s).slice(0, n - 1).trimEnd() + "…" : String(s || ""));
 const clock = (at) => (at ? String(at).slice(11, 16) : "");
-const FW = px(180);                                                // a fact quoted from a message is a wider card
-const GW = px(244);                                                // the one node that stands for everything recalled
-const boxW = (n) => (n.group ? GW : n.kind === "context_fact" || n.kind === "event" ? FW : CW);
+const INK = document.createElement("canvas").getContext("2d");
+const FACE = getComputedStyle(document.documentElement).getPropertyValue("--f") || "system-ui, sans-serif";
+/** The width a text takes at a size (in the design's px) and weight, with a little room to spare. */
+function wide(text, size, weight = 400) { INK.font = `${weight} ${px(size)}px ${FACE}`; return INK.measureText(String(text ?? "")).width * 1.05; }
+/** Whole words onto as many lines as it takes for each to fit `max`; a word is never broken or cut. */
+function wrap(text, size, weight, max) {
+  const lines = [];
+  for (const word of String(text ?? "").split(/\s+/).filter(Boolean)) {
+    const last = lines[lines.length - 1];
+    if (last != null && wide(last + " " + word, size, weight) <= max) lines[lines.length - 1] = last + " " + word;
+    else lines.push(word);
+  }
+  return lines;
+}
+const WIDTHS = new Map();
+/** A card is as wide as its words need. */
+function boxW(n) {
+  if (!WIDTHS.has(n.id)) {
+    const one = n.kind === "store" || !n.sub;
+    WIDTHS.set(n.id, Math.max(px(112), Math.max(wide(n.label, 13, 500), one ? 0 : wide(n.sub, 12)) + px(32)));
+  }
+  return WIDTHS.get(n.id);
+}
 const REASONS = ["outside", "unclear", "not stated", "struck", "struck before"];
 
 let X = null;      // the mounted exploration: data, elements, current stage and positions
@@ -36,8 +56,10 @@ function plan(k) {
   S.forEach((s, i) => s.node_ids_set_aside.forEach((id) => asideAt.set(id, i)));
   const P = new Map(), lines = [], texts = [];
   let leftBottom = 2 * (CH + px(22));
-  const put = (id, x, y, more = {}) => P.set(id, { x, y, ...more, o: (added.get(id) ?? 0) <= k ? more.o ?? 1 : 0 });
-  const GAP = px(22), XI = CW + GAP, XS = XI + CW + GAP, PX0 = XS + CW + px(22), YROW = H * 0.57, YB = H * 0.77;
+  const put = (id, x, y, more = {}) => P.set(id, { x, y, w: nodes.has(id) && nodes.get(id).kind !== "product" ? boxW(nodes.get(id)) : undefined, ...more, o: (added.get(id) ?? 0) <= k ? more.o ?? 1 : 0 });
+  const GAP = px(22), wOf = (kinds) => Math.max(px(112), ...data.nodes.filter((n) => kinds.includes(n.kind)).map(boxW));
+  const XI = wOf(["person", "event", "context_person"]) + GAP, XS = XI + wOf(["order_item", "home_fact", "sheet_value", "context_message"]) + GAP;
+  const PX0 = XS + wOf(["store", "web"]) + px(22), YROW = H * 0.57, YB = H * 0.77, FW = wOf(["context_fact"]);
 
   // the order: who, the item, the measurement
   const people = data.nodes.filter((n) => n.kind === "person");
@@ -55,8 +77,9 @@ function plan(k) {
     around.forEach((n, i) => put(n.id, 0, CH + px(26) + i * (CH + px(10))));
     notes.forEach((n, i) => put(n.id, XI, i * (CH + px(10))));
     const fy = new Map();
-    known.forEach((n, i) => { fy.set(n.id, i * (CH + px(6))); put(n.id, XS, fy.get(n.id), { w: FW, o: k >= iOrder && !n.used ? 0.4 : 1 }); });
-    const XD = XS + FW + px(150), XE = XD + CW + px(18);
+    known.forEach((n, i) => { fy.set(n.id, i * (CH + px(6))); put(n.id, XS, fy.get(n.id), { o: k >= iOrder && !n.used ? 0.4 : 1 }); });
+    const verbs = data.edges.filter((e) => e.feeds).map((e) => wide(e.verb + " ✓", 12));
+    const XD = XS + FW + Math.max(px(120), ...verbs) + px(28), XE = XD + wOf(["person"]) + px(18);
     const want = (id) => { const ys = data.edges.filter((e) => e.feeds && e.to === id).map((e) => fy.get(e.from)); return ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : null; };
     const issuer = people.find((n) => n.id === "person:issuer"), shopper = people.find((n) => n.id === "person:shopper");
     [item, ...limits].forEach((n, i) => put(n.id, XE, i * (CH + px(8))));          // prescribed: the order and its rules
@@ -86,14 +109,15 @@ function plan(k) {
     leftBottom = yD + ROW;
     if (data.sources?.supplied && supplied.length) texts.push({ x: XI, y: yS - px(7), cls: "src", html: esc(data.sources.supplied) });
     // the rules, above the products
-    limits.forEach((n, i) => put(n.id, PX0 + i * (CW + px(56)), 0));
+    let lx = PX0;
+    limits.forEach((n) => { put(n.id, lx, 0); lx += boxW(n) + px(24); });
     // the event's people, messages and facts fold back into it
     [...around, ...notes, ...known].forEach((n) => put(n.id, 0, 0, { o: 0, w: boxW(n) }));
   }
   // what it already knows: one node for all of it, and on their own only the few that bear on this item's pick
   const memories = data.nodes.filter((n) => n.kind === "memory");
   const own = memories.filter((n) => n.own), all = memories.find((n) => n.group);
-  if (all) put(all.id, 0, leftBottom + px(4), { w: GW });
+  if (all) put(all.id, 0, leftBottom + px(4));
   own.forEach((n, i) => put(n.id, 0, leftBottom + px(4) + (i + (all ? 1 : 0)) * (CH + px(6))));
   memories.filter((n) => !n.own && !n.group).forEach((n) => put(n.id, 0, leftBottom + px(4), { o: 0 }));
 
@@ -145,17 +169,19 @@ function plan(k) {
   const searched = reviews.map((r) => r.product);
   const order = iRank >= 0 ? S[iRank].order : [];
   const webbed = iWeb >= 0 && k >= iWeb;
-  const RBIG = px(36), GS = 1.15, CY = H * 0.47;
-  const gateX = W - CW * GS - px(2), leftEdge = XI + CW + px(26), head = gateX - px(40) - RBIG;
+  const RBIG = px(36), GS = 1.15, CY = H * 0.34;
+  const gateW = nodes.has("gate") ? boxW(nodes.get("gate")) * GS : 0;
+  const gateX = W - gateW - px(2), leftEdge = XS + px(40), head = gateX - px(52) - RBIG;
   let TOP = Math.min(5, order.length);
-  while (TOP > 2 && (head - leftEdge - RBIG) / (TOP - 1) < px(104)) TOP -= 1;
+  while (TOP > 2 && (head - leftEdge - RBIG) / (TOP - 1) < px(132)) TOP -= 1;
   const big = new Set(ranked ? order.slice(0, TOP) : webbed ? searched : []);
   const linePos = new Map();
   if (ranked) {
     const n = TOP, step = n > 1 ? Math.min(px(170), (head - leftEdge - RBIG) / (n - 1)) : 0;
     order.slice(0, TOP).forEach((id, i) => linePos.set(id, { x: head - i * step, y: CY }));
     // the rest that pass, in order, in a quiet block under them
-    const tail = order.slice(TOP), trows = 2, tsp = px(18), ty = CY + RBIG + px(100);
+    const tail = order.slice(TOP), trows = 2, tsp = px(18), named0 = order.slice(0, TOP).map((id) => wrap(nodes.get(id).label, 14, 600, (TOP > 1 ? step : px(200)) - px(14)).length);
+    const ty = CY + RBIG + px(32) + Math.max(1, ...named0) * px(17) + px(88);
     tail.forEach((id, i) => linePos.set(id, { x: leftEdge + px(8) + Math.floor(i / trows) * tsp, y: ty + (i % trows) * tsp }));
     if (tail.length) texts.push({ x: leftEdge + px(8) + Math.ceil(tail.length / trows) * tsp + px(6), y: ty + px(13), cls: "gs", html: `${tail.length} more that pass` });
   } else if (webbed) {
@@ -165,9 +191,9 @@ function plan(k) {
 
   if (asking) {
     const LANE = px(24), MW = px(84), RW = px(64), xp = PX0 + RB, spine = xp + RB + px(10), xm = spine + px(10);
-    const storeX = W - CW, xr2 = storeX - RW - px(36), xg = (xm + MW + xr2) / 2;
-    const room = xg - (xm + MW), shown = Math.max(1, Math.floor((2 * room - px(34)) / px(70)));   // how many withheld parts fit on the line
-    let ly = YROW - px(46), kept = 0;
+    const storeX = W - wOf(["store"]), xr2 = storeX - RW - px(36), xg = (xm + MW + xr2) / 2;
+    const room = xg - (xm + MW);
+    let ly = YROW - px(46), kept = 0, landed = 0;
     const top = ly;
     for (const pid of S[iAsk].row || []) {
       const mine = data.nodes.filter((n) => n.kind === "message" && n.product === pid);
@@ -178,10 +204,12 @@ function plan(k) {
       lines.push({ raw: [xp + RB, cy, spine, cy], cls: "" }, { raw: [spine, ly + px(9), spine, ly + (mine.length - 1) * LANE + px(9)], cls: "" });
       for (const m of mine) {
         const y9 = ly + px(9), chips = m.removed || [];
+        let shown = chips.length;                                   // as many whole parts as fit on the line, never a cut one
+        while (shown > 1 && wide(chips.slice(0, shown).map((c) => c.text).join(" · ") + " +9", 12, 500) > 2 * room - px(16)) shown -= 1;
         P.set(m.id, { x: xm, y: ly, o: 1, w: MW, h: px(18) });
         lines.push({ raw: [spine, y9, xm, y9], cls: "" }, { raw: [xm + MW, y9, xg, y9], cls: m.stopped ? "fails" : "lit" });
         // what the guard withheld sits on the guard line, struck
-        if (chips.length) texts.push({ x: xg, y: y9 + px(3.5), cls: "chip on mid", html: chips.slice(0, shown).map((c) => esc(short(c.text, 9))).join(" · ") + (chips.length > shown ? ` +${chips.length - shown}` : "") });
+        if (chips.length) texts.push({ x: xg, y: y9 + px(3.5), cls: "chip on mid", at: BEAT.chips + landed++ * BEAT.chip, html: chips.slice(0, shown).map((c) => esc(c.text)).join(" · ") + (chips.length > shown ? ` +${chips.length - shown}` : "") });
         const r = data.nodes.find((n) => n.kind === "reply" && n.message === m.id);
         if (r) {
           P.set(r.id, { x: xr2, y: ly, o: 1, w: RW, h: px(18) });
@@ -202,7 +230,7 @@ function plan(k) {
   for (const p of products) {
     const h = home.get(p.id), born = k >= iSearch, gone = asidePos.get(p.id), line = linePos.get(p.id);
     const src = P.get(h.store);
-    const where = !born ? { x: src.x + CW / 2, y: src.y + CH / 2 } : gone || line || h;
+    const where = !born ? { x: src.x + src.w / 2, y: src.y + CH / 2 } : gone || line || h;
     P.set(p.id, { ...where, o: born ? (gone ? 0.75 : 1) : 0, r: gone ? (gone.quiet ? RQ : RS) : big.has(p.id) ? (ranked ? RBIG : RB) : ranked ? px(8) : R,
       big: big.has(p.id) && !gone, aside: !!gone, dashed: k >= iRead && (S[iRead]?.not_stated || []).includes(p.id),
       read: k >= iRead, pick: ranked && p.picked, checked: limits.filter((l) => { const i = S.findIndex((x) => x.limit === l.id); return i >= 0 && i <= k; }).map((l) => l.id) });
@@ -210,10 +238,10 @@ function plan(k) {
   if (web) put(web.id, XS, YROW - CH / 2, ranked ? { o: 0 } : {});
   reviews.forEach((r) => {
     const p = P.get(r.product);
-    P.set(r.id, { x: p.x - px(36), y: p.y + p.r + px(ranked ? 12 : 9), o: (added.get(r.id) ?? 99) <= k && p.big && !asking ? 1 : 0, pill: true });
+    P.set(r.id, { x: p.x - reviewW(r) / 2, y: p.y + p.r + px(10), w: reviewW(r), h: px(18), o: (added.get(r.id) ?? 99) <= k && p.big && !asking ? 1 : 0, pill: true });
   });
   // the gate, and the cart beyond it
-  if (nodes.has("gate")) put("gate", gateX, CY - (CH * GS) / 2, { gate: true, s: GS, w: CW * GS, h: CH * GS });
+  if (nodes.has("gate")) put("gate", gateX, CY - (CH * GS) / 2, { gate: true, s: GS, w: gateW, h: CH * GS });
   data.nodes.filter((n) => n.kind === "cart").forEach((n, i) => put(n.id, gateX, CY + CH * GS + px(14) + i * (CH + px(8))));
 
   // the lines of this stage
@@ -221,7 +249,7 @@ function plan(k) {
   const card = (a, b, cls = "", label = "") => { if (vis(a) && vis(b)) lines.push({ a, b, cls, label, card: true }); };
   for (const e of data.edges) {
     if (e.feeds) { if (k >= iOrder && vis(e.from) && vis(e.to)) lines.push({ a: e.from, b: e.to, card: true, cls: e.matches === false ? "fails" : "lit",
-      label: short(e.verb, 22) + (e.matches === true ? " ✓" : e.matches === false ? " ✕" : ""), lt: nodes.get(e.to)?.kind === "person" ? 0.5 : 0.25 }); }
+      label: e.verb + (e.matches === true ? " ✓" : e.matches === false ? " ✕" : ""), lt: nodes.get(e.to)?.kind === "person" ? 0.5 : 0.3 }); }
     else if (e.verb === "says") card(e.from, e.to, "", "");
     else if (e.verb === "wrote" && nodes.get(e.to)?.kind === "context_message") { if (nodes.get(e.from)?.kind === "context_person") card(e.from, e.to, "", ""); }
     else if (e.prescribed) { if (eventPhase) card(e.from, e.to, "", ""); }
@@ -245,25 +273,39 @@ function plan(k) {
       const i = asideAt.get(p.id);
       if (i != null && i < k) continue;
       const v = p.checks[stage.limit.replace(/^limit:/, "")];
-      lines.push({ a: stage.limit, b: p.id, cls: "ray " + (i === k ? (v === "fail" ? "fails" : "none") : "passes"), fromCardBottom: true });
+      const cls = i === k ? (v === "fail" ? "fails" : "none") : "passes";
+      lines.push({ a: stage.limit, b: p.id, cls: "ray " + cls, fromCardBottom: true, at: BEAT.rays, op: cls === "fails" ? 0.7 : cls === "passes" ? 0.3 : 0.55 });
     }
   }
   if (ranked) {
-    order.slice(0, TOP).forEach((id) => {
+    const room = (TOP > 1 ? Math.abs(P.get(order[0]).x - P.get(order[1]).x) : px(200)) - px(14), LH = px(17);
+    const named = order.slice(0, TOP).map((id) => ({ id, lines: wrap(nodes.get(id).label, 14, 600, room) }));
+    const most = Math.max(1, ...named.map((x) => x.lines.length));
+    named.forEach(({ id, lines }) => {
       const n = nodes.get(id), p = P.get(id);
-      const room = order.length > 1 ? Math.abs(P.get(order[0]).x - P.get(order[1]).x) : px(170);
-      texts.push({ x: p.x, y: p.y - p.r - px(24), cls: "pn big mid", html: esc(short(n.label, Math.max(8, Math.min(20, Math.floor(room / px(8.8)))))) });
-      texts.push({ x: p.x, y: p.y - p.r - px(8), cls: "pp big mid", html: esc((n.sub || "").split(" · ")[0]) + (n.picked ? " · the pick" : "") });
+      lines.forEach((t, i) => texts.push({ x: p.x, y: p.y + p.r + px(20) + i * LH, cls: "pn big mid", html: esc(t) }));
+      texts.push({ x: p.x, y: p.y + p.r + px(22) + most * LH, cls: "pp big mid", html: esc((n.sub || "").split(" · ")[0]) + (n.picked ? " · the pick" : "") });
+      const r = reviews.find((x) => x.product === id);
+      if (r && P.get(r.id)) Object.assign(P.get(r.id), { x: p.x - reviewW(r) / 2, y: p.y + p.r + px(32) + most * LH });
     });
-  } else if (webbed) {
-    const fit = Math.max(6, Math.floor(Math.min(px(120), (W - PX0 - px(6)) / Math.max(1, searched.length)) / px(7.4)));
-    searched.forEach((id) => { const p = P.get(id); if (p.big) texts.push({ x: p.x, y: p.y - RB - px(7), cls: "pn mid", html: esc(short(nodes.get(id).label, fit)) }); });
+    X.rankedBottom = CY + RBIG + px(32) + most * LH + px(52);
   }
-  if (asking) (S[iAsk].row || []).forEach((id) => { const p = P.get(id); texts.push({ x: p.x + RB, y: p.y + RB + px(14), cls: "pn end", html: esc(short(nodes.get(id).label, 16)) }); });
+  if (asking) (S[iAsk].row || []).forEach((id) => { const p = P.get(id); wrap(nodes.get(id).label, 13, 500, px(170)).forEach((t, i) => texts.push({ x: p.x + RB, y: p.y + RB + px(16) + i * px(16), cls: "pn end", html: esc(t) })); });
   return { P, lines, texts };
 }
 
 // ---------- drawing ----------
+function reviewSays(n) {
+  // only the parts the record has: "4.8 ★ · 28 reviews", "4.8 ★", or "a review" when it is one quoted sentence
+  const parts = [n.rating != null ? `${n.rating} ★` : "", n.review_count != null ? `${n.review_count} ${n.review_count === 1 ? "review" : "reviews"}` : ""].filter(Boolean);
+  return parts.length ? parts.join(" · ") : "a review";
+}
+function reviewWhere(n) {
+  const product = X.data.nodes.find((p) => p.id === n.product), site = n.sub || "";
+  return product && site && site === product.owner ? ["on the seller's", "own page"] : site ? ["reviews on", site] : [];
+}
+const reviewW = (n) => Math.max(px(72), wide(reviewSays(n), 12, 500) + px(22));
+
 function thumb(url) {
   // ask the image host for a small copy; a host that does not know the parameter ignores it
   try { const u = new URL(url); u.searchParams.set("width", "240"); return u.href; } catch (e) { return url; }
@@ -273,17 +315,20 @@ function glyph(n) {
   if (n.kind === "product") {
     // a product is its photo; with no photo, a plain tile carrying the first word of its name
     const img = n.image_url ? `<image class="ph" href="${esc(thumb(n.image_url))}" preserveAspectRatio="xMidYMid slice"/>` : "";
-    return `<title>${esc(n.label)} · ${esc(n.sub || "")}</title><rect class="c"/><text class="tw mid">${esc(short(String(n.label || "").split(/\s+/)[0], 4))}</text>${img}<rect class="bd"/><rect class="ring"/><circle class="q q0"/><circle class="q q1"/>`;
+    return `<title>${esc(n.label)} · ${esc(n.sub || "")}</title><rect class="c"/><text class="tw mid">${esc(String(n.label || "").split(/\s+/)[0].slice(0, 4))}</text>${img}<rect class="bd"/><rect class="ring"/><circle class="q q0"/><circle class="q q1"/>`;
   }
   const one = n.kind === "store" || !n.sub;                           // a store's card needs no second line
   const dot = n.kind === "web" || n.kind === "review" ? "" : `<circle class="od ${ownerClass(n.owner)}" cx="${px(11)}" cy="${one ? CH / 2 : px(13.5)}" r="${px(3)}"/>`;
   const tx = dot ? px(20) : px(10);
   if (n.kind === "message") return `<title>${esc(n.sub || "")}</title><rect class="b pill${n.stopped ? " stopped" : ""}" width="${px(84)}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${px(42)}" y="${px(12.5)}">${esc(n.label)}</text>`;
   if (n.kind === "reply") return `<title>${esc(n.sub || "")}</title><rect class="b pill" width="${px(64)}" height="${px(18)}" rx="${px(9)}"/><circle class="od store" cx="${px(12)}" cy="${px(9)}" r="${px(3)}"/><text class="l" x="${px(21)}" y="${px(12.5)}">reply</text>`;
-  if (n.kind === "review") return `<rect class="b pill" width="${px(72)}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${px(36)}" y="${px(12.5)}">${esc(short(n.label, 11))}</text><text class="s mid" x="${px(36)}" y="${px(32)}">${esc(short(n.sub, 15))}</text>`;
+  if (n.kind === "review") {
+    const w = reviewW(n), where = reviewWhere(n);
+    return `<rect class="b pill" width="${w}" height="${px(18)}" rx="${px(9)}"/><text class="l mid" x="${w / 2}" y="${px(12.5)}">${esc(reviewSays(n))}</text>${where.map((t, i) => `<text class="s mid" x="${w / 2}" y="${px(33) + i * px(14)}">${esc(t)}</text>`).join("")}`;
+  }
   const w = boxW(n), room = (w - tx - px(6)) / px(6.9);
   return `<title>${esc(n.label)}</title><rect class="b" width="${w}" height="${CH}" rx="${px(6)}"/>${dot}
-    <text class="l" x="${tx}" y="${one ? CH / 2 + px(4.5) : px(17)}">${esc(short(n.label, Math.floor(room)))}</text>${one ? "" : `<text class="s" x="${tx}" y="${px(32)}">${esc(short(n.sub, Math.floor((w - tx - px(6)) / px(6.0))))}</text>`}
+    <text class="l" x="${tx}" y="${one ? CH / 2 + px(4.5) : px(17)}">${esc(n.label)}</text>${one ? "" : `<text class="s" x="${tx}" y="${px(32)}">${esc(n.sub)}</text>`}
     ${n.kind === "gate" ? `<path class="bar" d="M${-px(12)} ${-px(14)}V${CH + px(14)}"/>` : ""}`;
 }
 
@@ -362,7 +407,68 @@ function dress(k, target) {
     return { l, e, t: l.label ? el("text", { class: "lt mid" }, esc(l.label)) : null };
   });
   X.lineEls.forEach(({ t }) => t && X.gl.appendChild(t));
-  target.texts.forEach((t) => X.gt.appendChild(el("text", { class: t.cls, x: t.x, y: t.y }, t.html)));
+  X.textEls = target.texts.map((t) => { const e = el("text", { class: t.cls, x: t.x, y: t.y }, t.html); X.gt.appendChild(e); return { t, e }; });
+}
+
+// ---------- time ----------
+// How long each stage holds at 1x (ms), by what it shows. One table; the last stage holds until the viewer leaves.
+const HOLD = { event: 1500, order: 1500, known: 2000, search: 4000, reading: 2500, rule: 5000, asking: 4000, web: 2500, ranking: 2500, signature: 2500 };
+const hold = (s) => HOLD[s.id.split(":")[0]] ?? 2500;
+// The beats inside a stage (ms at 1x): a store's products arrive in a quick run, one store after another; a rule lights,
+// its lines reach the products, then the failing ones move aside together; the withheld parts land one after another.
+const BEAT = { store: 1000, each: 22, rays: 700, sweep: 2300, sweepFor: 900, chips: 1200, chip: 500, fade: 300 };
+const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+const unit = (v) => Math.max(0, Math.min(1, v));
+
+function choreograph(k) {
+  // when each thing starts to move within the stage, and for how long
+  const s = X.data.stages[k], kind = s.id.split(":")[0], T = new Map();
+  if (kind === "search") {
+    X.data.nodes.filter((n) => n.kind === "store").forEach((st, si) => {
+      T.set(st.id, { delay: si * BEAT.store, dur: 350 });
+      X.data.nodes.filter((n) => n.kind === "product" && n.owner === st.owner)
+        .forEach((p, i) => T.set(p.id, { delay: 250 + si * BEAT.store + i * BEAT.each, dur: 420 }));
+    });
+  }
+  if (kind === "rule") s.node_ids_set_aside.forEach((id) => T.set(id, { delay: BEAT.sweep, dur: BEAT.sweepFor }));
+  return T;
+}
+
+const halt = () => { cancelAnimationFrame(X.raf); clearTimeout(X.to); };
+const again = () => { halt(); X.raf = requestAnimationFrame(tick); X.to = setTimeout(tick, 40); };
+
+function tick() {
+  const A = X.anim, S = X.data.stages;
+  halt();
+  if (!A) return;
+  // the page's own clock; a frame never counts for less than 8 ms, so a stage always finishes
+  const now = performance.now(), dt = Math.max(8, Math.min(100, now - (X.last ?? now)));
+  X.last = now;
+  if (X.playing) A.elapsed += dt * X.speed;
+  const cur = new Map();
+  for (const [id, b] of A.target.P) {
+    const a = A.from.get(id) || b, c = A.T.get(id);
+    const u = A.still ? 1 : ease(unit((A.elapsed - (c?.delay ?? 0)) / (c?.dur ?? 750)));
+    cur.set(id, { ...b, x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u, o: a.o + (b.o - a.o) * u, r: b.r != null ? (a.r ?? b.r) + (b.r - (a.r ?? b.r)) * u : undefined });
+  }
+  paint(cur);
+  X.P = cur;
+  const shown = (at) => (A.still || at == null ? 1 : unit((A.elapsed - at) / BEAT.fade));
+  X.lineEls.forEach(({ l, e }) => { if (l.at != null) e.style.opacity = shown(l.at) * (l.op ?? 1); });
+  X.textEls.forEach(({ t, e }) => { if (t.at != null) e.style.opacity = shown(t.at); });
+  // the caption counts as the group moves aside (the numbers are the stage's own; read from its caption if not given apart)
+  const said = /^(.*): (\d+) set aside, (\d+) left\.$/.exec(S[X.k].caption || "");
+  const c = S[X.k].counting || (S[X.k].limit && said ? { lead: said[1], out: Number(said[2]), left: Number(said[3]) } : null);
+  if (c && X.hooks.onCount) {
+    const n = A.still ? c.out : Math.round(c.out * unit((A.elapsed - BEAT.sweep) / BEAT.sweepFor));
+    if (n !== A.count) { A.count = n; X.hooks.onCount(`${c.lead}: ${n} set aside, ${c.left + c.out - n} left.`); }
+  }
+  if (X.playing && A.elapsed >= A.hold) {
+    if (X.k < S.length - 1) return go(X.k + 1);
+    X.playing = false;                                               // the last stage: it stays
+    X.hooks.onStage(S[X.k], X.k, S.length);
+  }
+  if (X.playing) again();
 }
 
 function go(k, instant = false) {
@@ -370,35 +476,24 @@ function go(k, instant = false) {
   k = Math.max(0, Math.min(S.length - 1, k));
   const target = plan(k), from = X.P || target.P;
   X.k = k;
-  cancelAnimationFrame(X.raf);
+  halt();
+  const still = instant || !X.motion || !X.playing;                  // a step or a scrub lands at once; nothing moves while paused
+  X.anim = { target, from, T: still ? new Map() : choreograph(k), elapsed: 0, hold: hold(S[k]), still, count: -1 };
   dress(k, target);
   X.hooks.onStage(S[k], k, S.length);
-  const t0 = performance.now(), ms = instant || !X.motion ? 0 : X.ms || 750;
-  const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
-  let frames = 0;
-  const frame = () => {
-    // the page's own clock, kept inside 0..1, and never slower than half speed by frame count, so a tween always lands
-    frames += 1;
-    const t = ms ? Math.max(0, Math.min(1, Math.max((performance.now() - t0) / ms, (frames * 8) / ms))) : 1, u = ease(t), cur = new Map();
-    for (const [id, b] of target.P) {
-      const a = from.get(id) || b;
-      cur.set(id, { ...b, x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u, o: a.o + (b.o - a.o) * u, r: b.r != null ? (a.r ?? b.r) + (b.r - (a.r ?? b.r)) * u : undefined });
-    }
-    paint(cur);
-    X.P = cur;
-    if (t < 1) X.raf = requestAnimationFrame(frame);
-  };
-  if (ms) X.raf = requestAnimationFrame(frame); else frame();
+  X.last = undefined;
+  tick();
 }
 
 // ---------- the surface the page uses ----------
 export function mount(host, data, hooks, opts = {}) {
-  if (X) { clearInterval(X.timer); cancelAnimationFrame(X.raf); }   // one canvas, one clock
+  if (X) halt();                                                     // one canvas, one clock
   host.innerHTML = "";
   const cw = host.clientWidth, ch = host.clientHeight, DW = Math.max(cw, px(1036)), DH = Math.max(ch, px(580));
   const svg = el("svg", { class: "xp", width: cw, height: ch, viewBox: `0 0 ${DW} ${DH}`, preserveAspectRatio: "xMinYMin meet" });
   host.appendChild(svg);
-  X = { host, svg, data, hooks, W: DW - px(4), H: DH - px(24), sel: null, motion: opts.motion !== false, lineEls: [] };
+  X = { host, svg, data, hooks, W: DW - px(4), H: DH - px(24), sel: null, motion: opts.motion !== false, lineEls: [], textEls: [],
+    playing: false, speed: opts.speed === "slow" ? 0.5 : 1 };
   build();
   go(Math.min(opts.stage ?? 0, data.stages.length - 1), true);
   svg.addEventListener("click", (e) => {
@@ -409,18 +504,21 @@ export function mount(host, data, hooks, opts = {}) {
   });
 }
 export const stage = () => X?.k ?? 0;
-export const step = (d) => X && go(X.k + d);
-export const jump = (k, instant) => X && go(k, instant);
-export const playing = () => !!X?.timer;
-export function play(on, every = 1700) {
+export const playing = () => !!X?.playing;
+/** Play, or pause: paused, the caption stays and nothing moves; playing again goes on from where it stopped. */
+export function play(on) {
   if (!X) return;
-  clearInterval(X.timer); X.timer = null;
-  if (on) {
-    X.motion = true;                                                // pressing Play asks for motion
-    X.ms = Math.min(1100, Math.round(every * 0.45));
-    if (X.k >= X.data.stages.length - 1) go(0, true);
-    X.timer = setInterval(() => { if (X.k >= X.data.stages.length - 1) { play(false); X.hooks.onStage(X.data.stages[X.k], X.k, X.data.stages.length); } else go(X.k + 1); }, every);
-  }
+  halt();
+  X.playing = !!on;
+  if (!on) return;
+  X.motion = true;                                                  // pressing Play asks for motion
+  const A = X.anim, last = X.data.stages.length - 1;
+  if (X.k >= last && (!A || A.still || A.elapsed >= A.hold)) return go(0, true);   // from the end: once more from the start
+  X.last = undefined;
+  again();
 }
+export const step = (d) => { if (X) { play(false); go(X.k + d, true); } };
+export const jump = (k) => { if (X) go(k, true); };
+export const speed = (v) => { if (X) X.speed = v === "slow" ? 0.5 : 1; };
 export function select(id) { if (X) { X.sel = id; X.els.forEach((x, i) => x.classList.toggle("sel", i === id)); } }
 export { clock };
