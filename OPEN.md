@@ -11,49 +11,50 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 ## ENGINE
 | id | item | status |
 |---|---|---|
-| E1 | `==` as a real comparison; an unknown op or pick rule is an error | main |
-| E2 | units gpf and gpm | open |
-| E3 | order document and derived limits per sheet (`order_doc`) | open |
-| E4 | store replies and the instruction scan per sheet; one path rule, no hard-coded `sheet1` | open |
-| E5 | pick rule by id (`cheapest` for sheet 2; sheet 1 unchanged) | open |
-| E6 | names, not pronouns, in the chat | open |
-| E7 | rule 1: every stated value is tested; new status `unclear`; a number with no unit is `unclear` | open |
-| E8 | rule 2: every option on sale is its own candidate (needs S1) | open |
-| E9 | rule 3: a limit is compared as the order's sentence is written (at least, at most, equals, fits) | open |
-| E10 | figure meanings live in the sheet; no built-in glossary; the prompt asks what the page states, not an "exact measure" | open |
-| E11 | planted page out of the live state by default; its wording out of the scan prompt and pattern; `instruction_scan` key | open |
-| E12 | readers: `disagreements`, `extra`, `picks_changed`; agreement reported after the rules, unclear ones counted | open |
-| E13 | sheet 2 read end to end; report per item (candidates, inside, outside, unclear, not stated, pick) | open |
-| E14 | sheet 1 re-read under the three rules; before and after per item | open |
-| E15 | `image_url` passed through on `product` (needs S4) | open |
-| E16 | `obs.egress` called for every model call (reader, SIE, chat) | open |
-| E17 | fixture fallback in `extract/run.py` removed or shown in `degraded` | open |
+| E1 | `==` as a real comparison; an unknown op or pick rule is an error | ok |
+| E2 | units gpf and gpm | ok |
+| E3 | order document and derived limits per sheet (`order_doc`) | ok |
+| E4 | store replies and the instruction scan per sheet; one path rule, no hard-coded `sheet1` | ok |
+| E5 | pick rule by id (`cheapest` for sheet 2; sheet 1 unchanged) | ok |
+| E6 | names, not pronouns, in the chat | ok |
+| E7 | rule 1: every stated value is tested; new status `unclear`; a number with no unit is `unclear` | ok |
+| E8 | rule 2: every option on sale is its own candidate (needs S1) | ok |
+| E9 | rule 3: a limit is compared as the order's sentence is written (at least, at most, equals, fits) | ok |
+| E10 | figure meanings live in the sheet; no built-in glossary; the prompt asks what the page states, not an "exact measure" | ok |
+| E11 | planted page out of the live state by default; its wording out of the scan prompt and pattern; `instruction_scan` key | ok |
+| E12 | readers: `disagreements`, `extra`, `picks_changed`; agreement reported after the rules, unclear ones counted | ok |
+| E13 | sheet 2 read end to end; report per item (candidates, inside, outside, unclear, not stated, pick) | ok |
+| E14 | sheet 1 re-read under the three rules; before and after per item | ok |
+| E15 | `image_url` passed through on `product` (needs S4) | ok |
+| E16 | `obs.egress` called for every model call (reader, SIE, chat) | ok |
+| E17 | fixture fallback in `extract/run.py` removed or shown in `degraded` | ok |
 | E18 | sheet 1's figure meanings, in the order's words, sent to the integrator for `sheets/sheet1.json` | ok |
-| E21 | units declared in the sheet (`units`: name and its spellings), so a new sheet needs no code: dB, mph, mg come from sheets/sheet3.json; the built-in table stays only as a default | open |
-| E22 | sheet 3 (the teacher's list, now the lead example) read end to end once S16 exists; `several: "largest"` on the headphone limit; report per item | open |
-| E23 | a line's optional `quantity` carried into the canonical pick, the cart and the total (general; sheet 3 uses 24) | open |
-| E24 | `data_from`: a sheet may name the sheet whose fetched data it uses (one path rule); sheet 4 read end to end from sheet 1's data with its own order document; report per item | open |
-| E25 | `POST /api/admin/use-sheet` (laptop only): switch the running sheet, reset the run, start a new receipt chain; `GET /api/sheets` lists them | open |
-| E19 | receipts for every state change; `GET /api/receipts/verify` | main |
-| E20 | seal race, hash covers pick rule, delivery quotes, quantity, currency, variant; scope; `degraded` | main |
+| E21 | units declared in the sheet (`units`: name and its spellings), so a new sheet needs no code: dB, mph, mg come from sheets/sheet3.json; the built-in table stays only as a default | ok |
+| E22 | sheet 3 (the teacher's list, now the lead example) read end to end once S16 exists; `several: "largest"` on the headphone limit; report per item | ok |
+| E23 | a line's optional `quantity` carried into the canonical pick, the cart and the total (general; sheet 3 uses 24) | ok |
+| E24 | `data_from`: a sheet may name the sheet whose fetched data it uses (one path rule); sheet 4 read end to end from sheet 1's data with its own order document; report per item | ok |
+| E25 | `POST /api/admin/use-sheet` (laptop only): switch the running sheet, reset the run, start a new receipt chain; `GET /api/sheets` lists them | ok |
+| E26 | an option row must not be given a statement about a different option (Vive Textured Grab Bars: the 18 Inch and 36 Inch options read as 12 in); such a row is `unclear`; all option rows on sheets 4 and 3 re-checked | open |
+| E19 | receipts for every state change; `GET /api/receipts/verify` | ok |
+| E20 | seal race, hash covers pick rule, delivery quotes, quantity, currency, variant; scope; `degraded` | ok |
 
 ## STORE
 | id | item | status |
 |---|---|---|
-| S1 | both pools carry every in-stock option (`options`) | open |
-| S2 | brand list and per-type word lists removed; products kept by the store's own category; questions built from the sheet line | open |
-| S3 | store agents asked about delivery and returns only | open |
-| S4 | `image_url` on every product | open |
-| S5 | outbound ledger counts from the saved log, for the active sheet | open |
-| S6 | `parse_reply`: a reply that says the store does not say is "unclear" | open |
-| S7 | `create_carts` with `timeout_s` and `tries`; one real cart test at each sheet 2 store that has a pick | open |
-| S8 | SQL for the active sheet agrees with the engine (==, units, unclear) | main |
-| S9 | `/api/gate/status`: decision "switched back" with the evidence fields | open |
-| S10 | a local log of tool-call events with timings for the trail (`signoff.obs.recent()`) | open |
-| S11 | Amplitude: do home measurements, limits or the order's text ride along in events? Answer and set the content mode | open |
-| S12 | replay mode for sheet 2 | open |
-| S16 | sheet 3 pool and store answers fetched once into data/sheet3/ (the teacher's list: eleven stores, four lines), with options and images; counts per store and line in NOTES | open |
-| S17 | tables, SQL, ledger, replay and carts follow sheet 4 through `data_from`; `create_carts` returns the cart's `lines` so SIGN's line comparison (G6) can run | open |
+| S1 | both pools carry every in-stock option (`options`) | ok |
+| S2 | brand list and per-type word lists removed; products kept by the store's own category; questions built from the sheet line | ok |
+| S3 | store agents asked about delivery and returns only | ok |
+| S4 | `image_url` on every product | ok |
+| S5 | outbound ledger counts from the saved log, for the active sheet | ok |
+| S6 | `parse_reply`: a reply that says the store does not say is "unclear" | ok |
+| S7 | `create_carts` with `timeout_s` and `tries`; one real cart test at each sheet 2 store that has a pick | ok |
+| S8 | SQL for the active sheet agrees with the engine (==, units, unclear) | ok |
+| S9 | `/api/gate/status`: decision "switched back" with the evidence fields | ok |
+| S10 | a local log of tool-call events with timings for the trail (`signoff.obs.recent()`) | ok |
+| S11 | Amplitude: do home measurements, limits or the order's text ride along in events? Answer and set the content mode | ok |
+| S12 | replay mode for sheet 2 | ok |
+| S16 | sheet 3 pool and store answers fetched once into data/sheet3/ (the teacher's list: eleven stores, four lines), with options and images; counts per store and line in NOTES | ok |
+| S17 | tables, SQL, ledger, replay and carts follow sheet 4 through `data_from`; `create_carts` returns the cart's `lines` so SIGN's line comparison (G6) can run | ok |
 | S13 | Amplitude: the gate's variant attached to the session from its start (`experiments` is null now); both arms run once; delivered counts checked (only 2 events were delivered in the 13:25 run) | open |
 | S14 | the gate's verdict re-run after the three reading rules; it says "kept" or "switched back" from the numbers, with the evidence; no line claims Amplitude decided it | open |
 | S15 | `/api/sql/passing-box?source=airbyte` runs the same statement on the rows Airbyte delivered (`airbyte_pool`), only if under 20 minutes; otherwise WONTDO and the claim is "delivered beforehand" | open |
@@ -61,42 +62,42 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 ## SIGN
 | id | item | status |
 |---|---|---|
-| G1 | the sign tap answers within about 8 s; Senso runs in the background, never inside the tap | open |
+| G1 | the sign tap answers within about 8 s; Senso runs in the background, never inside the tap | ok |
 | G2 | enrolment needs the laptop's one-time code | ok |
-| G3 | one answer for an unsigned request | main |
-| G4 | display binding: the phone hashes `/api/sheet/canonical` itself and renders the review from it | open |
-| G5 | carts created for exactly the engine's signed picks | open |
-| G6 | cart lines compared with the signed picks; "store total differs" shown with both values | open |
-| G7 | Persona as a gate: signature refused until the inquiry is approved; decline and approve shown | open |
-| G8 | review-and-sign phone: no sheet 1 assumptions, the decision screen's tokens, sentence case | open |
-| G9 | Senso documents and sentences for sheet 2 | open |
-| G10 | receipts for every signed request, enrolment, Persona and Senso result | open |
-| G11 | `obs.egress` for every Senso, Persona and Firedrill request | open |
-| G12 | the Relay result on the signature record (`relay`) | open |
-| G13 | screenshots of every phone state at 390 x 844, looked at | open |
+| G3 | one answer for an unsigned request | ok |
+| G4 | display binding: the phone hashes `/api/sheet/canonical` itself and renders the review from it | ok |
+| G5 | carts created for exactly the engine's signed picks | ok |
+| G6 | cart lines compared with the signed picks; "store total differs" shown with both values | ok |
+| G7 | Persona as a gate: signature refused until the inquiry is approved; decline and approve shown | ok |
+| G8 | review-and-sign phone: no sheet 1 assumptions, the decision screen's tokens, sentence case | ok |
+| G9 | Senso documents and sentences for sheet 2 | ok |
+| G10 | receipts for every signed request, enrolment, Persona and Senso result | ok |
+| G11 | `obs.egress` for every Senso, Persona and Firedrill request | ok |
+| G12 | the Relay result on the signature record (`relay`) | ok |
+| G13 | screenshots of every phone state at 390 x 844, looked at | ok |
 | G14 | Firedrill: retry until 14:00; if it runs, a campaign and what it found; if not, Firedrill is not claimed | open |
 | G17 | Senso documents and sentences for sheet 3 (`sheets/sheet3_order.txt`); one rehearsal of the phone on sheet 3 in replay mode | open |
 | G18 | Senso's order document and sentences for sheet 4; one phone rehearsal on sheet 4 in replay mode with screenshots | open |
-| G15 | Senso: resolve and show the `version_id` of the order document beside each verdict (rows carry `content_id` only) | open |
-| G16 | `PERSONA_REQUIRED` on by default for the demo sheet once G7 works; Relay's sandbox passes with nobody present: say "sandbox" beside it | open |
+| G15 | Senso: resolve and show the `version_id` of the order document beside each verdict (rows carry `content_id` only) | ok |
+| G16 | `PERSONA_REQUIRED` on by default for the demo sheet once G7 works; Relay's sandbox passes with nobody present: say "sandbox" beside it | ok |
 
 ## SCREEN
 | id | item | status |
 |---|---|---|
-| C1 | the product-list screen, static pass (order document, cheapest-first rows, why-this-one, signature) | open |
+| C1 | the product-list screen, static pass (order document, cheapest-first rows, why-this-one, signature) | main |
 | C2 | the stepper of the run and a drawer per step (from `/api/trail`) | open |
 | C3 | motion: rows checked top to bottom; a limit change re-checks cells and moves the highlight; signing | open |
-| C4 | statuses outside, unclear, not stated visibly different; option rows; images | open |
+| C4 | statuses outside, unclear, not stated visibly different; option rows; images | main |
 | C5 | scale and zoom: 150% and 1920 x 1080 | open |
 | C6 | signature block: QR and one line; receipts as ticks with a count; signed state with "self-declared" or "identity checked (sandbox)" | open |
 | C7 | the unsigned-change control answering in a toast; tabs Decision and Trail; reader chip "switched back" | open |
-| C9 | a quiet sheet switcher in the top bar (from `GET /api/sheets`), laptop only | open |
+| C9 | a quiet sheet switcher in the top bar (from `GET /api/sheets`), laptop only | main |
 | C8 | Detail view, dots, rulers, trays and tiles removed | open |
 
 ## TRAIL
 | id | item | status |
 |---|---|---|
-| T1 | `GET /api/trail`: real records only, each with `step` and `kind` (evidence, reading, check, approval, action) | open |
+| T1 | `GET /api/trail`: real records only, each with `step` and `kind` (evidence, reading, check, approval, action) | ok |
 | T2 | `/trail/`: the seven steps as a timeline, events one line each, side sheet with quote and hash | open |
 | T3 | the decision screen's visual system; no dots, no arrows | open |
 
@@ -122,7 +123,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I9 | the SingleStore query on screen with a count that matches | open |
 | I10 | an Amplitude chart of tool calls by reader arm (needs the builder in the Amplitude console; first confirm events appear there at all) | open |
 | I12 | the lead example is sheet 3, the teacher's list (the builder, 13:25); sheet 2 is second and the fallback | ok |
-| I13 | main switched to sheet 4 (the lead) when it holds end to end; sheet 3 reachable through the switcher | open |
+| I13 | main switched to sheet 4 (the lead) when it holds end to end; sheet 3 reachable through the switcher | ok (13:38; sheet 3 through the switcher still to be seen) |
 | I14 | the lead example is sheet 4, surgery short; sheet 3 the class list is the 15-second second; the plumber and six-item sheets are not shown (the builder: "your choice", 13:30) | ok |
 | I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
