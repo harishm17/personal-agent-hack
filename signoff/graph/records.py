@@ -49,3 +49,18 @@ def read() -> dict:
     order_text = path.read_text() if path and path.is_file() else None
     return {"state": state, "receipts": receipts, "order_text": order_text, "memory": _rows(memory),
             "memory_available": memory is not None, "read_from": base or "the engine, in process"}
+
+
+def reviews(line_id: str):
+    """What GET /api/reviews?line_id= holds, or None when that route is absent or fails (the web stage is then left out)."""
+    base = config.env("SIGNOFF_GRAPH_FROM")
+    try:
+        if base:
+            import httpx
+            r = httpx.get(base.rstrip("/") + "/api/reviews", params={"line_id": line_id}, timeout=30)
+            return r.json() if r.status_code == 200 else None
+        from signoff.reviews import api as reviews_api
+        body = reviews_api.read(line_id)
+        return body if isinstance(body, dict) else json.loads(body.body)
+    except Exception:  # noqa: BLE001
+        return None

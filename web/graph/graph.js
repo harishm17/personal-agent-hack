@@ -2,7 +2,10 @@
 // Five columns, left to right: who, what they said, the rule, the product's own words, the outcome.
 // Click a node: its full text, owner and source. With nothing selected the side shows Cognee's answer.
 // ?line_id=L5 picks the item, ?node=<id> opens a node, ?live=0 stops the refresh (for screenshots).
+import * as XP from "/graph/explore.js";
+
 const params = new URLSearchParams(location.search);
+const MOTION = params.get("motion") !== "0" && !matchMedia("(prefers-reduced-motion: reduce)").matches && !navigator.webdriver;
 const LIVE = params.get("live") !== "0";
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -17,9 +20,12 @@ const KIND = { person: "Person", store: "Store", order_item: "Order item", home_
 const STATUS = { inside: "meets the order", outside: "outside", unclear: "unclear", not_stated: "not stated", struck: "struck" };
 
 let data = null, cognee = null, answer = null, stamp = "", sel = params.get("node"), line = params.get("line_id");
+// Two views of one item: the run growing as a graph (the default), and the five-column detail of the decision.
+let view = params.get("view") === "detail" ? "detail" : "explore", xdata = null, xkey = "", opened = false;
+const active = () => (view === "explore" && xdata?.nodes ? xdata : data);
 
 const ownerClass = (o) => (o === "issuer" || o === "shopper" ? o : o === "system" ? "" : "store");
-const ownerName = (o) => (data.people[o] || (o === "system" ? "the check" : o));
+const ownerName = (o) => (data.people[o] || (o === "system" ? "the agent's code" : o === "web" ? "another site" : o));
 const dot = (o) => `<i class="od ${ownerClass(o)}"></i>`;
 const clock = (at) => (at ? String(at).slice(11, 16) : "");
 function dur(s) {
@@ -81,7 +87,35 @@ function curve(a, b) {
   return { d: `M${x1} ${y1}C${m} ${y1} ${m} ${y2} ${x2} ${y2}`, lx: m, ly: (y1 + y2) / 2 + 3 };
 }
 
+function renderStage(s, k, n) {
+  $("#heads").innerHTML = `<span class="st"><b>${esc(s.title)}</b>${esc(s.caption)}${s.at ? `<i>${esc(clock(s.at))}</i>` : ""}</span>`;
+  if (!$("#scrub")) {
+    $("#ctl").innerHTML = `<button class="chip" data-play></button><button class="chip" data-step="-1" aria-label="Back">‹</button><button class="chip" data-step="1" aria-label="Next">›</button>
+      <input type="range" id="scrub" min="0" max="${n - 1}" step="1" aria-label="Stage"><span class="cap" id="count"></span>`;
+    $("#scrub").addEventListener("input", (e) => { XP.play(false); XP.jump(Number(e.target.value)); });
+  }
+  $("#scrub").max = n - 1; $("#scrub").value = k;
+  $("#count").textContent = `${k + 1} of ${n}`;
+  $("[data-play]").textContent = XP.playing() ? "Pause" : "Play";
+}
+
+function drawExplore() {
+  $("#ctl").hidden = false;
+  if (!xdata?.stages) { $("#stage").innerHTML = ""; $("#heads").innerHTML = ""; return; }
+  const key = JSON.stringify([xdata, innerWidth, innerHeight]);
+  if (key === xkey) return;
+  const same = xkey && JSON.parse(xkey)[0].line_id === xdata.line_id;
+  xkey = key;
+  // a new item opens at the start and plays; fresh records for the same item keep the stage on screen
+  const asked = params.get("stage"), last = xdata.stages.length - 1;
+  const at = same ? XP.stage() : asked != null ? Number(asked) : MOTION ? 0 : last;
+  XP.mount($("#stage"), xdata, { onSelect: (id) => { sel = id; renderSide(); }, onStage: renderStage }, { stage: at, motion: MOTION });
+  if (!same && asked == null && MOTION) XP.play(true);
+}
+
 function draw() {
+  if (view === "explore") return drawExplore();
+  $("#ctl").hidden = true; xkey = "";
   const L = layout(), { nodes, pos } = L;
   const near = new Set();
   if (sel && nodes.has(sel)) {
@@ -151,7 +185,8 @@ function renderTop() {
 }
 
 function renderBand() {
-  const chips = data.lines.map((l) => `<button class="chip" data-line="${esc(l.line_id)}" aria-pressed="${l.line_id === data.line_id}">${esc(cap(l.need))}</button>`).join("");
+  const chips = data.lines.map((l) => `<button class="chip" data-line="${esc(l.line_id)}" aria-pressed="${l.line_id === data.line_id}">${esc(cap(l.need))}</button>`).join("")
+    + `<span class="seg"><button class="chip" data-view="explore" aria-pressed="${view === "explore"}">The run</button><button class="chip" data-view="detail" aria-pressed="${view === "detail"}">The decision</button></span>`;
   const who = [["issuer", data.people.issuer], ["shopper", data.people.shopper], ["store", "a store"]]
     .map(([c, n]) => `<span><i class="od ${c}"></i>${esc(n)}</span>`).join("");
   $("#band").innerHTML = `${chips}<span class="grow"></span>
@@ -167,6 +202,9 @@ function sourceLine(s) {
   if (s.record === "sheet") return `<code>${esc(s.file)}</code> · <code>${esc(s.pointer)}</code>`;
   if (s.record === "receipt") return `receipt ${s.n} · <code>${esc(String(s.hash).slice(0, 16))}</code> · ${esc(clock(s.at))}`;
   if (s.record === "store_page") return `<a class="link" href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.url).replace(/^https?:\/\/(www\.)?/, ""))}</a>${span} · read ${esc(clock(s.fetched_at))}`;
+  if (s.record === "web_page") return `<a class="link" href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.url).replace(/^https?:\/\/(www\.)?/, "").slice(0, 60))}</a> · read ${esc(clock(s.fetched_at))}`;
+  if (s.record === "ledger") return `outbound ledger · rows ${esc((s.rows || []).join(", "))} · <a class="link" href="/trail/">trail</a>`;
+  if (s.record === "memory") return `memory <code>${esc(s.memory_id)}</code> · ${s.hash ? "receipt <code>" + esc(String(s.hash).slice(0, 12)) + "</code>" : "<code>" + esc(s.file || "") + "</code>"} · ${esc(clock(s.at))}`;
   if (s.record === "store_answer") return `${esc(s.store)}'s agent · asked ${esc(clock(s.asked_at))}`;
   return `<code>${esc(JSON.stringify(s))}</code>`;
 }
@@ -179,7 +217,7 @@ function quoted(n) {
 }
 
 function renderSide() {
-  const el = $("#side"), nodes = new Map(data.nodes.map((n) => [n.id, n]));
+  const src = active(), el = $("#side"), nodes = new Map(src.nodes.map((n) => [n.id, n]));
   const n = nodes.get(sel);
   if (sel === "fold") {
     const rows = Object.entries(data.folded.by_status).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<li><span class="grow">${esc(cap(STATUS[k] || k))}</span><b>${v}</b></li>`).join("");
@@ -187,17 +225,22 @@ function renderSide() {
     return;
   }
   if (n) {
-    const links = data.edges.filter((e) => e.from === n.id || e.to === n.id).map((e) => {
+    const mark = { pass: ["yes", "✓"], fail: ["no", "✕"] };
+    const quotes = n.kind !== "product" ? "" : src.edges.filter((e) => e.from === n.id && e.verb === "states").map((e) => nodes.get(e.to)).filter((q) => q?.quote)
+      .map((q) => `<li><span class="${(mark[q.state] || ["when", "?"])[0]}">${(mark[q.state] || ["when", "?"])[1]}</span><span class="grow"><mark>${esc(q.quote)}</mark></span></li>`).join("");
+    const links = src.edges.filter((e) => (e.from === n.id || e.to === n.id) && !(quotes && e.verb === "states") && nodes.has(e.from) && nodes.has(e.to)).slice(0, 12).map((e) => {
       const other = nodes.get(e.from === n.id ? e.to : e.from);
       return `<li>${dot(other.owner)}<span class="grow">${e.from === n.id ? esc(e.verb) + " " + esc(other.label) : esc(other.label) + " " + esc(e.verb) + " this"}</span></li>`;
     }).join("");
     const extra = [n.expr ? `<dt>Check</dt><dd>${esc(n.expr)}${n.why ? " · " + esc(n.why) : ""}</dd>` : "",
       n.kind === "product" && n.reason ? `<dt>Why not</dt><dd>${esc(n.reason)}</dd>` : "",
-      n.more_on_page ? `<dt>Also</dt><dd>${n.more_on_page} more on the page</dd>` : ""].join("");
+      n.more_on_page ? `<dt>Also</dt><dd>${n.more_on_page} more on the page</dd>` : "",
+      n.aside ? `<dt>Set aside</dt><dd>${esc(n.aside.reason)} · ${esc(nodes.get(n.aside.limit)?.label || "")}</dd>` : "",
+      n.href ? `<dt>Open</dt><dd><a class="link" href="${esc(n.href)}">the signature</a></dd>` : ""].join("");
     el.innerHTML = `<div class="cap">${esc(KIND[n.kind])}<button class="x" data-close aria-label="Close">×</button></div>
       <h2>${esc(n.label)}</h2><p class="quote">${quoted(n)}</p>
       <dl><dt>Owner</dt><dd>${dot(n.owner)}${esc(ownerName(n.owner))}</dd><dt>Source</dt><dd>${sourceLine(n.source)}</dd>${extra}</dl>
-      <hr><ul>${links}</ul>`;
+      ${quotes ? `<hr><div class="cap">The page's own words</div><ul>${quotes}</ul>` : ""}<hr><ul>${links}</ul>`;
     return;
   }
   // nothing selected: what Cognee answered for this item, and its permission record
@@ -222,29 +265,40 @@ function render() { renderTop(); renderBand(); draw(); renderSide(); }
 async function load() {
   const q = line ? `?line_id=${encodeURIComponent(line)}` : "";
   let body = await (await fetch("/api/graph" + q)).json();
-  if (!body.nodes && body.lines?.length) {                           // no item named: the first on the sheet
-    line = body.lines[0].line_id;
+  if (!body.nodes && body.lines?.length) {                           // no item named: the one with the most found
+    line = [...body.lines].sort((a, b) => (b.products || 0) - (a.products || 0))[0].line_id;
     body = await (await fetch(`/api/graph?line_id=${encodeURIComponent(line)}`)).json();
   }
-  const [a, c] = await Promise.all([
+  const [a, c, x] = await Promise.all([
     fetch(`/api/graph/ask?line_id=${encodeURIComponent(line)}`).then((r) => r.json()).catch(() => null),
-    fetch("/api/graph/cognee").then((r) => r.json()).catch(() => null)]);
-  const next = JSON.stringify([body, a, c]);
+    fetch("/api/graph/cognee").then((r) => r.json()).catch(() => null),
+    fetch(`/api/graph/explore?line_id=${encodeURIComponent(line)}`).then((r) => r.json()).catch(() => null)]);
+  const next = JSON.stringify([body, a, c, x]);
   if (next === stamp) return;
-  stamp = next; data = body; answer = a; cognee = c;
+  stamp = next; data = body; answer = a; cognee = c; xdata = x;
   if (data.nodes) render();
 }
 
 document.addEventListener("click", (e) => {
-  const chip = e.target.closest("[data-line]"), node = e.target.closest("[data-id]");
-  if (chip) { line = chip.dataset.line; sel = null; stamp = ""; history.replaceState(null, "", `?line_id=${line}`); load(); return; }
+  const chip = e.target.closest("[data-line]"), node = e.target.closest("[data-id]"), seg = e.target.closest("[data-view]");
+  if (seg) { view = seg.dataset.view; sel = null; XP.play(false); render(); return; }
+  if (e.target.closest("[data-play]")) { XP.play(!XP.playing()); e.target.closest("[data-play]").textContent = XP.playing() ? "Pause" : "Play"; return; }
+  if (e.target.closest("[data-step]")) { XP.play(false); XP.step(Number(e.target.closest("[data-step]").dataset.step)); return; }
+  if (e.target.closest("#ctl") || (view === "explore" && e.target.closest("#stage"))) return;   // the canvas handles its own clicks
+  if (chip) { XP.play(false); line = chip.dataset.line; sel = null; stamp = ""; params.delete("stage"); history.replaceState(null, "", `?line_id=${line}`); load(); return; }
   if (e.target.closest("[data-close]")) sel = null;
   else if (node) sel = sel === node.dataset.id ? null : node.dataset.id;
   else if (e.target.closest("#stage")) sel = null;
   else return;
   draw(); renderSide();
 });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape" && sel) { sel = null; draw(); renderSide(); } });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && sel) { sel = null; XP.select(null); draw(); renderSide(); }
+  if (view === "explore" && e.key === "ArrowRight") { XP.play(false); XP.step(1); }
+  if (view === "explore" && e.key === "ArrowLeft") { XP.play(false); XP.step(-1); }
+  if (view === "explore" && e.key === " " && e.target === document.body) { e.preventDefault(); XP.play(!XP.playing()); renderStageLabel(); }
+});
+const renderStageLabel = () => { const b = $("[data-play]"); if (b) b.textContent = XP.playing() ? "Pause" : "Play"; };
 addEventListener("resize", () => data && draw());
 load();
 if (LIVE) setInterval(load, 4000);

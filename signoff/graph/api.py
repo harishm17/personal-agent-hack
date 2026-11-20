@@ -16,7 +16,7 @@ import pathlib
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from signoff.graph import build, cognee, records
+from signoff.graph import build, cognee, explore as exploring, records
 
 router = APIRouter()
 ANSWERS = cognee.DATA / "answers"
@@ -49,7 +49,9 @@ def graph(line_id: str | None = None, near: int = 2):
     base = {"backend": "records", "backend_note": "built from the run's own records: " + r["read_from"],
             "sheet": {k: sheet.get(k) for k in ("id", "title", "invented")},
             "people": {role: (sheet.get(role) or {}).get("name") for role in ("issuer", "shopper")},
-            "lines": [{"line_id": l["id"], "need": l["need"]} for l in sheet.get("lines") or []],
+            "lines": [{"line_id": l["id"], "need": l["need"],
+                       "products": sum(1 for n in g["nodes"] if n["kind"] == "product" and n.get("line_id") == l["id"])}
+                      for l in sheet.get("lines") or []],
             "whole": build.counts(g), "memory": dict(g["memory"], available=r["memory_available"], rows=len(r["memory"])),
             "bar": {"items": len(sheet.get("lines") or []), "mode": r["state"].get("mode"),
                     "signed": bool((r["state"].get("seal") or {}).get("signed")),
@@ -61,6 +63,26 @@ def graph(line_id: str | None = None, near: int = 2):
     if v is None:
         return JSONResponse(dict(base, error="no item %r on this sheet" % line_id), status_code=404, headers=NO_STORE)
     return JSONResponse(dict(base, **v), headers=NO_STORE)
+
+
+@router.get("/api/graph/explore")
+def explore(line_id: str | None = None):
+    """One item's run as a graph that grows: nodes, edges and the stages in which they appear or are set aside."""
+    try:
+        r = records.read()
+    except Exception as error:  # noqa: BLE001
+        return JSONResponse({"backend": "records", "error": "the run's records could not be read: " + type(error).__name__},
+                            status_code=503, headers=NO_STORE)
+    sheet = r["state"].get("sheet") or {}
+    lines = [{"line_id": l["id"], "need": l["need"]} for l in sheet.get("lines") or []]
+    line_id = line_id or (lines[0]["line_id"] if lines else None)
+    body = exploring.explore(r, line_id, records.reviews(line_id)) if line_id else None
+    if body is None:
+        return JSONResponse({"backend": "records", "error": "no item %r on this sheet" % line_id, "lines": lines},
+                            status_code=404, headers=NO_STORE)
+    return JSONResponse(dict(body, backend="records", backend_note="built from the run's own records: " + r["read_from"],
+                             lines=lines, people={role: (sheet.get(role) or {}).get("name") for role in ("issuer", "shopper")}),
+                        headers=NO_STORE)
 
 
 def _answer_file(sheet_id, line_id) -> pathlib.Path:
