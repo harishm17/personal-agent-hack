@@ -251,6 +251,8 @@ def check(limit, product, figs, facts, sheet):
                         start=f.get("start"), end=f.get("end"), unit=f.get("unit") or term["unit"])
             if f.get("sentence"):
                 term.update(sentence=f["sentence"], quote_in_sentence=f["quote_in_sentence"])
+            if f.get("option_match"):
+                term["option_match"] = f["option_match"]  # which of the page's statements was matched to this option, and why
 
     out = {"limit_id": limit["id"], "name": limit["name"], "terms": terms, "op": op, "bound": bound}
     if missing:

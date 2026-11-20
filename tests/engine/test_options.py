@@ -68,3 +68,15 @@ def test_a_statement_about_another_size_is_not_a_statement_about_this_option():
     twelve = by_option["v12"]
     assert twelve["status"] == "outside" and twelve["reason"] == "bar length: 12 >= 16 is false"
     assert built["lines"][0]["pick"].endswith("v16")  # the cheaper 18 Inch option is not picked on a guess
+
+
+def test_the_words_shown_for_an_option_are_its_own_line_not_the_list_of_every_size():
+    pool = rows()
+    made = state._option_names(pool, figures(pool), SHEET)
+    built = rules.build_state(SHEET, pool, made, [], [])
+    sixteen = next(c for c in built["lines"][0]["candidates"] if c["product"]["variant_id"] == "v16")
+    term = sixteen["checks"][1]["terms"][0]
+    assert term["quote"] == "16” Grab bar" and term["sentence"] == "16” Grab bar- 19.11” end to end"
+    assert term["sentence"][slice(*term["quote_in_sentence"])] == term["quote"]
+    assert "12” Grab bar" not in term["sentence"] and "24” Grab bar" not in term["sentence"]
+    assert term["option_match"]["why"] == "the option you would buy is 16 Inch; the page's line for it: 16” Grab bar- 19.11” end to end"

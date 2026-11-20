@@ -243,6 +243,23 @@ def _option_names(pool, figures, sheet):
                     (len(numbers) == 2 and numbers[0] - 1e-6 <= value <= numbers[1] + 1e-6)
                 names_it = any(abs(n["value"] - value) < 1e-6 for n in spans.quote_numbers(f.get("quote") or ""))
                 (about_this if same or names_it else others).append(f)
+            text = row.get("text") or ""
+            other_sizes = {n["value"] for o in row.get("options") or [] if o.get("title") != named["quote"]
+                           for n in spans.quote_numbers(str(o.get("title") or ""))}
+            other_sizes |= {v for f in others for v in ([f.get("value")] if f.get("kind") == "single" else [f.get("low"), f.get("high")])
+                            if isinstance(v, (int, float))}
+            for f in about_this:
+                # the page's line for this option: from the matched statement to where the text turns to another
+                # size (the next number that names a different option), not the passage that lists every size
+                begin, end = f["start"], f["end"]
+                after = text[end:end + 140]
+                turn = next((n["start"] for n in spans.quote_numbers(after)
+                             if any(abs(n["value"] - v) < 1e-6 for v in other_sizes)), len(after))
+                stop = after.find("\n", 0, turn)
+                line = (text[begin:end] + after[:stop if stop >= 0 else turn]).rstrip(" -–,;")
+                f.update(sentence=line, quote_in_sentence=[0, end - begin])
+                f["option_match"] = {"option": named["quote"], "line": line,
+                                     "why": "the option you would buy is %s; the page's line for it: %s" % (named["quote"], line)}
             for f in others:
                 shown = "%g" % f["value"] if f.get("kind") == "single" else "%g to %g" % (f["low"], f["high"])
                 f["for_other_option"] = "describes another size (%s %s); this option is %s" % (shown, f.get("unit") or "", named["quote"])
