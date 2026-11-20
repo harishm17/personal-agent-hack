@@ -130,6 +130,31 @@ def test_the_log_shows_what_was_sent_and_the_ledger_row():
     assert step["sent_is_only_the_product_title_and_review"] is True and step["quotes_kept"] == 3
 
 
+def test_the_sent_body_shown_is_the_one_the_ledger_hashed():
+    from signoff import obs
+    body = {"query": "Acme Folding Walker review", "numResults": 4, "contents": {"text": {"maxCharacters": 3000}}}
+    row = obs.egress("exa.ai", "search the web for reviews of one product", body, ["product"], mask=[TITLE])
+    assert reviews._payload_hash(body) == row["payload_sha256"] and row["sealed_found_in_payload"] == []
+
+
+def test_the_routes_read_only_and_leave_the_engine_state_alone():
+    from fastapi.testclient import TestClient
+    from signoff.app import app
+    from signoff.engine import state as engine
+    client = TestClient(app)
+    engine.get_state()  # the engine loads on first use; the count starts after that
+    before = engine.version()
+    everything = client.get("/api/reviews").json()
+    assert everything["lines"] and all(l["summary"]["applied"] is False for l in everything["lines"])
+    one = everything["lines"][0]["line_id"]
+    assert client.get("/api/reviews", params={"line_id": one}).json()["line_id"] == one
+    assert client.get("/api/reviews", params={"line_id": "no such line"}).status_code == 404
+    assert client.get("/api/reviews/log").json()["step"] == "Reviews read"
+    fetched = client.post("/api/reviews/fetch", json={"line_id": one}).json()  # replay mode: nothing leaves
+    assert all(s.get("skipped") for s in fetched["searches"])
+    assert engine.version() == before
+
+
 def test_the_backup_key_is_used_only_when_the_first_is_refused_and_is_named(monkeypatch):
     calls = []
 

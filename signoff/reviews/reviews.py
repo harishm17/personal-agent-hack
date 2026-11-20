@@ -473,6 +473,12 @@ def fetch(state, line_id):
     return dict(for_line(line, errors), searches=searches, reader_errors=errors)
 
 
+def _payload_hash(payload):
+    """The SHA-256 the ledger takes of a payload (signoff/obs/egress.py serialises it the same way)."""
+    text = json.dumps(payload, ensure_ascii=False, default=str, sort_keys=True)
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
 def log(state=None):
     """Every search made, oldest first: what was sent, the ledger's row for it, and what code kept and dropped."""
     serves = {}
@@ -487,7 +493,10 @@ def log(state=None):
         out.append({"step": "Reviews read", "at": entry["fetched_at"], "service": entry.get("service"), "query": entry["query"],
                     "sent": sent, "sent_is_only_the_product_title_and_review": sent.get("query") == query_for(entry["title"])
                     and set(sent) == {"query", "numResults", "contents"},
-                    "ledger": entry.get("ledger"), "key_used": entry.get("key_used"),
+                    "ledger": entry.get("ledger"), "ledger_is": "the outbound ledger's row, written by the process that made the search "
+                    "(a search answered from the cache sends nothing and adds no row)",
+                    "sent_matches_the_ledger_hash": _payload_hash(sent) == (entry.get("ledger") or {}).get("payload_sha256"),
+                    "key_used": entry.get("key_used"),
                     "pages_returned": len(entry["reply"].get("results", [])),
                     "pages_read": len(entry.get("proposals") or {}), "quotes_kept": len(got["sources"]),
                     "dropped": len(got["dropped"]), "found": got["found"], "note": got["note"],
