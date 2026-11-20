@@ -178,6 +178,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I14 | the lead example is sheet 4, surgery short; sheet 3 the class list is the 15-second second; the plumber and six-item sheets are not shown (the builder: "your choice", 13:30) | ok |
 | I15 | the run of show from the demo director, and the flow designer's spec forwarded to TRAIL and SCREEN | ok |
 | I16 | one preference in a real order: sheet 3's notebook ("at least 70 sheets; 100 if they have them") once E31 is on main; decide at 15:20 whether the lead sheet gets one | open |
+| I17 | the judge review of 14:43 (`NOTES/REVIEW-judge-1440.md`, 21 items): 1, 2, 5 to 12, 15, 21 to SCREEN; 3, 4, 13, 14 to TRAIL; 16, 17 to GRAPH; 18, 19 to TALK; 20 to SIGN; each checked on main at 15:20; his run of show weighed against the builder's asks when DEMO.md is rewritten | open |
 | I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
 ## The builder
