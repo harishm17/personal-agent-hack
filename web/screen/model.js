@@ -122,7 +122,7 @@ const g = (v) => String(+v.toPrecision(6));
 /**
  * ?sim=1 only: works the checks and the pick out again in the page for a moved limit or measurement,
  * following fixtures/make_state.py. The real screen never calls this; the engine decides.
- * overrides: { limits: {limit_id: value}, facts: {fact_id: value} }
+ * overrides: { limits: {limit_id: value}, facts: {fact_id: value}, strikes: [{line_id, product_key, reason}] }
  */
 export function simulate(state, overrides = {}) {
   const s = structuredClone(state);
@@ -139,6 +139,10 @@ export function simulate(state, overrides = {}) {
   let insideCount = 0, ready = 0, total = 0;
   for (const line of s.lines) {
     const sheetLine = s.sheet.lines.find((l) => l.id === line.line_id);
+    for (const strike of (overrides.strikes || []).filter((x) => x.line_id === line.line_id)) {
+      line.struck.push({ ...strike, by: "issuer" });
+      for (const c of line.candidates) if (c.product.product_key === strike.product_key) { c.status = "struck"; c.reason = strike.reason; }
+    }
     for (const c of line.candidates) {
       for (const ch of c.checks) {
         for (const t of ch.terms) if (t.owner === "shopper") t.value = facts[t.fact].value;

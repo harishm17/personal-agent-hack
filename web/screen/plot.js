@@ -143,7 +143,9 @@ export function drawPlot(svg, line, shownId, onInspect) {
   }
   const detail = [...byFigure].map(([k, n]) => `${k.replace(/_/g, " ")} ${n}`).join(" · ");
   f += `<rect class="gutter" x="${x0}" y="${gutterY - gutterH / 2}" width="${x1 - x0}" height="${gutterH}" rx="5"/>`;
-  f += `<text class="guttertext" x="${x0 + 10}" y="${gutterY + 6}"><tspan>${unstated.length}</tspan> of ${line.candidates.length} pages never state a figure${detail ? ": " + esc(detail) : ""}</text>`;
+  const gutterLead = `${unstated.length} of ${line.candidates.length} pages never state a figure`;
+  const fits = (gutterLead.length + detail.length + 2) * 6.9 + 20 < x1 - x0;
+  f += `<text class="guttertext" x="${x0 + 10}" y="${gutterY + 6}"><tspan>${unstated.length}</tspan> of ${line.candidates.length} pages never state a figure${detail && fits ? ": " + esc(detail) : ""}</text>`;
   frame.innerHTML = f;
 
   // the passing area and the walls

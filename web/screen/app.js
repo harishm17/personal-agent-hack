@@ -15,10 +15,13 @@ const SIM = params.get("sim") === "1";
 // ?fixture=1 draws the committed fixture run whatever the engine holds; ?fixture=signed the same run after a signature
 const FIXTURE = { 1: "/screen/fixture-state.json", signed: "/screen/fixture-signed.json" }[params.get("fixture")];
 
+let fixtureUrl = FIXTURE;
+// ?fixture=1&sign=3000 swaps to the signed fixture after 3000 ms, to watch the seal close
+if (FIXTURE && params.get("sign")) setTimeout(() => { fixtureUrl = "/screen/fixture-signed.json"; load(); }, parseInt(params.get("sign"), 10));
 let server = null;            // the last /api/state
 let state = null;             // what is drawn: server, or the sim's recompute of it
 let raw = "";
-const ui = { inspect: null, panel: params.get("panel") || (SIM ? "sim" : "words"), sim: { limits: {}, facts: {} }, chat: [], busy: false };
+const ui = { inspect: null, panel: params.get("panel") || (SIM ? "sim" : "words"), sim: { limits: {}, facts: {}, strikes: [] }, chat: [], busy: false };
 let sized = "";
 const last = { view: null, shown: null, signed: null, hadPick: null };   // what the previous draw showed, to animate only real changes
 
@@ -27,6 +30,18 @@ if (SIM) {
   for (const pair of (params.get("set") || "").split(",").filter(Boolean)) {
     const [id, v] = pair.split(":");
     (id.includes(".") ? ui.sim.limits : ui.sim.facts)[id] = parseFloat(v);
+  }
+}
+
+// ?sim=1&then=L2.capacity:325@2500 moves a value 2500 ms after loading, to watch (and record) the change itself
+if (SIM && params.get("then")) {
+  for (const item of params.get("then").split(",")) {
+    const [pair, ms] = item.split("@"), [id, v] = pair.split(":");
+    setTimeout(() => {
+      if (id === "strike") ui.sim.strikes.push({ line_id: lineId(), product_key: (pickOf(state.lines.find((l) => l.line_id === lineId())) || { product: {} }).product.product_key, reason: "simulated strike" });
+      else (id.includes(".") ? ui.sim.limits : ui.sim.facts)[id] = parseFloat(v);
+      if (server) apply();
+    }, parseInt(ms, 10) || 2000);
   }
 }
 
@@ -41,7 +56,7 @@ fit();
 // ---------- data ----------
 async function load() {
   try {
-    const res = await fetch(FIXTURE || "/api/state", { cache: "no-store" });
+    const res = await fetch(fixtureUrl || "/api/state", { cache: "no-store" });
     if (!res.ok) throw new Error(res.status);
     const text = await res.text();
     if (text === raw) return;
@@ -54,7 +69,7 @@ async function load() {
 }
 
 function apply() {
-  const simActive = SIM && (Object.keys(ui.sim.limits).length || Object.keys(ui.sim.facts).length);
+  const simActive = SIM && (Object.keys(ui.sim.limits).length || Object.keys(ui.sim.facts).length || ui.sim.strikes.length);
   state = simActive ? simulate(server, ui.sim) : server;
   render();
 }
@@ -88,6 +103,7 @@ function render() {
   const sheetView = location.hash === "#sheet";
   stage.classList.toggle("sheet", sheetView);
   stage.classList.toggle("sql", !sheetView && ui.panel === "sql");
+  stage.classList.toggle("sealed", !!state.seal.signed);
   const signedNow = !!state.seal.signed, justSigned = last.signed === false && signedNow;
   last.signed = signedNow;
   if (sheetView) {
@@ -273,7 +289,8 @@ function renderSums({ line, shown }) {
   for (const row of document.querySelectorAll(".sum")) {   // a long row keeps its numerals and puts the margin under the comparison
     if (row.scrollWidth <= row.clientWidth + 1) continue;
     row.classList.add("tight");
-    row.querySelector(".spare").style.left = (row.querySelector(".res") || row.querySelector(".cmp")).offsetLeft + "px";
+    const spare = row.querySelector(".spare"), cmp = row.querySelector(".cmp");
+    spare.style.left = Math.max(0, cmp.offsetLeft + cmp.offsetWidth - spare.offsetWidth) + "px";   // ends where the comparison ends
   }
 }
 
@@ -420,7 +437,7 @@ function renderSimPanel({ sheetLine }) {
     ${factsOfLine(sheetLine).map((f) => slider("shopper", f.id, f.label, f.value, f.unit, f.min, f.max, f.step)).join("")}
     <button id="simreset">Back to the server's state</button></div>`;
   wireSliders();
-  $("simreset").onclick = () => { ui.sim = { limits: {}, facts: {} }; document.activeElement.blur(); $("context").innerHTML = ""; apply(); };
+  $("simreset").onclick = () => { ui.sim = { limits: {}, facts: {}, strikes: [] }; document.activeElement.blur(); $("context").innerHTML = ""; apply(); };
 }
 
 // ---------- the SQL view: one statement returns the passing box ----------

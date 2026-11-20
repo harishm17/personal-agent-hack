@@ -34,7 +34,8 @@ export function fly(src, dst, delay = 0, duration = 420) {
   ghost.className = "flyer";
   ghost.textContent = src.textContent;
   const cs = getComputedStyle(src);
-  Object.assign(ghost.style, { left: a.x + "px", top: a.y + "px", font: cs.font, color: cs.color, lineHeight: a.h + "px" });
+  Object.assign(ghost.style, { left: a.x + "px", top: a.y + "px", fontFamily: cs.fontFamily, fontSize: cs.fontSize,
+    fontWeight: cs.fontWeight, letterSpacing: cs.letterSpacing, color: cs.color, lineHeight: a.h + "px" });
   layer.appendChild(ghost);
   const scale = b.h / a.h, end = `translate(${b.x - a.x}px, ${b.y - a.y}px) scale(${scale})`;
   ghost.animate([{ transform: "none", opacity: 0 }, { transform: "none", opacity: 1, offset: 0.12 },

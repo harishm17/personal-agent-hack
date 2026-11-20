@@ -90,3 +90,11 @@ test("sim: Elena's measurement shifts every sum that uses it", () => {
   assert.equal(a.checks[1].margin, 0);
   assert.equal(line(sim, "L2").candidates.find((c) => c.product.product_id === "fx-E").status, "outside");
 });
+
+test("sim: a strike removes the pick and the next candidate takes its place", () => {
+  const sim = m.simulate(state, { strikes: [{ line_id: "L2", product_key: "fixture a", reason: "test" }] });
+  const l2 = line(sim, "L2");
+  assert.equal(l2.candidates.find((c) => c.product.product_id === "fx-A").status, "struck");
+  assert.equal(m.pickOf(l2).product.product_id, "fx-D");
+  assert.equal(l2.status, "next_candidate");
+});
