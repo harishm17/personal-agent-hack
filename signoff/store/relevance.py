@@ -27,9 +27,6 @@ def words(text: str) -> list[str]:
     return [stem(w) for w in re.findall(r"[a-z0-9]+", html.unescape(text or "").lower())]
 
 
-_QUANTITY_WORDS = {"pack", "pk", "pc", "piece", "count", "ct", "set", "each", "ea"}  # how many, not what
-
-
 def _is_count(w: str) -> bool:
     """A size or count token: "24", "48pk", "12ct". It is a quantity, not the name of the thing."""
     return bool(re.fullmatch(r"\d+[a-z]{0,3}", w))
@@ -41,7 +38,7 @@ def phrases(label: str) -> list[list[str]]:
     for p in parts:
         w = words(p)
         while w:  # a trailing size or count ("5-1/2", "48pk", "7 pack", "set of 4") is not the thing's name
-            if _is_count(w[-1]) or w[-1] == "of" or (w[-1] in _QUANTITY_WORDS and len(w) > 1 and w[-2].isdigit()):
+            if _is_count(w[-1]) or w[-1] == "of":
                 w.pop()
             else:
                 break
@@ -68,9 +65,19 @@ def store_labels(prod: dict) -> list[str]:
     return out
 
 
+def ends_with(ph: list[str], head: str) -> bool:
+    """Does the phrase end with the head word, allowing a quantity after it ("Pencils 12 Pack": a number and a word)?"""
+    return ph[-1] == head or (len(ph) >= 3 and ph[-2].isdigit() and ph[-3] == head)
+
+
+def core(ph: list[str]) -> list[str]:
+    """The phrase without a trailing quantity ("Commode Liner 7 Pack" -> "Commode Liner"): a number and the word after it."""
+    return ph[:-2] if len(ph) >= 3 and ph[-2].isdigit() else ph
+
+
 def head_in(label: str, head: str) -> bool:
     """Does one of the label's phrases end with the head word of the need?"""
-    return any(ph[-1] == head for ph in phrases(label))
+    return any(ends_with(ph, head) for ph in phrases(label))
 
 
 _FOR = re.compile(r"\b(?:for|fits?|compatible with)\b", re.I)
@@ -90,15 +97,15 @@ def belongs(prod: dict, need: str) -> tuple[bool, str]:
     title = prod.get("title", "")
     m = _FOR.search(title)
     own = title[:m.start()] if m else title  # what the title says it is, before any "for ..."
-    if m and not any(ph[-1] == head for ph in phrases(own)):
+    if m and not any(ends_with(ph, head) for ph in phrases(own)):
         return False, "its title says it is for a %s (%r), not a %s itself" % (need, title[m.start():][:60], need)
     sources = [("title", own)] + [("label", l) for l in labels]
     found = next((src for src in sources if head_in(src[1], head)), None)
     if not found:
         return False, "no phrase of its title or its %d store labels ends with %r" % (len(labels), head)
-    first = phrases(own)[0] if phrases(own) else []
-    if first and first[-1] != head and not any(ph[-1] == head for ph in phrases(own)):
-        if any(ph[-1] == first[-1] and head in ph[:-1] for l in labels for ph in phrases(l)):  # e.g. a label "Commode Liners"
+    first = core(phrases(own)[0]) if phrases(own) else []
+    if first and first[-1] != head and not any(ends_with(ph, head) for ph in phrases(own)):
+        if any(core(ph)[-1] == first[-1] and head in core(ph)[:-1] for l in labels for ph in phrases(l)):  # e.g. a label "Commode Liners"
             return False, "its title names a %s, which the store's own labels list as a kind of its own (a %s of the %s), not a %s" % (
                 first[-1], first[-1], head, head)
     named = set(words(" ".join([title] + labels)))
