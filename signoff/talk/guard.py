@@ -24,6 +24,7 @@ SPAN_LABELS = {"person name": "person", "family member": "person", "job title": 
                "health condition": "health", "medical procedure": "health", "body weight": "health",
                "amount of money": "money", "street address": "address"}
 MIN_SCORE = 0.5
+MIN_CHARS = 3  # a marked span with fewer letters and digits than this states no fact ("I", "we"): code drops it
 GAP = "[…]"
 
 _ONES = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen "
@@ -162,7 +163,7 @@ def model_spans(text: str, sheet: dict, finder, recipient_kind: str = "store") -
         start, end, kind = e.get("start"), e.get("end"), SPAN_LABELS.get(e.get("label"))
         if not isinstance(start, int) or not isinstance(end, int) or text[start:end] != e.get("text") or not kind:
             continue
-        if kind in may or float(e.get("score") or 0) < MIN_SCORE:
+        if kind in may or float(e.get("score") or 0) < MIN_SCORE or len(re.findall(r"[^\W_]", text[start:end])) < MIN_CHARS:
             continue
         found.append({"start": start, "end": end, "text": text[start:end], "kind": kind, "mark": MARK[kind],
                       "by": "span model", "score": round(float(e["score"]), 2),

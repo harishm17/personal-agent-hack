@@ -61,6 +61,8 @@ def test_code_drops_a_model_span_with_wrong_offsets_or_low_score(sheet):
     wrong = lambda t, labels: [{"text": "hip replacement", "label": "medical procedure", "score": 0.9, "start": 0, "end": 5}]  # noqa: E731
     low = lambda t, labels: [{"text": "hip replacement", "label": "medical procedure", "score": 0.2, "start": 15, "end": 30}]  # noqa: E731
     assert guard.model_spans(text, sheet, wrong) == []
+    pronoun = lambda t, labels: [{"text": "I", "label": "person name", "score": 0.62, "start": 0, "end": 1}]  # noqa: E731
+    assert guard.model_spans("I need it soon.", sheet, pronoun) == []  # seen live, 20 Nov 14:00: a span that states nothing
     assert guard.model_spans(text, sheet, low) == []
 
 
