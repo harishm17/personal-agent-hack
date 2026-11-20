@@ -133,3 +133,17 @@ def test_a_changed_document_becomes_a_new_version_of_the_same_node(monkeypatch, 
     out = senso.load_documents()
     assert calls == [("put", senso.BASE + "/org/kb/nodes/n1/raw")] and out["documents"]["order"]["version_num"] == 2
     assert out["documents"]["order"]["version_id"] == "v2" and out["documents"]["order"]["content_id"] == "c1"
+
+
+def test_every_sentence_is_sent_with_the_question_it_answers():
+    sent = []
+
+    class Client:
+        def post(self, url, json):
+            sent.append(json)
+            class R:
+                status_code = 200
+                def json(s): return {"status": "completed", "eval_run_id": "r", "claims": [{"claim_text": "c", "verdict": "verified", "evidence": []}]}
+            return R()
+    senso.judge(Client(), {"sentence": "Our order requires pencils for writing.", "blocks": False, "kind": "order"})
+    assert sent[0]["question"] == "What does our order require?" and sent[0]["author"] == "organization"

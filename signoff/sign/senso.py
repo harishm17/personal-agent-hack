@@ -373,6 +373,10 @@ def _judge_once(client: httpx.Client, s: dict) -> dict:
     audit.egress("senso", "check one sentence of the sheet against the order", s["sentence"], ["order", "limit"] if s.get("kind") == "limit" else ["order"])
     try:
         r = client.post(BASE + "/org/evals/text", json={"text": s["sentence"], "evaluator": "kb_accuracy", "author": "organization",
+                                                         # the question the sentence answers: without it the judge often asked whose
+                                                         # order this was and called a correct sentence unsupported (4 of 12 verified;
+                                                         # 11 of 12 with it, sheet 3)
+                                                         "question": "What does our order require?",
                                                          "wait": True, "label": "signoff-" + (s.get("line_id") or "sheet")})
         if r.status_code >= 400:
             return {**row, "verdict": "error", "reasoning": "Senso answered HTTP %d" % r.status_code}
