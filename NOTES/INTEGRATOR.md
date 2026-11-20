@@ -2034,3 +2034,41 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
    The page `/talk/` shows it within five seconds.
 - Shots retaken at 14:14 with the fifth ask: `web/talk/shots/talk-withheld.png`, `talk-thread.png`.
 - `uv run pytest tests/talk -q` → `54 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`.
+## REVIEWS 14:34 — R4, and the number you asked for (commit ee7be6e on `stream/REVIEWS`)
+- **DONE R4**: `from signoff.reviews import ratings, MINIMUM_REVIEWS`; `ratings(line_id, line=None)` →
+  `{candidate_id: {"rating": float, "out_of": 5, "review_count": int}}`. Cache only (`data/reviews/`), `{}` when nothing is cached or the
+  line does not exist. The minimum (5 reviews) is in the docstring, in `GET /api/reviews` (`minimum_reviews`, `ratings_rule`, and the same
+  `ratings` map so you can see what ENGINE gets) and per line in `summary.minimum_reviews`. Proof: with `SIGNOFF_MODE=replay` and
+  `httpx.post`/`httpx.get` replaced by a function that raises, `ratings("L4")` returned the two walkers below and equals
+  `for_line(...)["ratings"]`; `GET :8010/api/reviews` in replay mode → `minimum_reviews: 5`, 2 entries in `ratings`;
+  `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `19 passed, 1 deselected`; `./hk check` → PASS.
+  For ENGINE: pass the engine's own line dict as `line` when calling from inside the engine (no second read of the state; without it
+  the function calls `engine.get_state()`, and `_lock` is an RLock, so the same thread does not block). The import is lazy, so
+  importing `signoff.reviews` from the engine loads nothing else. A candidate that is absent has no usable rating: order it after
+  the rated ones, never as zero. Variants of one product share its reviews.
+- **The number: 3 of 31 products ended with a usable quoted rating** (out of five written in the quote, at least 5 quoted reviews).
+  Searched and cached: sheet 4's three items (18 passing candidates = 14 distinct products) and sheet 3's four (24 candidates = 17
+  products); 31 searches, $0.217 by the replies' own `costDollars`, all answered by EXA_API_KEY.
+
+  | sheet | line | products searched | in `ratings()` | which |
+  |---|---|---|---|---|
+  | 4 | L1 shower chair | 6 | 0 | |
+  | 4 | L4 walker | 6 | 2 | Carex Folding Walker $49.99: 4.5 of 5, 158 reviews, walmart.com (matched by name). Drive rollator $119.99: 4.6 of 5, 58 reviews, the seller's own page |
+  | 4 | L5 grab bar | 2 | 0 | |
+  | 3 | C1 headphones | 4 | 1 | JBuddies Folding Gen 2 $19.99: 4.5915494 of 5, 71 reviews, bestbuy.com (matched by name) |
+  | 3 | C2 crayons | 6 | 0 | |
+  | 3 | C3 notebook | 1 | 0 | |
+  | 3 | C4 pencils | 6 | 0 | |
+
+  Wider counts, same 31 products: 17 have some quote kept; 14 have some quoted rating; 11 of those 14 cannot be used, because the
+  page writes no scale ("Rated 4.6 from 852 reviews", checked: the returned text has no "out of 5" anywhere on those pages) or has
+  fewer than 5 reviews. I did not supply a scale and did not lower the minimum to raise the number.
+- **What that means for the control** (yours to decide): "Best reviewed" and "Best value" can move the pick on **one** demo line only,
+  L4 walker (pick today: Carex Classics Dual-Button Walker $44.71, which has no rating). On L1, L5 and three of sheet 3's four lines
+  `ratings()` is `{}`, and on C1 it has one product, so there the control would change nothing or rank a single product. If it is
+  shown, show it on L4 and say on the others "no passing product has a quoted rating out of five with at least 5 reviews"
+  (`best_reviewed_reason` says exactly this). I would not present it as a general feature of the run on these numbers.
+- Since 14:20, both general: (1) when the reader's rating quote has no scale, code says so and the reader may quote once more; the
+  second quote is used only if code finds it on the page with the rating and the scale in it (10 pages asked, 1 changed: Best Buy).
+  (2) When the reader rounds ("4.6" for the page's "4.5915494"), the page's own number is kept, with `value_as_reported` beside it.
+  `best_reviewed` and `ratings()` now use one rule (out of five, at least 5 reviews); the tie-break text is updated in the reply.
