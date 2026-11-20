@@ -55,7 +55,8 @@ def graph(line_id: str | None = None, near: int = 2):
             "whole": build.counts(g), "memory": dict(g["memory"], available=r["memory_available"], rows=len(r["memory"])),
             "bar": {"items": len(sheet.get("lines") or []), "mode": r["state"].get("mode"),
                     "signed": bool((r["state"].get("seal") or {}).get("signed")),
-                    "signed_at": (r["state"].get("seal") or {}).get("signed_at"), "total_cents": r["state"].get("total_cents")},
+                    "signed_at": (r["state"].get("seal") or {}).get("signed_at"), "signer": (r["state"].get("seal") or {}).get("signer"),
+                    "total_cents": r["state"].get("total_cents")},
             "cognee": _held(sheet.get("id"))}
     if line_id is None:
         return JSONResponse(base, headers=NO_STORE)
