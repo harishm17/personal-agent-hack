@@ -32,7 +32,13 @@ GLOSSARY = {
     "overall_width": "The widest outside measurement of the whole product: 'overall width', the width in the overall "
                      "or product dimensions, or the width outside the legs or base. Seat width, the width between "
                      "the arms, inside width and depth are different measures: never report them as overall width.",
-    "length": "The length of the product itself (for a bar or rail, end to end).",
+    "length": "The length of the product itself. When the page sells several sizes, report only the selected option's "
+              "length (the text may end with 'Selected option: ...'). A size option named by its length (the 12\" bar "
+              "among 'Available in 12\", 16\" and 18\" lengths', or 'Length: 12\" or 16\"') has that length: quote the "
+              "passage that gives the lengths, which must contain the selected option's number, and do not mark it "
+              "unsure for that reason alone. If the page gives the selected size both as a named size and as a longer "
+              "installed or end-to-end measurement, report the named size. If the selected option's length is not "
+              "given anywhere, it is not stated.",
     "mattress_thickness_max": "The thickest mattress the product fits. 'Fits mattresses 12 to 16 inches' is an "
                               "adjustable range.",
 }
@@ -63,6 +69,10 @@ Answer with one JSON object and nothing else:
 "unit": "lb", "quote": "...", "unsure": false, "unsure_reason": null}]}"""
 
 
+# Raised when a figure's meaning above is reworded, so only the products asked for that figure are read again.
+GLOSSARY_REVISION = {"length": 2}
+
+
 def wanted_figures(product, sheet):
     """The store figures the limits of this product's lines are summed from."""
     names = []
@@ -75,11 +85,25 @@ def wanted_figures(product, sheet):
     return names
 
 
+def figure_units(sheet):
+    """{figure name: the unit of the limit it is summed into}, from the sheet."""
+    out = {}
+    for line in sheet["lines"]:
+        for limit in line["limits"]:
+            for term in limit["terms"]:
+                if term["source"] == "store":
+                    out.setdefault(term["figure"], limit["unit"])
+    return out
+
+
 def prompt_for(product, names, sheet):
     meanings = dict(GLOSSARY, **(sheet.get("figures") or {}))
     asked = "\n".join("- %s: %s" % (n, meanings.get(n, n.replace("_", " "))) for n in names)
-    return "Figures to report:\n%s\n\nProduct page text, between the markers:\n<<<TEXT\n%s\nTEXT>>>" % (
-        asked, product.get("text") or "")
+    units = sorted({u for n, u in figure_units(sheet).items() if n in names and u not in ("lb", "in")})
+    more = ("\nOn this sheet a unit may also be one of: %s (and the metric unit of the same kind). Report it as "
+            "written.\n" % ", ".join(units)) if units else ""
+    return "Figures to report:\n%s\n%s\nProduct page text, between the markers:\n<<<TEXT\n%s\nTEXT>>>" % (
+        asked, more, product.get("text") or "")
 
 
 def parse(reply):
@@ -141,7 +165,7 @@ def ask_anthropic_api(model, system, user, max_tokens=4000):
     default fallback model; if it still declines, raise."""
     import anthropic
     _api_calls["made"] += 1
-    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY"), timeout=30.0, max_retries=0)
+    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY"), timeout=12.0, max_retries=0)
     response = client.beta.messages.create(
         model=model, max_tokens=max_tokens, system=system, messages=[{"role": "user", "content": user}],
         output_config={"effort": "low"}, betas=["server-side-fallback-2026-07-01"], fallbacks="default")
@@ -167,7 +191,7 @@ def ask_anthropic(model, system, user, live=False):
                 return ask_anthropic_api(model, system, user)
             except Exception as error:  # noqa: BLE001  (bad key, no credit, a rejected parameter, the network)
                 log.warning("Anthropic API call failed (%s): using claude -p for this one", type(error).__name__)
-    return ask_claude_cli(model, system, user)
+    return ask_claude_cli(model, system, user, timeout=25.0 if live else 180.0)  # a person is waiting: fail soon
 
 
 def ask(model, system, user, live=False):

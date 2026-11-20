@@ -39,26 +39,38 @@ def slug(name):
     return re.sub(r"[^A-Za-z0-9.]+", "-", name).strip("-")
 
 
-def pool_files(folder=None):
-    for candidate in (folder, os.environ.get("SIGNOFF_POOL_DIR"), ROOT / "data" / "pool"):
+def sheet_dirs(sheet_id):
+    """(pool folder, figures folder) of a sheet: sheet1 is data/pool and data/figures; any other sheet keeps its
+    pool under data/<sheet>/pool (the STORE stream's) and its figures under data/figures/<sheet>."""
+    if sheet_id == "sheet1":
+        return ROOT / "data" / "pool", ROOT / "data" / "figures"
+    return ROOT / "data" / sheet_id / "pool", ROOT / "data" / "figures" / sheet_id
+
+
+def pool_files(folder=None, sheet_id="sheet1"):
+    for candidate in (folder, os.environ.get("SIGNOFF_POOL_DIR"), sheet_dirs(sheet_id)[0]):
         if candidate and any(pathlib.Path(candidate).glob("*.json")):
             return sorted(pathlib.Path(candidate).glob("*.json"))
     return []
 
 
-def text_key(product, model):
+def text_key(product, model, sheet=None):
+    """Same text, same reader, same instructions: the cached reading stands ("read once, cached")."""
     salt = gliner.MODEL if model == gliner.EXTRACTOR else reader.SYSTEM
+    if sheet is not None and model != gliner.EXTRACTOR:
+        salt += "".join("%s=%d;" % (n, reader.GLOSSARY_REVISION[n]) for n in reader.wanted_figures(product, sheet)
+                        if n in reader.GLOSSARY_REVISION)
     return hashlib.sha256(("%s\n%s\n%s" % (model, salt, product.get("text") or "")).encode()).hexdigest()[:16]
 
 
 def read_one(product, sheet, model, assume_unit):
     started = time.time()
-    asked = reader.wanted_figures(product, sheet)
+    asked, units = reader.wanted_figures(product, sheet), reader.figure_units(sheet)
     if model == gliner.EXTRACTOR:
-        proposals, extractor, usage = gliner.read(product, asked)
+        proposals, extractor, usage = gliner.read(product, asked, units)
     else:
         proposals, extractor, usage, asked = reader.read(product, sheet, model)
-    figures = [spans.finish(p, product, extractor, assume_unit) for p in proposals]
+    figures = [spans.finish(p, product, extractor, assume_unit, units.get(p.get("figure"))) for p in proposals]
     obs.tool_call("figure_read", {"store": product["store"], "product_id": product["product_id"], "reader": extractor,
                                   "asked": asked},
                   {"figures": [{"figure": f["figure"], "kind": f["kind"], "value": f["value"], "low": f["low"],
@@ -66,19 +78,19 @@ def read_one(product, sheet, model, assume_unit):
                                 "unsure": bool(f.get("unsure"))} for f in figures]},
                   True, int((time.time() - started) * 1000))
     return {"store": product["store"], "product_id": product["product_id"], "title": product.get("title"),
-            "key": text_key(product, model), "asked": asked, "extractor": extractor, "proposals": proposals,
+            "key": text_key(product, model, sheet), "asked": asked, "extractor": extractor, "proposals": proposals,
             "figures": figures, "usage": usage, "seconds": round(time.time() - started, 2),
             "read_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds")}
 
 
-def run_reader(products, sheet, model, out, workers=8, force=False, assume_unit=None):
+def run_reader(products, sheet, model, out, workers=8, force=False, assume_unit=None, suffix=""):
     """One reader over one store's products. Returns (figure rows, errors, products read now)."""
-    folder = pathlib.Path(out) / "_runs" / slug(model)
+    folder = pathlib.Path(out) / "_runs" / (slug(model) + suffix)
     folder.mkdir(parents=True, exist_ok=True)
     store = products[0]["store"]
     log_path = folder / (store + ".log")
     log = {} if force or not log_path.exists() else {r["product_id"]: r for r in json.loads(log_path.read_text())}
-    todo = [p for p in products if log.get(p["product_id"], {}).get("key") != text_key(p, model)]
+    todo = [p for p in products if log.get(p["product_id"], {}).get("key") != text_key(p, model, sheet)]
     errors = []
     with concurrent.futures.ThreadPoolExecutor(workers) as pool:
         jobs = {pool.submit(read_one, p, sheet, model, assume_unit): p for p in todo}
@@ -130,15 +142,16 @@ def run(files, sheet, deciding, out, evidence=(), policy="first", workers=8, lim
 
 def refresh(workers=8):
     """For the app, after the pool was refetched: read what changed, combine, compare, reload the engine."""
-    sheet = json.loads((ROOT / "sheets" / ((os.environ.get("SIGNOFF_SHEET") or "sheet1") + ".json")).read_text())
-    files = pool_files()
-    if not files:
-        return {"products": 0, "errors": ["no data/pool"]}
-    evidence = [gliner.EXTRACTOR] if config.have("SIE_API_KEY") else []
-    summary = run(files, sheet, readers(), ROOT / "data" / "figures", evidence, workers=workers, quiet=True)
     from signoff.engine import state
+    sheet_id = state.get_state()["sheet"]["id"]
+    sheet = json.loads((ROOT / "sheets" / (sheet_id + ".json")).read_text())
+    files, out = pool_files(sheet_id=sheet_id), sheet_dirs(sheet_id)[1]
+    if not files:
+        return {"products": 0, "errors": ["no pool for %s" % sheet_id]}
+    evidence = [gliner.EXTRACTOR] if config.have("SIE_API_KEY") else []
+    summary = run(files, sheet, readers(), out, evidence, workers=workers, quiet=True)
     from signoff.extract import score
-    score.write(ROOT / "data" / "figures")
+    score.write(out)
     state.reload_data()
     return summary
 
@@ -146,8 +159,9 @@ def refresh(workers=8):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--pool-dir", default=None, help="default: $SIGNOFF_POOL_DIR, then data/pool")
-    ap.add_argument("--out", default=str(ROOT / "data" / "figures"))
+    ap.add_argument("--out", default=None, help="default: data/figures, or data/figures/<sheet> for another sheet")
     ap.add_argument("--sheet", default=os.environ.get("SIGNOFF_SHEET") or "sheet1")
+    ap.add_argument("--sheet-file", default=None, help="a sheet file outside sheets/ (for a draft)")
     ap.add_argument("--reader", action="append", help="a reader (repeatable, the first decides); default: the configured ones")
     ap.add_argument("--policy", choices=("agree", "first"), default=config.env("SIGNOFF_READER_POLICY") or "first")
     ap.add_argument("--no-evidence", action="store_true", help="skip the SIE extract pass")
@@ -155,19 +169,34 @@ def main(argv=None):
     ap.add_argument("--limit", type=int, default=None, help="first N products of each store")
     ap.add_argument("--force", action="store_true", help="read every product again")
     ap.add_argument("--assume-unit", default=None, help="unit for numbers the page gives without one (off by default)")
+    ap.add_argument("--second-pass", action="store_true",
+                    help="read every product once more with the first reader, into _runs/<reader>-pass2, to "
+                         "measure how far the reference agrees with itself; the engine's figures are not touched")
     args = ap.parse_args(argv)
-    files = pool_files(args.pool_dir)
+    default_out = str(sheet_dirs(args.sheet)[1])
+    args.out = args.out or default_out
+    files = pool_files(args.pool_dir, args.sheet)
     if not files:
         files = [ROOT / "fixtures" / "pool.json"]
-        print("no data/pool yet: reading fixtures/pool.json", file=sys.stderr)
-    sheet = json.loads((ROOT / "sheets" / (args.sheet + ".json")).read_text())
+        print("no pool for %s yet: reading fixtures/pool.json" % args.sheet, file=sys.stderr)
+    sheet = json.loads(pathlib.Path(args.sheet_file or ROOT / "sheets" / (args.sheet + ".json")).read_text())
     deciding = args.reader or readers()
+    if args.second_pass:
+        errors = []
+        for path in files:
+            products = json.loads(pathlib.Path(path).read_text())[:args.limit]
+            rows, failed, _ = run_reader(products, sheet, deciding[0], args.out, args.workers, args.force, args.assume_unit, "-pass2")
+            errors += failed
+            print("%s: second pass, %d figures" % (products[0]["store"], len(rows)))
+        from signoff.extract import score
+        print(json.dumps({"second_pass": deciding[0], "errors": errors, "comparison": str(score.write(args.out))}))
+        return 0
     evidence = [] if args.no_evidence or not config.have("SIE_API_KEY") or gliner.EXTRACTOR in deciding else [gliner.EXTRACTOR]
     if evidence:
         gliner.warm()
     summary = run(files, sheet, deciding, args.out, evidence, args.policy, args.workers, args.limit, args.force,
                   args.assume_unit)
-    if args.out == str(ROOT / "data" / "figures") and not args.limit:
+    if args.out == default_out and not args.limit:
         from signoff.extract import score
         summary["comparison"] = str(score.write(args.out))
     print(json.dumps(summary))

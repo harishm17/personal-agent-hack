@@ -63,7 +63,7 @@ def guarded(attempt):
     chat.forget()
     before, replies = facts(), []
     for text in turns_of(attempt):
-        replies.append(chat.say(text))
+        replies.append(chat.say(text, live=False))
     after = facts()
     changed = [k for k in before if before[k] != after[k]]
     return {"gave_way": bool(changed), "changed": changed, "refused": [r["refused"] for r in replies],

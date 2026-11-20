@@ -46,6 +46,9 @@ How to answer:
 - Two to four plain sentences. Neutral and practical. No lists, no headings, no emoji.
 - Use only facts from the tool results. Quote numbers exactly as they appear there. Say a store "states" a
   figure, never that anything is proved. If the results do not hold the answer, say so.
+- Do no arithmetic. Every number in your answer must appear, digit for digit, in the tool results or in her
+  message; code checks this and throws away an answer that has any other number. Do not work out differences,
+  totals, percentages or dates; code did the sums and they are in the results.
 - Never suggest, estimate or comment on what a limit should be, and give no medical advice.
 - {shopper_name} can change her own measurements herself, with the sliders on the screen; you cannot.
 
@@ -115,10 +118,10 @@ def refusal(intent, s):
            "what the limits are now and which products are inside them." % (issuer, who)
 
 
-def _context(text, s):
+def _context(text, s, source=state):
     """The read tools, run by code: the sheet always, and the candidates of every line the message names."""
     calls = [{"name": "read_state", "args": {}, "by": "code"}]
-    results = {"read_state": tools.read_state()}
+    results = {"read_state": tools.read_state(source)}
     low = text.lower()
     named = [l for l in s["lines"] if l["need"].lower() in low or any(w in low for w in l["need"].lower().split() if len(w) > 4)
              or l["line_id"].lower() in low.split()]
@@ -126,8 +129,21 @@ def _context(text, s):
         named = [l for l in s["lines"] if l["struck"]] or s["lines"][:0]
     for line in named[:3]:
         calls.append({"name": "read_candidates", "args": {"line_id": line["line_id"]}, "by": "code"})
-        results["read_candidates(%s)" % line["line_id"]] = tools.read_candidates(line["line_id"])
+        results["read_candidates(%s)" % line["line_id"]] = tools.read_candidates(line["line_id"], source)
     return calls, results
+
+
+NUMERAL = re.compile(r"\d+(?:,\d{3})*(?:\.\d+)?")
+
+
+def stray_numbers(reply, *sources):
+    """Numbers in a reply that are in none of the sources (the tool results, her message). Code, not a model:
+    a number the model worked out or misremembered is not shown."""
+    known = set()
+    for source in sources:
+        for n in NUMERAL.findall(source):
+            known.add(float(n.replace(",", "")))
+    return [n for n in NUMERAL.findall(reply) if float(n.replace(",", "")) not in known]
 
 
 def _parse(reply):
@@ -136,11 +152,15 @@ def _parse(reply):
     return str(obj.get("intent") or "other"), str(obj.get("reply") or "").strip()
 
 
-def say(text: str) -> dict:
+def say(text: str, source=state, history=None, live=True) -> dict:
+    """`source` is what the read tools read: the live engine, or a drill session's private sandbox.
+    `history` is that conversation's memory (the live chat's by default). `live=False` (drills, batch runs)
+    keeps the model call off the capped API key."""
+    history = _history if history is None else history
     text = (text or "").strip()
     started = time.time()
-    s = state.get_state()
-    before = (state.sheet_hash(), s["seal"]["signed"])
+    s = source.get_state()
+    before = (source.sheet_hash(), s["seal"]["signed"])
     if not text:
         return {"reply": "Ask me about a line, a product or a reason.", "refused": False, "tool_calls": []}
     intent = spot(text)
@@ -148,7 +168,7 @@ def say(text: str) -> dict:
         out = {"reply": refusal(intent, s), "refused": True, "intent": intent, "decided_by": "code",
                "tool_calls": [{"name": "read_state", "args": {}, "by": "code"}], "model": None}
     else:
-        calls, results = _context(text, s)
+        calls, results = _context(text, s, source)
         model = config.env("SIGNOFF_CHAT_MODEL") or DEFAULT_MODEL
         sheet = s["sheet"]
         system = SYSTEM.format(
@@ -156,23 +176,35 @@ def say(text: str) -> dict:
             issuer="%s (%s)" % (sheet["issuer"]["name"], sheet["issuer"]["role_label"]),
             issuer_name=sheet["issuer"]["name"], shopper_name=sheet["shopper"]["name"])
         with _lock:
-            earlier = "".join("%s: %s\n" % (who, said) for who, said in _history[-6:])
+            earlier = "".join("%s: %s\n" % (who, said) for who, said in history[-6:])
         user = "Tool results:\n%s\n\n%s%s says: %s" % (
             json.dumps(results, ensure_ascii=False), ("Earlier in this chat:\n%s\n" % earlier) if earlier else "",
             sheet["shopper"]["name"], text)
+        stray = []
         try:
-            raw, _, used = reader.ask(model, system, user, live=True)
+            raw, _, used = reader.ask(model, system, user, live=live)
             intent, reply = _parse(raw)
+            stray = stray_numbers(reply, user)
+            if stray and intent not in CHANGES:  # once more, naming the numbers; then code's own words
+                raw, _, used = reader.ask(model, system, user + "\n\nYour last answer contained numbers that are not "
+                                          "in the tool results: %s. Answer again without them." % ", ".join(stray), live=live)
+                intent, reply = _parse(raw)
+                stray = stray_numbers(reply, user)
+                if stray:
+                    reply = "I can't put that into words I can stand behind: my answer held a number (%s) that is " \
+                            "not in what the stores state or what code worked out. The screen shows each line's " \
+                            "sums, quotes and reasons." % ", ".join(stray)
         except Exception as error:  # noqa: BLE001  (no model: say so; the state is untouched either way)
             intent, reply, used = "unavailable", "I can't reach my model right now (%s). Nothing on the sheet has " \
                 "changed; the screen shows every line and reason." % type(error).__name__, model
         refused = intent in CHANGES
         out = {"reply": refusal(intent, s) if refused else reply, "refused": refused, "intent": intent,
-               "decided_by": "model intent, code refusal" if refused else "model", "tool_calls": calls, "model": used}
+               "decided_by": "model intent, code refusal" if refused else "model", "tool_calls": calls, "model": used,
+               "numbers_checked": not stray}
     with _lock:
-        _history.extend([(s["sheet"]["shopper"]["name"], text), ("Agent", out["reply"])])
-        del _history[:-12]
-    out["state_unchanged"] = (state.sheet_hash(), state.get_state()["seal"]["signed"]) == before
+        history.extend([(s["sheet"]["shopper"]["name"], text), ("Agent", out["reply"])])
+        del history[:-12]
+    out["state_unchanged"] = (source.sheet_hash(), source.get_state()["seal"]["signed"]) == before
     out["seconds"] = round(time.time() - started, 2)
     for call in out["tool_calls"]:
         obs.tool_call(call["name"], call["args"], {"by": "code"}, True, 0)

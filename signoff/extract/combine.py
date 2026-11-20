@@ -21,6 +21,8 @@ def numbers(row):
 
 def same(a, b):
     na, nb = numbers(a), numbers(b)
+    if any(not isinstance(v, (int, float)) for v in na[1:] + nb[1:]):
+        return False  # a record without its number agrees with nothing
     return len(na) == len(nb) and na[0] == nb[0] and all(abs(x - y) <= 0.01 for x, y in zip(na[1:], nb[1:]))
 
 
@@ -82,7 +84,7 @@ def combine(deciding, evidence=(), policy="first"):
             base.update(unsure=True, unsure_reason=reason)
         for name, index in by_reader[len(deciding):]:
             mark = index.get(key)
-            if mark and counted(mark) and overlaps(mark, base) and mark["kind"] == base["kind"] and same(mark, base):
+            if mark and counted(mark) and counted(base) and overlaps(mark, base) and mark["kind"] == base["kind"] and same(mark, base):
                 base.setdefault("also_marked_by", []).append(
                     {"extractor": name, "start": mark["start"], "end": mark["end"], "quote": mark["quote"]})
         out.append(base)

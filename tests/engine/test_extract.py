@@ -103,7 +103,7 @@ def test_under_the_agree_policy_a_figure_counts_only_when_the_readers_match():
 
 def test_only_a_live_call_uses_the_api_key_and_it_is_capped_with_the_command_line_as_fallback(monkeypatch):
     calls = []
-    monkeypatch.setattr(reader, "ask_claude_cli", lambda m, s, u: (calls.append("cli") or '{"figures": []}', {}))
+    monkeypatch.setattr(reader, "ask_claude_cli", lambda m, s, u, timeout=0: (calls.append("cli") or '{"figures": []}', {}))
     monkeypatch.setattr(reader.config, "have", lambda name: True)
     monkeypatch.setattr(reader.config, "env", lambda name, default=None: None)
     monkeypatch.setattr(reader, "ask_anthropic_api", lambda m, s, u: (calls.append("api") or "{}", {"via": "api"}))
@@ -120,3 +120,27 @@ def test_only_a_live_call_uses_the_api_key_and_it_is_capped_with_the_command_lin
     reader._api_calls["made"] = reader.API_CALL_CAP
     reader.ask("claude-sonnet-5-5", "s", "u", live=True)
     assert calls[-1] == "cli" and calls.count("api failed") == 1 and reader._api_calls["capped_logged"]
+
+
+def test_a_record_without_its_number_agrees_with_nothing_and_does_not_break_the_comparison():
+    empty = row("ref", None, unsure=True, unsure_reason="no number was reported")
+    out = combine.combine([("ref", [empty]), ("b", [row("b", 300)])], [("e", [row("e", 300)])])
+    assert out[0]["unsure"] and "also_marked_by" not in out[0] and "agreed_by" not in out[0]
+    assert combine.same(empty, row("b", 300)) is False
+
+
+def test_units_come_from_the_sheets_limit_so_another_sheet_needs_no_code():
+    text = "Stock Pot. Holds 8 QT. Also sold as 7.6 liters. Oven safe to 260°C."
+    product = {"store": "s", "product_id": "p", "text": text}
+    qt = spans.finish({"figure": "capacity", "kind": "single", "value": 8, "unit": "QT", "quote": "Holds 8 QT"},
+                      product, "test", target_unit="qt")
+    assert (qt["value"], qt["unit"], qt.get("unsure")) == (8, "qt", None)
+    litres = spans.finish({"figure": "capacity", "kind": "single", "value": 7.6, "unit": "liters", "quote": "7.6 liters"},
+                          product, "test", target_unit="qt")
+    assert litres["unit"] == "qt" and litres["value"] == 8.03 and litres["stated_unit"] == "L"
+    heat = spans.finish({"figure": "oven_safe", "kind": "single", "value": 260, "unit": "°C", "quote": "Oven safe to 260°C"},
+                        product, "test", target_unit="°F")
+    assert heat["value"] == 500.0 and heat["unit"] == "°F"
+    wrong = spans.finish({"figure": "capacity", "kind": "single", "value": 8, "unit": "in", "quote": "Holds 8 QT"},
+                         product, "test", target_unit="qt")
+    assert wrong["unsure"] and "cannot be compared" in wrong["unsure_reason"]
