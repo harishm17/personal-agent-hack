@@ -28,8 +28,8 @@ const last = { line: null, pick: null, signed: null, quiet: false };
 const aux = { egress: null, gate: null, enroll: null, trail: null, sheets: null, pages: {}, key: "" };
 // The last two tabs show only when their page is served: from /api/health's `pages` when it has that key; until then
 // from the routers it lists, for the pages known to be in the repo (asking for a page that is not there would log a 404).
-const TABS = [["/", "Decision"], ["/trail/", "Trail"], ["/graph/", "Memory", "signoff.graph.api"], ["/talk/", "Conversations", "signoff.talk.api"], ["/seal/", "Signature", "signoff.talk.api"]];
-const KNOWN_PAGES = new Set(["/talk/", "/graph/"]);      // pages that are in the repo on main; /seal/ joins when its folder lands, or at once through `pages`
+const TABS = [["/", "Decision"], ["/trail/", "Trail"], ["/graph/", "Memory", "signoff.graph.api"], ["/talk/", "Conversations", "signoff.talk.api"], ["/seal/", "Signature", "signoff.sign.api"]];
+const KNOWN_PAGES = new Set(["/talk/", "/graph/", "/seal/"]);      // pages that are in the repo on main; /seal/ joins when its folder lands, or at once through `pages`
 let introUntil = 0;
 
 if (SIM) {
@@ -126,9 +126,10 @@ async function loadAux() {
   }
   const needCode = state && !(state.issuer_key && state.issuer_key.enrolled) && !state.seal.signed;
   const opt = (path, url) => (has(path) ? get(url || path) : null);
+  aux.asks = has("/api/asks") ? await get("/api/asks") : null;
   const [egress, gate, enroll, trail, sheets] = await Promise.all([opt("/api/egress", "/api/egress?limit=5000"), opt("/api/gate/status"),
     needCode ? opt("/api/issuer/enroll-code") : null, opt("/api/trail"), opt("/api/sheets")]);
-  const key = JSON.stringify([aux.pages, aux.reviews, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
+  const key = JSON.stringify([aux.pages, aux.reviews, aux.asks, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
   Object.assign(aux, { egress, gate, enroll, trail, sheets });
   if (key !== aux.key && state) {       // redraw quietly, and never in the middle of the opening motion
     aux.key = key;
@@ -500,12 +501,20 @@ function renderList(line, pick) {
   // while the old pick says "was picked" it stays in view: if it sits in a folded part, it is shown beside the fold line
   const pinned = fold && ui.was ? before.slice(0, fold).filter((c) => c.id === ui.was.id) : [];
   if (pinned.length) fold += 1;
-  const forged = (limit) => limit.bound.source === "issuer" && !state.seal.signed
-    ? (ui.refusal && ui.refusal.id === limit.id ? `<span class="refline" role="status">${ui.refusal.html}</span>`
-      : `<span class="forge" role="button" tabindex="0" data-forge="${esc(limit.id)}" title="${esc(state.sheet.shopper.name)} tries to change this limit from here, without ${esc(state.sheet.issuer.name)}'s phone">try to change</span>`) : "";
-  const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span>${esc(h.name)} <b data-k="head.${limit.id}">${esc(h.rule)}</b></span>${forged(limit)}</span>`; }).join("");
+  // a limit is the approver's: read-only on the laptop. Where the route exists, the shopper can ask for a change.
+  const canAsk = aux.routes && aux.routes.has("/api/shopper/ask-change") && !state.seal.signed && !FIXTURE;
+  const owned = (limit) => {
+    if (limit.bound.source !== "issuer") return "";
+    const ask = askFor(limit.id), name = esc(state.sheet.issuer.name);
+    const status = !ask ? "" : /pend|wait|open/.test(ask.status || "pending") ? `asked ${name} · waiting`
+      : /declin|refus|reject/.test(ask.status) ? `${name} declined` : `${name} changed it to ${esc(withUnit(g(ask.value ?? ask.applied_value ?? boundOf(limit)), limit.unit))}`;
+    return `<span class="own" title="${name}'s limit: it changes only from ${name}'s phone, with a signature">${name}'s limit · phone only</span>`
+      + (status ? `<span class="askst">${status}</span>` : canAsk ? `<span class="ask" role="button" tabindex="0" data-open="ask:${esc(limit.id)}">Ask ${name}</span>` : "");
+  };
+  const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span>${esc(h.name)} <b data-k="head.${limit.id}">${esc(h.rule)}</b></span>${owned(limit)}</span>`; }).join("");
   const rules = Array.isArray(state.pick_rules) && state.pick_rules.length > 1 ? state.pick_rules : null;
-  const short = (r) => cap(String(r.short || r.label || r.id).replace(/ (that|inside|among) .*$/, "").replace(/_/g, " "));
+  const cut = (r) => cap(String(r.short || r.label || r.id).replace(/:.*$/, "").replace(/ (that|inside|among) .*$/, "").replace(/_/g, " "));
+  const short = (r) => ((rules || []).filter((x) => cut(x) === cut(r)).length > 1 && r.id !== (rules || []).find((x) => cut(x) === cut(r)).id ? cap(String(r.id).replace(/_/g, " ").replace(/ time$/, "")) : cut(r));
   const seg = rules ? `<div class="seg" role="group" aria-label="Order of the products that pass">${rules.map((r) => `<button data-rule="${esc(r.id)}" aria-pressed="${r.id === ruleId()}" ${state.seal.signed ? "disabled" : ""} title="${esc(r.label || "")}">${esc(short(r))}</button>`).join("")}</div>` : "";
   const lead = ladder ? "Cheapest first" : `${short((rules || []).find((r) => r.id === ruleId()) || { id: ruleId() })} first`;
   const sub = !rows.length ? "No page has been read for this item yet" : at < 0 ? `${lead}. ${rows.length} read · nothing passes`
@@ -610,10 +619,10 @@ function renderSide(line, c) {
         ${u && u.quote ? `<div class="kv"><span class="k">returns</span><span class="qt">“${esc(clip(u.quote, 90))}”</span></div>` : ""}</div>` : "";
     card = `<section class="card why"><div class="cap">${c.picked ? (line.picked_by === "shopper" ? `Chosen by ${esc(state.sheet.shopper.name)}` : c.picked_because ? "Recommended" : "Why this one") : c.status === "inside" ? "Passes, not the pick" : "Why not this one"}${c.picked && ui.was && ui.was.store !== c.product.store ? ` <span class="nowat">now at ${esc(c.product.store)}</span>` : ""}</div>
       <h2 title="${esc(c.product.title)}">${esc(c.product.title)}</h2>
-      <div class="meta2">${esc(option + c.product.store)} · <span data-k="why.price">${money(c.product.price_cents)}</span>${qty(line) > 1 ? `${esc(times(line))} = ${money(c.product.price_cents * qty(line))}` : ""} · <a class="link" href="${esc(c.product.url)}" target="_blank" rel="noopener">store page ↗</a></div>
+      <div class="meta2">${esc(option + c.product.store)} · <span data-k="why.price">${money(c.product.price_cents)}</span>${qty(line) > 1 ? `${esc(times(line))} = ${money(c.product.price_cents * qty(line))}` : ""} · <a class="link" href="${esc(c.product.url)}" target="_blank" rel="noopener" title="The store's page">page ↗</a></div>
       ${c.picked && c.picked_because && line.picked_by !== "shopper" ? `<div class="because">${esc(cap(c.picked_because))}</div>` : ""}
       ${c.status === "struck" ? `<div class="pair"><div class="ph2"><span>Struck by ${esc(state.sheet.issuer.name)}</span></div><div class="qt">“${esc(c.reason || "")}”</div></div>` : ""}
-      ${shown.map((ch) => pairHtml(ch, limits.find((l) => l.id === ch.limit_id), c)).join("")}${extrasHtml(c)}${agent}
+      ${shown.map((ch) => pairHtml(ch, limits.find((l) => l.id === ch.limit_id), c)).join("")}${agent}${extrasHtml(c)}
       ${canChoose(line, c) ? `<button class="btn choose" data-choose="${esc(c.id)}">Choose this one</button>` : ""}
       ${c.picked && line.picked_by === "shopper" && !state.seal.signed && aux.routes && aux.routes.has("/api/shopper/choose") ? `<button class="link" data-choose="">Back to the rule's pick</button>` : ""}
       ${!c.picked && pickOf(line) ? `<button class="link" data-show="">Back to the pick</button>` : ""}</section>`;
@@ -807,6 +816,7 @@ function renderDrawer(line, pick) {
   el.dataset.for = "";
   let html = null;
   if (d === "tools") html = toolRows().length ? toolsSheet() : null;
+  if (d && d.startsWith("ask:")) { if (el.dataset.for === d && !el.hidden) return; html = askSheet(d.slice(4), line); el.dataset.for = d; el.hidden = !html; if (html) el.innerHTML = closeBtn + html; return; }
   if (d && d.startsWith("step:")) html = stepSheet(d.slice(5), line, pick);
   const c = d === "pick" || d === "step:picked" ? pick : line.candidates.find((x) => x.id === d);
   if (!html && c) html = productSheet(c);
@@ -899,6 +909,7 @@ document.addEventListener("input", (e) => {
   if (!input) return;
   const value = parseFloat(input.value), id = input.dataset.id;
   input.previousElementSibling.textContent = `${g(value)} ${input.dataset.unit}`;
+  if (input.dataset.kind === "ask") return;
   if (input.dataset.kind === "limit") { ui.sim.limits[id] = value; return apply(); }
   if (SIM) { ui.sim.facts[id] = value; return apply(); }
   clearTimeout(factTimer);
@@ -911,6 +922,19 @@ document.addEventListener("input", (e) => {
   }, 60);
 });
 document.addEventListener("submit", async (e) => {
+  if (e.target.id === "askform") {
+    e.preventDefault();
+    const form = e.target, body = { limit_id: form.dataset.limit, value: parseFloat(form.elements.value.value), note: form.elements.note.value.trim() };
+    try {
+      const res = await fetch("/api/shopper/ask-change", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || out.ok === false) throw new Error(out.detail || out.error || res.status);
+      ui.drawer = null;
+      await loadAux();
+      last.quiet = true; render();
+    } catch (error) { q("#askReply").innerHTML = `<p>Not sent: ${esc(error.message)}</p>`; }
+    return;
+  }
   if (e.target.id !== "say") return;
   e.preventDefault();
   const box = q("#sayText"), text = box.value.trim();
@@ -932,7 +956,6 @@ document.addEventListener("submit", async (e) => {
 });
 
 // ---------- a change to a limit sent from this screen, without the approver's key. The server's answer, in a toast ----------
-const REFUSAL = { unsigned: "not signed", not_enrolled: "not signed", bad_signature: "not signed", unknown_key: "not the approver's key", replayed_seq: "replayed request", bad_payload: "not a signed request" };
 let toastTimer = null;
 function toast(anchor, html) {
   const el = q("#toast"), r = anchor.getBoundingClientRect();
@@ -944,41 +967,32 @@ function toast(anchor, html) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { el.hidden = true; }, 6000);
 }
-let refusalTimer = null;
-async function forgeChange(anchor) {
-  const line = theLine(), limit = sheetLineOf(line).limits.find((l) => l.id === anchor.dataset.forge);
-  const payload = JSON.stringify({ type: "set_limit", sheet_id: state.sheet.id, seq: Date.now(), at: new Date().toISOString(), limit_id: limit.id, value: limit.bound.min });
-  const sig = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(64)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-  let html;
-  try {
-    const res = await fetch("/api/issuer/request", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ payload, sig, key_id: (state.issuer_key && state.issuer_key.key_id) || "this-screen" }) });
-    const out = await res.json().catch(() => ({}));
-    // the server's answer, said plainly; its own code and reason are on hover
-    html = res.ok && out.ok !== false ? `<b>Accepted</b> <span class="code2">${res.status}</span>`
-      : `<b>Refused:</b> only ${esc(state.sheet.issuer.name)}'s phone can change this <span class="code2" title="${esc((REFUSAL[out.error] || words(out.error || "")) + (out.detail ? ": " + out.detail : ""))}">${res.status}</span>`;
-  } catch (error) {
-    html = "No answer from the server";
-  }
-  ui.refusal = { id: limit.id, html };
-  clearTimeout(refusalTimer);
-  refusalTimer = setTimeout(() => { ui.refusal = null; last.quiet = true; render(); }, 4200);
-  last.quiet = true;
-  render();
-  fx.arrive(q(".refline"), 0, 240, 3);
-  load();
+/** The shopper's asks to the approver (GET /api/asks), newest last; the latest one for a limit. */
+function askFor(limitId) {
+  const raw = aux.asks, list = Array.isArray(raw) ? raw : raw && (raw.asks || raw.items || [...(raw.pending || []), ...(raw.settled || [])]);
+  return (Array.isArray(list) ? list : []).filter((x) => x.limit_id === limitId).slice(-1)[0] || null;
+}
+function askSheet(limitId, line) {
+  const limit = sheetLineOf(line).limits.find((l) => l.id === limitId);
+  if (!limit) return null;
+  const name = esc(state.sheet.issuer.name), b = limit.bound;
+  return `<h2>Ask ${name}</h2><p>${esc(state.sheet.shopper.name)} proposes a value for “${esc(limit.name)}”. ${name} decides on the phone; nothing changes until then.</p>
+    <form id="askform" data-limit="${esc(limit.id)}">
+      <label class="field"><span>${esc(cap(limit.label || limit.name))}</span><output>${esc(withUnit(g(b.value), limit.unit))}</output>
+        <input type="range" data-kind="ask" data-unit="${esc(limit.unit)}" name="value" min="${b.min}" max="${b.max}" step="${b.step}" value="${b.value}"></label>
+      <input id="askNote" name="note" type="text" autocomplete="off" maxlength="140" aria-label="A short note" placeholder="A short note…">
+      <button class="btn" type="submit">Send to ${name}</button></form><div id="askReply" aria-live="polite"></div>`;
 }
 
 // ---------- interaction ----------
 document.addEventListener("click", (e) => {
-  const t = e.target.closest("[data-rule], [data-choose], [data-sheet], [data-menu], [data-forge], [data-toggle], [data-show], [data-open], [data-close], .rowx");
+  const t = e.target.closest("[data-rule], [data-choose], [data-sheet], [data-menu], [data-toggle], [data-show], [data-open], [data-close], .rowx");
   if (ui.menu && !(t && (t.dataset.sheet || t.dataset.menu !== undefined))) { ui.menu = false; ui.confirm = null; if (!t) { last.quiet = true; render(); return; } }
   if (!t || e.target.closest("a, input")) return;
   if (t.dataset.rule) return setRule(t.dataset.rule, t);
   if (t.dataset.choose !== undefined) return choose(t.dataset.choose, t);
   if (t.dataset.sheet) return useSheet(t.dataset.sheet, t.dataset.sure === "1");
   if (t.dataset.menu !== undefined) { ui.menu = !ui.menu; ui.confirm = null; last.quiet = true; return render(); }
-  if (t.dataset.forge) return forgeChange(t);
   if (t.dataset.toggle) { ui.open.has(t.dataset.toggle) ? ui.open.delete(t.dataset.toggle) : ui.open.add(t.dataset.toggle); }
   else if (t.dataset.close !== undefined) ui.drawer = null;
   else if (t.dataset.show !== undefined) ui.show = null;
@@ -990,14 +1004,11 @@ document.addEventListener("click", (e) => {
 });
 addEventListener("keydown", (e) => {
   if (e.key === "Escape" && (ui.drawer || ui.show || ui.menu)) { ui.drawer = null; ui.show = null; ui.menu = false; last.quiet = true; render(); }
-  if ((e.key === "Enter" || e.key === " ") && e.target.dataset && e.target.dataset.forge) { e.preventDefault(); forgeChange(e.target); }
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("ask")) { e.preventDefault(); e.target.click(); }
   if (e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey || !state) return;
   if (e.key === "e") { e.preventDefault(); ui.drawer = ui.drawer === "shopper" ? null : "shopper"; last.quiet = true; render(); q("#sayText")?.focus(); }
   const n = parseInt(e.key, 10);
   if (n >= 1 && n <= state.lines.length) location.hash = state.lines[n - 1].line_id;
 });
 
-load().then(loadAux).then(() => {       // ?forge=1 uses the control once after loading, for a picture of the server's answer
-  const control = params.get("forge") === "1" && q("[data-forge]");
-  if (control) forgeChange(control);
-});
+load().then(loadAux);

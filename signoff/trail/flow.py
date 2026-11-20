@@ -83,7 +83,7 @@ def _shelf(shelf, sheet=None):
         label = {"stores": "Each store's", "bought": "Bought"}.get(slot.get("slot")) or ("%s's" % name if name else _plain(slot.get("slot")))
         out.append({"slot": slot.get("slot"), "owner": "store" if slot.get("slot") == "stores" else slot.get("owner"), "label": label,
                     "count": len(items), "keys": [i.get("key") for i in items if i.get("key")],
-                    "items": [{"text": words(i), "age": (i.get("age") or {}).get("text") or ""} for i in items[:2]]})
+                    "items": [{"text": words(i)} for i in items[:2]]})   # no ages: they change by the minute, the picture does not
     return out
 
 

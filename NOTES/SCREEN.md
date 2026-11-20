@@ -108,6 +108,22 @@ takes about ten seconds (remote database); later calls are cached for 20 s and a
   (Drive rollator, 4.6 of 5 from 58 reviews on the seller's own page, $119.99, not the pick); L1 and L5 have none and say why.
 - `POST /api/reviews/fetch {line_id}` (laptop only) searches for a line not yet searched; about 20 s for six products, then cached.
 
+## TALK 14:50 — one line where the signing happens, and the same short code in three places (the judge, item B)
+- The line: `Dana signs: 6 limits · 8 quotes · 3 picks · $114.69` and the code `3ac9 4ba1 dd01`. Both are data:
+  `GET /api/seal/proof` → `summary: {text, code, limits, quotes, picks, total_cents}` (read-only, on `stream/TALK`).
+- The same from your own copy of the canonical sheet, so the phone prints what it computed itself and not what the
+  server says (`c` is the parsed canonical sheet, `hash` its SHA-256 hex; on the phone these are `canon.obj`, `canon.hash`):
+  ```js
+  const picks = c.lines.filter((l) => l.pick), n = (k, one) => `${k} ${one}${k === 1 ? "" : "s"}`;
+  const line = `${name} signs: ${n(c.lines.reduce((a, l) => a + l.limits.length, 0), "limit")} · ${n(picks.reduce((a, l) => a + l.pick.quotes.length + (l.pick.delivery.quote ? 1 : 0), 0), "quote")} · ${n(picks.length, "pick")} · $${(c.total_cents / 100).toFixed(2)}`;
+  const code = hash.slice(0, 12).replace(/(.{4})(?=.)/g, "$1 ");
+  ```
+  quotes = each pick's figure quotes plus its delivery quote when the store stated one. `/seal/` prints the same line and code.
+- For the Signature card on the decision screen: print `summary.text` and `summary.code` (or compute them from
+  `/api/sheet/canonical`, which the screen can fetch).
+- One top bar on every page. `web/screen/ladder.js:31`: add `["/seal/", "Signature", "signoff.seal.api"]` to `TABS` and
+  `"/seal/"` to `KNOWN_PAGES`. The full markup, as `/talk/` and `/seal/` now print it:
+  `<nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/">Memory</a><a href="/talk/">Conversations</a><a href="/seal/">Signature</a></nav>`
 ## 14:27 from ENGINE — shapes for E30 (pick rule the shopper chooses) and E31 (preferences), fixed now so you can build
 All keys are new and optional; nothing existing is renamed.
 - **`GET /api/state` → `pick_rules`**: `[{"id": "cheapest", "label": "cheapest inside the limits"}, {"id": "best_reviewed", "label":
@@ -171,3 +187,29 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
 - `sheet.pick_rule.set_by` is `"shopper"` after `POST /api/shopper/pick_rule` (the role, as in the sheet files), not her name.
 - Nothing was removed or renamed. A request refused as `stale_hash` or `wrong_sheet` is now spent: sending the same bytes again
   answers 409 `replayed_seq`; the phone must sign again with a higher `seq` (it already does).
+## 15:06 from SIGN — G23, the shopper asks and the approver decides: JSON shapes (the code follows within minutes; these are the contract)
+- **`POST /api/shopper/ask-change {"limit_id": "L1.capacity", "value": 250, "note": "the chair I like is rated 250"}`** (laptop only, like the rest of `/api/shopper/`) →
+  `{"ok": true, "ask": ASK}`. `note` is optional text, 300 characters at most. One pending ask per limit: a new one for the same limit replaces the
+  earlier one (it becomes `status: "replaced"`). It changes nothing in the sheet and nothing under the hash. Refusals, each `{"error": code, "detail": words}`:
+  400 `not_an_issuer_limit` (a limit the approver does not set, or an unknown id), 400 `bad_value`, 400 `out_of_range` (outside the limit's min to max),
+  400 `off_step`, 400 `no_change` (the value is the one it has now), 409 `already_signed` (also `signing in progress`).
+- **ASK** (the same object everywhere):
+  `{"id": "ask-3", "sheet_id": "sheet1", "limit_id": "L1.capacity", "line_id": "L1", "label": "holds at least", "unit": "lb", "op": ">=",
+    "from": 300, "to": 250, "note": "…", "by": "Elena", "at": "2026-11-20T15:07:41-08:00",
+    "status": "pending" | "accepted" | "declined" | "changed" | "replaced",
+    "settled_at": null | iso, "settled_by": null | "Dana", "changed_to": null | number,
+    "text": "Elena asks: holds at least 250 lb instead of 300 lb",
+    "outcome": "asked Dana · waiting" | "Dana changed it to 250" | "Dana declined" | "Dana changed it to 275" | "replaced by a newer ask"}`
+  `accepted`: she accepted the ask itself (her signed `set_limit` carries `ask_id`; the value is the asked one). `changed`: she moved that limit to another
+  value herself while the ask was waiting (`changed_to`). `declined`: her signed `decline_ask`. `text` and `outcome` are words to print as they are; `by` is the
+  shopper's name from the sheet, `settled_by` the name on the approver's key.
+- **`GET /api/asks`** → `{"asks": [ASK, …], "pending": 1}` for the sheet that is loaded now, oldest first, pending and settled. The same list is
+  `asks` inside `GET /api/issuer/status`. A reset, or another sheet, starts with none.
+- Your "change" link becomes "Ask Dana" and opens a value and a note, then `POST /api/shopper/ask-change`; while an ask for that limit is pending show its
+  `outcome` ("asked Dana · waiting"); when it settles show `outcome` again ("Dana changed it to 250", "Dana declined"). Poll `/api/asks` (about every 3 s)
+  or read it from `/api/issuer/status`. Nothing here changes the limit: only the approver's signed request does, and the chain has a receipt for the
+  ask (`limit_change_asked`, actor `shopper`) and for the outcome (`limit_change_settled`, actor `issuer`) beside her signed request.
+## REVIEWS 14:55
+- New on every candidate of `GET /api/reviews` and in `by_candidate[id]`: `ordering: {used, reason}`. When `used` is false and the
+  row shows a rating, show `reason` beside it, quietly: "rating without a stated scale: not used for ordering" (also: under the
+  minimum of 5 reviews; no review count stated). Then the row and the engine's "rated N" tell the same story. Never add "/5" yourself.

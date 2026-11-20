@@ -85,3 +85,31 @@ button.cv:hover, button.cv[aria-pressed="true"] { background: var(--bg); }
 .covers .lead { flex-basis: 100%; font-size: 0.875rem; line-height: 1.25rem; color: var(--t1); }
 .sum { font-size: 0.75rem; color: var(--t2); }
 .empty { color: var(--t3); }
+
+/* a narrow window (150% zoom at 1440 wide): the fingerprint and the check sit above the rows, so a change and its
+   result are still seen together */
+@media (max-width: 72rem) {
+  .covers .lead { order: -2; }
+  .print { order: -1; flex: 1 1 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); gap: 0.5rem 2rem; align-items: start; }
+  .print > .cap { grid-column: 1 / -1; }
+  .print .fp { grid-area: 2 / 1; }
+  .print .sum { grid-area: 3 / 1 / auto / -1; }
+  #status { grid-area: 2 / 2; margin: 0; padding: 0; border: 0; }
+  #cover { grid-area: 2 / 3; margin: 0; padding: 0; border: 0; }
+}
+
+/* attempts without her: a button, what it sends, and the server's own answer */
+.tries .lead { display: flex; align-items: baseline; gap: 0.75rem; font-size: 0.875rem; line-height: 1.25rem; }
+.tries .lead .muted { font-size: 0.8125rem; }
+.try { display: grid; grid-template-columns: 17rem minmax(0, 1fr) minmax(0, 1.4fr); column-gap: 1rem; align-items: center; min-height: 2rem; font-size: 0.8125rem; }
+.try + .try { border-top: 1px solid var(--line); }
+.try button { justify-self: start; height: 1.5rem; padding: 0 0.625rem; border: 1px solid var(--t1); border-radius: 0.75rem; font-size: 0.8125rem; white-space: nowrap; }
+.try button:hover:not(:disabled) { background: var(--t1); color: #fff; }
+.try button:disabled { border-color: var(--line); color: var(--t3); cursor: default; }
+.try .sent { font: 0.75rem var(--mono); color: var(--t3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.try .got { display: flex; align-items: baseline; gap: 0.5rem; min-width: 0; color: var(--t2); }
+.try .got code { color: var(--t1); font-weight: 600; }
+.try .got span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.try .got time { margin-left: auto; font: 0.75rem var(--mono); color: var(--t3); }
+.try .got.through { color: var(--bad); font-weight: 600; }
+@media (max-width: 72rem) { .try { grid-template-columns: 15rem minmax(0, 1fr); row-gap: 0.125rem; padding: 0.25rem 0; } .try .sent { display: none; } }

@@ -2117,6 +2117,29 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
 - STILL NEEDED FROM YOU: `"pages": [...]` in `GET /api/health` (the mounted page folders; app.py line 92 already has
   the list). Without it I list the pages known to be in the repo (talk, graph) and /seal/ will not appear when it lands,
   because asking for a page that is not there is the console 404 the director reported.
+
+## 15:10 from SCREEN (your 14:46 note, the judge's list; stream/SCREEN, main merged at bc3ce1d)
+- Step 1 DONE (items 1, 2, 8): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/j1-step1.png. The Signature card's headline is "Dana signs: 6 limits · the quotes ·
+  3 picks · $114.69", counted from the state, with the code to scan small under it. "try to change" under a limit; the
+  server's refusal shows in the column header for about 4 s: "Refused: only Dana's phone can change this 401". Step 4
+  reads "34 rejected, with reasons" for the open item; "Therapist signs" and "Carts" are in full ink.
+- Step 2 DONE (items 6, 21, 7, 12, 9, 11, 10 and the cuts for /): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/j2-step2.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/j2-step2-L5.png.
+  One line under each figure, "✓ quoted from the page · 3 models agree" (the models' names on hover); who says it sits
+  beside the words (Dana / Elena / the store), so the Why panel fits at 810 with the store agent's delivery and returns
+  visible; "+ 40 dearer (7 pass), not needed"; subtitle "42 read · 1 cheaper rejected"; "Total $114.69"; "✓ 2 receipts
+  verified"; "Elena · the home: tub inside 21.5 in" under the item's title (it opens her measurements and the chat);
+  "(21.5 in · measured last time)" for a remembered measurement (unseen: no fact is marked remembered on my port);
+  placeholder "Ask the agent…"; no times on the screen; header "invented people, real stores"; list title
+  "Dana · therapist · the order" (I wrote "the order", not "her order": the sheet gives no pronoun).
+  Also fixed: the tools route takes seconds (live queries) and was holding up the tabs, the QR and the reviews on load.
+- Step 3, PARTLY: the bar on / is Decision · Trail · Memory · Conversations, always. "Signature" (/seal/) is in the list
+  but hidden, because `web/seal` is not on main (7b3b56e) and I will not show a tab that opens a 404. It appears by
+  itself when /api/health has `"pages"` with "seal" in it; without that key please tell me when the folder lands.
+- Step 4 DONE: the drawer's caption is cut; each row has its noun from the route's `unit` ("SingleStore · 9 candidates
+  inside the limits", "Airbyte · 311 rows delivered"). It is closed by default.
+- Step 5, C14: NOT CLOSED. `state.pick_rules` is still null and `POST /api/shopper/pick_rule` is not in /openapi.json on
+  main at bc3ce1d, so the segments cannot be shown or clicked on real data. The code is in place (see 14:55 and 15:00).
+- C11: DONE at 14:55 on the real route ("Choose this one", "chosen by Elena").
 ## SIGN 14:35 — G22 (ordering and preferences on the phone), and what the derive step needs
 - DONE G22 (a): `web/phone/index.html` `ruleText`: "<shopper> asked for <label>" (e.g. "Elena asked for the best reviewed that passes") under the total, label from the signed canonical `pick_rule.label`; the shopper's name and `set_by == "shopper"` are read from `state.sheet.pick_rule` only when its id equals the signed rule's id, otherwise it says "Pick rule: <label>" and claims no choice. ENGINE: please set `sheet.pick_rule.set_by` to "shopper" only when she chose it (today the default `cheapest` already says "shopper", so the default would read "Elena asked for cheapest that meets the order"). Proof: `uv run pytest tests/sign/test_ordering_and_preferences.py -q` → 5 passed (phrase from the real function run in node; no claim when the state names another rule).
 - DONE G22 (a, binding): the ordering is under the hash, so a change after she looked is refused: `test_a_changed_ordering_after_she_looked_is_refused_by_the_hash` signs the earlier hash after the pick rule changed, with the engine's own `state._canonical`: 409 `stale_hash`, no cart call, nothing sealed.
@@ -2139,6 +2162,32 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
 5. Top bar: Decision · Trail · Memory · Conversations · Signature (`/`, `/trail/`, `/graph/`, `/talk/`, `/seal/`).
 Also in this commit: T6's route `GET /api/trail/left` and its panel, collapsed to its one line under the figure; the
 open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` are retaken.
+
+## 14:53 from TRAIL
+DONE T6: "What left, and what never did" is on `/trail/`, directly under the figure: one line always visible, one click
+opens the matrix (`/trail/#left` opens it already open). Route `GET /api/trail/left` (read-only, in my router;
+`signoff/trail/left.py`). `uv run -q pytest -q` → 400 passed (tests/trail: 16).
+Real totals, as the page states them on port 8016 (sheet 4, replay mode, with a copy of main's own ledger file taken at
+14:44 plus what my server sent since): **108 payloads to 5 recipients · 50 carried a limit, a measurement or a name, none
+to a store · 15 held one the sender did not declare · 31 stopped at the guard** (in 7 of 13 messages to 3 stores' agents;
+4 of the 13 were refused outright).
+What the matrix shows, and it does embarrass us where the records do:
+- the stores' agents: product name and need-by date sent (9 each); order limit, home measurement, a person and a health
+  detail **stopped** (6, 4, 6, 6 messages), each cell opening the guard's record with the removed words;
+- Senso: the order's limit **sent** in 34 payloads and the order in 58 (the sender declares them: Senso checks the sheet's
+  sentences against the order); a person's name **found** in 2 payloads the sender did not declare (red);
+- the database (singlestore): everything sent, and a person's name **found** in 13 of 13 writes though not declared (red);
+- analytics (amplitude, statsig): limit, measurement and name **never** (18 and 9 payloads checked by the ledger's
+  search); the other classes "not recorded", because the ledger's search cannot find them and the sender declared none.
+Rows come from the guard's rule and marks and the ledger's classes that occur; each has one real value from the run.
+A cell opens the ledger rows behind it (time, purpose, payload hash) or the guard's messages. Opening the panel strikes
+the stopped cells through. Screenshots I looked at: `web/trail/shots/left-0.png` (open, 1440 x 810), `left-1.png` (a
+"found" cell: names in the database writes), `left-2.png` (a "stopped" cell: the guard's removed words), `left-3.png`
+(a "never" cell), `left-150-0.png` (960 x 540).
+Not in it: columns for the reading model, the small reader, the stores' search and the web search, because main's ledger
+for sheet 4 has no rows to them (the reads ran as a batch elsewhere; noted for ENGINE at 13:50). They appear by
+themselves when rows exist. Two things for their owners: TALK's guard classed "at least 300 lbs" as a health detail in
+one message; STORE/SIGN: the database writes and two Senso payloads carry names the sender does not declare.
 ## TALK 14:48 — K5 status and what will not make it
 - Read the code first. Corrections to the brief's summary, which the page will follow:
   - The phone does not sign the bare hash. It signs a JSON message (`payload`): `type: "sign_sheet"`, the sheet id, `seq`,
@@ -2156,12 +2205,68 @@ open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` 
 - Will not make it: drawn flow lines from each row into the fingerprint (the rows sit beside it instead); a replay
   control for the lanes (they are drawn in order with their times). Parts 2 and 3 share one card: the rows on the left
   are the editable copy, the fingerprint and the check are on the right, so a change and its result are seen together.
+
+## TALK 14:50 — K5 done on `stream/TALK`; the judge's items A and B done
+- DONE K5: `/seal/` (`web/seal/index.html`, `seal.js`, `seal.css`, `verify.js`) and `GET /api/seal/proof`
+  (`signoff/seal/api.py`, read-only). Proof: `uv run pytest tests/seal -q` → `6 passed`. The test verifies a real saved
+  signature (`tests/seal/proof-signed.json`, saved from my port at 14:45), fails on a one-character change, and runs
+  `web/seal/verify.js` itself under node on the same proof: `valid: true`, then `valid: false` after one character.
+  Chrome did the same check on the page: see the shots. `./hk check` → `PASS (default) uv run -q pytest -q -x`.
+- What the page is, in the order it reads (the judge: "Change one thing" first):
+  1. Change one thing, with what the signature covers. 23 rows from the canonical sheet with owner dots (her rules, the
+     home's measurements, the store's words, picks, prices, delivery quotes, the ordering, the total), one column per
+     item. Every value is a button: an edit changes a copy in the page, the browser recomputes the SHA-256, the pattern
+     and the short code change, and the ECDSA check fails: "Not what Dana signed", the row marked, "Restore".
+     Unedited: "Verified in this browser with Dana's public key". Beside it: "A signature over the cart covers 7 of 23
+     rows" against "This signature covers 23 of 23 rows"; pressing the first dims the rows a cart does not hold.
+  2. Who holds what: three lanes, the private key drawn in the phone's lane, the public key in the agent's, the carts in
+     the stores'; the run's real events from the receipt chain in order with their times.
+- Exactly what the browser checks (and the test): SHA-256 of the canonical string's bytes equals the `sheet_hash` named
+  in the signed message; ECDSA P-256 over the message's bytes verifies with the enrolled key. For an edited copy it also
+  tries the signature against the message that would name the new fingerprint: that fails too. An edit splices the one
+  value into the original text, because a re-serialised copy is not the signed bytes (`16.0`, `–`): the test shows it.
+- Shots, each looked at, 1440 x 810, in `web/seal/shots/`: `seal-unsigned.png` (no key, "Nothing is signed yet: no cart can
+  exist", cart gate closed), `seal-unsigned-changed.png`, `seal-enrolled-unsigned.png`, `seal-signed.png` (verified),
+  `seal-changed.png` (300 → 250 fails), `seal-changed-quote.png` (a store quote edited), `seal-cart-coverage.png`,
+  `seal-lanes.png`, and at 150% zoom `seal-signed-150.png`, `seal-changed-150.png` (the check moves above the rows).
+- Honest limits: the signed state in the shots and the test is from my port in replay mode, signed with the kit's
+  `demo/signer.py` (the same message layout and algorithm as the phone, a key made in Python, not on a phone), identity by
+  Persona's sandbox through SIGN's simulate route, carts are replay carts. On main the page shows whatever main holds:
+  right now "nothing is signed yet". A signature is kept in memory only: restart main and it is gone, with its events.
+  Not built: drawn flow lines from the rows into the fingerprint, and a replay button for the lanes (they arrive in
+  order once, on load, unless the OS asks for reduced motion; the pattern's change on an edit always animates).
+- On main: merge, then restart main (the `/seal` mount is made at start, when `web/seal/` exists).
+  `curl -s localhost:8800/api/seal/proof | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['signed'], d['summary'])"`
+  `?still` draws the lanes without the arrival motion (for a screenshot); `?edit=300~250` opens with that change made.
+- Judge A, `/talk/`: the rule chips are the first thing read (16 px, "may receive" in ink, "never" struck and quieter);
+  one conversation per store with "+N more"; "Not sent · the guard stopped it" in quiet ink, no red; no timestamps.
+  `web/talk/shots/talk-thread.png`, `talk-refused.png` retaken.
+- Judge B: the one line and the short code are in the proof (`summary`), with the rule to compute them, in NOTES/SCREEN.md
+  and NOTES/SIGN.md. One top bar: `/talk/` and `/seal/` print the five tabs; the markup is in NOTES/SCREEN.md,
+  NOTES/TRAIL.md and NOTES/GRAPH.md.
 ## GRAPH 14:45 — H5: what will and will not make it
 - On `stream/GRAPH` now (commit "H5 first version"): `GET /api/graph/explore?line_id=` (nodes, edges, `stages`) and /graph/ opening on the run growing as a graph: the order, the search (every option a node: 73 for the walker), the reading (a dot per quoted figure; dashed when the page does not state one), the rules one at a time (rays from the rule; set aside into a counted band by rule and reason), the web (6 searched, rating pills, "only the title is sent"), the ranking (line toward the gate, pick ringed), the signature (gate, `/seal/`; a cart only when the state has one). Play, step, scrub, arrow keys. The five-column drawing is the second view ("The decision").
 - Will make it by 15:20: A (what it already knows: `GET /api/memory/recall?line_id=` as memory nodes with owner and age, attached to the store, product or measurement they are about; a remembered strike set aside as "struck before") and C (asking the store's agent, from `GET /api/talk/threads`: each message, the parts the guard withheld as struck chips, a stopped message ending at the guard, the reply, and "remembered" where MEMORY holds that reply).
 - Will not make it as asked: B. Sheet 4's order document states no patient weight and links no patient fact to a limit in its own text, so there is no "because" edge to draw without inventing it. The sealed facts do appear where a record shows them: as the withheld chips at the guard in C (the real spans the guard removed). WONTDO B as separate nodes unless the order text gains those sentences.
 - WONTDO H4 (the workflow as step cards): H5 replaces it on the same page; the stages are the steps, with their real counts in the caption. Cut for time: photo on hover (photos show on the few products left in the web and ranking stages).
 - H2 as written at 14:12 is unchanged: datasets per owner, the refusal recorded, Cognee answers the item question; the canvas is `backend: "records"`.
+
+## GRAPH 14:55 — H7 and the rest: what will make it
+- Working on `stream/GRAPH` now, 11 stages for the walker from `GET /api/graph/explore?line_id=L4`: what is known (the event) · the order · what it already knows · the search · the reading · the rules (two stages) · asking the store · the web · the ranking · the signature. Shots: `web/graph/shots/explore-1.png` to `-11.png`.
+- H7 will make it by 15:10: `signoff/graph/context.py` reads `sheets/<sheet id>_context.json`; a fact is kept only if its quote is in its message at the stated offsets (else dropped and listed in the stage's `dropped`); an `equals` feed is compared with the sheet (`matches` true or false; false is drawn red with "differs"). Tests in `tests/graph/test_context.py` (5). On the canvas: the event, its people, six messages, eleven facts with their sharing mark; at the order stage the facts that feed this item draw their edge with the verb ("sets the need-by date · matches", "is why", "became the measurement · matches"), the three with no `feeds` go dim under one label, "held · not used for this order". Click a fact: its message with the quote marked, sender, time.
+- Also in: A (memory recalled, 9 for the walker), C (messages, the guard, withheld parts as struck chips from the record, replies, "remembered").
+- Will not make it: H7 item 4 (the event in Cognee): it needs another ingest run of about two minutes and a new sentence writer; skipped, and Cognee is not claimed for the event. Photo on hover (photos show on the few products left). `best_reviewed` and the other orderings re-form the line only when the engine's candidates carry `rank`; today the reply says `ranked_by: "price"`.
+
+## GRAPH 14:58 — closing lines (branch `stream/GRAPH`; dev server on 8009 reads main's records with GET)
+- DONE H1: `curl -s 'http://127.0.0.1:8009/api/graph?line_id=L5'` → `backend: "records"`, 15 nodes, 18 edges, `whole: {nodes: 441, edges: 742, skipped: 0}`; every node and edge has `owner` and `source` (`uv run pytest tests/graph -q` → `19 passed, 1 deselected`: `test_every_node_and_edge_has_an_owner_and_a_source`, strikes and signatures only with their receipt, memory rows only when `proved`). In process on main the memory rows are read (`memory: {proved_rows: 48, used_as_source: 5, rows: 96}`), so `memory_rows` is no longer 0 once this is merged.
+- DONE H2 (as far as it is true; the rest is named): six datasets, one per owner (`data/graph/cognee.json`); the issuer's and shopper's written with their own Cognee agent keys; `data/graph/cognee_log.jsonl` line 1: shopper's key on `signoff-issuer` → 409 `PermissionDeniedError ... [write]`; ingest of 56 sentences measured at 127.1 s; `POST /api/graph/ask?line_id=L4` → `backend: "cognee"`, answer per dataset in 15 s, saved and shown in the side panel ("Answered by Cognee", one sentence per owner, the whole answer behind one link). NOT done and not claimed: the canvas is not read back from Cognee (`backend: "records"`); the event (H7) is not in Cognee. Live test: `uv run pytest tests/graph -m live` (one refusal against the real service).
+- DONE H3: `GET /api/graph?line_id=` and the five-column drawing ("The decision" on /graph/), store row removed as the judge asked (the store is named on its product). Shots: `web/graph/shots/walker.png`, `grab-bar.png`, `grab-bar-quote.png`.
+- WONTDO H4: replaced on the same page by H5 (the stages are the steps, each with its real count in the caption); two leads on one page would compete.
+- DONE H5: `curl -s 'http://127.0.0.1:8009/api/graph/explore?line_id=L4'` → `records {'products': 73, 'passing': 46, 'set_aside': 27, 'pages': 34}`; stages `event · order · known · search · reading · rule (300 lb: 17 set aside, 56 left) · rule (door: 10 set aside, 46 left) · asking · web (6 searched; 4 rated) · ranking (46 pass, cheapest) · signature`. Play, step, scrub, arrow keys, space; Play animates whatever the OS motion setting. Shots looked at: `web/graph/shots/explore-1.png` … `explore-11.png` (1440 x 810). A stage with no records is absent, not empty: no context file → no event stage; `/api/memory/recall` empty or missing → no "known"; no messages for the item's products → no "asking"; `/api/reviews` missing or nothing searched → no "web"; a cart node only when the state has carts and a `carts_created` receipt.
+- DONE H6: A, `known`: 9 memory nodes for the walker (owner dot, age, the record as source), a remembered strike is set aside as "struck before". C, `asking`: 3 messages, the withheld parts as struck chips taken from the record ("Rosa", "280 lb", "hip replacement"), 1 stopped at the guard, 2 replies marked "remembered" where MEMORY holds them. B is H7.
+- DONE H7 (items 1, 2, 3, 5): `signoff/graph/context.py`, `tests/graph/test_context.py` (quote must sit at its offsets; `equals` checked against the sheet; a differing value is kept and drawn red, "differs"; the committed file drops nothing). Stage 1: the event, 3 people, 6 messages, 11 facts each with its sharing mark; stage 2: 8 facts feed the order, edges with their verbs, 3 dim under "held · not used for this order". WONTDO H7 item 4 (the event in Cognee): not one call; needs a sentence writer and a two-minute ingest.
+- For the AGENTS.md quirks log (yours to add): GRAPH 13:54: Cognee refuses a write without permission with HTTP 409 whose body says "PermissionDeniedError ... (Status code: 403)", so test the body, not the code. GRAPH 14:00: `POST /api/v1/cognify` with `runInBackground: true` returns at once; poll `GET /api/v1/datasets/status?dataset=<id>` for `DATASET_PROCESSING_COMPLETED`; six small datasets took 127 s. GRAPH 14:01: `POST /api/v1/search` answers once per dataset (a list of `{dataset_id, search_result}`), which is what makes "from whom" literal.
+- Judge items 16, 17: done (16: Cognee answer capped to one sentence per owner, timestamps dropped; 17: the store row removed). One top bar: Decision · Trail · Memory · Conversations · Signature.
 ## REVIEWS 14:34 — R4, and the number you asked for (commit ee7be6e on `stream/REVIEWS`)
 - **DONE R4**: `from signoff.reviews import ratings, MINIMUM_REVIEWS`; `ratings(line_id, line=None)` →
   `{candidate_id: {"rating": float, "out_of": 5, "review_count": int}}`. Cache only (`data/reviews/`), `{}` when nothing is cached or the
@@ -2249,3 +2354,97 @@ refused_as_stale"` → "3 failed"; with the fixes the whole suite → "430 passe
 - One change of shape you merged at 14:50: when the shopper changes the ordering, `sheet.pick_rule.set_by` is now `"shopper"`
   (the role, as sheets 3 and 4 write it), not her name. The phone compares it with "shopper" to print "Elena asked for …", so
   with the name that line never showed.
+## 15:20 from SCREEN (your 15:05 correction; stream/SCREEN, main merged as bb68be4)
+- C15, the read-only half DONE: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c15-L5.png. The "change" / "try to change" link and its refusal are removed from the
+  laptop. Under each of the approver's limits the header reads "Dana's limit · phone only" (hover: "it changes only from
+  Dana's phone, with a signature"; I avoided "her": the sheet gives no pronoun). The home's measurements stay Elena's to
+  change. This undoes item 2 of my 15:10 report.
+- C15, "Ask Dana": WRITTEN, NOT SEEN. `POST /api/shopper/ask-change` and `GET /api/asks` are not in /openapi.json on main
+  at bb68be4 and no shape is in NOTES/SCREEN.md yet, so the link stays hidden. When the route exists: "Ask Dana" beside
+  the limit opens a small sheet (a value within the limit's min, max and step, a short note, "Send to Dana"); the limit
+  then shows "asked Dana · waiting", "Dana changed it to N" or "Dana declined". Keys I guessed for `/api/asks`: a list or
+  `{asks: [...]}` / `{pending, settled}` of `{limit_id, value, status}` with status pending / accepted / declined.
+- DONE C14, real data: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-live-mid.png (1440 x 810), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-live-960.png (150%). `state.pick_rules` and
+  `POST /api/shopper/pick_rule` are on main now. I clicked "Best reviewed" in the page on the walker: the list re-sorted
+  (the pick first, the others that pass, then "27 do not pass: 15 under 300 lb (lowest 250 lb) · …"), the pick moved to
+  the Drive rollator at $119.99 with "✓ Recommended" and "Rated 4.6 from 58 reviews, the highest that passes" from
+  `picked_because`, "now at parentgiving.com" and "was picked" showed, and the total followed. The control draws all five
+  rules the engine lists. Two limits of what I saw: the engine sends no `rank`, so among the others that pass I order by
+  rating and then price, which may differ from the engine's own order below the pick; and no candidate carries
+  `preferences` yet, so the "preferred" mark and "prefers …" are still seen only on placeholder data.
+- Step 3 DONE: `web/seal` is on main, so the bar on / is Decision · Trail · Memory · Conversations · Signature, and the
+  "Not signed" chip links to /seal/.
+- My port's rule is back on "cheapest".
+## 14:58 from TRAIL — the replay no longer moves when a record arrives; T6 rows from the sheet's context file
+- **Replay and live records.** A refresh that arrives while the replay is playing, or paused part-way, is held and drawn
+  when the run ends or when someone moves it by hand (rail, step buttons). Seen on port 8016 with the event stream open
+  (`/trail/`, no `live=0`): pressed Play, sent `POST /api/admin/reset` to my own port at about 3 s and again at about
+  10 s; the clock read step 3 at 0:06, step 4 at 0:13, step 5 at 0:16, step 6 at 0:20, step 7 at 0:23 and ended at 0:24
+  with the button back to "Play". The figure also no longer carries memory's ages, which changed its records every minute.
+- **T6 rows.** When `sheets/<sheet id>_context.json` exists, its `classes` come first, in its order, each with the words
+  of its first fact as the example and its travel rule as the row's tooltip: health detail, a person, home measurement,
+  order limit, need-by date; then the classes only the ledger knows (product name, page text, the order, prices). The
+  file's "home" and "schedule" are the ledger's and guard's "home_measurement" and "need_by" (one small table of the two
+  names in `signoff/trail/left.py`). Screenshots `web/trail/shots/left-context-0.png` and `left-context-1.png`. Totals
+  at this moment with a copy of main's ledger: 107 payloads to 5 recipients · 49 carried a limit, a measurement or a
+  name, none to a store · 22 held one the sender did not declare · 31 stopped at the guard. `uv run -q pytest -q` → 427 passed.
+## TALK 15:04 — K6 done on `stream/TALK`: "Try to get a cart without her"
+- DONE K6: a card on `/seal/` with four buttons. Each sends a real request to `POST /api/issuer/request` (the one route
+  that can change a limit or make a cart; SIGN's code has no other, and I added none) and prints the server's own answer:
+  | attempt | what is sent | the server's answer, signed run | unsigned run, no key |
+  |---|---|---|---|
+  | Ask for carts with no signature | `sign_sheet`, no `sig` | 401 `unsigned` "not signed by the approver's key" | the same |
+  | Sign with a key made in this browser | `sign_sheet` signed by a new WebCrypto P-256 key, claiming her key id | 401 `unsigned` | 401 `no_key` "no approver key is enrolled on this server; enrol this phone again" |
+  | Replay her signed request | the exact `payload` and `sig` of her signature | 409 `replayed_seq` "seq 4 is not greater than the last one (4)" | disabled: "no signed request in this run yet" |
+  | Change her limit from the laptop | `set_limit L1.capacity 300 → 250`, no `sig` | 401 `unsigned` | the same |
+- No finding: every attempt was refused. Nothing in the page decides the text shown: it is `status`, `error` and `detail`
+  from the response. If one ever came back 2xx the row says "NOT refused: tell the integrator" in red.
+- They do not disturb a real run. Checked on my port against a signed state, before and after the four attempts:
+  `{'version': 7, 'hash': '3ac94ba1…', 'signed': True, 'current': True, 'carts': 3, 'key': '06c1fbf5b174582c', 'last_seq': 3, 'limit': 300}`
+  both times → `UNCHANGED`. Why, from `signoff/sign/verify.py`: `last_seq` is advanced only after the signature verifies
+  and `seq` is greater; a refusal of these kinds is raised before that, and before the engine is touched. Also a unit
+  test on SIGN's own check: `test_each_attempt_without_her_key_is_refused_and_changes_nothing`. No attempt touches
+  enrolment (five wrong codes would lock the phone out for a minute), so there is no button for it.
+- In the records: each refusal is a `request_refused` receipt in the run's chain. The card's count ("5 attempts refused in
+  this run") is the number of those receipts; the lanes show them ("4 requests refused: unsigned, replayed seq").
+  `GET /api/seal/proof` → `refused: [{n, at, request, why}]`.
+- The limit attempt goes to the signing route, not to `/api/shopper/fact`: that route changes only Elena's own
+  measurements, answers 404 for a limit id and writes no receipt for it, so it would not be in the records.
+- Order on the page: (1) Change one thing, with what the signature covers, in one card, since the covered rows are the
+  values you change; (2) Try to get a cart without her; (3) the lanes. All four parts made it; the lanes are last.
+- Proof: `uv run pytest tests/seal -q` → `8 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`. Shots, looked
+  at: `web/seal/shots/seal-attempts-signed.png`, `seal-attempts-unsigned.png`, `seal-attempts-150.png`; all earlier
+  states retaken with the final page. Chrome made the attempts in the shots itself (`?try=nosig,newkey,replay,limit`).
+- On main: merge, restart main once (new route fields, the mount). Pressing the buttons on main is safe by the above; each
+  press adds a refused receipt to main's chain, which is the point. `?still&try=…` is for a screenshot only.
+## GRAPH 15:00 — ready to merge (`stream/GRAPH`, main merged in at 012efe2)
+- The changed context file is read (Rosa; seven messages; eleven facts, none dropped, no feed differs: `uv run pytest tests/graph -q` → `19 passed, 1 deselected`; `./hk check` → PASS). The event stage shows "held by Elena's agent" from `held_by.who`; the note's full text is the event node's text on click.
+- Autoplay checked in a headless Chrome from a cold open (no `stage` in the URL): it runs the eleven stages and lands exactly on the last layout. Two faults found and fixed on the way: a tween driven by the frame's timestamp could overshoot, and the canvas was measured before its controls were drawn.
+- /graph/ needs an app restart after the merge (the static mount is made at start-up). URLs for stills: `/graph/?live=0&line_id=L4&stage=N` (N from 0 to 10); `&view=detail` for the five columns.
+
+## GRAPH 15:03 — DONE H8 (limits are prescribed, never derived)
+- DONE H8: in `signoff/graph/explore.py` a feed whose target is a limit is refused in code, whatever the file says (listed in the event stage's `refused_feeds`, never drawn), and every limit carries exactly one authored edge, `person:issuer —wrote→ limit`, with the order's own span as its source. Proof: `uv run pytest tests/graph -q` → `20 passed, 1 deselected` (`test_no_fact_may_feed_a_limit_and_every_limit_is_written_by_its_author`); `curl -s 'http://127.0.0.1:8009/api/graph/explore?line_id=L4'` → the only edges into a limit from outside the stores' pages are `('person:issuer', 'wrote', 'limit:L4.capacity')` and `('person:issuer', 'wrote', 'limit:L4.door')`; `refused_feeds: []` with the corrected file; caption "10 facts held from 7 messages; 6 shape this order."
+- The three sources are named on the canvas from `sources` in the reply: "prescribed by Dana" over her order and its rules, "supplied by the family" over Elena, the need-by date and the measurement (the only things a fact's edge reaches), "stated by the stores" over the products. The weight is held, dim, with no edge. Shots re-taken: `web/graph/shots/explore-2.png` (the order stage) and the rest.
+## REVIEWS 14:55 — the mismatch on L4 and L1: not a bug, both sides were right; the route now says it per product
+Checked from the cache in replay mode, per product (rating, scale as quoted, count, site, the exact quote, candidate id in `ratings()`):
+
+| line | product | quote code found | scale in the quote | reviews | in `ratings()` | reason |
+|---|---|---|---|---|---|---|
+| L4 | Carex Folding Walker | "4.5 out of 5" (walmart.com) | 5 | 158 | yes | used |
+| L4 | Drive Medical Aluminum Rollator Walker | "Rated 4.6 out of 5 stars" (parentgiving.com, the seller's own page) | 5 | 58 | yes | used |
+| L4 | Drive Deluxe Folding Two-Button Walker With 5" Wheels | "Rated 4.5 from 138 reviews." (homedepot.com) | none | 138 | no | no `out_of` quoted |
+| L4 | Bariatric Walker with Wheels | "Rated 4.2 from 69 reviews." (amazon.com) | none | 69 | no | no `out_of` quoted |
+| L1 | Deluxe Aluminum Bath Bench by Drive | "3.9 (28)" (amazon.com) | none | 28 | no | no `out_of` quoted |
+| L1 | Medline Knockdown Shower Chair with Arms and Back | "Rated 5.0 out of 5 stars" (the seller's own page) | 5 | 2 | no | under the minimum of 5 |
+| L1 | Carex Universal Bath Seat without Back | "4.8 out of 5 stars" (target.com) | 5 | not stated | no | no review count quoted |
+
+- None is a variant-id or cache-read fault: every id in `ratings()` is the candidate id the route shows, and both read the same cache
+  through the same function (`for_line`). For the three with no scale I looked at the returned page text again: it has no "out of",
+  no "/5" and no "stars" anywhere, and the reader, asked once more for the place where the scale is written, answered `null` for each.
+  So the rating stays unordered. No scale of five was guessed.
+- What was wrong was the route's telling: it showed a rating without saying whether it is used. Fixed, general: every candidate in
+  `GET /api/reviews` (and in `by_candidate`) now has `ordering: {used: true|false, reason}`; the reasons are "rating without a stated
+  scale: not used for ordering", "rating from N reviews, under the minimum of 5: not used for ordering", "rating without a stated
+  number of reviews: not used for ordering", "no quoted rating", "not searched yet". `summary` has `used_for_ordering` and
+  `with_a_rating_not_used_for_ordering` (L4: 2 and 2; L1: 0 and 3). A test checks that the candidates with `ordering.used` are exactly
+  the keys of `ratings()`. Proof: `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `19 passed, 1 deselected`.

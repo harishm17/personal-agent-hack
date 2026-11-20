@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 
 from signoff import config
 
-from . import audit, handcheck, persona, senso
+from . import asks, audit, handcheck, persona, senso
 from .verify import KeyStore, Refused, verify_request
 
 router = APIRouter()
@@ -123,7 +123,7 @@ def enroll_code(request: Request):
 @router.get("/api/issuer/status")
 def issuer_status():
     ensure_watcher()
-    return {**_issuer_info(), "senso": senso.checks(), "identity_required": identity_required(), "relay": _relay()}
+    return {**_issuer_info(), "senso": senso.checks(), "identity_required": identity_required(), "relay": _relay(), **_asks_now()}
 
 
 # ---- the signed request -------------------------------------------------------------------------------
@@ -152,6 +152,15 @@ def _check_action(payload: dict, state: dict) -> None:
         steps = (value - b["min"]) / b["step"]
         if abs(steps - round(steps)) > 1e-6:
             raise Refused("off_step", "value %g is not a multiple of %g from %g" % (value, b["step"], b["min"]), 400)
+        if payload.get("ask_id") is not None:  # accepting an ask is her own change with exactly the asked value
+            ask = asks.pending(state["sheet"]["id"], str(payload["ask_id"]))
+            if ask is None:
+                raise Refused("no_such_ask", "that ask is not waiting any more", 409)
+            if ask["limit_id"] != payload.get("limit_id") or float(ask["to"]) != float(value):
+                raise Refused("ask_mismatch", "the request does not match the ask", 400)
+    elif kind == "decline_ask":
+        if asks.pending(state["sheet"]["id"], str(payload.get("ask_id"))) is None:
+            raise Refused("no_such_ask", "that ask is not waiting any more", 409)
     elif kind in ("strike", "unstrike"):
         line = next((l for l in state["lines"] if l["line_id"] == payload.get("line_id")), None)
         if line is None or not any(c["product"]["product_key"] == payload.get("product_key") for c in line["candidates"]):
@@ -360,8 +369,18 @@ def _handle_request(body: dict):
                 raise Refused("already_signed", "the sheet is signed; reset to sign again", 409)
             _check_action(payload, state)
             signer = {"key_id": keystore.key.key_id, "name": keystore.key.name}
+            sid = state["sheet"]["id"]
+            if payload["type"] == "decline_ask":  # a signed refusal of the shopper's ask: nothing in the sheet moves
+                asks.settle(sid, str(payload["ask_id"]), "declined", signer["name"], signer["key_id"])
+                receipt(body, True)
+                return {"ok": True, "applied": "decline_ask", "ask_id": payload["ask_id"], "version": _version(None, engine)}
             if payload["type"] != "sign_sheet":
                 result = engine.apply_issuer({**payload, "signer": signer})
+                if payload["type"] == "set_limit":  # the ask this answers (accepted) or one it overtakes (changed)
+                    if payload.get("ask_id"):
+                        asks.settle(sid, str(payload["ask_id"]), "accepted", signer["name"], signer["key_id"])
+                    else:
+                        asks.moved(sid, str(payload["limit_id"]), payload["value"], signer["name"], signer["key_id"])
                 receipt(body, True)
                 return {"ok": True, "applied": payload["type"], "version": _version(result, engine)}
             who = persona.status() if persona.record().get("inquiry_id") else persona.record()  # read from Persona's backend
@@ -564,6 +583,40 @@ async def admin_persona_simulate(request: Request):
     return await run_in_threadpool(persona.simulate, str(body.get("action", "")))
 
 
+# ---- the shopper's ask (G23) ---------------------------------------------------------------------------
+
+def _asks_now() -> dict:
+    try:
+        return asks.listing(get_engine().get_state())
+    except Exception:  # noqa: BLE001
+        return {"asks": [], "pending": 0}
+
+
+@router.get("/api/asks")
+def get_asks():
+    return _asks_now()
+
+
+@router.post("/api/shopper/ask-change")
+async def shopper_ask_change(request: Request):
+    """A record only: the sheet and its hash do not change. The approver decides on her phone with a signed request."""
+    body = await _json(request)
+    try:
+        state = get_engine().get_state()
+        if state["seal"].get("signed"):
+            raise Refused("already_signed", "the sheet is signed; nothing can be asked", 409)
+        if state.get("signing"):
+            raise Refused("already_signed", "the sheet is being signed right now", 409)
+        _check_action({"type": "set_limit", "limit_id": str(body.get("limit_id")), "value": body.get("value")}, state)
+        limit = _find_limit(state, str(body.get("limit_id")))
+        if float(body["value"]) == float(limit["bound"]["value"]):
+            raise Refused("no_change", "the limit is already %g" % limit["bound"]["value"], 400)
+        line = next(l for l in state["sheet"]["lines"] if limit in l["limits"])
+        return {"ok": True, "ask": asks.make(state, limit, line["id"], body["value"], body.get("note"))}
+    except Refused as error:
+        return _fail(error)
+
+
 @router.post("/api/admin/reset")
 def admin_reset():
     ensure_watcher()
@@ -571,6 +624,7 @@ def admin_reset():
         keystore.reset()
         persona.reset()
         senso.reset()
+        asks.reset()
         try:
             engine = get_engine()
             result = engine.reset()

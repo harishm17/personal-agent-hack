@@ -40,7 +40,7 @@ def test_a_one_character_change_fails(proof):
     with pytest.raises(verify.Refused):  # the message that would name the changed sheet was never signed
         verify.check_signature(jwk, s["payload"].replace(proof["sheet_hash"], new_hash), s["sig"])
     with pytest.raises(verify.Refused):  # nor is the message itself signed if one character of it changes
-        verify.check_signature(jwk, s["payload"].replace('"seq": 4', '"seq": 5'), s["sig"])
+        verify.check_signature(jwk, s["payload"].replace('"seq": %d' % s["seq"], '"seq": %d' % (s["seq"] + 1)), s["sig"])
 
 
 def test_the_pages_own_code_agrees(proof):
@@ -68,11 +68,15 @@ def test_unsigned_proof_has_no_signature_and_no_cart():
 
 
 def test_events_follow_the_receipts_in_order(proof):
+    """The saved run: enrolled, two signed limit changes, a signing refused for identity, a sandbox identity inquiry,
+    the signature, three replay carts, then the page's four attempts made by Chrome, all refused."""
     texts = [e["text"] for e in proof["events"]]
     assert texts[0] == "public key enrolled with a one-time code" and "2 signed limit changes" in texts
-    assert [e["text"] for e in proof["events"] if e.get("bad")] == ["sign sheet refused: identity not verified"]
-    assert texts.index("verified with the public key") < texts.index("3 carts created · replay") < len(texts) - 1
-    assert texts[-1].startswith("cart lines ") and "3 of 3" in texts[-1]
+    assert texts.index("verified with the public key") < texts.index("3 carts created · replay") < texts.index("cart lines match the signed picks · 3 of 3")
+    bad = [e["text"] for e in proof["events"] if e.get("bad")]
+    assert bad and all(" refused: " in t for t in bad) and any("replayed seq" in t for t in bad)
+    assert len(proof["refused"]) >= 4 and {r["request"] for r in proof["refused"]} == {"sign_sheet", "set_limit"}
+    assert proof["signed"] is True and proof["current"] is True  # after the refused attempts the seal is as it was
     assert all(e["from"] in api.LANES and e["to"] in api.LANES for e in proof["events"])
     assert api.events([], {}) == []
 
@@ -83,3 +87,52 @@ def test_the_one_line_is_counted_from_the_canonical_sheet(proof):
     assert s["limits"] == sum(len(l["limits"]) for l in sheet["lines"]) == 6 and s["picks"] == 3 and s["quotes"] == 8
     assert s["text"] == "Dana signs: 6 limits · 8 quotes · 3 picks · $114.69" and s["code"] == "3ac9 4ba1 dd01"
     assert s["code"].replace(" ", "") == proof["sheet_hash"][:12]
+
+
+# ---- K6: the four attempts the page makes, against SIGN's own check (no server, no network) ----
+
+def _signed(key, payload: dict) -> dict:
+    import base64
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
+    text = json.dumps(payload)
+    r, s = decode_dss_signature(key.sign(text.encode(), ec.ECDSA(hashes.SHA256())))
+    return {"payload": text, "sig": base64.urlsafe_b64encode(r.to_bytes(32, "big") + s.to_bytes(32, "big")).rstrip(b"=").decode()}
+
+
+def _jwk(key) -> dict:
+    n = key.public_key().public_numbers()
+    return {"kty": "EC", "crv": "P-256", "x": verify.b64u_encode(n.x.to_bytes(32, "big")), "y": verify.b64u_encode(n.y.to_bytes(32, "big"))}
+
+
+def test_each_attempt_without_her_key_is_refused_and_changes_nothing():
+    from cryptography.hazmat.primitives.asymmetric import ec
+    hers, other = ec.generate_private_key(ec.SECP256R1()), ec.generate_private_key(ec.SECP256R1())
+    store = verify.KeyStore(path=None)
+    enrolled = store.enroll(_jwk(hers), "Dana", "2026-11-20T15:00:00-08:00", store.code)
+    real = {**_signed(hers, {"type": "sign_sheet", "sheet_id": "sheet4", "seq": 4, "sheet_hash": "h"}), "key_id": enrolled.key_id}
+    assert verify.verify_request(store, real, "sheet4", "h")["seq"] == 4 and store.key.last_seq == 4
+    late = {"type": "sign_sheet", "sheet_id": "sheet4", "seq": 10 ** 13, "sheet_hash": "h"}
+    attempts = {
+        "no signature": ({"payload": json.dumps(late), "key_id": enrolled.key_id}, "unsigned", 401),
+        "a key that was never enrolled, claiming to be hers": ({**_signed(other, late), "key_id": enrolled.key_id}, "unsigned", 401),
+        "a key that was never enrolled, under its own id": ({**_signed(other, late), "key_id": verify.key_id_for(_jwk(other))}, "unsigned", 401),
+        "her signed request again": (real, "replayed_seq", 409),
+        "a limit change with no signature": ({"payload": json.dumps({"type": "set_limit", "sheet_id": "sheet4", "seq": 10 ** 13,
+                                                                    "limit_id": "L1.capacity", "value": 250}), "key_id": enrolled.key_id}, "unsigned", 401),
+    }
+    for name, (body, code, status) in attempts.items():
+        with pytest.raises(verify.Refused) as refusal:
+            verify.verify_request(store, body, "sheet4", "h")
+        assert (refusal.value.code, refusal.value.status) == (code, status), name
+        assert store.key.key_id == enrolled.key_id and store.key.last_seq == 4, name  # the key and seq are as they were
+
+
+def test_refused_requests_are_listed_from_the_receipts():
+    chain = [{"n": 1, "at": "t1", "type": "enrolled", "detail": {}},
+             {"n": 2, "at": "t2", "type": "request_refused", "detail": {"request": "sign_sheet", "refused_because": "unsigned: x"}},
+             {"n": 3, "at": "t3", "type": "request_refused", "detail": {"request": "sign_sheet", "refused_because": "unsigned: x"}}]
+    assert [(r["n"], r["request"]) for r in api.refused(chain)] == [(2, "sign_sheet"), (3, "sign_sheet")]
+    assert [e["text"] for e in api.events(chain, {})][-1] == "2 requests refused: unsigned"
+    assert [e["text"] for e in api.events(chain[:2], {})][-1] == "sign sheet refused: unsigned"

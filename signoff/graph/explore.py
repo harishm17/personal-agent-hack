@@ -4,6 +4,8 @@ The page draws what this returns and decides nothing: which products exist, what
 set a product aside and why, which were searched on the web, the order they are ranked in, and whether the
 approver has signed all come from the records. A stage whose records do not exist is left out, never invented.
 """
+import datetime
+
 from signoff.graph import build
 
 ASIDE = {"outside": "fail", "unclear": "unclear", "not_stated": "not_stated"}
@@ -19,8 +21,35 @@ def _short(text, n=28):
     return text if len(text) <= n else text[:n - 1].rstrip() + "…"
 
 
+def _day(iso):
+    try:
+        d = datetime.date.fromisoformat(str(iso)[:10])
+        return "%s %d" % (d.strftime("%b"), d.day)
+    except ValueError:
+        return str(iso or "")
+
+
+def _target(pointer: str, sheet: dict):
+    """The node a pointer into the sheet stands for: (node ids, or None when it is a plain value of the sheet)."""
+    t = [x for x in str(pointer).split("/") if x]
+    try:
+        if t[:1] == ["lines"] and len(t) >= 4 and t[2] == "limits":
+            return ["limit:" + sheet["lines"][int(t[1])]["limits"][int(t[3])]["id"]]
+        if t[:1] == ["lines"] and len(t) >= 2:
+            return ["item:" + sheet["lines"][int(t[1])]["id"]]
+        if t[:1] == ["shopper_facts"] and len(t) >= 2:
+            return ["fact:" + sheet["shopper_facts"][int(t[1])]["id"]]
+        if t == ["shopper_facts"]:
+            return ["fact:" + f["id"] for f in sheet.get("shopper_facts") or []]
+        if t in (["shopper"], ["issuer"]):
+            return ["person:" + t[0]]
+    except (IndexError, KeyError, ValueError, TypeError):
+        return []
+    return None
+
+
 def explore(records: dict, line_id: str, reviews: dict | None = None, recall: dict | None = None,
-            talk: dict | None = None) -> dict | None:
+            talk: dict | None = None, context: dict | None = None) -> dict | None:
     state = records["state"]
     sheet = state.get("sheet") or {}
     g = build.build(state, records["receipts"], records["order_text"], records["memory"])
@@ -151,6 +180,82 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
                 extra[rid]["remembered"] = held
                 edges.append({"from": rid, "verb": "remembered", "to": held, "owner": m.get("store"), "source": extra[held]["source"]})
 
+    # the event the order comes out of: its people, its messages, and the facts quoted from them
+    event_ids, fed, held_only, refused_feeds = [], 0, 0, []
+    if context and context.get("event"):
+        file = context.get("file")
+        role = {(sheet.get(r) or {}).get("id"): r for r in ("issuer", "shopper")}
+        ev = context["event"]
+        held_by = context.get("held_by") if isinstance(context.get("held_by"), dict) else {}
+        holder = next(((sheet.get(r) or {}).get("name") for r in ("issuer", "shopper") if (sheet.get(r) or {}).get("id") == held_by.get("who")), None) \
+            or next((p.get("name") for p in context["people"] if p.get("id") == held_by.get("who")), None)
+        extra["event"] = {"id": "event", "kind": "event", "owner": "system", "label": ev.get("label"),
+                          "sub": "%s to %s" % (_day(ev.get("starts")), _day(ev.get("ends"))), "text": held_by.get("note") or ev.get("label"),
+                          "held_by": "held by %s's agent" % holder if holder else None,
+                          "invented": context.get("invented"), "source": {"record": "context", "file": file, "pointer": "/event"}}
+        event_ids.append("event")
+        who = {}
+        for i, p in enumerate(context["people"]):
+            pid = "person:context:%s" % p.get("id")
+            who[p.get("id")] = pid
+            extra[pid] = {"id": pid, "kind": "context_person", "owner": "system", "label": p.get("name"), "sub": p.get("role_label") or p.get("role"),
+                          "text": "%s, %s" % (p.get("name"), p.get("role_label") or p.get("role")),
+                          "source": {"record": "context", "file": file, "pointer": "/people/%d" % i}}
+            event_ids.append(pid)
+            edges.append({"from": "event", "verb": "involves", "to": pid, "owner": "system", "source": extra[pid]["source"]})
+        for r, node in (("issuer", "person:issuer"), ("shopper", "person:shopper")):
+            who[(sheet.get(r) or {}).get("id")] = node
+        for i, m in enumerate(context["messages"]):
+            mid = "note:%s" % m.get("id")
+            owner = role.get(m.get("from")) or "system"
+            extra[mid] = {"id": mid, "kind": "context_message", "owner": owner, "label": m.get("from_label") or m.get("from"),
+                          "sub": "%s · %s %s" % (m.get("channel"), _day(m.get("at")), str(m.get("at") or "")[11:16]), "text": m.get("text"),
+                          "at": m.get("at"), "source": {"record": "context", "file": file, "pointer": "/messages/%d" % i, "at": m.get("at"),
+                                                        "from_label": m.get("from_label"), "channel": m.get("channel")}}
+            event_ids.append(mid)
+            if who.get(m.get("from")) and (who[m["from"]] in extra or who[m["from"]] in by_id):
+                edges.append({"from": who[m["from"]], "verb": "wrote", "to": mid, "owner": owner, "source": extra[mid]["source"]})
+        on_item = {item} | set(facts) | {l["id"] for l in limits} | set(people)
+        for f in context["facts"]:
+            fid = "known:%s" % f.get("id")
+            msg = extra.get("note:%s" % f.get("source")) or {}
+            src = dict(msg.get("source") or {}, start=f.get("start"), end=f.get("end"))
+            mark = str((context.get("classes") or {}).get(f.get("class")) or "").split(";")[0].replace("the need-by ", "").strip()
+            here, elsewhere = [], False
+            for feed in f["feeds"]:
+                targets = _target(feed["to"], sheet)
+                if targets is None:  # a plain value of the sheet: drawn as its own small node
+                    found, value = feed["found"], None
+                    vid = "sheet:%s" % feed["to"]
+                    if found and vid not in extra:
+                        from signoff.graph.context import at_pointer
+                        value = at_pointer(sheet, feed["to"])[1]
+                        extra[vid] = {"id": vid, "kind": "sheet_value", "owner": role.get(f.get("owner")) or "system", "label": "%s %s" % (feed["to"].strip("/").replace("_", " "), _day(value) if isinstance(value, str) else value),
+                                      "sub": "on the order", "text": "%s: %s" % (feed["to"], value),
+                                      "source": {"record": "sheet", "file": "sheets/%s.json" % sheet.get("id"), "pointer": feed["to"]}}
+                        event_ids.append(vid)
+                    targets = [vid] if found else []
+                if any(str(t).startswith("limit:") for t in targets):
+                    # a limit has one source, the order its author wrote: a fact never feeds, explains or sets one
+                    refused_feeds.append({"fact": f.get("id"), "to": feed["to"], "why": "a limit is prescribed by its author, not derived from a fact"})
+                    continue
+                for t in targets:
+                    if t in on_item or t in extra:
+                        here.append(t)
+                        edges.append({"from": fid, "verb": feed["verb"], "to": t, "owner": role.get(f.get("owner")) or "system",
+                                      "matches": feed["matches"], "feeds": True, "source": src})
+                    else:
+                        elsewhere = True
+            used = any(not any(str(t).startswith("limit:") for t in (_target(x["to"], sheet) or [])) for x in f["feeds"])
+            fed += 1 if used else 0
+            held_only += 0 if used else 1
+            extra[fid] = {"id": fid, "kind": "context_fact", "owner": role.get(f.get("owner")) or "system", "label": f.get("label"),
+                          "sub": mark, "class": f.get("class"), "text": msg.get("text"), "quote": f.get("quote"), "value": f.get("value"),
+                          "unit": f.get("unit"), "used": used, "feeds_here": bool(here), "feeds_elsewhere": elsewhere and not here,
+                          "at": msg.get("at"), "source": src}
+            event_ids.append(fid)
+            edges.append({"from": "note:%s" % f.get("source"), "verb": "says", "to": fid, "owner": extra[fid]["owner"], "source": src})
+
     # the ranking: the order the engine's own ordering gives. For "cheapest" that is the price; for any other
     # ordering the engine's rank is used when a candidate carries one, and the reply says which was used.
     rule = sheet.get("pick_rule") or {}
@@ -192,6 +297,12 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
             edges.append({"from": "gate", "verb": "releases", "to": cid, "owner": "issuer", "source": build._receipt(made)})
             cart_ids.append(cid)
 
+    for l in limits:  # every limit has exactly one source: its author wrote it in the order
+        edges.append({"from": "person:issuer", "verb": "wrote", "to": l["id"], "owner": "issuer", "prescribed": True, "source": l["source"]})
+    names = {r: (sheet.get(r) or {}).get("name") for r in ("issuer", "shopper")}
+    sources = {"prescribed": "prescribed by %s" % names["issuer"] if names["issuer"] else None,
+               "supplied": "supplied by the family" if event_ids else ("supplied by %s" % names["shopper"] if names["shopper"] else None),
+               "stated": "stated by the stores"}
     keep = set(people) | {item} | set(facts) | {l["id"] for l in limits} | set(stores) | product_ids | {s["id"] for s in statements}
     edges = [e for e in g["edges"] if e["from"] in keep and e["to"] in keep] + edges
 
@@ -202,7 +313,8 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
         {"id": "order", "title": "The order", "at": (state.get("order") or {}).get("derived_at"),
          "caption": "%s wrote the order; %s measured the house." % (issuer.get("name"), (sheet.get("shopper") or {}).get("name")) if facts
          else "%s wrote the order." % issuer.get("name"),
-         "node_ids_added": people + [item] + facts, "node_ids_set_aside": [], "reason_counts": {}},
+         "node_ids_added": people + [item] + facts + [l["id"] for l in limits] + [i for i in event_ids if i.startswith("sheet:")],
+         "node_ids_set_aside": [], "reason_counts": {}},
         {"id": "search", "title": "The search", "at": next((f for f in fetched if f), None),
          "caption": "%s searched: %s found." % (_plural(len(stores), "store"), _plural(len(products), "option")),
          "node_ids_added": stores + [p["id"] for p in products], "node_ids_set_aside": [], "reason_counts": {}},
@@ -211,8 +323,13 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
          "node_ids_added": [s["id"] for s in statements], "node_ids_set_aside": [], "reason_counts": {},
          "not_stated": [p["id"] for p in products if any(v == "not_stated" for v in checks.get(p["id"], {}).values())]},
     ]
+    if event_ids:
+        stages.insert(0, {"id": "event", "title": "What is known", "at": min((extra[i].get("at") or "" for i in event_ids if extra[i].get("at")), default=None),
+                          "caption": "%s held from %s; %d shape this order." % (_plural(fed + held_only, "fact"), _plural(len(context["messages"]), "message"), fed),
+                          "node_ids_added": [i for i in event_ids if not i.startswith("sheet:")], "node_ids_set_aside": [], "reason_counts": {},
+                          "dropped": context.get("dropped") or [], "refused_feeds": refused_feeds})
     if known:
-        stages.insert(1, {"id": "known", "title": "What it already knows", "at": None,
+        stages.insert(2 if event_ids else 1, {"id": "known", "title": "What it already knows", "at": None,
                           "caption": "%s recalled, of %s held." % (_plural(len(known), "memory", "memories"), (recall.get("counts") or {}).get("of", len(known))),
                           "node_ids_added": known, "node_ids_set_aside": [], "reason_counts": {}})
     left = len(products)
@@ -224,7 +341,7 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
         left -= len(out)
         stages.append({"id": "rule:" + l["id"], "title": "The rules", "at": None, "limit": l["id"], "rule": l["label"],
                        "caption": "%s: %d set aside, %d left." % (str(l.get("sub") or l["label"]).capitalize(), len(out), left),
-                       "node_ids_added": [l["id"]], "node_ids_set_aside": out, "reason_counts": counts})
+                       "node_ids_added": [], "node_ids_set_aside": out, "reason_counts": counts})
     if asked:
         withheld = sum(len(extra[i]["removed"]) for i in asked)
         stopped = sum(1 for i in asked if extra[i]["stopped"])
@@ -249,5 +366,7 @@ def explore(records: dict, line_id: str, reviews: dict | None = None, recall: di
     return {"line_id": line_id, "need": line.get("need"), "nodes": nodes, "edges": edges, "stages": stages,
             "totals": {"products": len(products), "passing": len(passing), "set_aside": len(aside),
                        "pages": len({(cands[p["id"]].get("product") or {}).get("product_id") for p in products})},
-            "reviews_available": reviews is not None, "recall_available": recall is not None, "talk_available": talk is not None,
-            "counts": {"memory": len(known), "message": len(asked), "reply": len(said)}}
+            "sources": sources, "reviews_available": reviews is not None, "recall_available": recall is not None, "talk_available": talk is not None,
+            "counts": {"memory": len(known), "message": len(asked), "reply": len(said),
+                       "context_fact": fed + held_only, "context_fact_used": fed, "context_message": len((context or {}).get("messages") or [])},
+            "context_available": context is not None}
