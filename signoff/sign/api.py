@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
+from signoff import config
+
 from . import handcheck, persona, senso
 from .verify import KeyStore, Refused, verify_request
 
@@ -140,6 +142,8 @@ async def issuer_request(request: Request):
             if payload["type"] != "sign_sheet":
                 result = engine.apply_issuer({**payload, "signer": signer})
                 return {"ok": True, "applied": payload["type"], "version": _version(result, engine)}
+            if config.env("PERSONA_REQUIRED") == "1" and not persona.status().get("verified"):
+                raise Refused("identity_needed", "PERSONA_REQUIRED is on: the signer must pass the identity check first", 403)
             blocked = _senso_for(engine, state)
             if blocked:
                 raise Refused("senso_blocked", "Senso found %d sentence(s) in conflict or unsupported" % len(blocked), 409)
