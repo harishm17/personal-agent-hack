@@ -1504,3 +1504,7 @@ Sheet 3 on my port: the live engine still has no figures (`state_every_figure` 0
   both fail 16, so the status was right. With E26 all five show 12, from the option's name and the page's "12” Grab bar…" passage,
   and the lone "15.11” end to end" quote is set aside because it does not name this option. The 16" rows are inside on 16 as before.
 - Sheet 4 after E26: 153 candidates, L1 12 inside / 12 outside / 1 unclear / 18 not stated; L4 48 / 16 / 2 / 7; L5 7 / 20 / 3 / 7.
+- Correction to the last line of my E26 note: the L1 and L4 figures there were from my scratch trial, not from the state. From
+  `/api/state` on sheet 4 now (your re-read of sheet 1 with the width sentence, E26 on): **152 candidates; L1 9 inside / 12 outside /
+  1 unclear / 20 not stated; L4 46 / 16 / 4 / 7; L5 7 / 20 / 3 / 7**; 62 inside, 48 outside, 8 unclear, 34 not stated in all;
+  picks $41.99 (`17 <= 21.5`, "Width (outside legs): 17""), $44.71, $27.99; total $114.69.
