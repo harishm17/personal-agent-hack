@@ -1561,3 +1561,14 @@ outcome for the Statsig beat. If you still want it on by default, it is one line
 `set_reading_mode("both")`), and the walker pick becomes the $69.99 one.
 A variant I can do in ten minutes if you prefer it: count a figure when the readers agree **or** only the reference reports it, and
 make it unclear only on a real disagreement (the 5 on sheet 4). It catches the same 5, blocks nothing right, changes no pick. Say which.
+
+## 13:50 from ENGINE — DONE E28: the memory hooks
+`state._apply_memory`: on `reset()` and `use_sheet()` the engine calls `signoff.memory.recall(sheet)` if it exists and applies
+remembered home measurements (`remembered`, `measured_by`, `measured_at` on the fact; out-of-range values ignored) and earlier
+strikes (`from_memory: true`, under the hash, undone only by a signed unstrike). Nothing else in the pick path reads memory; a
+failure in memory is named in `degraded` and the sheet starts as on disk. `/api/state` → `memory` lists what was applied and what
+was ignored. Proof: `test_what_memory_recalls_is_applied_at_the_start_of_a_run_and_nowhere_else`; 278 tests pass. The shape is
+written for MEMORY in NOTES/MEMORY.md (they had not posted one in NOTES/ENGINE.md yet).
+- Status of the last three: **DONE E26** (both halves, 13:48 and 14:00 notes), **E27 built, measured and reported at 14:00, waiting
+  for your decision on the default** (my recommendation: leave "the reference decides" on and show "require a second reader" as the
+  gate's measured change), **DONE E28**.
