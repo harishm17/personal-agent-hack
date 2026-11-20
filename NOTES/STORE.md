@@ -25,3 +25,12 @@ SIGN now calls `create_carts` once per store in its own thread and gives all sto
 
 ## 12:50 from SIGN — please return the cart's lines from `create_carts`
 For the line-by-line comparison with the signed picks (variant id, quantity, unit price) each cart dict from `create_carts` should carry `lines: [{variant_id, quantity, unit_price_cents, title}]`, taken from the store's `create_cart` reply (`cart.line_items`: item id, quantity, and the item price; prices in cents). SIGN already reads `lines` when present; without it the seal says `lines_checked: false` (the totals are still compared). Variant ids must be in the same form as the pool's `variant_id`. Thank you for `timeout_s`/`tries`: SIGN passes `timeout_s=4, tries=1`.
+
+## 12:55 from SIGN — exact change for `create_carts` so cart lines can be compared (OPEN.md G6)
+I called `create_cart` once for real to read its reply: `cart.line_items[]` is `{id, item: {id: <variant id>, title, price: <cents>, image_url}, quantity, totals}` and `cart.currency` is set. In `signoff/store/cart.py` `create_carts`, after `c = r.get("cart", r)`, please add to each result dict:
+```python
+"currency": c.get("currency"),
+"lines": [{"variant_id": l["item"]["id"], "quantity": l.get("quantity", 1), "unit_price_cents": l["item"].get("price"),
+           "title": l["item"].get("title")} for l in c.get("line_items", [])],
+```
+SIGN's comparison reads exactly those keys (variant id, quantity, unit price) and shows both values on a difference; until `lines` is there every cart says "lines_checked: false". Replay mode: the replayed cart should return its lines the same way.
