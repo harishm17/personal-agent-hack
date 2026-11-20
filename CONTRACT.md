@@ -377,3 +377,30 @@ prior work is "Signing the Transaction but Not the Decision" (arXiv 2609.11757, 
 proposes binding the decision to the signature; say that this build does that, with a signer who is not
 the payer, over real stores. The Personal Agent Protocol is real (Persona's deck today names Persona as a
 design partner; personalagentprotocol.org).
+
+## Amendment 12:40 — the paper, read first-hand (Louck, Dvir, Stulman, arXiv 2609.11757)
+- Correction to Amendment 12:30: the paper does **not** bind the decision. It shows AP2 "signs the
+  transaction but not the decision" (a merchant's text moves the choice in up to 73% of runs, the cart
+  differs from what was shown in 56%), and its fix binds the cart to **what was displayed** ("display
+  binding": product id, unit price, currency, quantity, payee, one cart per approval, no replay) and
+  surfaces overspend against the cheapest item meeting the hard constraints. Its own words: "the mandate
+  chain contains no evidence for that judgment" and "no downstream check can fully validate the product
+  choice".
+- How to cite it: "Louck et al. showed that AP2 signs the transaction but not the decision, and bind the
+  cart to what was displayed. This build goes one step further and puts the reasons (limits, quotes, sums
+  and the pick rule) under the approver's signature, on real stores." Adopt their terms "display binding"
+  and "surfaced, not closed". The Personal Agent Protocol's roadmap does list signed approvals as future
+  work (read first-hand at personalagentprotocol.org/docs/introduction).
+- Gaps it exposes here, to close in this order:
+  1. **Display binding on the phone** (SIGN). The phone fetches `/api/sheet/canonical`, hashes it itself
+     with WebCrypto, refuses to sign if that differs from the server's hash, and renders the review from
+     that same JSON, so what she sees is exactly what she signs.
+  2. **Quantity, currency and the variant** join the canonical pick (ENGINE): `quantity`, `currency`,
+     `variant_title`. After cart creation SIGN compares the store's cart lines (variant id, quantity,
+     unit price) with the signed picks, not only totals; a difference is shown, not hidden.
+  3. **Scope labels** (ENGINE, SCREEN): a delivery or returns answer that is the store's general answer is
+     marked `scope: "store-wide"`; a figure read from a product description that has several variants
+     carries `variants` (count) and the bought variant's title is shown. No figure is dropped for it.
+  4. SIGN uses the engine's signed picks for the signed hash (currently unused), so no cart is orphaned.
+- Said aloud as limits, not fixed: a quote proves where a figure came from, not that the store's claim is
+  true; signatures have no expiry; no third party verifies.
