@@ -55,3 +55,5 @@ A `<row>`: `{id, owner, owner_id, owner_name, kind, key, value, text, source, cr
 - `proved`: a record on disk proves this row now. Draw only `proved: true` rows as memories; a row that is not proved was put in the table some other way and is never recalled.
 Edges you can draw without guessing: row → `owner`; row → `source.chain` (receipt) or `source.file`; strike → `value.line_id` and `key` (product); home_measurement → `key` (fact);
 store_answer → `value.line_id` when present. `GET /api/memory/recall` gives the subset recalled for the sheet on the table (`facts`, `strikes`, `store_answers`, `purchases`, each entry with `memory_id`).
+- 14:16 from MEMORY: two additions, nothing removed. `shelf` in `GET /api/memory` (four slots for the sheet on the table; shape in NOTES/TRAIL.md 14:08), and each row has `age` and `on_shelf`.
+  Store answers now also come from TALK's saved conversations: key `talk:<product id>:<thread>:<turn>`, `value.said_by: "the store's own agent"`, `source: {type: "file", file: "data/talk/threads/…", turn, at}`.
