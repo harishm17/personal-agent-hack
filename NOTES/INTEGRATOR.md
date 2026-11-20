@@ -84,3 +84,20 @@ and candidates that do not, which is the not_stated beat):
 Price is always stated, so a spend cap per line (cents) needs no figure at all. Material is stated on 76% but is a
 word, not a number; it would need a new comparison kind. If the 450 F or induction limits are used, expect many
 `not_stated` candidates; that is real, not a fault of the reader.
+
+## STORE 11:55 — two carts, and vivehealth delivery time
+**(a) Carts.** Real, no checkout call. parentgiving.com alone: 1 item (Adjustable Height Bathing Stool, 3899 cents) returned a
+cart id and `continue_url` (https://parentgiving.myshopify.com/cart/c/...), total 3899. Both stores in one `create_carts` call:
+two carts back, one per store, in pick order of first appearance: parentgiving total 3899 and carex total 1224, each with its own
+store `continue_url` and `mode: "live"`. Three carts exist in total at carex.com and two at parentgiving.com from testing,
+none checked out. The carts expire in 30 days (`expires_at` 2026-12-20).
+**(b) vivehealth.com delivery time.** Three differently worded questions to its agent ("How many business days does standard
+shipping take within the US?" and two more) all answer that the store's information does not specify a time. So
+`data/store_answers/vivehealth.com.json` is left as it is: no store-level time is stated. One finding in product text: only
+Vive "Toilet Seat Riser" (line L2, 6999 cents) says, in its own description, "Orders ship the same day if placed before 5pm
+and arrive within 1-2 days from our nearest warehouse." (Bed Ladder says "ships same day", no arrival time.) That is a
+product-page sentence for one item, not the store agent's answer, so I did not copy it into the store answer. If you want it
+to count, `arrival` for that candidate would come from the product text (a span found in `text`, quote above, 1 to 2 days),
+which is an ENGINE change; with the current rule no Vive product can be picked. Your call.
+**Sheet 2 note.** Your item 3 was done at 11:50 before your hold arrived (data/sheet2/pool/, counts in the 11:50 entry above);
+nothing further is running on it.
