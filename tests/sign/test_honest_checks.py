@@ -68,3 +68,9 @@ def test_identity_is_never_implied(env):
     assert sg["name_basis"] == "self-declared" and sg["persona"]["label"] == "identity not checked" and not sg["persona"]["verified"]
     html = (ROOT / "web" / "phone" / "index.html").read_text()
     assert '"identity not checked"' in html                      # the phone's fallback is the plain statement
+
+
+def test_a_sentence_that_differs_or_is_unsupported_is_counted_not_hidden():
+    rows = [{"verdict": "verified"}] * 5 + [{"verdict": "conflict"}, {"verdict": "unsupported"}]
+    assert text_for({"senso": {"status": "complete", "checks": rows}}, "list") == \
+        "Checked against the list: 5 of 7 verified, 1 differ from the list, 1 not supported by the list"

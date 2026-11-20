@@ -329,11 +329,13 @@ function sensoSealText(sg, word) {
   if (s.status !== "complete") return "not checked";
   const rows = s.checks || [];
   if (!rows.length) return "nothing to check against the " + o;
-  const ok = rows.filter((r) => r.verdict === "verified").length, bad = rows.filter((r) => r.verdict === "error").length;
+  const n = (v) => rows.filter((r) => r.verdict === v).length;
+  const ok = n("verified"), bad = n("error"), diff = n("conflict"), unsup = rows.length - ok - bad - diff;
   const vs = {};
   rows.forEach((r) => { if (r.source && r.source.version_id) vs[r.source.version_id] = r.source.version_num || String(r.source.version_id).slice(0, 8); });
   const ids = Object.keys(vs), ver = ids.length === 1 ? " (version " + vs[ids[0]] + ")" : "";
-  return "Checked against the " + o + ver + ": " + ok + " of " + rows.length + " verified" + (bad ? ", " + bad + " not checked (Senso did not answer)" : "");
+  return "Checked against the " + o + ver + ": " + ok + " of " + rows.length + " verified" + (diff ? ", " + diff + " differ from the " + o : "") +
+    (unsup ? ", " + unsup + " not supported by the " + o : "") + (bad ? ", " + bad + " not checked (Senso did not answer)" : "");
 }
 /* senso-seal-text:end */
 function renderSheet() {
