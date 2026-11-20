@@ -80,3 +80,56 @@ def test_advisory_sentence_is_asked_once():
     client = FakeClient(["unsupported"])
     row = senso.judge(client, {"sentence": "x", "blocks": False})
     assert row["verdict"] == "unsupported" and client.calls == 1
+
+
+def test_a_verdict_names_the_version_of_the_document_it_was_checked_against(monkeypatch, tmp_path):
+    monkeypatch.setattr(senso, "REGISTRY", tmp_path / "docs.json")
+    senso._save_registry({"order:sheet2": {"title": "Bathroom remodel order (invented)", "content_id": "c1", "kb_node_id": "n1",
+                                           "version_id": "v3", "version_num": 3, "sha": "x"}})
+
+    class Client:
+        def post(self, url, json):
+            class R:
+                status_code = 200
+                def json(s):
+                    return {"status": "completed", "eval_run_id": "r", "claims": [
+                        {"claim_text": "c", "verdict": "verified", "quote": "q", "evidence": [{"content_id": "c1", "content_version_id": "v3", "chunk_index": 2}]}]}
+            return R()
+    row = senso.judge(Client(), {"sentence": "Our order requires a toilet for the bathroom.", "blocks": True, "kind": "order"})
+    assert row["source"]["version_id"] == "v3" and row["source"]["version_num"] == 3 and row["source"]["title"].startswith("Bathroom")
+    senso.set_checks([row], "h")
+    assert senso.checks()["order_document"]["versions"][0]["version_num"] == 3
+    # a verdict that rests on an older version says so
+    class Old(Client):
+        def post(self, url, json):
+            r = super().post(url, json)
+            body = r.json()
+            body["claims"][0]["evidence"][0]["content_version_id"] = "v2"
+            r.json = lambda: body
+            return r
+    old = senso.judge(Old(), {"sentence": "x", "blocks": False, "kind": "limit"})
+    assert old["source"]["version_id"] == "v2" and old["source"]["version_num"] is None and old["source"]["latest_version_id"] == "v3"
+
+
+def test_a_changed_document_becomes_a_new_version_of_the_same_node(monkeypatch, tmp_path):
+    monkeypatch.setattr(senso, "REGISTRY", tmp_path / "docs.json")
+    monkeypatch.setattr(senso, "documents", lambda sheet=None: [{"key": "order", "title": "T", "text": "new text"}])
+    senso._save_registry({"order": {"title": "T", "content_id": "c1", "kb_node_id": "n1", "version_id": "v1", "version_num": 1, "sha": "old"}})
+    calls = []
+
+    class Client:
+        def __init__(self, *a, **k): pass
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def put(self, url, json):
+            calls.append(("put", url))
+            class R:
+                status_code = 200
+                def json(s): return {"id": "c1", "kb_node_id": "n1", "latest_content_version_id": "v2", "version_num": 2}
+            return R()
+        def post(self, url, json):
+            calls.append(("post", url)); raise AssertionError("a changed document must not be posted as a new one")
+    monkeypatch.setattr(senso.httpx, "Client", Client)
+    out = senso.load_documents()
+    assert calls == [("put", senso.BASE + "/org/kb/nodes/n1/raw")] and out["documents"]["order"]["version_num"] == 2
+    assert out["documents"]["order"]["version_id"] == "v2" and out["documents"]["order"]["content_id"] == "c1"
