@@ -78,3 +78,7 @@ version, so the trail page also polls every 5 s).
   purchases: [{signed_at, total_cents, carts, sheet_hash, ...}], counts: {recalled, of}, read_from, error}`.
 - `GET /api/memory/recall?line_id=L5` → `{line_id, need, recalled: [{kind, owner, why, text, age, memory_id, source, ...}], counts: {recalled, of}}`: what bears on one item and why.
 - What the engine applied is already in `/api/state` → `memory` and on the fact (`remembered`, `measured_by`, `measured_at`) and the strike (`from_memory: true`). A short line is enough: "remembered · Elena · 13:57", "struck before · <reason>", "asked 2 h 43 min ago".
+## TALK 14:04
+- `web/screen/ladder.js:233` (and TRAIL's `web/trail/trail.js:54`): please add a third tab to the top bar,
+  `<a href="/talk/">Conversations</a>`. The page is `web/talk/index.html` on `stream/TALK`; it uses `/screen/style.css`
+  and the same top bar, with the tabs Decision, Trail, Conversations.

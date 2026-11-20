@@ -58,3 +58,31 @@ A `<card>`: `{memory_id, owner, kind, text, source, at, age: {seconds, text}}` p
 - Which cards were recalled for one item: `GET /api/memory/recall?line_id=L1` → `recalled: [{memory_id, kind, owner, why, text, age, ...}]`; match `memory_id` to the shelf's cards. `why` is short ("bounds \"fits inside the tub\" on this item").
 - "recalled from memory" on a measurement: the engine marks the fact in `/api/state` (`remembered: true, measured_by, measured_at`) and a strike with `from_memory: true`.
 - One thing to draw truthfully: a card exists from the moment its receipt exists (a measurement when Elena sets it, a strike when Dana's signed request is accepted), not only at the signature. Only the "bought" card appears on signing. On 8007 after one run: shopper 1, approver 1, stores 9, bought 1.
+## TALK 14:10 — the guard row: `GET /api/talk/threads` → `messages` (stable; on `stream/TALK`, served on port 8008 now)
+`messages` is a flat list, oldest first, one entry per outbound message of the active sheet (`?sheet=sheet4` for another).
+Every string that came from a store is untrusted text: escape it. Shape of one entry (real, 14:02 today):
+```
+{"id": "cbd3c7f37f4f:1", "thread": "cbd3c7f37f4f", "n": 1,        n: 1 first message, 2 the one follow-up
+ "origin": "shopper",                                             "shopper" (the shopper's own words) | "agent" (its own question about a pick)
+ "store": "parentgiving.com",
+ "product": {"id": "gid://shopify/Product/8045699104933", "title": "Deluxe Aluminum Bath Bench by Drive"},   may be null
+ "at": "2026-11-20T14:02:10-08:00",
+ "purpose": "Mum weighs 280 pounds and came home from a hip operation on Monday. Tell the store that, …",
+ "draft": "My mother, who weighs 280 lbs and recently had hip surgery, needs a Deluxe Aluminum Bath Bench by Drive that supports 300 lbs …",
+ "removed": [{"text": "My mother", "class": "person", "mark": "a person", "rule": "a person is sealed for a store (family member)",
+              "by": "span model", "start": 0, "end": 9}, …],      start/end are offsets in `draft`; by: "sheet value" | "span model"
+ "decision": "rewritten",                                         "sent" (clean as written) | "rewritten" (cut, then sent) | "refused" (not sent)
+ "why": null,                                                     set when refused
+ "sent": "Please arrange for expedited shipping of the Deluxe Aluminum Bath Bench by Drive to ensure it arrives by December 2, 2026. Could you also confirm if an opened item can be returned?",   null when refused
+ "left": [{"class": "product", "mark": "product name", "text": "Deluxe Aluminum Bath Bench by Drive"},
+          {"class": "need_by", "mark": "need-by date", "text": "December 2, 2026"}],   the permitted facts `sent` carries; [] when refused
+ "reply": {"text": "Nothing has been arranged, and the store’s information does not specify expedited shipping …",
+           "at": "2026-11-20T14:02:10-08:00",
+           "answers": [{"start": 0, "end": 132, "quote": "…", "question": "…"}, …]}}   offsets in reply.text; null when nothing was sent
+```
+- `class` is one of limit, home_measurement, person, health, money, address (and need_by, delivery_region, product if a
+  sheet's `sharing` seals those). `mark` is the two-word label for a chip; the same labels are in the top-level `marks`.
+- The top level also has `rule` (`{recipient, may, sealed, source}`) and `threads` (the same data grouped per conversation).
+- For the lead row use `id: "cbd3c7f37f4f:1"`: 7 removed, sent, a real reply. `cbd3c7f37f4f:2` is its follow-up, refused.
+  The agent's own questions (`origin: "agent"`, 6 messages, 3 stores) have `removed: []`: nothing was stopped, by design.
+- Two earlier asks (`f9faad4b5aed:1`, `1553b09d0333:1`) were refused and sent nothing; they are real and stay in the list.
