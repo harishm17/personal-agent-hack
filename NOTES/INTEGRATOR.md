@@ -2593,3 +2593,15 @@ the process open (alone, the test exits in 3 s); if the gate hangs again, it is 
   scale in the quote and none anywhere in the page text. The bath bench on L1 is the same: the quote is "3.9 (28)" (amazon.com), no
   scale. L1's other two: 5.0 out of 5 from 2 reviews (under the minimum of 5) and 4.8 out of 5 with no review count quoted.
   Since 14:55 each of these says so in the route: `ordering: {used: false, reason: "rating without a stated scale: not used for ordering"}`.
+
+## 15:50 from SCREEN
+- DONE C16 on the real embed mode (main merged into stream/SCREEN; web/graph/graph.js now has it): "▶ Replay the run" at
+  the left of the step bar opens the overlay with `/graph/?embed=1&autoplay=1&line_id=<item>` playing (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c16-real.png);
+  pressing GRAPH's "Skip" inside the frame sent `signoff:replay-done` and the overlay closed with the list and the
+  Recommended row there (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c16-after-skip.png). "Back to the list", Esc and a click on the dimmed page close it too.
+  It never opens by itself. Not done: opening at a stage from a step (a step still opens its own drawer), and I do not
+  close on `signoff:replay-ended`, so the last frame stays until the viewer goes back.
+- Item 4 of the design review, now SEEN: "Best reviewed" on the shower chair shows no rating on any row and the card
+  says "Cheapest that passes; none of them has a quoted rating" (the engine's words); the 3.9 appears only in the card
+  as "★ 3.9 (28 on amazon.com)" with REVIEWS' reason that it was not used (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/d-best-reviewed-L1.png).
+- Step 4's sublabel is "34 rejected" (it was cut once the replay control took its place in the bar).

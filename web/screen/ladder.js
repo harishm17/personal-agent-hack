@@ -378,7 +378,7 @@ function stepList(line, pick) {
     { id: "list_read", label: "List read", small: limits ? `${n_(limits, "limit", "limits")}, quoted` : "limits on the sheet", done: true },
     { id: "stores_searched", label: "Stores searched", small: n_(sheet.stores.length, "store", "stores"), done: pages > 0 },
     { id: "pages_read", label: "Pages read", small: n_(pages, "page", "pages"), done: pages > 0 },
-    { id: "checked", label: "Checked", small: `${line.candidates.filter((c) => c.status !== "inside").length} rejected, with reasons`, done: state.lines.some((l) => l.candidates.length > 0), k: "step.rej" },
+    { id: "checked", label: "Checked", small: `${line.candidates.filter((c) => c.status !== "inside").length} rejected`, done: state.lines.some((l) => l.candidates.length > 0), k: "step.rej" },
     { id: "picked", label: "Picked", small: pick || state.total_cents ? `${n_(state.lines.filter((l) => l.pick).length, "item", "items")} · ${money(state.total_cents)}` : "nothing passes", done: !!pick, k: "step.pick" },
     { id: "signs", label: `${cap(sheet.issuer.role || "approver")} signs`, small: seal.signed ? `signed by ${sheet.issuer.name}` : "from the phone", done: !!seal.signed },
     { id: "carts", label: "Carts", small: seal.signed ? `${(seal.carts || []).length} created` : "none exist yet", done: !!seal.signed && (seal.carts || []).length > 0 },
