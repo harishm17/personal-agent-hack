@@ -9,8 +9,8 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<
 const ownerClass = (o) => (o === "issuer" || o === "shopper" ? o : o === "system" || o === "web" ? "" : "store");
 const short = (s, n) => (String(s || "").length > n ? String(s).slice(0, n - 1).trimEnd() + "…" : String(s || ""));
 const clock = (at) => (at ? String(at).slice(11, 16) : "");
-const FW = px(180);                                                // a fact quoted from a message is a wider card
-const boxW = (n) => (n.kind === "context_fact" ? FW : CW);
+const FW = px(176);                                                // a fact quoted from a message is a wider card
+const boxW = (n) => (n.kind === "context_fact" || n.kind === "event" ? FW : CW);
 const REASONS = ["outside", "unclear", "not stated", "struck", "struck before"];
 
 let X = null;      // the mounted exploration: data, elements, current stage and positions
@@ -52,7 +52,7 @@ function plan(k) {
     notes.forEach((n, i) => put(n.id, XI, i * (CH + px(10))));
     const fy = new Map();
     known.forEach((n, i) => { fy.set(n.id, i * (CH + px(6))); put(n.id, XS, fy.get(n.id), { w: FW, o: k >= iOrder && !n.used ? 0.4 : 1 }); });
-    const XD = XS + FW + px(150), XE = XD + CW + px(24);
+    const XD = XS + FW + px(166), XE = XD + CW + px(24);
     const want = (id) => { const ys = data.edges.filter((e) => e.feeds && e.to === id).map((e) => fy.get(e.from)); return ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : null; };
     const stack = (list, x) => {
       let prev = -Infinity, last = 0;
@@ -65,7 +65,7 @@ function plan(k) {
     stack([item, ...limits, ...values, ...facts], XE);
     const issuer = people.find((n) => n.id === "person:issuer"), shopper = people.find((n) => n.id === "person:shopper");
     if (issuer) put(issuer.id, XD, P.get(item.id).y);
-    if (shopper) put(shopper.id, XD, Math.max(want(shopper.id) ?? 0, facts.length ? P.get(facts[0].id).y : 0, (issuer ? P.get(item.id).y + CH + px(10) : 0)));
+    if (shopper) put(shopper.id, XD, Math.max(want(shopper.id) ?? 0, issuer ? P.get(item.id).y + CH + px(10) : 0));
     const idle = known.find((n) => !n.used);
     if (idle && k >= iOrder) texts.push({ x: XS + FW + px(10), y: fy.get(idle.id) + CH / 2 + px(3), cls: "gs", html: "held · not used for this order" });
   } else {
@@ -157,8 +157,8 @@ function plan(k) {
         lines.push({ a: pid, b: m.id, cls: "" });
         lines.push({ raw: [xm + MW, ly + px(9), xg, ly + px(9)], cls: m.stopped ? "fails" : "lit" });
         let cx = xc;
-        (m.removed || []).slice(0, 3).forEach((c) => { texts.push({ x: cx, y: ly + px(5.5), cls: "chip", html: esc(short(c.text, 11)) }); cx += px(64); });
-        if ((m.removed || []).length > 3) texts.push({ x: cx, y: ly + px(5.5), cls: "gs", html: `+${m.removed.length - 3}` });
+        (m.removed || []).slice(0, 2).forEach((c) => { texts.push({ x: cx, y: ly + px(5.5), cls: "chip", html: esc(short(c.text, 11)) }); cx += px(66); });
+        if ((m.removed || []).length > 2) texts.push({ x: cx, y: ly + px(5.5), cls: "gs", html: `+${m.removed.length - 2}` });
         if (m.stopped) texts.push({ x: xg + px(8), y: ly + px(12.5), cls: "stop", html: "stopped at the guard" });
         const r = data.nodes.find((n) => n.kind === "reply" && n.message === m.id);
         if (r) { P.set(r.id, { x: xg + px(18), y: ly, o: 1, w: RW, h: px(18) }); lines.push({ raw: [xg, ly + px(9), xg + px(18), ly + px(9)], cls: "lit" }); }
@@ -177,7 +177,7 @@ function plan(k) {
     const where = !born ? { x: src.x + CW / 2, y: src.y + CH / 2 } : gone || line || h;
     P.set(p.id, { ...where, o: born ? (gone ? 0.75 : 1) : 0, r: gone ? RS : big.has(p.id) ? RB : ranked ? px(3.6) : R,
       big: big.has(p.id) && !gone, aside: !!gone, dashed: k >= iRead && (S[iRead]?.not_stated || []).includes(p.id),
-      read: k >= iRead, pick: ranked && p.picked, checked: limits.filter((l) => (added.get(l.id) ?? 99) <= k).map((l) => l.id) });
+      read: k >= iRead, pick: ranked && p.picked, checked: limits.filter((l) => { const i = S.findIndex((x) => x.limit === l.id); return i >= 0 && i <= k; }).map((l) => l.id) });
   }
   if (web) put(web.id, XS, YROW - CH / 2, ranked ? { o: 0 } : {});
   reviews.forEach((r) => {
@@ -196,7 +196,7 @@ function plan(k) {
       label: e.verb + (e.matches === true ? " · matches" : e.matches === false ? " · differs" : ""), lt: nodes.get(e.to)?.kind === "person" ? 0.5 : 0.27 }); }
     else if (e.verb === "says") card(e.from, e.to, "", "");
     else if (e.verb === "wrote" && nodes.get(e.to)?.kind === "context_message") { if (nodes.get(e.from)?.kind === "context_person") card(e.from, e.to, "", ""); }
-    else if (e.verb === "wrote" || e.verb === "measured") card(e.from, e.to, "", e.verb);
+    else if (e.verb === "wrote" || e.verb === "measured") card(e.from, e.to, "", eventPhase ? "" : e.verb);
     else if (e.verb === "searches" && nodes.get(e.to)?.kind === "store" && k >= iSearch && !ranked) card(e.from, e.to, k === iSearch ? "lit" : "", k === iSearch ? e.label : "");
     else if (e.verb === "requires" && nodes.get(e.to)?.kind === "home_fact") { if (vis(e.to) && vis(e.from)) lines.push({ a: e.to, b: e.from, cls: "", toCorner: true, card: true }); }
     else if (e.verb === "waits for" && k >= iSign && iSign >= 0) lines.push({ a: e.from, b: e.to, cls: "lit", toCard: true });
@@ -296,7 +296,7 @@ function dress(k, target) {
     if (n.kind === "context_fact") g.classList.toggle("lit", k === data.stages.findIndex((s) => s.id === "order") && !!n.feeds_here);
     if (n.kind !== "product") continue;
     g.classList.toggle("aside", p.aside); g.classList.toggle("dashed", p.dashed); g.classList.toggle("pick", !!p.pick);
-    g.classList.toggle("big", p.big); g.classList.toggle("read", p.read);
+    g.classList.toggle("big", p.big); g.classList.toggle("read", p.read && p.r > px(3.8));
     const limits = data.nodes.filter((x) => x.kind === "limit");
     g.querySelectorAll(".q").forEach((q, i) => {
       const lim = limits[i], v = lim ? n.checks[lim.id.replace(/^limit:/, "")] : null;
@@ -307,10 +307,9 @@ function dress(k, target) {
   X.lineEls = target.lines.map((l) => {
     const e = el("line", { class: `ln ${l.cls}` });
     X.gl.appendChild(e);
-    const t = l.label ? el("text", { class: "lt mid" }, esc(l.label)) : null;
-    if (t) X.gl.appendChild(t);
-    return { l, e, t };
+    return { l, e, t: l.label ? el("text", { class: "lt mid" }, esc(l.label)) : null };
   });
+  X.lineEls.forEach(({ t }) => t && X.gl.appendChild(t));
   target.texts.forEach((t) => X.gt.appendChild(el("text", { class: t.cls, x: t.x, y: t.y }, t.html)));
 }
 
