@@ -141,6 +141,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | H4 | `/graph/` leads with the run as a workflow graph: each step a node with its tool and its real count, products shown by name moving along it and leaving at the rule they fail; the knowledge graph of one decision below it | open |
 | H3 | `GET /api/graph?line_id=` (nodes and edges for one item, with which backend answered) and `/graph/` drawing it quietly | open |
 | H5 | `/graph/` opens on the run explored as a graph that grows: the order, the searches, every product found as a node, each rule sweeping the products that fail it aside with the reason, web review searches attaching ratings to those that pass, the ranking by the chosen ordering, the signature as the last gate before a cart; Play and step; every node clickable to its text and source; real records only (the builder, 14:31) | open |
+| H6 | the exploration also shows what the agent already knew and whom it asked: recalled memories as nodes with owner and age (measurement, earlier strike, earlier purchase, what a store said), the patient's facts from the order as sealed nodes that explain a limit and never travel, and the conversation with the store's agent with the guard's removed parts on the edge; `memory_rows` no longer 0 in `/api/graph` (the builder, 14:38) | open |
 
 ## REVIEWS (what the web says, quoted with its source)
 | id | item | status |
