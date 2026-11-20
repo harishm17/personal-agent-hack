@@ -29,6 +29,9 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | E16 | `obs.egress` called for every model call (reader, SIE, chat) | open |
 | E17 | fixture fallback in `extract/run.py` removed or shown in `degraded` | open |
 | E18 | sheet 1's figure meanings, in the order's words, sent to the integrator for `sheets/sheet1.json` | open |
+| E21 | units declared in the sheet (`units`: name and its spellings), so a new sheet needs no code: dB, mph, mg come from sheets/sheet3.json; the built-in table stays only as a default | open |
+| E22 | sheet 3 (the teacher's list, now the lead example) read end to end once S16 exists; `several: "largest"` on the headphone limit; report per item | open |
+| E23 | a line's optional `quantity` carried into the canonical pick, the cart and the total (general; sheet 3 uses 24) | open |
 | E19 | receipts for every state change; `GET /api/receipts/verify` | main |
 | E20 | seal race, hash covers pick rule, delivery quotes, quantity, currency, variant; scope; `degraded` | main |
 
@@ -47,6 +50,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | S10 | a local log of tool-call events with timings for the trail (`signoff.obs.recent()`) | open |
 | S11 | Amplitude: do home measurements, limits or the order's text ride along in events? Answer and set the content mode | open |
 | S12 | replay mode for sheet 2 | open |
+| S16 | sheet 3 pool and store answers fetched once into data/sheet3/ (the teacher's list: eleven stores, four lines), with options and images; counts per store and line in NOTES | open |
 | S13 | Amplitude: the gate's variant attached to the session from its start (`experiments` is null now); both arms run once; delivered counts checked (only 2 events were delivered in the 13:25 run) | open |
 | S14 | the gate's verdict re-run after the three reading rules; it says "kept" or "switched back" from the numbers, with the evidence; no line claims Amplitude decided it | open |
 | S15 | `/api/sql/passing-box?source=airbyte` runs the same statement on the rows Airbyte delivered (`airbyte_pool`), only if under 20 minutes; otherwise WONTDO and the claim is "delivered beforehand" | open |
@@ -68,6 +72,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | G12 | the Relay result on the signature record (`relay`) | open |
 | G13 | screenshots of every phone state at 390 x 844, looked at | open |
 | G14 | Firedrill: retry until 14:00; if it runs, a campaign and what it found; if not, Firedrill is not claimed | open |
+| G17 | Senso documents and sentences for sheet 3 (`sheets/sheet3_order.txt`); one rehearsal of the phone on sheet 3 in replay mode | open |
 | G15 | Senso: resolve and show the `version_id` of the order document beside each verdict (rows carry `content_id` only) | open |
 | G16 | `PERSONA_REQUIRED` on by default for the demo sheet once G7 works; Relay's sandbox passes with nobody present: say "sandbox" beside it | open |
 
@@ -111,6 +116,8 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I8 | a real Senso block shown once (an item that is not on the order) | open |
 | I9 | the SingleStore query on screen with a count that matches | open |
 | I10 | an Amplitude chart of tool calls by reader arm (needs the builder in the Amplitude console; first confirm events appear there at all) | open |
+| I12 | the lead example is sheet 3, the teacher's list (the builder, 13:25); sheet 2 is second and the fallback | ok |
+| I13 | main switched to sheet 3 when it holds end to end | open |
 | I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
 ## The builder
