@@ -61,3 +61,24 @@ def test_the_committed_context_file_holds_every_fact_it_claims():
         got = context.read(json.loads(path.read_text()), sheet, "sheets/" + path.name)
         assert got["dropped"] == [], (path.name, got["dropped"])
         assert all(feed["matches"] is not False for f in got["facts"] for feed in f["feeds"]), path.name
+
+
+def test_no_fact_may_feed_a_limit_and_every_limit_is_written_by_its_author():
+    state = json.loads((ROOT / "fixtures" / "state.json").read_text())
+    sheet = state["sheet"]
+    line = sheet["lines"][0]
+    c = {"event": {"id": "e", "label": "An event", "starts": "2026-11-24", "ends": "2026-12-02"}, "people": [], "classes": {},
+         "messages": [{"id": "m1", "from": sheet["issuer"]["id"], "at": "2026-11-12T10:00:00-08:00", "text": "He weighs 280 lb."}],
+         "facts": [{"id": "weight", "label": "Weighs 280 lb", "value": 280, "class": "health", "owner": sheet["issuer"]["id"], "source": "m1",
+                    "quote": "He weighs 280 lb", "start": 0, "end": 16, "feeds": [{"to": "/lines/0/limits/0", "verb": "is why"}]}]}
+    records = {"state": state, "receipts": [], "order_text": None, "memory": []}
+    got = explore.explore(records, line["id"], context=context.read(c, sheet, "sheets/x_context.json"))
+    nodes = {n["id"]: n for n in got["nodes"]}
+    into_limits = [e for e in got["edges"] if nodes[e["to"]]["kind"] == "limit" and nodes[e["from"]]["kind"] == "context_fact"]
+    assert into_limits == []
+    assert got["stages"][0]["refused_feeds"] == [{"fact": "weight", "to": "/lines/0/limits/0", "why": "a limit is prescribed by its author, not derived from a fact"}]
+    assert nodes["known:weight"]["used"] is False and nodes["known:weight"]["feeds_here"] is False
+    for limit in [n for n in got["nodes"] if n["kind"] == "limit"]:
+        wrote = [e for e in got["edges"] if e["to"] == limit["id"] and e["verb"] == "wrote"]
+        assert [e["from"] for e in wrote] == ["person:issuer"] and wrote[0]["source"] == limit["source"]
+    assert got["sources"]["prescribed"] == "prescribed by %s" % sheet["issuer"]["name"]

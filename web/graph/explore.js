@@ -55,18 +55,19 @@ function plan(k) {
     known.forEach((n, i) => { fy.set(n.id, i * (CH + px(6))); put(n.id, XS, fy.get(n.id), { w: FW, o: k >= iOrder && !n.used ? 0.4 : 1 }); });
     const XD = XS + FW + px(166), XE = XD + CW + px(24);
     const want = (id) => { const ys = data.edges.filter((e) => e.feeds && e.to === id).map((e) => fy.get(e.from)); return ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : null; };
-    const stack = (list, x) => {
-      let prev = -Infinity, last = 0;
-      list.map((n, i) => ({ n, y: want(n.id), i })).map((o) => { if (o.y == null) o.y = o.i === 0 ? 0 : null; return o; })
-        .map((o, i, all) => { if (o.y == null) o.y = (all[i - 1]?.y ?? 0) + 1; return o; })
-        .sort((a, b) => a.y - b.y || a.i - b.i)
-        .forEach((o) => { const y = Math.max(o.y, prev + CH + px(10)); prev = y; last = y; put(o.n.id, x, y); });
-      return last;
-    };
-    stack([item, ...limits, ...values, ...facts], XE);
     const issuer = people.find((n) => n.id === "person:issuer"), shopper = people.find((n) => n.id === "person:shopper");
-    if (issuer) put(issuer.id, XD, P.get(item.id).y);
-    if (shopper) put(shopper.id, XD, Math.max(want(shopper.id) ?? 0, issuer ? P.get(item.id).y + CH + px(10) : 0));
+    [item, ...limits].forEach((n, i) => put(n.id, XE, i * (CH + px(8))));          // prescribed: the order and its rules
+    if (issuer) put(issuer.id, XD, 0);
+    const below = (1 + limits.length) * (CH + px(8)) + px(22);
+    const sy = Math.max(want(shopper?.id) ?? 0, below);
+    if (shopper) put(shopper.id, XD, sy);
+    let prev = -Infinity;                                                          // supplied: placed to face the facts that feed them
+    [...values, ...facts].map((n, i) => ({ n, y: want(n.id) ?? below + i })).sort((a, b) => a.y - b.y)
+      .forEach((o) => { const y = Math.max(o.y, below, prev + CH + px(10)); prev = y; put(o.n.id, XE, y); });
+    if (k >= iOrder) {
+      if (data.sources?.prescribed) texts.push({ x: XD, y: -px(5), cls: "src", html: esc(data.sources.prescribed) });
+      if (data.sources?.supplied) texts.push({ x: XD, y: sy - px(7), cls: "src", html: esc(data.sources.supplied) });
+    }
     const idle = known.find((n) => !n.used);
     if (idle && k >= iOrder) texts.push({ x: XS + FW + px(10), y: fy.get(idle.id) + CH / 2 + px(3), cls: "gs", html: "held · not used for this order" });
   } else {
@@ -197,12 +198,18 @@ function plan(k) {
       label: e.verb + (e.matches === true ? " · matches" : e.matches === false ? " · differs" : ""), lt: nodes.get(e.to)?.kind === "person" ? 0.5 : 0.27 }); }
     else if (e.verb === "says") card(e.from, e.to, "", "");
     else if (e.verb === "wrote" && nodes.get(e.to)?.kind === "context_message") { if (nodes.get(e.from)?.kind === "context_person") card(e.from, e.to, "", ""); }
+    else if (e.prescribed) { if (eventPhase) card(e.from, e.to, "", ""); }
     else if (e.verb === "wrote" || e.verb === "measured") card(e.from, e.to, "", eventPhase ? "" : e.verb);
     else if (e.verb === "searches" && nodes.get(e.to)?.kind === "store" && k >= iSearch && !ranked) card(e.from, e.to, k === iSearch ? "lit" : "", "");
-    else if (e.verb === "requires" && nodes.get(e.to)?.kind === "home_fact") { if (vis(e.to) && vis(e.from)) lines.push({ a: e.to, b: e.from, cls: "", toCorner: true, card: true }); }
+    else if (e.verb === "requires" && nodes.get(e.to)?.kind === "home_fact") { if (!eventPhase && vis(e.to) && vis(e.from)) lines.push({ a: e.to, b: e.from, cls: "", toCorner: true, card: true }); }
     else if (e.verb === "waits for" && k >= iSign && iSign >= 0) lines.push({ a: e.from, b: e.to, cls: "lit", toCard: true });
     else if (e.verb === "releases") card(e.from, e.to, "lit", "");
     else if (e.verb === "searches" && e.from === "web:search" && k === iWeb) lines.push({ a: e.from, b: e.to, cls: "", fromCard: true });
+  }
+  if (!eventPhase && data.sources) {
+    if (data.sources.prescribed && limits.length) texts.push({ x: P.get(limits[0].id).x, y: -px(5), cls: "src", html: esc(data.sources.prescribed) });
+    if (data.sources.supplied && facts.length + values.length) texts.push({ x: XI, y: CH + px(15), cls: "src", html: esc(data.sources.supplied) });
+    if (data.sources.stated && k >= iSearch && stores.length && !ranked) texts.push({ x: PX0, y: P.get(stores[0].id).y - px(7), cls: "src", html: esc(data.sources.stated) });
   }
   const stage = S[k];
   if (k === iSearch && stores.length) {                             // the item's own queries, said once
@@ -249,7 +256,7 @@ function glyph(n) {
 
 function build() {
   const { svg, data } = X;
-  svg.innerHTML = `<g class="lines"></g><g class="texts"></g><g class="nodes"></g>`;
+  svg.innerHTML = `<g transform="translate(0 ${px(16)})"><g class="lines"></g><g class="texts"></g><g class="nodes"></g></g>`;
   X.gl = svg.querySelector(".lines"); X.gt = svg.querySelector(".texts");
   const gn = svg.querySelector(".nodes");
   X.els = new Map();
@@ -350,7 +357,7 @@ export function mount(host, data, hooks, opts = {}) {
   host.innerHTML = "";
   const svg = el("svg", { class: "xp", width: host.clientWidth, height: host.clientHeight });
   host.appendChild(svg);
-  X = { host, svg, data, hooks, W: host.clientWidth - px(4), H: host.clientHeight - px(8), sel: null, motion: opts.motion !== false, lineEls: [] };
+  X = { host, svg, data, hooks, W: host.clientWidth - px(4), H: host.clientHeight - px(24), sel: null, motion: opts.motion !== false, lineEls: [] };
   build();
   go(Math.min(opts.stage ?? 0, data.stages.length - 1), true);
   svg.addEventListener("click", (e) => {
