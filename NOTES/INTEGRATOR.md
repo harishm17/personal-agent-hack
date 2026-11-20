@@ -579,3 +579,37 @@ Order done as you asked: sign-tap cap, 1, 2, 3, then phone (review-and-sign, don
 - Built: `signoff/relay/` (core.py, api.py, `node/relay.mjs` with `@persona/sdk-node` 0.5.1; run `npm install` in `signoff/relay/node/` on a fresh checkout, `node_modules/` is already ignored), `web/relay/index.html` (embedded widget `@persona/relay` 0.2.2 from jsDelivr; no bundler), `tests/relay/` (live test passes). Tell SIGN is in `NOTES/SIGN.md`: `signoff.relay.status()` for the `relay` key.
 - Server path run end to end against the sandbox key: create session, issue Privacy Pass, redeem claim. Claim payload fields: `claim_type`, `claim_result` ("passed"), `methodology[]` (each `method` "live_selfie", `result`); redemption also returns `tokenConsumed`. The signature record gets only `{claim_type, result, sandbox, at}`.
 - Honest limits: (1) in sandbox Persona simulates the claim, so redemption returns "passed" even when nobody has used the widget; the server cannot tell. The "a person tapped" evidence is the widget's `onComplete` on the phone, which only the page sees. (2) I could not complete the widget step in the headless preview browser (the checkbox renders and posts to Persona, no verification step opened; it probably needs a camera), so `onComplete` is untested. The page has a quiet "I finished the check" fallback that redeems anyway. Someone should tap it once on a real phone over the tunnel before this is shown. (3) A 30-minute session; the key is read through config and only handed to the node helper's environment; the production key is never read.
+## 12:25 from SCREEN
+- On `stream/SCREEN` (main merged at 0162dab), in your order:
+  1. Motion on the flow view: on open the dots leave the stores and pass the gates (about 2.4 s); a moved limit slides
+     its tick, dots change side as it passes, the ring glides, the pick card cross-fades, numbers roll; the signature
+     block fills on signing. The frame (headers, rulers, ticks, card outlines) is on screen from the first frame.
+     Motion is off for reduced motion, `?motion=0`, and automated browsers (`navigator.webdriver`), so a scripted
+     screenshot gets the final state; `?motion=1` forces it for recording.
+  2. Pick card: per limit "the order says" (from `limit.from_order.quote`, number marked, Senso tag from
+     `version_id`/`content_id`, "changed from the order" when `matches` is false), the margin bar, then "from the home"
+     and "the store states". Until `from_order` arrives only the store's side shows. Ruler labels say "from the order"
+     (click: the sentence) or "from the home".
+  3. Drawn only when the key exists: `asked` (rows on the pick card, all Q and A behind the click), `planted` (a red
+     diamond in Read, click: "Instruction found · no path to the pick"), reader chip from `/api/gate/status` (live now:
+     "reader: reference · small model switched back", numbers behind the click), `/api/egress` as one item
+     "0 limits in N messages to stores" with the grid behind the click, `receipts` strip in the signature block.
+  4. Signed block: signer, time, short hash, "Covers limits, quotes, picks, total", Persona status with "sandbox", cart links.
+- Only the reader chip has been seen with real data. `from_order`, `asked`, `planted`, `receipts` and `/api/egress` are not on
+  main yet; I drew them from placeholder values at `/?fixture=1&sample=1#L2` (fixture only, never applied to engine data).
+  When they land, please tell me if a shape differs from the contract's.
+- `/api/egress` rows: I read `kind`, `recipient`, `fact_classes`; summary: `to_stores`, `limits_in_store_messages`,
+  `home_measurements_in_store_messages`, `people_in_store_messages`, `messages`, `checked_by` (from stream/STORE's code).
+
+## 12:35 from SCREEN (your 12:30 additions)
+- (a) "Change this limit from here" is a quiet link under the rulers. It posts a `set_limit` to `/api/issuer/request`
+  with 64 random bytes as the signature and shows the server's answer in place. Seen on port 8003 with no key enrolled:
+  "Refused · 401 · no issuer key is enrolled"; the limit stayed 300 and the state version did not move. With a key
+  enrolled the server should answer 403 "the signature does not match the enrolled key"; I have not seen that one.
+  If the server ever accepts, the screen says "Accepted · 200" in red. `/?forge=1#L1` presses it once on load.
+- (b) When no key is enrolled the signature block asks `GET /api/issuer/enroll-code` and shows `code` and the phone link
+  (`link`, `url`, `phone_url` or `phone`, whichever the route returns). The route is not on main yet (404 here), so this
+  is undrawn. After signing: the signer line carries `seal.signer_label` / `seal.identity` / `signature.identity` if the
+  state has one, else "identity checked (sandbox)" when Persona verified, else "self-declared"; `seal.covers` is listed
+  when present. "store total differs" shows when a cart has `signed_total_cents` different from `total_cents`.
+  SIGN: tell me the real key names if they differ.
