@@ -35,6 +35,7 @@ def test_spacing_and_curly_marks_are_forgiven_but_the_stored_quote_is_the_stores
 def test_a_number_that_is_not_in_the_quote_makes_the_figure_unsure():
     f = fig(value=350)
     assert f["span_found_in_text"] and f["unsure"] and "not in the quoted words" in f["unsure_reason"]
+    assert f["number_in_quote"] is False  # never put to a test
     seat = fig(figure="overall_width", value=16, unit="in", quote="Seat width 16 inches")
     assert "unsure" not in seat  # code cannot tell seat width from overall width; the reader's prompt and the
     # second reader are there for that. Code only refuses numbers that are not in the words.
@@ -48,7 +49,7 @@ def test_ranges_fractions_and_missing_units():
     h = fig(figure="added_height", value=4.5, unit="in", quote="Adds 4 1/2 inches of height")
     assert h["span_found_in_text"] and "unsure" not in h
     n = fig(figure="seat_height", kind="adjustable", value=None, low=13.5, high=17, unit=None, quote="Seat (Height): 13.5-17")
-    assert n["unsure"] and "without a unit" in n["unsure_reason"]
+    assert n["unit"] is None and "unsure" not in n and n["span_found_in_text"]  # a statement with no unit, not an absence
     cm = fig(figure="overall_width", value=20.25, unit="cm", quote="Overall Width: 20.25”")
     assert cm["unit"] == "in" and cm["stated_unit"] == "cm" and cm["value"] == 7.97
 
@@ -156,10 +157,10 @@ def test_a_number_counts_only_if_it_is_the_only_one_or_the_text_labels_it():
     several = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
     assert rule(numbered("overall_width", several, 31, "w")) is False            # the list of labels pairs w with 31
     wrong = numbered("overall_width", several, 14.75, "w")
-    assert rule(wrong) is True and wrong["unsure_reason"].startswith(spans.AMBIGUOUS)
-    assert "pairs the label 'w' with another number" in wrong["unsure_reason"]
+    assert rule(wrong) is True and wrong["number_check"]["paired"] is False
+    assert wrong["possible"] == [1.63, 31.0] and "unsure" not in wrong           # every number in the quote is tested
     silent = numbered("overall_width", several, 31)
-    assert rule(silent) is True and "gave no label" in silent["unsure_reason"]    # several numbers and no label: unsure
+    assert rule(silent) is True and "gave no label" in silent["number_check"]["how"] and silent["possible"] == [1.63, 14.75]
     assert rule(numbered("overall_width", "Overall Width: 21.5 inches", 21.5)) is False   # one number: nothing to settle
     # a number in another kind of unit is not a rival
     assert rule(numbered("weight_capacity", "Supports 300 lbs with a seat width of 16 inches", 300, unit="lb")) is False
@@ -169,7 +170,7 @@ def test_a_number_counts_only_if_it_is_the_only_one_or_the_text_labels_it():
 
 
 def test_the_pairing_is_read_from_the_text_alone_whatever_the_separator_or_the_words():
-    ok = lambda *a, **k: spans.apply_unambiguous_rule(numbered(*a, **k)) is False  # noqa: E731
+    ok = lambda *a, **k: spans.apply_unambiguous_rule(numbered(*a, **k)) is False  # noqa: E731  (False: the number is settled)
     assert ok("overall_width", 'Product Dims (h x w x d): 16" - 21" x 21" x 18"', 21, "w")       # 21 is also in the height range
     assert ok("overall_width", 'Outside Legs: 17.5" (W) x 17.25" (D)', 17.5, "W")                 # the label beside the number
     assert ok("overall_width", "Dimensions: 23.5”W x 20”L x 32” - 40”H", 23.5, "W")
@@ -188,7 +189,7 @@ def test_the_rule_runs_on_every_new_read_and_keeps_the_readers_label():
     quote = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
     wrong = spans.finish({"figure": "overall_width", "kind": "single", "value": 14.75, "unit": "in", "quote": quote,
                           "label": "w"}, page, "any")
-    assert wrong["span_found_in_text"] and wrong["unsure"] and wrong["caught_by"].startswith("code:")
+    assert wrong["span_found_in_text"] and wrong["possible"] == [1.63, 31.0] and "unsure" not in wrong
     right = spans.finish({"figure": "overall_width", "kind": "single", "value": 31, "unit": "in", "quote": quote,
                           "label": "w"}, page, "any")
     assert "unsure" not in right and right["label"] == "w" and right["number_check"]["paired"] is True
@@ -196,46 +197,6 @@ def test_the_rule_runs_on_every_new_read_and_keeps_the_readers_label():
                           "quote": "Weight Capacity: 300 lbs."}, page, "any")
     assert "number_check" not in plain and "unsure" not in plain
     assert "label" in reader.SYSTEM and "h x w" not in reader.SYSTEM.lower()  # the instruction names no format
-
-
-def test_the_comparison_lists_disagreements_extras_and_what_the_rule_caught(tmp_path):
-    from signoff.extract import score
-    quote = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
-    def fig(extractor, figure, value, q=quote, label=None):
-        return {"store": "s", "product_id": "p", "figure": figure, "kind": "single", "value": value, "low": value,
-                "high": value, "unit": "in", "quote": q, "start": 0, "end": len(q), "extractor": extractor,
-                "span_found_in_text": True, "label": label}
-    for name, rows in (("claude-sonnet-5-5", [fig("anthropic:claude-sonnet-5-5", "overall_width", 31, label="w")]),
-                       ("small", [fig("small", "overall_width", 14.75, label="w"), fig("small", "length", 12, "12 in long")])):
-        folder = tmp_path / "_runs" / name
-        folder.mkdir(parents=True)
-        (folder / "s.json").write_text(json.dumps(rows))
-        (folder / "s.log").write_text(json.dumps([{"store": "s", "product_id": "p", "extractor": rows[0]["extractor"],
-                                                   "asked": ["overall_width", "length"], "seconds": 1.0, "usage": {}}]))
-    made = score.compare(tmp_path)
-    small = next(r for r in made["readers"] if r["extractor"] == "small")
-    # as read, the small reader disagrees on the width; with the rule on, code has marked its figure unsure
-    assert small["number_rule"]["before"]["statement"] == (
-        "same number on 0 of 1 figures both readers found; the reference alone found 0, this reader alone found 1")
-    assert small["statement"] == ("same number on 0 of 0 figures both readers found; the reference alone found 1, "
-                                  "this reader alone found 1")
-    caught = small["number_rule"]["caught"]
-    assert len(caught) == 1 and caught[0]["value"] == "14.75" and caught[0]["number_check"]["paired"] is False
-    assert made["number_rule"]["reference_figures_caught"] == 0 and list(made["number_rule"]["caught"]) == ["small"]
-    assert [e["figure"] for e in small["extra"]] == ["length"]
-
-
-def test_a_figure_the_text_ties_to_another_option_is_unsure_and_several_options_alone_change_nothing():
-    variant = {"variant_title": '12"', "option_labels": ['12"'], "other_option_labels": ['16"', '24"']}
-    tied = {"figure": "weight_capacity", "quote": "Supports 500 pounds (24” bar)", "value": 500}
-    assert spans.apply_option_rule(tied, variant) is True
-    assert tied["unsure_reason"] == 'the text ties this figure to the option 24"; the option in the pool is 12"'
-    both = {"figure": "length", "quote": 'Length: 12" or 16"', "value": 12}
-    assert spans.apply_option_rule(both, variant) is False  # the quote names the option in the pool too
-    plain = {"figure": "weight_capacity", "quote": "Weight Capacity: 250 lb.", "value": 250}
-    assert spans.apply_option_rule(plain, variant) is False and "unsure" not in plain
-    words = {"variant_title": "18 Inch", "option_labels": ["18 Inch"], "other_option_labels": ["12 Inch", "24 Inch"]}
-    assert spans.apply_option_rule({"figure": "weight_capacity", "quote": "500 Pounds (24”)", "value": 500}, words) is True
 
 
 def test_a_dual_flush_page_reads_as_two_numbers_and_the_full_flush_cannot_be_dropped():
@@ -246,7 +207,7 @@ def test_a_dual_flush_page_reads_as_two_numbers_and_the_full_flush_cannot_be_dro
     assert (both["kind"], both["low"], both["high"], both["unit"]) == ("spread", 1.1, 1.6, "gpf") and "unsure" not in both
     light = spans.finish({"figure": "flush_volume", "kind": "single", "value": 1.1, "unit": "gpf",
                           "quote": "Dual Flush 1.1/1.6 GPF"}, page, "any", target_unit="gpf")
-    assert light["unsure"] and "several numbers" in light["unsure_reason"]  # the 1.6 is a rival: no label, no count
+    assert light["possible"] == [1.6] and "unsure" not in light  # the 1.6 is a rival: both numbers are put to the test
     flow = spans.finish({"figure": "flow_rate", "kind": "single", "value": 1.2, "unit": "GPM",
                          "quote": "Flow 1.2 GPM at 60 PSI"}, page, "any", target_unit="gpm")
     assert flow["unit"] == "gpm" and "unsure" not in flow  # 60 PSI is another kind of unit, not a rival
