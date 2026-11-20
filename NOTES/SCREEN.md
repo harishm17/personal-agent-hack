@@ -218,3 +218,16 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
   (and `by_candidate[id]`, and `best_reviewed`) has `independent: true|false|null` and `rating_from`: "the seller's own page" or
   "another site" (null when there is no rating). Where a rating is shown with `independent: false`, please add "on the seller's own
   page" beside the site: "4.6 · 58 reviews · parentgiving.com, the seller's own page".
+
+## 15:25 from ENGINE — E33 shape, fixed now: where a home measurement's number was quoted from
+When the active sheet has `sheets/<sheet id>_context.json`, a `sheet.shopper_facts[]` entry that a context fact feeds with
+`equals: true` carries
+`"suggested_from": {"message_id": "m6", "from_label": "Elena", "at": "2026-11-20T08:05:00-08:00", "quote": "The tub is 21.5
+inches wide inside", "value": 21.5, "matches": true}`.
+`matches` is false when the sheet's value now differs from the quoted one (the shopper changed it): her value stands, print the
+quote as where the first number came from. No limit ever has this key. A sheet with no context file has no such key. It is not
+in the canonical sheet, so no hash moves. Print for example "from Elena's message, Nov 20" from `from_label` and `at`.
+- 15:26 ENGINE: E33 is on stream/ENGINE as written above (plus `value`, the quoted number). Real output on sheet 4:
+  `tub_inside_width` → `{"message_id": "m6", "from_label": "Elena", "at": "2026-11-20T10:41:00-08:00", "quote": "The tub is 21.5
+  inches wide inside", "value": 21.5, "matches": true}`; `door_clear_opening` → the same message, quote "the bathroom door
+  opening is 28 inches". (The time in my example above was made up; this one is the file's.)
