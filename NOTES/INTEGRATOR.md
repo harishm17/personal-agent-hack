@@ -1072,7 +1072,7 @@ untracked and not ignored; I left it in place and did not commit it (STORE's pat
 
 ## STORE 14:50 — DONE S16: sheet 3 pool and counts (pattern count)
 **Where.** `data/sheet3/pool/<store>.json` (raw replies `data/sheet3/pool/raw/`), `data/sheet3/store_answers/`, `data/sheet3/pool_summary.json`. Eight stores, 3 queries for K1, 2 for K2, 1 for K3 (the sheet's own),
-every query to every store (24 calls per... 8 stores x 6 queries = 48 searches, one call a second per store, none refused: the project's client sends the profile header). No cart, no checkout call.
+every query to every store (8 stores x 6 distinct queries = 48 searches, about one call a second per store, none refused: the project's client sends the profile header). No cart, no checkout call.
 **Products kept by the relevance rule (title or the store's own labels name the need)**: K1 headphones: jlab 22 of 25 candidates, purosound 12 of 12, onanoff 12 of 12, skullcandy 14 of 16 (60 products, 133 options);
 K2 electric scooter: hiboy 12 of 12, gotrax 15 of 15 (27 products, 59 options); K3 energy drink: alaninu 10 of 10 (10 products, 10 options), **guayaki 0 of 10: Guayaki's own labels say "Cans", "Higher Power Cans",
 "Sparkling Cans", never "energy drink", and no title names one, so the rule drops all ten (reason recorded per product). If you want Guayaki in K3 the sheet's need or a query must say what the store says (for example "yerba mate"); I did not
@@ -1087,7 +1087,7 @@ override the rule.** The scooter stores also returned headphones queries and the
 | | all | 60 | any dB 39 (65%); volume-context 28 (47%); two levels in context 7 |
 | K2 top speed in mph | gotrax | 15 | 6 |
 | | hiboy | 12 | 9 |
-| | all | 27 | 15 (56%); the 12 without are mostly accessories-free models whose speed is in km/h or not given (MAX has none) |
+| | all | 27 | 15 (56%); I did not look at why the other 12 do not state it (the Hiboy S2 MAX is one) |
 | K3 caffeine in mg | alaninu | 10 | 10 (all 200 mg) |
 Note on K1: "any dB figure" also counts sensitivity (-38 dB) and noise levels, so the volume-context count is the better one; and a page that states two levels (a cap of 85 dB or 95 dB) is the case that needs a rule.
 **The probe's findings, confirmed from the data:**
