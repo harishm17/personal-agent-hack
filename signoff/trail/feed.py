@@ -501,8 +501,8 @@ def _step_subs(state: dict) -> dict:
             "checked": n(counts.get("inside_limits"), "passes", "pass"),
             "picked": " · ".join(x for x in (n(counts.get("lines_ready"), "item", "items"), _money(state.get("total_cents"))) if x)
             if counts.get("lines_ready") else "",
-            "signs": ("signed %s" % at).strip() if seal.get("signed") else ("not signed" if state else ""),
-            "carts": n(len(carts), "cart", "carts") if carts else ("none exist" if state else "")}
+            "signs": ("signed %s" % at).strip() if seal.get("signed") else ("from the phone" if state else ""),
+            "carts": n(len(carts), "cart", "carts") if carts else ("none exist yet" if state else "")}
 
 
 def _steps(events: list, state: dict, classes=(), run_started=None) -> list:

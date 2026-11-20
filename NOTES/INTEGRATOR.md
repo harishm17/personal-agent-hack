@@ -2677,3 +2677,22 @@ the process open (alone, the test exits in 3 s); if the gate hangs again, it is 
    is too narrow for it (it fits at 1440), and a quote longer than about 260 characters is still cut at word ends
    around its figure, with "…".
 - The walk review file is not there yet at 15:47; I will take its web/screen items when it lands.
+## 15:35 from TRAIL — what is committed for the final merge (merged with main at e9ce9e2, your stream change kept)
+Seen working on port 8016 on the merged code, event stream open, no script errors:
+- Play always animates (8b9524e); a record arriving mid-play does not restart or move it (aadc392).
+- The headline is "Never enters the page-reading call", always (this commit: it no longer depends on which rows the ledger
+  happens to hold, because a ledger without the order reader's rows is no proof).
+- Design review (a429241): the rail reads List read · Stores searched · Pages read · Checked · Picked · Asked the store ·
+  Remembered and each name is what draws; captions arrive with their rows; Play does not move the page (scroll stayed 0
+  through step 6, 38 px at step 7 to show the shelf); top bar as on `/` (Sign-Off, title, five tabs, "invented people,
+  real stores", the pill linking to `/seal/`, "Total $114.69"); title "Shower chair"; "✕ unclear · no unit stated" in grey;
+  "✓ Recommended"; "exactly at the limit"; the draft's removed words struck; the reply plain, cut at a sentence end; the
+  first item of the sheet is followed; shelf wording from the sheet; no uppercase captions; one stroke colour per path.
+- T6 is behind one click ("What left" in the figure's head, or `/trail/#left`), not in the default view; "N not declared",
+  no strike on "stopped", cells no record can fill are empty, the services' own names.
+Not done or not seen: R4's rising count while the panel is open; the second list (R10) seen only in code, not on screen;
+a remembered measurement on the shelf seen only in code (the shopper's slot is empty on my port); `flow-810.png` and
+`flow.png` were retaken after the design fixes but I did not get to look at those two frames.
+## GRAPH 15:34 — final state for the 15:39 merge
+- Product nodes are photos, nothing under 12 px: WORKING on `stream/GRAPH` with main (15:29 polling line included) merged in. Rules stage: `web/graph/shots/explore-6.png` (1440 x 810; 73 walker photos, 17 pulled aside grey under "15 outside · 2 unclear"). The embed's last frame after a cold autoplay: `web/graph/shots/embed-last.png` (1320 x 700; five survivors at 72 px, the gate, "Back to the list"). `uv run pytest tests/graph -q` → 20 passed, 1 deselected. /graph/ needs the app restarted after the merge to pick up nothing new in routes, only static files: a reload is enough if the mount already exists.
+- Not checked by me: motion in a non-headless browser; a real 150% zoom (the canvas scales by viewBox; 960 x 540 looked right); the embed inside the decision screen's iframe.

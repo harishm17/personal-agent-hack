@@ -14,6 +14,13 @@ const W = 1392;                                   // the stage is laid out at th
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const dot = (owner) => `<i class="od ${owner === "issuer" ? "issuer" : owner === "shopper" ? "shopper" : owner === "store" ? "store" : ""}"></i>`;
 const quoted = (e) => `${esc(e.text.slice(0, e.quote[0]))}<mark>${esc(e.text.slice(e.quote[0], e.quote[1]))}</mark>${esc(e.text.slice(e.quote[1]))}`;
+/** The whole sentences of `s` that fit in n characters (at least the first one). */
+const sentences = (s, n) => {
+  const parts = String(s || "").match(/[^.!?]+[.!?]+(\s|$)/g) || [String(s || "")];
+  let out = parts[0];
+  for (const p of parts.slice(1)) { if ((out + p).length > n) break; out += p; }
+  return out.trim();
+};
 const clip = (s, n) => (s.length > n ? s.slice(0, n).replace(/\s+\S*$/, "") + " …" : s);
 
 let root = null, flow = null, drawn = "", pos = 6, playing = false, timer = null, started = 0, left = 0, ticker = null;
@@ -45,7 +52,7 @@ function html(f) {
       <span class="tok" data-s="3" data-a="from" data-from="#fl-by-${i}" data-d="900" id="fl-r-${i}">${dot(c.right.owner)}${esc(c.right.text)}</span>
       <span class="mg" data-s="3" data-d="${2000 + i * 300}">${c.ok === true ? `<span class="tickmark">✓</span> ${esc(c.margin)}` : c.ok === false ? `<span class="no">✕ outside</span>` : ""}</span>`).join("");
   const sig = f.signature;
-  return `<div class="fl-head"><span class="fl-title">${esc(f.title)}</span><span class="grow"></span><span class="cap" id="fl-clock"></span>
+  return `<div class="fl-head"><span class="fl-title">${esc(f.title)}</span><button class="fb link" data-left-open>What left</button><span class="grow"></span><span class="cap" id="fl-clock"></span>
       <button class="fb" data-step="-1" aria-label="Step back">‹</button><button class="fb" data-play aria-label="Play or pause">▶ Play</button><button class="fb" data-step="1" aria-label="Step on">›</button></div>
     <div class="fl-scale"><div class="fl-stage" id="fl-stage">
       <div class="fl-rail" role="group" aria-label="The steps of the run">${rail}</div>
@@ -55,14 +62,14 @@ function html(f) {
           <div class="fl-by"><b class="byh">Never enters ${esc(m ? m.never_enters : "the page-reading call")}</b>${pills}<div class="chips">${outside}</div></div></div>
         <div class="fl-col"><div class="cap up">Checked in code</div>
           ${f.checks.length ? `<div class="fc"><div class="cap">the store's figure &nbsp;against&nbsp; the limit</div><div class="cmp">${checks}</div></div>` : none("No check record")}
-          ${f.refused ? `<div class="fc rowc quiet" data-s="4"><span class="pc">${esc(f.refused.price)}</span><span class="tt">${esc(f.refused.title)}</span><span class="no">refused · ${esc(f.refused.reason)}</span></div>` : ""}
-          ${f.pick ? `<div class="fc rowc pick" data-s="4" data-d="900"><b class="pc">${esc(f.pick.price)}</b><b class="tt">${esc(f.pick.title)}</b><span class="muted">${esc(f.pick.rule)}</span></div>` : none("No pick")}
-          <div class="fc rowc ${sig.signed ? "" : "quiet"}" data-s="5">${dot("issuer")}<span class="tt">${esc(sig.who)} signs from the phone</span><span class="${sig.signed ? "" : "faint"}">${esc(sig.text)}</span></div>
+          ${f.refused ? `<div class="fc rowc quiet" data-s="4"><span class="pc">${esc(f.refused.price)}</span><span class="tt">${esc(f.refused.title)}</span><span class="muted">✕ ${esc(f.refused.status)} · ${esc(f.refused.reason)}</span></div>` : ""}
+          ${f.pick ? `<div class="fc rowc pick" data-s="4" data-d="900"><b class="pc">${esc(f.pick.price)}</b><b class="tt">${esc(f.pick.title)}</b><span class="rec" title="${esc(f.pick.rule)}">✓ Recommended</span></div>` : none("No pick")}
+          <div class="fc rowc ${sig.signed ? "" : "quiet"}" data-s="4" data-d="1700">${dot("issuer")}<span class="tt">${esc(sig.who)} signs from the phone</span><span class="${sig.signed ? "" : "faint"}">${esc(sig.text)}</span></div>
         </div>
       </div>
-      <div class="cap up">To the store's own agent</div>
+      ${f.talk || f.asked ? `<div class="cap up" data-s="5">To the store's own agent</div>` : ""}
       <div class="fl-guard">${guardRow(f)}</div>
-      <div class="cap up">Memory · each fact has an owner</div>
+      <div class="cap up" data-s="6">Memory · each fact has an owner</div>
       <div class="fl-mem">${f.memory ? f.memory.map(slot).join("") : none("No memory record")}</div>
       <svg class="fl-lines" id="fl-lines" aria-hidden="true"></svg>
     </div></div>`;
@@ -83,16 +90,17 @@ function draftHtml(t) {
  *  With a guard record (TALK's), the removed spans stop at the line; without one, the question and reply as saved. */
 function guardRow(f) {
   const t = f.talk, a = f.asked;
+  if (!t && !a) return "";
   if (t) {
-    const chips = t.removed.map((r, i) => `<span class="fchip x" data-s="4" data-a="from" data-from="#fl-draft" data-d="${1300 + i * 110}" title="${esc(r.mark)}">${esc(r.text)}</span>`).join("");
-    return `<div class="fc" data-s="4" data-d="900" id="fl-draft"><div class="cap">the agent's draft</div><p class="dr">${draftHtml(t)}</p></div>
-      <div class="gate" data-s="4" data-d="1100"><b class="cap">Guard · ${t.removed.length ? "stopped here" : "nothing stopped"}</b><div class="stopped">${chips}</div>
+    const chips = t.removed.map((r, i) => `<span class="fchip x" data-s="5" data-a="from" data-from="#fl-draft" data-d="${700 + i * 110}" title="${esc(r.mark)}">${esc(r.text)}</span>`).join("");
+    return `<div class="fc" data-s="5" id="fl-draft"><div class="cap">the agent's draft</div><p class="dr">${draftHtml(t)}</p></div>
+      <div class="gate" data-s="5" data-d="300"><b class="cap">Guard · ${t.removed.length ? "stopped here" : "nothing stopped"}</b><div class="stopped">${chips}</div>
         ${t.left.length ? `<span class="cap">sent: ${esc(t.left.join(", "))}</span>` : ""}</div>
-      <div class="fc" data-s="4" data-d="2300"><div class="cap">${dot("store")}${esc(t.store)}'s agent replied</div><p class="dr">“<mark>${esc(clip(t.reply, 170))}</mark>”</p></div>`;
+      <div class="fc" data-s="5" data-d="1800"><div class="cap">${dot("store")}${esc(t.store)}'s agent replied</div><p class="dr">“${esc(sentences(t.reply, 170))}”</p></div>`;
   }
-  return `${a ? `<div class="fc" data-s="4" data-d="900"><div class="cap">our agent wrote</div><p class="dr">${esc(a.question)}</p></div>` : none("No question record")}
-    <div class="gate" data-s="4" data-d="1100"><b class="cap">Guard</b><span class="fchip">no guard record</span></div>
-    ${a ? `<div class="fc" data-s="4" data-d="2300"><div class="cap">${dot("store")}${esc(a.store)}'s agent replied</div><p class="dr">“<mark>${esc(clip(a.reply, 170))}</mark>”</p></div>` : none("No reply record")}`;
+  return `<div class="fc" data-s="5"><div class="cap">our agent wrote</div><p class="dr">${esc(a.question)}</p></div>
+    <div class="gate" data-s="5" data-d="300"><b class="cap">Guard</b><span class="fchip">no guard record</span></div>
+    <div class="fc" data-s="5" data-d="1800"><div class="cap">${dot("store")}${esc(a.store)}'s agent replied</div><p class="dr">“${esc(sentences(a.reply, 170))}”</p></div>`;
 }
 
 /** One owner's slot on the memory shelf: what a new run would recall, or that it is empty. */
@@ -139,7 +147,7 @@ function drawLines() {
       const l = q(`fl-l-${i}`), r = q(`fl-r-${i}`), quote = q(`fl-q-${i}`), pill = q(`fl-by-${i}`);
       if (l && quote) {                            // the quoted figure leaves the frame for the check
         const a = box(quote), b = box(l), mid = (fr.r + b.x) / 2;
-        paths.push(`<path class="hot" data-s="3" data-a="draw" data-t="700" d="M${fr.r} ${a.cy} C${mid} ${a.cy} ${mid} ${b.cy} ${b.x} ${b.cy}"/>`);
+        paths.push(`<path data-s="3" data-a="draw" data-t="700" d="M${fr.r} ${a.cy} C${mid} ${a.cy} ${mid} ${b.cy} ${b.x} ${b.cy}"/>`);
       }
       if (r && pill) {                             // the limit or the measurement goes round the frame, never through it
         const src = q(flow.bypass[i].owner === "issuer" ? "fl-order" : "fl-home-0");
@@ -197,8 +205,8 @@ function show(move) {
   const play = root.querySelector("[data-play]");
   if (play) play.textContent = playing ? "❚❚ Pause" : "▶ Play";
   if (move) {     // keep the part that is playing in view: the lower rows from step 5 on, the top before that
-    const part = pos >= 6 ? root.querySelector(".fl-mem") : pos >= 4 ? root.querySelector(".fl-guard") : root;
-    part.scrollIntoView({ block: pos >= 4 ? "nearest" : "start", behavior: MOTION ? "smooth" : "auto" });
+    const part = pos >= 6 ? root.querySelector(".fl-mem") : pos >= 5 ? root.querySelector(".fl-guard") : root.querySelector(".fl-cols");
+    part.scrollIntoView({ block: "nearest", behavior: MOTION ? "smooth" : "auto" });
   }
   clock();
 }

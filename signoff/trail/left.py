@@ -36,6 +36,8 @@ OWNER = {"limit": "issuer", "order": "issuer", "need_by": "issuer", "home_measur
 # sharing class, and `classes` saying what may travel. Its class names, where they differ from the ledger's and the
 # guard's names for the same class.
 CONTEXT_CLASS = {"home": "home_measurement", "schedule": "need_by"}
+# The services' own names, as they write them. A recipient not listed is shown as the ledger has it.
+NAMES = {"singlestore": "SingleStore", "senso": "Senso", "amplitude": "Amplitude", "statsig": "Statsig", "exa.ai": "Exa"}
 GROUP_OVER = 3      # more stores than this are one column, counted
 LISTED = 6          # records listed behind one cell; the rest are counted
 
@@ -118,7 +120,7 @@ def build(sheet: dict, flow: dict, rows: list, messages: list, rule: dict = None
             payloads_of[col] = [r for _, rs in group for r in rs]
         else:
             for name, rs in group:
-                columns.append({"id": name, "label": name.split(":")[-1].split("/")[-1], "kind": word, "payloads": len(rs),
+                columns.append({"id": name, "label": NAMES.get(name.lower()) or name.split(":")[-1].split("/")[-1], "kind": word, "payloads": len(rs),
                                 "group": "outside" if _outside(kind, name) else "own", "members": [name]})
                 payloads_of[name] = rs
     stores = sorted({m.get("store") for m in messages if m.get("store")})

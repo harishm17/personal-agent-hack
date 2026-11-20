@@ -22,7 +22,7 @@ def threads(sheet: str | None = None):
     turns = [turn for t in talk.threads(sid) for turn in t["turns"]]
     count = {"messages": len(turns), "not_sent": sum(1 for x in turns if not x["sent"]),
              "over_cautious": sum(1 for x in turns if not x["sent"] and (x.get("review") or {}).get("verdict") == "over-cautious")}
-    return {"count": count, "sheet": sid, "title": sh.get("title"), "rule": guard.rule(sh), "marks": guard.MARK, "threads": talk.threads(sid),
+    return {"count": count, "shopper": (sh.get("shopper") or {}).get("name"), "sheet": sid, "title": sh.get("title"), "rule": guard.rule(sh), "marks": guard.MARK, "threads": talk.threads(sid),
             "messages": talk.messages(sh)}
 
 

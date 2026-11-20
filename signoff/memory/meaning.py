@@ -122,6 +122,9 @@ def need_of(sheet: dict, line_id: str):
     return ". ".join([str(line.get("need"))] + [str(l.get("name")) for l in line.get("limits") or [] if l.get("name")])
 
 
+_waited: set = set()  # needs this process has already waited for once
+
+
 def search(sheet: dict, line_id: str, recalled: dict, k: int = 5, kinds=None, wait_s=3.0) -> dict:
     """The `k` memories nearest in meaning to the item's need, of those `recalled` for the sheet (so a measurement
     that was replaced or a strike that was undone is not ranked). Never raises: a model or database that does not
@@ -140,7 +143,8 @@ def search(sheet: dict, line_id: str, recalled: dict, k: int = 5, kinds=None, wa
     try:
         if need not in _queries:
             index_in_background(sheet)
-            until = time.time() + wait_s
+            until = time.time() + (0 if need in _waited else wait_s)  # wait once per need; after that the caller is told at once
+            _waited.add(need)
             while need not in _queries and time.time() < until:
                 time.sleep(0.05)
         if need not in _queries:

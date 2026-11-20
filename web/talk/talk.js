@@ -1,4 +1,5 @@
 // Conversations: draws GET /api/talk/threads. Every string from a store is untrusted text: it is escaped, never run.
+import { topBar } from "/seal/topbar.js";
 const q = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const ui = { data: null, id: new URLSearchParams(location.search).get("id"), open: new Set(), more: new Set(), key: "" };
@@ -19,23 +20,19 @@ const withheld = (t) => t.turns.reduce((n, turn) => n + turn.removed.length, 0) 
 const notSent = (t) => t.turns.filter((turn) => !turn.sent).length;
 
 function renderTop() {
-  const d = ui.data;
-  const n = d.threads.length, cut = d.threads.reduce((a, t) => a + withheld(t), 0);
-  q("#top").innerHTML = `<span class="brand">Sign-Off</span>
-    <span class="sheet">${esc(d.title || d.sheet)}</span>
-    <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/">Memory</a><a href="/talk/" aria-current="page">Conversations</a><a href="/seal/">Signature</a></nav>
-    <span class="meta">${d.count.messages} messages to the stores' own agents · ${d.count.not_sent} not sent${d.count.over_cautious ? `, ${d.count.over_cautious} of those over-cautious` : ""}</span>
-    <span class="grow"></span>
-    <span class="pill">${cut} withheld</span>`;
+  const d = ui.data, cut = d.threads.reduce((a, t) => a + withheld(t), 0);
+  topBar(q("#top"), "/talk/");  // the same bar as the decision screen: the sheet, the views, the signed pill, the total
   const mark = (k) => esc(d.marks[k] || k);
   q("#band").innerHTML = `<span class="cap">A store's agent may receive</span>${d.rule.may.map((k) => `<span class="pill">${mark(k)}</span>`).join("")}
-    <span class="cap">never</span>${d.rule.sealed.map((k) => `<span class="pill sealed">${mark(k)}</span>`).join("")}`;
+    <span class="cap">never</span>${d.rule.sealed.map((k) => `<span class="pill sealed">${mark(k)}</span>`).join("")}
+    <span class="grow"></span><span class="tally">${cut} withheld · ${d.count.not_sent} of ${d.count.messages} messages not sent${d.count.over_cautious ? `, ${d.count.over_cautious} of those over-cautious` : ""}</span>`;
 }
 
 // The default view: the one lead blocked share (marked `lead` in its record), then one of the agent's own exchanges
 // per store. The shopper's asks were typed to test the guard: they say so, and the rest are behind a count.
 const sentAny = (t) => t.turns.some((turn) => turn.sent);
 const TEST = "typed to test the guard";
+const who = () => ui.data.shopper || "the shopper";
 const leadShare = () => ui.data.threads.find((t) => t.lead);
 function forStore(store) {
   const all = ui.data.threads.filter((t) => t.store === store && !t.lead);
@@ -46,8 +43,8 @@ function forStore(store) {
 function renderList() {
   const stores = [...new Set(ui.data.threads.map((t) => t.store))];
   const item = (t, sub) => `<button class="item ${sub ? "sub" : ""}" data-id="${esc(t.id)}" aria-current="${t.id === ui.id}">
-      <span>${sub ? "" : `<b><i class="od store"></i>${esc(t.store)}</b>`}<span class="muted small">${esc(t.origin === "shopper" ? TEST : sub ? "the agent asked" : t.title || "")}</span></span>
-      <span class="n">${!sentAny(t) ? "not sent" : withheld(t) ? withheld(t) + " withheld" : ""}</span></button>`;
+      <span>${sub ? "" : `<b><i class="od store"></i>${esc(t.store)}</b>`}<span class="muted small">${esc(t.origin === "shopper" ? `${who()} asked · ${TEST}` : sub ? "the agent asked" : t.title || "")}</span></span>
+      <span class="n">${!sentAny(t) ? "held by the guard" : withheld(t) ? withheld(t) + " withheld" : ""}</span></button>`;
   const lead = leadShare();
   q("#list").innerHTML = (lead ? `<div class="cap">A blocked share</div>${item(lead)}<div class="cap">The agent's own questions</div>` : "") + stores.map((store) => {
     const { first, rest } = forStore(store);
@@ -62,7 +59,7 @@ function turnHtml(t, turn, prev) {
   const counts = {};
   const said = turn.n === 1 ? t.purpose_removed || [] : [];
   for (const s of turn.removed.length ? turn.removed : said) counts[s.mark] = (counts[s.mark] || 0) + 1;
-  const marks = Object.entries(counts).map(([m, n]) => `<span class="pill">${esc(m)}${n > 1 ? `<i>${n}</i>` : ""}</span>`).join("");
+  const marks = Object.entries(counts).map(([m, n]) => `<span class="pill">${esc(m)}<i>${n}</i></span>`).join("");
   let ours;
   if (turn.sent) {
     const lead = prev && prev.sent ? `Earlier I asked: "${prev.sent}" ` : "";
@@ -73,7 +70,7 @@ function turnHtml(t, turn, prev) {
     ours = `<div class="who ours-who">Not sent · the guard stopped it${turn.review ? ` · ${esc(turn.review.verdict)}: ${esc(turn.review.why)}` : ""}</div><div class="msg ours refused">${esc((turn.why || "").replace(/^./, (c) => c.toUpperCase()))}</div>`;
   }
   const row = turn.removed.length || said.length ? `<button class="wh" data-open="${esc(key)}" aria-expanded="${open}">Withheld ${marks}<span class="caret">${open ? "▴" : "▾"}</span></button>` : "";
-  const behind = open ? `<div class="behind">${turn.n === 1 && t.origin === "shopper" ? `<span class="cap">The shopper's words</span>${marked(t.purpose, t.purpose_removed || [], "s")}` : ""}
+  const behind = open ? `<div class="behind">${turn.n === 1 && t.origin === "shopper" ? `<span class="cap">${esc(who())}'s words</span>${marked(t.purpose, t.purpose_removed || [], "s")}` : ""}
       <span class="cap">The agent's draft</span>${marked(turn.draft, turn.removed, "s")}
       ${turn.still.length ? `<span class="cap">Rewritten once, still not clean</span>${marked(turn.rewritten || "", turn.still, "s")}` : ""}</div>` : "";
   const reply = turn.reply ? `<div class="who">${esc(t.store)}'s agent</div><div class="msg theirs">${marked(turn.reply, turn.answers || [], "mark")}</div>` : "";
@@ -83,7 +80,7 @@ function turnHtml(t, turn, prev) {
 function renderThread() {
   const t = ui.data.threads.find((x) => x.id === ui.id);
   if (!t) { q("#thread").innerHTML = `<div class="empty">No conversation yet</div>`; return; }
-  q("#thread").innerHTML = `<div class="row"><h1>${esc(t.title || t.store)}</h1><span class="cap">${t.origin === "shopper" ? TEST + " · " : ""}<i class="od store"></i>${esc(t.store)}</span></div>
+  q("#thread").innerHTML = `<div class="row"><h1>${esc(t.title || t.store)}</h1><span class="cap">${t.origin === "shopper" ? `${esc(who())} asked · ${TEST} · ` : ""}<i class="od store"></i>${esc(t.store)}</span></div>
     ${t.error ? `<div class="msg refused">${esc(t.error)}</div>` : ""}
     ${t.turns.map((turn, i) => turnHtml(t, turn, t.turns[i - 1])).join("")}`;
 }
