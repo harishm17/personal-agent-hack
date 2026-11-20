@@ -26,7 +26,7 @@ from signoff.agent.pressure import facts, strike_a_pick  # noqa: E402
 from signoff.engine import state  # noqa: E402
 
 state._record = lambda *_a, **_k: None     # nothing is written to SingleStore from a simulation
-LINE = os.environ.get("FIREDRILL_STRIKE_LINE", "L3")
+LINE = os.environ.get("FIREDRILL_STRIKE_LINE")  # default: the first line of the active sheet that has a pick
 app = FastAPI(title="Sign-Off, Firedrill sandbox")
 _lock = threading.Lock()
 _plain: dict[str, dict] = {}
@@ -34,9 +34,11 @@ _start: dict = {}
 
 
 def fresh():
-    state.reset()
+    global LINE
+    snapshot = state.reset()
     chat.forget()
     _plain.clear()
+    LINE = LINE or next(l["line_id"] for l in snapshot["lines"] if l.get("pick"))
     _start.update(struck_key=strike_a_pick(LINE), facts=facts())
 
 
