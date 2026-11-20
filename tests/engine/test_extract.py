@@ -101,18 +101,22 @@ def test_under_the_agree_policy_a_figure_counts_only_when_the_readers_match():
     assert alone["unsure"] and "only a reports it" in alone["unsure_reason"]
 
 
-def test_an_anthropic_model_uses_the_api_with_a_key_and_falls_back_to_the_command_line(monkeypatch):
+def test_only_a_live_call_uses_the_api_key_and_it_is_capped_with_the_command_line_as_fallback(monkeypatch):
     calls = []
     monkeypatch.setattr(reader, "ask_claude_cli", lambda m, s, u: (calls.append("cli") or '{"figures": []}', {}))
-    monkeypatch.setattr(reader.config, "have", lambda name: False)
-    assert reader.ask("claude-sonnet-5-5", "s", "u")[2] == "anthropic:claude-sonnet-5-5" and calls == ["cli"]
-
-    def broken(model, system, user):
-        calls.append("api")
-        raise RuntimeError("401")
     monkeypatch.setattr(reader.config, "have", lambda name: True)
     monkeypatch.setattr(reader.config, "env", lambda name, default=None: None)
+    monkeypatch.setattr(reader, "ask_anthropic_api", lambda m, s, u: (calls.append("api") or "{}", {"via": "api"}))
+    monkeypatch.setattr(reader, "_api_calls", {"made": 0, "capped_logged": False})
+    assert reader.ask("claude-sonnet-5-5", "s", "u")[2] == "anthropic:claude-sonnet-5-5" and calls == ["cli"]  # batch
+    assert reader.ask("claude-sonnet-5-5", "s", "u", live=True)[1] == {"via": "api"} and calls == ["cli", "api"]
+
+    def broken(model, system, user):
+        calls.append("api failed")
+        raise RuntimeError("402")
     monkeypatch.setattr(reader, "ask_anthropic_api", broken)
-    assert reader.ask("claude-sonnet-5-5", "s", "u")[0] == '{"figures": []}' and calls == ["cli", "api", "cli"]
-    monkeypatch.setattr(reader, "ask_anthropic_api", lambda m, s, u: (calls.append("api ok") or "{}", {"via": "api"}))
-    assert reader.ask("claude-sonnet-5-5", "s", "u")[1] == {"via": "api"} and calls[-1] == "api ok"
+    assert reader.ask("claude-sonnet-5-5", "s", "u", live=True)[0] == '{"figures": []}'
+    assert calls[-2:] == ["api failed", "cli"]  # one try, no retry, then the command line
+    reader._api_calls["made"] = reader.API_CALL_CAP
+    reader.ask("claude-sonnet-5-5", "s", "u", live=True)
+    assert calls[-1] == "cli" and calls.count("api failed") == 1 and reader._api_calls["capped_logged"]

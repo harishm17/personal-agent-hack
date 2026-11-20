@@ -161,7 +161,7 @@ def say(text: str) -> dict:
             json.dumps(results, ensure_ascii=False), ("Earlier in this chat:\n%s\n" % earlier) if earlier else "",
             sheet["shopper"]["name"], text)
         try:
-            raw, _, used = reader.ask(model, system, user)
+            raw, _, used = reader.ask(model, system, user, live=True)
             intent, reply = _parse(raw)
         except Exception as error:  # noqa: BLE001  (no model: say so; the state is untouched either way)
             intent, reply, used = "unavailable", "I can't reach my model right now (%s). Nothing on the sheet has " \

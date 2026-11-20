@@ -8,6 +8,7 @@ Serverless; `claude...` is Anthropic (the `claude -p` command line until `ANTHRO
 `arcee:<model>` or any other id is Arcee. SIE and Arcee are both OpenAI-compatible chat endpoints.
 """
 import json
+import logging
 import pathlib
 import subprocess
 import tempfile
@@ -129,12 +130,18 @@ def ask_claude_cli(model, system, user, timeout=180.0):
     return body.get("result") or "", dict(body.get("usage") or {}, cost_usd=body.get("total_cost_usd"))
 
 
-def ask_anthropic_api(model, system, user, max_tokens=16000):
-    """One Messages API call through the Anthropic SDK. Used only when `ANTHROPIC_API_KEY` exists.
-    No sampling parameters (current models reject them); low effort, because the task is a short read.
-    A policy decline is re-run by the server on its default fallback model; if it still declines, raise."""
+API_CALL_CAP = 60  # per process: the API key has little credit; batch reads never use it
+_api_calls = {"made": 0, "capped_logged": False}
+log = logging.getLogger("signoff.reader")
+
+
+def ask_anthropic_api(model, system, user, max_tokens=4000):
+    """One Messages API call through the Anthropic SDK: no retries, no sampling parameters (current models
+    reject them), low effort because the task is short. A policy decline is re-run by the server on its
+    default fallback model; if it still declines, raise."""
     import anthropic
-    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY"), timeout=60.0)
+    _api_calls["made"] += 1
+    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY"), timeout=30.0, max_retries=0)
     response = client.beta.messages.create(
         model=model, max_tokens=max_tokens, system=system, messages=[{"role": "user", "content": user}],
         output_config={"effort": "low"}, betas=["server-side-fallback-2026-07-01"], fallbacks="default")
@@ -146,20 +153,27 @@ def ask_anthropic_api(model, system, user, max_tokens=16000):
     return text, usage
 
 
-def ask_anthropic(model, system, user):
-    """The API when there is a key, else `claude -p`. An API failure of any kind falls back to `claude -p`."""
-    if config.have("ANTHROPIC_API_KEY") and config.env("SIGNOFF_ANTHROPIC_VIA") != "cli":
-        try:
-            return ask_anthropic_api(model, system, user)
-        except Exception:  # noqa: BLE001  (bad key, a parameter the model rejects, the network: use the backstop)
-            pass
+def ask_anthropic(model, system, user, live=False):
+    """`claude -p`, always, for batch work. Only a live call (one a person is waiting on) may use the API
+    key, at most API_CALL_CAP times per process and never retried; any API failure falls back to `claude -p`."""
+    if live and config.have("ANTHROPIC_API_KEY") and config.env("SIGNOFF_ANTHROPIC_VIA") != "cli":
+        if _api_calls["made"] >= API_CALL_CAP:
+            if not _api_calls["capped_logged"]:
+                _api_calls["capped_logged"] = True
+                log.warning("Anthropic API call cap reached (%d calls in this process): using claude -p from now on",
+                            API_CALL_CAP)
+        else:
+            try:
+                return ask_anthropic_api(model, system, user)
+            except Exception as error:  # noqa: BLE001  (bad key, no credit, a rejected parameter, the network)
+                log.warning("Anthropic API call failed (%s): using claude -p for this one", type(error).__name__)
     return ask_claude_cli(model, system, user)
 
 
-def ask(model, system, user):
-    """(reply text, usage, extractor name)."""
+def ask(model, system, user, live=False):
+    """(reply text, usage, extractor name). `live=True` only for a call a person is waiting on."""
     if model.startswith("claude"):
-        text, usage = ask_anthropic(model, system, user)
+        text, usage = ask_anthropic(model, system, user, live)
         return text, usage, "anthropic:%s" % model
     if model.startswith("sie:"):
         text, usage = ask_openai_style(SIE_URL, config.env("SIE_API_KEY"), model[4:], system, user)
