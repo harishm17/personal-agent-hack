@@ -450,3 +450,5 @@ So "the reading model has no tools; its output is typed and span-checked" is tru
 - Tests (`tests/engine/test_receipts.py`): a changed receipt on disk is found at its `n`; a changed receipt with its own hash fixed is
   found at the next one; a dropped last receipt is found; a receipt that cannot be written never stops a change. 0.2 ms per change at
   400 receipts. Wording: "tamper-evident". Whoever can rewrite the whole file and the process memory can forge a chain; any edit shows.
+- Correction to my receipt note above: the measured cost is 2.9 ms per change in total (recompute plus receipt) with 400 receipts in the
+  chain, not "0.2 ms". Still far under the 50 ms the slider needs.
