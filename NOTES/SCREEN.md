@@ -164,3 +164,26 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
   line `preferences`: `[{"id", "op", "unit", "set_by", "bound", "terms"}]` when the line has any; in `pick`: `preferences`:
   `[{"id", "status", "expr"}]`, and with a review ordering `rating` (the object above or null) and, for `most_popular`,
   `review_count`. `picked_because` is words for the screen and is not in the canonical sheet.
+
+## 15:06 from SIGN — G23, the shopper asks and the approver decides: JSON shapes (the code follows within minutes; these are the contract)
+- **`POST /api/shopper/ask-change {"limit_id": "L1.capacity", "value": 250, "note": "the chair I like is rated 250"}`** (laptop only, like the rest of `/api/shopper/`) →
+  `{"ok": true, "ask": ASK}`. `note` is optional text, 300 characters at most. One pending ask per limit: a new one for the same limit replaces the
+  earlier one (it becomes `status: "replaced"`). It changes nothing in the sheet and nothing under the hash. Refusals, each `{"error": code, "detail": words}`:
+  400 `not_an_issuer_limit` (a limit the approver does not set, or an unknown id), 400 `bad_value`, 400 `out_of_range` (outside the limit's min to max),
+  400 `off_step`, 400 `no_change` (the value is the one it has now), 409 `already_signed` (also `signing in progress`).
+- **ASK** (the same object everywhere):
+  `{"id": "ask-3", "sheet_id": "sheet1", "limit_id": "L1.capacity", "line_id": "L1", "label": "holds at least", "unit": "lb", "op": ">=",
+    "from": 300, "to": 250, "note": "…", "by": "Elena", "at": "2026-11-20T15:07:41-08:00",
+    "status": "pending" | "accepted" | "declined" | "changed" | "replaced",
+    "settled_at": null | iso, "settled_by": null | "Dana", "changed_to": null | number,
+    "text": "Elena asks: holds at least 250 lb instead of 300 lb",
+    "outcome": "asked Dana · waiting" | "Dana changed it to 250" | "Dana declined" | "Dana changed it to 275" | "replaced by a newer ask"}`
+  `accepted`: she accepted the ask itself (her signed `set_limit` carries `ask_id`; the value is the asked one). `changed`: she moved that limit to another
+  value herself while the ask was waiting (`changed_to`). `declined`: her signed `decline_ask`. `text` and `outcome` are words to print as they are; `by` is the
+  shopper's name from the sheet, `settled_by` the name on the approver's key.
+- **`GET /api/asks`** → `{"asks": [ASK, …], "pending": 1}` for the sheet that is loaded now, oldest first, pending and settled. The same list is
+  `asks` inside `GET /api/issuer/status`. A reset, or another sheet, starts with none.
+- Your "change" link becomes "Ask Dana" and opens a value and a note, then `POST /api/shopper/ask-change`; while an ask for that limit is pending show its
+  `outcome` ("asked Dana · waiting"); when it settles show `outcome` again ("Dana changed it to 250", "Dana declined"). Poll `/api/asks` (about every 3 s)
+  or read it from `/api/issuer/status`. Nothing here changes the limit: only the approver's signed request does, and the chain has a receipt for the
+  ask (`limit_change_asked`, actor `shopper`) and for the outcome (`limit_change_settled`, actor `issuer`) beside her signed request.
