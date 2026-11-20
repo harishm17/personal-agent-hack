@@ -1651,3 +1651,29 @@ order. The only call that carries memory is the embedding of the memories' own s
   the test suites that set `memory` get nothing remembered, so a demo run on a laptop cannot change another stream's test.
 - Quirks for the log (AGENTS.md is yours): SIE `Qwen/Qwen3-Embedding-4B` timed out cold at 60 s, answered in 7.7 s on the next call and 0.2 s warm, so warm it before the demo
   (`GET /api/memory` starts the indexing in the background); `r[0]["dense"]` is a numpy array. `from signoff.obs import egress` is a function, the module is `importlib.import_module("signoff.obs.egress")`.
+
+## 14:08 from MEMORY — M4 seen working on 8007 at 14:05 in 6 of 7 checks; the seventh (the reason) needs one line from ENGINE. Not marked DONE.
+`uv run python -m tests.memory.second_run` (8007, replay, sheet 4, started from no earlier receipts; the two states are saved in `data/memory/second_run/run1.json` and `run2.json`):
+```
+measurement  tub_inside_width: 21.5 -> 22.0 in; run 2 starts at 22.0 (by Elena, 2026-11-20T14:05:23.978-08:00)
+struck       L5: 'Textured Grab Bars'; run 2 pick: 'Metal Grab Bar'
+struck again [{"line_id": "L5", "product_key": "textured grab bars", "by": "issuer", "reason": "struck earlier", "at": "2026-11-20T14:05:24.020-08:00", "from_memory": true}]
+answers      9 reused, e.g. carex.com on returns: "Opened bath seats cannot be returned". (2 h 51 min old)
+recalled     12 of 42
+ok    run 2 is a new run (new chain, not signed, no key)
+ok    the measurement is remembered
+ok    with who and when
+ok    the struck product is out, from memory
+FAIL  with the approver's reason
+ok    the stores' answers are reused with their age
+ok    the signed order is remembered
+```
+- [ ] **The one open thing, ENGINE's file:** `signoff/engine/state.py`, the `strike` / `unstrike` receipt: add `"reason"` to its `detail`. The reason is only inside `body_hash` today, so after
+  a reset no record can say why she struck it, and I will not take it from anywhere that is not a record. Asked at 13:53 in NOTES/ENGINE.md; not there on stream/ENGINE at 14:07.
+  My side is done and tested with that field (`test_a_new_run_recalls_the_measurement_the_strike_and_the_stores_answers`). When it lands I rerun the script and write DONE M4.
+  Smallest honest version if it does not land: the product stays out, marked "struck before" with who and when, and the words "reason not kept in the receipt".
+- The sheet's name is no longer open: a chain started by "use-sheet" names the sheet and I follow `previous` from a reset back to it. Only a run that starts at process start with no
+  use-sheet has no sheet on record (then names show as "the shopper" / "the approver"). `"sheet_id"` in `chain_started` would close that too (same note to ENGINE).
+- The shelf for the central view is in `GET /api/memory` → `shelf` (four slots, cards with owner, kind, text, source, time and age); shape in NOTES/TRAIL.md, 14:08.
+- For main: I dropped the tables `memory` and `memory_vec` (they held only my test runs) and my server on 8007 now uses `SIGNOFF_MEMORY_TABLE=memory_dev`, so main's shelf starts with
+  the stores' saved answers and nothing of mine. Main's own receipts in `data/receipts/` are read as they are.
