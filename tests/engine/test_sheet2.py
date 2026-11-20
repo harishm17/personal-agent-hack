@@ -77,3 +77,19 @@ def test_the_cheapest_rule_does_not_need_a_delivery_time_and_the_order_matches(b
     assert limits["T1.flush"]["from_order"]["value"] == 1.28 and "1.28 gallons per flush" in limits["T1.flush"]["from_order"]["quote"]
     moved = state.apply_issuer({"type": "set_limit", "limit_id": "T3.flow", "value": 2.5})
     assert line(moved, "T3")["why"]["inside"] > line(s, "T3")["why"]["inside"] and moved["order"]["limits_matching"] == 4
+
+
+def test_the_first_load_of_a_sheet_that_declares_units_equals_every_later_load(both):
+    """A sheet's own units must be known before its figures are prepared, or the first load differs from a reload."""
+    if not (ROOT / "sheets" / "sheet3.json").exists() or not any((ROOT / "data" / "sheet3" / "pool").glob("*.json")):
+        pytest.skip("sheet 3 is not in this checkout")
+    from signoff.engine import rules
+    declared = json.loads((ROOT / "sheets" / "sheet3.json").read_text()).get("units") or {}
+    for name in declared:  # as in a fresh process: nothing declared yet
+        for spelling in rules.DECLARED.pop(name, []):
+            rules.ALIASES.pop(spelling, None)
+        rules.FAMILY.pop(name, None)
+    first = state.use_sheet("sheet3")
+    again = state.reset()
+    key = lambda s: (s["sheet_hash"], s["total_cents"], s["counts"], s["two_readers"]["strict_mode_measured"])  # noqa: E731
+    assert key(first) == key(again)
