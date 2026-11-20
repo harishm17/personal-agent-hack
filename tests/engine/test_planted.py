@@ -29,10 +29,12 @@ def facts(s):
 
 
 def test_with_and_without_the_planted_page_picks_hash_and_total_are_identical(real_pool, monkeypatch):
-    monkeypatch.setenv("SIGNOFF_PLANTED", "off")
+    monkeypatch.delenv("SIGNOFF_PLANTED", raising=False)
     without = state.reset()
-    assert "planted" not in without
-    monkeypatch.delenv("SIGNOFF_PLANTED")
+    assert "planted" not in without  # off unless asked for
+    assert without["instruction_scan"]["instructions_found"] == 0 and without["instruction_scan"]["pages_scanned"] >= 100
+    assert without["instruction_scan"]["text"].endswith("0 instructions to an agent found")
+    monkeypatch.setenv("SIGNOFF_PLANTED", "1")
     with_it = state.reset()
     assert facts(with_it) == facts(without)
     page = with_it["planted"]
