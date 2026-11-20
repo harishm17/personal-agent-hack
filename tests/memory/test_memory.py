@@ -188,3 +188,54 @@ def test_rows_reach_singlestore_and_come_back(records, sheet, monkeypatch):
         assert any(r["kind"] == "home_measurement" and r["value"]["value"] == 22.5 for r in held["rows"])
     finally:
         store._in_db(lambda conn: conn.cursor().execute("DROP TABLE IF EXISTS %s" % name))
+
+
+def test_the_context_count_says_which_model_calls_were_given_memory():
+    from signoff.memory import meaning
+    rows = [{"kind": "model", "recipient": "anthropic:reader", "purpose": "read figures from one store page", "bytes": 3000,
+             "fact_classes": ["product", "store_text"], "sealed_found_in_payload": []}] * 3 + [
+            {"kind": "model", "recipient": meaning.RECIPIENT, "purpose": meaning.PURPOSE_INDEX, "bytes": 900,
+             "fact_classes": ["home_measurement", "store_text"], "sealed_found_in_payload": ["home_measurement: 22.5 in"]},
+            {"kind": "store", "recipient": "carex.com", "purpose": "ask", "bytes": 10, "fact_classes": ["none"]}]
+    told = meaning.context(rows)
+    assert (told["model_calls"], told["calls_given_memory"], told["calls_given_no_memory"]) == (4, 1, 3)
+    reader = told["by_call"][0]
+    assert (reader["calls"], reader["calls_given_memory"], reader["given"], reader["calls_with_a_home_measurement"]) == (
+        3, 0, ["product", "store_text"], 0)
+
+
+def test_recall_by_meaning_never_raises_and_says_when_it_did_not_run(records, sheet, monkeypatch):
+    from signoff.memory import meaning
+    monkeypatch.setattr(meaning, "embed", lambda *a, **k: 1 / 0)
+    monkeypatch.setattr(meaning, "_queries", {})
+    recalled = memory.recall(sheet)
+    told = meaning.search(sheet, "L5", recalled)
+    assert told["ranked"] == [] and "ZeroDivisionError" in told["error"] and told["query"].startswith("grab bar")
+    assert meaning.search(sheet, "nope", recalled)["error"]
+
+
+@pytest.mark.live
+def test_meaning_ranks_the_memories_about_the_item_first(records, sheet, product, monkeypatch):
+    import uuid
+    from signoff.memory import meaning
+    name = "memory_test_" + uuid.uuid4().hex[:8]
+    monkeypatch.setenv("SIGNOFF_MEMORY_TABLE", name)
+    monkeypatch.delenv("SIGNOFF_MEMORY_DB")
+    monkeypatch.setattr(meaning, "_queries", {})
+    receipts.start("sheet sheet4")
+    _measure(22.5)
+    signed_strike(product, "the suction cup lets go on tile")
+    try:
+        done = meaning.index(timeout_s=600)
+        assert done["indexed"] == done["of"] > 0
+        recalled = memory.recall(sheet)
+        told = meaning.search(sheet, product["line_id"], recalled, k=3, timeout_s=120)
+        assert told["error"] is None and told["recalled"] == 3 and told["of"] == recalled["counts"]["recalled"]
+        assert told["not_indexed_yet"] == 0
+        assert told["ranked"][0]["kind"] == "strike" and told["ranked"][0]["key"] == product["product_key"]
+        assert all(r["owner"] in ("shopper", "issuer", *sheet["stores"]) for r in told["ranked"])
+        only_stores = meaning.search(sheet, product["line_id"], recalled, k=3, kinds=["store_answer"], timeout_s=120)
+        assert {r["kind"] for r in only_stores["ranked"]} == {"store_answer"}
+    finally:
+        for table in (name, name + "_vec"):
+            store._in_db(lambda conn: conn.cursor().execute("DROP TABLE IF EXISTS %s" % table))
