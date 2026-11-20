@@ -42,7 +42,7 @@ def _make_env(monkeypatch, engine, sheet_id):
     monkeypatch.setattr(api, "get_engine", lambda: engine)
     monkeypatch.setattr(api, "get_cart", lambda: cart)
     monkeypatch.setattr(api, "ensure_watcher", lambda: None)  # no background Senso thread inside a unit test
-    monkeypatch.setattr(api, "keystore", KeyStore(path=None))
+    monkeypatch.setattr(api, "keystore", api.SignKeyStore(path=None))
     monkeypatch.setattr(persona, "configured", lambda: False)
     monkeypatch.setattr(senso, "configured", lambda: False)  # no real Senso call from a unit test
     persona.reset()

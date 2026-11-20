@@ -52,7 +52,7 @@ function html(f) {
       <div class="fl-cols">
         <div class="fl-col"><div class="cap up">What each party said</div>${orderCard}${homeCards}${pageCard}</div>
         <div class="fl-col">${frame}
-          <div class="fl-by"><b class="byh">Never enters a model call</b>${pills}<div class="chips">${outside}</div></div></div>
+          <div class="fl-by"><b class="byh">Never enters ${esc(m ? m.never_enters : "the page-reading call")}</b>${pills}<div class="chips">${outside}</div></div></div>
         <div class="fl-col"><div class="cap up">Checked in code</div>
           ${f.checks.length ? `<div class="fc"><div class="cap">the store's figure &nbsp;against&nbsp; the limit</div><div class="cmp">${checks}</div></div>` : none("No check record")}
           ${f.refused ? `<div class="fc rowc quiet" data-s="4"><span class="pc">${esc(f.refused.price)}</span><span class="tt">${esc(f.refused.title)}</span><span class="no">refused · ${esc(f.refused.reason)}</span></div>` : ""}

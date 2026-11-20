@@ -1,4 +1,6 @@
 """The trail feed: built from records only, never raises, and every event names one of seven steps and five kinds."""
+import pytest
+
 from signoff.trail import feed
 
 RECEIPTS = [
@@ -115,6 +117,7 @@ def test_a_blocked_store_message_is_stopped():
     assert e["stopped"] and e["verified"] is False and e["step"] == "stores_searched" and e["label"] == "1 message blocked"
 
 
+@pytest.mark.live      # collect() reads the live sources, and memory's shelf asks the database
 def test_collect_never_raises_and_names_each_source():
     src = feed.collect()
     assert {s["id"] for s in src["sources"]} >= {"state", "receipts", "egress"}
@@ -202,6 +205,10 @@ def test_what_left_is_read_from_the_ledger_and_the_guard_and_never_claims_what_n
     out = left.build(sheet, None, rows, messages, rule, {"health": "health detail", "limit": "order limit"})
     cell = lambda c, col: out["cells"][c][col]
     assert [c["id"] for c in out["columns"]] == ["agents", "anthropic:x", "senso"]
+    assert [c["group"] for c in out["columns"]] == ["outside", "own", "own"]
+    assert (out["totals"]["outside_payloads"], out["totals"]["outside_carried"], out["totals"]["own_carried"]) == (2, 0, 2)
+    web = left.build(sheet, None, rows + [ledger(4, "2026-11-20T11:31:00-08:00", "exa.ai", "search", "sponsor service")], [], rule, {})
+    assert {c["id"]: c["group"] for c in web["columns"]}["exa.ai"] == "outside"       # recorded by its web domain
     assert cell("store_text", "anthropic:x")["state"] == "sent" and cell("store_text", "anthropic:x")["sent"] == 2
     assert cell("limit", "anthropic:x")["state"] == "found" and cell("limit", "anthropic:x")["found_items"][0]["match"] == "300 lb"
     assert cell("limit", "senso")["state"] == "sent" and cell("person", "senso")["state"] == "never"
