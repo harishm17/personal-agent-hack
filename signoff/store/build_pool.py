@@ -54,7 +54,7 @@ def product_key(prod: dict | str) -> str:
 
 def build(sheet_id: str | None = None) -> dict:
     """Rebuild the pool of the sheet from the raw replies on disk. Returns {store: rows}; writes the pool files and the summary."""
-    sheet_id = sheet_id or sheetctx.active_id()
+    sheet_id = sheetctx.data_id(sheet_id)  # a sheet with `data_from` has no pool of its own: build the one it uses
     sheet = json.loads((ROOT / "sheets" / f"{sheet_id}.json").read_text())
     pool_dir = sheetctx.pool_dir(sheet_id)
     raw_dir = pool_dir / "raw"

@@ -55,3 +55,14 @@ def test_a_count_is_not_the_head_of_a_phrase():
     assert relevance.belongs(prod("Crayola Crayons 24pk"), "crayons 24")[0]
     assert relevance.belongs(prod("Yoobi Color Block No.2 Pencils 48pk"), "#2 pencils")[0]
     assert relevance.belongs(prod("Mini Binder, 4 Pack"), "pencils")[0] is False
+
+
+def test_a_part_or_accessory_is_not_the_thing_it_is_for():
+    p = prod("Replacement Leg Tips for Carex Universal Shower Chair and Transfer Bench - Set of 4", ["Replacement Parts"])
+    ok, why = relevance.belongs(p, "shower chair")
+    assert not ok and "for a shower chair" in why
+    assert relevance.belongs(prod("Raised Toilet Seat for Seniors"), "raised toilet seat")[0]  # "for ..." after the thing is fine
+    liner = prod("Carex Commode Liner (7-Pack)", ["Bedside and Bathroom Commodes and Commode Liners", "Commodes"])
+    ok, why = relevance.belongs(liner, "bedside commode")
+    assert not ok and "liner" in why
+    assert relevance.belongs(prod("Carex Deluxe Folding Commode", ["Bedside and Bathroom Commodes and Commode Liners"]), "bedside commode")[0]

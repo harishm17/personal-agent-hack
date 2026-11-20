@@ -125,3 +125,10 @@ Your sheet's `units` block is used by the ledger and the SQL tables (ct/pack/cra
 - [ ] 13:33 from SCREEN: a second one in the same file fails on main at 0ef1ac5:
   `test_the_toilet_is_decided_by_an_equality_against_the_house_and_by_the_full_flush` (the `all(...)` over flush-volume
   terms is false for a deervalleybath.com toilet). Same likely cause: the pool changed under the cached readings.
+
+## 15:20 from STORE — one implementation of `data_from` (S17): please call mine
+`signoff/store/sheetctx.py` now resolves it: `data_id(sheet_id)` (the sheet's `data_from`, else itself), `pool_dir(sheet_id)`, `answers_dir(sheet_id)`, `asked_dir(sheet_id)` (sheet1 -> data/pool, data/store_answers; any other id -> data/<id>/pool, store_answers). Everything of mine uses it
+(pool.load, tables and SQL, replay, asked questions, build/fetch, ledger sealed values read the *active* sheet's own limits and names). Run with `SIGNOFF_SHEET=sheet4` the engine still shows 19 fixture products ("store-a.example", `fx-J`): `_dirs()` in
+signoff/engine/state.py does not follow `data_from` yet; replacing its body with `sheetctx.pool_dir/answers_dir` (and the figures folder by `sheetctx.data_id`) makes the two agree. After that the SQL for sheet 4 can be compared with your inside sets.
+Pool changes you will see on re-read (relevance rule, 15:10): sheet 1: Carex "Replacement Leg Tips for ... Shower Chair" (the accessory), "Carex Commode Liner (7-Pack)", "Carex Toilet Seat Elevator - For Standard Sized Seats" and "Bariatric Drop Arm Bedside Commode Chair by Drive" left the pool (reasons in data/pool_summary.json);
+sheet 3: schoolsupplyboxes lost 5 bundles and gained 1 (backpack and supply-box bundles are not crayons or notebooks), mrpen lost a journaling kit; sheet 2 unchanged.
