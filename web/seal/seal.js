@@ -152,44 +152,70 @@ function firstRule() {
 function tries() {
   const p = ui.proof, who = p.approver.name || "the approver", rule = firstRule(), lower = rule && Math.round(rule.value * 5 / 6);
   return [
-    { id: "nosig", label: "Ask for carts with no signature", sent: "sign the sheet · no signature" },
+    { id: "nosig", label: "Ask for carts with no signature", sent: "sign the sheet, no signature" },
     { id: "newkey", label: "Sign with a key made in this browser", sent: "sign the sheet · a new key, never enrolled" },
     { id: "replay", label: `Replay ${who}'s signed request`, sent: p.signature ? "the same signed request, sent again" : "no signed request in this run yet", off: !p.signature },
     { id: "limit", label: `Change ${who}'s limit from the laptop`, sent: rule ? `${who}'s limit for the ${rule.need}, ${rule.value} to ${lower} ${rule.unit} · no signature` : `no limit of ${who}'s on this sheet`, off: !rule, rule, lower },
   ];
 }
-// the server's refusal code in plain words; its own sentence is kept word for word behind the hover
-const REFUSAL = (who) => ({ unsigned: `not signed by ${who}'s key`, replayed_seq: "this signed request was already used", no_key: "no key is enrolled yet" });
-async function attempt(t) {
+async function bodyFor(t) {
   const p = ui.proof, enrolled = p.public_key && p.public_key.key_id;
   const base = (type) => ({ type, sheet_id: p.sheet.id, seq: Date.now(), at: new Date().toISOString() });  // the phone's own layout
-  let body;
-  if (t.id === "nosig") body = { payload: JSON.stringify({ ...base("sign_sheet"), sheet_hash: p.sheet_hash }), key_id: enrolled || null };
-  if (t.id === "limit") body = { payload: JSON.stringify({ ...base("set_limit"), limit_id: t.rule.id, value: t.lower }), key_id: enrolled || null };
-  if (t.id === "replay") body = { payload: p.signature.payload, sig: p.signature.sig, key_id: p.signature.key_id };
-  if (t.id === "newkey") {
-    const pair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]);
-    const jwk = await crypto.subtle.exportKey("jwk", pair.publicKey);
-    const payload = JSON.stringify({ ...base("sign_sheet"), sheet_hash: p.sheet_hash });
-    const sig = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, pair.privateKey, new TextEncoder().encode(payload));
-    body = { payload, sig: b64u(sig), key_id: enrolled || hex(await sha256(jwk.x + "." + jwk.y)).slice(0, 16) };  // it claims to be her key
-  }
-  const res = await fetch("/api/issuer/request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (t.id === "nosig") return { payload: JSON.stringify({ ...base("sign_sheet"), sheet_hash: p.sheet_hash }), key_id: enrolled || null };
+  if (t.id === "limit") return { payload: JSON.stringify({ ...base("set_limit"), limit_id: t.rule.id, value: t.lower }), key_id: enrolled || null };
+  if (t.id === "replay") return { payload: p.signature.payload, sig: p.signature.sig, key_id: p.signature.key_id };
+  const pair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]);
+  const jwk = await crypto.subtle.exportKey("jwk", pair.publicKey);
+  const payload = JSON.stringify({ ...base("sign_sheet"), sheet_hash: p.sheet_hash });
+  const sig = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, pair.privateKey, new TextEncoder().encode(payload));
+  return { payload, sig: b64u(sig), key_id: enrolled || hex(await sha256(jwk.x + "." + jwk.y)).slice(0, 16) };  // it claims to be her key
+}
+const PATH = "/api/issuer/request";
+async function attempt(t) {
+  const body = await bodyFor(t);
+  const res = await fetch(PATH, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const raw = await res.text();  // the response exactly as the server sent it
   let answer = {};
-  try { answer = await res.json(); } catch (e) { answer = {}; }
-  ui.tried[t.id] = { status: res.status, error: answer.error, detail: answer.detail, through: res.ok || answer.ok === true, at: new Date() };
+  try { answer = JSON.parse(raw); } catch (e) { answer = {}; }
+  ui.tried[t.id] = { body, status: res.status, raw, through: res.ok || answer.ok === true, at: new Date() };
   ui.key = "";
   await load();
 }
+async function copyCurl(t) {
+  const body = JSON.stringify(await bodyFor(t)).replace(/'/g, "'\\''");
+  const base = (ui.proof.public_url || location.origin).replace(/\/$/, "");
+  await navigator.clipboard.writeText(`curl -s -i -X POST '${base}${PATH}' -H 'Content-Type: application/json' -d '${body}'`);
+  ui.copied = t.id;
+  renderTries();
+  setTimeout(() => { ui.copied = null; renderTries(); }, 1500);
+}
+// what a recorded refusal was, in the sheet's own words
+function asked(r) {
+  const who = ui.proof.approver.name || "the approver";
+  if (r.request === "sign_sheet") return "sign the sheet";
+  if (r.request === "set_limit") {
+    const t = scan(ui.proof.canonical);
+    for (const ln of t.items.lines.items) for (const m of ln.items.limits.items) if (m.items.id.value === r.limit_id) return `change ${who}'s limit for the ${ln.items.need.value} to ${r.value} ${m.items.unit.value}`;
+    return `change a limit of ${who}'s`;
+  }
+  return r.request === "enrol" ? "enrol a key" : r.request === "strike" ? "strike a product" : r.request === "unstrike" ? "undo a strike" : "a request";
+}
 function renderTries() {
   const p = ui.proof, n = p.refused.length, who = p.approver.name || "the approver";
-  q("#tries").innerHTML = `<div class="lead"><span>Try to get a cart without ${esc(who)}.</span><span class="muted">The agent can read, search and compare. It cannot approve.</span><span class="grow"></span><span class="pill">${n} ${n === 1 ? "attempt" : "attempts"} refused in this run</span></div>` +
+  const newest = [...p.refused].reverse(), some = ui.allRefused ? newest : newest.slice(0, 4);
+  const record = n ? some.map((r) => `<div class="rec"><time>${clock(r.at)}</time><span>${esc(asked(r))}</span>
+      <span class="muted">${r.her_key === true ? `signed by ${esc(who)}'s key` : r.her_key === false ? `no signature from ${esc(who)}'s key` : ""}</span>
+      <span class="said">${esc(r.words)}</span></div>`).join("") + (n > some.length ? `<button class="link" id="allrefused">+${n - some.length} earlier</button>` : "")
+    : `<div class="rec empty">No one has tried in this run.</div>`;
+  const shorten = (body) => JSON.stringify({ ...body, ...(body.sig ? { sig: body.sig.slice(0, 16) + "…" } : {}) }, null, 1);
+  q("#tries").innerHTML = `<div class="lead"><span>Without ${esc(who)}'s signature</span><span class="grow"></span><span class="pill">${n} refused in this run</span></div>
+    <div class="cap">Refused, from the run's records · the server's own words</div>${record}
+    <div class="cap send">Send one yourself · these are real requests to this server. Send them from anywhere.</div>` +
     tries().map((t) => {
       const r = ui.tried[t.id];
-      const got = !r ? "" : r.through
-        ? `<span class="got through">${r.status} · NOT refused: tell the integrator</span>`
-        : `<span class="got" title="${esc(`${r.status} ${r.error || ""}: ${r.detail || ""}`)}"><b>✕ Refused</b><span>${esc(REFUSAL(who)[r.error] || r.detail || r.error || "")}</span><time>${r.status} · ${r.at.toLocaleTimeString("en-GB")}</time></span>`;
-      return `<div class="try"><button data-try="${t.id}" ${t.off || ui.trying ? "disabled" : ""}>${esc(t.label)}</button><span class="sent">${esc(t.sent)}</span>${got}</div>`;
+      const open = !r ? "" : `<div class="proof ${r.through ? "through" : ""}"><pre>POST ${PATH}\n${esc(shorten(r.body))}</pre><pre>HTTP ${r.status}${r.through ? "  NOT refused: tell the integrator" : ""}\n${esc(r.raw)}</pre></div>`;
+      return `<div class="try"><span>${esc(t.label)}</span><span class="sent">${esc(t.sent)}</span>
+        ${t.off ? "" : `<button class="link" data-try="${t.id}" ${ui.trying ? "disabled" : ""}>Send</button><button class="link" data-curl="${t.id}">${ui.copied === t.id ? "copied" : "copy as curl"}</button>`}</div>${open}`;
     }).join("");
 }
 
@@ -249,10 +275,13 @@ document.addEventListener("click", (e) => {
   if (val) { ui.editing = Number(val.dataset.id); renderRows(); }
   if (e.target.closest("#restore")) { ui.edits.clear(); ui.editing = null; recompute(); }
   if (e.target.closest("#cartview")) { ui.cartOnly = !ui.cartOnly; renderRows(); }
+  if (e.target.closest("#allrefused")) { ui.allRefused = true; renderTries(); }
+  const curl = e.target.closest("[data-curl]");
+  if (curl) copyCurl(tries().find((t) => t.id === curl.dataset.curl)).catch(() => {});
   const tryButton = e.target.closest("[data-try]");
   if (tryButton && !ui.trying) {
     ui.trying = true;
-    attempt(tries().find((t) => t.id === tryButton.dataset.try)).catch((error) => { ui.tried[tryButton.dataset.try] = { status: "no answer", error: String(error), through: false, at: new Date() }; })
+    attempt(tries().find((t) => t.id === tryButton.dataset.try)).catch((error) => { ui.tried[tryButton.dataset.try] = { body: {}, status: "none", raw: String(error), through: false, at: new Date() }; })
       .finally(() => { ui.trying = false; renderTries(); });
   }
 });
