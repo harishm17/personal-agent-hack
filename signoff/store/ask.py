@@ -24,6 +24,29 @@ def _clause(text: str, sent: str) -> str:
     return sent.rstrip(".;! ")
 
 
+_NOT_SAID = re.compile(r"\b(?:does|do|did|is|are)(?: not|n.t)\s+(?:specif|state|say|mention|clear|provid|list|address|cover)|"
+                       r"\bnot (?:specified|stated|clear|mentioned|provided)|unclear|no information|cannot tell|can.t tell", re.I)
+_DENIED = re.compile(r"cannot be returned|can.t be returned|not (?:be )?returnable|non-returnable|not eligible|excluded from returns|"
+                     r"no returns|final sale|not accepted|(?:will not|won.t|do not|don.t) accept|unable to be returned", re.I)
+_HEDGED = re.compile(r"\bmay\b|\bmight\b|\bcould\b|generally|typically|usually|depends|only if|\bif\b|\bmust\b|unused|unopened|"
+                     r"original packaging|resalable|provided|unless|conditions?\b|would not meet|not meet", re.I)
+_AFFIRMED = re.compile(r"can be returned|is returnable|are returnable|accepts? returns?|returns? (?:are |is )?accepted|"
+                       r"eligible for (?:a )?(?:return|refund)|will accept", re.I)
+
+
+def returnable_from(sentence: str) -> str:
+    """'yes' only when the sentence itself affirms the return of an opened item, with no condition an opened item could fail;
+    'no' when it denies; anything else, including a store saying it does not say, is 'unclear'. No phrase list of answers:
+    four checks in a fixed order (does not say, denial, hedge or condition, affirmation)."""
+    if _NOT_SAID.search(sentence):
+        return "unclear"
+    if _DENIED.search(sentence):
+        return "no"
+    if _HEDGED.search(sentence):
+        return "unclear"
+    return "yes" if _AFFIRMED.search(sentence) else "unclear"
+
+
 def parse_reply(store: str, question: str, answer: str, asked_at: str) -> dict:
     delivery = {"stated": False, "quote": None, "days_low": None, "days_high": None}
     for sent in _sentences(answer):
@@ -41,18 +64,14 @@ def parse_reply(store: str, question: str, answer: str, asked_at: str) -> dict:
                 break
     assert delivery["quote"] is None or delivery["quote"] in answer
 
-    returns = {"returnable": "unclear", "fee": None, "quote": None, "applies_to": "opened bath seats"}
+    m = re.search(r"\b(opened [a-z][a-z -]*?)(?: be returned|\?|,)", question, re.I)
+    returns = {"returnable": "unclear", "fee": None, "quote": None, "applies_to": m.group(1) if m else "opened item"}
     sents = _sentences(answer)
     ret = [s for s in sents if re.search(r"return|refund", s, re.I)]
-    pick = next((s for s in ret if re.search(r"opened|bath seat", s, re.I)), ret[0] if ret else None)
+    pick = next((s for s in ret if re.search(r"opened|unboxed", s, re.I)), ret[0] if ret else None)
     if pick:
         returns["quote"] = _clause(answer, pick)
-        if re.search(r"may not qualify|isn.t specified|not specified|unclear|depends", pick, re.I):
-            returns["returnable"] = "unclear"
-        elif re.search(r"cannot be returned|can't be returned|not returnable|non-returnable|excluded from returns|no returns", pick, re.I):
-            returns["returnable"] = "no"
-        elif re.search(r"can be returned|may be returned|accepted|within \d+ days", pick, re.I):
-            returns["returnable"] = "yes"
+        returns["returnable"] = returnable_from(pick)
     fee = next((s for s in sents if re.search(r"restocking|return shipping|shipping cost", s, re.I)
                 and not re.search(r"does not apply", s, re.I)), None)
     if fee:

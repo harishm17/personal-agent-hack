@@ -842,3 +842,36 @@ total drops by $299.01. A sheet's figure wording is now part of the reading cach
 10; its T4 pick differs; 4.2 s per page); SIE extract alone 31 of 32 both found, the reference alone 115 (it finds few of these).
 **Not done yet for sheet 2:** the store agents' replies (none exist for sheet 2 yet), a second pass of the reference, the chat and
 drills were not exercised on it.
+## STORE 13:25 — items 1 to 4 of your 12:50 note are on stream/STORE
+1. **Pool moved** (committed 12:47, ENGINE told in NOTES/ENGINE.md): `data/sheet2/pool/<store>.json` (+ `raw/`), `data/sheet2/store_answers/`;
+   cookware deleted. `tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone` fails until ENGINE replaces it (only failure left: 203 pass).
+2. **Returns reading** is now `ask.returnable_from(sentence)`, four checks in a fixed order, no phrase list of answers: the store does not
+   say (doesn't specify / isn't clear) -> unclear; a denial -> no; a hedge or a condition an opened item could fail (may, if, unused,
+   original packaging, would not meet) -> unclear; only a plain affirmation -> yes. Tests cover your example. All saved replies of both
+   sheets re-read with it: none changed except `applies_to`, which I did not write back for sheet 1.
+3. **Everything follows the active sheet** (`signoff/store/sheetctx.py`: the engine's sheet, else `SIGNOFF_SHEET`; sheet1 files are
+   `data/pool`, others `data/<id>/pool` and `store_answers`): `pool.load()`; SingleStore tables and the SQL (`==`: equal for a single figure,
+   the bound inside the range for a spread; a figure in another unit never counts; units gpf and gpm; `limits`/`figures` units use the
+   engine's unit names when it has them; live test with `==`, gpf, a dual flush and a cm figure passes against a reference written in
+   the test: **ENGINE, when your `==` lands, check it agrees: a spread under `==` passes when the bound lies in [low, high]**); the asked
+   questions (templates for rough_in, flush_volume, flow_rate, "gallons per flush/minute"; pick and runner-up eligibility follows the sheet's
+   pick rule id, so sheet 2's `cheapest` does not need a delivery time; the product title is the store's own words and is left out of
+   the sealed-value check, otherwise every "10-Inch Rough-In" title would be refused); the ledger's sealed values (the active sheet's issuer
+   limits with units incl. gpf/gpm, its home measurements, Marco and Priya); replay (`create_cart` and `ask` find sheet 2's pool and
+   answers; `refresh-pool` runs the right fetcher for the sheet; in replay it only rebuilds).
+   **Carts at the four stores, real, one call, timeout 8 s, one try: all four answered in 1.0 s** (one product each, cheapest: Swiss Madison
+   Sublime faucet 9682, Horow T0352W toilet, DeerValley DV-1F52813 toilet, Kingston KX250 shower head), `mode: "live"`, each with its own
+   store `continue_url` (swissmadison.myshopify.com, 8cf9b5-2.myshopify.com, deervalley-bath.myshopify.com, kingston-brass.myshopify.com).
+   **Price accuracy finding:** Horow's cart total for T0352W is **19920 cents while its search price is 24900** (exactly 20% lower). The
+   other three carts equal their search prices. The signed sheet shows the store's own cart total, not the search price: say which one
+   is "the price".
+   **Problem in the sheet file (yours):** two of sheet 2's queries contain the sealed values: "10 inch rough in toilet" (the house's
+   measured rough-in) and "30 inch vanity" (the alcove width, which is T4's limit). The ledger guard blocks them on a live search, so
+   `refresh-pool` for sheet 2 would refuse those two (I fetched them at 12:28, before the guard, and they are in the raw replies). If the
+   demo says "no store is told a limit or a measurement", change those two queries (for example "one piece toilet 10 rough in" is still a
+   leak; "toilet" and "bathroom vanity" are enough).
+4. **Ledger counts** now come from the saved log (the file is read each time), per sheet: `GET /api/egress` counts the active sheet,
+   `?sheet=all` everything; each row has `sheet`. After a restart the summary is the same as before it (tested by clearing memory).
+**For TRAIL:** every tool-call event is also written to `data/obs/events.jsonl` ({name, at, ended_at, duration_ms, success, session_id,
+sheet_id, error?}); `signoff.obs.recent(n, session_id=None, sheet_id=None)` and `GET /api/obs/events?n=200&session_id=&sheet_id=`. Not written
+under pytest. The folder is not committed (suggest ignoring `data/obs/` and `data/egress/`).

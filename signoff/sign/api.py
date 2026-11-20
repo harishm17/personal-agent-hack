@@ -505,7 +505,7 @@ def senso_load():
     """Puts the order, the handout and the store texts in the knowledge base (asynchronous on Senso's side)."""
     if not senso.configured():
         return {"configured": False}
-    result = senso.load_documents()
+    result = senso.load_documents(get_engine().get_state()["sheet"])
     return {**result, "processing": senso.wait_processed(timeout=5)}
 
 

@@ -2,77 +2,100 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
 <title>Live human check</title>
 <style>
-  :root { --bg: #fbfaf7; --ink: #1d2a2c; --quiet: #6a7578; --line: #dcd9d0; --ok: #1f6b4a; --bad: #9a3a2b; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #14191a; --ink: #e8ecea; --quiet: #98a3a5; --line: #2c3537; --ok: #6cc59b; --bad: #e08a78; } }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, sans-serif; }
-  main { max-width: 28rem; margin: 0 auto; padding: 2.5rem 16px; }
-  h1 { font-size: 1.15rem; font-weight: 600; margin: 0 0 .25rem; }
-  p { margin: .25rem 0 1rem; color: var(--quiet); }
-  button { font: inherit; padding: .7rem 1.1rem; border: 1px solid var(--ink); background: var(--ink); color: var(--bg); border-radius: 6px; min-height: 44px; }
-  button:disabled { opacity: .5; }
-  #relay-container { margin-top: 1rem; min-height: 0; }
-  #result { margin-top: 1.25rem; font-weight: 600; }
-  #result.ok { color: var(--ok); } #result.bad { color: var(--bad); }
-  small { display: block; margin-top: 1rem; color: var(--quiet); }
+  /* The decision screen's tokens (web/screen/flow.css): white surface, hairline borders, radius 8, one type
+     family, 14 px body, one accent (near-black), full-width primary button. */
+  :root { --surface: #fff; --line: #e5e7eb; --t1: #111827; --t2: #4b5563; --t3: #9ca3af; --accent: #111827; --ok: #16a34a; --bad: #b42318;
+          --f: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--surface); color: var(--t1); font: 400 14px/20px var(--f);
+    -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  main { padding: 16px 16px calc(24px + env(safe-area-inset-bottom)); max-width: 28rem; margin: 0 auto; }
+  header { display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+  header .brand { font-weight: 600; }
+  .pill { font-size: 12px; line-height: 20px; padding: 0 8px; border: 1px solid var(--line); border-radius: 10px; color: var(--t2); }
+  h1 { font: 600 20px/28px var(--f); margin: 16px 0 4px; }
+  p { margin: 0 0 16px; color: var(--t2); }
+  button { font: 600 14px/20px var(--f); width: 100%; min-height: 48px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--t1); cursor: pointer; touch-action: manipulation; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .4; cursor: default; }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--t1); outline-offset: 2px; }
+  #relay-container { margin-top: 16px; }
+  #check { margin-top: 12px; }
+  .card { margin-top: 16px; border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+  .card .head { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .card .head .mark { font-weight: 600; }
+  .card.ok .mark { color: var(--ok); } .card.bad .mark { color: var(--bad); }
+  .card .meta { margin: 8px 0 0; color: var(--t2); font-size: 13px; line-height: 18px; }
+  #note { margin-top: 12px; color: var(--t2); }
+  #note.bad { color: var(--bad); }
+  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <main>
+  <header><span class="brand">Sign-Off</span><span class="pill">Sandbox</span></header>
   <h1>Live human check</h1>
-  <p>Confirms that a person, not the agent, is signing. Sandbox: the result is simulated.</p>
-  <button id="go">Start</button>
+  <p>Confirms that a person, not the agent, is signing. In the sandbox the result is simulated.</p>
+  <button id="go" class="primary">Start the check</button>
   <div id="relay-container"></div>
-  <div id="result" role="status" aria-live="polite"></div>
-  <button id="check" hidden style="background:none;color:var(--quiet);border-color:var(--line);margin-top:1rem">I finished the check</button>
-  <small id="detail"></small>
+  <button id="check" hidden>I finished the check</button>
+  <div id="note" role="status" aria-live="polite"></div>
+  <section id="card" class="card" hidden aria-live="polite">
+    <div class="head"><span class="mark" id="mark"></span><span id="verdict"></span></div>
+    <p class="meta" id="meta"></p>
+  </section>
 </main>
 <script type="module">
-const go = document.getElementById("go"), out = document.getElementById("result"), detail = document.getElementById("detail");
+const $ = (id) => document.getElementById(id);
+const go = $("go"), check = $("check"), note = $("note"), card = $("card");
 const post = (path) => fetch(path, { method: "POST" }).then((r) => r.json());
-const say = (text, cls = "") => { out.textContent = text; out.className = cls; };
+const say = (text, bad = false) => { note.textContent = text; note.className = bad ? "bad" : ""; };
 
 async function redeem() {
   say("Checking…");
   for (let i = 0; i < 20; i++) {
     const r = await post("/api/issuer/relay/complete");
     if (r.pending) { await new Promise((ok) => setTimeout(ok, 1500)); continue; }
-    if (!r.ok) { say("Could not finish: " + (r.error || "unknown"), "bad"); return; }
+    if (!r.ok) { say("Could not finish: " + (r.error || "unknown"), true); go.disabled = false; return; }
     const passed = r.result === "passed";
-    say(passed ? "Live human: passed (sandbox)" : "Live human: failed (sandbox)", passed ? "ok" : "bad");
-    detail.textContent = "Claim " + r.claim_type + " at " + r.at + ". Sandbox claims are simulated.";
-    document.getElementById("relay-container").replaceChildren(); check.hidden = true;
+    say("");
+    card.hidden = false; card.className = "card " + (passed ? "ok" : "bad");
+    $("mark").textContent = passed ? "✓" : "✕";
+    $("verdict").textContent = passed ? "Live human: passed (sandbox)" : "Live human: failed (sandbox)";
+    $("meta").textContent = "Claim " + r.claim_type + ", " + r.at + ". Sandbox claims are simulated.";
+    $("relay-container").replaceChildren(); check.hidden = true; go.hidden = true;
     return;
   }
-  say("Not finished yet. Start again.", "bad");
+  say("Not finished yet. Start again.", true);
   go.disabled = false;
 }
 
-const check = document.getElementById("check");
 check.addEventListener("click", () => { check.hidden = true; redeem(); });
 
 go.addEventListener("click", async () => {
-  go.disabled = true; check.hidden = true; say(""); detail.textContent = "";
+  go.disabled = true; check.hidden = true; card.hidden = true; say("");
   let session;
   try { session = await post("/api/issuer/relay/start"); } catch { session = { ok: false }; }
-  if (!session.ok) { say("Could not start: " + (session.error || "no connection"), "bad"); go.disabled = false; return; }
+  if (!session.ok) { say("Could not start: " + (session.error || "no connection"), true); go.disabled = false; return; }
   try {
     const { default: Relay } = await import("https://cdn.jsdelivr.net/npm/@persona/relay@0.2.2/+esm");
     new Relay("#relay-container", {
-      accessToken: session.access_token, theme: "auto",
+      accessToken: session.access_token, theme: "light",
       onComplete: () => { check.hidden = true; redeem(); },
-      onExpire: () => { say("Session ended. Start again.", "bad"); go.disabled = false; },
-      onError: (e) => { say("Could not show the check: " + (e && (e.message || e.code) || "error"), "bad"); go.disabled = false; },
+      onExpire: () => { say("The session ended. Start again.", true); go.disabled = false; },
+      onError: (e) => { say("Could not show the check: " + ((e && (e.message || e.code)) || "error"), true); go.disabled = false; },
     });
     check.hidden = false;
   } catch (e) {
-    say("Could not load the check. Open Persona's page instead:", "bad");
-    detail.innerHTML = "";
-    const a = document.createElement("a"); a.href = session.hosted_url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "Open";
-    detail.append(a);
+    say("Could not load the check. ", true);
+    const a = document.createElement("a");
+    a.href = session.hosted_url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "Open it on Persona's page";
+    note.append(a);
     go.disabled = false;
   }
 });
