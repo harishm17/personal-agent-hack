@@ -67,7 +67,7 @@ export function figureSpan(quote, term) {
   const first = found.find((t) => t.v === low);
   if (!first) return whole;
   const last = high !== low ? found.find((t) => t.s >= first.e && t.v === high) || first : first;
-  const unit = /^\s?-?\s?(?:inches|inch|in\b|”|"|''|lbs?\b|pounds?|cm\b|mm\b|°\s?F\b|gp[fm]\b|gallons? per (?:flush|minute)|gal\b)/i.exec(quote.slice(last.e));
+  const unit = /^\s?-?\s?(?:inches|inch|in\b|”|"|''|lbs?\b|pounds?|cm\b|mm\b|°\s?F\b|gp[fm]\b|gallons? per (?:flush|minute)|gal\b|dB\b|sheets?\b|ct\b|count\b|crayons?\b|pencils?\b|pcs?\b)/i.exec(quote.slice(last.e));
   return [first.s, last.e + (unit ? unit[0].length : 0)];
 }
 
@@ -195,7 +195,7 @@ export function simulate(state, overrides = {}) {
       pick.picked = true;
       line.status = local ? "pick_up" : line.struck.length ? "next_candidate" : "ready";
       line.reason = local ? sheetLine.fulfilment_note || null : null;
-      if (line.status !== "pick_up") { ready += 1; total += pick.product.price_cents; }
+      if (line.status !== "pick_up") { ready += 1; total += pick.product.price_cents * (sheetLine.quantity || 1); }
       const t = [...pick.checks].sort((a, b) => a.margin - b.margin)[0];
       line.tightest = { limit_id: t.limit_id, name: t.name, margin: t.margin, unit: t.bound.unit,
         text: t.margin === 0 ? "nothing to spare" : `${g(t.margin)} ${t.bound.unit} to spare` };

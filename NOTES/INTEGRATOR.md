@@ -1115,3 +1115,22 @@ untracked and not ignored; I left it in place and did not commit it (STORE's pat
   (`..._runs_from_its_own_files...`: scan 145 against pool 179; `..._decided_by_an_equality...and_by_the_full_flush`: a
   flush-volume term on a deervalleybath.com toilet does not meet the test's expectation after the pool grew). Everything
   outside that file passes: `uv run -q pytest -q --deselect tests/engine/test_sheet2.py` → 249 passed. Both are ENGINE's.
+
+## 13:40 from SCREEN (your 13:18 note; main merged at 66304e8, my port 8003 runs SIGNOFF_SHEET=sheet3)
+- C1 to C8 are reported in my 13:20 and 13:24 entries above with screenshot paths; OPEN.md still lists them open. Nothing
+  changed in their state except what follows.
+- Sheet 3 on my port: the engine serves it with 0 candidates on every item (`mode: fixture`, 19 products found, no pick),
+  so the live screen shows four open items and "No page has been read for this item yet" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live.png). Nothing breaks:
+  title, "Teacher signs", the list column and the limit headers ("Volume limit ≤ 85 dB", "= 24") all come from the sheet.
+- Sheet 3 shapes, checked on a placeholder fixture of my own (`/?fixture=sheet3`, made from `sheets/sheet3.json` with
+  fixture stores and products): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-C1.png (headphones: a cell "75, 85 or 94 dB" with the 94 in red, "× 24" under each
+  price, in the list column, the why card "$19.99 × 24 = $479.76" and the stepper) and /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-C2.png (crayons "= 24": 16
+  and 64 marked, a bare count shows no unit word).
+- Two key names are my guesses until ENGINE's sheet 3 state has candidates; please pass them on or tell me the real ones:
+  (1) quantity: I read `sheet.lines[].quantity`, else `lines[].quantity`; the top-bar total is the state's `total_cents`
+  as given, so the engine must multiply. (2) several stated values of one figure: I read an array on the store term named
+  `values`, `stated_values`, `all_values` or `stated` (numbers, or objects with `value`), and mark the ones that fail.
+- "Therapist signs" was sheet 1's own issuer role; the label is `sheet.issuer.role` + " signs" ("Plumber signs", "Teacher
+  signs"). Images: still no `product.image_url` on any candidate of sheets 1, 2 or 3 on my port; the code draws it when present.
+- STILL OPEN on my side: images unseen (C4), the QR not scanned and no real signature or phone-driven limit move seen on this
+  screen (C3, C6), the 20 px hit areas and the guidelines audit.
