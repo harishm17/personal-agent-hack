@@ -410,11 +410,12 @@ function renderSteps(line, pick) {
 /** The requirement in the list's own words, with the deciding number marked. Without a quote, the sheet's own label. */
 function requirement(limit) {
   const o = limit.from_order, b = boundOf(limit);
+  const changed = o && o.matches === false && limit.bound.source === "issuer" ? ` <span class="tag">changed to ${esc(withUnit(g(b), limit.unit))} by ${esc(state.sheet.issuer.name)}</span>` : "";
   if (o && o.quote) {
     const value = o.value ?? (limit.bound.source === "issuer" ? b : null);
-    if (value == null) return esc(o.quote);
+    if (value == null) return esc(o.quote) + changed;
     const [s, e] = figureSpan(o.quote, { value });
-    return s === 0 && e === o.quote.length ? esc(o.quote) : `${esc(o.quote.slice(0, s))}<mark>${esc(o.quote.slice(s, e))}</mark>${esc(o.quote.slice(e))}`;
+    return (s === 0 && e === o.quote.length ? esc(o.quote) : `${esc(o.quote.slice(0, s))}<mark>${esc(o.quote.slice(s, e))}</mark>${esc(o.quote.slice(e))}`) + changed;
   }
   return limit.bound.source === "shopper" ? `${esc(cap(limit.label || limit.name))}.` : `${esc(cap(limit.name))}: ${esc(limit.label || "")} <mark>${esc(withUnit(g(b), limit.unit))}</mark>.`;
 }
@@ -551,7 +552,7 @@ function renderList(line, pick) {
   const rejectedBefore = before.filter((c) => c.status !== "inside").length, also = after.filter((c) => c.status === "inside").length;
   // as many rows as fit around the pick without scrolling (one to eight), the rest behind a fold line
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), room = q("#list").clientHeight - (innerWidth < 1180 ? 13.5 : 9.2) * rem;
-  const fit = Math.max(innerWidth < 1180 ? 0 : 1, Math.min(8, Math.floor((room - 4.6 * rem - 5.6 * rem) / (3.9 * rem))));
+  const fit = Math.max(innerWidth < 1180 ? 0 : 1, Math.min(8, Math.floor((room - 5.4 * rem - 5.6 * rem) / (4.7 * rem))));
   let fold = before.length > fit && !ui.open.has("above") && at >= 0 ? before.length - fit : 0;
   // while the old pick says "was picked" it stays in view: if it sits in a folded part, it is shown beside the fold line
   const pinned = fold && ui.was ? before.slice(0, fold).filter((c) => c.id === ui.was.id) : [];
@@ -601,10 +602,10 @@ function renderList(line, pick) {
 
 // ---------- right: why this one, in the list's words and the store's words ----------
 /** The part of a sentence around its figure, the figure marked and never cut off. */
-function fragment(quote, term, before = 44, after = 30) {
+function fragment(quote, term, before = 110, after = 110) {
   const text = quote || "";
   const [s, e] = figureSpan(text, term);
-  if (s === 0 && e === text.length) return esc(clip(text, before + after));
+  if (s === 0 && e === text.length) return esc(clip(text, before + after + 40));
   let from = Math.max(0, s - before);
   if (from > 0) from = text.indexOf(" ", from) + 1 || from;
   let to = Math.min(text.length, e + after);
@@ -634,7 +635,7 @@ function pairHtml(ch, limit, c) {
   if (isUnclear(c, ch)) {
     const quote = (f && f.quote) || t.quote, why = ch.unclear_why || ch.missing_why || (f && f.unsure_reason) || "";
     store = src("the store", quote ? fragment(quote, f || t) : `<span class="chip unclear">${esc(statedText(ch, c) || "unclear")}</span>`)
-      + (why ? src("why", esc(clip(why.replace(/^stated, but not clearly[^:]*:\s*/, ""), 120))) : "");
+      + (why ? src("why", esc(why.replace(/^stated, but not clearly[^:]*:\s*/, ""))) : "");
   } else if (ch.state === "not_stated") store = src("the store", `<span class="chip none">not stated on the page</span>`);
   else store = t.quote ? src(`<span title="${esc(optionOf(c) ? "option: " + optionOf(c) : "")}">the store</span>`, fragment(t.quote, t)) + (ch.pass ? guards(c, ch, t) : "") : "";
   return `<div class="pair" data-open="${esc(c.id)}">
@@ -651,7 +652,7 @@ function extrasHtml(c) {
   return (met.length ? `<div class="pair"><div class="ph2"><span>Preferred</span><span class="okw">✓ ${n_(met.length, "preference", "preferences")} met</span></div>${met.map((x) => `<div class="qt">${esc(x.label)}</div>`).join("")}</div>` : "")
     + (r ? `<div class="pair"><div class="ph2"><span>Reviewers say</span><span class="greyw">${esc(ratingText(r))}</span></div>
         ${r.value != null && !r.used ? `<div class="k">${esc(r.reason || "not used for ordering")}</div>` : ""}
-        ${r.quote ? `<div class="qt">“${esc(clip(r.quote, 140))}”</div>` : ""}
+        ${r.quote ? `<div class="qt">“${esc(r.quote)}”</div>` : ""}
         ${r.url ? `<div class="k"><a class="link" href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.site || "the page")} ↗</a>${r.matched ? ` · matched by ${esc(clip(r.matched, 70))}` : ""}</div>` : ""}</div>` : "");
 }
 
@@ -659,7 +660,7 @@ function extrasHtml(c) {
 function orderTags(order, ch) {
   const senso = (Array.isArray(state.senso) ? state.senso : []).find((r) => r && r.limit_id === ch.limit_id && (r.version_id || r.content_id)) || {};
   const id = order.version_id || order.content_id || senso.version_id || senso.content_id;
-  return (order.matches === false ? ` <span class="tag">changed from the list</span>` : "") + (id ? ` <span class="tag" title="Senso ${esc(id)}">Senso ${esc(String(id).slice(0, 8))}</span>` : "");
+  return (order.matches === false ? ` <span class="tag">changed to ${esc(withUnit(g(ch.bound.value), ch.bound.unit))} by ${esc(state.sheet.issuer.name)}</span>` : "") + (id ? ` <span class="tag" title="Senso ${esc(id)}">Senso ${esc(String(id).slice(0, 8))}</span>` : "");
 }
 
 function renderSide(line, c) {
@@ -670,8 +671,8 @@ function renderSide(line, c) {
     const option = c.product.variant_title && !/^default/i.test(c.product.variant_title) ? `${c.product.variant_title} · ` : "";
     const a = c.arrival, u = c.undo, scope = (x) => (x && x.scope ? ` <span class="faint">(${esc(x.scope)})</span>` : "");
     const agent = c.picked && ((a && a.quote) || (u && u.quote)) ? `<div class="pair agent" data-open="${esc(c.id)}"><div class="ph2"><span>The store's agent states</span></div>
-        ${a && a.quote ? `<div class="kv"><span class="k">delivery</span><span class="qt">“${esc(clip(a.quote, 90))}”</span></div>` : ""}
-        ${u && u.quote ? `<div class="kv"><span class="k">returns</span><span class="qt">“${esc(clip(u.quote, 90))}”</span></div>` : ""}</div>` : "";
+        ${a && a.quote ? `<div class="kv"><span class="k">delivery</span><span class="qt">“${esc(a.quote)}”</span></div>` : ""}
+        ${u && u.quote ? `<div class="kv"><span class="k">returns</span><span class="qt">“${esc(u.quote)}”</span></div>` : ""}</div>` : "";
     card = `<section class="card why"><div class="cap">${c.picked ? (line.picked_by === "shopper" ? `Chosen by ${esc(state.sheet.shopper.name)}` : "Recommended") : c.status === "inside" ? "Passes, not recommended" : "Why not this one"}${c.picked && ui.was && ui.was.store !== c.product.store ? ` <span class="nowat">now at ${esc(c.product.store)}</span>` : ""}</div>
       <h2 title="${esc(c.product.title)}">${esc(c.product.title)}</h2>
       <div class="meta2">${esc(option + c.product.store)} · <span data-k="why.price">${money(c.product.price_cents)}</span>${qty(line) > 1 ? `${esc(times(line))} = ${money(c.product.price_cents * qty(line))}` : ""} · <a class="link" href="${esc(c.product.url)}" target="_blank" rel="noopener" title="The store's page">page ↗</a></div>
