@@ -1,0 +1,231 @@
+{
+  "id": "sheet4",
+  "title": "Home after surgery",
+  "invented": true,
+  "invented_note": "Invented family, home, therapist and order. Real stores, real product text, real carts.",
+  "data_from": "sheet1",
+  "order_doc": "sheets/sheet4_order.txt",
+  "issuer": {
+    "id": "dana",
+    "name": "Dana",
+    "role": "therapist",
+    "role_label": "occupational therapist",
+    "invented": true
+  },
+  "shopper": {
+    "id": "elena",
+    "name": "Elena",
+    "role": "shopper",
+    "role_label": "daughter, at the house",
+    "invented": true
+  },
+  "stores": [
+    "carex.com",
+    "vivehealth.com",
+    "parentgiving.com"
+  ],
+  "need_by": "2026-12-02",
+  "pick_rule": {
+    "id": "cheapest_with_delivery_time",
+    "label": "cheapest that states a delivery time",
+    "set_by": "shopper"
+  },
+  "figures": {
+    "weight_capacity": "how much weight the item holds: the heaviest person it is made to carry, in pounds.",
+    "overall_width": "the item's overall width, side to side at its widest, in inches: the size that has to fit inside the tub or pass through the door.",
+    "length": "how long the grab bar is, in inches."
+  },
+  "shopper_facts": [
+    {
+      "id": "tub_inside_width",
+      "label": "tub inside width",
+      "short": "tub inside",
+      "value": 21.5,
+      "unit": "in",
+      "min": 18.0,
+      "max": 30.0,
+      "step": 0.5,
+      "set_by": "shopper"
+    },
+    {
+      "id": "door_clear_opening",
+      "label": "bathroom door clear opening",
+      "short": "door opening",
+      "value": 28.0,
+      "unit": "in",
+      "min": 22.0,
+      "max": 36.0,
+      "step": 0.5,
+      "set_by": "shopper"
+    }
+  ],
+  "lines": [
+    {
+      "id": "L1",
+      "need": "shower chair",
+      "room": "bathroom",
+      "fulfilment": "cart",
+      "queries": [
+        "shower chair",
+        "transfer bench"
+      ],
+      "limits": [
+        {
+          "id": "L1.capacity",
+          "name": "weight capacity",
+          "label": "holds at least",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "weight_capacity"
+            }
+          ],
+          "op": ">=",
+          "bound": {
+            "source": "issuer",
+            "value": 300,
+            "min": 200,
+            "max": 600,
+            "step": 25
+          },
+          "unit": "lb",
+          "set_by": "issuer",
+          "issuer_role": "therapist",
+          "set_at": "2026-11-20T11:00:00-08:00"
+        },
+        {
+          "id": "L1.tub",
+          "name": "fits inside the tub",
+          "label": "overall width fits the tub",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "overall_width"
+            }
+          ],
+          "op": "<=",
+          "bound": {
+            "source": "shopper",
+            "fact": "tub_inside_width"
+          },
+          "unit": "in",
+          "set_by": "issuer",
+          "issuer_role": "therapist",
+          "set_at": "2026-11-20T11:00:00-08:00"
+        }
+      ]
+    },
+    {
+      "id": "L4",
+      "need": "walker",
+      "room": "hall",
+      "fulfilment": "cart",
+      "queries": [
+        "walker",
+        "two wheel walker"
+      ],
+      "limits": [
+        {
+          "id": "L4.capacity",
+          "name": "weight capacity",
+          "label": "holds at least",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "weight_capacity"
+            }
+          ],
+          "op": ">=",
+          "bound": {
+            "source": "issuer",
+            "value": 300,
+            "min": 200,
+            "max": 600,
+            "step": 25
+          },
+          "unit": "lb",
+          "set_by": "issuer",
+          "issuer_role": "therapist",
+          "set_at": "2026-11-20T11:00:00-08:00"
+        },
+        {
+          "id": "L4.door",
+          "name": "passes the door",
+          "label": "overall width passes the door",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "overall_width"
+            }
+          ],
+          "op": "<=",
+          "bound": {
+            "source": "shopper",
+            "fact": "door_clear_opening"
+          },
+          "unit": "in",
+          "set_by": "issuer",
+          "issuer_role": "therapist",
+          "set_at": "2026-11-20T11:00:00-08:00"
+        }
+      ]
+    },
+    {
+      "id": "L5",
+      "need": "grab bar",
+      "room": "bathroom",
+      "fulfilment": "cart",
+      "queries": [
+        "grab bar"
+      ],
+      "limits": [
+        {
+          "id": "L5.capacity",
+          "name": "weight capacity",
+          "label": "holds at least",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "weight_capacity"
+            }
+          ],
+          "op": ">=",
+          "bound": {
+            "source": "issuer",
+            "value": 300,
+            "min": 200,
+            "max": 600,
+            "step": 25
+          },
+          "unit": "lb",
+          "set_by": "issuer",
+          "issuer_role": "therapist",
+          "set_at": "2026-11-20T11:00:00-08:00"
+        },
+        {
+          "id": "L5.length",
+          "name": "bar length",
+          "label": "length at least",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "length"
+            }
+          ],
+          "op": ">=",
+          "bound": {
+            "source": "issuer",
+            "value": 16.0,
+            "min": 9.0,
+            "max": 36.0,
+            "step": 1.0
+          },
+          "unit": "in",
+          "set_by": "issuer",
+          "issuer_role": "therapist",
+          "set_at": "2026-11-20T11:00:00-08:00"
+        }
+      ]
+    }
+  ]
+}
