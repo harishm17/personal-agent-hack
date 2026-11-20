@@ -209,6 +209,20 @@ def order_document(sheet: dict | None = None) -> dict | None:
     return {"key": key, **{k: d.get(k) for k in ("title", "content_id", "version_id", "version_num")}} if d else None
 
 
+def unload(keys: list[str]) -> list[str]:
+    """Takes documents out of the knowledge base (and the registry) so a verdict cannot rest on another sheet's order, for
+    example sheet 1's near-identical order when sheet 4 is the one on the table. `load_documents(sheet)` brings one back."""
+    reg = _registry()
+    nodes = [reg[k]["kb_node_id"] for k in keys if k in reg and reg[k].get("kb_node_id")]
+    if nodes:
+        with httpx.Client(headers=_headers(), timeout=30) as client:
+            client.post(BASE + "/org/kb/nodes/bulk-delete", json={"node_ids": nodes})
+    for k in keys:
+        reg.pop(k, None)
+    _save_registry(reg)
+    return nodes
+
+
 def prune_stale() -> list[str]:
     """Deletes copies of our own documents that are not the registered ones (left by earlier loads), so a verdict can
     only rest on the current version. Only nodes whose title is one of ours are touched."""
@@ -429,4 +443,9 @@ if __name__ == "__main__":
     import sys
     print(json.dumps(load_documents(sys.argv[1] if len(sys.argv) > 1 else None), indent=1))
     print("pruned", prune_stale())
+    for arg in sys.argv[2:]:      # `... sheet4 unload order handout order:sheet2`
+        if arg == "unload":
+            keys = sys.argv[sys.argv.index("unload") + 1:]
+            print("unloaded", unload(keys))
+            break
     print(wait_processed())
