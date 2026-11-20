@@ -33,7 +33,7 @@ def get_engine():
 
 
 def get_cart():
-    return importlib.import_module("signoff.store.cart")
+    return importlib.import_module("signoff.sign.carts")  # create_cart through STORE's ucp, with the store's lines kept
 
 
 def _now() -> str:
@@ -294,7 +294,7 @@ def _carts_within(picks: list[dict], budget: float) -> list[dict]:
         got = box.get(store)
         now = _now()
         if got and got.get("carts"):
-            out += got["carts"]
+            out += [_label_failure(c) for c in got["carts"]]
         elif got:
             out.append({"store": store, "cart_id": None, "cart_url": None, "total_cents": None, "created_at": now,
                         "mode": "failed", "note": "the store answered with an error (%s); no cart was created" % got["error"]})
@@ -305,6 +305,16 @@ def _carts_within(picks: list[dict], budget: float) -> list[dict]:
     return out
 
 
+def _label_failure(cart: dict) -> dict:
+    """A store that answered with an error (not a timeout) is `failed`, with its words; a timeout stays `pending`."""
+    err = cart.get("error")
+    if err and not cart.get("cart_url"):
+        slow = any(w in err.lower() for w in ("timed out", "timeout"))
+        return {**cart, "mode": "pending" if slow else "failed", "note": ("the store had not answered in time; the cart is still being created"
+                if slow else "the store answered with an error: %s" % err)}
+    return cart
+
+
 def _late_fill(store: str, got: dict) -> None:
     """A store answered after the seal: put its cart in the signed record."""
     ctx = _late.get("ctx")
@@ -313,7 +323,7 @@ def _late_fill(store: str, got: dict) -> None:
     with ctx["lock"]:
         carts = [c for c in ctx["carts"] if not (c["store"] == store and c["mode"] == "pending")]
         if got.get("carts"):
-            carts += _check_lines(_check_totals(got["carts"], ctx["picks"], ctx["state"]), ctx["picks"])
+            carts += _check_lines(_check_totals([_label_failure(c) for c in got["carts"]], ctx["picks"], ctx["state"]), ctx["picks"])
         else:
             carts.append({"store": store, "cart_id": None, "cart_url": None, "total_cents": None, "created_at": _now(),
                           "mode": "failed", "note": "the store answered with an error (%s)" % got.get("error")})
