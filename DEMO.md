@@ -38,15 +38,14 @@ appearing, at about 1:35.** The failed check at about 2:00 is the proof that fol
 | 1:22 | the phone: **Sign**, tap, tap again; hold still for the carts (about 4 s) | the signing and carts steps; the cart links | **PEAK.** "Until this tap, no cart existed anywhere. Now there are carts at the real stores. Nothing is checked out." |
 | 1:45 | tab 2, `/seal/`, reload | "A signature over the cart covers 7 of 23 rows · here 23 of 23" (read the counts off the screen) | "A signature on a cart covers these rows. Hers covers all of them: her rules, Elena's measurements, the stores' words, the picks, the prices, the ordering." |
 | 1:58 | click the **300 lb** (now 375), type another value [verify, signed] | the fingerprint changing; the signature line turning red | "Change one value. This browser recomputes the fingerprint and checks her signature again. It no longer covers this sheet." |
-| 2:10 | **Replay her signed request**, then **Change her limit from the laptop** [verify, signed] | the two refusals | "These are real requests to the real server. Her own request sent a second time: refused. Her limit changed from the laptop: refused. The agent can shop all day. It cannot approve." |
+| 2:10 | click **Restore** | the fingerprint returning; "Dana's key signed this" | "Put it back and it holds again. Nobody can alter what she approved without it showing: not the agent, not the family, not us." The refused-attempts card stays for questions: it shows each request and the server's own answer, and gives the command to send it yourself. |
 | 2:25 | stay on `/seal/` | the whole signed sheet | the live close and the last line |
 | 2:50 | | | ten seconds of slack; the phone will use them |
 
 Rules for the stage:
 - Leave the ordering control on Cheapest. Do not open Trail, Memory, Conversations or the Tools drawer.
   Do not use the title menu: switching sheets starts a new run.
-- After signing, do not press "Ask for carts with no signature" or "Sign with a key made in this browser":
-  they then answer "already signed", which shows less. Before signing they are the stronger refusals.
+- The refused-attempts card on `/seal/` is not pressed on stage (the builder, 15:49: buttons that print "refused" read as a gimmick). It is evidence for questions: open a row to show the exact request and the server's answer.
 - Say a number only while it is on screen. The fingerprint changes with every change to the sheet: read it
   off the screen, and look at the phone and the laptop side by side before saying they match.
 - Present at 100% zoom (two pages still break at 150%) [verify at 15:42].
