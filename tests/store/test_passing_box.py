@@ -36,6 +36,7 @@ def _state(sheet, pool, figures, answers, strikes):
     return make_state.build_state(sheet, pool, figures, answers, strikes)
 
 
+@pytest.mark.live  # talks to SingleStore, about 90 s: run with `uv run pytest -m live`, not in the gate
 def test_sql_agrees_with_engine_on_fixtures_and_random_limits(db, monkeypatch):
     sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
     pool, figures = make_state.build_inputs()
