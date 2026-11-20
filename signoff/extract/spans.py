@@ -176,6 +176,8 @@ def quote_numbers(quote):
     number it is joined to: "30 - 37\"" are both lengths)."""
     found, quote = [], quote or ""
     for m in WRITTEN.finditer(quote):  # "4 1/2" and "3/4" and "4½" are one number each, not three
+        if quote[max(0, m.start() - 1):m.start()] == "#" or re.search(r"(?i)\bno\.\s*$", quote[:m.start()]):
+            continue  # "#2" and "No. 2" name a grade or an item, they do not measure anything
         if m.group("whole") is not None:
             value = int(m.group("whole")) + int(m.group("num")) / max(int(m.group("den")), 1)
         elif m.group("fnum") is not None:
@@ -186,7 +188,9 @@ def quote_numbers(quote):
             value = float(m.group("plain").replace(",", "")) + FRACTIONS.get(m.group("uni") or "", 0)
         found.append({"value": value, "start": m.start(), "end": m.end(), "family": None})
     for n in found:
-        tail = quote[n["end"]:n["end"] + 12].lstrip(" \t")
+        tail = quote[n["end"]:n["end"] + 14].lstrip(" \t")
+        if re.match(r"-[A-Za-z]", tail):
+            tail = tail[1:]  # "10-inch" and "3-hole": the word joined to the number is its unit
         declared = [(rules.FAMILY.get(name, name), "(?:%s)(?![A-Za-z])" % "|".join(re.escape(x) for x in spellings))
                     for name, spellings in rules.DECLARED.items()]
         for name, pattern in declared + list(FAMILIES):

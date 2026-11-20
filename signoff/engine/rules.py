@@ -145,7 +145,7 @@ def tested_values(fig, op, bound):
     return values
 
 
-def comparable(fig, limit_unit):
+def comparable(fig, limit_unit, unit_required=True):
     """Why a statement's number cannot be put beside the limit, or None when it can. A statement that cannot
     be compared is still a statement: the check is unclear, the figure is not absent."""
     numbers = [fig.get("value")] if fig.get("kind") == "single" else [fig.get("low"), fig.get("high")]
@@ -155,7 +155,9 @@ def comparable(fig, limit_unit):
     if fig.get("for_other_option"):
         return fig["for_other_option"]
     if unit_name(fig.get("unit")) is None:
-        return "no unit stated"
+        # a length or a weight without its unit cannot be compared; a count is a bare number, and a sheet says so
+        # on the limit with "unit_required": false (the label then says what is counted)
+        return None if not unit_required and fig.get("unit") is None else "no unit stated"
     if unit_name(fig.get("unit")) != unit_name(limit_unit):
         return "stated in %s, not %s" % (fig.get("unit"), limit_unit)
     return None
@@ -205,7 +207,8 @@ def check(limit, product, figs, facts, sheet):
             terms.append({"owner": "store", "owner_name": product["store"], "label": label,
                           "figure": t["figure"], "value": None, "unit": limit["unit"]})
             continue
-        usable = [f for f in stated if comparable(f, limit["unit"]) is None]
+        needs_unit = limit.get("unit_required", True)
+        usable = [f for f in stated if comparable(f, limit["unit"], needs_unit) is None]
         first = (usable or stated)[0]
         term = {"owner": "store", "owner_name": product["store"], "label": label, "figure": t["figure"],
                 "value": None, "unit": first.get("unit") or limit["unit"], "kind": first.get("kind"),
@@ -216,7 +219,7 @@ def check(limit, product, figs, facts, sheet):
         if len(stated) > 1:
             term["statements"] = len(stated)
         if not usable:
-            unclear = unclear or comparable(stated[0], limit["unit"])
+            unclear = unclear or comparable(stated[0], limit["unit"], needs_unit)
             shown = stated[0].get("value") if stated[0].get("kind") == "single" else stated[0].get("low")
             term.update(value=shown if isinstance(shown, (int, float)) else None, unit=stated[0].get("unit") or limit["unit"])
             terms.append(term)

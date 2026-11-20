@@ -243,3 +243,13 @@ def test_a_lines_quantity_multiplies_its_pick_in_the_total_and_a_bad_one_is_an_e
     sheet["lines"][1]["quantity"] = 0
     with pytest.raises(ValueError, match="quantity"):
         rules.validate_sheet(sheet)
+
+
+def test_a_count_needs_no_unit_when_the_sheet_says_so_and_a_measure_still_does():
+    sheet, pool, figures = sheet_with(">=", 10.0)
+    figures[0]["unit"] = None
+    line, check = only_check(sheet, pool, figures)
+    assert check["state"] == "unclear" and check["unclear_why"] == "no unit stated"
+    sheet["lines"][0]["limits"][0]["unit_required"] = False  # the limit counts things: a bare number is the count
+    line, check = only_check(sheet, pool, figures)
+    assert check["state"] == "pass" and check["expr"] == "10 >= 10"
