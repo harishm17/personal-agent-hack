@@ -563,19 +563,21 @@ def _canonical_obj(state):
     """What the issuer signs: sheet id, each line's limits, pick, its figures' quotes and prices, the total."""
     facts = {f["id"]: f["value"] for f in state["sheet"]["shopper_facts"]}
     by_id = {line["line_id"]: line for line in state["lines"]}
-    lines = []
+    lines, rule = [], state["sheet"]["pick_rule"]
     for sheet_line in state["sheet"]["lines"]:
         line = by_id[sheet_line["id"]]
-        limits = []
-        for l in sheet_line["limits"]:
+        def with_bound(l):
             b = l["bound"]
-            limits.append({"id": l["id"], "op": l["op"], "unit": l["unit"], "set_by": b["source"],
-                           "bound": b["value"] if b["source"] == "issuer" else facts[b["fact"]],
-                           "terms": [t.get("figure") or "%s=%g" % (t["fact"], facts[t["fact"]]) for t in l["terms"]]})
+            return {"id": l["id"], "op": l["op"], "unit": l["unit"], "set_by": b["source"],
+                    "bound": b["value"] if b["source"] == "issuer" else facts[b["fact"]],
+                    "terms": [t.get("figure") or "%s=%g" % (t["fact"], facts[t["fact"]]) for t in l["terms"]]}
+        limits = [with_bound(l) for l in sheet_line["limits"]]
         out = {"line_id": line["line_id"], "need": line["need"], "status": line["status"],
                "fulfilment": sheet_line.get("fulfilment"), "limits": limits,
                "struck": sorted(s["product_key"] for s in line["struck"]), "pick": None,
                "picked_by": line.get("picked_by")}
+        if sheet_line.get("preferences"):  # a preference is signed with its bound, like a limit
+            out["preferences"] = [with_bound(w) for w in sheet_line["preferences"]]
         pick = next((c for c in line["candidates"] if c["picked"]), None)
         if pick:
             p = pick["product"]
@@ -589,9 +591,16 @@ def _canonical_obj(state):
                                         "scope": pick["arrival"].get("scope"),
                                         "days_low": pick["arrival"]["days_low"], "days_high": pick["arrival"]["days_high"],
                                         "need_by": pick["arrival"]["need_by"]}}
+            if pick.get("preferences"):
+                out["pick"]["preferences"] = [{"id": w["id"], "status": w["status"], "expr": w["expr"]}
+                                              for w in pick["preferences"]]
+            if rule["id"] in rules.RATING_RULES:  # the rating the ordering rested on, or that there was none
+                out["pick"]["rating"] = pick.get("rating")
         lines.append(out)
-    rule = state["sheet"]["pick_rule"]
-    return {"sheet_id": state["sheet"]["id"], "pick_rule": {"id": rule["id"], "label": rule["label"]},
+    covered = {"id": rule["id"], "label": rule["label"]}
+    if rule["id"] == "best_value":
+        covered["within"] = rules.within_of(state["sheet"])
+    return {"sheet_id": state["sheet"]["id"], "pick_rule": covered,
             "lines": lines, "total_cents": state["total_cents"]}
 
 
@@ -716,7 +725,8 @@ def _attach(state):
                    "modes": MODES, "reference": ref_name, "second": SECOND_READER,
                    "strict_mode_measured": _s.get("strict_outcome")}
         if _s.get("reading_mode") != "reference" and _s.get("agreement"):
-            alone = rules.build_state(_s["sheet"], _s["pool"], _s["figures_single"], _s["answers"], _s["strikes"], _s["mode"])
+            alone = rules.build_state(_s["sheet"], _s["pool"], _s["figures_single"], _s["answers"], _s["strikes"], _s["mode"],
+                                      ratings=_s.get("ratings"))
             was = {l["line_id"]: next((c for c in l["candidates"] if c["picked"]), None) for l in alone["lines"]}
             now = {l["line_id"]: next((c for c in l["candidates"] if c["picked"]), None) for l in state["lines"]}
             brief = lambda c: c and {"title": c["product"]["title"], "store": c["product"]["store"],  # noqa: E731
@@ -740,6 +750,7 @@ def _attach(state):
                            not_stated=tally["not_stated"])
     if _s.get("memory"):
         state["memory"] = _s["memory"]  # what was applied from memory at the start of this run, and what was ignored
+    state["pick_rules"] = rules.pick_rules(rules.within_of(state["sheet"]))  # the orderings the shopper may choose
     state["degraded"] = health.all()  # every fallback in use is named here; empty when all is well
     try:
         state["receipts"] = receipts.summary()
@@ -779,6 +790,8 @@ def _apply_choices(state):
             continue
         for c in line["candidates"]:
             c["picked"] = c["id"] == chosen_id
+            c.pop("picked_because", None)
+        chosen["picked_because"] = "chosen by %s" % _s["sheet"]["shopper"]["name"]
         t = sorted(chosen["checks"], key=lambda k: k["margin"])[0]
         line.update(pick=chosen_id, picked_by="shopper", tightest={
             "limit_id": t["limit_id"], "name": t["name"], "margin": t["margin"], "unit": t["bound"]["unit"],
@@ -793,9 +806,48 @@ def _apply_choices(state):
     return state
 
 
+def _ratings_fn():
+    """`signoff.reviews.ratings`, looked up when it is needed: the engine runs the same with no reviews module."""
+    try:
+        import signoff.reviews as package
+        fn = getattr(package, "ratings", None)
+        if fn is None:
+            from signoff.reviews import reviews as module
+            fn = getattr(module, "ratings", None)
+        return fn if callable(fn) else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _quoted_ratings():
+    """{candidate id: {rating, out_of, review_count}} from the reviews cache, and nothing else: no module, an empty
+    cache or an error all mean every product is unrated, and the line says how many were rated. The reviews
+    module reads the candidates from the state, so it is shown this version's candidates while it answers."""
+    fn = _ratings_fn()
+    if fn is None:
+        return {}
+    plain = rules.build_state(_s["sheet"], _s["pool"], _s["figures"], _s["answers"], _s["strikes"], _s["mode"])
+    plain["version"] = _s["version"]
+    before, _s["state"] = _s.get("state"), plain
+    out = {}
+    try:
+        for line in _s["sheet"]["lines"]:
+            got = fn(line["id"]) or {}
+            out.update({k: v for k, v in got.items() if isinstance(v, dict)})
+        health.clear("ratings")
+    except Exception as error:  # noqa: BLE001
+        out = {}
+        health.note("ratings", "the reviews cache could not be read (%s); every product is shown as unrated" % type(error).__name__)
+    finally:
+        _s["state"] = before
+    return out
+
+
 def _recompute(record=True, why="load"):
     started = time.perf_counter()
-    state = rules.build_state(_s["sheet"], _s["pool"], _s["figures"], _s["answers"], _s["strikes"], _s["mode"])
+    _s["ratings"] = _quoted_ratings()
+    state = rules.build_state(_s["sheet"], _s["pool"], _s["figures"], _s["answers"], _s["strikes"], _s["mode"],
+                              ratings=_s["ratings"])
     state = _apply_choices(state)
     _s["version"] += 1
     state["version"] = _s["version"]
@@ -928,6 +980,30 @@ def set_shopper_fact(fact_id, value) -> dict:
         receipts.append("shopper_fact", "shopper", None, {"fact_id": fact_id, "value": value},
                         {"fact_id": fact_id, "from": was, "to": fact["value"], "unit": fact["unit"]})
         return _recompute(why="shopper_fact")
+
+
+def set_pick_rule(rule_id) -> dict:
+    """Not in the contract's list: the shopper chooses how the products that pass are ordered, for this run. The
+    limits decide what passes; this decides only which of those is shown first. Unsigned, hers, and under the
+    hash: the approver signs the rule that was applied. A reset or another sheet returns to the sheet's own rule."""
+    with _lock:
+        _ensure()
+        _open_for_changes()
+        sheet = _s["sheet"]
+        on_disk = _read(SHEETS / (sheet["id"] + ".json")).get("pick_rule") or {}
+        known = {r["id"]: r for r in rules.pick_rules(rules.within_of(sheet))}
+        if rule_id not in known or rule_id not in rules.PICK_RULES:
+            raise EngineError("no pick rule %r; the rules know %s" % (rule_id, ", ".join(rules.PICK_RULES)), 400)
+        was = sheet["pick_rule"]
+        if rule_id == on_disk.get("id"):
+            new = dict(on_disk)  # the sheet's own rule, in the sheet's own words
+        else:
+            new = {"id": rule_id, "label": known[rule_id]["label"], "set_by": sheet["shopper"]["name"]}
+            if "within" in was:
+                new["within"] = was["within"]
+        sheet["pick_rule"] = new
+        receipts.append("shopper_pick_rule", "shopper", None, {"id": rule_id}, {"from": was.get("id"), "to": rule_id})
+        return _recompute(why="shopper_pick_rule")
 
 
 def set_shopper_choice(line_id, candidate_id) -> dict:
