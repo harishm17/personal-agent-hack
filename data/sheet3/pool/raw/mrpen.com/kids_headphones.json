@@ -1,0 +1,1784 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://mrpen.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Mr. Pen",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "mrpen.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "62824808604"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "62824808604"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8236880560284",
+   "title": "Squishy Toys for Kids, 12 pcs, Mini Squishies, Fidget Toys",
+   "description": {
+    "html": "Meet Mr. Pen Squishy Toys for Kids\u2014a calming 12-piece assortment made for sensory play, stress relief, and everyday fun. 12-piece assortment: Includes charming characters with animals and whimsical shapes Minimalistic look: Soft white color with a clean, minimal aesthetic designed to evoke calm and happiness High-quality & non-toxic: Made with high-quality, non-toxic materials for safe play Durable for daily use: Built to withstand continuous handling for long-lasting enjoyment Great for stress relief: Satisfying texture and squishable feel supports sensory play and stress relief Supports focus & calm: Helpful for reducing anxiety and promoting focus for kids and adults More than a toy: Works as desk decor, party favors, or a fun addition to any squishy collection Age: Intended for 3+ years old"
+   },
+   "url": "https://mrpen.com/products/mr-pen-squishy-toys-for-kids-12-pcs",
+   "handle": "mr-pen-squishy-toys-for-kids-12-pcs",
+   "price_range": {
+    "min": {
+     "amount": 699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 674,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 674,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44368695492764",
+     "sku": "WPEW012M320",
+     "title": "Default Title",
+     "description": {
+      "html": "Meet Mr. Pen Squishy Toys for Kids\u2014a calming 12-piece assortment made for sensory play, stress relief, and everyday fun. 12-piece assortment: Includes charming characters with animals and whimsical shapes Minimalistic look: Soft white color with a clean, minimal aesthetic designed to evoke calm and happiness High-quality & non-toxic: Made with high-quality, non-toxic materials for safe play Durable for daily use: Built to withstand continuous handling for long-lasting enjoyment Great for stress relief: Satisfying texture and squishable feel supports sensory play and stress relief Supports focus & calm: Helpful for reducing anxiety and promoting focus for kids and adults More than a toy: Works as desk decor, party favors, or a fun addition to any squishy collection Age: Intended for 3+ years old"
+     },
+     "price": {
+      "amount": 699,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 674,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61EdrtjU_cL._AC_SL1500.jpg?v=1723981169"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44368695492764:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61EdrtjU_cL._AC_SL1500.jpg?v=1723981169"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/tg-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2c-only",
+    "Squishy Toys"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/325959319708",
+     "handle": "mr-pen-squishy-toys-collection-for-kids",
+     "title": "Mr. Pen Squishy Toys Collection for Kids",
+     "description": {
+      "html": "Explore Mr. Pen squishy toys\u2014mini squishies, jumbo slow-rising & mochi styles for sensory play, stress relief, party favors & gifts."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8209675321500",
+   "title": "Kids Craft Scissors Decorative Edge, 6 Pack, Zig Zag Patterns",
+   "description": {
+    "html": "Kids craft scissors decorative edge set includes 6 creative patterns for fun borders, scrapbooking, and school projects. Package includes 6 creative craft scissors \u2014 each pair has a unique pattern for different decorative cuts. Easy to use for kids \u2014 great for children starting to learn with kids craft scissors and beginner cutting practice. Safer design for little hands \u2014 blade is covered by plastic to help prevent children from cutting their hands when using. Make fun decorative borders \u2014 create intricate, embellished edging with decorative edge scissors, including zig zag scissors styles. Perfect for crafting & paper projects \u2014 ideal scrapbooking scissors for bulletin boards, layouts, cards, and DIY designs."
+   },
+   "url": "https://mrpen.com/products/craft-scissors-decorative-edge-6-pack-craft-scissors-zig-zag-scissors-decorative-scissors-scrapbooking-scissors-fancy",
+   "handle": "craft-scissors-decorative-edge-6-pack-craft-scissors-zig-zag-scissors-decorative-scissors-scrapbooking-scissors-fancy",
+   "price_range": {
+    "min": {
+     "amount": 685,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 785,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 925,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1060,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44264866381980",
+     "sku": "LA06",
+     "title": "Bright Color",
+     "description": {
+      "html": "Kids craft scissors decorative edge set includes 6 creative patterns for fun borders, scrapbooking, and school projects. Package includes 6 creative craft scissors \u2014 each pair has a unique pattern for different decorative cuts. Easy to use for kids \u2014 great for children starting to learn with kids craft scissors and beginner cutting practice. Safer design for little hands \u2014 blade is covered by plastic to help prevent children from cutting their hands when using. Make fun decorative borders \u2014 create intricate, embellished edging with decorative edge scissors, including zig zag scissors styles. Perfect for crafting & paper projects \u2014 ideal scrapbooking scissors for bulletin boards, layouts, cards, and DIY designs."
+     },
+     "price": {
+      "amount": 685,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 925,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Bright Color"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-21-1_b7197228-0a75-4e20-b74e-e532fc0432df.jpg?v=1752259239"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44264866381980:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44264866414748",
+     "sku": "HLCO006M329VC",
+     "title": "Soft Color",
+     "description": {
+      "html": "Kids craft scissors decorative edge set includes 6 creative patterns for fun borders, scrapbooking, and school projects. Package includes 6 creative craft scissors \u2014 each pair has a unique pattern for different decorative cuts. Easy to use for kids \u2014 great for children starting to learn with kids craft scissors and beginner cutting practice. Safer design for little hands \u2014 blade is covered by plastic to help prevent children from cutting their hands when using. Make fun decorative borders \u2014 create intricate, embellished edging with decorative edge scissors, including zig zag scissors styles. Perfect for crafting & paper projects \u2014 ideal scrapbooking scissors for bulletin boards, layouts, cards, and DIY designs."
+     },
+     "price": {
+      "amount": 785,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1060,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Soft Color"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-76_364a6888-88b4-40f0-8727-d9aa65773dbd.jpg?v=1752259246"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44264866414748:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Bright Color"
+      },
+      {
+       "label": "Soft Color"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-21-1_b7197228-0a75-4e20-b74e-e532fc0432df.jpg?v=1752259239",
+     "alt_text": "1-21"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Art Supplies",
+    "b2c-only",
+    "House",
+    "Kids School",
+    "MCF",
+    "New",
+    "Product",
+    "School & Office",
+    "Scissors",
+    "Shop"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687884444",
+     "handle": "art-supplies",
+     "title": "Mr. Pen Art Supplies Collection",
+     "description": {
+      "html": "Explore Mr. Pen Art Supplies Collection \u2014 from paint brushes and paper pads to blending stumps, craft sticks, and pencil cases. Perfect for artists of all ages."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688015516",
+     "handle": "kids-school",
+     "title": "Kids School",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688113820",
+     "handle": "house",
+     "title": "House",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300696010908",
+     "handle": "scissors",
+     "title": "Mr. Pen Scissors Collection: Kids, Craft, Fabric, Office & Kitchen",
+     "description": {
+      "html": "Explore the Mr. Pen Scissors Collection\u2014kids scissors, craft scissors, office scissors, kitchen shears & poultry scissors for every task."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8209674338460",
+   "title": "Clear Pencil Pouches, 3 Pack, Transparent TPU Zipper Bags for School, Travel & Makeup",
+   "description": {
+    "html": "Includes 3 clear pencil pouches with assorted colored edging. Made from durable TPU material for long-lasting use. Transparent design allows quick visibility of contents. Spacious enough for pens, pencils, erasers, sharpeners, and supplies. Multipurpose use for school supplies, makeup brushes, or small tools. Zipper closure secures items and prevents spills. Wipeable surface makes cleaning quick and easy. Lightweight and compact for on-the-go organization. Fits easily into backpacks, handbags, or briefcases. Designed for kids, students, teachers, travelers, and professionals."
+   },
+   "url": "https://mrpen.com/products/clear-pencil-pouch-3-pack-clear-pencil-case-pencil-bags-clear-pouch-pencil-case-for-kids-pencil-case-clear-makeup-pouch-kids-pencil-pouch-pencil-cases-clear-make-up-bag",
+   "handle": "clear-pencil-pouch-3-pack-clear-pencil-case-pencil-bags-clear-pouch-pencil-case-for-kids-pencil-case-clear-makeup-pouch-kids-pencil-pouch-pencil-cases-clear-make-up-bag",
+   "price_range": {
+    "min": {
+     "amount": 699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 944,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 944,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44264858550428",
+     "sku": "AHCL003M313",
+     "title": "Autum",
+     "description": {
+      "html": "Includes 3 clear pencil pouches with assorted colored edging. Made from durable TPU material for long-lasting use. Transparent design allows quick visibility of contents. Spacious enough for pens, pencils, erasers, sharpeners, and supplies. Multipurpose use for school supplies, makeup brushes, or small tools. Zipper closure secures items and prevents spills. Wipeable surface makes cleaning quick and easy. Lightweight and compact for on-the-go organization. Fits easily into backpacks, handbags, or briefcases. Designed for kids, students, teachers, travelers, and professionals."
+     },
+     "price": {
+      "amount": 699,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 944,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Autum"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/q1-12_a4f08e53-92f6-4548-b630-739bbea92e86.jpg?v=1750096273"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44264858550428:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Autum"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/q1-12_a4f08e53-92f6-4548-b630-739bbea92e86.jpg?v=1750096273"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b",
+    "Pencil Cases",
+    "School"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688408732",
+     "handle": "pencil-pouches",
+     "title": "Mr. Pen Pencil Cases & Pouches Collection",
+     "description": {
+      "html": "Shop the Mr. Pen Pencil Cases & Pouches Collection for durable, stylish storage. From fabric and silicone pouches to clear and hard cases, we have the perfect way to keep your pens, pencils, and supplies organized."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312174280860",
+     "handle": "binders-organizers",
+     "title": "Pencil Pouches, Boxes, and School Organization",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/321364263068",
+     "handle": "gift-ideas-for-teens",
+     "title": "Gift Ideas for Teens",
+     "description": {
+      "html": "Explore Mr. Pen gift ideas for teens\u2014fun, faith-friendly essentials to inspire creativity, study time, and everyday organization."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942667665564",
+   "title": "Mini Food Cute Erasers for Kids, 30 pcs, 3D Mini Erasers",
+   "description": {
+    "html": "Mr. Pen mini food cute erasers for kids include 30 colorful 3D designs that erase cleanly and make learning and rewards extra fun. 30-piece variety pack \u2014 creatively designed food items from fruits and veggies to sweet treats. Realistic 3D details \u2014 vibrant colors and intricate shapes that look like mini \u201creal food.\u201d Fully functional erasers \u2014 erase pencil marks cleanly without smudging. Great for learning activities \u2014 use for teaching food types, counting, sorting, and classroom games. Perfect rewards & favors \u2014 ideal for prize boxes, gifts, party favors, and school events. Non-toxic materials \u2014 safe for children to use, sized for young learners. Safety note \u2014 these erasers contain small parts; keep away from children under 3 years."
+   },
+   "url": "https://mrpen.com/products/mr-pen-food-erasers-30-pack-puzzle-fruit-pull-apart-erasers-for-kids",
+   "handle": "mr-pen-food-erasers-30-pack-puzzle-fruit-pull-apart-erasers-for-kids",
+   "price_range": {
+    "min": {
+     "amount": 699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 944,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 944,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43364324147356",
+     "sku": "FE30",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen mini food cute erasers for kids include 30 colorful 3D designs that erase cleanly and make learning and rewards extra fun. 30-piece variety pack \u2014 creatively designed food items from fruits and veggies to sweet treats. Realistic 3D details \u2014 vibrant colors and intricate shapes that look like mini \u201creal food.\u201d Fully functional erasers \u2014 erase pencil marks cleanly without smudging. Great for learning activities \u2014 use for teaching food types, counting, sorting, and classroom games. Perfect rewards & favors \u2014 ideal for prize boxes, gifts, party favors, and school events. Non-toxic materials \u2014 safe for children to use, sized for young learners. Safety note \u2014 these erasers contain small parts; keep away from children under 3 years."
+     },
+     "price": {
+      "amount": 699,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 944,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-154.jpg?v=1752261734"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43364324147356:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-154.jpg?v=1752261734",
+     "alt_text": "1-154"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b",
+    "Erasers",
+    "Kids School",
+    "MCF",
+    "New",
+    "Pencil Erasers",
+    "Product",
+    "School & Office",
+    "Shop"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688015516",
+     "handle": "kids-school",
+     "title": "Kids School",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688375964",
+     "handle": "erasers",
+     "title": "Erasers Collection \u2013 Pencil Erasers, Cap Erasers, Novelty & Dry Erasers",
+     "description": {
+      "html": "Explore the Mr. Pen Erasers Collection, featuring pencil erasers, cap erasers, novelty styles, and dry erase options. Built for durability and daily use, our erasers deliver clean corrections at school, work, or home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312174674076",
+     "handle": "classroom-essentials",
+     "title": "Classroom Essentials",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942854607004",
+   "title": "Dark Colored Pencil Sharpener for Colored Pencils, 3 Pack, 3 Hole, Manual Pencil Sharpeners, Handheld Pencil Sharpener, Pencil Sharpeners Handheld, Crayon Sharpener, Colored Pencil Sharpener",
+   "description": {
+    "html": "This set includes 3 multipurpose sharpeners, offering a comprehensive solution for all your pencil sharpening needs.Mr. Pen sharpeners are thoughtfully designed to accommodate three different pencil barrel sizes - jumbo, regular, and colored pencil, ensuring optimal sharpening for a range of tools.These sharpeners, equipped with a dedicated storage compartment for pencil shavings, help maintain a clean and tidy workspace for your art projects.The ergonomic triangular shape of the sharpeners allows for an easy and comfortable grip, making them effortless to use for adults and children alike.Fitted with high-quality metal blades with pointed edges, these 3-in-1 sharpeners promise a long-lasting sharp point for your pencils, thereby extending their lifespan."
+   },
+   "url": "https://mrpen.com/products/pencil-sharpener-for-colored-pencils-3-pack-3-hole",
+   "handle": "pencil-sharpener-for-colored-pencils-3-pack-3-hole",
+   "price_range": {
+    "min": {
+     "amount": 795,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 795,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1073,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1073,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43365095145628",
+     "sku": "NCEC036M304",
+     "title": "Default Title",
+     "description": {
+      "html": "This set includes 3 multipurpose sharpeners, offering a comprehensive solution for all your pencil sharpening needs.Mr. Pen sharpeners are thoughtfully designed to accommodate three different pencil barrel sizes - jumbo, regular, and colored pencil, ensuring optimal sharpening for a range of tools.These sharpeners, equipped with a dedicated storage compartment for pencil shavings, help maintain a clean and tidy workspace for your art projects.The ergonomic triangular shape of the sharpeners allows for an easy and comfortable grip, making them effortless to use for adults and children alike.Fitted with high-quality metal blades with pointed edges, these 3-in-1 sharpeners promise a long-lasting sharp point for your pencils, thereby extending their lifespan."
+     },
+     "price": {
+      "amount": 795,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1073,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/w1-2_5ec108f7-7426-4b61-9a21-89be47436bff.jpg?v=1712186965"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43365095145628:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/w1-2_5ec108f7-7426-4b61-9a21-89be47436bff.jpg?v=1712186965",
+     "alt_text": "w1"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Kids School",
+    "MCF",
+    "School & Office",
+    "Sharpners"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688015516",
+     "handle": "kids-school",
+     "title": "Kids School",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301254508700",
+     "handle": "sharpeners",
+     "title": "Sharpeners",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056729756",
+     "handle": "colored-pencils",
+     "title": "Colored Pencils",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942657704092",
+   "title": "Mr Pen- Magnetic Desk Toy with Colored and Silver Paper Clips (100 Pieces), Desk Toys, Desk Decor, Desk Accessories, Paperweight, Cute Office Supplies, Paper Clips Holder, Paper Clip Dispenser",
+   "description": {
+    "html": "Mr. Pen Powerful Magnet Set With The Open Design And Strong Magnet Not Only Can Hold Paper Clips, Binder Clips , Nails, Push Pin, Screws And Etc But It Gives Your Office Or Desk A Unique Look. Magnetism Can Be Delivered Through Paper Clips Or Other Metals So The Set Can Be Used As A Desk Top Toy Or Magnetic Sculpture To Relieve Stress And Increase Concentration. The Set Includes: 1 Powerful Magnet Surface 9\u201dX3.5\u201d Easily Pick Up Spilled Paper Clips Or Other Metal Pieces Holds Up To 100 Paper Clips 50 Colorful Paper Clips n 1 \u00bc\u201d Long Paper Clips Made From Nickel Plating To Protect Clips Against Corrosion 50 Silver-Finished Paper Clips n 1 \u00bc\u201d Long Paper Clips Made From Zinc Galvanized Plating That Protects Clips Against Corrosion"
+   },
+   "url": "https://mrpen.com/products/magnetic-desk-toy-100-colored-silver-paper-clips-office-supplies",
+   "handle": "magnetic-desk-toy-100-colored-silver-paper-clips-office-supplies",
+   "price_range": {
+    "min": {
+     "amount": 785,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 785,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1060,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1060,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43364263657628",
+     "sku": "MS03",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen Powerful Magnet Set With The Open Design And Strong Magnet Not Only Can Hold Paper Clips, Binder Clips , Nails, Push Pin, Screws And Etc But It Gives Your Office Or Desk A Unique Look. Magnetism Can Be Delivered Through Paper Clips Or Other Metals So The Set Can Be Used As A Desk Top Toy Or Magnetic Sculpture To Relieve Stress And Increase Concentration. The Set Includes: 1 Powerful Magnet Surface 9\u201dX3.5\u201d Easily Pick Up Spilled Paper Clips Or Other Metal Pieces Holds Up To 100 Paper Clips 50 Colorful Paper Clips n 1 \u00bc\u201d Long Paper Clips Made From Nickel Plating To Protect Clips Against Corrosion 50 Silver-Finished Paper Clips n 1 \u00bc\u201d Long Paper Clips Made From Zinc Galvanized Plating That Protects Clips Against Corrosion"
+     },
+     "price": {
+      "amount": 785,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1060,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/2-600x600-1.jpg?v=1712171903"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43364263657628:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/2-600x600-1.jpg?v=1712171903",
+     "alt_text": "2-600x600-1"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Kids School",
+    "MCF",
+    "New",
+    "Paper Clips & Binder Clips",
+    "Product",
+    "School & Office",
+    "Shop"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688015516",
+     "handle": "kids-school",
+     "title": "Kids School",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688343196",
+     "handle": "paper-clips-binder-clips",
+     "title": "Paper Clips, Binder Clips, and Bookmarks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942661243036",
+   "title": "Correction Pen, Correction Fluid, Pack of 12, Correction liquid White, White Correction Fluid, White Fluid, White Out, Wipe Out Liquid, Wide Out Fluid, White Correction Tape Pen Fluid",
+   "description": {
+    "html": "Pack Of 12 Correction Pens (0.24fl. Oz. /7ml Each) Needle Point Tip For Accurate And Precise Corrections Soft Squeeze Barrel Fast Drying And Smooth Finish Covers Pens, Markers And \u2026"
+   },
+   "url": "https://mrpen.com/products/mr-pen-correction-pen-correction-fluid-pack-of-12-correction-liquid-white-white-correction-fluid",
+   "handle": "mr-pen-correction-pen-correction-fluid-pack-of-12-correction-liquid-white-white-correction-fluid",
+   "price_range": {
+    "min": {
+     "amount": 999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1349,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1349,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43364294557852",
+     "sku": "CP12",
+     "title": "Default Title",
+     "description": {
+      "html": "Pack Of 12 Correction Pens (0.24fl. Oz. /7ml Each) Needle Point Tip For Accurate And Precise Corrections Soft Squeeze Barrel Fast Drying And Smooth Finish Covers Pens, Markers And \u2026"
+     },
+     "price": {
+      "amount": 999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1349,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/91pM0GJAnAL._SL679.jpg?v=1712172639"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43364294557852:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/91pM0GJAnAL._SL679.jpg?v=1712172639",
+     "alt_text": "91pM0GJAnAL._SL679_"
+    }
+   ],
+   "tags": [
+    "Kids School",
+    "MCF",
+    "New",
+    "Product",
+    "School & Office",
+    "Shop"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688015516",
+     "handle": "kids-school",
+     "title": "Kids School",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056795292",
+     "handle": "white-out",
+     "title": "White Out",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942812434588",
+   "title": "Pencil Case, Pencil Pouch, Pencil Bag, Pen Case, Pen Pouch, Pen Bag, Pencil Pouches, Pencil Bags, School Pencil Case, College Pencil Case",
+   "description": {
+    "html": "Mr. Pen pencil pouch features a spacious main compartment with 5 mesh pockets, providing organized sections for pens, pencils, erasers, and other stationery, ensuring everything is neatly arranged and easily accessible.Designed with a wide-opening mechanism, this pencil pouch allows for quick and full access to your supplies, so you can grab what you need without any hassle.Constructed from high-quality, resilient fabric, the pouch is designed to endure daily wear and tear, protecting your supplies and withstanding the test of time.The pencil pouch is compact and light, perfect for slipping into a backpack or desk drawer, making it an ideal choice for students and professionals on the move.With its sleek design and beautiful color palette, Mr. Pen pencil pouch isn't just practical \u2013 it's also a chic accessory that adds a pop of color to your school or office ensemble."
+   },
+   "url": "https://mrpen.com/products/mr-pen-pencil-case-mint-green-pencil-pouch-pencil-bag-pen-case-pen-pouch-pen-bag",
+   "handle": "mr-pen-pencil-case-mint-green-pencil-pouch-pencil-bag-pen-case-pen-pouch-pen-bag",
+   "price_range": {
+    "min": {
+     "amount": 799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 803,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1195,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44097508180124",
+     "sku": "ZAQW086M230",
+     "title": "Mint Green",
+     "description": {
+      "html": "Mr. Pen pencil pouch features a spacious main compartment with 5 mesh pockets, providing organized sections for pens, pencils, erasers, and other stationery, ensuring everything is neatly arranged and easily accessible.Designed with a wide-opening mechanism, this pencil pouch allows for quick and full access to your supplies, so you can grab what you need without any hassle.Constructed from high-quality, resilient fabric, the pouch is designed to endure daily wear and tear, protecting your supplies and withstanding the test of time.The pencil pouch is compact and light, perfect for slipping into a backpack or desk drawer, making it an ideal choice for students and professionals on the move.With its sleek design and beautiful color palette, Mr. Pen pencil pouch isn't just practical \u2013 it's also a chic accessory that adds a pop of color to your school or office ensemble."
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 803,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Mint Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/q1-13-1.jpg?v=1712183927"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44097508180124:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44097508212892",
+     "sku": "MRGM001M335VC",
+     "title": "Dark Green",
+     "description": {
+      "html": "Mr. Pen pencil pouch features a spacious main compartment with 5 mesh pockets, providing organized sections for pens, pencils, erasers, and other stationery, ensuring everything is neatly arranged and easily accessible.Designed with a wide-opening mechanism, this pencil pouch allows for quick and full access to your supplies, so you can grab what you need without any hassle.Constructed from high-quality, resilient fabric, the pouch is designed to endure daily wear and tear, protecting your supplies and withstanding the test of time.The pencil pouch is compact and light, perfect for slipping into a backpack or desk drawer, making it an ideal choice for students and professionals on the move.With its sleek design and beautiful color palette, Mr. Pen pencil pouch isn't just practical \u2013 it's also a chic accessory that adds a pop of color to your school or office ensemble."
+     },
+     "price": {
+      "amount": 899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1195,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Dark Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_99a50ec8-cf46-4bf1-9c3c-9e9f72ae4639.jpg?v=1718655975"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44097508212892:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44097508245660",
+     "sku": "LRIT001M335VC",
+     "title": "Pink",
+     "description": {
+      "html": "Mr. Pen pencil pouch features a spacious main compartment with 5 mesh pockets, providing organized sections for pens, pencils, erasers, and other stationery, ensuring everything is neatly arranged and easily accessible.Designed with a wide-opening mechanism, this pencil pouch allows for quick and full access to your supplies, so you can grab what you need without any hassle.Constructed from high-quality, resilient fabric, the pouch is designed to endure daily wear and tear, protecting your supplies and withstanding the test of time.The pencil pouch is compact and light, perfect for slipping into a backpack or desk drawer, making it an ideal choice for students and professionals on the move.With its sleek design and beautiful color palette, Mr. Pen pencil pouch isn't just practical \u2013 it's also a chic accessory that adds a pop of color to your school or office ensemble."
+     },
+     "price": {
+      "amount": 899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1079,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/pin.jpg?v=1718656079"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44097508245660:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44097508278428",
+     "sku": "TQXT001M337VC",
+     "title": "Blue",
+     "description": {
+      "html": "Mr. Pen pencil pouch features a spacious main compartment with 5 mesh pockets, providing organized sections for pens, pencils, erasers, and other stationery, ensuring everything is neatly arranged and easily accessible.Designed with a wide-opening mechanism, this pencil pouch allows for quick and full access to your supplies, so you can grab what you need without any hassle.Constructed from high-quality, resilient fabric, the pouch is designed to endure daily wear and tear, protecting your supplies and withstanding the test of time.The pencil pouch is compact and light, perfect for slipping into a backpack or desk drawer, making it an ideal choice for students and professionals on the move.With its sleek design and beautiful color palette, Mr. Pen pencil pouch isn't just practical \u2013 it's also a chic accessory that adds a pop of color to your school or office ensemble."
+     },
+     "price": {
+      "amount": 899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1079,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/blu.jpg?v=1718656171"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44097508278428:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44097508311196",
+     "sku": "LCMR001M335VCN",
+     "title": "Purple",
+     "description": {
+      "html": "Mr. Pen pencil pouch features a spacious main compartment with 5 mesh pockets, providing organized sections for pens, pencils, erasers, and other stationery, ensuring everything is neatly arranged and easily accessible.Designed with a wide-opening mechanism, this pencil pouch allows for quick and full access to your supplies, so you can grab what you need without any hassle.Constructed from high-quality, resilient fabric, the pouch is designed to endure daily wear and tear, protecting your supplies and withstanding the test of time.The pencil pouch is compact and light, perfect for slipping into a backpack or desk drawer, making it an ideal choice for students and professionals on the move.With its sleek design and beautiful color palette, Mr. Pen pencil pouch isn't just practical \u2013 it's also a chic accessory that adds a pop of color to your school or office ensemble."
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 992,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/pu.jpg?v=1718656384"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44097508311196:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Mint Green"
+      },
+      {
+       "label": "Dark Green"
+      },
+      {
+       "label": "Pink"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Purple"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/q1-13-1.jpg?v=1712183927",
+     "alt_text": "q1-13"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-3-16",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b",
+    "Kids School",
+    "MCF",
+    "Pencil Pouches",
+    "School & Office"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688015516",
+     "handle": "kids-school",
+     "title": "Kids School",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304123576476",
+     "handle": "bible-pencil-pouches",
+     "title": "Bible Pencil Pouches",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942755877020",
+   "title": "Mr. Pen Adjustable Elastic Pen Holder for Notebooks, Planners and Journals",
+   "description": {
+    "html": "Package includes 1 piece of adjustable pen holder and 3 band wraps. It is designed to hold multiple pens and pencils on 5x8 to 8.5x11 hardcover notebooks. Mr. Pen pen sleeve case is made of durable polyester fabric, which brings fantastic soft touch on the surface. The pen holder's size is 8\" x 3.87\", which is slim and light. This adjustable elastic band pen polder lets you easily carry pens, keys, or any stationery for notebooks & Bible. You can also use it as a bookmark, which is quite handy. It\u2019s very easy to access the pens when you are in a hurry. You no longer have to hold a heavy and messy pencil case."
+   },
+   "url": "https://mrpen.com/products/mr-pen-adjustable-elastic-band-pen-holder-pen-holder-for-notebook",
+   "handle": "mr-pen-adjustable-elastic-band-pen-holder-pen-holder-for-notebook",
+   "price_range": {
+    "min": {
+     "amount": 899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1214,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1214,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43364710613148",
+     "sku": "SHK100",
+     "title": "Default Title",
+     "description": {
+      "html": "Package includes 1 piece of adjustable pen holder and 3 band wraps. It is designed to hold multiple pens and pencils on 5x8 to 8.5x11 hardcover notebooks. Mr. Pen pen sleeve case is made of durable polyester fabric, which brings fantastic soft touch on the surface. The pen holder's size is 8\" x 3.87\", which is slim and light. This adjustable elastic band pen polder lets you easily carry pens, keys, or any stationery for notebooks & Bible. You can also use it as a bookmark, which is quite handy. It\u2019s very easy to access the pens when you are in a hurry. You no longer have to hold a heavy and messy pencil case."
+     },
+     "price": {
+      "amount": 899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1214,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-21-6.jpg?v=1712180717"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43364710613148:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-21-6.jpg?v=1712180717"
+    }
+   ],
+   "tags": [
+    "Kids School",
+    "MCF",
+    "other School & Office",
+    "School & Office"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688015516",
+     "handle": "kids-school",
+     "title": "Kids School",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300696404124",
+     "handle": "other-school-office",
+     "title": "other School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8972473008284",
+   "title": "Mr. Pen- Summer Craft Scissors Decorative Edge, 6 Pack, White & Pastel Color, Craft Scissors, Zig Zag Scissors",
+   "description": {
+    "html": "Mr. Pen craft scissors collection features a vibrant set of 6 scissors, each with distinct, decorative edges to enhance creative projects. Designed with comfort in mind, each scissor comes with large, brightly colored handles that are ergonomic, ensuring ease of use for prolonged crafting sessions. These scissors provide a variety of cut patterns such as zigzag, wave, and scallop, enabling users to add a touch of flair and creativity to their paper crafts. The scissors are constructed with sturdy materials, ensuring that they remain sharp and effective even after multiple uses. Safe for both kids and adults, these decorative edge scissors are an essential addition to any art and craft kit, elevating the overall design of projects."
+   },
+   "url": "https://mrpen.com/products/mr-pen-craft-scissors-decorative-edge-6-pack-white-pastel-color-craft-scissors-zig-zag-scissors-copy",
+   "handle": "mr-pen-craft-scissors-decorative-edge-6-pack-white-pastel-color-craft-scissors-zig-zag-scissors-copy",
+   "price_range": {
+    "min": {
+     "amount": 685,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 885,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 925,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1195,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47115205509276",
+     "sku": "NHGL006M350VC",
+     "title": "Pastel",
+     "description": {
+      "html": "Mr. Pen craft scissors collection features a vibrant set of 6 scissors, each with distinct, decorative edges to enhance creative projects. Designed with comfort in mind, each scissor comes with large, brightly colored handles that are ergonomic, ensuring ease of use for prolonged crafting sessions. These scissors provide a variety of cut patterns such as zigzag, wave, and scallop, enabling users to add a touch of flair and creativity to their paper crafts. The scissors are constructed with sturdy materials, ensuring that they remain sharp and effective even after multiple uses. Safe for both kids and adults, these decorative edge scissors are an essential addition to any art and craft kit, elevating the overall design of projects."
+     },
+     "price": {
+      "amount": 885,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1195,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pastel"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61o7-SJthzL._AC_SL1500.jpg?v=1752257997"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47115205509276:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47115205542044",
+     "sku": "LA06",
+     "title": "Bright",
+     "description": {
+      "html": "Mr. Pen craft scissors collection features a vibrant set of 6 scissors, each with distinct, decorative edges to enhance creative projects. Designed with comfort in mind, each scissor comes with large, brightly colored handles that are ergonomic, ensuring ease of use for prolonged crafting sessions. These scissors provide a variety of cut patterns such as zigzag, wave, and scallop, enabling users to add a touch of flair and creativity to their paper crafts. The scissors are constructed with sturdy materials, ensuring that they remain sharp and effective even after multiple uses. Safe for both kids and adults, these decorative edge scissors are an essential addition to any art and craft kit, elevating the overall design of projects."
+     },
+     "price": {
+      "amount": 685,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 925,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Bright"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61o7-SJthzL._AC_SL1500.jpg?v=1752257997"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47115205542044:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Bright"
+      },
+      {
+       "label": "Pastel"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61o7-SJthzL._AC_SL1500.jpg?v=1752257997"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ae-2-1-4-4-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Mr. Pen New Products 2024"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312627495068",
+     "handle": "high-inventoory",
+     "title": "High Inventoory",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/316405514396",
+     "handle": "art-supplies-1",
+     "title": "Art Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRPVGN5TkRjek1EQTRNamcwTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

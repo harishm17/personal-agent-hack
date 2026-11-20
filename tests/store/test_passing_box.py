@@ -137,3 +137,13 @@ def test_the_same_statement_runs_on_the_airbyte_table_and_the_source_is_checked(
     app = FastAPI()
     app.include_router(api.router)
     assert TestClient(app).get("/api/sql/passing-box?line_id=L1&source=nonsense").status_code == 422
+
+
+def test_the_sheets_own_unit_words_are_one_unit_in_the_tables():
+    from signoff.db import records
+    state = {"sheet": {"units": {"count": ["ct", "pack", "crayons"], "dB": ["db", "decibel"]}}}
+    records._learn_units(state)
+    assert records._unit("ct") == "count" and records._unit("Crayons") == "count" and records._unit("count") == "count"
+    assert records._unit("decibels") != "dB" and records._unit("DB") == "dB"
+    assert records._unit("inches") == "in"
+    records._learn_units({"sheet": {}})

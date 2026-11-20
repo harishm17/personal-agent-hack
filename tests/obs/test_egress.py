@@ -91,3 +91,14 @@ def test_row_numbers_stay_unique_when_another_process_wrote_the_file():
     mod._rows.clear()  # a second process starts with an empty memory and appends to the same file
     b = record("x.com", "p", "b", kind="store")
     assert b["n"] == a["n"] + 1
+
+
+def test_the_sheets_own_unit_words_seal_a_limit_in_either_order(monkeypatch):
+    from signoff.store import sheetctx
+    monkeypatch.setattr(sheetctx, "active_id", lambda: "sheet3")
+    hits = {(h["class"], h["match"]) for h in detect("crayons 24")}
+    assert ("limit", "24 count") in hits  # the sheet's query "crayons 24" tells a store the limit
+    assert ("limit", "70 sheets") in {(h["class"], h["match"]) for h in detect("a 70-sheet notebook")}
+    assert ("limit", "85 dB") in {(h["class"], h["match"]) for h in detect("limits volume to 85dB")}
+    assert detect("crayons") == [] and detect("pencils 2") == [] and detect("#2 pencils") == []
+    assert record("jlab.com", "search_catalog", {"q": "crayons 24"}, kind="store", block_on_hit=True)["blocked"]

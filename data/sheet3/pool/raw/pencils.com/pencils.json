@@ -1,0 +1,1534 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://pencils.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Pencils.com",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "pencils.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "17254744164"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "17254744164"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/3033129123940",
+   "title": "Blackwing 602 Pencils (12 Pack)",
+   "description": {
+    "html": "Description The iconic Blackwing 602 that once commanded up to $40/pencil and was favored by famous writers like John Steinbeck is back. The Blackwing 602 features a firm and smooth graphite core that is ideal for writers and everyday users who don't like to sharpen often. Includes Blackwing's signature pink extendable eraser and unique ferrule design. Inspired by the past, made for the writers of tomorrow. Each box contains 12 firm and smooth premium graphite pencils, crafted from Genuine Incense-cedar. Details Item #: 105330 Brand Name: Blackwing Pencil Type: Graphite Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Grey Country of Origin: Japan"
+   },
+   "url": "https://pencils.com/products/blackwing-602-pencils-12-pack",
+   "handle": "blackwing-602-pencils-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 3400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/25141242789988",
+     "sku": "105330",
+     "title": "Default Title",
+     "description": {
+      "html": "Description The iconic Blackwing 602 that once commanded up to $40/pencil and was favored by famous writers like John Steinbeck is back. The Blackwing 602 features a firm and smooth graphite core that is ideal for writers and everyday users who don't like to sharpen often. Includes Blackwing's signature pink extendable eraser and unique ferrule design. Inspired by the past, made for the writers of tomorrow. Each box contains 12 firm and smooth premium graphite pencils, crafted from Genuine Incense-cedar. Details Item #: 105330 Brand Name: Blackwing Pencil Type: Graphite Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Grey Country of Origin: Japan"
+     },
+     "price": {
+      "amount": 3400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Blackwing_602.jpg?v=1746750120"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25141242789988:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Blackwing_602.jpg?v=1746750120",
+     "alt_text": "Blackwing 602 Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Best seller",
+    "Featured Pencils",
+    "gifts for stationery fans",
+    "Gifts for Students",
+    "Gifts for Teachers",
+    "Gifts for Writers",
+    "Incense-Cedar",
+    "Japanese Graphite"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118737469540",
+     "handle": "recommended-graphite-pencils",
+     "title": "Recommended Graphite Pencils",
+     "description": {
+      "html": "Shop our favorite wood-cased, graphite pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158306336828",
+     "handle": "blackwing-rebrand",
+     "title": "Blackwing Rebrand",
+     "description": {
+      "html": "Blackwing recently updated their look with new emblems and logos. Check out some of their new products."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2723234545764",
+   "title": "Golden Bear USA Blue #2 Pencils (12 Pack)",
+   "description": {
+    "html": "Description Golden Bear USA #2 pencils are made in the USA with globally and domestically sourced components, including, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience and bear (pardon the pun) the PMA seal, making them safe and certified non-toxic. Available in orange and blue finishes, Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.12 pencils per package. Details Item #: 104116 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Blue Country of Origin: Made in the USA with globally and domestically sourced components"
+   },
+   "url": "https://pencils.com/products/golden-bear-usa-blue-2-pencils-12-pack",
+   "handle": "golden-bear-usa-blue-2-pencils-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 495,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/23947506090084",
+     "sku": "104116",
+     "title": "Default Title",
+     "description": {
+      "html": "Description Golden Bear USA #2 pencils are made in the USA with globally and domestically sourced components, including, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience and bear (pardon the pun) the PMA seal, making them safe and certified non-toxic. Available in orange and blue finishes, Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.12 pencils per package. Details Item #: 104116 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Blue Country of Origin: Made in the USA with globally and domestically sourced components"
+     },
+     "price": {
+      "amount": 495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Golden-Bear-Blue.jpg?v=1552933030"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/23947506090084:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Golden-Bear-Blue.jpg?v=1552933030",
+     "alt_text": "Golden Bear Blue #2 Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Featured Pencils",
+    "Gift for Students",
+    "Gifts for Students",
+    "Great for Teachers",
+    "Incense-Cedar",
+    "Made in the USA",
+    "No. 2 Pencils"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118104064100",
+     "handle": "test-scoring-pencils",
+     "title": "Test Scoring Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118737469540",
+     "handle": "recommended-graphite-pencils",
+     "title": "Recommended Graphite Pencils",
+     "description": {
+      "html": "Shop our favorite wood-cased, graphite pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158940987452",
+     "handle": "stay-home-stay-creative",
+     "title": "Stay home, stay creative",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2768533553252",
+   "title": "Blackwing Pearl Pencils (12 Pack)",
+   "description": {
+    "html": "Description The Blackwing Pearl features a pearl white finish, gold imprint, white eraser, and a \"balanced\" graphite core that is softer than the Blackwing 602, but firmer than the graphite found in the Palomino Blackwing. Its unique ferrule allows you to extend and replace the eraser after extensive use and even \"hack\" your pencil to give it a custom look. Each box contains 12 balanced and smooth premium graphite pencils, crafted from Genuine Incense-cedar. Details Item #: 105331 Brand Name: Blackwing Pencil Type: Graphite Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Pearl White Country of Origin: Japan"
+   },
+   "url": "https://pencils.com/products/blackwing-pearl-pencils-12-pack",
+   "handle": "blackwing-pearl-pencils-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 3400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/24113353752676",
+     "sku": "105331-2026",
+     "title": "Default Title",
+     "description": {
+      "html": "Description The Blackwing Pearl features a pearl white finish, gold imprint, white eraser, and a \"balanced\" graphite core that is softer than the Blackwing 602, but firmer than the graphite found in the Palomino Blackwing. Its unique ferrule allows you to extend and replace the eraser after extensive use and even \"hack\" your pencil to give it a custom look. Each box contains 12 balanced and smooth premium graphite pencils, crafted from Genuine Incense-cedar. Details Item #: 105331 Brand Name: Blackwing Pencil Type: Graphite Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Pearl White Country of Origin: Japan"
+     },
+     "price": {
+      "amount": 3400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/BW_Shoot1_Aug_2024_12_01608a1d-b8bd-4418-88f9-3552caac6ec5.jpg?v=1771345982"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/24113353752676:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/BW_Shoot1_Aug_2024_12_01608a1d-b8bd-4418-88f9-3552caac6ec5.jpg?v=1771345982"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Best seller",
+    "Featured Pencils",
+    "Gifts for Artists",
+    "gifts for stationery fans",
+    "Gifts for Writers",
+    "Incense-Cedar",
+    "Japanese Graphite"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118737469540",
+     "handle": "recommended-graphite-pencils",
+     "title": "Recommended Graphite Pencils",
+     "description": {
+      "html": "Shop our favorite wood-cased, graphite pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158306336828",
+     "handle": "blackwing-rebrand",
+     "title": "Blackwing Rebrand",
+     "description": {
+      "html": "Blackwing recently updated their look with new emblems and logos. Check out some of their new products."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/3034091126884",
+   "title": "Blackwing Matte Pencils (12 Pack) - Ships in 1 week",
+   "description": {
+    "html": "Description With a retro look that is decidedly fresh, the Blackwing Matte pencil pays tribute to the grand-daddy of legendary pencils, the Eberhardt-Faber Blackwing 602. Blackwing pencils have sketched, written and composed their way across the American cultural landscape. This soft and smooth graphite core is the ideal gift for artists, musicians or anyone who sometimes seeks a more natural existence. The graphite core is the softest of the standard Blackwing pencils.Matte black finish with black eraser. Replacement erasers available in a wide selection of colors. Details Item #: 105329-2026 Brand Name: Blackwing Pencil Type: Graphite Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Black Country of Origin: Japan"
+   },
+   "url": "https://pencils.com/products/blackwing-pencils-12-pack",
+   "handle": "blackwing-pencils-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 3400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/25143598153828",
+     "sku": "105329-2026",
+     "title": "Default Title",
+     "description": {
+      "html": "Description With a retro look that is decidedly fresh, the Blackwing Matte pencil pays tribute to the grand-daddy of legendary pencils, the Eberhardt-Faber Blackwing 602. Blackwing pencils have sketched, written and composed their way across the American cultural landscape. This soft and smooth graphite core is the ideal gift for artists, musicians or anyone who sometimes seeks a more natural existence. The graphite core is the softest of the standard Blackwing pencils.Matte black finish with black eraser. Replacement erasers available in a wide selection of colors. Details Item #: 105329-2026 Brand Name: Blackwing Pencil Type: Graphite Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Black Country of Origin: Japan"
+     },
+     "price": {
+      "amount": 3400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/BW_Shoot1_Aug_2024_09.jpg?v=1771346063"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25143598153828:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/BW_Shoot1_Aug_2024_09.jpg?v=1771346063"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Drawing Pencils",
+    "Featured Pencils",
+    "Gifts for Artists",
+    "Gifts for Crafting",
+    "gifts for stationery fans",
+    "Incense-Cedar",
+    "Japanese Graphite"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113637163108",
+     "handle": "graded-drawing-pencils",
+     "title": "Graded Drawing Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158306336828",
+     "handle": "blackwing-rebrand",
+     "title": "Blackwing Rebrand",
+     "description": {
+      "html": "Blackwing recently updated their look with new emblems and logos. Check out some of their new products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289535918140",
+     "handle": "great-blackwing-gifts",
+     "title": "Great Blackwing Gifts",
+     "description": {
+      "html": "Shop great gifts from Blackwing. Made from high-quality materials and expert craftsmanship. Sustainably harvested wood and Japanese graphite."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294342131772",
+     "handle": "best-sellers",
+     "title": "Best Sellers",
+     "description": {
+      "html": "Our best-selling pencils. Shop graphite pencils, colored pencils, and popular accessories."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2768610033764",
+   "title": "Blackwing Natural Pencils (12 Pack)",
+   "description": {
+    "html": "The Blackwing Natural pencil features an exposed Incense-cedar barrel with a subtle clear matte finish and our popular extra-firm graphite. Every Blackwing Natural features a gold imprint, grey eraser and the iconic square Blackwing ferrule. Blackwing Natural pencils come in packs of 12."
+   },
+   "url": "https://pencils.com/products/blackwing-natural-pencils-12-pack",
+   "handle": "blackwing-natural-pencils-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 3400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/24113607606372",
+     "sku": "105332-2026",
+     "title": "Default Title",
+     "description": {
+      "html": "The Blackwing Natural pencil features an exposed Incense-cedar barrel with a subtle clear matte finish and our popular extra-firm graphite. Every Blackwing Natural features a gold imprint, grey eraser and the iconic square Blackwing ferrule. Blackwing Natural pencils come in packs of 12."
+     },
+     "price": {
+      "amount": 3400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Blackwing_Natural.png?v=1746750121"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/24113607606372:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Blackwing_Natural.png?v=1746750121",
+     "alt_text": "Blackwing Natural Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Featured Pencils",
+    "Gifts for Crafting",
+    "Incense-Cedar",
+    "Japanese Graphite"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118737469540",
+     "handle": "recommended-graphite-pencils",
+     "title": "Recommended Graphite Pencils",
+     "description": {
+      "html": "Shop our favorite wood-cased, graphite pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158306336828",
+     "handle": "blackwing-rebrand",
+     "title": "Blackwing Rebrand",
+     "description": {
+      "html": "Blackwing recently updated their look with new emblems and logos. Check out some of their new products."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2723356999780",
+   "title": "Blackwing Mixed Set (Set of 12)",
+   "description": {
+    "html": "Pencils.com Exclusive Holiday Set. The best of all Blackwing core pencils in a mixed 12-pack. This mixed set contains:- 3 Blackwing Matte Pencils (Soft graphite)- 3 Blackwing 602 Pencils (Firm graphite)- 3 Blackwing Pearls (Balanced graphite)- 3 Blackwing Naturals (Extra-firm graphite)All in a sleek black gift box. The Blackwing Mixed Set is only available on Pencils.com during the holiday season, so grab it while you can."
+   },
+   "url": "https://pencils.com/products/blackwing-mixed-set",
+   "handle": "blackwing-mixed-set",
+   "price_range": {
+    "min": {
+     "amount": 3400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/23948016943204",
+     "sku": "105570",
+     "title": "Default Title",
+     "description": {
+      "html": "Pencils.com Exclusive Holiday Set. The best of all Blackwing core pencils in a mixed 12-pack. This mixed set contains:- 3 Blackwing Matte Pencils (Soft graphite)- 3 Blackwing 602 Pencils (Firm graphite)- 3 Blackwing Pearls (Balanced graphite)- 3 Blackwing Naturals (Extra-firm graphite)All in a sleek black gift box. The Blackwing Mixed Set is only available on Pencils.com during the holiday season, so grab it while you can."
+     },
+     "price": {
+      "amount": 3400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/PDC_Exclusives_2025-17.png?v=1763431136"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/23948016943204:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/PDC_Exclusives_2025-17.png?v=1763431136"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Blackwing Exclusives",
+    "Gifts",
+    "Gifts for Crafting",
+    "Gifts for Teachers",
+    "Incense-Cedar",
+    "Japanese Graphite"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118740910180",
+     "handle": "gift-guide",
+     "title": "Gift Guide",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/165946884156",
+     "handle": "exclusives",
+     "title": "Exclusives",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/3223421943908",
+   "title": "Golden Bear Orange #2 Pencils (12 Pack)",
+   "description": {
+    "html": "Description These Golden Bear #2 pencils are made in Thailand out of Genuine, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience. Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.12 #2 pencils per package. Details Item #: 104284 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Orange Country of Origin: Thailand"
+   },
+   "url": "https://pencils.com/products/golden-bear-orange-2-pencils-12-pack-made-in-thailand",
+   "handle": "golden-bear-orange-2-pencils-12-pack-made-in-thailand",
+   "price_range": {
+    "min": {
+     "amount": 395,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 395,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/26289046552676",
+     "sku": "104284",
+     "title": "Default Title",
+     "description": {
+      "html": "Description These Golden Bear #2 pencils are made in Thailand out of Genuine, California grown, Incense-cedar and are durable enough for everyday use in the office, at school and at home. These high-quality #2 pencils feature a quality graphite core for a smooth writing experience. Golden Bear #2 office and school supplies are the perfect writing instrument for students, aspiring authors, journalists, office workers and everyday users.12 #2 pencils per package. Details Item #: 104284 Brand Name: Golden Bear Pencil Type: Graphite Lead Grade(s): HB Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Orange Country of Origin: Thailand"
+     },
+     "price": {
+      "amount": 395,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/GoldenBear-Thailand-1.jpg?v=1554163215"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/26289046552676:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/GoldenBear-Thailand-1.jpg?v=1554163215",
+     "alt_text": "Golden Bear Orange #2 Pencils (12 Pack)"
+    }
+   ],
+   "tags": [
+    "50%",
+    "Back-to-School",
+    "Gifts for Students",
+    "Gifts for Writers",
+    "Good for Kids",
+    "Great for Teachers",
+    "Incense-Cedar",
+    "No. 2 Pencils"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118104064100",
+     "handle": "test-scoring-pencils",
+     "title": "Test Scoring Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158940987452",
+     "handle": "stay-home-stay-creative",
+     "title": "Stay home, stay creative",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262107725884",
+     "handle": "back-to-school-favorites",
+     "title": "Back-to-School Favorites",
+     "description": {
+      "html": "Shop back-to-school favorites and quality tools that will set students up for success."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2723235233892",
+   "title": "ForestChoice #2 Graphite Pencils (12 Pack)",
+   "description": {
+    "html": "Description The world's first FSC\u00ae-certified (FSC-C010858) pencil, ForestChoice #2 (HB) graphite pencils are made from FSC\u00ae-certified Incense-cedar, which means it comes from responsibly-managed forests. Saving the planet never looked so good. These everyday pencils are great for use at your school, home or office. Also available in a 144 count box. Details Item #: 100058 Brand Name: ForestChoice Pencil Type: Graphite Lead Grade(s): HB/#2 Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Natural Country of Origin: Thailand"
+   },
+   "url": "https://pencils.com/products/forestchoice-2-graphite-pencils-12-pack",
+   "handle": "forestchoice-2-graphite-pencils-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/23947506876516",
+     "sku": "100058",
+     "title": "Default Title",
+     "description": {
+      "html": "Description The world's first FSC\u00ae-certified (FSC-C010858) pencil, ForestChoice #2 (HB) graphite pencils are made from FSC\u00ae-certified Incense-cedar, which means it comes from responsibly-managed forests. Saving the planet never looked so good. These everyday pencils are great for use at your school, home or office. Also available in a 144 count box. Details Item #: 100058 Brand Name: ForestChoice Pencil Type: Graphite Lead Grade(s): HB/#2 Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Natural Country of Origin: Thailand"
+     },
+     "price": {
+      "amount": 500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/ForestChoice4upCropped.png?v=1551997224"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/23947506876516:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/ForestChoice4upCropped.png?v=1551997224",
+     "alt_text": "ForestChoice #2 Graphite Pencils"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Eco-Friendly Gifts",
+    "Featured Pencils",
+    "FSC Certified",
+    "Gifts for Crafting",
+    "Gifts for Kids",
+    "Gifts for Students",
+    "Good for Kids",
+    "Incense-Cedar",
+    "No. 2 Pencils"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118104064100",
+     "handle": "test-scoring-pencils",
+     "title": "Test Scoring Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118737469540",
+     "handle": "recommended-graphite-pencils",
+     "title": "Recommended Graphite Pencils",
+     "description": {
+      "html": "Shop our favorite wood-cased, graphite pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158940987452",
+     "handle": "stay-home-stay-creative",
+     "title": "Stay home, stay creative",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7473699455036",
+   "title": "Blackwing Pearl - Pink (Set of 12)",
+   "description": {
+    "html": "The pink Pearl colorway is a new addition to the core Blackwing pencil line-up. Each pencil contains the same balanced and smooth graphite core found in the other Pearl pencils. It is softer than the graphite found in the Blackwing 602, but firmer than the graphite found in the Blackwing Matte, a favorite among calligraphers and illustrators. Each pencil features a pearlescent pink finish, iconic square Blackwing ferrule, silver imprint, and bright blue eraser. Blackwing Pearl Pink pencils come in a 12-pack gift box that doubles as a pencil cup.All Blackwing pencil products conform to ASTM D-4236."
+   },
+   "url": "https://pencils.com/products/blackwing-pearl-pink-set-of-12",
+   "handle": "blackwing-pearl-pink-set-of-12",
+   "price_range": {
+    "min": {
+     "amount": 3400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41509573591100",
+     "sku": "107217",
+     "title": "Default Title",
+     "description": {
+      "html": "The pink Pearl colorway is a new addition to the core Blackwing pencil line-up. Each pencil contains the same balanced and smooth graphite core found in the other Pearl pencils. It is softer than the graphite found in the Blackwing 602, but firmer than the graphite found in the Blackwing Matte, a favorite among calligraphers and illustrators. Each pencil features a pearlescent pink finish, iconic square Blackwing ferrule, silver imprint, and bright blue eraser. Blackwing Pearl Pink pencils come in a 12-pack gift box that doubles as a pencil cup.All Blackwing pencil products conform to ASTM D-4236."
+     },
+     "price": {
+      "amount": 3400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/PinkPearl-horizontal.jpg?v=1746749973"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41509573591100:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/PinkPearl-horizontal.jpg?v=1746749973",
+     "alt_text": "A Blackwing Pearl - Pink pencil on a white background."
+    }
+   ],
+   "tags": [
+    "Core Pencils",
+    "Gifts for Artists",
+    "gifts for stationery fans"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262622543932",
+     "handle": "gifts-for-artists-and-writers",
+     "title": "Gifts for Artists and Writers",
+     "description": {
+      "html": "Nice full product suite for everything writers and artists need to create."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/276074856508",
+     "handle": "gifts-for-the-pencil-lover",
+     "title": "Gifts for the Pencil Lover",
+     "description": {
+      "html": "For the ones that are obsessed with pencils. Gifts to complete the collection."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289535918140",
+     "handle": "great-blackwing-gifts",
+     "title": "Great Blackwing Gifts",
+     "description": {
+      "html": "Shop great gifts from Blackwing. Made from high-quality materials and expert craftsmanship. Sustainably harvested wood and Japanese graphite."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7515939504188",
+   "title": "Blackwing 602 (Short) - Set of 12",
+   "description": {
+    "html": "Short Blackwing 602 pencils inspired by golf-length pencils (about half the size of a regular Blackwing) traditionally used for golf score sheets. These portable pencils fit easily in your pocket/bag for travel, sketching, and taking notes on the go.Each Set comes with 12 Short Blackwing 602 pencils featuring the popular firm graphite core, gold \u201cHalf the Pressure, Twice the Speed\" imprint, a gunmetal grey finish, and iconic square Blackwing ferrule with a pink eraser. All Blackwing pencil products conform to ASTM D-4236."
+   },
+   "url": "https://pencils.com/products/blackwing-602-short-set-of-12",
+   "handle": "blackwing-602-short-set-of-12",
+   "price_range": {
+    "min": {
+     "amount": 2400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41584366321724",
+     "sku": "107371",
+     "title": "Default Title",
+     "description": {
+      "html": "Short Blackwing 602 pencils inspired by golf-length pencils (about half the size of a regular Blackwing) traditionally used for golf score sheets. These portable pencils fit easily in your pocket/bag for travel, sketching, and taking notes on the go.Each Set comes with 12 Short Blackwing 602 pencils featuring the popular firm graphite core, gold \u201cHalf the Pressure, Twice the Speed\" imprint, a gunmetal grey finish, and iconic square Blackwing ferrule with a pink eraser. All Blackwing pencil products conform to ASTM D-4236."
+     },
+     "price": {
+      "amount": 2400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/mini602-horizontal.jpg?v=1746749958"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41584366321724:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/mini602-horizontal.jpg?v=1746749958",
+     "alt_text": "Blackwing 602 (Short) - Set of 12, Blackwing Golf Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Core Pencils",
+    "gifts for stationery fans"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/276072038460",
+     "handle": "blackwing-new-arrivals",
+     "title": "Latest Blackwing Arrivals",
+     "description": {
+      "html": "Shop the latest arrivals from Blackwing from exclusive gift sets to limited edition pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/276074856508",
+     "handle": "gifts-for-the-pencil-lover",
+     "title": "Gifts for the Pencil Lover",
+     "description": {
+      "html": "For the ones that are obsessed with pencils. Gifts to complete the collection."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289535918140",
+     "handle": "great-blackwing-gifts",
+     "title": "Great Blackwing Gifts",
+     "description": {
+      "html": "Shop great gifts from Blackwing. Made from high-quality materials and expert craftsmanship. Sustainably harvested wood and Japanese graphite."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzNOVEUxT1RNNU5UQTBNVGc0TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

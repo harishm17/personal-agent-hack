@@ -1,0 +1,2047 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.jlab.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "JLab",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.jlab.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "2409337"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "2409337"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/6899221233736",
+   "title": "Rewind2 Wireless Retro Headphones Black",
+   "description": {
+    "html": "The Rewind 2 Wireless Retro Headphones Black are wireless headphones with a retro design and modern connectivity, built around Bluetooth multipoint and wireless share mode. They ship with orange and black foam earmuffs. Bluetooth multipoint keeps the headphones connected to two devices at once, and wireless share mode lets a second pair of Rewind 2 headphones join the same audio source, so two people can listen to the same music without a splitter cable. A single built-in microphone handles calls, and Google Fast Pair speeds up initial setup on Android devices. Sound can be tuned through 3 EQ presets via the JLab App, which also manages custom controls, music and movie mode switching, safe hearing limits, and over-the-air firmware updates. The headphones connect over Bluetooth 5.4 with SBC and AAC codec support and a 30+ foot range, supporting the HSP, HFP, A2DP, and AVRCP protocols. Latency runs under 200ms in Movie Mode and over 200ms in Music mode. The headphones weigh 56.8 grams and measure 6.1 inches tall, 5.12 inches long, and 1.18 inches wide. Two sets of foam earmuffs, one orange and one black, are included so the look can be swapped to match an outfit or mood. Battery life is rated at 20 hours per charge, with a 3 hour charge time and a quick charge option that adds 3 hours of playtime from a 10 minute charge. Standby time is rated at 300+ hours. Includes: Rewind 2 Wireless headphones, orange and black foam earmuffs, and a JLab 2 year limited warranty. Specifications AudioDriver: 36mm dynamicFrequency response: 20Hz to 20kHzImpedance: 32 ohms MicrophoneNoise canceling: 1-mic ENCTotal microphones: 1 ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPLatency (Movie Mode): <200msLatency (Music): >200msMultipoint: YesWireless Share Mode: YesGoogle Fast Pair: YesVoice assistance: Yes BatteryBattery type: 220mAh 3.7V LiPoTotal playtime: 20 hoursStandby time: 300+ hoursCharge time: 3 hoursQuick charge: 10 min = 3 hoursCharge cable: USB-CInput power: DC 5V, 1A Features and controlsControls: ButtonsEQ3 sound: Yes App (JLab App)Custom controls: YesCustom EQ: YesMusic / Movie Mode: YesMy JLab: YesOTA updates: YesSafe hearing: Yes DimensionsHeight: 6.1 inLength: 5.12 inWidth: 1.18 inWeight: 56.8 g In the boxRewind 2 Wireless headphones \u00b7 Orange foam earmuffs \u00b7 Black foam earmuffs \u00b7 JLab 2 year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/rewind-2-wireless-retro-headphones-black",
+   "handle": "rewind-2-wireless-retro-headphones-black",
+   "price_range": {
+    "min": {
+     "amount": 2699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2699,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40366498578504",
+     "sku": "HBREWIND2BLK24WEB",
+     "title": "Default Title",
+     "description": {
+      "html": "The Rewind 2 Wireless Retro Headphones Black are wireless headphones with a retro design and modern connectivity, built around Bluetooth multipoint and wireless share mode. They ship with orange and black foam earmuffs. Bluetooth multipoint keeps the headphones connected to two devices at once, and wireless share mode lets a second pair of Rewind 2 headphones join the same audio source, so two people can listen to the same music without a splitter cable. A single built-in microphone handles calls, and Google Fast Pair speeds up initial setup on Android devices. Sound can be tuned through 3 EQ presets via the JLab App, which also manages custom controls, music and movie mode switching, safe hearing limits, and over-the-air firmware updates. The headphones connect over Bluetooth 5.4 with SBC and AAC codec support and a 30+ foot range, supporting the HSP, HFP, A2DP, and AVRCP protocols. Latency runs under 200ms in Movie Mode and over 200ms in Music mode. The headphones weigh 56.8 grams and measure 6.1 inches tall, 5.12 inches long, and 1.18 inches wide. Two sets of foam earmuffs, one orange and one black, are included so the look can be swapped to match an outfit or mood. Battery life is rated at 20 hours per charge, with a 3 hour charge time and a quick charge option that adds 3 hours of playtime from a 10 minute charge. Standby time is rated at 300+ hours. Includes: Rewind 2 Wireless headphones, orange and black foam earmuffs, and a JLab 2 year limited warranty. Specifications AudioDriver: 36mm dynamicFrequency response: 20Hz to 20kHzImpedance: 32 ohms MicrophoneNoise canceling: 1-mic ENCTotal microphones: 1 ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPLatency (Movie Mode): <200msLatency (Music): >200msMultipoint: YesWireless Share Mode: YesGoogle Fast Pair: YesVoice assistance: Yes BatteryBattery type: 220mAh 3.7V LiPoTotal playtime: 20 hoursStandby time: 300+ hoursCharge time: 3 hoursQuick charge: 10 min = 3 hoursCharge cable: USB-CInput power: DC 5V, 1A Features and controlsControls: ButtonsEQ3 sound: Yes App (JLab App)Custom controls: YesCustom EQ: YesMusic / Movie Mode: YesMy JLab: YesOTA updates: YesSafe hearing: Yes DimensionsHeight: 6.1 inLength: 5.12 inWidth: 1.18 inWeight: 56.8 g In the boxRewind 2 Wireless headphones \u00b7 Orange foam earmuffs \u00b7 Black foam earmuffs \u00b7 JLab 2 year limited warranty"
+     },
+     "price": {
+      "amount": 2699,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2699,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/2_Rewind2_BlackOrange.jpg?v=1762446417"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40366498578504:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/2_Rewind2_BlackOrange.jpg?v=1762446417"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "Best-Sellers",
+    "Black-Friday-Canada",
+    "bluetooth",
+    "bluetooth multipoint",
+    "bulk-order-eligible",
+    "ca-free-shipping",
+    "ca-in-stock",
+    "Color: Black",
+    "Color: Colors",
+    "de-free-shipping",
+    "es-free-shipping",
+    "Fathers Day",
+    "Featured-Option",
+    "fitness",
+    "fr-free-shipping",
+    "halloween deals",
+    "headphones",
+    "Headphones > Listen to Music > Budget Friendly",
+    "Headphones > Listen to Music > Colorful",
+    "Headphones > Work Out > Budget Friendly",
+    "Headphones > Work Out > Colorful",
+    "headphones-travel-budget-friendly",
+    "headphones-travel-colorful",
+    "igg25_for_him",
+    "impact",
+    "impact - headphones",
+    "inventory-auto",
+    "it-free-shipping",
+    "jlab plus",
+    "MCF",
+    "men",
+    "new",
+    "RMA ELIGIBLE",
+    "uk-free-shipping",
+    "uk-in-stock",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "wireless",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25320709",
+     "handle": "headphones",
+     "title": "Headphones",
+     "description": {
+      "html": "JLab offers comfy over-ear and on-ear headphones with noise cancellation at great prices for an immersive audio experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822177",
+     "handle": "fitness",
+     "title": "Fitness",
+     "description": {
+      "html": "JLab offers a range of durable and high-quality headphones and earbuds designed for workouts."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265965502536",
+     "handle": "bluetooth-multipoint",
+     "title": "Bluetooth Multipoint",
+     "description": {
+      "html": "We don't just make products, we design technology to improve people's lives. Bluetooth multipoint is a feature that allows headphones and earbuds to connect and maintain a connection to multiple devices at once. Learn more about Bluetooth multipoint"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893537329224",
+   "title": "JBuds Lux ANC Headphones Sage",
+   "description": {
+    "html": "JLab JBuds Lux ANC in Sage are over-ear wireless headphones built without compromise on the things that matter most. Hybrid ANC, 70 hours of playtime, Spatial Audio, and a foldable design that handles the desk, the commute, and the gym without skipping a beat. Hybrid ANC reduces ambient noise by up to 35dB using both feedforward and feedback microphones. Five condenser microphones with 3-mic ENC handle call clarity. Be Aware Mode switches off ANC when you need to hear your surroundings. Spatial Audio creates a wider, more immersive soundstage. Wireless Share Mode lets two pairs of JBuds Lux ANC headphones share audio from one device simultaneously, no splitter needed. Battery life sits at 70 total hours with ANC off (40 hours with ANC on), with 40 hours of talk time. Quick charge gives you 7.5 hours from 10 minutes of charging. The included USB-C to C cable also supports wired audio playback. Faux leather ear cushions. Foldable design. Button controls. Bluetooth 5.4 with SBC and AAC codecs. Google Fast Pair for instant Android pairing. Multipoint connects two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms. The JLab app adds custom EQ, control remapping, noise control, Interval Timer, OTA firmware updates, safe hearing tools, and My JLab device management. Includes JBuds Lux ANC headphones, USB-C charging and audio cable, and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicFrequency response: 20-20,000 HzImpedance: 32 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 35 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x condenserNoise canceling: 3-mic ENC ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesWired playback: Yes (USB-C to C)Wireless Share Mode: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursQuick charge: 10 min = 7.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonMovie Mode latency: <200ms App (JLab App)Custom EQ: YesCustom controls: YesNoise control: YesInterval Timer: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.48 inLength: 6.30 inWidth: 2.76 inWeight: 252 g In the boxJBuds Lux ANC headphones \u00b7 USB-C charging and audio cable \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/jbuds-lux-anc-headphones-sage",
+   "handle": "jbuds-lux-anc-headphones-sage",
+   "price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342907420744",
+     "sku": "HBJLUXANCSGE20WEB",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab JBuds Lux ANC in Sage are over-ear wireless headphones built without compromise on the things that matter most. Hybrid ANC, 70 hours of playtime, Spatial Audio, and a foldable design that handles the desk, the commute, and the gym without skipping a beat. Hybrid ANC reduces ambient noise by up to 35dB using both feedforward and feedback microphones. Five condenser microphones with 3-mic ENC handle call clarity. Be Aware Mode switches off ANC when you need to hear your surroundings. Spatial Audio creates a wider, more immersive soundstage. Wireless Share Mode lets two pairs of JBuds Lux ANC headphones share audio from one device simultaneously, no splitter needed. Battery life sits at 70 total hours with ANC off (40 hours with ANC on), with 40 hours of talk time. Quick charge gives you 7.5 hours from 10 minutes of charging. The included USB-C to C cable also supports wired audio playback. Faux leather ear cushions. Foldable design. Button controls. Bluetooth 5.4 with SBC and AAC codecs. Google Fast Pair for instant Android pairing. Multipoint connects two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms. The JLab app adds custom EQ, control remapping, noise control, Interval Timer, OTA firmware updates, safe hearing tools, and My JLab device management. Includes JBuds Lux ANC headphones, USB-C charging and audio cable, and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicFrequency response: 20-20,000 HzImpedance: 32 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 35 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x condenserNoise canceling: 3-mic ENC ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesWired playback: Yes (USB-C to C)Wireless Share Mode: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursQuick charge: 10 min = 7.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonMovie Mode latency: <200ms App (JLab App)Custom EQ: YesCustom controls: YesNoise control: YesInterval Timer: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.48 inLength: 6.30 inWidth: 2.76 inWeight: 252 g In the boxJBuds Lux ANC headphones \u00b7 USB-C charging and audio cable \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1JBudsLuxSage_84f163dc-4178-4fbb-9495-1ec730ff7e06.jpg?v=1762446290"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342907420744:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1JBudsLuxSage_84f163dc-4178-4fbb-9495-1ec730ff7e06.jpg?v=1762446290",
+     "alt_text": "JBuds LUX ANC Headphones Sage | 40058309050440"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Active Junky x JLab",
+    "Active Junky x JLab Discount Eligible",
+    "active-noise-cancellation",
+    "Affiliate Samples",
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU - SALE",
+    "au-free-shipping",
+    "au-in-stock",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "Black-Friday-Canada",
+    "bluetooth",
+    "bluetooth headphones",
+    "bluetooth multipoint",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "ca-free-shipping",
+    "ca-in-stock",
+    "College-Grad-Gifts",
+    "Color: Colors",
+    "Cultivatepcg",
+    "de-free-shipping",
+    "es-free-shipping",
+    "fitness",
+    "fr-free-shipping",
+    "headphones",
+    "Headphones > Listen to Music > Best Features",
+    "Headphones > Listen to Music > Colorful",
+    "Headphones > Work Out > Best Features",
+    "Headphones > Work Out > Colorful",
+    "headphones-take-calls-best-features",
+    "headphones-take-calls-colorful",
+    "headphones-travel-best-features",
+    "headphones-travel-colorful",
+    "headphones-use-at-school-best-features",
+    "headphones-use-at-school-colorful",
+    "igg25_for_fashion_lovers",
+    "igg25_for_her",
+    "igg25_for_him",
+    "igg25_tech_lover",
+    "igg26_tech_lover",
+    "impact - headphones",
+    "impact - student_work",
+    "it-free-shipping",
+    "JBuds Lux",
+    "Lux Headphones",
+    "MCF",
+    "men",
+    "new",
+    "PGA-TOUR",
+    "premium headphones",
+    "RMA ELIGIBLE",
+    "SALE - CA",
+    "SALE - UK",
+    "SALE - USA",
+    "SHOP APP - HEADPHONES",
+    "SHOP APP LISTING",
+    "uk-free-shipping",
+    "uk-in-stock",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "wired headphones",
+    "wireless headphones",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25756457",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Wireless Headphones",
+     "description": {
+      "html": "Find the best wireless Bluetooth headphones - on ear or over ear headphones, earbuds and anything to enjoy your music on the go. Whether you're looking for deep bass, great sound quality, or long hours of battery life look no further than these JLab wireless headphones. We offer wireless over ear, active noise cancelling, and other wireless bluetooth headphones that pair great with our wireless earbuds. Great for traveling, working out, running and more. JLab Audio's top headphones keep you wire free and going strong."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822177",
+     "handle": "fitness",
+     "title": "Fitness",
+     "description": {
+      "html": "JLab offers a range of durable and high-quality headphones and earbuds designed for workouts."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/160455721032",
+     "handle": "active-noise-cancellation",
+     "title": "Active Noise Cancellation",
+     "description": {
+      "html": "Noise Cancelling Enjoy distraction free working from home, tune out the noises on your commute or fully focus on the day ahead with ANC. Cancel out unwanted noise with Active Noise Cancellation. This technology takes outside noises into a microphone and creates a new soundwave to cancel out that noise. Learn more here."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893538607176",
+   "title": "Studio Pro Wireless Over-Ear Headphones Black",
+   "description": {
+    "html": "JLab Studio Pro Wireless are over-ear wireless headphones from the Studio line, offering 50 hours of playtime, a foldable design, and EQ3 Sound in a lightweight package. An older product in the JLab lineup, they deliver reliable everyday wireless listening without active noise cancellation. EQ3 Sound gives you three preset listening modes. A single MEMS microphone with 1-mic ENC and DNS algorithm handles call noise reduction. Button controls for playback and calls. Voice assistant support built in. Faux leather ear cushions for comfortable extended wear. Bluetooth 5 with SBC and AAC codecs. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms for synced video. Quick charge gives you 8 hours of playback from 10 minutes of charging. Charges via USB-C in 2 hours. Standby time of 420 hours. Foldable design for easy packing and storage. Includes Studio Pro Wireless headphones, USB-C charging cable, and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicOutput: 110 \u00b13 dBFrequency response: 20-20,000 HzImpedance: 32 ohmsEQ3 presets: Yes MicrophoneTotal mics: 1 x MEMSNoise canceling: 1-mic ENC + DNS AlgorithmSensitivity: -38 dB \u00b13 dB ConnectivityBluetooth: 5Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime: 50 hoursStandby: 420 hoursQuick charge: 10 min = 8 hoursBattery: 600 mAh 3.7V LiPoCharge time: 2 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: Buttons DimensionsHeight: 7.28 inLength: 6.50 inWidth: 2.95 inWeight: 173 g In the boxStudio Pro Wireless headphones \u00b7 USB-C charging cable \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/studio-pro-wireless-over-ear-headphones-black",
+   "handle": "studio-pro-wireless-over-ear-headphones-black",
+   "price_range": {
+    "min": {
+     "amount": 4000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342908797000",
+     "sku": "HBASTUDIOPRORBLK4",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab Studio Pro Wireless are over-ear wireless headphones from the Studio line, offering 50 hours of playtime, a foldable design, and EQ3 Sound in a lightweight package. An older product in the JLab lineup, they deliver reliable everyday wireless listening without active noise cancellation. EQ3 Sound gives you three preset listening modes. A single MEMS microphone with 1-mic ENC and DNS algorithm handles call noise reduction. Button controls for playback and calls. Voice assistant support built in. Faux leather ear cushions for comfortable extended wear. Bluetooth 5 with SBC and AAC codecs. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms for synced video. Quick charge gives you 8 hours of playback from 10 minutes of charging. Charges via USB-C in 2 hours. Standby time of 420 hours. Foldable design for easy packing and storage. Includes Studio Pro Wireless headphones, USB-C charging cable, and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicOutput: 110 \u00b13 dBFrequency response: 20-20,000 HzImpedance: 32 ohmsEQ3 presets: Yes MicrophoneTotal mics: 1 x MEMSNoise canceling: 1-mic ENC + DNS AlgorithmSensitivity: -38 dB \u00b13 dB ConnectivityBluetooth: 5Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime: 50 hoursStandby: 420 hoursQuick charge: 10 min = 8 hoursBattery: 600 mAh 3.7V LiPoCharge time: 2 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: Buttons DimensionsHeight: 7.28 inLength: 6.50 inWidth: 2.95 inWeight: 173 g In the boxStudio Pro Wireless headphones \u00b7 USB-C charging cable \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 4000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/StudioProBT_f2404778-d656-4f6d-94e8-90ae4ccc5e99.jpg?v=1762446316"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342908797000:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/StudioProBT_f2404778-d656-4f6d-94e8-90ae4ccc5e99.jpg?v=1762446316",
+     "alt_text": "Studio Pro Wireless Over-Ear Headphones Black| 35445758197832"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "badges-group-1",
+    "Best-Sellers",
+    "bluetooth",
+    "bluetooth headphones",
+    "bts-promo",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "ca-free-shipping",
+    "CA-welcome-discount-eligible",
+    "Color: Black",
+    "fitness",
+    "halloween deals",
+    "headphones",
+    "Headphones > Listen to Music > Budget Friendly",
+    "Headphones > Work Out > Budget Friendly",
+    "headphones-take-calls-budget-friendly",
+    "headphones-travel-budget-friendly",
+    "headphones-use-at-school-budget-friendly",
+    "High-School-Grad",
+    "igg23_for_her",
+    "igg23_for_him",
+    "impact - headphones",
+    "inventory-auto",
+    "inventory-auto-test",
+    "MCF",
+    "men",
+    "miami",
+    "No Stock - DE",
+    "No Stock - UK",
+    "no-discount",
+    "premium headphones",
+    "RMA ELIGIBLE",
+    "shoelace",
+    "softheadphonebagupsell",
+    "Studio-Headphones",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "Wireless Headphones",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25320709",
+     "handle": "headphones",
+     "title": "Headphones",
+     "description": {
+      "html": "JLab offers comfy over-ear and on-ear headphones with noise cancellation at great prices for an immersive audio experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25756457",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Wireless Headphones",
+     "description": {
+      "html": "Find the best wireless Bluetooth headphones - on ear or over ear headphones, earbuds and anything to enjoy your music on the go. Whether you're looking for deep bass, great sound quality, or long hours of battery life look no further than these JLab wireless headphones. We offer wireless over ear, active noise cancelling, and other wireless bluetooth headphones that pair great with our wireless earbuds. Great for traveling, working out, running and more. JLab Audio's top headphones keep you wire free and going strong."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269173260360",
+     "handle": "soft-headphone-baf",
+     "title": "Soft Headphone Bag",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893540212808",
+   "title": "Studio Pro ANC Over-Ear Wireless Headphones Black",
+   "description": {
+    "html": "JLab Studio Pro Wireless are over-ear wireless headphones from the Studio line, offering 50 hours of playtime, a foldable design, and EQ3 Sound in a lightweight package. An older product in the JLab lineup, they deliver reliable everyday wireless listening without active noise cancellation. EQ3 Sound gives you three preset listening modes. A single MEMS microphone with 1-mic ENC and DNS algorithm handles call noise reduction. Button controls for playback and calls. Voice assistant support built in. Faux leather ear cushions for comfortable extended wear. Bluetooth 5 with SBC and AAC codecs. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms for synced video. Quick charge gives you 8 hours of playback from 10 minutes of charging. Charges via USB-C in 2 hours. Standby time of 420 hours. Foldable design for easy packing and storage. Includes Studio Pro Wireless headphones, USB-C charging cable, and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicOutput: 110 \u00b13 dBFrequency response: 20-20,000 HzImpedance: 32 ohmsEQ3 presets: Yes MicrophoneTotal mics: 1 x MEMSNoise canceling: 1-mic ENC + DNS AlgorithmSensitivity: -38 dB \u00b13 dB ConnectivityBluetooth: 5Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime: 50 hoursStandby: 420 hoursQuick charge: 10 min = 8 hoursBattery: 600 mAh 3.7V LiPoCharge time: 2 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: Buttons DimensionsHeight: 7.28 inLength: 6.50 inWidth: 2.95 inWeight: 173 g In the boxStudio Pro Wireless headphones \u00b7 USB-C charging cable \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/studio-pro-anc-over-ear-wireless-headphones-black",
+   "handle": "studio-pro-anc-over-ear-wireless-headphones-black",
+   "price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342910304328",
+     "sku": "HBSTPROANCRBLK4",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab Studio Pro Wireless are over-ear wireless headphones from the Studio line, offering 50 hours of playtime, a foldable design, and EQ3 Sound in a lightweight package. An older product in the JLab lineup, they deliver reliable everyday wireless listening without active noise cancellation. EQ3 Sound gives you three preset listening modes. A single MEMS microphone with 1-mic ENC and DNS algorithm handles call noise reduction. Button controls for playback and calls. Voice assistant support built in. Faux leather ear cushions for comfortable extended wear. Bluetooth 5 with SBC and AAC codecs. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms for synced video. Quick charge gives you 8 hours of playback from 10 minutes of charging. Charges via USB-C in 2 hours. Standby time of 420 hours. Foldable design for easy packing and storage. Includes Studio Pro Wireless headphones, USB-C charging cable, and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicOutput: 110 \u00b13 dBFrequency response: 20-20,000 HzImpedance: 32 ohmsEQ3 presets: Yes MicrophoneTotal mics: 1 x MEMSNoise canceling: 1-mic ENC + DNS AlgorithmSensitivity: -38 dB \u00b13 dB ConnectivityBluetooth: 5Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime: 50 hoursStandby: 420 hoursQuick charge: 10 min = 8 hoursBattery: 600 mAh 3.7V LiPoCharge time: 2 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: Buttons DimensionsHeight: 7.28 inLength: 6.50 inWidth: 2.95 inWeight: 173 g In the boxStudio Pro Wireless headphones \u00b7 USB-C charging cable \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/StudioProANC.jpg?v=1762446345"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342910304328:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/StudioProANC.jpg?v=1762446345",
+     "alt_text": "Studio Pro ANC Over-Ear Wireless Headphones Black| 39285044412488"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "__badge:anc",
+    "__filters:active-noise-canceling|bluetooth|foldable|microphone|over-ear-comfort|sound-equalizer-controls",
+    "__icons:battery-45|anc-43|aux|eq3|univ-mic|cloud-foam",
+    "Active Junky x JLab",
+    "Active Junky x JLab Discount Eligible",
+    "active-noise-cancellation",
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "back-to-school",
+    "badges-group-1",
+    "bluetooth",
+    "bluetooth headphones",
+    "bts-promo",
+    "bulk-order-eligible",
+    "CA-welcome-discount-eligible",
+    "Color: Black",
+    "fitness",
+    "halloween deals",
+    "headphones",
+    "Headphones > Listen to Music > Best Features",
+    "Headphones > Work Out > Best Features",
+    "headphones-take-calls-best-features",
+    "headphones-travel-best-features",
+    "headphones-use-at-school-best-features",
+    "igg23_for_active_living",
+    "igg23_for_him",
+    "igg23_for_techies",
+    "impact - headphones",
+    "inventory-auto",
+    "MCF",
+    "men",
+    "miami",
+    "No Stock - CA",
+    "No Stock - DE",
+    "No Stock - UK",
+    "no-discount",
+    "Podcasting",
+    "podcasts",
+    "premium headphones",
+    "RMA ELIGIBLE",
+    "shoelace",
+    "softheadphonebagupsell",
+    "Studio-Headphones",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "Wireless Headphones",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25320709",
+     "handle": "headphones",
+     "title": "Headphones",
+     "description": {
+      "html": "JLab offers comfy over-ear and on-ear headphones with noise cancellation at great prices for an immersive audio experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25756457",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Wireless Headphones",
+     "description": {
+      "html": "Find the best wireless Bluetooth headphones - on ear or over ear headphones, earbuds and anything to enjoy your music on the go. Whether you're looking for deep bass, great sound quality, or long hours of battery life look no further than these JLab wireless headphones. We offer wireless over ear, active noise cancelling, and other wireless bluetooth headphones that pair great with our wireless earbuds. Great for traveling, working out, running and more. JLab Audio's top headphones keep you wire free and going strong."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/160455721032",
+     "handle": "active-noise-cancellation",
+     "title": "Active Noise Cancellation",
+     "description": {
+      "html": "Noise Cancelling Enjoy distraction free working from home, tune out the noises on your commute or fully focus on the day ahead with ANC. Cancel out unwanted noise with Active Noise Cancellation. This technology takes outside noises into a microphone and creates a new soundwave to cancel out that noise. Learn more here."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893539950664",
+   "title": "JBuds Lux ANC Headphones Mauve",
+   "description": {
+    "html": "JLab JBuds Lux ANC in Mauve are over-ear wireless headphones built without compromise on the things that matter most. Hybrid ANC, 70 hours of playtime, Spatial Audio, and a foldable design that handles the desk, the commute, and the gym without skipping a beat. Hybrid ANC reduces ambient noise by up to 35dB using both feedforward and feedback microphones. Five condenser microphones with 3-mic ENC handle call clarity. Be Aware Mode switches off ANC when you need to hear your surroundings. Spatial Audio creates a wider, more immersive soundstage. Wireless Share Mode lets two pairs of JBuds Lux ANC headphones share audio from one device simultaneously, no splitter needed. Battery life sits at 70 total hours with ANC off (40 hours with ANC on), with 40 hours of talk time. Quick charge gives you 7.5 hours from 10 minutes of charging. The included USB-C to C cable also supports wired audio playback. Faux leather ear cushions. Foldable design. Button controls. Bluetooth 5.4 with SBC and AAC codecs. Google Fast Pair for instant Android pairing. Multipoint connects two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms. The JLab app adds custom EQ, control remapping, noise control, Interval Timer, OTA firmware updates, safe hearing tools, and My JLab device management. Includes JBuds Lux ANC headphones, USB-C charging and audio cable, and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicFrequency response: 20-20,000 HzImpedance: 32 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 35 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x condenserNoise canceling: 3-mic ENC ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesWired playback: Yes (USB-C to C)Wireless Share Mode: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursQuick charge: 10 min = 7.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonMovie Mode latency: <200ms App (JLab App)Custom EQ: YesCustom controls: YesNoise control: YesInterval Timer: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.48 inLength: 6.30 inWidth: 2.76 inWeight: 252 g In the boxJBuds Lux ANC headphones \u00b7 USB-C charging and audio cable \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/jbuds-lux-anc-headphones-mauve",
+   "handle": "jbuds-lux-anc-headphones-mauve",
+   "price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342910042184",
+     "sku": "HBJLUXANCMVE20WEB",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab JBuds Lux ANC in Mauve are over-ear wireless headphones built without compromise on the things that matter most. Hybrid ANC, 70 hours of playtime, Spatial Audio, and a foldable design that handles the desk, the commute, and the gym without skipping a beat. Hybrid ANC reduces ambient noise by up to 35dB using both feedforward and feedback microphones. Five condenser microphones with 3-mic ENC handle call clarity. Be Aware Mode switches off ANC when you need to hear your surroundings. Spatial Audio creates a wider, more immersive soundstage. Wireless Share Mode lets two pairs of JBuds Lux ANC headphones share audio from one device simultaneously, no splitter needed. Battery life sits at 70 total hours with ANC off (40 hours with ANC on), with 40 hours of talk time. Quick charge gives you 7.5 hours from 10 minutes of charging. The included USB-C to C cable also supports wired audio playback. Faux leather ear cushions. Foldable design. Button controls. Bluetooth 5.4 with SBC and AAC codecs. Google Fast Pair for instant Android pairing. Multipoint connects two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms. The JLab app adds custom EQ, control remapping, noise control, Interval Timer, OTA firmware updates, safe hearing tools, and My JLab device management. Includes JBuds Lux ANC headphones, USB-C charging and audio cable, and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicFrequency response: 20-20,000 HzImpedance: 32 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 35 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x condenserNoise canceling: 3-mic ENC ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesWired playback: Yes (USB-C to C)Wireless Share Mode: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursQuick charge: 10 min = 7.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonMovie Mode latency: <200ms App (JLab App)Custom EQ: YesCustom controls: YesNoise control: YesInterval Timer: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.48 inLength: 6.30 inWidth: 2.76 inWeight: 252 g In the boxJBuds Lux ANC headphones \u00b7 USB-C charging and audio cable \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Mauve"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1JBudsLuxMauve_0df84da8-5e92-4334-9deb-de5a54222534.jpg?v=1762446341"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342910042184:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1JBudsLuxMauve_0df84da8-5e92-4334-9deb-de5a54222534.jpg?v=1762446341",
+     "alt_text": "JBuds LUX ANC Headphones Mauve | 40058337296456"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Active Junky x JLab",
+    "Active Junky x JLab Discount Eligible",
+    "active-noise-cancellation",
+    "Affiliate Samples",
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU - SALE",
+    "au-free-shipping",
+    "au-in-stock",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "Black-Friday-Canada",
+    "bluetooth",
+    "bluetooth headphones",
+    "bluetooth multipoint",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "ca-free-shipping",
+    "ca-in-stock",
+    "College-Grad-Gifts",
+    "Color: Colors",
+    "Cultivatepcg",
+    "de-free-shipping",
+    "es-free-shipping",
+    "every you - every day",
+    "fitness",
+    "for every you",
+    "fr-free-shipping",
+    "gift-her",
+    "headphones",
+    "Headphones > Listen to Music > Best Features",
+    "Headphones > Listen to Music > Colorful",
+    "Headphones > Work Out > Best Features",
+    "Headphones > Work Out > Colorful",
+    "headphones-take-calls-best-features",
+    "headphones-take-calls-colorful",
+    "headphones-travel-best-features",
+    "headphones-travel-colorful",
+    "headphones-use-at-school-best-features",
+    "headphones-use-at-school-colorful",
+    "igg24_for_her",
+    "igg24_for_him",
+    "igg25_for_fashion_lovers",
+    "igg25_for_her",
+    "igg25_for_him",
+    "igg25_tech_lover",
+    "igg26_for_her",
+    "igg26_tech_lover",
+    "impact - best sellers",
+    "impact - headphones",
+    "impact - student_work",
+    "it-free-shipping",
+    "JBuds Lux",
+    "Lux Headphones",
+    "MCF",
+    "men",
+    "Mothers Day",
+    "new",
+    "PGA-TOUR",
+    "premium headphones",
+    "RMA ELIGIBLE",
+    "SALE - CA",
+    "SALE - UK",
+    "SALE - USA",
+    "SHOP APP - HEADPHONES",
+    "SHOP APP LISTING",
+    "uk-free-shipping",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "wired headphones",
+    "wireless headphones",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25756457",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Wireless Headphones",
+     "description": {
+      "html": "Find the best wireless Bluetooth headphones - on ear or over ear headphones, earbuds and anything to enjoy your music on the go. Whether you're looking for deep bass, great sound quality, or long hours of battery life look no further than these JLab wireless headphones. We offer wireless over ear, active noise cancelling, and other wireless bluetooth headphones that pair great with our wireless earbuds. Great for traveling, working out, running and more. JLab Audio's top headphones keep you wire free and going strong."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/160455721032",
+     "handle": "active-noise-cancellation",
+     "title": "Active Noise Cancellation",
+     "description": {
+      "html": "Noise Cancelling Enjoy distraction free working from home, tune out the noises on your commute or fully focus on the day ahead with ANC. Cancel out unwanted noise with Active Noise Cancellation. This technology takes outside noises into a microphone and creates a new soundwave to cancel out that noise. Learn more here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265965502536",
+     "handle": "bluetooth-multipoint",
+     "title": "Bluetooth Multipoint",
+     "description": {
+      "html": "We don't just make products, we design technology to improve people's lives. Bluetooth multipoint is a feature that allows headphones and earbuds to connect and maintain a connection to multiple devices at once. Learn more about Bluetooth multipoint"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893537099848",
+   "title": "JBuds Lux ANC Headphones Graphite",
+   "description": {
+    "html": "JLab JBuds Lux ANC in Graphite are over-ear wireless headphones built without compromise on the things that matter most. Hybrid ANC, 70 hours of playtime, Spatial Audio, and a foldable design that handles the desk, the commute, and the gym without skipping a beat. Hybrid ANC reduces ambient noise by up to 35dB using both feedforward and feedback microphones. Five condenser microphones with 3-mic ENC handle call clarity. Be Aware Mode switches off ANC when you need to hear your surroundings. Spatial Audio creates a wider, more immersive soundstage. Wireless Share Mode lets two pairs of JBuds Lux ANC headphones share audio from one device simultaneously, no splitter needed. Battery life sits at 70 total hours with ANC off (40 hours with ANC on), with 40 hours of talk time. Quick charge gives you 7.5 hours from 10 minutes of charging. The included USB-C to C cable also supports wired audio playback. Faux leather ear cushions. Foldable design. Button controls. Bluetooth 5.4 with SBC and AAC codecs. Google Fast Pair for instant Android pairing. Multipoint connects two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms. The JLab app adds custom EQ, control remapping, noise control, Interval Timer, OTA firmware updates, safe hearing tools, and My JLab device management. Includes JBuds Lux ANC headphones, USB-C charging and audio cable, and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicFrequency response: 20-20,000 HzImpedance: 32 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 35 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x condenserNoise canceling: 3-mic ENC ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesWired playback: Yes (USB-C to C)Wireless Share Mode: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursQuick charge: 10 min = 7.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonMovie Mode latency: <200ms App (JLab App)Custom EQ: YesCustom controls: YesNoise control: YesInterval Timer: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.48 inLength: 6.30 inWidth: 2.76 inWeight: 252 g In the boxJBuds Lux ANC headphones \u00b7 USB-C charging and audio cable \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/jbuds-lux-anc-headphones-graphite",
+   "handle": "jbuds-lux-anc-headphones-graphite",
+   "price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342907191368",
+     "sku": "HBJLUXANCGPH20WEB",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab JBuds Lux ANC in Graphite are over-ear wireless headphones built without compromise on the things that matter most. Hybrid ANC, 70 hours of playtime, Spatial Audio, and a foldable design that handles the desk, the commute, and the gym without skipping a beat. Hybrid ANC reduces ambient noise by up to 35dB using both feedforward and feedback microphones. Five condenser microphones with 3-mic ENC handle call clarity. Be Aware Mode switches off ANC when you need to hear your surroundings. Spatial Audio creates a wider, more immersive soundstage. Wireless Share Mode lets two pairs of JBuds Lux ANC headphones share audio from one device simultaneously, no splitter needed. Battery life sits at 70 total hours with ANC off (40 hours with ANC on), with 40 hours of talk time. Quick charge gives you 7.5 hours from 10 minutes of charging. The included USB-C to C cable also supports wired audio playback. Faux leather ear cushions. Foldable design. Button controls. Bluetooth 5.4 with SBC and AAC codecs. Google Fast Pair for instant Android pairing. Multipoint connects two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms. The JLab app adds custom EQ, control remapping, noise control, Interval Timer, OTA firmware updates, safe hearing tools, and My JLab device management. Includes JBuds Lux ANC headphones, USB-C charging and audio cable, and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicFrequency response: 20-20,000 HzImpedance: 32 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 35 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x condenserNoise canceling: 3-mic ENC ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesWired playback: Yes (USB-C to C)Wireless Share Mode: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursQuick charge: 10 min = 7.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonMovie Mode latency: <200ms App (JLab App)Custom EQ: YesCustom controls: YesNoise control: YesInterval Timer: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.48 inLength: 6.30 inWidth: 2.76 inWeight: 252 g In the boxJBuds Lux ANC headphones \u00b7 USB-C charging and audio cable \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1JBudsLuxGraphite_c6f0cdf2-c75c-4cf9-ac0a-b44fbb11fc4b.jpg?v=1762446285"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342907191368:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1JBudsLuxGraphite_c6f0cdf2-c75c-4cf9-ac0a-b44fbb11fc4b.jpg?v=1762446285",
+     "alt_text": "JBuds LUX ANC Headphones Graphite | 40058309017672"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Active Junky x JLab",
+    "Active Junky x JLab Discount Eligible",
+    "active-noise-cancellation",
+    "Affiliate Samples",
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU - SALE",
+    "au-in-stock",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "Best-Sellers",
+    "Black-Friday-Canada",
+    "bluetooth",
+    "bluetooth headphones",
+    "bluetooth multipoint",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "ca-free-shipping",
+    "ca-in-stock",
+    "classroom-headphones",
+    "College-Grad-Gifts",
+    "Cultivatepcg",
+    "de-free-shipping",
+    "es-free-shipping",
+    "Fathers Day",
+    "Featured-Option",
+    "fitness",
+    "for every you",
+    "fr-free-shipping",
+    "halloween deals",
+    "headphones",
+    "Headphones > Listen to Music > Best Features",
+    "Headphones > Work Out > Best Features",
+    "headphones-take-calls-best-features",
+    "headphones-travel-best-features",
+    "headphones-use-at-school-best-features",
+    "igg24_for_her",
+    "igg24_for_him",
+    "igg25_for_fashion_lovers",
+    "igg25_for_her",
+    "igg25_for_him",
+    "igg25_tech_lover",
+    "igg26_tech_lover",
+    "impact - best sellers",
+    "impact - headphones",
+    "impact - student_work",
+    "it-free-shipping",
+    "JBuds Lux",
+    "Lux Headphones",
+    "MCF",
+    "men",
+    "new",
+    "PGA-TOUR",
+    "Podcasting",
+    "podcasts",
+    "premium headphones",
+    "RMA ELIGIBLE",
+    "SALE - CA",
+    "SALE - UK",
+    "SALE - USA",
+    "SHOP APP - HEADPHONES",
+    "SHOP APP LISTING",
+    "uk-free-shipping",
+    "uk-in-stock",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "wired headphones",
+    "wireless headphones",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25320709",
+     "handle": "headphones",
+     "title": "Headphones",
+     "description": {
+      "html": "JLab offers comfy over-ear and on-ear headphones with noise cancellation at great prices for an immersive audio experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25756457",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Wireless Headphones",
+     "description": {
+      "html": "Find the best wireless Bluetooth headphones - on ear or over ear headphones, earbuds and anything to enjoy your music on the go. Whether you're looking for deep bass, great sound quality, or long hours of battery life look no further than these JLab wireless headphones. We offer wireless over ear, active noise cancelling, and other wireless bluetooth headphones that pair great with our wireless earbuds. Great for traveling, working out, running and more. JLab Audio's top headphones keep you wire free and going strong."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/26413645",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7005647175752",
+   "title": "Studio 2 Wireless On-Ear Headphones Black",
+   "description": {
+    "html": "The Studio 2 Wireless On-Ear Headphones Black are Bluetooth headphones built for all-day comfort, with EQ3 Sound, Bluetooth multipoint, and wireless share mode. They ship in a single black colorway. Bluetooth multipoint keeps the headphones connected to two devices at once, and wireless share mode lets a second pair of compatible JLab headphones join the same audio source, so two people can listen together without a splitter cable. Dual noise canceling microphones pick up voice while reducing background sound on calls, and Google Fast Pair and Microsoft Swift Pair speed up initial setup on Android and Windows devices. Sound can be tuned through 3 EQ presets and further customized through the JLab App, which also manages custom controls, music and movie mode switching, safe hearing limits, and over-the-air firmware updates. The headphones connect over Bluetooth 5.4 with SBC and AAC codec support and a 30+ foot range, supporting the HSP, HFP, A2DP, and AVRCP protocols. The headphones weigh 138 grams and measure 7.32 inches tall, 6.02 inches long, and 2.83 inches wide, with PU ear cushions for extended wear. Battery life is rated at 45 hours total playtime or 24 hours of talk time, with a 2 hour charge time and a quick charge option that adds 1 hour of playtime from a 10 minute charge. Standby time is rated at 190 hours. Includes: Studio 2 Wireless headset and a JLab 2 year limited warranty. Specifications AudioDriver: 40mm dynamicFrequency response: 20Hz to 20kHzImpedance: 16 ohms MicrophoneNoise canceling: 1-mic ENCTotal microphones: 1 x ECMMicrophone sensitivity: -38dB \u00b1 3dB ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: YesWireless Share Mode: YesGoogle Fast Pair: YesMicrosoft Swift Pair: YesVoice assistance: Yes BatteryCharge time: 2 hoursQuick charge: 10 min = 1 hourTalk time: 24 hoursTotal playtime: 45 hoursStandby time: 190 hoursCharge cable: USB-CInput power: 400mABattery type: 380mAh 3.8V Li-Ion Comfort and featuresEar cushion type: PUControls: ButtonsEQ3 sound: Yes App (JLab App)App support: YesCustom controls: YesCustom EQ: YesMusic / Movie Mode: YesMy JLab: YesOTA updates: YesSafe hearing: Yes DimensionsHeight: 7.32 inLength: 6.02 inWidth: 2.83 inWeight: 138 g In the boxStudio 2 Wireless headset \u00b7 JLab 2 year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/studio-2-wireless-on-ear-headphones-black",
+   "handle": "studio-2-wireless-on-ear-headphones-black",
+   "price_range": {
+    "min": {
+     "amount": 3199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40783329558600",
+     "sku": "HBSTUD2RBLK93",
+     "title": "Default Title",
+     "description": {
+      "html": "The Studio 2 Wireless On-Ear Headphones Black are Bluetooth headphones built for all-day comfort, with EQ3 Sound, Bluetooth multipoint, and wireless share mode. They ship in a single black colorway. Bluetooth multipoint keeps the headphones connected to two devices at once, and wireless share mode lets a second pair of compatible JLab headphones join the same audio source, so two people can listen together without a splitter cable. Dual noise canceling microphones pick up voice while reducing background sound on calls, and Google Fast Pair and Microsoft Swift Pair speed up initial setup on Android and Windows devices. Sound can be tuned through 3 EQ presets and further customized through the JLab App, which also manages custom controls, music and movie mode switching, safe hearing limits, and over-the-air firmware updates. The headphones connect over Bluetooth 5.4 with SBC and AAC codec support and a 30+ foot range, supporting the HSP, HFP, A2DP, and AVRCP protocols. The headphones weigh 138 grams and measure 7.32 inches tall, 6.02 inches long, and 2.83 inches wide, with PU ear cushions for extended wear. Battery life is rated at 45 hours total playtime or 24 hours of talk time, with a 2 hour charge time and a quick charge option that adds 1 hour of playtime from a 10 minute charge. Standby time is rated at 190 hours. Includes: Studio 2 Wireless headset and a JLab 2 year limited warranty. Specifications AudioDriver: 40mm dynamicFrequency response: 20Hz to 20kHzImpedance: 16 ohms MicrophoneNoise canceling: 1-mic ENCTotal microphones: 1 x ECMMicrophone sensitivity: -38dB \u00b1 3dB ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: YesWireless Share Mode: YesGoogle Fast Pair: YesMicrosoft Swift Pair: YesVoice assistance: Yes BatteryCharge time: 2 hoursQuick charge: 10 min = 1 hourTalk time: 24 hoursTotal playtime: 45 hoursStandby time: 190 hoursCharge cable: USB-CInput power: 400mABattery type: 380mAh 3.8V Li-Ion Comfort and featuresEar cushion type: PUControls: ButtonsEQ3 sound: Yes App (JLab App)App support: YesCustom controls: YesCustom EQ: YesMusic / Movie Mode: YesMy JLab: YesOTA updates: YesSafe hearing: Yes DimensionsHeight: 7.32 inLength: 6.02 inWidth: 2.83 inWeight: 138 g In the boxStudio 2 Wireless headset \u00b7 JLab 2 year limited warranty"
+     },
+     "price": {
+      "amount": 3199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1_Studio2Wireless_Black.jpg?v=1762476854"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40783329558600:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1_Studio2Wireless_Black.jpg?v=1762476854"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "black",
+    "bluetooth",
+    "bluetooth multipoint",
+    "bulk-order-eligible",
+    "CA-welcome-discount-eligible",
+    "Featured-Option",
+    "headphones",
+    "inventory-auto",
+    "MCF",
+    "men",
+    "new",
+    "No Stock - CA",
+    "No Stock - DE",
+    "No Stock - UK",
+    "RMA ELIGIBLE",
+    "SHOP APP - HEADPHONES",
+    "SHOP APP LISTING",
+    "Studio-Headphones",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "wireless",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25320709",
+     "handle": "headphones",
+     "title": "Headphones",
+     "description": {
+      "html": "JLab offers comfy over-ear and on-ear headphones with noise cancellation at great prices for an immersive audio experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265965502536",
+     "handle": "bluetooth-multipoint",
+     "title": "Bluetooth Multipoint",
+     "description": {
+      "html": "We don't just make products, we design technology to improve people's lives. Bluetooth multipoint is a feature that allows headphones and earbuds to connect and maintain a connection to multiple devices at once. Learn more about Bluetooth multipoint"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269173260360",
+     "handle": "soft-headphone-baf",
+     "title": "Soft Headphone Bag",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6932055588936",
+   "title": "Go Lux ANC Wireless Headphones Sage",
+   "description": {
+    "html": "JLab GO Lux ANC in Sage are over-ear wireless headphones with active noise cancellation, the starting point in the JLab headphone range designed to deliver reliable ANC performance without overcomplicating things. They sit below the JBuds Lux ANC and bring hybrid ANC, Spatial Audio, Multipoint, and 70 total hours of playtime at an accessible price point. Hybrid ANC reduces ambient noise by up to 30dB using both feedforward and feedback microphones working together. Five MEMS microphones with 3-mic ENC handle both noise cancellation and call clarity. Be Aware Mode switches off ANC and lets in surrounding sound when you need to stay alert. Spatial Audio creates a wider, more immersive soundstage. EQ3 Sound gives you three preset listening modes: Signature, Bass Boost, and Balanced. Battery life sits at 70 total hours with ANC off (40 hours with ANC on) and 40 hours of talk time, with standby exceeding 400 hours. Quick charge gives you 7 hours of playback from 10 minutes of charging. Charges via USB-C in 2.5 hours. Bluetooth 5.4 with SBC and AAC codecs. Both Google Fast Pair and Microsoft Swift Pair supported for instant pairing on Android and Windows devices. Multipoint connects to two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms for synced video. Wireless Share Mode lets two JLab headphones connect to the same audio source simultaneously - useful for travel or shared listening without splitting a cable or needing two devices. Faux leather ear cushions for a soft, comfortable seal during extended listening. Foldable design for easy packing and storage. Button controls for playback and calls. The JLab app adds custom EQ, control remapping, Music and Movie modes, noise control settings, OTA firmware updates, safe hearing tools, and My JLab device management. Includes GO Lux ANC headphones and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicOutput: 104 \u00b13 dBFrequency response: 20-20,000 HzImpedance: 16 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 30 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x MEMSNoise canceling: 3-mic ENCSensitivity: -32 dB \u00b11 dB ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesMicrosoft Swift Pair: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursStandby: 400+ hoursQuick charge: 10 min = 7 hoursBattery: 600 mAh 3.7V LiPoCharge time: 2.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonsWireless Share Mode: Yes App (JLab App)Custom EQ: YesCustom controls: YesMusic / Movie Mode: YesNoise control: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.68 inLength: 6.10 inWidth: 1.57 inWeight: 196 g In the boxGO Lux ANC headphones \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/go-lux-anc-wireless-headphones-sage",
+   "handle": "go-lux-anc-wireless-headphones-sage",
+   "price_range": {
+    "min": {
+     "amount": 3329,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3329,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5299,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40494260584520",
+     "sku": "HBGOLUXANCSGE20WEB",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab GO Lux ANC in Sage are over-ear wireless headphones with active noise cancellation, the starting point in the JLab headphone range designed to deliver reliable ANC performance without overcomplicating things. They sit below the JBuds Lux ANC and bring hybrid ANC, Spatial Audio, Multipoint, and 70 total hours of playtime at an accessible price point. Hybrid ANC reduces ambient noise by up to 30dB using both feedforward and feedback microphones working together. Five MEMS microphones with 3-mic ENC handle both noise cancellation and call clarity. Be Aware Mode switches off ANC and lets in surrounding sound when you need to stay alert. Spatial Audio creates a wider, more immersive soundstage. EQ3 Sound gives you three preset listening modes: Signature, Bass Boost, and Balanced. Battery life sits at 70 total hours with ANC off (40 hours with ANC on) and 40 hours of talk time, with standby exceeding 400 hours. Quick charge gives you 7 hours of playback from 10 minutes of charging. Charges via USB-C in 2.5 hours. Bluetooth 5.4 with SBC and AAC codecs. Both Google Fast Pair and Microsoft Swift Pair supported for instant pairing on Android and Windows devices. Multipoint connects to two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms for synced video. Wireless Share Mode lets two JLab headphones connect to the same audio source simultaneously - useful for travel or shared listening without splitting a cable or needing two devices. Faux leather ear cushions for a soft, comfortable seal during extended listening. Foldable design for easy packing and storage. Button controls for playback and calls. The JLab app adds custom EQ, control remapping, Music and Movie modes, noise control settings, OTA firmware updates, safe hearing tools, and My JLab device management. Includes GO Lux ANC headphones and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicOutput: 104 \u00b13 dBFrequency response: 20-20,000 HzImpedance: 16 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 30 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x MEMSNoise canceling: 3-mic ENCSensitivity: -32 dB \u00b11 dB ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesMicrosoft Swift Pair: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursStandby: 400+ hoursQuick charge: 10 min = 7 hoursBattery: 600 mAh 3.7V LiPoCharge time: 2.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonsWireless Share Mode: Yes App (JLab App)Custom EQ: YesCustom controls: YesMusic / Movie Mode: YesNoise control: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.68 inLength: 6.10 inWidth: 1.57 inWeight: 196 g In the boxGO Lux ANC headphones \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 3329,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1_GOLuxANC_Sage.jpg?v=1762446714"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40494260584520:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1_GOLuxANC_Sage.jpg?v=1762446714"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate Samples",
+    "all",
+    "ALLOTMENT-ELIGIBLE",
+    "AU - SALE",
+    "au-free-shipping",
+    "au-in-stock",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "Best-Sellers",
+    "bluetooth",
+    "bluetooth multipoint",
+    "bulk-order-eligible",
+    "ca-free-shipping",
+    "ca-in-stock",
+    "Cultivatepcg",
+    "de-free-shipping",
+    "es-free-shipping",
+    "Fathers Day",
+    "fr-free-shipping",
+    "Go Lux ANC",
+    "headphones",
+    "igg25_for_fashion_lovers",
+    "igg25_for_her",
+    "igg25_for_him",
+    "impact - CES",
+    "inventory-auto",
+    "it-free-shipping",
+    "Lux Headphones",
+    "MCF",
+    "men",
+    "Mothers Day",
+    "new",
+    "RMA ELIGIBLE",
+    "SALE - CA",
+    "SALE - UK",
+    "SALE - USA",
+    "SHOP APP - HEADPHONES",
+    "SHOP APP LISTING",
+    "uk-free-shipping",
+    "uk-in-stock",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25320709",
+     "handle": "headphones",
+     "title": "Headphones",
+     "description": {
+      "html": "JLab offers comfy over-ear and on-ear headphones with noise cancellation at great prices for an immersive audio experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/26413645",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/160455721032",
+     "handle": "active-noise-cancellation",
+     "title": "Active Noise Cancellation",
+     "description": {
+      "html": "Noise Cancelling Enjoy distraction free working from home, tune out the noises on your commute or fully focus on the day ahead with ANC. Cancel out unwanted noise with Active Noise Cancellation. This technology takes outside noises into a microphone and creates a new soundwave to cancel out that noise. Learn more here."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6931856293960",
+   "title": "Go Lux ANC Wireless Headphones Graphite",
+   "description": {
+    "html": "JLab GO Lux ANC in Graphite are over-ear wireless headphones with active noise cancellation, the starting point in the JLab headphone range designed to deliver reliable ANC performance without overcomplicating things. They sit below the JBuds Lux ANC and bring hybrid ANC, Spatial Audio, Multipoint, and 70 total hours of playtime at an accessible price point. Hybrid ANC reduces ambient noise by up to 30dB using both feedforward and feedback microphones working together. Five MEMS microphones with 3-mic ENC handle both noise cancellation and call clarity. Be Aware Mode switches off ANC and lets in surrounding sound when you need to stay alert. Spatial Audio creates a wider, more immersive soundstage. EQ3 Sound gives you three preset listening modes: Signature, Bass Boost, and Balanced. Battery life sits at 70 total hours with ANC off (40 hours with ANC on) and 40 hours of talk time, with standby exceeding 400 hours. Quick charge gives you 7 hours of playback from 10 minutes of charging. Charges via USB-C in 2.5 hours. Bluetooth 5.4 with SBC and AAC codecs. Both Google Fast Pair and Microsoft Swift Pair supported for instant pairing on Android and Windows devices. Multipoint connects to two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms for synced video. Wireless Share Mode lets two JLab headphones connect to the same audio source simultaneously - useful for travel or shared listening without splitting a cable or needing two devices. Faux leather ear cushions for a soft, comfortable seal during extended listening. Foldable design for easy packing and storage. Button controls for playback and calls. The JLab app adds custom EQ, control remapping, Music and Movie modes, noise control settings, OTA firmware updates, safe hearing tools, and My JLab device management. Includes GO Lux ANC headphones and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicOutput: 104 \u00b13 dBFrequency response: 20-20,000 HzImpedance: 16 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 30 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x MEMSNoise canceling: 3-mic ENCSensitivity: -32 dB \u00b11 dB ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesMicrosoft Swift Pair: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursStandby: 400+ hoursQuick charge: 10 min = 7 hoursBattery: 600 mAh 3.7V LiPoCharge time: 2.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonsWireless Share Mode: Yes App (JLab App)Custom EQ: YesCustom controls: YesMusic / Movie Mode: YesNoise control: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.68 inLength: 6.10 inWidth: 1.57 inWeight: 196 g In the boxGO Lux ANC headphones \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/go-lux-anc-wireless-headphones-graphite",
+   "handle": "go-lux-anc-wireless-headphones-graphite",
+   "price_range": {
+    "min": {
+     "amount": 3329,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3329,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5299,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40493791936584",
+     "sku": "HBGOLUXANCGPH20WEB",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab GO Lux ANC in Graphite are over-ear wireless headphones with active noise cancellation, the starting point in the JLab headphone range designed to deliver reliable ANC performance without overcomplicating things. They sit below the JBuds Lux ANC and bring hybrid ANC, Spatial Audio, Multipoint, and 70 total hours of playtime at an accessible price point. Hybrid ANC reduces ambient noise by up to 30dB using both feedforward and feedback microphones working together. Five MEMS microphones with 3-mic ENC handle both noise cancellation and call clarity. Be Aware Mode switches off ANC and lets in surrounding sound when you need to stay alert. Spatial Audio creates a wider, more immersive soundstage. EQ3 Sound gives you three preset listening modes: Signature, Bass Boost, and Balanced. Battery life sits at 70 total hours with ANC off (40 hours with ANC on) and 40 hours of talk time, with standby exceeding 400 hours. Quick charge gives you 7 hours of playback from 10 minutes of charging. Charges via USB-C in 2.5 hours. Bluetooth 5.4 with SBC and AAC codecs. Both Google Fast Pair and Microsoft Swift Pair supported for instant pairing on Android and Windows devices. Multipoint connects to two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms for synced video. Wireless Share Mode lets two JLab headphones connect to the same audio source simultaneously - useful for travel or shared listening without splitting a cable or needing two devices. Faux leather ear cushions for a soft, comfortable seal during extended listening. Foldable design for easy packing and storage. Button controls for playback and calls. The JLab app adds custom EQ, control remapping, Music and Movie modes, noise control settings, OTA firmware updates, safe hearing tools, and My JLab device management. Includes GO Lux ANC headphones and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicOutput: 104 \u00b13 dBFrequency response: 20-20,000 HzImpedance: 16 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 30 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x MEMSNoise canceling: 3-mic ENCSensitivity: -32 dB \u00b11 dB ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesMicrosoft Swift Pair: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursStandby: 400+ hoursQuick charge: 10 min = 7 hoursBattery: 600 mAh 3.7V LiPoCharge time: 2.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonsWireless Share Mode: Yes App (JLab App)Custom EQ: YesCustom controls: YesMusic / Movie Mode: YesNoise control: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.68 inLength: 6.10 inWidth: 1.57 inWeight: 196 g In the boxGO Lux ANC headphones \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 3329,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1_GOLuxANC_Graphite_f699fe63-1c45-4ee5-9e56-e5121a9a9edb.jpg?v=1759300893"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40493791936584:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1_GOLuxANC_Graphite_f699fe63-1c45-4ee5-9e56-e5121a9a9edb.jpg?v=1759300893"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate Samples",
+    "all",
+    "ALLOTMENT-ELIGIBLE",
+    "AU - SALE",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "bluetooth",
+    "bluetooth multipoint",
+    "bulk-order-eligible",
+    "ca-free-shipping",
+    "classroom-headphones",
+    "Cultivatepcg",
+    "de-free-shipping",
+    "es-free-shipping",
+    "fr-free-shipping",
+    "Go Lux ANC",
+    "headphones",
+    "igg25_for_fashion_lovers",
+    "igg25_for_her",
+    "igg25_for_him",
+    "impact - CES",
+    "inventory-auto",
+    "it-free-shipping",
+    "Lux Headphones",
+    "MCF",
+    "men",
+    "new",
+    "PGA-TOUR",
+    "RMA ELIGIBLE",
+    "SALE - CA",
+    "SALE - UK",
+    "SALE - USA",
+    "SHOP APP - HEADPHONES",
+    "SHOP APP LISTING",
+    "uk-free-shipping",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/26413645",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/160455721032",
+     "handle": "active-noise-cancellation",
+     "title": "Active Noise Cancellation",
+     "description": {
+      "html": "Noise Cancelling Enjoy distraction free working from home, tune out the noises on your commute or fully focus on the day ahead with ANC. Cancel out unwanted noise with Active Noise Cancellation. This technology takes outside noises into a microphone and creates a new soundwave to cancel out that noise. Learn more here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265965502536",
+     "handle": "bluetooth-multipoint",
+     "title": "Bluetooth Multipoint",
+     "description": {
+      "html": "We don't just make products, we design technology to improve people's lives. Bluetooth multipoint is a feature that allows headphones and earbuds to connect and maintain a connection to multiple devices at once. Learn more about Bluetooth multipoint"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6932055457864",
+   "title": "Go Lux ANC Wireless Headphones Mauve",
+   "description": {
+    "html": "JLab GO Lux ANC in Mauve are over-ear wireless headphones with active noise cancellation, the starting point in the JLab headphone range designed to deliver reliable ANC performance without overcomplicating things. They sit below the JBuds Lux ANC and bring hybrid ANC, Spatial Audio, Multipoint, and 70 total hours of playtime at an accessible price point. Hybrid ANC reduces ambient noise by up to 30dB using both feedforward and feedback microphones working together. Five MEMS microphones with 3-mic ENC handle both noise cancellation and call clarity. Be Aware Mode switches off ANC and lets in surrounding sound when you need to stay alert. Spatial Audio creates a wider, more immersive soundstage. EQ3 Sound gives you three preset listening modes: Signature, Bass Boost, and Balanced. Battery life sits at 70 total hours with ANC off (40 hours with ANC on) and 40 hours of talk time, with standby exceeding 400 hours. Quick charge gives you 7 hours of playback from 10 minutes of charging. Charges via USB-C in 2.5 hours. Bluetooth 5.4 with SBC and AAC codecs. Both Google Fast Pair and Microsoft Swift Pair supported for instant pairing on Android and Windows devices. Multipoint connects to two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms for synced video. Wireless Share Mode lets two JLab headphones connect to the same audio source simultaneously - useful for travel or shared listening without splitting a cable or needing two devices. Faux leather ear cushions for a soft, comfortable seal during extended listening. Foldable design for easy packing and storage. Button controls for playback and calls. The JLab app adds custom EQ, control remapping, Music and Movie modes, noise control settings, OTA firmware updates, safe hearing tools, and My JLab device management. Includes GO Lux ANC headphones and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicOutput: 104 \u00b13 dBFrequency response: 20-20,000 HzImpedance: 16 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 30 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x MEMSNoise canceling: 3-mic ENCSensitivity: -32 dB \u00b11 dB ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesMicrosoft Swift Pair: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursStandby: 400+ hoursQuick charge: 10 min = 7 hoursBattery: 600 mAh 3.7V LiPoCharge time: 2.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonsWireless Share Mode: Yes App (JLab App)Custom EQ: YesCustom controls: YesMusic / Movie Mode: YesNoise control: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.68 inLength: 6.10 inWidth: 1.57 inWeight: 196 g In the boxGO Lux ANC headphones \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/go-lux-anc-wireless-headphones-mauve",
+   "handle": "go-lux-anc-wireless-headphones-mauve",
+   "price_range": {
+    "min": {
+     "amount": 3329,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3329,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5299,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40494260355144",
+     "sku": "HBGOLUXANCMVE20WEB",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab GO Lux ANC in Mauve are over-ear wireless headphones with active noise cancellation, the starting point in the JLab headphone range designed to deliver reliable ANC performance without overcomplicating things. They sit below the JBuds Lux ANC and bring hybrid ANC, Spatial Audio, Multipoint, and 70 total hours of playtime at an accessible price point. Hybrid ANC reduces ambient noise by up to 30dB using both feedforward and feedback microphones working together. Five MEMS microphones with 3-mic ENC handle both noise cancellation and call clarity. Be Aware Mode switches off ANC and lets in surrounding sound when you need to stay alert. Spatial Audio creates a wider, more immersive soundstage. EQ3 Sound gives you three preset listening modes: Signature, Bass Boost, and Balanced. Battery life sits at 70 total hours with ANC off (40 hours with ANC on) and 40 hours of talk time, with standby exceeding 400 hours. Quick charge gives you 7 hours of playback from 10 minutes of charging. Charges via USB-C in 2.5 hours. Bluetooth 5.4 with SBC and AAC codecs. Both Google Fast Pair and Microsoft Swift Pair supported for instant pairing on Android and Windows devices. Multipoint connects to two devices simultaneously. Support protocols: HSP/HFP/A2DP/AVRCP. Compatible with iOS and Android, including Siri and Google Assistant. Movie Mode latency under 200ms for synced video. Wireless Share Mode lets two JLab headphones connect to the same audio source simultaneously - useful for travel or shared listening without splitting a cable or needing two devices. Faux leather ear cushions for a soft, comfortable seal during extended listening. Foldable design for easy packing and storage. Button controls for playback and calls. The JLab app adds custom EQ, control remapping, Music and Movie modes, noise control settings, OTA firmware updates, safe hearing tools, and My JLab device management. Includes GO Lux ANC headphones and a JLab 2-year limited warranty. Specifications AudioDriver: 40mm dynamicOutput: 104 \u00b13 dBFrequency response: 20-20,000 HzImpedance: 16 ohmsEQ3 presets: Signature, Bass Boost, BalancedSpatial Audio: Yes Noise cancelingANC type: HybridANC noise reduction: 30 dBBe Aware Mode: Yes MicrophoneTotal mics: 5 x MEMSNoise canceling: 3-mic ENCSensitivity: -32 dB \u00b11 dB ConnectivityBluetooth: 5.4Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPMultipoint: Yes (2 devices)Google Fast Pair: YesMicrosoft Swift Pair: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryTotal playtime (ANC off): 70 hoursTotal playtime (ANC on): 40 hoursTalk time: 40 hoursStandby: 400+ hoursQuick charge: 10 min = 7 hoursBattery: 600 mAh 3.7V LiPoCharge time: 2.5 hoursCharge port: USB-CInput power: DC 5V, 1A Comfort and featuresEar cushion type: Faux leatherFoldable: YesControls: ButtonsWireless Share Mode: Yes App (JLab App)Custom EQ: YesCustom controls: YesMusic / Movie Mode: YesNoise control: YesOTA updates: YesSafe hearing: YesMy JLab: Yes DimensionsHeight: 7.68 inLength: 6.10 inWidth: 1.57 inWeight: 196 g In the boxGO Lux ANC headphones \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 3329,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Mauve"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1_GO_Lux_ANC_Mauve_738b4152-4442-4f9c-bce7-f213129f6e23.jpg?v=1759300924"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40494260355144:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/1_GO_Lux_ANC_Mauve_738b4152-4442-4f9c-bce7-f213129f6e23.jpg?v=1759300924"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate Samples",
+    "all",
+    "ALLOTMENT-ELIGIBLE",
+    "AU - SALE",
+    "au-free-shipping",
+    "au-in-stock",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "bluetooth",
+    "bluetooth multipoint",
+    "bulk-order-eligible",
+    "ca-free-shipping",
+    "ca-in-stock",
+    "Cultivatepcg",
+    "de-free-shipping",
+    "es-free-shipping",
+    "Featured-Option",
+    "fr-free-shipping",
+    "Go Lux ANC",
+    "headphones",
+    "igg25_for_fashion_lovers",
+    "igg25_for_her",
+    "igg25_for_him",
+    "impact - CES",
+    "inventory-auto",
+    "it-free-shipping",
+    "Lux Headphones",
+    "MCF",
+    "men",
+    "Mothers Day",
+    "new",
+    "RMA ELIGIBLE",
+    "SALE - CA",
+    "SALE - UK",
+    "SALE - USA",
+    "SHOP APP - HEADPHONES",
+    "SHOP APP LISTING",
+    "uk-free-shipping",
+    "uk-in-stock",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/26413645",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/160455721032",
+     "handle": "active-noise-cancellation",
+     "title": "Active Noise Cancellation",
+     "description": {
+      "html": "Noise Cancelling Enjoy distraction free working from home, tune out the noises on your commute or fully focus on the day ahead with ANC. Cancel out unwanted noise with Active Noise Cancellation. This technology takes outside noises into a microphone and creates a new soundwave to cancel out that noise. Learn more here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265965502536",
+     "handle": "bluetooth-multipoint",
+     "title": "Bluetooth Multipoint",
+     "description": {
+      "html": "We don't just make products, we design technology to improve people's lives. Bluetooth multipoint is a feature that allows headphones and earbuds to connect and maintain a connection to multiple devices at once. Learn more about Bluetooth multipoint"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzJPVE15TURVMU5EVTNPRFkwTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

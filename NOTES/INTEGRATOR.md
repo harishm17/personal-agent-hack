@@ -1169,3 +1169,61 @@ Sheet 2 totals: 226 candidates, 73 inside, 63 outside, 30 unclear, 60 truly not 
 - Still open from my 13:23 note, both yours: `sheets/sheet1.json` has no `figures` (E18 words, with the reworded bed-rail entry:
   with it L6 reads 9 inside, 0 unclear, pick Wonder Bed Handle $99.99, sheet 1 total $279.03, 92 inside / 61 outside / 8 unclear / 42
   not stated); `sheets/sheet2.json` needs `"several": "largest"` on T1.flush and the vanity words.
+## STORE 14:50 — DONE S16: sheet 3 pool and counts (pattern count)
+**Where.** `data/sheet3/pool/<store>.json` (raw replies `data/sheet3/pool/raw/`), `data/sheet3/store_answers/`, `data/sheet3/pool_summary.json`. Eight stores, 3 queries for K1, 2 for K2, 1 for K3 (the sheet's own),
+every query to every store (8 stores x 6 distinct queries = 48 searches, about one call a second per store, none refused: the project's client sends the profile header). No cart, no checkout call.
+**Products kept by the relevance rule (title or the store's own labels name the need)**: K1 headphones: jlab 22 of 25 candidates, purosound 12 of 12, onanoff 12 of 12, skullcandy 14 of 16 (60 products, 133 options);
+K2 electric scooter: hiboy 12 of 12, gotrax 15 of 15 (27 products, 59 options); K3 energy drink: alaninu 10 of 10 (10 products, 10 options), **guayaki 0 of 10: Guayaki's own labels say "Cans", "Higher Power Cans",
+"Sparkling Cans", never "energy drink", and no title names one, so the rule drops all ten (reason recorded per product). If you want Guayaki in K3 the sheet's need or a query must say what the store says (for example "yerba mate"); I did not
+override the rule.** The scooter stores also returned headphones queries and the other way round: those candidates (hiboy 14, gotrax 20 for K1) are dropped with the reason.
+**Pattern counts of the deciding figure in the text (regular expressions, not a model read):**
+| line | store | products | state the figure |
+|---|---|---|---|
+| K1 volume in dB | jlab | 22 | any dB figure on 21; in a volume, limit, hearing or max context on 10; two or more different levels in that context on 5 |
+| | purosound | 12 | any dB 11 (context 11); two levels 1 |
+| | onanoff | 12 | any dB 7 (context 7); two levels 1 |
+| | skullcandy | 14 | **0** (no dB, no "decibel" on any of the 14 pages) |
+| | all | 60 | any dB 39 (65%); volume-context 28 (47%); two levels in context 7 |
+| K2 top speed in mph | gotrax | 15 | 6 |
+| | hiboy | 12 | 9 |
+| | all | 27 | 15 (56%); I did not look at why the other 12 do not state it (the Hiboy S2 MAX is one) |
+| K3 caffeine in mg | alaninu | 10 | 10 (all 200 mg) |
+Note on K1: "any dB figure" also counts sensitivity (-38 dB) and noise levels, so the volume-context count is the better one; and a page that states two levels (a cap of 85 dB or 95 dB) is the case that needs a rule.
+**The probe's findings, confirmed from the data:**
+1. JLab JBuddies Pop Wireless (Kids Headphones, Pink): $17.99 (1799 cents), one option; text: "A hearing protection switch lets you cap output at 85 dB or 95 dB, with 95 dB as the default and 85 dB available", "Output: 85 / 95 dB (switchable)",
+   "Hearing protection switch: Yes (85 dB / 95 dB, 95 dB default)Volume limiting: Yes (85 dB..." : both levels are stated, 95 dB is the default. Confirmed. Under `<= 85` a spread 85 to 95 fails at its larger end (the default), which is the point of the example.
+2. Gotrax Rival Electric Scooter: 29900 cents; text states "15.5 MPH top speed" (pattern value 15.5). Confirmed.
+3. Hiboy: S2 Electric Scooter 28499 cents, "Max Speed: 19MPH" (19); S2 Lite 25499 cents, "top speed of 13 mph" (13). Also S2 SE 19, S2 Nova 19, S2 Pro 19; S2 MAX states no mph. Confirmed.
+4. Alani Nu: all ten cans (energy drink - orange kiss and nine more flavours, 2999 cents each, one option) state 200 mg of caffeine. Confirmed.
+**Store answers (delivery / returns, verbatim in the files):** jlab 2-7 business days; onanoff 10-14 business days (registered airmail from Hong Kong); hiboy 2-5 working days; gotrax 4-8 business days; alaninu orders processed and shipped within 3-10 business days; purosound, skullcandy and guayaki state no delivery time
+(skullcandy: only that standard, 2nd Day and Next Day air exist). Returns: skullcandy and purosound say they do not say whether opened headphones qualify; jlab says opened or used items may be restricted; guayaki: "doesn't accept returns or exchanges, including for opened drinks" (no).
+Two fixes the new replies forced in my reader (all earlier sheets re-read, no saved answer changed): a refund window ("within 14 days of the ship date") is no longer taken for a delivery time, and a plain "returns accepted within 30 days" is `unclear` for an opened item unless the sentence is about an opened or used item.
+
+## STORE 15:05 — DONE S16 (re-done for the teacher's list): sheet 3 pool, counts (pattern count), the four confirmations
+**Where.** `data/sheet3/pool/<store>.json` + `raw/`, `data/sheet3/store_answers/<store>.json` (11 stores), `data/sheet3/pool_summary.json`. 11 stores x the sheet's 11 distinct queries (each query to each store, one call a second per store, none refused: the
+project's client sends the profile header); the headphone replies fetched earlier were kept; the scooter and energy-drink files are deleted. No cart was created for the fetch, no checkout call.
+**Products kept by the relevance rule (need words, the store's own labels or its title), with options:** C1 headphones 60 (133 options): jlab 22, onanoff 12, purosound 12, skullcandy 14. C2 crayons 29 (31): bazic 12, ooly 11, schoolsupplyboxes 5, mrpen 1.
+C3 notebook 60 (126): bazic 20, pencils.com 14, schoolsupplyboxes 10, yoobi 6, mrpen 5, ooly 4, bluesummit 1. C4 pencils 61 (73): bazic 17, pencils.com 16, ooly 11, mrpen 10, schoolsupplyboxes 5, yoobi 2.
+The rule drops what is not the thing (journals, sketchbooks, binders, envelopes, erasers, scooters): reasons are in the summary file. Drops that matter for the demo: Blue Summit Supplies has 1 notebook (its notebooks are called journals and logbooks), Ooly's sketchbooks are not notebooks, and Yoobi has 2 pencil products.
+**Pattern counts of the deciding figure in the text (regular expressions, not a model read; "stated" = a number next to the unit word):**
+| line | store | products | state it |
+|---|---|---|---|
+| C1 dB | jlab | 22 | any dB figure 21; in a volume, limit, hearing or max context 10; two or more levels in that context 5 |
+| | onanoff | 12 | any 7; context 7; two or more levels 1 (BuddyPhones School+ states three) |
+| | purosound | 12 | any 11; context 11; two or more levels 1 |
+| | skullcandy | 14 | **0** (no dB or decibel anywhere) |
+| | all | 60 | any dB 39 (65%); volume context 28 (47%); two or more different dB numbers on a page: 20 |
+| C2 crayons in a box | bazic 2 of 12, ooly 4 of 11, schoolsupplyboxes 4 of 5, mrpen 1 of 1 | 29 | 11 (38%) |
+| C3 sheets | bazic 20 of 20, schoolsupplyboxes 5 of 10, yoobi 3 of 6, pencils.com 2 of 14, ooly 0 of 4, mrpen 0 of 5, bluesummit 0 of 1 | 60 | 30 (50%); pages (not sheets) are stated on pencils.com 11 of 14, mrpen 3, ooly 3 |
+| C4 pencils in a pack | pencils.com 15 of 16, ooly 7 of 11, mrpen 7 of 10, bazic 3 of 17, schoolsupplyboxes 4 of 5, yoobi 2 of 2 | 61 | 38 (62%) |
+C3 and C2 are the weak lines: only half the notebooks state sheets (a few state pages, which the sheet says are not sheets), and crayons in a box are in the text on 11 of 29 under this pattern (many titles carry the count in forms my pattern does not read: "box of 8", "set of 12"); a model read may find more.
+**The four confirmations from the data:**
+1. BuddyPhones School+ Wireless (onanoff.com, 2999 cents, options School Blue/Pink/Yellow...): "You can choose from three sound levels—75dB, 85dB, or 94dB—to make sure the volume never gets too loud." Confirmed: three levels.
+2. JLab JBuddies Pop Wireless Kids Headphones (Pink), 1799 cents, one option: "A hearing protection switch lets you cap output at 85 dB or 95 dB, with 95 dB as the default and 85 dB available", "Output: 85 / 95 dB (switchable)", "Volume limiting: Yes (85 dB / 95 dB, 95 dB default)". Confirmed.
+3. PuroBasic: "the headphones that limit harmful volumes over 85 dB" and "all within the safety of 85dB" on both PuroBasic Wired Volume Limited Headphones (2465 cents, five colours) and the Scratch & Dent copy (2000 cents). Confirmed: 85 dB.
+4. A 64-count crayon box beside a 24: bazicproducts.com "64 ct. Premium Crayons w/sharpener" 599 cents; schoolsupplyboxes.com "24 Count Crayons" 79 cents and "Crayola Crayons 24pk" 254 cents; ooly "Brilliant Bee Crayons" 1195 cents (option "set of 12"; 24 appears in its text). Confirmed.
+**Store answers (verbatim in the files; delivery / returns of an opened item).** Delivery stated: bazic 2-7 business days, ooly 4-7, schoolsupplyboxes 2-5, mrpen 2-5, jlab 2-7, onanoff 10-14 (airmail from Hong Kong), the others (purosound, skullcandy, yoobi, bluesummit, pencils.com) state none.
+Returns of an opened item: no store says yes; bazic, ooly, pencils.com, yoobi say an opened item would not meet the policy (read as "no"), schoolsupplyboxes, jlab, skullcandy, purosound, bluesummit, mrpen: unclear.
+**Carts, pre-test:** one cart at each of the 11 stores in one call, timeout 6 s, one try: all eleven answered in 1.1 s, `mode: "live"`, each with its own store link and the right line (quantity 1, unit price). Price accuracy: pencils.com's cheapest product (Custom Screen Printed Pencils) is 31 cents in the search reply and **33 cents in the cart**; the other ten carts equal their search prices. I will repeat the cart test for the stores that actually get a pick when ENGINE has read the sheet.
+**Two things in the sheet (yours):** (1) the C2 query "crayons 24" contains the limit (24, unit count): the ledger guard now knows the sheet's own unit words (`units`: count = ct, pack, crayons, ...), so a live search for it is **blocked**; I fetched it at 14:50, before the guard knew the word "crayons" was a unit, so it went to the 11 stores once and its replies are in the raw files. Change the query (for example "crayons") if the demo says no store is told a limit. (2) `units.count` includes "pencils" and "crayons", so "12 pencils" in any message to a store counts as the limit 12.
+**Also changed:** returns: "would not meet / does not qualify / aren't eligible" for the opened item is now `no` (was unclear); "may", "generally", "if", "must" stay `unclear`; horow (sheet 2) and the sheet 3 stores re-read, sheet 1's answers unchanged.

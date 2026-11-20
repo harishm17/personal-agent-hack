@@ -1,0 +1,341 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.jlab.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "JLab",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.jlab.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "2409337"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "2409337"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/15792333520968",
+   "title": "Epic Lux Lab, Epic Lab Edition & Epic Sport ANC 3 Black Bundle",
+   "description": {
+    "html": "The Epic Lab Black Bundle puts JLab's top tier audio in one set. Epic Lux Lab Edition ANC headphones for home and travel, Epic Lab Edition earbuds for everyday listening, and Epic Sport ANC 3 earbuds for workouts. All three are finished in Black, support Hi-Res Audio with LDAC, and connect to the JLab App. Epic Lux Lab Edition headphones: 32mm Hi-Res dynamic drivers, Adaptive ANC up to 42dB, and Spatial Audio with head tracking Epic Lab Edition earbuds: hybrid dual drivers (10mm dynamic plus Knowles balanced armature) with Hybrid ANC Epic Sport ANC 3 earbuds: hybrid dual drivers with Knowles balanced armature, Hybrid ANC, and a secure sport earhook Up to 90 hours of headphone playtime, 56+ hours on Epic Lab Edition, and 52+ hours on Epic Sport ANC 3 Wireless charging on all three: a charging dock for the headphones and wireless charging cases for both earbuds IP55 rated Epic Lab Edition and IP66 rated Epic Sport ANC 3 for sweat and dust protection Bluetooth multipoint and Google Fast Pair on every piece Customize ANC, Be Aware, EQ, touch controls, and safe hearing limits in the JLab App PACKAGE INCLUDES Epic Lux Lab Edition ANC Over-Ear Headphones, Black Wireless charging dock Premium carry case USB-C to USB-C charging cable and USB-C to AUX cable Epic Lab Edition True Wireless Earbuds, Black Epic Lab Edition wireless charging case USB-C dongle 3 sets of gel tips and 3 sets of Cloud Foam tips Epic Sport ANC 3 True Wireless Earbuds, Black Epic Sport ANC 3 charging case with integrated USB-C cable 3 sets of gel tips JLab 2 Year Limited Warranty SPECIFICATIONS Epic Lux Lab Edition ANC Over-Ear Headphones Driver: 32mm Hi-Res dynamic Frequency Response: 20Hz to 40kHz Impedance: 16 ohms Output: 96dB \u00b13dB ANC: Adaptive, up to 42dB, with Be Aware Spatial Audio: Yes, with head tracking Microphones: 6 condensers, 4-mic ENC Bluetooth: 5.4, SBC, AAC and LDAC, 30+ ft range Multipoint: Yes Google Fast Pair and Microsoft Swift Pair: Yes Wired playback: Yes, USB-C to 3.5mm Battery: 750mAh 3.7V LiPo Playtime: 90 hours, 60 hours with ANC on Talk Time: 45 hours Quick Charge: 5 minutes = 5 hours Charge Time: 3 hours Wireless Charging: Yes Weight: 300g Epic Lab Edition True Wireless Earbuds Driver: 10mm dynamic plus Knowles balanced armature Frequency Response: 20Hz to 40kHz Impedance: 16 ohms Output: 97dB \u00b13dB ANC: Hybrid, with Be Aware Microphones: 6 MEMS, 2-mic ENC Bluetooth: 5.3, SBC, AAC and LDAC, 30+ ft range USB-C Dongle: Yes, 50ms latency Multipoint: Yes Playtime: 13 hours per earbud, 56 hours total Playtime with ANC on: 9 hours per earbud, 36 hours total Quick Charge: 10 minutes = 2 hours Charge Time: under 2 hours Wireless Charging: Yes, Qi Ingress Protection: IP55 Earbud Weight: 11g total Epic Sport ANC 3 True Wireless Earbuds Driver: 10mm dynamic plus Knowles balanced armature Frequency Response: 20Hz to 40kHz Impedance: 16 ohms ANC: Hybrid, with Be Aware Spatial Audio: Yes Microphones: 6 MEMS, 2-mic ENC Bluetooth: 5.3, SBC, AAC and LDAC, 30+ ft range Multipoint: Yes Playtime: 12 hours per earbud, 52 hours total Playtime with ANC on: 10 hours per earbud, 42 hours total Quick Charge: 10 minutes = 2 hours Charge Time: under 2 hours Wireless Charging: Yes Ingress Protection: IP66 Fit: Sport earhook Earbud Weight: 16.8g total"
+   },
+   "url": "https://www.jlab.com/products/epic-lux-lab-epic-lab-edition-epic-sport-anc-3-black-bundle",
+   "handle": "epic-lux-lab-epic-lab-edition-epic-sport-anc-3-black-bundle",
+   "price_range": {
+    "min": {
+     "amount": 20998,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20998,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 52497,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 52497,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/57655677714504",
+     "sku": "HBELUXLABBLK5WEB-EBELABBLK50WEB-EBEPICSPT3BLK50WEB",
+     "title": "Default Title",
+     "description": {
+      "html": "The Epic Lab Black Bundle puts JLab's top tier audio in one set. Epic Lux Lab Edition ANC headphones for home and travel, Epic Lab Edition earbuds for everyday listening, and Epic Sport ANC 3 earbuds for workouts. All three are finished in Black, support Hi-Res Audio with LDAC, and connect to the JLab App. Epic Lux Lab Edition headphones: 32mm Hi-Res dynamic drivers, Adaptive ANC up to 42dB, and Spatial Audio with head tracking Epic Lab Edition earbuds: hybrid dual drivers (10mm dynamic plus Knowles balanced armature) with Hybrid ANC Epic Sport ANC 3 earbuds: hybrid dual drivers with Knowles balanced armature, Hybrid ANC, and a secure sport earhook Up to 90 hours of headphone playtime, 56+ hours on Epic Lab Edition, and 52+ hours on Epic Sport ANC 3 Wireless charging on all three: a charging dock for the headphones and wireless charging cases for both earbuds IP55 rated Epic Lab Edition and IP66 rated Epic Sport ANC 3 for sweat and dust protection Bluetooth multipoint and Google Fast Pair on every piece Customize ANC, Be Aware, EQ, touch controls, and safe hearing limits in the JLab App PACKAGE INCLUDES Epic Lux Lab Edition ANC Over-Ear Headphones, Black Wireless charging dock Premium carry case USB-C to USB-C charging cable and USB-C to AUX cable Epic Lab Edition True Wireless Earbuds, Black Epic Lab Edition wireless charging case USB-C dongle 3 sets of gel tips and 3 sets of Cloud Foam tips Epic Sport ANC 3 True Wireless Earbuds, Black Epic Sport ANC 3 charging case with integrated USB-C cable 3 sets of gel tips JLab 2 Year Limited Warranty SPECIFICATIONS Epic Lux Lab Edition ANC Over-Ear Headphones Driver: 32mm Hi-Res dynamic Frequency Response: 20Hz to 40kHz Impedance: 16 ohms Output: 96dB \u00b13dB ANC: Adaptive, up to 42dB, with Be Aware Spatial Audio: Yes, with head tracking Microphones: 6 condensers, 4-mic ENC Bluetooth: 5.4, SBC, AAC and LDAC, 30+ ft range Multipoint: Yes Google Fast Pair and Microsoft Swift Pair: Yes Wired playback: Yes, USB-C to 3.5mm Battery: 750mAh 3.7V LiPo Playtime: 90 hours, 60 hours with ANC on Talk Time: 45 hours Quick Charge: 5 minutes = 5 hours Charge Time: 3 hours Wireless Charging: Yes Weight: 300g Epic Lab Edition True Wireless Earbuds Driver: 10mm dynamic plus Knowles balanced armature Frequency Response: 20Hz to 40kHz Impedance: 16 ohms Output: 97dB \u00b13dB ANC: Hybrid, with Be Aware Microphones: 6 MEMS, 2-mic ENC Bluetooth: 5.3, SBC, AAC and LDAC, 30+ ft range USB-C Dongle: Yes, 50ms latency Multipoint: Yes Playtime: 13 hours per earbud, 56 hours total Playtime with ANC on: 9 hours per earbud, 36 hours total Quick Charge: 10 minutes = 2 hours Charge Time: under 2 hours Wireless Charging: Yes, Qi Ingress Protection: IP55 Earbud Weight: 11g total Epic Sport ANC 3 True Wireless Earbuds Driver: 10mm dynamic plus Knowles balanced armature Frequency Response: 20Hz to 40kHz Impedance: 16 ohms ANC: Hybrid, with Be Aware Spatial Audio: Yes Microphones: 6 MEMS, 2-mic ENC Bluetooth: 5.3, SBC, AAC and LDAC, 30+ ft range Multipoint: Yes Playtime: 12 hours per earbud, 52 hours total Playtime with ANC on: 10 hours per earbud, 42 hours total Quick Charge: 10 minutes = 2 hours Charge Time: under 2 hours Wireless Charging: Yes Ingress Protection: IP66 Fit: Sport earhook Earbud Weight: 16.8g total"
+     },
+     "price": {
+      "amount": 20998,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 52497,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/CopyofRyanEarbudDraft_1_5.jpg?v=1794874450"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/57655677714504:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/CopyofRyanEarbudDraft_1_5.jpg?v=1794874450"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "active-noise-cancellation",
+    "all",
+    "audio",
+    "bluetooth",
+    "bluetooth multipoint",
+    "bundle",
+    "bundles",
+    "earbuds",
+    "EPIC SPORT ANC 3",
+    "Featured-Option",
+    "headphones",
+    "igg26_tech_lover",
+    "Lux Headphones",
+    "premium earbuds",
+    "SALE - CA",
+    "SALE - UK",
+    "SALE - USA",
+    "Sport-Earbuds",
+    "us-free-shipping",
+    "WEB3"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304633",
+     "handle": "earbuds",
+     "title": "Earbuds",
+     "description": {
+      "html": "JLab earbuds are perfect for any activity, from workouts to work calls. They're waterproof, comfortable, and come with noise cancellation options. Enjoy easy connectivity with your devices and crystal-clear calls, all while experiencing a customized fit for your ears."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268172984392",
+     "handle": "sale",
+     "title": "Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269173260360",
+     "handle": "soft-headphone-baf",
+     "title": "Soft Headphone Bag",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

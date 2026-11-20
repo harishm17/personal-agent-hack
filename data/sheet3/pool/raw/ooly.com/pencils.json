@@ -1,0 +1,1629 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.ooly.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "OOLY",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.ooly.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "24862582"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "24862582"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/546556870689",
+   "title": "Stay Sharp Pencils - Rainbow - Set of 6",
+   "description": {
+    "html": "Stay on top of your writing game with Stay Sharp Graphite Pencils. Each set Stay Sharps come with 6 pencils in candy colored rainbow barrels with refillable pencil leads. It's kind of like a mechanical pencil but without the clicking action. Just put the used lead on top and a new lead pops out in front. There's no need to sharpen pencils anymore! No. 2 graphite. Non Sharpening Leads Set of 6 No. 2 Graphite Suitable for ages 3 and up"
+   },
+   "url": "https://www.ooly.com/products/stay-sharp-pencils-rainbow",
+   "handle": "stay-sharp-pencils-rainbow",
+   "price_range": {
+    "min": {
+     "amount": 746,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 746,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/7068647915553",
+     "sku": "128-44",
+     "title": "Default Title",
+     "description": {
+      "html": "Stay on top of your writing game with Stay Sharp Graphite Pencils. Each set Stay Sharps come with 6 pencils in candy colored rainbow barrels with refillable pencil leads. It's kind of like a mechanical pencil but without the clicking action. Just put the used lead on top and a new lead pops out in front. There's no need to sharpen pencils anymore! No. 2 graphite. Non Sharpening Leads Set of 6 No. 2 Graphite Suitable for ages 3 and up"
+     },
+     "price": {
+      "amount": 746,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/128-44-Stay-Sharp-Graphite-Pencils-C1.png?v=1609897924"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/7068647915553:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/128-44-Stay-Sharp-Graphite-Pencils-C1.png?v=1609897924",
+     "alt_text": "OOLY Stay Sharp Graphite Pencils in new packaging."
+    }
+   ],
+   "tags": [
+    "adults",
+    "bts24",
+    "bts26",
+    "elementary",
+    "her",
+    "hs college",
+    "kids",
+    "middle",
+    "mirakl",
+    "rebuyall",
+    "school",
+    "teens"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30769086497",
+     "handle": "pencils-sharpeners",
+     "title": "Pencils and Sharpeners",
+     "description": {
+      "html": "Pencils and sharpeners go together like peanut butter and jelly. Nothing says fun like these cute pencils from OOLY. And, what would a pencil be without a sharpener? Dull, lifeless, and, frankly, not much fun. OOLY sharpeners make the perfect writing buddy. They\u2019re unique and whimsical. Woodland Writing Pals are forest friends just waiting to be put to use. They look after you and your pencils as you write. They\u2019re here for you, to keep you sharp and and take care of your mistakes because they are an eraser too! Both the Birds Eye View and the Monkey Business sharpeners will hold your pencil for you while you take a break, keeping it safe and secure. Your pencil is in good hands with these guys. For purists, the Mighty Pencil Sharpener is basic but mighty. It will do your dirty work and catch your shavings. It will also sharpen three different pencil sizes, so you\u2019ll never be left high and dry. You can\u2019t have a pencil without an equally amazing sharpener to go with it."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31338528801",
+     "handle": "gifts-for-mom",
+     "title": "gifts for mom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80352346147",
+     "handle": "calendar-planner-supplies",
+     "title": "Calendar and Planner Supplies",
+     "description": {
+      "html": "When you\u2019re looking to add a little flair to your personal planner, OOLY\u2019s planner supplies make organizing fun and oh so pretty! Decorate in style with colored gel pens, pastel highlighters, stickers and more. Style your planner and bring it to life with colorful pens, markers and creative art supplies. OOLY makes staying on top of tasks and to-do\u2019s colorful and easy! With a rainbow of different planner supplies that add color and fun to your , planning your days, projects, and everything in between just got very exciting! Plot your next project with your decorated personal planner. Enhance your schedule of important appointments in perfect color-coded order using silky-smooth gel pens or pack in all the color you need into one magical multicolor pen. Dual tipped markers are also great for traveling with more color options than you can imagine. And of course you need a place to keep everything and there is no better place than one of our many amazing journals for people of all ages."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83893157923",
+     "handle": "teacher-school-supplies",
+     "title": "Teacher School Supplies",
+     "description": {
+      "html": "Our teachers encourage us to follow our dreams and inspire us to become our best person possible. Shop these school necessities and classroom supplies (or gifts) for teachers. Plan, organize and excel with our list of essential teacher supplies Who said school has to be boring? Find everything on your teacher supply list that is both practical and pretty. The right arts and crafts supplies will make the right impression for all grade levels. Find the right teacher supplies online here at OOLY. Leave grades and comments that make an impression with the Note Pals Sticky Tabs and glitter gel pens. Use Do-Overs Erasable Highlighters to really make a mark on the page. Our huge collection of Jot-It! Notebooks are the perfect place to keep track of the day; use Modern Script fountain pens to make sure nothing is left behind."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4840459829283",
+   "title": "Noted! Graphite Mechanical Pencils - Set of 6",
+   "description": {
+    "html": "Get inspired to write or sketch with these extra thick leaded graphite mechanical pencils. Each of these 6 colorful barreled pencils has its own inspiring message. Noted! Graphite Mechanical Pencils are ready to get down to work or fun! Noted! Mechanical Pencils are pre-loaded with 2mm extra thick No 2 graphite lead and even have a lead sharpener on the top of each pencil. To give you a bit of inspiration, each of the 6 colorful pencil barrels has a motivating quote to keep your spirits up. Set of 6 of Mechanical Pencil Extra Thick 2mm lead Sharpener on top of each pencil Refills available Inspiring quote on each barrel Suitable for ages 6 and up"
+   },
+   "url": "https://www.ooly.com/products/noted-graphite-mechanical-pencils-set-of-6",
+   "handle": "noted-graphite-mechanical-pencils-set-of-6",
+   "price_range": {
+    "min": {
+     "amount": 896,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 896,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1195,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1195,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32983841144867",
+     "sku": "128-156",
+     "title": "Default Title",
+     "description": {
+      "html": "Get inspired to write or sketch with these extra thick leaded graphite mechanical pencils. Each of these 6 colorful barreled pencils has its own inspiring message. Noted! Graphite Mechanical Pencils are ready to get down to work or fun! Noted! Mechanical Pencils are pre-loaded with 2mm extra thick No 2 graphite lead and even have a lead sharpener on the top of each pencil. To give you a bit of inspiration, each of the 6 colorful pencil barrels has a motivating quote to keep your spirits up. Set of 6 of Mechanical Pencil Extra Thick 2mm lead Sharpener on top of each pencil Refills available Inspiring quote on each barrel Suitable for ages 6 and up"
+     },
+     "price": {
+      "amount": 896,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1195,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/128-156-Noted_-Graphite-Mechanical-Pencils-B1.png?v=1607977385"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/32983841144867:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/128-156-Noted_-Graphite-Mechanical-Pencils-B1.png?v=1607977385",
+     "alt_text": "OOLY Noted mechanical pencils set of 6 in packaging"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "adults",
+    "bts24",
+    "bts26",
+    "category planning",
+    "disco",
+    "elementary",
+    "her",
+    "him",
+    "hs college",
+    "kids",
+    "mechanical",
+    "middle",
+    "mirakl",
+    "rebuyall",
+    "retro",
+    "school",
+    "studio",
+    "teens"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30769086497",
+     "handle": "pencils-sharpeners",
+     "title": "Pencils and Sharpeners",
+     "description": {
+      "html": "Pencils and sharpeners go together like peanut butter and jelly. Nothing says fun like these cute pencils from OOLY. And, what would a pencil be without a sharpener? Dull, lifeless, and, frankly, not much fun. OOLY sharpeners make the perfect writing buddy. They\u2019re unique and whimsical. Woodland Writing Pals are forest friends just waiting to be put to use. They look after you and your pencils as you write. They\u2019re here for you, to keep you sharp and and take care of your mistakes because they are an eraser too! Both the Birds Eye View and the Monkey Business sharpeners will hold your pencil for you while you take a break, keeping it safe and secure. Your pencil is in good hands with these guys. For purists, the Mighty Pencil Sharpener is basic but mighty. It will do your dirty work and catch your shavings. It will also sharpen three different pencil sizes, so you\u2019ll never be left high and dry. You can\u2019t have a pencil without an equally amazing sharpener to go with it."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31338528801",
+     "handle": "gifts-for-mom",
+     "title": "gifts for mom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80355098659",
+     "handle": "pastel",
+     "title": "Pastel",
+     "description": {
+      "html": "Turn your pastel hued dreams into a positively pretty reality with this candy-colored collection of pastel art supplies, pastel highlighters, and pastel school supplies from OOLY! Pretty pastels pack a punch of positivity Don\u2019t be fooled by the softness of these pretty sweet shades. The power of pastels is that their soft, pretty nature packs a punch of positivity. That\u2019s why at OOLY, we love to celebrate all things pastel! From pastel art supplies, pastel paints, Chunkies, pastel school supplies, and pastel highlighters, we have everything you need to create your happy\u2026.in the sweetest pastel shades! We love pastels because they radiate with positive vibes. They bring candy colored dreams to life with a gentle vibrancy that can\u2019t be ignored. Pastels work for any project, introducing an entirely new color scheme, while injecting your art with a new angle, a positive energy, and a happy, feel good vibe that can\u2019t help but make you smile. Seriously - do a project in pastels, highlight your notes in pastels, erase your mistakes with pastel erasers - and your mood is immediately boosted. Don\u2019t believe us? Give it a try and get pasteling (and smiling!) right away!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83893157923",
+     "handle": "teacher-school-supplies",
+     "title": "Teacher School Supplies",
+     "description": {
+      "html": "Our teachers encourage us to follow our dreams and inspire us to become our best person possible. Shop these school necessities and classroom supplies (or gifts) for teachers. Plan, organize and excel with our list of essential teacher supplies Who said school has to be boring? Find everything on your teacher supply list that is both practical and pretty. The right arts and crafts supplies will make the right impression for all grade levels. Find the right teacher supplies online here at OOLY. Leave grades and comments that make an impression with the Note Pals Sticky Tabs and glitter gel pens. Use Do-Overs Erasable Highlighters to really make a mark on the page. Our huge collection of Jot-It! Notebooks are the perfect place to keep track of the day; use Modern Script fountain pens to make sure nothing is left behind."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6888826372131",
+   "title": "Unique Unicorns Graphite Pencils - Set of 12",
+   "description": {
+    "html": "Legend-ary pencils Sure, your school and office supplies might work fine, but can you say that they\u2019re legendary? If not, it\u2019s time to open up your pencil case and let these goodies gallop their way into it! This set of 12 unicorn pencils is just what you need to kick up the personality quotient in your supplies. Perfect for drawing, school, or work, this pencil set includes all number 2 graphite pencils and features cute designs - think rainbows, hearts, stars, and yes, even unicorns! Why accept graphite pencils that are merely functional, when they can be fantastical? Set of graphite, number 2 pencils 12 pencils are included in the set Each pencil features a cute unicorn design Perfect for school or work Suitable for ages 3 and up"
+   },
+   "url": "https://www.ooly.com/products/unique-unicorns-graphite-pencils-set-of-12",
+   "handle": "unique-unicorns-graphite-pencils-set-of-12",
+   "price_range": {
+    "min": {
+     "amount": 521,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 521,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 695,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 695,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40163745333283",
+     "sku": "128-179",
+     "title": "Default Title",
+     "description": {
+      "html": "Legend-ary pencils Sure, your school and office supplies might work fine, but can you say that they\u2019re legendary? If not, it\u2019s time to open up your pencil case and let these goodies gallop their way into it! This set of 12 unicorn pencils is just what you need to kick up the personality quotient in your supplies. Perfect for drawing, school, or work, this pencil set includes all number 2 graphite pencils and features cute designs - think rainbows, hearts, stars, and yes, even unicorns! Why accept graphite pencils that are merely functional, when they can be fantastical? Set of graphite, number 2 pencils 12 pencils are included in the set Each pencil features a cute unicorn design Perfect for school or work Suitable for ages 3 and up"
+     },
+     "price": {
+      "amount": 521,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 695,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Unique-Unicorns-Graphite-Pencils-Packaging-Front.jpg?v=1699480222"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/40163745333283:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Unique-Unicorns-Graphite-Pencils-Packaging-Front.jpg?v=1699480222",
+     "alt_text": "OOLY Unique Unicorns Graphite Pencils front of packaging"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bts24",
+    "elementary",
+    "her",
+    "hs college",
+    "kids",
+    "middle",
+    "mirakl",
+    "school",
+    "teens",
+    "unicorn"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30769086497",
+     "handle": "pencils-sharpeners",
+     "title": "Pencils and Sharpeners",
+     "description": {
+      "html": "Pencils and sharpeners go together like peanut butter and jelly. Nothing says fun like these cute pencils from OOLY. And, what would a pencil be without a sharpener? Dull, lifeless, and, frankly, not much fun. OOLY sharpeners make the perfect writing buddy. They\u2019re unique and whimsical. Woodland Writing Pals are forest friends just waiting to be put to use. They look after you and your pencils as you write. They\u2019re here for you, to keep you sharp and and take care of your mistakes because they are an eraser too! Both the Birds Eye View and the Monkey Business sharpeners will hold your pencil for you while you take a break, keeping it safe and secure. Your pencil is in good hands with these guys. For purists, the Mighty Pencil Sharpener is basic but mighty. It will do your dirty work and catch your shavings. It will also sharpen three different pencil sizes, so you\u2019ll never be left high and dry. You can\u2019t have a pencil without an equally amazing sharpener to go with it."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/30991286305",
+     "handle": "unicorns",
+     "title": "Unicorn Supplies",
+     "description": {
+      "html": "Everyday is better with unicorns. Be inspired with the most magical art, office and school supplies. These cute unicorn-inspired supplies are the perfect addition to your school collection. Find inspiration with magical unicorn art, office and school supplies Because unicorns and school supplies go together perfectly. Be inspired with the most magical unicorn-themed art, office and school supplies. Whether you\u2019re shopping for whimsical craft supplies, stationery or writing tools, OOLY has everything you need in a fanciful theme of magical unicorns. Year-round, Unicorn Write Stuff gift set makes the perfect gift for school or for unicorn themed birthday parties. It comes packed with unicorn-inspired stationery, stickers, pens, pencils, crayons and erasers. Pick up a set of 8 Unique Unicorn Pocket Pal journals, a Unique Unicorns 6 click multi-color pen or some Unique Unicorn and rainbow and rainbow strawberry scented erasers for super school supply fun. Share with friends or make trades with other eraser collecting pals. Next time you pull out a pencil, pen, notebook or eraser, let it be covered in unicorns!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/151799660579",
+     "handle": "gifts-for-kids",
+     "title": "Gifts for Kids",
+     "description": {
+      "html": "Whether they\u2019re aspiring astronauts, curious crafters, or the next Picasso, discover gifts in every color of the rainbow that will spark creativity and delight the little artists in your life."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263928709155",
+     "handle": "homeschool-supplies",
+     "title": "Homeschool Supplies",
+     "description": {
+      "html": "When it comes to setting your kids on a road to homeschool success, look no further than the colorful world of OOLY school supplies. Inspire your school students with a world of writing supplies, colored pencils, markers and organizational products for a more personal education and fun with learning. Colorful and inspirational supplies for homeschool success OOLY has the homeschool supplies you need for an at-home education like no other. The expected school needs are all here but with all the cute and colorfulness from OOLY you love such as graphite pencils, erasers, gel pens and more. But a homeschool education can offer a more personal touch and OOLY has the homeschool supplies that inspire throughout the school year. Children learn and retain school lessons when more of their senses are stimulated. Engage your homeschool children with the Creatibles Air Dry Clay Kit for any creative lesson ideas you may have. And Stampables Double-Ended Markers offer a creative way to apply fun stamping action with any math problem solving. Pencil mistakes are going to be made; that\u2019s a given in any school setting. So why not have cute erasers for your homeschool kids? ClickIt erasers make erasing pencil mistakes a quick click away. Rainbow Glitter Gem erasers offer a dazzling pencil eraser option with strawberry scented erasers inside a glittery barrel."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7181930692643",
+   "title": "Write On Graphite Pencils and Eraser - Set of 2",
+   "description": {
+    "html": "Graphite pencil set that writes on (and on!) Ready, set, sketch! The Write On Graphite Pencil Set gives a sleek upgrade to your standard pencil pack. Made of solid graphite from tip to tail, these pencils last longer, sharpen cleaner, and deliver a satisfyingly smooth writing experience. With two bold, woodless graphite pencils and one colorful eraser, this 3-piece set is made for big thinkers, tiny doodlers, and everyone in between. Crafted with hardened graphite tips, this premium pencil set stays sharp longer\u2014perfect for endless writing, notes, and drawings. You\u2019ll spend more time sketching and less time sharpening, making these a trusty go-to for school, planning, and more. Each pencil features a matte soft-touch barrel for a comfortable grip and a protective cap that keeps tips safe and pencil cases neat. The cheerful eraser looks great on any desk and works beautifully. Whether you're sketching big ideas, jotting little notes, or shading your next masterpiece, this graphite pencil set is built to keep up. Durable, functional, and cool enough to show off, it\u2019s perfect for students, journalers, and grown-up creatives alike. Includes 2 full-length woodless graphite pencils Solid graphite means more drawing, less sharpening Matte barrels with a soft-touch finish Comes with 1 colorful eraser Protective caps keep pencil tips safe Great for sketching, planning, and writing Modern, mess-free design for everyday use Cute and giftable for all ages Recommended for ages 6 and up"
+   },
+   "url": "https://www.ooly.com/products/write-on-graphite-pencils-set-of-2",
+   "handle": "write-on-graphite-pencils-set-of-2",
+   "price_range": {
+    "min": {
+     "amount": 896,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 896,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1195,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1195,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41990538199075",
+     "sku": "128-192",
+     "title": "Default Title",
+     "description": {
+      "html": "Graphite pencil set that writes on (and on!) Ready, set, sketch! The Write On Graphite Pencil Set gives a sleek upgrade to your standard pencil pack. Made of solid graphite from tip to tail, these pencils last longer, sharpen cleaner, and deliver a satisfyingly smooth writing experience. With two bold, woodless graphite pencils and one colorful eraser, this 3-piece set is made for big thinkers, tiny doodlers, and everyone in between. Crafted with hardened graphite tips, this premium pencil set stays sharp longer\u2014perfect for endless writing, notes, and drawings. You\u2019ll spend more time sketching and less time sharpening, making these a trusty go-to for school, planning, and more. Each pencil features a matte soft-touch barrel for a comfortable grip and a protective cap that keeps tips safe and pencil cases neat. The cheerful eraser looks great on any desk and works beautifully. Whether you're sketching big ideas, jotting little notes, or shading your next masterpiece, this graphite pencil set is built to keep up. Durable, functional, and cool enough to show off, it\u2019s perfect for students, journalers, and grown-up creatives alike. Includes 2 full-length woodless graphite pencils Solid graphite means more drawing, less sharpening Matte barrels with a soft-touch finish Comes with 1 colorful eraser Protective caps keep pencil tips safe Great for sketching, planning, and writing Modern, mess-free design for everyday use Cute and giftable for all ages Recommended for ages 6 and up"
+     },
+     "price": {
+      "amount": 896,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1195,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Write-On-Graphite-Pencils-Package-Front.png?v=1766517285"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/41990538199075:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Write-On-Graphite-Pencils-Package-Front.png?v=1766517285",
+     "alt_text": "Front of packaging of OOLY Write On Graphite Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2-2-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bts26",
+    "category planning",
+    "graphite",
+    "her",
+    "him",
+    "middle",
+    "mirakl",
+    "new",
+    "planner",
+    "rebuyall",
+    "retro",
+    "school",
+    "studio",
+    "writing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30769086497",
+     "handle": "pencils-sharpeners",
+     "title": "Pencils and Sharpeners",
+     "description": {
+      "html": "Pencils and sharpeners go together like peanut butter and jelly. Nothing says fun like these cute pencils from OOLY. And, what would a pencil be without a sharpener? Dull, lifeless, and, frankly, not much fun. OOLY sharpeners make the perfect writing buddy. They\u2019re unique and whimsical. Woodland Writing Pals are forest friends just waiting to be put to use. They look after you and your pencils as you write. They\u2019re here for you, to keep you sharp and and take care of your mistakes because they are an eraser too! Both the Birds Eye View and the Monkey Business sharpeners will hold your pencil for you while you take a break, keeping it safe and secure. Your pencil is in good hands with these guys. For purists, the Mighty Pencil Sharpener is basic but mighty. It will do your dirty work and catch your shavings. It will also sharpen three different pencil sizes, so you\u2019ll never be left high and dry. You can\u2019t have a pencil without an equally amazing sharpener to go with it."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/30992203809",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": "Unleash an explosion of excitement with the new OOLY collection! It's cuteness and fun rolled into one! Newly OOLY fun is here! Discover everything new OOLY has to offer! Our newest OOLY products are here to bring you endless joy and creativity. Get ready to explore the adorable and fun Stickiville sticker collection, where cute characters and vibrant designs come to life. Create delightful and personalized trinkets with our Shrink-its! DIY Shrink Art Kits, providing hours of entertainment for all ages. The vivid colors of our Vivid Pop! Water Based Paint Markers are perfect for your artistic endeavors, or dive into the world of watercolors with the Scenic Hues DIY Watercolor Art Kits, allowing you to create breathtaking scenes with ease. And don't forget to spread joy with our Tiny Tadas! Note Cards and Sticker Sets, featuring charming mini notes and stickers. Whether you're a seasoned artist or just looking for some creative fun, the new OOLY range has something for everyone. Get ready to experience the magic of creativity with our latest and greatest cute and fun products that will brighten your day and inspire your imagination."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31338528801",
+     "handle": "gifts-for-mom",
+     "title": "gifts for mom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/79825109027",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "Fill their stockings with color, cuteness, and oh so much fun! Whether you need stocking stuffer ideas for kids, adults, or your favorite teacher, we\u2019ve selected tiny presents that\u2019ll surprise and delight each."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6899913195555",
+   "title": "Un-Mistakeables! Erasable Colored Pencils - Set of 12",
+   "description": {
+    "html": "Erase your whoopsies with these colored pencils We all make mistakes, even when we\u2019re coloring. Thankfully, this set of colored pencils with erasers makes it a snap to get rid of every creative boo boo on the page, so you can start fresh! Great for art projects, design ideas, and everyday coloring, this set includes 12 pencils in a rainbow of colors. From blue, to red, to green, to just about every color in between, these erasable colored pencils will help free your creative spirit! Set of 12 erasable colored pencils Pencils include a rainbow of colors including red, blue, green and yellow Pencils are non toxic Each pencil includes an eraser Suitable for ages 3 and up"
+   },
+   "url": "https://www.ooly.com/products/un-mistakeables-erasable-colored-pencils-set-of-12",
+   "handle": "un-mistakeables-erasable-colored-pencils-set-of-12",
+   "price_range": {
+    "min": {
+     "amount": 896,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 896,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1195,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1195,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40192404848675",
+     "sku": "128-181",
+     "title": "Default Title",
+     "description": {
+      "html": "Erase your whoopsies with these colored pencils We all make mistakes, even when we\u2019re coloring. Thankfully, this set of colored pencils with erasers makes it a snap to get rid of every creative boo boo on the page, so you can start fresh! Great for art projects, design ideas, and everyday coloring, this set includes 12 pencils in a rainbow of colors. From blue, to red, to green, to just about every color in between, these erasable colored pencils will help free your creative spirit! Set of 12 erasable colored pencils Pencils include a rainbow of colors including red, blue, green and yellow Pencils are non toxic Each pencil includes an eraser Suitable for ages 3 and up"
+     },
+     "price": {
+      "amount": 896,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1195,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Un-Mistakeables-Erasable-Colored-Pencils-Packaging-Front.png?v=1735440578"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/40192404848675:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Un-Mistakeables-Erasable-Colored-Pencils-Packaging-Front.png?v=1735440578",
+     "alt_text": "Front of packaging of OOLY Un-Mistakeables! Erasable Colored Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "adults",
+    "art",
+    "art + diy",
+    "bts24",
+    "bts26",
+    "category planning",
+    "elementary",
+    "gifts for artists",
+    "her",
+    "him",
+    "kids",
+    "middle",
+    "mirakl",
+    "rebuyall",
+    "school art",
+    "teens",
+    "top seller"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30769086497",
+     "handle": "pencils-sharpeners",
+     "title": "Pencils and Sharpeners",
+     "description": {
+      "html": "Pencils and sharpeners go together like peanut butter and jelly. Nothing says fun like these cute pencils from OOLY. And, what would a pencil be without a sharpener? Dull, lifeless, and, frankly, not much fun. OOLY sharpeners make the perfect writing buddy. They\u2019re unique and whimsical. Woodland Writing Pals are forest friends just waiting to be put to use. They look after you and your pencils as you write. They\u2019re here for you, to keep you sharp and and take care of your mistakes because they are an eraser too! Both the Birds Eye View and the Monkey Business sharpeners will hold your pencil for you while you take a break, keeping it safe and secure. Your pencil is in good hands with these guys. For purists, the Mighty Pencil Sharpener is basic but mighty. It will do your dirty work and catch your shavings. It will also sharpen three different pencil sizes, so you\u2019ll never be left high and dry. You can\u2019t have a pencil without an equally amazing sharpener to go with it."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58396606499",
+     "handle": "school-art-supplies",
+     "title": "School Art Supplies",
+     "description": {
+      "html": "Discover colorful art supplies for school that will bring color and life to your school projects. Paints, markers, colored pencils and more are available to elevate your artistic imagination. Imagine, create and color with art supplies for school Bringing your imagination to life through art is amplified by the tools with which you choose to create. OOLY has come up with every possible option for bringing color to life in the most creative and special of ways. Whether you\u2019re looking for Modern Metallics, going for a huge color splash, or like the dustless look of chalk crayons and markers, OOLY has unique and fun craft supplies for you. Deepen your perspective with less messy oil pastels. Get glamorous with glitter and neon lil\u2019 Poster Paint Pods to deck out your best poster, whether it be to sell lemonade, display a school project or advertise a local event. Color and texture options are nearly limitless. Choose from cute and creative gel pens, puffy paint pens, watercolor pencils, Chunkies Paint Sticks, or Seriously Fine Tip markers. Create on more than paper with Marvelous Multi-purpose markers and Fabric Doodlers markers."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/79825109027",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "Fill their stockings with color, cuteness, and oh so much fun! Whether you need stocking stuffer ideas for kids, adults, or your favorite teacher, we\u2019ve selected tiny presents that\u2019ll surprise and delight each."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/151799660579",
+     "handle": "gifts-for-kids",
+     "title": "Gifts for Kids",
+     "description": {
+      "html": "Whether they\u2019re aspiring astronauts, curious crafters, or the next Picasso, discover gifts in every color of the rainbow that will spark creativity and delight the little artists in your life."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4840461336611",
+   "title": "Pastel Hues Colored Pencils - Set of 24",
+   "description": {
+    "html": "Beautifully toned Pastel Hues Colored Pencils will bring a new look to your artwork, planner or any project. With a wide range of pastel color options this 24 piece set will make your project stand out in a soft subtle way. Discover colored pencils like no other with this set of 24 softly toned colored pencils. The delicate colors can be blended together to make a powerful impact. Pastel Hues Colored Pencils will add variety to any artwork, officework, schoolwork and more with subtle soft colors. 24 Pastel colored pencils Suitable for ages 3 and up"
+   },
+   "url": "https://www.ooly.com/products/pastel-hues-colored-pencils-set-of-24",
+   "handle": "pastel-hues-colored-pencils-set-of-24",
+   "price_range": {
+    "min": {
+     "amount": 849,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 849,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32983850188835",
+     "sku": "128-159",
+     "title": "Default Title",
+     "description": {
+      "html": "Beautifully toned Pastel Hues Colored Pencils will bring a new look to your artwork, planner or any project. With a wide range of pastel color options this 24 piece set will make your project stand out in a soft subtle way. Discover colored pencils like no other with this set of 24 softly toned colored pencils. The delicate colors can be blended together to make a powerful impact. Pastel Hues Colored Pencils will add variety to any artwork, officework, schoolwork and more with subtle soft colors. 24 Pastel colored pencils Suitable for ages 3 and up"
+     },
+     "price": {
+      "amount": 849,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/128-159-Pastel-Hues-Colored-Pencils-Set-of-12-B1.png?v=1607974437"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/32983850188835:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/128-159-Pastel-Hues-Colored-Pencils-Set-of-12-B1.png?v=1607974437",
+     "alt_text": "OOLY Pastel Hues colored pencils set of 24 in packaging"
+    }
+   ],
+   "tags": [
+    "adults",
+    "art",
+    "art + diy",
+    "easter",
+    "elementary",
+    "girl",
+    "her",
+    "him",
+    "kids",
+    "mirakl",
+    "sale collection",
+    "school art",
+    "studio",
+    "teens",
+    "travel"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30769086497",
+     "handle": "pencils-sharpeners",
+     "title": "Pencils and Sharpeners",
+     "description": {
+      "html": "Pencils and sharpeners go together like peanut butter and jelly. Nothing says fun like these cute pencils from OOLY. And, what would a pencil be without a sharpener? Dull, lifeless, and, frankly, not much fun. OOLY sharpeners make the perfect writing buddy. They\u2019re unique and whimsical. Woodland Writing Pals are forest friends just waiting to be put to use. They look after you and your pencils as you write. They\u2019re here for you, to keep you sharp and and take care of your mistakes because they are an eraser too! Both the Birds Eye View and the Monkey Business sharpeners will hold your pencil for you while you take a break, keeping it safe and secure. Your pencil is in good hands with these guys. For purists, the Mighty Pencil Sharpener is basic but mighty. It will do your dirty work and catch your shavings. It will also sharpen three different pencil sizes, so you\u2019ll never be left high and dry. You can\u2019t have a pencil without an equally amazing sharpener to go with it."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31338528801",
+     "handle": "gifts-for-mom",
+     "title": "gifts for mom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58396606499",
+     "handle": "school-art-supplies",
+     "title": "School Art Supplies",
+     "description": {
+      "html": "Discover colorful art supplies for school that will bring color and life to your school projects. Paints, markers, colored pencils and more are available to elevate your artistic imagination. Imagine, create and color with art supplies for school Bringing your imagination to life through art is amplified by the tools with which you choose to create. OOLY has come up with every possible option for bringing color to life in the most creative and special of ways. Whether you\u2019re looking for Modern Metallics, going for a huge color splash, or like the dustless look of chalk crayons and markers, OOLY has unique and fun craft supplies for you. Deepen your perspective with less messy oil pastels. Get glamorous with glitter and neon lil\u2019 Poster Paint Pods to deck out your best poster, whether it be to sell lemonade, display a school project or advertise a local event. Color and texture options are nearly limitless. Choose from cute and creative gel pens, puffy paint pens, watercolor pencils, Chunkies Paint Sticks, or Seriously Fine Tip markers. Create on more than paper with Marvelous Multi-purpose markers and Fabric Doodlers markers."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80352346147",
+     "handle": "calendar-planner-supplies",
+     "title": "Calendar and Planner Supplies",
+     "description": {
+      "html": "When you\u2019re looking to add a little flair to your personal planner, OOLY\u2019s planner supplies make organizing fun and oh so pretty! Decorate in style with colored gel pens, pastel highlighters, stickers and more. Style your planner and bring it to life with colorful pens, markers and creative art supplies. OOLY makes staying on top of tasks and to-do\u2019s colorful and easy! With a rainbow of different planner supplies that add color and fun to your , planning your days, projects, and everything in between just got very exciting! Plot your next project with your decorated personal planner. Enhance your schedule of important appointments in perfect color-coded order using silky-smooth gel pens or pack in all the color you need into one magical multicolor pen. Dual tipped markers are also great for traveling with more color options than you can imagine. And of course you need a place to keep everything and there is no better place than one of our many amazing journals for people of all ages."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6899913162787",
+   "title": "Color Sheen Metallic Colored Pencils - Set of 12",
+   "description": {
+    "html": "Shimmer, shine, and color Unleash the power of lustrous color with the Color Sheen Metallic Colored Pencils. This set of 12 shimmering pencils offers a unique palette designed to make your artwork shine, especially on black paper. With a smooth coloring experience and an easy-grip triangular barrel, artists of all ages can effortlessly glide over paper, watching their creations reflect light. Whether you're sketching on white or experimenting with the depth of black paper art, these pre-sharpened pencils ensure every stroke is infused with brilliance! Set of 12 Metallic Colored Pencils Triangular barrel design for comfortable handling Works on both black and white paper Pre-Sharpened and ready-to-use right out of the box Packaging size: 3\u201d x 7\u201d Suitable for ages 6 and up"
+   },
+   "url": "https://www.ooly.com/products/color-sheen-metallic-colored-pencils-set-of-12",
+   "handle": "color-sheen-metallic-colored-pencils-set-of-12",
+   "price_range": {
+    "min": {
+     "amount": 971,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 971,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1295,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1295,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40192404815907",
+     "sku": "128-178",
+     "title": "Default Title",
+     "description": {
+      "html": "Shimmer, shine, and color Unleash the power of lustrous color with the Color Sheen Metallic Colored Pencils. This set of 12 shimmering pencils offers a unique palette designed to make your artwork shine, especially on black paper. With a smooth coloring experience and an easy-grip triangular barrel, artists of all ages can effortlessly glide over paper, watching their creations reflect light. Whether you're sketching on white or experimenting with the depth of black paper art, these pre-sharpened pencils ensure every stroke is infused with brilliance! Set of 12 Metallic Colored Pencils Triangular barrel design for comfortable handling Works on both black and white paper Pre-Sharpened and ready-to-use right out of the box Packaging size: 3\u201d x 7\u201d Suitable for ages 6 and up"
+     },
+     "price": {
+      "amount": 971,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1295,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Color-Sheen-Metallic-Colored-Pencils-Package-Front.png?v=1706568733"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/40192404815907:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Color-Sheen-Metallic-Colored-Pencils-Package-Front.png?v=1706568733",
+     "alt_text": "Color Sheen Metallic Colored Pencils - Set of 12 front of packaging"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "adults",
+    "art",
+    "art + diy",
+    "black paper",
+    "category glitter shine",
+    "elementary",
+    "her",
+    "him",
+    "hs college",
+    "kids",
+    "metallic",
+    "middle",
+    "mirakl",
+    "teens"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30769086497",
+     "handle": "pencils-sharpeners",
+     "title": "Pencils and Sharpeners",
+     "description": {
+      "html": "Pencils and sharpeners go together like peanut butter and jelly. Nothing says fun like these cute pencils from OOLY. And, what would a pencil be without a sharpener? Dull, lifeless, and, frankly, not much fun. OOLY sharpeners make the perfect writing buddy. They\u2019re unique and whimsical. Woodland Writing Pals are forest friends just waiting to be put to use. They look after you and your pencils as you write. They\u2019re here for you, to keep you sharp and and take care of your mistakes because they are an eraser too! Both the Birds Eye View and the Monkey Business sharpeners will hold your pencil for you while you take a break, keeping it safe and secure. Your pencil is in good hands with these guys. For purists, the Mighty Pencil Sharpener is basic but mighty. It will do your dirty work and catch your shavings. It will also sharpen three different pencil sizes, so you\u2019ll never be left high and dry. You can\u2019t have a pencil without an equally amazing sharpener to go with it."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80352346147",
+     "handle": "calendar-planner-supplies",
+     "title": "Calendar and Planner Supplies",
+     "description": {
+      "html": "When you\u2019re looking to add a little flair to your personal planner, OOLY\u2019s planner supplies make organizing fun and oh so pretty! Decorate in style with colored gel pens, pastel highlighters, stickers and more. Style your planner and bring it to life with colorful pens, markers and creative art supplies. OOLY makes staying on top of tasks and to-do\u2019s colorful and easy! With a rainbow of different planner supplies that add color and fun to your , planning your days, projects, and everything in between just got very exciting! Plot your next project with your decorated personal planner. Enhance your schedule of important appointments in perfect color-coded order using silky-smooth gel pens or pack in all the color you need into one magical multicolor pen. Dual tipped markers are also great for traveling with more color options than you can imagine. And of course you need a place to keep everything and there is no better place than one of our many amazing journals for people of all ages."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/85350219811",
+     "handle": "mothers-day-gifts",
+     "title": "mother's day gifts",
+     "description": {
+      "html": "Treat mom to a Mother\u2019s Day bouquet of fun crafts from OOLY. From fun notepads, to cool sketchbooks, to colorful pens and markers, OOLY is brimming with creative gifts to make mom smile. Colorfully creative Mother's Day gifts Celebrate Mother's Day with creative gifts such as watercolor paints, colored pencils, fountain pens and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158436196387",
+     "handle": "elementary-school-graduation-gifts",
+     "title": "Elementary School Graduation Gifts",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7203038396451",
+   "title": "Point Made Mechanical Graphite Pencils \u2013 Set of 3",
+   "description": {
+    "html": "Mechanical pencils that make a point Here\u2019s a pencil set that says what you\u2019re thinking \u2014 literally. The Point Made Mechanical Graphite Pencils come in a set of three bright barrels, each printed with a cheeky phrase: \u201cFinally a Good Point,\u201d \u201cMy Point Exactly,\u201d and \u201cPointing Out the Obvious.\u201d These aren\u2019t just stylish sidekicks for your pencil pouch \u2014 they\u2019re functional too. Each mechanical pencil is filled with No 2 extra-thick graphite lead, so it feels smooth and strong like a classic No 2 pencil, but without the need to sharpen every time you write. Unless, of course, you want that clean, crisp tip, in which case, the included sharpener gives you the option of a fine point. To refill? Just pop off the eraser, drop in one of the included graphite lead refills, and you\u2019re back to making your point in no time. With these functional and fun mechanical pencils with erasers, it\u2019s easy to stay sharp \u2014 literally and figuratively. Includes 3 bold Number #2 mechanical pencils with colorful barrels Features clever sayings: Finally a Good Point, My Point Exactly, Pointing Out the Obvious Comes with a sharpener for an optional fine point Includes 12 Graphite Lead Refills Refillable: just remove the eraser and insert lead Suitable for ages 6 and up"
+   },
+   "url": "https://www.ooly.com/products/point-made-mechanical-graphite-pencils-set-of-3",
+   "handle": "point-made-mechanical-graphite-pencils-set-of-3",
+   "price_range": {
+    "min": {
+     "amount": 446,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 446,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 595,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 595,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41998492467235",
+     "sku": "128-194",
+     "title": "Default Title",
+     "description": {
+      "html": "Mechanical pencils that make a point Here\u2019s a pencil set that says what you\u2019re thinking \u2014 literally. The Point Made Mechanical Graphite Pencils come in a set of three bright barrels, each printed with a cheeky phrase: \u201cFinally a Good Point,\u201d \u201cMy Point Exactly,\u201d and \u201cPointing Out the Obvious.\u201d These aren\u2019t just stylish sidekicks for your pencil pouch \u2014 they\u2019re functional too. Each mechanical pencil is filled with No 2 extra-thick graphite lead, so it feels smooth and strong like a classic No 2 pencil, but without the need to sharpen every time you write. Unless, of course, you want that clean, crisp tip, in which case, the included sharpener gives you the option of a fine point. To refill? Just pop off the eraser, drop in one of the included graphite lead refills, and you\u2019re back to making your point in no time. With these functional and fun mechanical pencils with erasers, it\u2019s easy to stay sharp \u2014 literally and figuratively. Includes 3 bold Number #2 mechanical pencils with colorful barrels Features clever sayings: Finally a Good Point, My Point Exactly, Pointing Out the Obvious Comes with a sharpener for an optional fine point Includes 12 Graphite Lead Refills Refillable: just remove the eraser and insert lead Suitable for ages 6 and up"
+     },
+     "price": {
+      "amount": 446,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 595,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Point-Made-Mechanical-Graphite-Pencils-Set-of-3-Product-Front.png?v=1773183752"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/41998492467235:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Point-Made-Mechanical-Graphite-Pencils-Set-of-3-Product-Front.png?v=1773183752"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bts26",
+    "category planning",
+    "new",
+    "planner",
+    "retro"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30769086497",
+     "handle": "pencils-sharpeners",
+     "title": "Pencils and Sharpeners",
+     "description": {
+      "html": "Pencils and sharpeners go together like peanut butter and jelly. Nothing says fun like these cute pencils from OOLY. And, what would a pencil be without a sharpener? Dull, lifeless, and, frankly, not much fun. OOLY sharpeners make the perfect writing buddy. They\u2019re unique and whimsical. Woodland Writing Pals are forest friends just waiting to be put to use. They look after you and your pencils as you write. They\u2019re here for you, to keep you sharp and and take care of your mistakes because they are an eraser too! Both the Birds Eye View and the Monkey Business sharpeners will hold your pencil for you while you take a break, keeping it safe and secure. Your pencil is in good hands with these guys. For purists, the Mighty Pencil Sharpener is basic but mighty. It will do your dirty work and catch your shavings. It will also sharpen three different pencil sizes, so you\u2019ll never be left high and dry. You can\u2019t have a pencil without an equally amazing sharpener to go with it."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/30992203809",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": "Unleash an explosion of excitement with the new OOLY collection! It's cuteness and fun rolled into one! Newly OOLY fun is here! Discover everything new OOLY has to offer! Our newest OOLY products are here to bring you endless joy and creativity. Get ready to explore the adorable and fun Stickiville sticker collection, where cute characters and vibrant designs come to life. Create delightful and personalized trinkets with our Shrink-its! DIY Shrink Art Kits, providing hours of entertainment for all ages. The vivid colors of our Vivid Pop! Water Based Paint Markers are perfect for your artistic endeavors, or dive into the world of watercolors with the Scenic Hues DIY Watercolor Art Kits, allowing you to create breathtaking scenes with ease. And don't forget to spread joy with our Tiny Tadas! Note Cards and Sticker Sets, featuring charming mini notes and stickers. Whether you're a seasoned artist or just looking for some creative fun, the new OOLY range has something for everyone. Get ready to experience the magic of creativity with our latest and greatest cute and fun products that will brighten your day and inspire your imagination."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273696063523",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/463817408547",
+     "handle": "planning",
+     "title": "Planning",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7203055173667",
+   "title": "Color Together Mechanical Colored Pencils - Set of 18",
+   "description": {
+    "html": "Draw the world your way Color is better when everyone belongs. The Color Together\u00ae Mechanical Colored Pencils set brings representation and creativity together in one thoughtfully designed mechanical pencil set made for kids who love to draw people, stories, and the world around them. Inside, you'll find 12 classic colors paired with 6 skin tone colored pencils, giving artists the freedom to create portraits, characters, and scenes that look like their friends and families. Each pencil features smooth, richly pigmented 2.0 mm colored lead that clicks forward easily and stays strong while coloring. No broken tips. No sharpening mess. Every pencil includes a built-in sharpener hidden inside the cap, so when drawings call for finer details, kids can easily switch from bold coloring to clean lines. Package also includes 26 color refills. Because these are mechanical colored pencils, creativity stays neat, portable, and ready to go wherever inspiration strikes. Designed for classrooms, art time at home, and everyday drawing, this inclusive set makes it easy to color together, thoughtfully and confidently. Mechanical colored pencils designed for smooth, consistent color Includes 12 classic colors and 6 skin tone colored pencils Built-in sharpeners included inside each pencil cap for fine detail work Thick 2.0 mm colored lead for bold coloring and easy control Includes 26 color refills Click-to-advance lead keeps pencils clean and ready to use Suitable for ages 6 and up"
+   },
+   "url": "https://www.ooly.com/products/color-together-mechanical-colored-pencils-set-of-18",
+   "handle": "color-together-mechanical-colored-pencils-set-of-18",
+   "price_range": {
+    "min": {
+     "amount": 1196,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1196,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1595,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1595,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41998558855203",
+     "sku": "128-195",
+     "title": "Default Title",
+     "description": {
+      "html": "Draw the world your way Color is better when everyone belongs. The Color Together\u00ae Mechanical Colored Pencils set brings representation and creativity together in one thoughtfully designed mechanical pencil set made for kids who love to draw people, stories, and the world around them. Inside, you'll find 12 classic colors paired with 6 skin tone colored pencils, giving artists the freedom to create portraits, characters, and scenes that look like their friends and families. Each pencil features smooth, richly pigmented 2.0 mm colored lead that clicks forward easily and stays strong while coloring. No broken tips. No sharpening mess. Every pencil includes a built-in sharpener hidden inside the cap, so when drawings call for finer details, kids can easily switch from bold coloring to clean lines. Package also includes 26 color refills. Because these are mechanical colored pencils, creativity stays neat, portable, and ready to go wherever inspiration strikes. Designed for classrooms, art time at home, and everyday drawing, this inclusive set makes it easy to color together, thoughtfully and confidently. Mechanical colored pencils designed for smooth, consistent color Includes 12 classic colors and 6 skin tone colored pencils Built-in sharpeners included inside each pencil cap for fine detail work Thick 2.0 mm colored lead for bold coloring and easy control Includes 26 color refills Click-to-advance lead keeps pencils clean and ready to use Suitable for ages 6 and up"
+     },
+     "price": {
+      "amount": 1196,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1595,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/Color-Together-Mechanical-Colored-Pencils-Set-of-18-Product-Front.png?v=1773180077"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/41998558855203:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/Color-Together-Mechanical-Colored-Pencils-Set-of-18-Product-Front.png?v=1773180077"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30769086497",
+     "handle": "pencils-sharpeners",
+     "title": "Pencils and Sharpeners",
+     "description": {
+      "html": "Pencils and sharpeners go together like peanut butter and jelly. Nothing says fun like these cute pencils from OOLY. And, what would a pencil be without a sharpener? Dull, lifeless, and, frankly, not much fun. OOLY sharpeners make the perfect writing buddy. They\u2019re unique and whimsical. Woodland Writing Pals are forest friends just waiting to be put to use. They look after you and your pencils as you write. They\u2019re here for you, to keep you sharp and and take care of your mistakes because they are an eraser too! Both the Birds Eye View and the Monkey Business sharpeners will hold your pencil for you while you take a break, keeping it safe and secure. Your pencil is in good hands with these guys. For purists, the Mighty Pencil Sharpener is basic but mighty. It will do your dirty work and catch your shavings. It will also sharpen three different pencil sizes, so you\u2019ll never be left high and dry. You can\u2019t have a pencil without an equally amazing sharpener to go with it."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273696063523",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/470297313315",
+     "handle": "color-draw",
+     "title": "Color & Draw",
+     "description": {
+      "html": "Markers, crayons, and coloring books for hours of creative fun."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/470300426275",
+     "handle": "colored-pencils",
+     "title": "Colored Pencils",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6888840593443",
+   "title": "Astronaut Graphite Pencils - Set of 12",
+   "description": {
+    "html": "A space pencil set to help you launch ideas This set of number 2 graphite pencils provides the perfect tool for capturing your out-of-this-world ideas. Whether at school, in the office, or at home drawing, this pack of number 2 graphite pencils is perfect for anyone who can\u2019t help but gaze in wonderment at the stars. Each pencil is designed with a cosmically awesome astronaut and space illustration. This pencil set includes 12 astronaut pencils in all, so get yourself some and have a blast! Set of graphite, number 2 pencils 12 pencils are included in the set Each pencil features a space or astronaut design Perfect for school or work Suitable for ages 3 and up"
+   },
+   "url": "https://www.ooly.com/products/astronaut-graphite-pencils-set-of-12",
+   "handle": "astronaut-graphite-pencils-set-of-12",
+   "price_range": {
+    "min": {
+     "amount": 521,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 521,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 695,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 695,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40163792027683",
+     "sku": "128-180",
+     "title": "Default Title",
+     "description": {
+      "html": "A space pencil set to help you launch ideas This set of number 2 graphite pencils provides the perfect tool for capturing your out-of-this-world ideas. Whether at school, in the office, or at home drawing, this pack of number 2 graphite pencils is perfect for anyone who can\u2019t help but gaze in wonderment at the stars. Each pencil is designed with a cosmically awesome astronaut and space illustration. This pencil set includes 12 astronaut pencils in all, so get yourself some and have a blast! Set of graphite, number 2 pencils 12 pencils are included in the set Each pencil features a space or astronaut design Perfect for school or work Suitable for ages 3 and up"
+     },
+     "price": {
+      "amount": 521,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 695,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Astronaut-Graphite-Pencils-Packaging-Front.png?v=1745516045"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/40163792027683:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Astronaut-Graphite-Pencils-Packaging-Front.png?v=1745516045",
+     "alt_text": "OOLY Astronaut Graphite Pencils in product packaging"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "astronaut",
+    "bts24",
+    "elementary",
+    "her",
+    "him",
+    "hs college",
+    "kids",
+    "middle",
+    "mirakl",
+    "school",
+    "teens"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30769086497",
+     "handle": "pencils-sharpeners",
+     "title": "Pencils and Sharpeners",
+     "description": {
+      "html": "Pencils and sharpeners go together like peanut butter and jelly. Nothing says fun like these cute pencils from OOLY. And, what would a pencil be without a sharpener? Dull, lifeless, and, frankly, not much fun. OOLY sharpeners make the perfect writing buddy. They\u2019re unique and whimsical. Woodland Writing Pals are forest friends just waiting to be put to use. They look after you and your pencils as you write. They\u2019re here for you, to keep you sharp and and take care of your mistakes because they are an eraser too! Both the Birds Eye View and the Monkey Business sharpeners will hold your pencil for you while you take a break, keeping it safe and secure. Your pencil is in good hands with these guys. For purists, the Mighty Pencil Sharpener is basic but mighty. It will do your dirty work and catch your shavings. It will also sharpen three different pencil sizes, so you\u2019ll never be left high and dry. You can\u2019t have a pencil without an equally amazing sharpener to go with it."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/151799660579",
+     "handle": "gifts-for-kids",
+     "title": "Gifts for Kids",
+     "description": {
+      "html": "Whether they\u2019re aspiring astronauts, curious crafters, or the next Picasso, discover gifts in every color of the rainbow that will spark creativity and delight the little artists in your life."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263928709155",
+     "handle": "homeschool-supplies",
+     "title": "Homeschool Supplies",
+     "description": {
+      "html": "When it comes to setting your kids on a road to homeschool success, look no further than the colorful world of OOLY school supplies. Inspire your school students with a world of writing supplies, colored pencils, markers and organizational products for a more personal education and fun with learning. Colorful and inspirational supplies for homeschool success OOLY has the homeschool supplies you need for an at-home education like no other. The expected school needs are all here but with all the cute and colorfulness from OOLY you love such as graphite pencils, erasers, gel pens and more. But a homeschool education can offer a more personal touch and OOLY has the homeschool supplies that inspire throughout the school year. Children learn and retain school lessons when more of their senses are stimulated. Engage your homeschool children with the Creatibles Air Dry Clay Kit for any creative lesson ideas you may have. And Stampables Double-Ended Markers offer a creative way to apply fun stamping action with any math problem solving. Pencil mistakes are going to be made; that\u2019s a given in any school setting. So why not have cute erasers for your homeschool kids? ClickIt erasers make erasing pencil mistakes a quick click away. Rainbow Glitter Gem erasers offer a dazzling pencil eraser option with strawberry scented erasers inside a glittery barrel."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/264274346019",
+     "handle": "school-supplies-under-20",
+     "title": "School Supplies Under $20",
+     "description": {
+      "html": "Whether you\u2019re preparing for their first year of grade school or last year of college, back to school shopping has never been easier. Stock up and save with these great deals, all under $20! New year, new gear! Back to school supplies under $20! Save with OOLY's school supplies."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzJPRGc0T0RRd05Ua3pORFF6TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

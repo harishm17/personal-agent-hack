@@ -26,8 +26,15 @@ def _shopper_values(state: dict) -> dict:
     return {f["id"]: f["value"] for f in state["sheet"].get("shopper_facts", [])}
 
 
+_sheet_units: dict = {}  # alias (lower case) -> the sheet's own unit name, set from the state being written
+
+
 def _unit(u):
-    """The engine's own unit name (so "inch" and "in" are one unit in the tables), else the unit as written."""
+    """One name for a unit: the sheet's own spellings (its `units` block: "count" is ct, pack, crayons...) first, then the
+    engine's alias table ("inch" is "in"), else the unit as written."""
+    key = str(u or "").strip().lower()
+    if key in _sheet_units:
+        return _sheet_units[key]
     try:
         from signoff.engine import rules
         return rules.unit_name(u) or u
@@ -35,7 +42,16 @@ def _unit(u):
         return u
 
 
+def _learn_units(state: dict) -> None:
+    _sheet_units.clear()
+    for canonical, aliases in ((state.get("sheet") or {}).get("units") or {}).items():
+        _sheet_units[str(canonical).lower()] = canonical
+        for a in aliases:
+            _sheet_units[str(a).strip().lower()] = canonical
+
+
 def limit_rows(state: dict) -> list[tuple]:
+    _learn_units(state)
     facts, rows = _shopper_values(state), []
     for line in state["sheet"]["lines"]:
         for lim in line["limits"]:
@@ -83,6 +99,7 @@ def _write_now(state: dict) -> None:
 
 
 def _write_now_locked(state: dict) -> None:
+    _learn_units(state)
     schema.ensure()
     from signoff.store import pool as pool_mod
     c = conn.connect()

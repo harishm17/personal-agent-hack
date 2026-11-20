@@ -1,0 +1,486 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.bluesummitsupplies.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Blue Summit Supplies",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.bluesummitsupplies.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "21617289"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "21617289"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/1987485892666",
+   "title": "Blue Summit Supplies #8 Business Envelopes, Double Window, Security Tint, For QuickBooks, Flip & Seal, 500 Pack",
+   "description": {
+    "html": "Your QuickBooks Printed Checks will Line up Perfectly It can be so difficult to find envelopes that fit business checks perfectly. Some will show the recipient\u2019s address but not the sender's address, while others will hide parts of the addresses, and worse, others will show parts of the check like the check amount, or check memo. So much for security. Our check envelopes have a unique bottom window design so your check amounts and memos will always be hidden, and our window locations are positioned perfectly to line up with your addresses. NO NEED to reformat your software. Bottom window location of 3/4'' from the bottom, and a window height of 7/8\" prevents the check amounts from showing in the bottom window like other check envelopes Bottom window location of 7/8\" from the left side, and a window width of 3.5\u201d guarantees your recipient's address will show without the need to reformat quickbooks for both tri-fold and 3 checks per page check paper. Just print and slide the check in Security with a Professional Look It can be frustrating to purchase envelopes only to find them flimsy enough to have you worried about their durability during transit. Our envelopes are made of 24 LB White wove paper that will provide a professional look from the box all the way to your destination Your checks will be secure with an easy to use Flip and Seal design that will hold its seal and completely hide your checks behind our dark black security tint 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying, however, if our product is not exactly what you are looking for, or does not meet your expectation then send them back anytime for a 100 % refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/envelopes-for-quickbooks-checks-012",
+   "handle": "envelopes-for-quickbooks-checks-012",
+   "price_range": {
+    "min": {
+     "amount": 3599,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/20015134736442",
+     "sku": "CR-INWS-LHTN",
+     "title": "Default Title",
+     "description": {
+      "html": "Your QuickBooks Printed Checks will Line up Perfectly It can be so difficult to find envelopes that fit business checks perfectly. Some will show the recipient\u2019s address but not the sender's address, while others will hide parts of the addresses, and worse, others will show parts of the check like the check amount, or check memo. So much for security. Our check envelopes have a unique bottom window design so your check amounts and memos will always be hidden, and our window locations are positioned perfectly to line up with your addresses. NO NEED to reformat your software. Bottom window location of 3/4'' from the bottom, and a window height of 7/8\" prevents the check amounts from showing in the bottom window like other check envelopes Bottom window location of 7/8\" from the left side, and a window width of 3.5\u201d guarantees your recipient's address will show without the need to reformat quickbooks for both tri-fold and 3 checks per page check paper. Just print and slide the check in Security with a Professional Look It can be frustrating to purchase envelopes only to find them flimsy enough to have you worried about their durability during transit. Our envelopes are made of 24 LB White wove paper that will provide a professional look from the box all the way to your destination Your checks will be secure with an easy to use Flip and Seal design that will hold its seal and completely hide your checks behind our dark black security tint 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying, however, if our product is not exactly what you are looking for, or does not meet your expectation then send them back anytime for a 100 % refund."
+     },
+     "price": {
+      "amount": 3599,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/files/012_main_image_b9e0d6b5-40ef-42c0-a1ea-fe1b6544be27.jpg?v=1726897006"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/20015134736442:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/files/012_main_image_b9e0d6b5-40ef-42c0-a1ea-fe1b6544be27.jpg?v=1726897006",
+     "alt_text": "Blue Summit Supplies #8 Business Envelopes, Double Window, Security Tint, For QuickBooks, Flip & Seal, 500 Pack Mailing Envelopes Blue Summit Supplies "
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:419",
+    "AvailabilityForB2C:2814",
+    "AvailabilityInWarehouse:419",
+    "AvailableForB2B:In stock",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:TRUE",
+    "BSS-92588-012",
+    "BSSSKU:TRUE",
+    "Collection:Envelopes",
+    "Collection:Mailing Envelopes",
+    "Collection:Office Supplies",
+    "CollectionHandle:envelopes",
+    "CollectionHandle:mailing-envelopes",
+    "CollectionHandle:office-supplies",
+    "envelopes2024",
+    "EVERYONE",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/87706009658",
+     "handle": "auto-renew",
+     "title": "Auto Renew",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271562014898",
+     "handle": "mailing-envelopes",
+     "title": "Mailing Envelopes",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271562047666",
+     "handle": "envelopes",
+     "title": "Envelopes",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/1987485925434",
+   "title": "Blue Summit Supplies #8 Business Envelopes, Double Window, Security Tint, For QuickBooks, Self Seal, 500/Pack",
+   "description": {
+    "html": "Your QuickBooks Printed Checks will Line up PerfectlyIt can be so difficult to find envelopes that fit business checks perfectly. Some will show the recipient's address but not the sender's address, while others will hide parts of the addresses, and worse, others will show parts of the check like the check amount, or check memo. So much for security. Our no 8 check windowed envelopes have a unique bottom window design so your check amounts and memos will always be hidden, and our window locations are positioned perfectly to line up with your addresses. NO NEED to reformat your software. Bottom window location of 3/4'' from the bottom, and a window height of 7/8'' prevents the check amounts from showing in the bottom window like other check envelopes Bottom window location of 7/8'' from the left side, and a window width of 3.5'' guarantees your recipient's address will show without the need to reformat quickbooks for tri-fold, voucher, and 3 checks per page check paper. Just print and slide the check in Security with a Professional Look It can be frustrating to purchase envelopes only to find them flimsy enough to have you worried about their durability during transit. Our envelopes are made of 24 LB White wove paper that will provide a professional look from the box all the way to your destinationYour payroll checks will be secure with an easy to use peel and seal design that will hold its seal and completely hide your checks behind our dark black security tint100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying, however, if our product is not exactly what you are looking for, or does not meet your expectation then send them back anytime for a 100 % refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/quickbooks-window-envelopes-self-seal-001",
+   "handle": "quickbooks-window-envelopes-self-seal-001",
+   "price_range": {
+    "min": {
+     "amount": 3799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/20015134769210",
+     "sku": "IT-5K1X-K4SX",
+     "title": "Default Title",
+     "description": {
+      "html": "Your QuickBooks Printed Checks will Line up PerfectlyIt can be so difficult to find envelopes that fit business checks perfectly. Some will show the recipient's address but not the sender's address, while others will hide parts of the addresses, and worse, others will show parts of the check like the check amount, or check memo. So much for security. Our no 8 check windowed envelopes have a unique bottom window design so your check amounts and memos will always be hidden, and our window locations are positioned perfectly to line up with your addresses. NO NEED to reformat your software. Bottom window location of 3/4'' from the bottom, and a window height of 7/8'' prevents the check amounts from showing in the bottom window like other check envelopes Bottom window location of 7/8'' from the left side, and a window width of 3.5'' guarantees your recipient's address will show without the need to reformat quickbooks for tri-fold, voucher, and 3 checks per page check paper. Just print and slide the check in Security with a Professional Look It can be frustrating to purchase envelopes only to find them flimsy enough to have you worried about their durability during transit. Our envelopes are made of 24 LB White wove paper that will provide a professional look from the box all the way to your destinationYour payroll checks will be secure with an easy to use peel and seal design that will hold its seal and completely hide your checks behind our dark black security tint100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying, however, if our product is not exactly what you are looking for, or does not meet your expectation then send them back anytime for a 100 % refund."
+     },
+     "price": {
+      "amount": 3799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/8-Double-Window-Security-Envelope-Main-001.jpg?v=1589983799"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/20015134769210:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/8-Double-Window-Security-Envelope-Main-001.jpg?v=1589983799",
+     "alt_text": "#8 Double Window Security Check Envelopes for QuickBooks, Self Seal, 500 Count Envelopes Blue Summit Supplies "
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:9",
+    "AvailabilityForB2C:2806",
+    "AvailabilityInWarehouse:9",
+    "AvailableForB2B:In stock",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:TRUE",
+    "BSS-92588-001",
+    "BSSSKU:TRUE",
+    "Collection:Envelopes",
+    "Collection:Mailing Envelopes",
+    "Collection:Office Supplies",
+    "CollectionHandle:envelopes",
+    "CollectionHandle:mailing-envelopes",
+    "CollectionHandle:office-supplies",
+    "envelopes2024",
+    "EVERYONE",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:TRUE",
+    "Solution-Shipping"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/87706009658",
+     "handle": "auto-renew",
+     "title": "Auto Renew",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271562014898",
+     "handle": "mailing-envelopes",
+     "title": "Mailing Envelopes",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271562047666",
+     "handle": "envelopes",
+     "title": "Envelopes",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

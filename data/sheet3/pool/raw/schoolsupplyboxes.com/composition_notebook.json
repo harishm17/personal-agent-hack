@@ -1,0 +1,2253 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://schoolsupplyboxes.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "School Supply Boxes",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "schoolsupplyboxes.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "2981593158"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "2981593158"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/2054136332358",
+   "title": "Wide Ruled 100 Sheet Composition Notebook",
+   "description": {
+    "html": "A classic school notebook, wide ruled composition books are the preferred notebooks of elementary school teachers everywhere. Available black, yellow, red, green, and blue, pick the colors you need for your child's first day back to school. With 100 sheets of paper in each, your elementary student will be well prepared to start their writing assignments on day one."
+   },
+   "url": "https://schoolsupplyboxes.com/products/wide-ruled-bundle-composition-notebook-100-sheets",
+   "handle": "wide-ruled-bundle-composition-notebook-100-sheets",
+   "price_range": {
+    "min": {
+     "amount": 121,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 121,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/20711856078918",
+     "sku": "20016",
+     "title": "Red",
+     "description": {
+      "html": "A classic school notebook, wide ruled composition books are the preferred notebooks of elementary school teachers everywhere. Available black, yellow, red, green, and blue, pick the colors you need for your child's first day back to school. With 100 sheets of paper in each, your elementary student will be well prepared to start their writing assignments on day one."
+     },
+     "price": {
+      "amount": 121,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/WideRuled100SheetCompositionNotebookRed.jpg?v=1590587984"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711856078918:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711856111686",
+     "sku": "20015",
+     "title": "Yellow",
+     "description": {
+      "html": "A classic school notebook, wide ruled composition books are the preferred notebooks of elementary school teachers everywhere. Available black, yellow, red, green, and blue, pick the colors you need for your child's first day back to school. With 100 sheets of paper in each, your elementary student will be well prepared to start their writing assignments on day one."
+     },
+     "price": {
+      "amount": 121,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/WideRuled100SheetCompositionNotebookYellow.jpg?v=1590587984"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711856111686:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711856144454",
+     "sku": "20006",
+     "title": "Black",
+     "description": {
+      "html": "A classic school notebook, wide ruled composition books are the preferred notebooks of elementary school teachers everywhere. Available black, yellow, red, green, and blue, pick the colors you need for your child's first day back to school. With 100 sheets of paper in each, your elementary student will be well prepared to start their writing assignments on day one."
+     },
+     "price": {
+      "amount": 121,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/WideRuled100SheetCompositionNotebookBlack.jpg?v=1590587984"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711856144454:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711856209990",
+     "sku": "20018",
+     "title": "Blue",
+     "description": {
+      "html": "A classic school notebook, wide ruled composition books are the preferred notebooks of elementary school teachers everywhere. Available black, yellow, red, green, and blue, pick the colors you need for your child's first day back to school. With 100 sheets of paper in each, your elementary student will be well prepared to start their writing assignments on day one."
+     },
+     "price": {
+      "amount": 121,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/WideRuled100SheetCompositionNotebookBlue.jpg?v=1590587984"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711856209990:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711856242758",
+     "sku": "20017",
+     "title": "Green",
+     "description": {
+      "html": "A classic school notebook, wide ruled composition books are the preferred notebooks of elementary school teachers everywhere. Available black, yellow, red, green, and blue, pick the colors you need for your child's first day back to school. With 100 sheets of paper in each, your elementary student will be well prepared to start their writing assignments on day one."
+     },
+     "price": {
+      "amount": 121,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/WideRuled100SheetCompositionNotebookGreen.jpg?v=1590587984"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711856242758:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/29590413344838",
+     "sku": "20023",
+     "title": "Misc",
+     "description": {
+      "html": "A classic school notebook, wide ruled composition books are the preferred notebooks of elementary school teachers everywhere. Available black, yellow, red, green, and blue, pick the colors you need for your child's first day back to school. With 100 sheets of paper in each, your elementary student will be well prepared to start their writing assignments on day one."
+     },
+     "price": {
+      "amount": 121,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Misc"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/WideRuled100SheetCompositionNotebook.jpg?v=1590587984"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/29590413344838:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Red"
+      },
+      {
+       "label": "Yellow"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Green"
+      },
+      {
+       "label": "Misc"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/WideRuled100SheetCompositionNotebook.jpg?v=1590587984"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-13",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#bundle",
+    "#paper",
+    "new"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159442862152",
+     "handle": "paper-products",
+     "title": "Student Paper Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2054222250054",
+   "title": "College Ruled 100 Sheet Composition Notebook",
+   "description": {
+    "html": "With their familiar marble covers, college ruled composition books are a classic way for high school and college kids to keep their notes together. Keep all of your class notes where they should be in the available black, yellow, red, green, and blue colored notebooks. With 100 sheets of paper in each composition book, you'll be ready to start taking notes on your first day of class."
+   },
+   "url": "https://schoolsupplyboxes.com/products/college-ruled-bundle-composition-notebook-100-sheets",
+   "handle": "college-ruled-bundle-composition-notebook-100-sheets",
+   "price_range": {
+    "min": {
+     "amount": 105,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 105,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/20684941885510",
+     "sku": "20007",
+     "title": "Black",
+     "description": {
+      "html": "With their familiar marble covers, college ruled composition books are a classic way for high school and college kids to keep their notes together. Keep all of your class notes where they should be in the available black, yellow, red, green, and blue colored notebooks. With 100 sheets of paper in each composition book, you'll be ready to start taking notes on your first day of class."
+     },
+     "price": {
+      "amount": 105,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuled100SheetCompositionNotebookBlack.jpg?v=1590587866"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20684941885510:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20714493542470",
+     "sku": "20021",
+     "title": "Green",
+     "description": {
+      "html": "With their familiar marble covers, college ruled composition books are a classic way for high school and college kids to keep their notes together. Keep all of your class notes where they should be in the available black, yellow, red, green, and blue colored notebooks. With 100 sheets of paper in each composition book, you'll be ready to start taking notes on your first day of class."
+     },
+     "price": {
+      "amount": 105,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuled100SheetCompositionNotebookGreen.jpg?v=1590587866"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20714493542470:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20714493575238",
+     "sku": "20022",
+     "title": "Blue",
+     "description": {
+      "html": "With their familiar marble covers, college ruled composition books are a classic way for high school and college kids to keep their notes together. Keep all of your class notes where they should be in the available black, yellow, red, green, and blue colored notebooks. With 100 sheets of paper in each composition book, you'll be ready to start taking notes on your first day of class."
+     },
+     "price": {
+      "amount": 105,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuled100SheetCompositionNotebookBlue.jpg?v=1590587866"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20714493575238:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20714493608006",
+     "sku": "20020",
+     "title": "Red",
+     "description": {
+      "html": "With their familiar marble covers, college ruled composition books are a classic way for high school and college kids to keep their notes together. Keep all of your class notes where they should be in the available black, yellow, red, green, and blue colored notebooks. With 100 sheets of paper in each composition book, you'll be ready to start taking notes on your first day of class."
+     },
+     "price": {
+      "amount": 105,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuled100SheetCompositionNotebookRed.jpg?v=1590587866"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20714493608006:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20714493640774",
+     "sku": "20019",
+     "title": "Yellow",
+     "description": {
+      "html": "With their familiar marble covers, college ruled composition books are a classic way for high school and college kids to keep their notes together. Keep all of your class notes where they should be in the available black, yellow, red, green, and blue colored notebooks. With 100 sheets of paper in each composition book, you'll be ready to start taking notes on your first day of class."
+     },
+     "price": {
+      "amount": 105,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuled100SheetCompositionNotebookYellow.jpg?v=1590587866"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20714493640774:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/29590376808518",
+     "sku": "20024",
+     "title": "Misc",
+     "description": {
+      "html": "With their familiar marble covers, college ruled composition books are a classic way for high school and college kids to keep their notes together. Keep all of your class notes where they should be in the available black, yellow, red, green, and blue colored notebooks. With 100 sheets of paper in each composition book, you'll be ready to start taking notes on your first day of class."
+     },
+     "price": {
+      "amount": 105,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Misc"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuled100SheetCompositionNotebook.jpg?v=1590587866"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/29590376808518:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Green"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Red"
+      },
+      {
+       "label": "Yellow"
+      },
+      {
+       "label": "Misc"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuled100SheetCompositionNotebook.jpg?v=1590587866"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-13",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#bundle",
+    "#paper",
+    "combo",
+    "new",
+    "writing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159442862152",
+     "handle": "paper-products",
+     "title": "Student Paper Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/3981344440390",
+   "title": "100 Sheet Composition Notebooks - School Supplies Bundle - 5 Composition Notebooks - 1 Black, 1 Red, 1 Green, 1 Blue, and 1 Yellow",
+   "description": {
+    "html": "Make your notebook shopping easier by getting all of your composition books, in various colors, all at once. The red, yellow, blue, black, and green composition books each contain 100 sheets to make sure you've got plenty of space to keep your notes or write your essays. Make sure to choose wide ruled for elementary students and college ruled for older students."
+   },
+   "url": "https://schoolsupplyboxes.com/products/100-sheet-composition-notebooks-school-supplies-bundle-5-composition-notebooks-1-black-1-red-1-green-1-blue-and-1-yellow",
+   "handle": "100-sheet-composition-notebooks-school-supplies-bundle-5-composition-notebooks-1-black-1-red-1-green-1-blue-and-1-yellow",
+   "price_range": {
+    "min": {
+     "amount": 1299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1299,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/29602482782278",
+     "sku": "20049",
+     "title": "Wide Ruled",
+     "description": {
+      "html": "Make your notebook shopping easier by getting all of your composition books, in various colors, all at once. The red, yellow, blue, black, and green composition books each contain 100 sheets to make sure you've got plenty of space to keep your notes or write your essays. Make sure to choose wide ruled for elementary students and college ruled for older students."
+     },
+     "price": {
+      "amount": 1299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Wide Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/5PackofCompositionBooksWide.jpg?v=1590587522"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/29602482782278:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/29602482847814",
+     "sku": "20050",
+     "title": "College Ruled",
+     "description": {
+      "html": "Make your notebook shopping easier by getting all of your composition books, in various colors, all at once. The red, yellow, blue, black, and green composition books each contain 100 sheets to make sure you've got plenty of space to keep your notes or write your essays. Make sure to choose wide ruled for elementary students and college ruled for older students."
+     },
+     "price": {
+      "amount": 1299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "College Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/5PackofCompositionBooksCollege.jpg?v=1590587522"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/29602482847814:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Wide Ruled"
+      },
+      {
+       "label": "College Ruled"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/5PackofCompositionBooksWide.jpg?v=1590587522"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/5554200477858",
+   "title": "Primary Composition Book",
+   "description": {
+    "html": "A primary composition book is an essential tool for young learners, providing a structured space for them to practice writing and improve their literacy skills. Designed specifically for early education, this book is a great companion for students as they develop their handwriting and creativity. Let\u2019s explore why the primary composition book is a must-have for your child\u2019s learning journey."
+   },
+   "url": "https://schoolsupplyboxes.com/products/primary-composition-book-kindergarten-thru-3rd",
+   "handle": "primary-composition-book-kindergarten-thru-3rd",
+   "price_range": {
+    "min": {
+     "amount": 279,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 279,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/35530968432802",
+     "sku": "10063",
+     "title": "Default Title",
+     "description": {
+      "html": "A primary composition book is an essential tool for young learners, providing a structured space for them to practice writing and improve their literacy skills. Designed specifically for early education, this book is a great companion for students as they develop their handwriting and creativity. Let\u2019s explore why the primary composition book is a must-have for your child\u2019s learning journey."
+     },
+     "price": {
+      "amount": 279,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/4180579.jpg?v=1596648178"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/35530968432802:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/4180579.jpg?v=1596648178"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159442862152",
+     "handle": "paper-products",
+     "title": "Student Paper Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/3981294665798",
+   "title": "Essential Secondary School Supply Kit Bundle - 51 Pieces",
+   "description": {
+    "html": "Back to School shopping is simple with this school supply pack, perfect for middle school students, high school students, or college students. Get your school essentials kit here which includes: (2) 1\" Binders, (5) Folder - 3 Prong, (2) College Ruled Loose Leaf Filler Paper, (2) College Ruled Composition Notebooks, (4) College Ruled 1 Subject Notebook. This school kit also includes: (1) Pencil Bag, (2) pink erasers, (1) Crayola 12 pack Colored Pencil, (4) BIC Mechanical Pencils - 0.7 MM lead, (1) 0.7 MM Lead Refill, (1) Index Card - 100 count, (4) Black Pens, (4) Blue pen, (4) Red Pens, (1) Sharpie Permanent Black Marker, and (1) Kleenex Tissue Pocket Packs. School essentials kit for secondary school students, back to school kit, school supplies for secondary school students, school kit, freshman school supplies, sophomore school supplies, junior school supplies, senior school supplies, high school bundle."
+   },
+   "url": "https://schoolsupplyboxes.com/products/secondary-school-essentials-back-to-school-kit-school-supplies-bundle-includes-1-binder-folder-notebook-filler-paper-mechanical-pencil-note-card-black-blue-pen-stress-ball-51-pieces-1",
+   "handle": "secondary-school-essentials-back-to-school-kit-school-supplies-bundle-includes-1-binder-folder-notebook-filler-paper-mechanical-pencil-note-card-black-blue-pen-stress-ball-51-pieces-1",
+   "price_range": {
+    "min": {
+     "amount": 4499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 489999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8998,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 503888,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45523799408802",
+     "sku": "NB6",
+     "title": "1 Box",
+     "description": {
+      "html": "Back to School shopping is simple with this school supply pack, perfect for middle school students, high school students, or college students. Get your school essentials kit here which includes: (2) 1\" Binders, (5) Folder - 3 Prong, (2) College Ruled Loose Leaf Filler Paper, (2) College Ruled Composition Notebooks, (4) College Ruled 1 Subject Notebook. This school kit also includes: (1) Pencil Bag, (2) pink erasers, (1) Crayola 12 pack Colored Pencil, (4) BIC Mechanical Pencils - 0.7 MM lead, (1) 0.7 MM Lead Refill, (1) Index Card - 100 count, (4) Black Pens, (4) Blue pen, (4) Red Pens, (1) Sharpie Permanent Black Marker, and (1) Kleenex Tissue Pocket Packs. School essentials kit for secondary school students, back to school kit, school supplies for secondary school students, school kit, freshman school supplies, sophomore school supplies, junior school supplies, senior school supplies, high school bundle."
+     },
+     "price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Unit Count",
+       "label": "1 Box"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6214-Edit.jpg?v=1715089118"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523799408802:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45523799441570",
+     "sku": "NB6-Case",
+     "title": "1 Case (2 Boxes)",
+     "description": {
+      "html": "Back to School shopping is simple with this school supply pack, perfect for middle school students, high school students, or college students. Get your school essentials kit here which includes: (2) 1\" Binders, (5) Folder - 3 Prong, (2) College Ruled Loose Leaf Filler Paper, (2) College Ruled Composition Notebooks, (4) College Ruled 1 Subject Notebook. This school kit also includes: (1) Pencil Bag, (2) pink erasers, (1) Crayola 12 pack Colored Pencil, (4) BIC Mechanical Pencils - 0.7 MM lead, (1) 0.7 MM Lead Refill, (1) Index Card - 100 count, (4) Black Pens, (4) Blue pen, (4) Red Pens, (1) Sharpie Permanent Black Marker, and (1) Kleenex Tissue Pocket Packs. School essentials kit for secondary school students, back to school kit, school supplies for secondary school students, school kit, freshman school supplies, sophomore school supplies, junior school supplies, senior school supplies, high school bundle."
+     },
+     "price": {
+      "amount": 8899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8998,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Unit Count",
+       "label": "1 Case (2 Boxes)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6214-Edit.jpg?v=1715089118"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523799441570:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45523799474338",
+     "sku": "NB6-Pallet",
+     "title": "1 Pallet (112 Boxes)",
+     "description": {
+      "html": "Back to School shopping is simple with this school supply pack, perfect for middle school students, high school students, or college students. Get your school essentials kit here which includes: (2) 1\" Binders, (5) Folder - 3 Prong, (2) College Ruled Loose Leaf Filler Paper, (2) College Ruled Composition Notebooks, (4) College Ruled 1 Subject Notebook. This school kit also includes: (1) Pencil Bag, (2) pink erasers, (1) Crayola 12 pack Colored Pencil, (4) BIC Mechanical Pencils - 0.7 MM lead, (1) 0.7 MM Lead Refill, (1) Index Card - 100 count, (4) Black Pens, (4) Blue pen, (4) Red Pens, (1) Sharpie Permanent Black Marker, and (1) Kleenex Tissue Pocket Packs. School essentials kit for secondary school students, back to school kit, school supplies for secondary school students, school kit, freshman school supplies, sophomore school supplies, junior school supplies, senior school supplies, high school bundle."
+     },
+     "price": {
+      "amount": 489999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 503888,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Unit Count",
+       "label": "1 Pallet (112 Boxes)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/nb2_3_6_10_0ead48c0-a5c2-4a72-b65b-d1ee2c6c5d51.jpg?v=1747838336"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523799474338:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Unit Count",
+     "values": [
+      {
+       "label": "1 Box"
+      },
+      {
+       "label": "1 Case (2 Boxes)"
+      },
+      {
+       "label": "1 Pallet (112 Boxes)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6214-Edit.jpg?v=1715089118"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#bundle",
+    "#HOMEPAGE",
+    "new"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/85293465670",
+     "handle": "middle-school-grades-6-8",
+     "title": "Middle School Supplies",
+     "description": {
+      "html": "Check out our school supplies for middle school students in grade six, seven and eight. We have ready to go school boxes to save you time and money on your back to school shopping this year!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/85293498438",
+     "handle": "high-school-grades-9-12",
+     "title": "Highschool Supplies",
+     "description": {
+      "html": "Check out our school supplies for high school students in ninth, tenth, eleventh and twelfth grade. We have ready to go school boxes to save you time and money on your back to school shopping this year! The perfect bundles for your freshman, sophomore, junior or senior in high school."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158492524616",
+     "handle": "featured-products",
+     "title": "Featured Products",
+     "description": {
+      "html": "These are the top products in all 5 categories. Elementary School, Middle School, High School, College, and our New and Improved Create your own bundle."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/315530018978",
+     "handle": "bulk-supplies",
+     "title": "Bulk Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2054222643270",
+   "title": "College Ruled Single Subject Notebook",
+   "description": {
+    "html": "When you're in high school or college, college ruled notebooks are the best way to get as many notes as you can in a single place. Available in five classic colors, choose the ones you need to suit your needs or to match your organizational style. Whether they're for notes, essays, or just an extra notebook to keep around the house, college ruled notebooks make sure all your important notes stay in one place."
+   },
+   "url": "https://schoolsupplyboxes.com/products/college-ruled-spiral-notebook-70-sheets",
+   "handle": "college-ruled-spiral-notebook-70-sheets",
+   "price_range": {
+    "min": {
+     "amount": 87,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 87,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/20711838154822",
+     "sku": "20037",
+     "title": "Yellow",
+     "description": {
+      "html": "When you're in high school or college, college ruled notebooks are the best way to get as many notes as you can in a single place. Available in five classic colors, choose the ones you need to suit your needs or to match your organizational style. Whether they're for notes, essays, or just an extra notebook to keep around the house, college ruled notebooks make sure all your important notes stay in one place."
+     },
+     "price": {
+      "amount": 87,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledSingleSubjectNotebookYellow.jpg?v=1590586104"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711838154822:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711838220358",
+     "sku": "20038",
+     "title": "Red",
+     "description": {
+      "html": "When you're in high school or college, college ruled notebooks are the best way to get as many notes as you can in a single place. Available in five classic colors, choose the ones you need to suit your needs or to match your organizational style. Whether they're for notes, essays, or just an extra notebook to keep around the house, college ruled notebooks make sure all your important notes stay in one place."
+     },
+     "price": {
+      "amount": 87,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledSingleSubjectNotebookRed.jpg?v=1590586104"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711838220358:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711838253126",
+     "sku": "20036",
+     "title": "Black",
+     "description": {
+      "html": "When you're in high school or college, college ruled notebooks are the best way to get as many notes as you can in a single place. Available in five classic colors, choose the ones you need to suit your needs or to match your organizational style. Whether they're for notes, essays, or just an extra notebook to keep around the house, college ruled notebooks make sure all your important notes stay in one place."
+     },
+     "price": {
+      "amount": 87,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledSingleSubjectNotebookBlack.jpg?v=1590586104"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711838253126:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711838285894",
+     "sku": "20035",
+     "title": "Blue",
+     "description": {
+      "html": "When you're in high school or college, college ruled notebooks are the best way to get as many notes as you can in a single place. Available in five classic colors, choose the ones you need to suit your needs or to match your organizational style. Whether they're for notes, essays, or just an extra notebook to keep around the house, college ruled notebooks make sure all your important notes stay in one place."
+     },
+     "price": {
+      "amount": 87,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledSingleSubjectNotebookBlue.jpg?v=1590586104"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711838285894:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711838318662",
+     "sku": "20039",
+     "title": "Green",
+     "description": {
+      "html": "When you're in high school or college, college ruled notebooks are the best way to get as many notes as you can in a single place. Available in five classic colors, choose the ones you need to suit your needs or to match your organizational style. Whether they're for notes, essays, or just an extra notebook to keep around the house, college ruled notebooks make sure all your important notes stay in one place."
+     },
+     "price": {
+      "amount": 87,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledSingleSubjectNotebookGreen.jpg?v=1590586104"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711838318662:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20684944146502",
+     "sku": "20045",
+     "title": "Misc",
+     "description": {
+      "html": "When you're in high school or college, college ruled notebooks are the best way to get as many notes as you can in a single place. Available in five classic colors, choose the ones you need to suit your needs or to match your organizational style. Whether they're for notes, essays, or just an extra notebook to keep around the house, college ruled notebooks make sure all your important notes stay in one place."
+     },
+     "price": {
+      "amount": 87,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Misc"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledSingleSubjectNotebook.jpg?v=1590586091"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20684944146502:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Yellow"
+      },
+      {
+       "label": "Red"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Green"
+      },
+      {
+       "label": "Misc"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledSingleSubjectNotebook.jpg?v=1590586091"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#bundle",
+    "#paper",
+    "combo",
+    "new",
+    "writing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159442862152",
+     "handle": "paper-products",
+     "title": "Student Paper Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2054221267014",
+   "title": "College Ruled Three Subject Notebook",
+   "description": {
+    "html": "College ruled three subject note books make sure you've got more space to keep all of your notes for class in one space. Available in blue, black, yellow, red, and green, these notebooks make sure you've got enough writing space for your first day back to school. College ruled paper is the preferred paper of high school and college students."
+   },
+   "url": "https://schoolsupplyboxes.com/products/college-ruled-spiral-notebook-3-subject",
+   "handle": "college-ruled-spiral-notebook-3-subject",
+   "price_range": {
+    "min": {
+     "amount": 185,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 185,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/20711814627398",
+     "sku": "20042",
+     "title": "Yellow",
+     "description": {
+      "html": "College ruled three subject note books make sure you've got more space to keep all of your notes for class in one space. Available in blue, black, yellow, red, and green, these notebooks make sure you've got enough writing space for your first day back to school. College ruled paper is the preferred paper of high school and college students."
+     },
+     "price": {
+      "amount": 185,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Yellow"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledThreeSubjectNotebookYellow.jpg?v=1590601160"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711814627398:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711814725702",
+     "sku": "20043",
+     "title": "Red",
+     "description": {
+      "html": "College ruled three subject note books make sure you've got more space to keep all of your notes for class in one space. Available in blue, black, yellow, red, and green, these notebooks make sure you've got enough writing space for your first day back to school. College ruled paper is the preferred paper of high school and college students."
+     },
+     "price": {
+      "amount": 185,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledThreeSubjectNotebookRed.jpg?v=1590601160"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711814725702:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711814758470",
+     "sku": "20040",
+     "title": "Blue",
+     "description": {
+      "html": "College ruled three subject note books make sure you've got more space to keep all of your notes for class in one space. Available in blue, black, yellow, red, and green, these notebooks make sure you've got enough writing space for your first day back to school. College ruled paper is the preferred paper of high school and college students."
+     },
+     "price": {
+      "amount": 185,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledThreeSubjectNotebookBlue.jpg?v=1590601160"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711814758470:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711814791238",
+     "sku": "20044",
+     "title": "Green",
+     "description": {
+      "html": "College ruled three subject note books make sure you've got more space to keep all of your notes for class in one space. Available in blue, black, yellow, red, and green, these notebooks make sure you've got enough writing space for your first day back to school. College ruled paper is the preferred paper of high school and college students."
+     },
+     "price": {
+      "amount": 185,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledThreeSubjectNotebookGreen.jpg?v=1590601160"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711814791238:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20711814824006",
+     "sku": "20041",
+     "title": "Black",
+     "description": {
+      "html": "College ruled three subject note books make sure you've got more space to keep all of your notes for class in one space. Available in blue, black, yellow, red, and green, these notebooks make sure you've got enough writing space for your first day back to school. College ruled paper is the preferred paper of high school and college students."
+     },
+     "price": {
+      "amount": 185,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledThreeSubjectNotebookBlack.jpg?v=1590601160"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20711814824006:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20684937461830",
+     "sku": "20046",
+     "title": "Misc",
+     "description": {
+      "html": "College ruled three subject note books make sure you've got more space to keep all of your notes for class in one space. Available in blue, black, yellow, red, and green, these notebooks make sure you've got enough writing space for your first day back to school. College ruled paper is the preferred paper of high school and college students."
+     },
+     "price": {
+      "amount": 185,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Misc"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledThreeSubjectNotebook.jpg?v=1590601158"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20684937461830:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Yellow"
+      },
+      {
+       "label": "Red"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Green"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Misc"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/CollegeRuledThreeSubjectNotebook.jpg?v=1590601158"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-13",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#bundle",
+    "#paper",
+    "combo",
+    "new",
+    "writing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159442862152",
+     "handle": "paper-products",
+     "title": "Student Paper Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8194919202978",
+   "title": "17\" Backpack Bundle for Elementary School | Back to School Bookbag with Supplies | Contains Crayons, Colored Pencils, Ruler, Disappearing Glue, Notebook, and More",
+   "description": {
+    "html": "Gear up for the first day of school with a backpack stuffed with back to school supplies! This awesome bundle features one clear, plastic bookbag and pencil pouch with several back to school essentials for kindergarten through 5th grade. The 17\" clear backpack contains (1), 12\" wooden ruler, (4) 3-pronged folders in various colors, (1) 24pk of Crayola Crayons, (1) 12pk of Crayola Colored Pencils, (2) 100 sheet wide-ruled composition notebooks in various colors, (3) wide-ruled single subject notebooks in various colors. The pencil bag / binder pouch (misc color) is filled with a few crafting goodies to get you started on those masterpieces. It features (3) Elmer's Disappearing Purple Glue Sticks, (1) pair of kids blunt tip scissors. and (2) classic pink erasers. Durable, sturdy, and lightweight, the clear backpack measures 17 x 12 x 5.75 inches, a great size for a young student and offers an unobscured view of everything inside. The pockets provide ample space for more school essentials such as water bottles, umbrellas, and more. Put the stress of school supply shopping behind you this summer and pick up a pre-packed bookbag that's ready for your kid's first day of school!"
+   },
+   "url": "https://schoolsupplyboxes.com/products/17-backpack-bundle-for-elementary-school-back-to-school-bookbag-with-supplies-contains-crayons-colored-pencils-ruler-disappearing-glue-notebook-and-more",
+   "handle": "17-backpack-bundle-for-elementary-school-back-to-school-bookbag-with-supplies-contains-crayons-colored-pencils-ruler-disappearing-glue-notebook-and-more",
+   "price_range": {
+    "min": {
+     "amount": 3499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44108097487010",
+     "sku": "EBBKClear",
+     "title": "Clear",
+     "description": {
+      "html": "Gear up for the first day of school with a backpack stuffed with back to school supplies! This awesome bundle features one clear, plastic bookbag and pencil pouch with several back to school essentials for kindergarten through 5th grade. The 17\" clear backpack contains (1), 12\" wooden ruler, (4) 3-pronged folders in various colors, (1) 24pk of Crayola Crayons, (1) 12pk of Crayola Colored Pencils, (2) 100 sheet wide-ruled composition notebooks in various colors, (3) wide-ruled single subject notebooks in various colors. The pencil bag / binder pouch (misc color) is filled with a few crafting goodies to get you started on those masterpieces. It features (3) Elmer's Disappearing Purple Glue Sticks, (1) pair of kids blunt tip scissors. and (2) classic pink erasers. Durable, sturdy, and lightweight, the clear backpack measures 17 x 12 x 5.75 inches, a great size for a young student and offers an unobscured view of everything inside. The pockets provide ample space for more school essentials such as water bottles, umbrellas, and more. Put the stress of school supply shopping behind you this summer and pick up a pre-packed bookbag that's ready for your kid's first day of school!"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Clear"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6567-Edit.jpg?v=1715090396"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/44108097487010:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44108139036834",
+     "sku": "EBBKBlack",
+     "title": "Solid Black",
+     "description": {
+      "html": "Gear up for the first day of school with a backpack stuffed with back to school supplies! This awesome bundle features one clear, plastic bookbag and pencil pouch with several back to school essentials for kindergarten through 5th grade. The 17\" clear backpack contains (1), 12\" wooden ruler, (4) 3-pronged folders in various colors, (1) 24pk of Crayola Crayons, (1) 12pk of Crayola Colored Pencils, (2) 100 sheet wide-ruled composition notebooks in various colors, (3) wide-ruled single subject notebooks in various colors. The pencil bag / binder pouch (misc color) is filled with a few crafting goodies to get you started on those masterpieces. It features (3) Elmer's Disappearing Purple Glue Sticks, (1) pair of kids blunt tip scissors. and (2) classic pink erasers. Durable, sturdy, and lightweight, the clear backpack measures 17 x 12 x 5.75 inches, a great size for a young student and offers an unobscured view of everything inside. The pockets provide ample space for more school essentials such as water bottles, umbrellas, and more. Put the stress of school supply shopping behind you this summer and pick up a pre-packed bookbag that's ready for your kid's first day of school!"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Solid Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6564-Edit.jpg?v=1715090396"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/44108139036834:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Clear"
+      },
+      {
+       "label": "Solid Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6564-Edit.jpg?v=1715090396"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/84970963014",
+     "handle": "elementary-school-k-5",
+     "title": "Elementary School Supplies",
+     "description": {
+      "html": "All of the back to school supply needs for your child in elementary school grades kindergarten, first grade, second grade, third grade, fourth grade or fifth grade. These are custom made boxes ready to ship to your door so you do not have to go to the store to buy your kids back to school supplies again!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8731641479330",
+   "title": "College Ruled Three Subject Notebooks (120 Sheets) - Multi-Pack",
+   "description": {
+    "html": "College Ruled Three Subject Notebooks \u2013 Multi-Pack \u2013 120 Sheets Each \u2013 Durable, Divided, and Ready to Work Stay organized and prepared with these College Ruled Three Subject Notebooks, each offering 120 college-ruled sheets thoughtfully divided into three sections. Whether you're managing multiple classes, projects, or tasks, these notebooks keep your notes neat, separated, and easy to reference. Each notebook features a sturdy cover and comes in a mix of classic colors\u2014black, blue, green, red, and yellow\u2014perfect for color-coding subjects or simply adding variety to your school or office supplies. The college-ruled format provides the ideal spacing for detailed note-taking, journaling, or planning. Available in 3-pack, 12-pack, and 48-pack options, these versatile notebooks are perfect for students, teachers, professionals, or anyone looking to stay organized with style and structure."
+   },
+   "url": "https://schoolsupplyboxes.com/products/college-ruled-three-subject-notebooks-multi-pack",
+   "handle": "college-ruled-three-subject-notebooks-multi-pack",
+   "price_range": {
+    "min": {
+     "amount": 1299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45720010162338",
+     "sku": "SSB-20046-02.67",
+     "title": "3 Pack",
+     "description": {
+      "html": "College Ruled Three Subject Notebooks \u2013 Multi-Pack \u2013 120 Sheets Each \u2013 Durable, Divided, and Ready to Work Stay organized and prepared with these College Ruled Three Subject Notebooks, each offering 120 college-ruled sheets thoughtfully divided into three sections. Whether you're managing multiple classes, projects, or tasks, these notebooks keep your notes neat, separated, and easy to reference. Each notebook features a sturdy cover and comes in a mix of classic colors\u2014black, blue, green, red, and yellow\u2014perfect for color-coding subjects or simply adding variety to your school or office supplies. The college-ruled format provides the ideal spacing for detailed note-taking, journaling, or planning. Available in 3-pack, 12-pack, and 48-pack options, these versatile notebooks are perfect for students, teachers, professionals, or anyone looking to stay organized with style and structure."
+     },
+     "price": {
+      "amount": 1299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/81lPoRAsZpL._AC_SL1500.jpg?v=1753879386"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45720010162338:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45720010195106",
+     "sku": "SSB-20046-10.68",
+     "title": "12 Pack",
+     "description": {
+      "html": "College Ruled Three Subject Notebooks \u2013 Multi-Pack \u2013 120 Sheets Each \u2013 Durable, Divided, and Ready to Work Stay organized and prepared with these College Ruled Three Subject Notebooks, each offering 120 college-ruled sheets thoughtfully divided into three sections. Whether you're managing multiple classes, projects, or tasks, these notebooks keep your notes neat, separated, and easy to reference. Each notebook features a sturdy cover and comes in a mix of classic colors\u2014black, blue, green, red, and yellow\u2014perfect for color-coding subjects or simply adding variety to your school or office supplies. The college-ruled format provides the ideal spacing for detailed note-taking, journaling, or planning. Available in 3-pack, 12-pack, and 48-pack options, these versatile notebooks are perfect for students, teachers, professionals, or anyone looking to stay organized with style and structure."
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "12 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/81lPoRAsZpL._AC_SL1500.jpg?v=1753879386"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45720010195106:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45720010227874",
+     "sku": "SSB-20046-42.72",
+     "title": "48 Pack",
+     "description": {
+      "html": "College Ruled Three Subject Notebooks \u2013 Multi-Pack \u2013 120 Sheets Each \u2013 Durable, Divided, and Ready to Work Stay organized and prepared with these College Ruled Three Subject Notebooks, each offering 120 college-ruled sheets thoughtfully divided into three sections. Whether you're managing multiple classes, projects, or tasks, these notebooks keep your notes neat, separated, and easy to reference. Each notebook features a sturdy cover and comes in a mix of classic colors\u2014black, blue, green, red, and yellow\u2014perfect for color-coding subjects or simply adding variety to your school or office supplies. The college-ruled format provides the ideal spacing for detailed note-taking, journaling, or planning. Available in 3-pack, 12-pack, and 48-pack options, these versatile notebooks are perfect for students, teachers, professionals, or anyone looking to stay organized with style and structure."
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48 Pack"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/81lPoRAsZpL._AC_SL1500.jpg?v=1753879386"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45720010227874:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "3 Pack"
+      },
+      {
+       "label": "12 Pack"
+      },
+      {
+       "label": "48 Pack"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/81lPoRAsZpL._AC_SL1500.jpg?v=1753879386"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/3981293486150",
+   "title": "Ultimate High School and College Bundle - 93 Pieces",
+   "description": {
+    "html": "Take one hassle out of back to school shopping and buy a School Supply Box filled with everything your high school or college student needs. This 12x10x6-inch school supply pack includes: (1) 12\" wooden ruler, (2) 1\" binders, (4) college-ruled 1-subject notebooks, (2) college-ruled 3-subject notebooks, (5) 2 pocket folders with prongs, (2) 5-tab plastic dividers, (2) college-ruled composition books, (2) packs of college-ruled loose leaf paper. Writing supplies include: (1) 24pk School Supply Boxes #2 mechanical pencil, (2) pink erasers, (1) binder pouch, (1) pack of index cards, (1) 3pk of highlighters, (4) black pens, (4) red pens, (4) blue pens, (1) 8pk of #2 pencils, (1) 0.7mm lead refill, (1) 12pk Crayola colored pencils, (1) Sharpie permanent marker, (2) 100ct sticky notes, (5) pencil top erasers, and (1) tissue pocket pack. This massive school supply kit contains everything your child needs for the first day of school and beyond. Whether it\u2019s for homework, studying, or writing assignments, this kit is ready to go! The tools included are also great for note-taking, flashcards, and keeping organized throughout the year. School Supply Boxes don\u2019t have to be just for students\u2014this kit also makes a great gift for a teacher, tutor, homeschooling family, or anyone looking to stock up on school essentials."
+   },
+   "url": "https://schoolsupplyboxes.com/products/ultimate-high-school-and-college-back-to-school-essentials-kit-includes-notebooks-folders-1-binder-tab-dividers-2-mechanical-pencils-index-cards-highlighters-24-pens-tissues-and-more-1",
+   "handle": "ultimate-high-school-and-college-back-to-school-essentials-kit-includes-notebooks-folders-1-binder-tab-dividers-2-mechanical-pencils-index-cards-highlighters-24-pens-tissues-and-more-1",
+   "price_range": {
+    "min": {
+     "amount": 5799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 544999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 11598,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 556704,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45523796557986",
+     "sku": "NB4",
+     "title": "1 Box",
+     "description": {
+      "html": "Take one hassle out of back to school shopping and buy a School Supply Box filled with everything your high school or college student needs. This 12x10x6-inch school supply pack includes: (1) 12\" wooden ruler, (2) 1\" binders, (4) college-ruled 1-subject notebooks, (2) college-ruled 3-subject notebooks, (5) 2 pocket folders with prongs, (2) 5-tab plastic dividers, (2) college-ruled composition books, (2) packs of college-ruled loose leaf paper. Writing supplies include: (1) 24pk School Supply Boxes #2 mechanical pencil, (2) pink erasers, (1) binder pouch, (1) pack of index cards, (1) 3pk of highlighters, (4) black pens, (4) red pens, (4) blue pens, (1) 8pk of #2 pencils, (1) 0.7mm lead refill, (1) 12pk Crayola colored pencils, (1) Sharpie permanent marker, (2) 100ct sticky notes, (5) pencil top erasers, and (1) tissue pocket pack. This massive school supply kit contains everything your child needs for the first day of school and beyond. Whether it\u2019s for homework, studying, or writing assignments, this kit is ready to go! The tools included are also great for note-taking, flashcards, and keeping organized throughout the year. School Supply Boxes don\u2019t have to be just for students\u2014this kit also makes a great gift for a teacher, tutor, homeschooling family, or anyone looking to stock up on school essentials."
+     },
+     "price": {
+      "amount": 5799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Unit Count",
+       "label": "1 Box"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6145-Edit.jpg?v=1715088428"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523796557986:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45523796590754",
+     "sku": "NB4-Case",
+     "title": "1 Case (2 Boxes)",
+     "description": {
+      "html": "Take one hassle out of back to school shopping and buy a School Supply Box filled with everything your high school or college student needs. This 12x10x6-inch school supply pack includes: (1) 12\" wooden ruler, (2) 1\" binders, (4) college-ruled 1-subject notebooks, (2) college-ruled 3-subject notebooks, (5) 2 pocket folders with prongs, (2) 5-tab plastic dividers, (2) college-ruled composition books, (2) packs of college-ruled loose leaf paper. Writing supplies include: (1) 24pk School Supply Boxes #2 mechanical pencil, (2) pink erasers, (1) binder pouch, (1) pack of index cards, (1) 3pk of highlighters, (4) black pens, (4) red pens, (4) blue pens, (1) 8pk of #2 pencils, (1) 0.7mm lead refill, (1) 12pk Crayola colored pencils, (1) Sharpie permanent marker, (2) 100ct sticky notes, (5) pencil top erasers, and (1) tissue pocket pack. This massive school supply kit contains everything your child needs for the first day of school and beyond. Whether it\u2019s for homework, studying, or writing assignments, this kit is ready to go! The tools included are also great for note-taking, flashcards, and keeping organized throughout the year. School Supply Boxes don\u2019t have to be just for students\u2014this kit also makes a great gift for a teacher, tutor, homeschooling family, or anyone looking to stock up on school essentials."
+     },
+     "price": {
+      "amount": 11499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11598,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Unit Count",
+       "label": "1 Case (2 Boxes)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6145-Edit.jpg?v=1715088428"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523796590754:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45523796623522",
+     "sku": "NB4-Pallet",
+     "title": "1 Pallet (96 Boxes)",
+     "description": {
+      "html": "Take one hassle out of back to school shopping and buy a School Supply Box filled with everything your high school or college student needs. This 12x10x6-inch school supply pack includes: (1) 12\" wooden ruler, (2) 1\" binders, (4) college-ruled 1-subject notebooks, (2) college-ruled 3-subject notebooks, (5) 2 pocket folders with prongs, (2) 5-tab plastic dividers, (2) college-ruled composition books, (2) packs of college-ruled loose leaf paper. Writing supplies include: (1) 24pk School Supply Boxes #2 mechanical pencil, (2) pink erasers, (1) binder pouch, (1) pack of index cards, (1) 3pk of highlighters, (4) black pens, (4) red pens, (4) blue pens, (1) 8pk of #2 pencils, (1) 0.7mm lead refill, (1) 12pk Crayola colored pencils, (1) Sharpie permanent marker, (2) 100ct sticky notes, (5) pencil top erasers, and (1) tissue pocket pack. This massive school supply kit contains everything your child needs for the first day of school and beyond. Whether it\u2019s for homework, studying, or writing assignments, this kit is ready to go! The tools included are also great for note-taking, flashcards, and keeping organized throughout the year. School Supply Boxes don\u2019t have to be just for students\u2014this kit also makes a great gift for a teacher, tutor, homeschooling family, or anyone looking to stock up on school essentials."
+     },
+     "price": {
+      "amount": 544999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 556704,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Unit Count",
+       "label": "1 Pallet (96 Boxes)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/nb4_pallet.jpg?v=1747838308"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523796623522:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Unit Count",
+     "values": [
+      {
+       "label": "1 Box"
+      },
+      {
+       "label": "1 Case (2 Boxes)"
+      },
+      {
+       "label": "1 Pallet (96 Boxes)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6145-Edit.jpg?v=1715088428"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#bundle",
+    "#HOMEPAGE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/85293498438",
+     "handle": "high-school-grades-9-12",
+     "title": "Highschool Supplies",
+     "description": {
+      "html": "Check out our school supplies for high school students in ninth, tenth, eleventh and twelfth grade. We have ready to go school boxes to save you time and money on your back to school shopping this year! The perfect bundles for your freshman, sophomore, junior or senior in high school."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/85293531206",
+     "handle": "college",
+     "title": "College School Supplies",
+     "description": {
+      "html": "Check out our college supply boxes that are perfect for anyone heading off to college this year that need to be prepared. We have ready to go school boxes to save you time and money on your back to school shopping this year! The perfect bundles for your freshman, sophomore, junior or senior in college. Give them the gift of a college supply kit this year."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158492524616",
+     "handle": "featured-products",
+     "title": "Featured Products",
+     "description": {
+      "html": "These are the top products in all 5 categories. Elementary School, Middle School, High School, College, and our New and Improved Create your own bundle."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/315530018978",
+     "handle": "bulk-supplies",
+     "title": "Bulk Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqb3pPVGd4TWprek5EZzJNVFV3TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

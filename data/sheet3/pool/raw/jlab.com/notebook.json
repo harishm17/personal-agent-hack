@@ -1,0 +1,1928 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.jlab.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "JLab",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.jlab.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "2409337"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "2409337"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/6898775162952",
+   "title": "Epic Mini Keyboard Black",
+   "description": {
+    "html": "JLab Epic Mini Wireless Keyboard is a 60% form factor wireless keyboard built for work and compact desk setups. It connects via 2.4GHz USB-C dongle or Bluetooth 5.2, runs on battery for over a year between charges, and supports both Windows and Mac layouts in one keyboard. 82 keys with a media knob in a compact, portable package. A 60% layout removes the numpad, function row, and navigation cluster found on full-size keyboards, leaving only the core alphanumeric keys, modifier keys, and arrow cluster - the keys used most during typing. The result is a noticeably smaller footprint on your desk and a lighter keyboard to carry, while a media knob at the top right handles volume and media control without needing the missing function row. OS Layout Keys let you switch between Windows and Mac key configurations directly on the keyboard. Scissor switches provide a low-profile keypress with 1.8mm stroke distance and 5 million cycle key life - quiet and well suited for shared workspaces. Backlit keys for low-light use. Battery life runs over 1 year with the backlight off and over 13 days with backlight at max. Standby time exceeds 24 months. Charges via USB-C in under 5 hours. Connect via 2.4GHz USB-C dongle for stable low-latency wireless or Bluetooth 5.2 for multi-device flexibility. Tilt legs for adjustable typing angle. Coated ABS top cover. ABS keycaps. The JLab Work app handles saved profiles and custom key configuration. Includes Epic Mini Keyboard, USB-C dongle, and a JLab 2-year limited warranty. Specifications KeyboardForm factor: Mini (60%)Number of keys: 82Switch type: ScissorKey stroke distance: 1.8mm \u00b10.3mmKey return force: 75 \u00b110gfKey operating life: 5+ million cyclesKeycap type: ABSTop cover: Coated ABSOS Layout Keys: Yes (Windows and Mac)Hotkeys: YesIlluminated keys: YesMedia knob: YesTilt legs: Yes ConnectivityWireless: 2.4GHz (USB-C dongle) + Bluetooth 5.2Windows compatible: YesMac compatible: Yes BatteryBattery life (backlight off): 1+ yearBattery life (backlight on): 13+ daysStandby: 24+ monthsCharge time: <5 hoursCharge port: USB-CInput power: 4.75-5.25V App (JLab Work)Saved profiles: YesCustom key configuration: Yes DimensionsHeight: 0.90 inLength: 12.30 inWidth: 5.75 inWeight: 528 g In the boxEpic Mini Keyboard \u00b7 USB-C dongle \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/epic-mini-wireless-keyboard-black",
+   "handle": "epic-mini-wireless-keyboard-black",
+   "price_range": {
+    "min": {
+     "amount": 5999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40365426344008",
+     "sku": "KEPICMINIKEYRBLK4",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab Epic Mini Wireless Keyboard is a 60% form factor wireless keyboard built for work and compact desk setups. It connects via 2.4GHz USB-C dongle or Bluetooth 5.2, runs on battery for over a year between charges, and supports both Windows and Mac layouts in one keyboard. 82 keys with a media knob in a compact, portable package. A 60% layout removes the numpad, function row, and navigation cluster found on full-size keyboards, leaving only the core alphanumeric keys, modifier keys, and arrow cluster - the keys used most during typing. The result is a noticeably smaller footprint on your desk and a lighter keyboard to carry, while a media knob at the top right handles volume and media control without needing the missing function row. OS Layout Keys let you switch between Windows and Mac key configurations directly on the keyboard. Scissor switches provide a low-profile keypress with 1.8mm stroke distance and 5 million cycle key life - quiet and well suited for shared workspaces. Backlit keys for low-light use. Battery life runs over 1 year with the backlight off and over 13 days with backlight at max. Standby time exceeds 24 months. Charges via USB-C in under 5 hours. Connect via 2.4GHz USB-C dongle for stable low-latency wireless or Bluetooth 5.2 for multi-device flexibility. Tilt legs for adjustable typing angle. Coated ABS top cover. ABS keycaps. The JLab Work app handles saved profiles and custom key configuration. Includes Epic Mini Keyboard, USB-C dongle, and a JLab 2-year limited warranty. Specifications KeyboardForm factor: Mini (60%)Number of keys: 82Switch type: ScissorKey stroke distance: 1.8mm \u00b10.3mmKey return force: 75 \u00b110gfKey operating life: 5+ million cyclesKeycap type: ABSTop cover: Coated ABSOS Layout Keys: Yes (Windows and Mac)Hotkeys: YesIlluminated keys: YesMedia knob: YesTilt legs: Yes ConnectivityWireless: 2.4GHz (USB-C dongle) + Bluetooth 5.2Windows compatible: YesMac compatible: Yes BatteryBattery life (backlight off): 1+ yearBattery life (backlight on): 13+ daysStandby: 24+ monthsCharge time: <5 hoursCharge port: USB-CInput power: 4.75-5.25V App (JLab Work)Saved profiles: YesCustom key configuration: Yes DimensionsHeight: 0.90 inLength: 12.30 inWidth: 5.75 inWeight: 528 g In the boxEpic Mini Keyboard \u00b7 USB-C dongle \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/3_EpicMini_5b761e79-7930-4266-8b21-ad88c1fc55c0.jpg?v=1759297596"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40365426344008:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/3_EpicMini_5b761e79-7930-4266-8b21-ad88c1fc55c0.jpg?v=1759297596"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-7-9-12-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "back-to-school",
+    "Best-Sellers",
+    "bluetooth",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "Featured-Option",
+    "igg25_for_him",
+    "igg25_tech_lover",
+    "impact",
+    "impact - gaming",
+    "inventory-auto",
+    "new",
+    "No Stock - CA",
+    "No Stock - DE",
+    "No Stock - UK",
+    "office",
+    "RMA ELIGIBLE",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "work-from-home",
+    "work_series"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/26413645",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266528751688",
+     "handle": "wireless-keyboards",
+     "title": "Keyboards",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266529472584",
+     "handle": "epic-work-series",
+     "title": "Epic Work Series",
+     "description": {
+      "html": "EPIC SERIES INNOVATE EVERYTHING. THE ULTIMATE EXPERIENCE FOR YOU. When your job requires the ultimate focus and efficiency, you need the gear to support your intensity. Enjoy the ultimate work set-up with the Epic series keyboards, mice, webcams, and microphones."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6894711930952",
+   "title": "GO POP+ True Wireless Earbuds Black",
+   "description": {
+    "html": "JLab GO Pop+ in Black are true wireless earbuds built for everyday listening, available in a wide range of colors to match your style. Part of JLab's GO lineup, the starting point in the JLab range designed to deliver reliable wireless audio without overcomplicating things. The charging case has a built-in USB-C cable that folds into the case itself, so there is no separate cable to carry or lose. The same cable works to charge the case from any USB-C port and can also charge your iPhone or Android phone directly from the case when you need it. Each earbud lasts 9 hours on a single charge, with 35 total hours across the case. Quick charge gives you 1 hour of playback from 10 minutes of charging. Bluetooth 5.3 with SBC and AAC codecs. Google Fast Pair makes Android pairing instant. Compatible with iOS and Android, including Siri and Google Assistant. IPX4 rated for sweat and splash resistance. Two MEMS microphones with 1-mic ENC and a DNS algorithm handle call clarity. Be Aware Mode lets in ambient sound for safe outdoor use. Dual Connect lets you use either earbud independently. Touch controls for playback and calls. Voice assistant support built in. EQ3 Sound gives you three preset listening modes: Signature, Bass Boost, and Balanced. The JLab app adds custom EQ, control remapping, noise control settings, safe hearing tools, and My JLab device management. Includes GO Pop+ earbuds, charging case with integrated USB-C cable, 3 sets of silicone gel tips (S/M/L), and a JLab 2-year limited warranty. Specifications AudioDriver: 6mm dynamicFrequency response: 20-20,000 HzImpedance: 16 ohmsEQ3 presets: Signature, Bass Boost, Balanced MicrophoneTotal mics: 2 x MEMSNoise canceling: 1-mic ENC + DNS Algorithm ConnectivityBluetooth: 5.3Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPGoogle Fast Pair: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryPer earbud: 9 hoursTotal playtime: 35 hoursStandby: 60+ hoursQuick charge: 10 min = 1 hourEarbud battery: 45 mAh 3.7V LiPoEarbud charge time: <2.2 hoursCase battery: 380 mAh 3.7V LiPoCase charge time: <2 hoursCharge cable: Integrated USB-CInput power: DC 5V, 1A Fit and comfortFit style: In-ear canalEar tip material: SiliconeEar tip sizes: S / M / LIP rating: IPX4 (earbuds) FeaturesControls: TouchBe Aware Mode: YesDual Connect: YesVoice assistant: Siri, Google AssistantMusic latency: >200ms App (JLab App)Custom EQ: YesCustom controls: YesNoise control: YesSafe hearing: YesMy JLab: Yes Dimensions - earbudsHeight: 0.97 inLength: 0.75 inWidth: 0.66 inTotal weight: 7.8 g Dimensions - caseHeight: 1.60 inLength: 2.42 inWidth: 0.98 inWeight: 28.8 g In the boxGO Pop+ earbuds \u00b7 Charging case with integrated USB-C cable \u00b7 3 sets of silicone gel tips (S/M/L) \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/go-pop-plus-true-wireless-earbuds-black",
+   "handle": "go-pop-plus-true-wireless-earbuds-black",
+   "price_range": {
+    "min": {
+     "amount": 1999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2699,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40349687251016",
+     "sku": "EBGPOPPBLK50WEB",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab GO Pop+ in Black are true wireless earbuds built for everyday listening, available in a wide range of colors to match your style. Part of JLab's GO lineup, the starting point in the JLab range designed to deliver reliable wireless audio without overcomplicating things. The charging case has a built-in USB-C cable that folds into the case itself, so there is no separate cable to carry or lose. The same cable works to charge the case from any USB-C port and can also charge your iPhone or Android phone directly from the case when you need it. Each earbud lasts 9 hours on a single charge, with 35 total hours across the case. Quick charge gives you 1 hour of playback from 10 minutes of charging. Bluetooth 5.3 with SBC and AAC codecs. Google Fast Pair makes Android pairing instant. Compatible with iOS and Android, including Siri and Google Assistant. IPX4 rated for sweat and splash resistance. Two MEMS microphones with 1-mic ENC and a DNS algorithm handle call clarity. Be Aware Mode lets in ambient sound for safe outdoor use. Dual Connect lets you use either earbud independently. Touch controls for playback and calls. Voice assistant support built in. EQ3 Sound gives you three preset listening modes: Signature, Bass Boost, and Balanced. The JLab app adds custom EQ, control remapping, noise control settings, safe hearing tools, and My JLab device management. Includes GO Pop+ earbuds, charging case with integrated USB-C cable, 3 sets of silicone gel tips (S/M/L), and a JLab 2-year limited warranty. Specifications AudioDriver: 6mm dynamicFrequency response: 20-20,000 HzImpedance: 16 ohmsEQ3 presets: Signature, Bass Boost, Balanced MicrophoneTotal mics: 2 x MEMSNoise canceling: 1-mic ENC + DNS Algorithm ConnectivityBluetooth: 5.3Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPGoogle Fast Pair: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryPer earbud: 9 hoursTotal playtime: 35 hoursStandby: 60+ hoursQuick charge: 10 min = 1 hourEarbud battery: 45 mAh 3.7V LiPoEarbud charge time: <2.2 hoursCase battery: 380 mAh 3.7V LiPoCase charge time: <2 hoursCharge cable: Integrated USB-CInput power: DC 5V, 1A Fit and comfortFit style: In-ear canalEar tip material: SiliconeEar tip sizes: S / M / LIP rating: IPX4 (earbuds) FeaturesControls: TouchBe Aware Mode: YesDual Connect: YesVoice assistant: Siri, Google AssistantMusic latency: >200ms App (JLab App)Custom EQ: YesCustom controls: YesNoise control: YesSafe hearing: YesMy JLab: Yes Dimensions - earbudsHeight: 0.97 inLength: 0.75 inWidth: 0.66 inTotal weight: 7.8 g Dimensions - caseHeight: 1.60 inLength: 2.42 inWidth: 0.98 inWeight: 28.8 g In the boxGO Pop+ earbuds \u00b7 Charging case with integrated USB-C cable \u00b7 3 sets of silicone gel tips (S/M/L) \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2699,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/GOPop_Black3.jpg?v=1762446393"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40349687251016:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/GOPop_Black3.jpg?v=1762446393"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "__filters:bluetooth|microphone|sweatproof-fitness-proof|sound-equalizer-controls|touch-controls|charging-case",
+    "__icons:battery-32|go-air-pop-smaller-fit|dual-connect|touch-sensors|auto-on|ipx4",
+    "Active Junky x JLab",
+    "Active Junky x JLab Discount Eligible",
+    "Affiliate Samples",
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "back-to-school",
+    "badges-group-1",
+    "Best-Sellers",
+    "black",
+    "Black-Friday-Canada",
+    "bluetooth",
+    "bluetooth earbuds",
+    "Buds-Form-Earbuds",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "ca-free-shipping",
+    "ca-in-stock",
+    "Color: Black",
+    "CULTIVATEPCG",
+    "de-free-shipping",
+    "earbuds",
+    "Earbuds > Listen to Music > Budget Friendly",
+    "Earbuds > Take Calls > Budget Friendly",
+    "Earbuds > Travel > Budget Friendly",
+    "Earbuds > Use at School > Budget Friendly",
+    "Earbuds > Work Out > Budget Friendly",
+    "earbudsupsell",
+    "es-free-shipping",
+    "Featured-Option",
+    "fitness",
+    "Fourth of July",
+    "fr-free-shipping",
+    "halloween deals",
+    "High-School-Grad",
+    "igg23_for_her",
+    "igg23_for_him",
+    "igg23_for_techies",
+    "igg23_for_travel_lovers",
+    "igg24_best_selling_under_50",
+    "igg24_for_fashion_lovers",
+    "igg24_for_her",
+    "igg24_for_him",
+    "igg25_for_fashion_lovers",
+    "igg25_for_her",
+    "impact",
+    "impact - best sellers",
+    "impact - earbuds",
+    "inventory-auto",
+    "it-free-shipping",
+    "JLab Plus",
+    "MCF",
+    "men",
+    "miami",
+    "new",
+    "no-discount",
+    "pink",
+    "Pop-Plus",
+    "RMA ELIGIBLE",
+    "SALE - CA",
+    "SALE - USA",
+    "SHOP APP - EARBUDS",
+    "SHOP APP LISTING",
+    "small-ears",
+    "uk-free-shipping",
+    "uk-in-stock",
+    "under30",
+    "us-free-shipping",
+    "us-in-stock",
+    "USB-C",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "wireless",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304633",
+     "handle": "earbuds",
+     "title": "Earbuds",
+     "description": {
+      "html": "JLab earbuds are perfect for any activity, from workouts to work calls. They're waterproof, comfortable, and come with noise cancellation options. Enjoy easy connectivity with your devices and crystal-clear calls, all while experiencing a customized fit for your ears."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25756137",
+     "handle": "bluetooth-earbuds",
+     "title": "Bluetooth Wireless Earbuds",
+     "description": {
+      "html": "It's time to GO, anywhere, anytime, without the hassle of wires. Enjoy the ease of wireless with JLab Bluetooth earbuds. Perfect for working out, long commutes, or just hanging out by the pool, just connect to your phone or device via Bluetooth and you can get all your tunes on the GO!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/26413645",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893539885128",
+   "title": "GO Wireless Keyboard Black",
+   "description": {
+    "html": "JLab GO Wireless Keyboard is a compact 60% wireless keyboard built for everyday use at home, in the office, or on the go. It connects via 2.4GHz USB-A dongle or Bluetooth 5 and runs on 2 AAA batteries for over 4 months between changes. 78 keys with a media knob in the lightest keyboard in the JLab lineup. Compatible with Windows and Mac. A 60% layout removes the numpad, function row, and navigation cluster found on full-size keyboards, leaving the core alphanumeric keys, modifier keys, and arrow cluster. The result is a small, portable keyboard that fits in a bag without adding bulk. At 305g it is noticeably lighter than every other keyboard in the JLab range. A media knob handles volume and media without leaving the home row. Tilt legs for adjustable typing angle. Scissor switches provide a low-profile keypress with 1.8mm stroke distance and 5 million cycle key life. OS Layout Keys let you switch between Windows and Mac key configurations directly on the keyboard. Connect via 2.4GHz dongle for stable low-latency wireless or Bluetooth 5 for multi-device flexibility. ABS keycaps with ABS top cover. Includes GO Keyboard, 2 AAA batteries, USB-A dongle, and a JLab 2-year limited warranty. Specifications KeyboardForm factor: Mini (60%)Number of keys: 78Switch type: ScissorKey stroke distance: 1.8mm \u00b10.3mmKey return force: 50 \u00b120gfKey operating life: 5 million cyclesKeycap type: ABSTop cover: ABSOS Layout Keys: Yes (Windows and Mac)Hotkeys: YesMedia knob: YesTilt legs: Yes ConnectivityWireless: 2.4GHz (USB-A dongle) + Bluetooth 5Windows compatible: YesMac compatible: Yes BatteryBattery type: 2 x AAA (included)Battery life: 4+ months DimensionsHeight: 0.96 inLength: 11.24 inWidth: 5.13 inWeight: 305 g In the boxGO Keyboard \u00b7 2 x AAA batteries \u00b7 USB-A dongle \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/jlab-go-keyboard-black",
+   "handle": "jlab-go-keyboard-black",
+   "price_range": {
+    "min": {
+     "amount": 1999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342909911112",
+     "sku": "KGOKEYBRBLK4",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab GO Wireless Keyboard is a compact 60% wireless keyboard built for everyday use at home, in the office, or on the go. It connects via 2.4GHz USB-A dongle or Bluetooth 5 and runs on 2 AAA batteries for over 4 months between changes. 78 keys with a media knob in the lightest keyboard in the JLab lineup. Compatible with Windows and Mac. A 60% layout removes the numpad, function row, and navigation cluster found on full-size keyboards, leaving the core alphanumeric keys, modifier keys, and arrow cluster. The result is a small, portable keyboard that fits in a bag without adding bulk. At 305g it is noticeably lighter than every other keyboard in the JLab range. A media knob handles volume and media without leaving the home row. Tilt legs for adjustable typing angle. Scissor switches provide a low-profile keypress with 1.8mm stroke distance and 5 million cycle key life. OS Layout Keys let you switch between Windows and Mac key configurations directly on the keyboard. Connect via 2.4GHz dongle for stable low-latency wireless or Bluetooth 5 for multi-device flexibility. ABS keycaps with ABS top cover. Includes GO Keyboard, 2 AAA batteries, USB-A dongle, and a JLab 2-year limited warranty. Specifications KeyboardForm factor: Mini (60%)Number of keys: 78Switch type: ScissorKey stroke distance: 1.8mm \u00b10.3mmKey return force: 50 \u00b120gfKey operating life: 5 million cyclesKeycap type: ABSTop cover: ABSOS Layout Keys: Yes (Windows and Mac)Hotkeys: YesMedia knob: YesTilt legs: Yes ConnectivityWireless: 2.4GHz (USB-A dongle) + Bluetooth 5Windows compatible: YesMac compatible: Yes BatteryBattery type: 2 x AAA (included)Battery life: 4+ months DimensionsHeight: 0.96 inLength: 11.24 inWidth: 5.13 inWeight: 305 g In the boxGO Keyboard \u00b7 2 x AAA batteries \u00b7 USB-A dongle \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/GOKeyboard2-min.jpg?v=1762446340"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342909911112:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/GOKeyboard2-min.jpg?v=1762446340",
+     "alt_text": "GO Wireless Keyboard Black| 39457511407688"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-7-9-12-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "__filters:bluetooth|microphone|enhanced-calls|quick-mute|over-ear-comfort|multipoint",
+    "__icons:connection|device-connection|hotkeys|short-keys|battery|compatibility-windows|",
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "back-to-school",
+    "badges-group-1",
+    "bluetooth",
+    "bluetooth multipoint",
+    "bts-promo",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "ca-in-stock",
+    "classroom",
+    "Featured-Option",
+    "High-School-Grad",
+    "impact - gaming",
+    "inventory-auto",
+    "MCF",
+    "men",
+    "No Stock - CA",
+    "No Stock - DE",
+    "NOTINPRIMEDAY23",
+    "office",
+    "RMA ELIGIBLE",
+    "SALE - CA",
+    "uk-free-shipping",
+    "uk-in-stock",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "women",
+    "work-from-home",
+    "work_series"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265965502536",
+     "handle": "bluetooth-multipoint",
+     "title": "Bluetooth Multipoint",
+     "description": {
+      "html": "We don't just make products, we design technology to improve people's lives. Bluetooth multipoint is a feature that allows headphones and earbuds to connect and maintain a connection to multiple devices at once. Learn more about Bluetooth multipoint"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266382573640",
+     "handle": "go-work-series",
+     "title": "Go Work Series",
+     "description": {
+      "html": "GO Series Surprisingly Compact. Surprisingly Awesome. When your workspace needs to be as flexible as you - the GO Series is perfect for your mobile work set-up. Great for travel, setting up at your favorite coffee shop, and even at your kitchen table, the GO Series is compact and portable with surprising value. Complete your minimalist work setup with JLab."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266528751688",
+     "handle": "wireless-keyboards",
+     "title": "Keyboards",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893536641096",
+   "title": "Epic Wireless Keyboard Black",
+   "description": {
+    "html": "JLab Epic Wireless Keyboard is a full-size wireless keyboard built for work, connecting via 2.4GHz USB-A dongle or Bluetooth 5.2. Scissor switches deliver a quiet, shallow keypress suited for office and home office use. 108 keys with a numpad, a media knob, and backlit keys. Compatible with Windows and Mac. Scissor switches provide a low-profile keypress with 1.8mm stroke distance and 5 million cycle key life - quieter and shallower than mechanical switches, making them well suited for shared workspaces and long typing sessions. OS Layout Keys let you switch between Windows and Mac key configurations directly on the keyboard, so the same keyboard works natively on both operating systems without remapping. Full-size (100%) layout with a numpad, function row, navigation cluster, and arrow keys all intact. A media knob handles volume and media without leaving the home row. Tilt legs for adjustable typing angle. Coated ABS top cover. ABS keycaps. Battery life runs over 2 years with the backlight off. Charges via USB-C. Connect via 2.4GHz dongle for a stable low-latency wireless connection or Bluetooth 5.2 for multi-device flexibility. The JLab Work app handles saved profiles and custom key configuration. Includes Epic Wireless Keyboard, USB-A dongle, and a JLab 2-year limited warranty. Specifications KeyboardForm factor: Full size (100%)Number of keys: 108Number pad: YesSwitch type: ScissorKey stroke distance: 1.8mm \u00b10.3mmKey return force: 75 \u00b110gfKey operating life: 5 million cyclesKeycap type: ABSTop cover: Coated ABSOS Layout Keys: Yes (Windows and Mac)Hotkeys: YesIlluminated keys: YesMedia knob: YesTilt legs: Yes ConnectivityWireless: 2.4GHz (USB-A dongle) + Bluetooth 5.2Windows compatible: YesMac compatible: Yes BatteryBattery life (backlight off): 2+ yearsCharge port: USB-CInput power: 3.3-4.2V App (JLab Work)Saved profiles: YesCustom key configuration: Yes DimensionsHeight: 1.25 inLength: 16.75 inWidth: 5.50 inWeight: 783 g In the boxEpic Wireless Keyboard \u00b7 USB-A dongle \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/epic-keyboard-black",
+   "handle": "epic-keyboard-black",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342906732616",
+     "sku": "KEPICKEYRBLK4",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab Epic Wireless Keyboard is a full-size wireless keyboard built for work, connecting via 2.4GHz USB-A dongle or Bluetooth 5.2. Scissor switches deliver a quiet, shallow keypress suited for office and home office use. 108 keys with a numpad, a media knob, and backlit keys. Compatible with Windows and Mac. Scissor switches provide a low-profile keypress with 1.8mm stroke distance and 5 million cycle key life - quieter and shallower than mechanical switches, making them well suited for shared workspaces and long typing sessions. OS Layout Keys let you switch between Windows and Mac key configurations directly on the keyboard, so the same keyboard works natively on both operating systems without remapping. Full-size (100%) layout with a numpad, function row, navigation cluster, and arrow keys all intact. A media knob handles volume and media without leaving the home row. Tilt legs for adjustable typing angle. Coated ABS top cover. ABS keycaps. Battery life runs over 2 years with the backlight off. Charges via USB-C. Connect via 2.4GHz dongle for a stable low-latency wireless connection or Bluetooth 5.2 for multi-device flexibility. The JLab Work app handles saved profiles and custom key configuration. Includes Epic Wireless Keyboard, USB-A dongle, and a JLab 2-year limited warranty. Specifications KeyboardForm factor: Full size (100%)Number of keys: 108Number pad: YesSwitch type: ScissorKey stroke distance: 1.8mm \u00b10.3mmKey return force: 75 \u00b110gfKey operating life: 5 million cyclesKeycap type: ABSTop cover: Coated ABSOS Layout Keys: Yes (Windows and Mac)Hotkeys: YesIlluminated keys: YesMedia knob: YesTilt legs: Yes ConnectivityWireless: 2.4GHz (USB-A dongle) + Bluetooth 5.2Windows compatible: YesMac compatible: Yes BatteryBattery life (backlight off): 2+ yearsCharge port: USB-CInput power: 3.3-4.2V App (JLab Work)Saved profiles: YesCustom key configuration: Yes DimensionsHeight: 1.25 inLength: 16.75 inWidth: 5.50 inWeight: 783 g In the boxEpic Wireless Keyboard \u00b7 USB-A dongle \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/EpicKeyboardfront2-min.jpg?v=1762446277"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342906732616:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/EpicKeyboardfront2-min.jpg?v=1762446277",
+     "alt_text": "Epic Wireless Keyboard Black| 39457549418568"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-7-9-12-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "__icons:connection|device-connection|number-pads|short-keys|media-knob|customization|compatibility-windows",
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "au-free-shipping",
+    "au-in-stock",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "back-to-school",
+    "badges-group-1",
+    "bluetooth",
+    "bts-promo",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "classroom",
+    "every you - every day",
+    "Featured-Option",
+    "gab-tag",
+    "igg23_for_techies",
+    "igg25_for_him",
+    "igg25_tech_lover",
+    "impact - gaming",
+    "inventory-auto",
+    "MCF",
+    "No Stock - CA",
+    "No Stock - DE",
+    "no-discount",
+    "office",
+    "RMA ELIGIBLE",
+    "sale",
+    "uk-free-shipping",
+    "uk-in-stock",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "work-from-home",
+    "work_series"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266528751688",
+     "handle": "wireless-keyboards",
+     "title": "Keyboards",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266529472584",
+     "handle": "epic-work-series",
+     "title": "Epic Work Series",
+     "description": {
+      "html": "EPIC SERIES INNOVATE EVERYTHING. THE ULTIMATE EXPERIENCE FOR YOU. When your job requires the ultimate focus and efficiency, you need the gear to support your intensity. Enjoy the ultimate work set-up with the Epic series keyboards, mice, webcams, and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266531602504",
+     "handle": "work-done-better",
+     "title": "Work Done Better",
+     "description": {
+      "html": "Work Smarter with JLab's Complete Work Collection Shop our full range of work products designed for clear calls, lasting comfort, and seamless multitasking. From noise-canceling headsets to keyboards, mice, webcams, microphones, and bundles, JLab has everything students and professionals need to stay productive wherever they work."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893539426376",
+   "title": "GO Wireless Mouse Black",
+   "description": {
+    "html": "The GO Wireless Mouse Black is a compact wireless mouse built to switch between a Windows PC, Mac, or Chrome OS device without re-pairing each time. It ships in a single black colorway. The mouse uses Bluetooth multipoint to stay paired to two devices at once and switches between them with a button press, letting one mouse serve a laptop and a phone side by side without disconnecting and reconnecting. The mouse runs on a single AA battery rather than a built-in rechargeable cell, so power can be swapped out on the go instead of waiting on a charge. Connectivity is dual mode: a 2.4GHz USB-A wireless dongle handles one connection for the most stable link, while Bluetooth 5.0 pairs directly to a second device without the dongle plugged in. Polling rate differs by connection type, 125Hz over 2.4GHz and 115Hz over Bluetooth. The mouse works with Windows 10 or later, macOS 10.15 or later, Chrome OS, and Microsoft Surface devices. The mouse has an ambidextrous shape for either hand and measures 3.9 inches tall, 2.52 inches long, and 1.54 inches wide, weighing 58.4 grams total. It has 4 buttons, an optical sensor rated at 3000 frames per second, and a maximum tracking speed of 28 inches per second. DPI is adjustable across three settings: 800, 1200, and 1600. Clicks are silent, with a button force of 100 grams (\u00b1 10g) and a scroll wheel force of 20 grams (\u00b1 5g). Includes: the GO Wireless Mouse, 1 AA battery, a USB-A wireless dongle, and a JLab 2 year limited warranty. Specifications AppApp support: No ConnectivityWireless: 2.4GHz + Bluetooth 5.0Dongle: USB-AOS compatibility: Windows 10+, macOS 10.15+, Chrome OS, Surface DimensionsHeight: 3.9 inLength: 2.52 inWidth: 1.54 inWeight: 58.4 g MouseSensor type: OpticalDPI: 800 / 1200 / 1600Adjustable DPI: YesNumber of buttons: 4Form factor: Ambidextrous2.4GHz polling rate: 125 HzBluetooth polling rate: 115 HzFrame rate: 3000 frames/secMax speed: 28 IPSButton acting force: 100 \u00b1 10 gWheel acting force: 20 \u00b1 5 gSilent clicks: Yes BatteryType: AA (not rechargeable)Working current: 18 mA In the boxGO Wireless Mouse \u00b7 1 AA battery \u00b7 USB-A wireless dongle \u00b7 JLab 2 year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/go-wireless-mouse-black",
+   "handle": "go-wireless-mouse-black",
+   "price_range": {
+    "min": {
+     "amount": 1499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342909517896",
+     "sku": "MGOMOUSERBLK124",
+     "title": "Default Title",
+     "description": {
+      "html": "The GO Wireless Mouse Black is a compact wireless mouse built to switch between a Windows PC, Mac, or Chrome OS device without re-pairing each time. It ships in a single black colorway. The mouse uses Bluetooth multipoint to stay paired to two devices at once and switches between them with a button press, letting one mouse serve a laptop and a phone side by side without disconnecting and reconnecting. The mouse runs on a single AA battery rather than a built-in rechargeable cell, so power can be swapped out on the go instead of waiting on a charge. Connectivity is dual mode: a 2.4GHz USB-A wireless dongle handles one connection for the most stable link, while Bluetooth 5.0 pairs directly to a second device without the dongle plugged in. Polling rate differs by connection type, 125Hz over 2.4GHz and 115Hz over Bluetooth. The mouse works with Windows 10 or later, macOS 10.15 or later, Chrome OS, and Microsoft Surface devices. The mouse has an ambidextrous shape for either hand and measures 3.9 inches tall, 2.52 inches long, and 1.54 inches wide, weighing 58.4 grams total. It has 4 buttons, an optical sensor rated at 3000 frames per second, and a maximum tracking speed of 28 inches per second. DPI is adjustable across three settings: 800, 1200, and 1600. Clicks are silent, with a button force of 100 grams (\u00b1 10g) and a scroll wheel force of 20 grams (\u00b1 5g). Includes: the GO Wireless Mouse, 1 AA battery, a USB-A wireless dongle, and a JLab 2 year limited warranty. Specifications AppApp support: No ConnectivityWireless: 2.4GHz + Bluetooth 5.0Dongle: USB-AOS compatibility: Windows 10+, macOS 10.15+, Chrome OS, Surface DimensionsHeight: 3.9 inLength: 2.52 inWidth: 1.54 inWeight: 58.4 g MouseSensor type: OpticalDPI: 800 / 1200 / 1600Adjustable DPI: YesNumber of buttons: 4Form factor: Ambidextrous2.4GHz polling rate: 125 HzBluetooth polling rate: 115 HzFrame rate: 3000 frames/secMax speed: 28 IPSButton acting force: 100 \u00b1 10 gWheel acting force: 20 \u00b1 5 gSilent clicks: Yes BatteryType: AA (not rechargeable)Working current: 18 mA In the boxGO Wireless Mouse \u00b7 1 AA battery \u00b7 USB-A wireless dongle \u00b7 JLab 2 year limited warranty"
+     },
+     "price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/GOMouse3-min_50cbaccc-84ee-4bcc-91ee-becc86469ee0.jpg?v=1762446331"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342909517896:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/GOMouse3-min_50cbaccc-84ee-4bcc-91ee-becc86469ee0.jpg?v=1762446331",
+     "alt_text": "GO Wireless Mouse Battery| 39457543323720"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-7-9-12-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "__filters:bluetooth|microphone|enhanced-calls|quick-mute|over-ear-comfort|multipoint",
+    "__icons:connection|device-connection|mouse-on-the-go|battery-6-months|silent-click|compatibility-rh-lh",
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "back-to-school",
+    "badges-group-1",
+    "bluetooth",
+    "bluetooth multipoint",
+    "bts-promo",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "classroom",
+    "de-free-shipping",
+    "es-free-shipping",
+    "Featured-Option",
+    "fr-free-shipping",
+    "High-School-Grad",
+    "impact - gaming",
+    "inventory-auto",
+    "it-free-shipping",
+    "MCF",
+    "men",
+    "No Stock - CA",
+    "NOTINPRIMEDAY23",
+    "office",
+    "RMA ELIGIBLE",
+    "uk-free-shipping",
+    "uk-in-stock",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "women",
+    "work-from-home",
+    "work_series"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265965502536",
+     "handle": "bluetooth-multipoint",
+     "title": "Bluetooth Multipoint",
+     "description": {
+      "html": "We don't just make products, we design technology to improve people's lives. Bluetooth multipoint is a feature that allows headphones and earbuds to connect and maintain a connection to multiple devices at once. Learn more about Bluetooth multipoint"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266382573640",
+     "handle": "go-work-series",
+     "title": "Go Work Series",
+     "description": {
+      "html": "GO Series Surprisingly Compact. Surprisingly Awesome. When your workspace needs to be as flexible as you - the GO Series is perfect for your mobile work set-up. Great for travel, setting up at your favorite coffee shop, and even at your kitchen table, the GO Series is compact and portable with surprising value. Complete your minimalist work setup with JLab."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266512760904",
+     "handle": "wireless-mice",
+     "title": "Mice",
+     "description": {
+      "html": "Boost your workflow with ergonomic wireless mice featuring precision tracking, customizable buttons, and comfortable designs that reduce wrist strain during long work sessions."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6894485569608",
+   "title": "GO Sport+ True Wireless Earbuds Graphite",
+   "description": {
+    "html": "JLab GO Sport+ in Graphite are true wireless sport earbuds built for active use - running, workouts, and anything where a standard earbud fit is not secure enough. Part of JLab's GO lineup, the starting point in the JLab range designed to deliver reliable wireless audio without overcomplicating things. The earhook wraps around the ear for a locked-in fit during movement, while the in-ear canal bud delivers sound directly. IP55 rated for dust and water resistance, handling heavy sweat, rain, and splash exposure that standard earbuds cannot. The charging case has a built-in USB-C cable that folds into the case itself, so there is no separate cable to carry or lose. The same cable works to charge the case from any USB-C port and can also charge your iPhone or Android phone directly from the case when you need it. Each earbud lasts 9 hours on a single charge, with 35 total hours across the case. Quick charge gives you 1 hour of playback from 10 minutes of charging. Bluetooth 5.3 with SBC and AAC codecs. Google Fast Pair makes Android pairing instant. Compatible with iOS and Android, including Siri and Google Assistant. Two MEMS microphones with 1-mic ENC and a DNS algorithm handle call clarity. Be Aware Mode lets in ambient sound for safe outdoor use. Dual Connect lets you use either earbud independently. Touch controls for playback and calls. Voice assistant support built in. EQ3 Sound gives you three preset listening modes: Signature, Bass Boost, and Balanced. The JLab app adds custom EQ, control remapping, noise control settings, safe hearing tools, and My JLab device management. Includes GO Sport+ earbuds, charging case with integrated USB-C cable, 3 sets of silicone gel tips (S/M/L), and a JLab 2-year limited warranty. Specifications AudioDriver: 6mm dynamicFrequency response: 20-20,000 HzImpedance: 16 ohmsEQ3 presets: Signature, Bass Boost, Balanced MicrophoneTotal mics: 2 x MEMSNoise canceling: 1-mic ENC + DNS Algorithm ConnectivityBluetooth: 5.3Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPGoogle Fast Pair: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryPer earbud: 9 hoursTotal playtime: 35 hoursStandby: 60+ hoursQuick charge: 10 min = 1 hourEarbud battery: 45 mAh 3.7V LiPoEarbud charge time: <2.2 hoursCase battery: 380 mAh 3.7V LiPoCase charge time: <2 hoursCharge cable: Integrated USB-CInput power: DC 5V, 1A Fit and comfortFit style: In-ear canal with earhookEar tip material: SiliconeEar tip sizes: S / M / LIP rating: IP55 (earbuds) FeaturesControls: TouchBe Aware Mode: YesDual Connect: YesVoice assistant: Siri, Google AssistantMusic latency: >200ms App (JLab App)Custom EQ: YesCustom controls: YesNoise control: YesSafe hearing: YesMy JLab: Yes Dimensions - earbudsHeight: 0.98 inLength: 1.35 inWidth: 1.90 inTotal weight: 13.1 g Dimensions - caseHeight: 1.20 inLength: 3.23 inWidth: 2.33 inWeight: 45.8 g In the boxGO Sport+ earbuds \u00b7 Charging case with integrated USB-C cable \u00b7 3 sets of silicone gel tips (S/M/L) \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/go-sport-plus-earbuds-graphite",
+   "handle": "go-sport-plus-earbuds-graphite",
+   "price_range": {
+    "min": {
+     "amount": 2339,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2339,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40348615704648",
+     "sku": "EBGSPRTPGPH50WEB",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab GO Sport+ in Graphite are true wireless sport earbuds built for active use - running, workouts, and anything where a standard earbud fit is not secure enough. Part of JLab's GO lineup, the starting point in the JLab range designed to deliver reliable wireless audio without overcomplicating things. The earhook wraps around the ear for a locked-in fit during movement, while the in-ear canal bud delivers sound directly. IP55 rated for dust and water resistance, handling heavy sweat, rain, and splash exposure that standard earbuds cannot. The charging case has a built-in USB-C cable that folds into the case itself, so there is no separate cable to carry or lose. The same cable works to charge the case from any USB-C port and can also charge your iPhone or Android phone directly from the case when you need it. Each earbud lasts 9 hours on a single charge, with 35 total hours across the case. Quick charge gives you 1 hour of playback from 10 minutes of charging. Bluetooth 5.3 with SBC and AAC codecs. Google Fast Pair makes Android pairing instant. Compatible with iOS and Android, including Siri and Google Assistant. Two MEMS microphones with 1-mic ENC and a DNS algorithm handle call clarity. Be Aware Mode lets in ambient sound for safe outdoor use. Dual Connect lets you use either earbud independently. Touch controls for playback and calls. Voice assistant support built in. EQ3 Sound gives you three preset listening modes: Signature, Bass Boost, and Balanced. The JLab app adds custom EQ, control remapping, noise control settings, safe hearing tools, and My JLab device management. Includes GO Sport+ earbuds, charging case with integrated USB-C cable, 3 sets of silicone gel tips (S/M/L), and a JLab 2-year limited warranty. Specifications AudioDriver: 6mm dynamicFrequency response: 20-20,000 HzImpedance: 16 ohmsEQ3 presets: Signature, Bass Boost, Balanced MicrophoneTotal mics: 2 x MEMSNoise canceling: 1-mic ENC + DNS Algorithm ConnectivityBluetooth: 5.3Codecs: SBC, AACRange: 30+ ftSupport protocols: HSP/HFP/A2DP/AVRCPGoogle Fast Pair: YesiOS compatible: YesAndroid compatible: YesSiri: YesGoogle Assistant: Yes BatteryPer earbud: 9 hoursTotal playtime: 35 hoursStandby: 60+ hoursQuick charge: 10 min = 1 hourEarbud battery: 45 mAh 3.7V LiPoEarbud charge time: <2.2 hoursCase battery: 380 mAh 3.7V LiPoCase charge time: <2 hoursCharge cable: Integrated USB-CInput power: DC 5V, 1A Fit and comfortFit style: In-ear canal with earhookEar tip material: SiliconeEar tip sizes: S / M / LIP rating: IP55 (earbuds) FeaturesControls: TouchBe Aware Mode: YesDual Connect: YesVoice assistant: Siri, Google AssistantMusic latency: >200ms App (JLab App)Custom EQ: YesCustom controls: YesNoise control: YesSafe hearing: YesMy JLab: Yes Dimensions - earbudsHeight: 0.98 inLength: 1.35 inWidth: 1.90 inTotal weight: 13.1 g Dimensions - caseHeight: 1.20 inLength: 3.23 inWidth: 2.33 inWeight: 45.8 g In the boxGO Sport+ earbuds \u00b7 Charging case with integrated USB-C cable \u00b7 3 sets of silicone gel tips (S/M/L) \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 2339,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/JLab-Go-AIr-Sport-True_Wireless-Sport-Earbuds-Graphite_d60b8660-b8bd-48cd-bafc-fa3dc927a826.jpg?v=1759297117"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40348615704648:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/JLab-Go-AIr-Sport-True_Wireless-Sport-Earbuds-Graphite_d60b8660-b8bd-48cd-bafc-fa3dc927a826.jpg?v=1759297117"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "__filters:bluetooth|microphone|sweatproof-fitness-proof|sound-equalizer-controls|charging-case|touch-controls",
+    "__icons:battery-32|ip55|earhook|dual-connect|eq3|c3-calling",
+    "Active Junky x JLab",
+    "Active Junky x JLab Discount Eligible",
+    "Affiliate Samples",
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "au-in-stock",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "badges-group-1",
+    "Best-Sellers",
+    "black",
+    "Black-Friday-Canada",
+    "bluetooth",
+    "bluetooth earbuds",
+    "bulk-order-eligible",
+    "ca-free-shipping",
+    "ca-in-stock",
+    "Color: Black",
+    "de-free-shipping",
+    "earbuds",
+    "Earbuds > Work Out > Budget Friendly",
+    "es-free-shipping",
+    "Featured-Option",
+    "fitness",
+    "for every you - fitness",
+    "fr-free-shipping",
+    "Go Sport+",
+    "halloween deals",
+    "igg23_for_active_living",
+    "igg23_for_her",
+    "igg23_for_him",
+    "igg23_for_travel_lovers",
+    "igg24_best_selling_under_50",
+    "igg24_for_her",
+    "igg24_for_him",
+    "igg25_for_wellness",
+    "igg25_sports_fans",
+    "igg26_for_wellness",
+    "impact",
+    "impact - best sellers",
+    "impact - earbuds",
+    "impact - fitness",
+    "inventory-auto",
+    "it-free-shipping",
+    "JLab Plus",
+    "MCF",
+    "men",
+    "no-discount",
+    "PGA-TOUR",
+    "RMA ELIGIBLE",
+    "SALE - CA",
+    "SALE - UK",
+    "SALE - USA",
+    "SHOP APP - EARBUDS",
+    "SHOP APP LISTING",
+    "sport",
+    "Sport-Earbuds",
+    "uk-free-shipping",
+    "uk-in-stock",
+    "us-free-shipping",
+    "us-in-stock",
+    "USB-C",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "wireless",
+    "women"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304633",
+     "handle": "earbuds",
+     "title": "Earbuds",
+     "description": {
+      "html": "JLab earbuds are perfect for any activity, from workouts to work calls. They're waterproof, comfortable, and come with noise cancellation options. Enjoy easy connectivity with your devices and crystal-clear calls, all while experiencing a customized fit for your ears."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25756137",
+     "handle": "bluetooth-earbuds",
+     "title": "Bluetooth Wireless Earbuds",
+     "description": {
+      "html": "It's time to GO, anywhere, anytime, without the hassle of wires. Enjoy the ease of wireless with JLab Bluetooth earbuds. Perfect for working out, long commutes, or just hanging out by the pool, just connect to your phone or device via Bluetooth and you can get all your tunes on the GO!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/56582897790",
+     "handle": "true-wireless-earbuds",
+     "title": "True Wireless Earbuds",
+     "description": {
+      "html": "From all-around performance to the ultimate experience with Smart ANC, JLab continues to build a reputation for engineering feature-packed products at price points below the established leaders in the space. Compare your top features or uses below to find YOUR true wireless. GO Air Great for everyday use.Starting at $20. JBuds Air Great all-around performance for any lifestyle. Starting at $50. Epic Air The ultimate true wireless experience with Smart ANC.Starting at $99."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893539000392",
+   "title": "Go Pop USB Webcam Black",
+   "description": {
+    "html": "JLab GO Pop USB Webcam is a 1080p plug-and-play webcam built for video calls, remote work, and home office setups. Connects via USB-A with a 6.5ft cable, no software or drivers required. Privacy cover, auto exposure, auto white balance, and low brightness compensation are all built in. The 1080p sensor captures at 30fps with an 80-degree field of view - wide enough to show your face and upper body without distortion. Fixed focus keeps the image sharp for standard desk distances without requiring manual adjustment. Auto exposure adjusts the image brightness automatically based on your lighting conditions, and low brightness compensation helps maintain a clear image in dim environments. Auto white balance corrects for different light sources - warm bulbs, cool office lighting, or daylight. A built-in privacy cover slides over the lens when the camera isn't in use. No microphone is included - audio input requires a separate microphone or headset. The 6.5ft USB-A cable gives you flexibility in positioning the camera on a monitor, laptop, or tripod mount. Compatible with any device with a USB-A port and a standard video calling application. Includes GO Pop Webcam and a JLab 2-year limited warranty. Specifications VideoResolution: 1080pFrames per second: 30 fpsMegapixels: 2.1Field of view: 80\u00b0Focus: FixedAuto exposure: YesAuto white balance: YesLow brightness compensation: Yes MicrophoneBuilt-in mic: No ConnectivityPlug type: USB-ACable length: 6.5 ft FeaturesPrivacy cover: Yes DimensionsHeight: 1.73 inLength: 2.76 inWidth: 2.05 in In the boxGO Pop Webcam \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/go-pop-webcam-black",
+   "handle": "go-pop-webcam-black",
+   "price_range": {
+    "min": {
+     "amount": 2499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342909059144",
+     "sku": "WPOPCAMRBLK124",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab GO Pop USB Webcam is a 1080p plug-and-play webcam built for video calls, remote work, and home office setups. Connects via USB-A with a 6.5ft cable, no software or drivers required. Privacy cover, auto exposure, auto white balance, and low brightness compensation are all built in. The 1080p sensor captures at 30fps with an 80-degree field of view - wide enough to show your face and upper body without distortion. Fixed focus keeps the image sharp for standard desk distances without requiring manual adjustment. Auto exposure adjusts the image brightness automatically based on your lighting conditions, and low brightness compensation helps maintain a clear image in dim environments. Auto white balance corrects for different light sources - warm bulbs, cool office lighting, or daylight. A built-in privacy cover slides over the lens when the camera isn't in use. No microphone is included - audio input requires a separate microphone or headset. The 6.5ft USB-A cable gives you flexibility in positioning the camera on a monitor, laptop, or tripod mount. Compatible with any device with a USB-A port and a standard video calling application. Includes GO Pop Webcam and a JLab 2-year limited warranty. Specifications VideoResolution: 1080pFrames per second: 30 fpsMegapixels: 2.1Field of view: 80\u00b0Focus: FixedAuto exposure: YesAuto white balance: YesLow brightness compensation: Yes MicrophoneBuilt-in mic: No ConnectivityPlug type: USB-ACable length: 6.5 ft FeaturesPrivacy cover: Yes DimensionsHeight: 1.73 inLength: 2.76 inWidth: 2.05 in In the boxGO Pop Webcam \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/jlab-pop-webcam-angle-2_067915a2-5d1a-4db1-ba90-d77275f2a672.jpg?v=1762446323"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342909059144:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/jlab-pop-webcam-angle-2_067915a2-5d1a-4db1-ba90-d77275f2a672.jpg?v=1762446323",
+     "alt_text": "Pop Webcam Black | 39976490139720"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/co-2-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Affiliate Samples",
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "back-to-school",
+    "Best-Sellers",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "Featured-Option",
+    "High-School-Grad",
+    "igg24_for_her",
+    "igg24_for_him",
+    "impact - best sellers",
+    "impact - gaming",
+    "inventory-auto",
+    "new",
+    "new-work",
+    "No Stock - CA",
+    "No Stock - DE",
+    "No Stock - UK",
+    "office",
+    "PC-Gaming",
+    "RMA ELIGIBLE",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "work-from-home"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266382573640",
+     "handle": "go-work-series",
+     "title": "Go Work Series",
+     "description": {
+      "html": "GO Series Surprisingly Compact. Surprisingly Awesome. When your workspace needs to be as flexible as you - the GO Series is perfect for your mobile work set-up. Great for travel, setting up at your favorite coffee shop, and even at your kitchen table, the GO Series is compact and portable with surprising value. Complete your minimalist work setup with JLab."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266512859208",
+     "handle": "web-cameras",
+     "title": "Webcams",
+     "description": {
+      "html": "Make a lasting impression with high-definition web cameras featuring auto-focus technology, adjustable lighting, and wide-angle views for flawless video meetings and content creation."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266531602504",
+     "handle": "work-done-better",
+     "title": "Work Done Better",
+     "description": {
+      "html": "Work Smarter with JLab's Complete Work Collection Shop our full range of work products designed for clear calls, lasting comfort, and seamless multitasking. From noise-canceling headsets to keyboards, mice, webcams, microphones, and bundles, JLab has everything students and professionals need to stay productive wherever they work."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266724507720",
+     "handle": "college-back-to-campus",
+     "title": "College: Back To Campus",
+     "description": {
+      "html": "Power through college with JLab's premium audio gear, productivity accessories, and dorm essentials featuring advanced noise cancellation, long battery life, and portable designs. From all-night study sessions to dorm parties, our college collection includes everything students need for campus life at student-friendly prices."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893537034312",
+   "title": "GO Cam White",
+   "description": {
+    "html": "JLab GO Cam in White is a 1080p plug-and-play webcam with a built-in omni-directional microphone, built for video calls, remote work, and home office setups. Connects via USB-A with a 6.5ft cable, no software or drivers required. Auto exposure, auto white balance, and low brightness compensation all built in. The 1/2.7\" CMOS sensor captures 1080p at 30fps with a 75-degree field of view and a 4.4mm focal length. Fixed focus stays sharp from 30cm to infinity - no manual adjustment needed for standard desk distances. Auto exposure adjusts image brightness automatically based on your lighting, and low brightness compensation maintains a clear image in dim environments. Auto white balance corrects for different light sources. The built-in omni-directional microphone picks up voice from all directions with a frequency response of 30Hz to 8kHz - sufficient for clear call audio without a separate microphone. The 6.5ft USB-A cable gives you flexibility in positioning on a monitor, laptop, or tripod mount. Includes GO Cam Webcam and a JLab 2-year limited warranty. Specifications VideoResolution: 1080pFrames per second: 30 fpsMegapixels: 2.0Image sensor: 1/2.7\" CMOSField of view: 75\u00b0Focal length: 4.4mmFocal range: 30cm to infinityFocus: FixedAuto exposure: YesAuto white balance: YesLow brightness compensation: Yes MicrophoneTotal mics: 1Directional: Omni-directionalFrequency response: 30Hz-8kHz ConnectivityPlug type: USB-ACable length: 6.5 ft DimensionsHeight: 2.01 inLength: 2.76 inWidth: 2.20 in In the boxGO Cam Webcam \u00b7 JLab 2-year limited warranty"
+   },
+   "url": "https://www.jlab.com/products/go-cam-white",
+   "handle": "go-cam-white",
+   "price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342907125832",
+     "sku": "WGOCAMRWHT124",
+     "title": "Default Title",
+     "description": {
+      "html": "JLab GO Cam in White is a 1080p plug-and-play webcam with a built-in omni-directional microphone, built for video calls, remote work, and home office setups. Connects via USB-A with a 6.5ft cable, no software or drivers required. Auto exposure, auto white balance, and low brightness compensation all built in. The 1/2.7\" CMOS sensor captures 1080p at 30fps with a 75-degree field of view and a 4.4mm focal length. Fixed focus stays sharp from 30cm to infinity - no manual adjustment needed for standard desk distances. Auto exposure adjusts image brightness automatically based on your lighting, and low brightness compensation maintains a clear image in dim environments. Auto white balance corrects for different light sources. The built-in omni-directional microphone picks up voice from all directions with a frequency response of 30Hz to 8kHz - sufficient for clear call audio without a separate microphone. The 6.5ft USB-A cable gives you flexibility in positioning on a monitor, laptop, or tripod mount. Includes GO Cam Webcam and a JLab 2-year limited warranty. Specifications VideoResolution: 1080pFrames per second: 30 fpsMegapixels: 2.0Image sensor: 1/2.7\" CMOSField of view: 75\u00b0Focal length: 4.4mmFocal range: 30cm to infinityFocus: FixedAuto exposure: YesAuto white balance: YesLow brightness compensation: Yes MicrophoneTotal mics: 1Directional: Omni-directionalFrequency response: 30Hz-8kHz ConnectivityPlug type: USB-ACable length: 6.5 ft DimensionsHeight: 2.01 inLength: 2.76 inWidth: 2.20 in In the boxGO Cam Webcam \u00b7 JLab 2-year limited warranty"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/GOCam1white-min.jpg?v=1762446284"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342907125832:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/GOCam1white-min.jpg?v=1762446284",
+     "alt_text": "GO Cam White| 39462605389896"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/co-2-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "back-to-school",
+    "badges-group-1",
+    "Best-Sellers",
+    "bluetooth",
+    "bts-promo",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "ca-in-stock",
+    "CA-welcome-discount-eligible",
+    "classroom",
+    "impact - gaming",
+    "inventory-auto",
+    "MCF",
+    "men",
+    "No Stock - CA",
+    "No Stock - DE",
+    "No Stock - UK",
+    "NOTINPRIMEDAY23",
+    "office",
+    "Podcasting",
+    "RMA ELIGIBLE",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "women",
+    "work-from-home",
+    "work_series"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/266382573640",
+     "handle": "go-work-series",
+     "title": "Go Work Series",
+     "description": {
+      "html": "GO Series Surprisingly Compact. Surprisingly Awesome. When your workspace needs to be as flexible as you - the GO Series is perfect for your mobile work set-up. Great for travel, setting up at your favorite coffee shop, and even at your kitchen table, the GO Series is compact and portable with surprising value. Complete your minimalist work setup with JLab."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269455261768",
+     "handle": "podcasting",
+     "title": "Podcasting",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269467091016",
+     "handle": "work-from-home",
+     "title": "Work From Home",
+     "description": {
+      "html": "Upgrade your work from home setup with JLab's high-quality keyboards, headsets, mice and webcams. Improve your productivity and stay connected with coworkers and sales calls. Shop now and enjoy fast, free shipping with products at unbeatable prices."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6893539754056",
+   "title": "GO Work POP Wireless On-Ear Headset Black",
+   "description": {
+    "html": "FEATURES Wireless lightweight headset with multipoint and 50+ hours playtime \u2022 50+ Hours worktime\u2022 Bluetooth Multipoint: Connect to any two devices \u2022 Lab Quality Sound with EQ2 Voice or Music Mode \u2022 Rotating Boom Mic with noise canceling MEMS microphone \u2022 Lightweight design with fabric Cloud Foam Earcups \u2022 Total control of calls and music PACKAGE INCLUDES \u2022 GO Work POP Wireless On-Ear Headset\u2022 JLab Two Year Warranty SPECIFICATIONS Audio FeaturesControls: ButtonsEQ3 Sound: Voice/MusicIncludes: GO Work POP Headset and JLab 2 Year Limited WarrantyMultipoint: YesVoice Assistance: Yes MicrophoneBoom Mic: YesEnvironmental Noise Canceling Microphones: 2-mic ENCFrequency Response: 100 \u2013 10 kHzImpedance: 300 ohmTotal Microphone(s): MEMS ConnectivityBluetooth Version: 5.3Codecs: SBC, AACLatency (Movie Mode): <200msLatency (Music): >200msRange: 30+ feetSupport Protocols: HSP / HFP / A2DP / AVRCP Audio SpecsDriver: 40mm DynamicFrequency Response: 20 \u2013 20 kHzImpedance: 32 ohmsOutput: 105 \u00b1 3dB Product DimensionsHeight: 5.51 inLength: 5.59 inWidth: 2.52 inTotal Weight: 101 g BatteryBattery Type: 400mAh 3.7v (LiPo)Total Playtime: 50 hoursTalk Time: 32 hoursQuick Charge: 10 minutes = 5.5 hoursCharge Time: 2.5 hoursCharge Cable: USB-CCharge Port: USB-CInput Power: DC 5V, 1A"
+   },
+   "url": "https://www.jlab.com/products/go-work-pop-wireless-on-ear-headset-black",
+   "handle": "go-work-pop-wireless-on-ear-headset-black",
+   "price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40342909878344",
+     "sku": "HBGWRKPOPRBLK4",
+     "title": "Default Title",
+     "description": {
+      "html": "FEATURES Wireless lightweight headset with multipoint and 50+ hours playtime \u2022 50+ Hours worktime\u2022 Bluetooth Multipoint: Connect to any two devices \u2022 Lab Quality Sound with EQ2 Voice or Music Mode \u2022 Rotating Boom Mic with noise canceling MEMS microphone \u2022 Lightweight design with fabric Cloud Foam Earcups \u2022 Total control of calls and music PACKAGE INCLUDES \u2022 GO Work POP Wireless On-Ear Headset\u2022 JLab Two Year Warranty SPECIFICATIONS Audio FeaturesControls: ButtonsEQ3 Sound: Voice/MusicIncludes: GO Work POP Headset and JLab 2 Year Limited WarrantyMultipoint: YesVoice Assistance: Yes MicrophoneBoom Mic: YesEnvironmental Noise Canceling Microphones: 2-mic ENCFrequency Response: 100 \u2013 10 kHzImpedance: 300 ohmTotal Microphone(s): MEMS ConnectivityBluetooth Version: 5.3Codecs: SBC, AACLatency (Movie Mode): <200msLatency (Music): >200msRange: 30+ feetSupport Protocols: HSP / HFP / A2DP / AVRCP Audio SpecsDriver: 40mm DynamicFrequency Response: 20 \u2013 20 kHzImpedance: 32 ohmsOutput: 105 \u00b1 3dB Product DimensionsHeight: 5.51 inLength: 5.59 inWidth: 2.52 inTotal Weight: 101 g BatteryBattery Type: 400mAh 3.7v (LiPo)Total Playtime: 50 hoursTalk Time: 32 hoursQuick Charge: 10 minutes = 5.5 hoursCharge Time: 2.5 hoursCharge Cable: USB-CCharge Port: USB-CInput Power: DC 5V, 1A"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/GOWorkPopBlack1-min.jpg?v=1762446337"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40342909878344:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/GOWorkPopBlack1-min.jpg?v=1762446337",
+     "alt_text": "Go Work Pop Black| 39563867553864"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-2-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all",
+    "all-products",
+    "ALLOTMENT-ELIGIBLE",
+    "AU-welcome-discount-eligible",
+    "audio",
+    "badges-group-1",
+    "bluetooth",
+    "bluetooth headphones",
+    "bluetooth multipoint",
+    "bts-promo",
+    "bulk-order-eligible",
+    "Buy-With-Prime",
+    "headphones",
+    "headsets-take-calls-budget-friendly",
+    "headsets-use-at-school-budget-friendly",
+    "igg25_for_fashion_lovers",
+    "igg25_for_her",
+    "inventory-auto",
+    "MCF",
+    "men",
+    "No Stock - CA",
+    "No Stock - DE",
+    "No Stock - UK",
+    "NOTINPRIMEDAY23",
+    "office",
+    "premium headphones",
+    "RMA ELIGIBLE",
+    "SALE - CA",
+    "shoelace",
+    "SHOP APP - HEADPHONES",
+    "SHOP APP LISTING",
+    "uk-in-stock",
+    "UK-welcome-discount-eligible",
+    "us-free-shipping",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible",
+    "women",
+    "work",
+    "work-from-home",
+    "work-headset",
+    "work-wireless-headsets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25756457",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Wireless Headphones",
+     "description": {
+      "html": "Find the best wireless Bluetooth headphones - on ear or over ear headphones, earbuds and anything to enjoy your music on the go. Whether you're looking for deep bass, great sound quality, or long hours of battery life look no further than these JLab wireless headphones. We offer wireless over ear, active noise cancelling, and other wireless bluetooth headphones that pair great with our wireless earbuds. Great for traveling, working out, running and more. JLab Audio's top headphones keep you wire free and going strong."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/25822193",
+     "handle": "bluetooth",
+     "title": "Bluetooth Wireless Personal Audio",
+     "description": {
+      "html": "It's time to GO wire free with the best of JLab's Bluetooth products. Don't let wires get in the way of your headphones, earbuds or speaker. Connect your mobile phone, tablet or any other Bluetooth-enabled device to wirelessly connect up to 30 feet away and be on the GO to your next adventure."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/210742476872",
+     "handle": "work-collection-headsets",
+     "title": "Work Headsets",
+     "description": {
+      "html": "Tech done better Innovation is about bringing new life and thinking to oft-neglected product categories. Meet Work \u2013 a collection of products designed for (work) life. For working from home. Working on the go. Working with ultimate focus and efficiency. We listened to consumers\u2019 needs and uncovered new possibilities for your work tech. From mice and keyboards to webcams and microphones, we know you\u2019re going to love them. Surprisingly awesome value And with any JLab products \u2013 our goal is to include leading-edge feature sets at tiered price points to enable as many people as possible to own and use great personal tech. @keyframes color{0%{background-color:silver}50%{background-color:#d8d8d8}100{background-color:#fff}}.card__content{grid-template-rows:1fr!important}.compare.actions,.compare.slot{justify-content:space-between;flex-direction:column}div.compare_header{display:flex;flex-direction:row;justify-content:center;align-items:center;padding:16px 0;background:#f5f5f5;text-transform:uppercase;position:relative}.compare_header span{position:sticky}.compare.image>div{height:125px}.compare_spec_value{text-align:center}.compare_spec_name{font-weight:700}.compare.scrollable{max-width:100%;padding:20px}.compare.scrollable::-webkit-scrollbar {display: none }.compare.scrollable>div.grid {width: 100% }.compare.compare_container {margin-bottom: 100px }.compare.contain {display: flex;flex-direction: column }.compare-product-image img {background-color: silver;animation-name: color;animation-duration: 2s;animation-iteration-count: infinite;border-radius: 8px }@media screen and (max-width:1180px) {.compare.scrollable {overflow: scroll;-ms-overflow-style: none;scrollbar-width: none }.compare.scrollable>div.grid {width: 1180px }.compare.compare_container {margin-left: 20px;margin-right: 20px }}.specheadings .scrollable>.grid>div:not(:last-child) {border-right: 1px solid #e5e5e5 }.colorway {height: 20px;width: 20px;border-radius: 50%;display: inline-block;margin-right: 8px;border: 1px solid #ccc }@media screen and (max-width:749px){.compare.scrollable>div.grid {width: 880px }.compare.compare_container {margin-left: 0;margin-right: 0 }} Work Buds In-Ear Headset Go Work Pop On-Ear Headset Go Work Wireless On-Ear Headset JBuds Work Wireless Over-Ear Headset Total Playtime 55+ hours 50+ hours 45+ Hours 60+ Hours Type True Wireless On-Ear Wireless Headset On-Ear Headset Over-Ear Work Headset Listening Modes 2 2 2 2 Color Options 1 3 1 1 Bluetooth Version Bluetooth 5.3 Bluetooth 5.3 Bluetooth 5 Bluetooth 5 Built in MEMs Mic - Quick Mute - - Hear Yourself - - Detachable Earcup/piece - - - Mute LED Indicator - - 3.5MM AUX Option - - let lastKnownScrollPosition = 0; let ticking = false; function updateScrollers(scrollPos) { document.querySelectorAll('.scrollable').forEach(function(element) { element.scrollLeft = scrollPos; }); } function setScrollers() { document.querySelectorAll('.scrollable').forEach(function(element) { element.addEventListener('scroll', function() { var scrollLeft = element.scrollLeft; lastKnownScrollPosition = scrollLeft; if (!ticking) { window.requestAnimationFrame(() => { updateScrollers(lastKnownScrollPosition); ticking = false; }); ticking = true; } }); grabbables(); let pos = {left: 0, x: 0}; const mouseDownHandler = function (e) { if(!scroll_active) { return; } element.style.cursor = 'grabbing'; element.style.userSelect = 'none'; pos = { left: element.scrollLeft, x: e.clientX, }; document.addEventListener('mousemove', mouseMoveHandler); document.addEventListener('mouseup', mouseUpHandler); }; const mouseMoveHandler = function (e) { const dx = e.clientX - pos.x; element.scrollLeft = pos.left - dx; }; const mouseUpHandler = function () { element.style.cursor = 'grab'; element.style.removeProperty('user-select'); document.removeEventListener('mousemove', mouseMoveHandler); document.removeEventListener('mouseup', mouseUpHandler); }; element.addEventListener('mousedown', mouseDownHandler); }); } function grabbables() { if(window.innerWidth < 1180) { scroll_active = true; document.querySelectorAll('.scrollable').forEach(function(element) { element.style.cursor = 'grab'; }); } else { scroll_active = false; document.querySelectorAll('.scrollable').forEach(function(element) { element.style.cursor = 'default'; }); } }document.addEventListener(\"DOMContentLoaded\", function(){ setScrollers(); });"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265965502536",
+     "handle": "bluetooth-multipoint",
+     "title": "Bluetooth Multipoint",
+     "description": {
+      "html": "We don't just make products, we design technology to improve people's lives. Bluetooth multipoint is a feature that allows headphones and earbuds to connect and maintain a connection to multiple devices at once. Learn more about Bluetooth multipoint"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6947765780552",
+   "title": "USB-C to USB-A Adapter 3 Pack",
+   "description": {
+    "html": ""
+   },
+   "url": "https://www.jlab.com/products/usb-c-to-usb-a-adapter-3-pack",
+   "handle": "usb-c-to-usb-a-adapter-3-pack",
+   "price_range": {
+    "min": {
+     "amount": 1000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40540637790280",
+     "sku": "AUSBATYPEC100WEB",
+     "title": "Default Title",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 1000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/JLab-USB-A-USB-C-Adapter-Studio_1000_3_e55fcbe9-0624-432a-aab4-55b46332b1a5.jpg?v=1762446802"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://jlabgrabbag.myshopify.com/cart/40540637790280:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/9337/files/JLab-USB-A-USB-C-Adapter-Studio_1000_3_e55fcbe9-0624-432a-aab4-55b46332b1a5.jpg?v=1762446802"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all",
+    "AU-welcome-discount-eligible",
+    "CA-welcome-discount-eligible",
+    "UK-welcome-discount-eligible",
+    "us-in-stock",
+    "WEB3",
+    "Welcome-Discount-Eligible"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/25304765",
+     "handle": "all",
+     "title": "All JLab Products",
+     "description": {
+      "html": "Incredible Sound. Designed for you. Shop all JLab products - earbuds, headphones and microphones."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158242930760",
+     "handle": "accessories",
+     "title": "Accessories",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269712687176",
+     "handle": "welcome-discount-code-eligible",
+     "title": "Welcome Discount Code Eligible",
+     "description": {
+      "html": "Eligible for Email Sign-Up Form Discount for 10% Off Your Items"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269833961544",
+     "handle": "allotment-collection",
+     "title": "allotment collection",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/272696606792",
+     "handle": "nav-earbuds-accessories",
+     "title": "Nav Earbuds Accessories",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzJPVFEzTnpZMU56Z3dOVFV5TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

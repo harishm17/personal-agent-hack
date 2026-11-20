@@ -1,0 +1,1551 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://yoobi.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Yoobi",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "yoobi.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "4456817"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "4456817"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4543173886065",
+   "title": "Spiral Notebook, 3 Pack",
+   "description": {
+    "html": "Take notes and write down your to-do lists in these colorful Yoobi college ruled spiral notebooks. This bundle comes in 3 different colors, one for each subject to help you stay organized! Each notebook comes with 150 three-hole punched perforated sheets to tear out cleanly and easily. Plus, it includes an interior paper pocket to help all your loose papers! YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details 3-Pack of 3-subject notebook 150 sheets each Perfect for school, home or office College ruled, 3-hole punched perforated sheets Includes interior paper pocket Paper size: 8\" x 10.5\" Notebook Dimensions (with Spiral): 0.4\" x 8.85\" x 10.63\" Colors: Blush, Mint, Blue"
+   },
+   "url": "https://yoobi.com/products/3-pk-spiral-notebook-college-ruled-multicolor",
+   "handle": "3-pk-spiral-notebook-college-ruled-multicolor",
+   "price_range": {
+    "min": {
+     "amount": 1899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39428708597873",
+     "sku": "YOOB1202443",
+     "title": "Default Title",
+     "description": {
+      "html": "Take notes and write down your to-do lists in these colorful Yoobi college ruled spiral notebooks. This bundle comes in 3 different colors, one for each subject to help you stay organized! Each notebook comes with 150 three-hole punched perforated sheets to tear out cleanly and easily. Plus, it includes an interior paper pocket to help all your loose papers! YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details 3-Pack of 3-subject notebook 150 sheets each Perfect for school, home or office College ruled, 3-hole punched perforated sheets Includes interior paper pocket Paper size: 8\" x 10.5\" Notebook Dimensions (with Spiral): 0.4\" x 8.85\" x 10.63\" Colors: Blush, Mint, Blue"
+     },
+     "price": {
+      "amount": 1899,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/3pkSpiralNotebook-Multicolor5copy.jpg?v=1622562624"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/39428708597873:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/3pkSpiralNotebook-Multicolor5copy.jpg?v=1622562624"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all",
+    "all-paper",
+    "back to school",
+    "best-sellers",
+    "bundles",
+    "college",
+    "everyday",
+    "Favorite-Supplies",
+    "high school",
+    "prime",
+    "professional",
+    "school_essentials",
+    "stocking-adult",
+    "teacher"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/58097795",
+     "handle": "spiral-notebooks",
+     "title": "Spiral Notebooks",
+     "description": {
+      "html": "Choose from our collection of college-ruled and wide-ruled notebooks, each designed to take with you on the go. Write it all down in a cute composition book with lined sheets, tear out that to-do list with the spiral notebook\u2019s perforated edges, and make your desk notes pop with a mini notebook that\u2019s colors and patterns reflect the uniqueness of you."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/76963843",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Looking to stock up on school or office essentials? Yoobi's bundled items have you covered! Choose from our colorful pen sets, complete with gel, ballpoint, and felt-tip options. Love pencils? Grab a bundle that includes No. 2 pencils, sharpeners, and erasers, so you're always prepared. Highlight key points with our vibrant highlighters, and bring your creativity to life with bold markers. Keep everything organized with our adorable pencil pouches\u2014perfect for storing all your favorite supplies in one place. With Yoobi bundles, you\u2019ll have everything you need to stay creative and organized!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/95193890929",
+     "handle": "all-paper",
+     "title": "Notebooks & Journals",
+     "description": {
+      "html": "Looking for supplies for school, home or the office? Notebooks are probably on the list! Choose from spiral notebooks, composition books and fun, glittery journals. Spiral notebooks are college-ruled and composition books are available in college ruled and wide ruled. There are basic solid colors and fun prints as well."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/164477173873",
+     "handle": "best-sellers-1",
+     "title": "Best Sellers",
+     "description": {
+      "html": "Not sure which Yoobi products to buy? All of our products help children in need, so you can't go wrong! There are so many fun and colorful school supplies to choose from, and these are our customers' favorites! Choose from colorful notebooks to binders, gel pens, markers and highlighters. Dont' forget a cute pencil case to store these in too! And for those Marvel fans, we have lots of fun school supplies featuring your favorite super hero, including Spider-Man, Captain American and other Avengers."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6588914729073",
+   "title": "Spiral Notebook, 3 Pack - Sweets",
+   "description": {
+    "html": "Bring your sweet tooth to school with you in the form of this notebook set! The pack of three spiral notebooks includes a baby pink cover with tossed animal marshmallow design, a pastel ombre cover with adorable sweet treats, animals, and inspirational words, and a purple cover with colorful sprinkle design. 100 wide ruled sheets give you plenty of room for all your sweet ideas. Two interior pockets hold your loose handouts and worksheets.YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S.Product Details Includes: 3 spiral notebooks 2 interior pockets each 100 perforated, 3-hole punched sheets each Wide ruled Spiral binding Paper size: 8\u201d x 10.5\u201d PVC free FSC certified Dimensions each: 0.45\u201d x 8.4\u201d x 10.5\u201d"
+   },
+   "url": "https://yoobi.com/products/sweets-notebook-set",
+   "handle": "sweets-notebook-set",
+   "price_range": {
+    "min": {
+     "amount": 1299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1299,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39383727439985",
+     "sku": "PPQE0761",
+     "title": "Default Title",
+     "description": {
+      "html": "Bring your sweet tooth to school with you in the form of this notebook set! The pack of three spiral notebooks includes a baby pink cover with tossed animal marshmallow design, a pastel ombre cover with adorable sweet treats, animals, and inspirational words, and a purple cover with colorful sprinkle design. 100 wide ruled sheets give you plenty of room for all your sweet ideas. Two interior pockets hold your loose handouts and worksheets.YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S.Product Details Includes: 3 spiral notebooks 2 interior pockets each 100 perforated, 3-hole punched sheets each Wide ruled Spiral binding Paper size: 8\u201d x 10.5\u201d PVC free FSC certified Dimensions each: 0.45\u201d x 8.4\u201d x 10.5\u201d"
+     },
+     "price": {
+      "amount": 1299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/3_Pack_Sweets_1_Subject_Wide_Ruled_Notebook_Set_PPQE0761_1C.png?v=1622736673"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/39383727439985:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/3_Pack_Sweets_1_Subject_Wide_Ruled_Notebook_Set_PPQE0761_1C.png?v=1622736673",
+     "alt_text": "set of 3 spiral notebooks - sprinkles, sweets and marshmallows"
+    }
+   ],
+   "tags": [
+    "2021_BTS",
+    "all",
+    "all-paper",
+    "bogo",
+    "easter",
+    "elementary",
+    "Favorite-Supplies",
+    "kindergarten",
+    "regular_price",
+    "school_essentials",
+    "spring",
+    "sweet-dreams",
+    "sweet-treats"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/58097795",
+     "handle": "spiral-notebooks",
+     "title": "Spiral Notebooks",
+     "description": {
+      "html": "Choose from our collection of college-ruled and wide-ruled notebooks, each designed to take with you on the go. Write it all down in a cute composition book with lined sheets, tear out that to-do list with the spiral notebook\u2019s perforated edges, and make your desk notes pop with a mini notebook that\u2019s colors and patterns reflect the uniqueness of you."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/95193890929",
+     "handle": "all-paper",
+     "title": "Notebooks & Journals",
+     "description": {
+      "html": "Looking for supplies for school, home or the office? Notebooks are probably on the list! Choose from spiral notebooks, composition books and fun, glittery journals. Spiral notebooks are college-ruled and composition books are available in college ruled and wide ruled. There are basic solid colors and fun prints as well."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/285172433009",
+     "handle": "paper",
+     "title": "Paper",
+     "description": {
+      "html": "Whether you prefer notebooks, journals, or loose-leaf paper, Yoobi has all your paper needs covered! Choose from vibrant spiral notebooks, sleek composition books, or fun notepads that add personality to your desk. Don\u2019t forget sticky notes for quick reminders and colorful index cards for study sessions or organizing your thoughts. And when it\u2019s time to keep it all in order, check out our stylish binders and folders! With Yoobi\u2019s paper products, you\u2019ll stay organized and inspired for whatever comes your way."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7162406961265",
+   "title": "Yoobi - Barbie 3pk Notebooks",
+   "description": {
+    "html": "This three pack of colorful spiral bound notebooks feature covers with one pink/holographic, one peach and one blue notebook in the set Binder-Compatible 1-Subject Notebooks: Built to withstand wear and tear, these spiral bound notebooks can be inserted into a binder or used alone to organize loose papers, worksheets and notes 150 Perforated 3-Hole Punched Sheets: Perfect for math, science, English, history and other classes, as well as work, these notebooks have lined sheets that tear out evenly and cleanly For School, Home, Office & Travel: Take these spiral notebooks with you on all your major adventures, to take notes, jot down ideas, journal, sketch and doodle; these supplies will jazz up your backpack, desk and office We believe school supplies should be available for every child in every classroom, not at the expense of our teachers; to help ease some of the barriers to education, Yoobi creates fun, colorful products for school, home and office that give back; for each qualifying Yoobi item purchased, Yoobi Global, LLC will donate a Yoobi item to Kids in Need Foundation"
+   },
+   "url": "https://yoobi.com/products/yoobi-barbie-3pk-notebooks",
+   "handle": "yoobi-barbie-3pk-notebooks",
+   "price_range": {
+    "min": {
+     "amount": 1699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41055485919345",
+     "sku": "PPNB2364",
+     "title": "Default Title",
+     "description": {
+      "html": "This three pack of colorful spiral bound notebooks feature covers with one pink/holographic, one peach and one blue notebook in the set Binder-Compatible 1-Subject Notebooks: Built to withstand wear and tear, these spiral bound notebooks can be inserted into a binder or used alone to organize loose papers, worksheets and notes 150 Perforated 3-Hole Punched Sheets: Perfect for math, science, English, history and other classes, as well as work, these notebooks have lined sheets that tear out evenly and cleanly For School, Home, Office & Travel: Take these spiral notebooks with you on all your major adventures, to take notes, jot down ideas, journal, sketch and doodle; these supplies will jazz up your backpack, desk and office We believe school supplies should be available for every child in every classroom, not at the expense of our teachers; to help ease some of the barriers to education, Yoobi creates fun, colorful products for school, home and office that give back; for each qualifying Yoobi item purchased, Yoobi Global, LLC will donate a Yoobi item to Kids in Need Foundation"
+     },
+     "price": {
+      "amount": 1699,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/files/PPNB2364_Barbie1SubjectCollegeRuledNotebooks3pk_1.jpg?v=1717086831"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/41055485919345:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/files/PPNB2364_Barbie1SubjectCollegeRuledNotebooks3pk_1.jpg?v=1717086831"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all-paper",
+    "barbie",
+    "bundles",
+    "license"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/58097795",
+     "handle": "spiral-notebooks",
+     "title": "Spiral Notebooks",
+     "description": {
+      "html": "Choose from our collection of college-ruled and wide-ruled notebooks, each designed to take with you on the go. Write it all down in a cute composition book with lined sheets, tear out that to-do list with the spiral notebook\u2019s perforated edges, and make your desk notes pop with a mini notebook that\u2019s colors and patterns reflect the uniqueness of you."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/76963843",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Looking to stock up on school or office essentials? Yoobi's bundled items have you covered! Choose from our colorful pen sets, complete with gel, ballpoint, and felt-tip options. Love pencils? Grab a bundle that includes No. 2 pencils, sharpeners, and erasers, so you're always prepared. Highlight key points with our vibrant highlighters, and bring your creativity to life with bold markers. Keep everything organized with our adorable pencil pouches\u2014perfect for storing all your favorite supplies in one place. With Yoobi bundles, you\u2019ll have everything you need to stay creative and organized!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/95193890929",
+     "handle": "all-paper",
+     "title": "Notebooks & Journals",
+     "description": {
+      "html": "Looking for supplies for school, home or the office? Notebooks are probably on the list! Choose from spiral notebooks, composition books and fun, glittery journals. Spiral notebooks are college-ruled and composition books are available in college ruled and wide ruled. There are basic solid colors and fun prints as well."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/275478708337",
+     "handle": "licensed-product",
+     "title": "Licensed Product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6536736800881",
+   "title": "Spiral Notebook, 6 Pack",
+   "description": {
+    "html": "Take notes and write down your to-do lists in these colorful Yoobi colleges ruled spiral notebooks. This bundle comes with 6 notebooks, one for each subject to help you stay organized! Each notebook comes with 100 three-hole-punched perforated sheets to tear out cleanly and easily. Plus, it includes an interior paper pocket to help all your loose papers! YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details 6 printed notebooks - 2 pinks, 2 aquae, 1 coral, and 1 blue 1-Subject Spiral Notebook College rule, 100 sheets 2 pockets on the inside to organize loose papers 3-hole punched and perforated Paper size: 8\u201d x 10.5\u201d PVC free FSC certified paper DIMENSIONS: 10.5\u201d x 8.4\u201d x 0.5\u201d"
+   },
+   "url": "https://yoobi.com/products/6-pack-notebooks",
+   "handle": "6-pack-notebooks",
+   "price_range": {
+    "min": {
+     "amount": 2299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2299,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39250940035185",
+     "sku": "PPQE0723",
+     "title": "Default Title",
+     "description": {
+      "html": "Take notes and write down your to-do lists in these colorful Yoobi colleges ruled spiral notebooks. This bundle comes with 6 notebooks, one for each subject to help you stay organized! Each notebook comes with 100 three-hole-punched perforated sheets to tear out cleanly and easily. Plus, it includes an interior paper pocket to help all your loose papers! YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details 6 printed notebooks - 2 pinks, 2 aquae, 1 coral, and 1 blue 1-Subject Spiral Notebook College rule, 100 sheets 2 pockets on the inside to organize loose papers 3-hole punched and perforated Paper size: 8\u201d x 10.5\u201d PVC free FSC certified paper DIMENSIONS: 10.5\u201d x 8.4\u201d x 0.5\u201d"
+     },
+     "price": {
+      "amount": 2299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/spiralnotebook3_7bba33fd-10a9-41d3-be81-b00dfc0e7aa2.jpg?v=1628106377"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/39250940035185:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/spiralnotebook3_7bba33fd-10a9-41d3-be81-b00dfc0e7aa2.jpg?v=1628106377",
+     "alt_text": "notebook pack"
+    }
+   ],
+   "tags": [
+    "2021_spring",
+    "all",
+    "all-paper",
+    "back to school",
+    "best-sellers",
+    "bogo",
+    "bundles",
+    "everyday",
+    "Favorite-Supplies",
+    "high school",
+    "prime",
+    "regular_price",
+    "stocking-adult",
+    "sweet-treats",
+    "teacher"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/58097795",
+     "handle": "spiral-notebooks",
+     "title": "Spiral Notebooks",
+     "description": {
+      "html": "Choose from our collection of college-ruled and wide-ruled notebooks, each designed to take with you on the go. Write it all down in a cute composition book with lined sheets, tear out that to-do list with the spiral notebook\u2019s perforated edges, and make your desk notes pop with a mini notebook that\u2019s colors and patterns reflect the uniqueness of you."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/76963843",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Looking to stock up on school or office essentials? Yoobi's bundled items have you covered! Choose from our colorful pen sets, complete with gel, ballpoint, and felt-tip options. Love pencils? Grab a bundle that includes No. 2 pencils, sharpeners, and erasers, so you're always prepared. Highlight key points with our vibrant highlighters, and bring your creativity to life with bold markers. Keep everything organized with our adorable pencil pouches\u2014perfect for storing all your favorite supplies in one place. With Yoobi bundles, you\u2019ll have everything you need to stay creative and organized!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/95193890929",
+     "handle": "all-paper",
+     "title": "Notebooks & Journals",
+     "description": {
+      "html": "Looking for supplies for school, home or the office? Notebooks are probably on the list! Choose from spiral notebooks, composition books and fun, glittery journals. Spiral notebooks are college-ruled and composition books are available in college ruled and wide ruled. There are basic solid colors and fun prints as well."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/164477173873",
+     "handle": "best-sellers-1",
+     "title": "Best Sellers",
+     "description": {
+      "html": "Not sure which Yoobi products to buy? All of our products help children in need, so you can't go wrong! There are so many fun and colorful school supplies to choose from, and these are our customers' favorites! Choose from colorful notebooks to binders, gel pens, markers and highlighters. Dont' forget a cute pencil case to store these in too! And for those Marvel fans, we have lots of fun school supplies featuring your favorite super hero, including Spider-Man, Captain American and other Avengers."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7162408206449",
+   "title": "Yoobi Blush Marble Multi 6pk Notebooks",
+   "description": {
+    "html": "Notebooks with a Stylish Aesthetic: This six pack of colorful spiral bound notebooks feature aesthetic designs, with two blush pink, two gray and two marble in the set; complete assignments, store handouts and more in style Binder-Compatible 1-Subject Notebooks: Built to withstand wear and tear, these spiral bound notebooks can be inserted into a binder or used alone to organize loose papers, worksheets and notes 100 Perforated 3-Hole Punched Sheets: Perfect for math, science, English, history and other classes, as well as work, these notebooks have lined sheets that tear out evenly and cleanly For School, Home, Office & Travel: Take these spiral notebooks with you on all your major adventures, to take notes, jot down ideas, journal, sketch and doodle; these supplies will jazz up your backpack, desk and office We believe school supplies should be available for every child in every classroom, not at the expense of our teachers; to help ease some of the barriers to education, Yoobi creates fun, colorful products for school, home and office that give back; for each qualifying Yoobi item purchased, Yoobi Global, LLC will donate a Yoobi item to Kids in Need Foundation"
+   },
+   "url": "https://yoobi.com/products/yoobi-blush-marble-multi-6pk-notebooks",
+   "handle": "yoobi-blush-marble-multi-6pk-notebooks",
+   "price_range": {
+    "min": {
+     "amount": 2499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41055487164529",
+     "sku": "PPNB2367",
+     "title": "Default Title",
+     "description": {
+      "html": "Notebooks with a Stylish Aesthetic: This six pack of colorful spiral bound notebooks feature aesthetic designs, with two blush pink, two gray and two marble in the set; complete assignments, store handouts and more in style Binder-Compatible 1-Subject Notebooks: Built to withstand wear and tear, these spiral bound notebooks can be inserted into a binder or used alone to organize loose papers, worksheets and notes 100 Perforated 3-Hole Punched Sheets: Perfect for math, science, English, history and other classes, as well as work, these notebooks have lined sheets that tear out evenly and cleanly For School, Home, Office & Travel: Take these spiral notebooks with you on all your major adventures, to take notes, jot down ideas, journal, sketch and doodle; these supplies will jazz up your backpack, desk and office We believe school supplies should be available for every child in every classroom, not at the expense of our teachers; to help ease some of the barriers to education, Yoobi creates fun, colorful products for school, home and office that give back; for each qualifying Yoobi item purchased, Yoobi Global, LLC will donate a Yoobi item to Kids in Need Foundation"
+     },
+     "price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/files/PPNB2367_BlushMarbleMulti1SubjectCollegeRuledNotebooks6pk_1.jpg?v=1717086468"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/41055487164529:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/files/PPNB2367_BlushMarbleMulti1SubjectCollegeRuledNotebooks6pk_1.jpg?v=1717086468"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all-paper",
+    "bundles"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/58097795",
+     "handle": "spiral-notebooks",
+     "title": "Spiral Notebooks",
+     "description": {
+      "html": "Choose from our collection of college-ruled and wide-ruled notebooks, each designed to take with you on the go. Write it all down in a cute composition book with lined sheets, tear out that to-do list with the spiral notebook\u2019s perforated edges, and make your desk notes pop with a mini notebook that\u2019s colors and patterns reflect the uniqueness of you."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/76963843",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Looking to stock up on school or office essentials? Yoobi's bundled items have you covered! Choose from our colorful pen sets, complete with gel, ballpoint, and felt-tip options. Love pencils? Grab a bundle that includes No. 2 pencils, sharpeners, and erasers, so you're always prepared. Highlight key points with our vibrant highlighters, and bring your creativity to life with bold markers. Keep everything organized with our adorable pencil pouches\u2014perfect for storing all your favorite supplies in one place. With Yoobi bundles, you\u2019ll have everything you need to stay creative and organized!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/95193890929",
+     "handle": "all-paper",
+     "title": "Notebooks & Journals",
+     "description": {
+      "html": "Looking for supplies for school, home or the office? Notebooks are probably on the list! Choose from spiral notebooks, composition books and fun, glittery journals. Spiral notebooks are college-ruled and composition books are available in college ruled and wide ruled. There are basic solid colors and fun prints as well."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/285172433009",
+     "handle": "paper",
+     "title": "Paper",
+     "description": {
+      "html": "Whether you prefer notebooks, journals, or loose-leaf paper, Yoobi has all your paper needs covered! Choose from vibrant spiral notebooks, sleek composition books, or fun notepads that add personality to your desk. Don\u2019t forget sticky notes for quick reminders and colorful index cards for study sessions or organizing your thoughts. And when it\u2019s time to keep it all in order, check out our stylish binders and folders! With Yoobi\u2019s paper products, you\u2019ll stay organized and inspired for whatever comes your way."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7162404798577",
+   "title": "Yoobi Bright Multicolor 3pk Composition Notebooks",
+   "description": {
+    "html": "Supplies Don\u2019t Get Cuter than This: This bright & colorful set of three composition books includes a pink ombre, a blue ombre and a green checkerboard design 1-Subject Wide-Ruled Notebooks: Each notebook has 100 sheets of paper and is great for any class, from science and math to English, art and more For School, Home, Office & Travel: Take these cute printed composition books with you on all your major adventures, to take notes, journal, sketch and doodle; it will jazz up your backpack and desk FSC-Certified 9.75\u201d x 7.5\u201d Paper, Sewn Binding: Built to withstand wear and tear, our fun notebooks have paper with standard lines to guide your handwriting We believe school supplies should be available for every child in every classroom, not at the expense of our teachers; to help ease some of the barriers to education, Yoobi creates fun, colorful products for school, home and office that give back; for each qualifying Yoobi item purchased, Yoobi Global, LLC will donate a Yoobi item to Kids in Need Foundation"
+   },
+   "url": "https://yoobi.com/products/yoobi-bright-multicolor-3pk-composition-notebooks",
+   "handle": "yoobi-bright-multicolor-3pk-composition-notebooks",
+   "price_range": {
+    "min": {
+     "amount": 1499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41055483002993",
+     "sku": "PPCN2366",
+     "title": "Default Title",
+     "description": {
+      "html": "Supplies Don\u2019t Get Cuter than This: This bright & colorful set of three composition books includes a pink ombre, a blue ombre and a green checkerboard design 1-Subject Wide-Ruled Notebooks: Each notebook has 100 sheets of paper and is great for any class, from science and math to English, art and more For School, Home, Office & Travel: Take these cute printed composition books with you on all your major adventures, to take notes, journal, sketch and doodle; it will jazz up your backpack and desk FSC-Certified 9.75\u201d x 7.5\u201d Paper, Sewn Binding: Built to withstand wear and tear, our fun notebooks have paper with standard lines to guide your handwriting We believe school supplies should be available for every child in every classroom, not at the expense of our teachers; to help ease some of the barriers to education, Yoobi creates fun, colorful products for school, home and office that give back; for each qualifying Yoobi item purchased, Yoobi Global, LLC will donate a Yoobi item to Kids in Need Foundation"
+     },
+     "price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/files/PPCN2366_BrightMulticolorWideRuledCompositionBooks3pk_1.jpg?v=1717087522"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/41055483002993:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/files/PPCN2366_BrightMulticolorWideRuledCompositionBooks3pk_1.jpg?v=1717087522"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all-paper",
+    "bundles"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/58097795",
+     "handle": "spiral-notebooks",
+     "title": "Spiral Notebooks",
+     "description": {
+      "html": "Choose from our collection of college-ruled and wide-ruled notebooks, each designed to take with you on the go. Write it all down in a cute composition book with lined sheets, tear out that to-do list with the spiral notebook\u2019s perforated edges, and make your desk notes pop with a mini notebook that\u2019s colors and patterns reflect the uniqueness of you."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/76963843",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Looking to stock up on school or office essentials? Yoobi's bundled items have you covered! Choose from our colorful pen sets, complete with gel, ballpoint, and felt-tip options. Love pencils? Grab a bundle that includes No. 2 pencils, sharpeners, and erasers, so you're always prepared. Highlight key points with our vibrant highlighters, and bring your creativity to life with bold markers. Keep everything organized with our adorable pencil pouches\u2014perfect for storing all your favorite supplies in one place. With Yoobi bundles, you\u2019ll have everything you need to stay creative and organized!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/95193890929",
+     "handle": "all-paper",
+     "title": "Notebooks & Journals",
+     "description": {
+      "html": "Looking for supplies for school, home or the office? Notebooks are probably on the list! Choose from spiral notebooks, composition books and fun, glittery journals. Spiral notebooks are college-ruled and composition books are available in college ruled and wide ruled. There are basic solid colors and fun prints as well."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/285172433009",
+     "handle": "paper",
+     "title": "Paper",
+     "description": {
+      "html": "Whether you prefer notebooks, journals, or loose-leaf paper, Yoobi has all your paper needs covered! Choose from vibrant spiral notebooks, sleek composition books, or fun notepads that add personality to your desk. Don\u2019t forget sticky notes for quick reminders and colorful index cards for study sessions or organizing your thoughts. And when it\u2019s time to keep it all in order, check out our stylish binders and folders! With Yoobi\u2019s paper products, you\u2019ll stay organized and inspired for whatever comes your way."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4555746607217",
+   "title": "1 Inch Binder, 4 Pack - Multicolor",
+   "description": {
+    "html": "In a Bind? Not anymore. Our 4 pack of multicolor 1-inch binders hold up to 100 sheets with easy-to-open D-rings that allow sheets to lay flat. Twin inside pockets hold loose notes and handouts. Add your own personal spin or note inside our plastic clear cover. YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details Perfect for school, home or office 4 pack 1 inch, 3-ring binders Holds up to 220 sheets each Customizable front sheet Customizable spine insert Easy-to-open and close D-rings Dimensions: 1.0\"x 10.4\" x 11.6\" Colors: Coral, Blush, Mint, Blue"
+   },
+   "url": "https://yoobi.com/products/4-pk-1-inch-binder-multicolor",
+   "handle": "4-pk-1-inch-binder-multicolor",
+   "price_range": {
+    "min": {
+     "amount": 2199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39342469546097",
+     "sku": "YOOB1203133",
+     "title": "Default Title",
+     "description": {
+      "html": "In a Bind? Not anymore. Our 4 pack of multicolor 1-inch binders hold up to 100 sheets with easy-to-open D-rings that allow sheets to lay flat. Twin inside pockets hold loose notes and handouts. Add your own personal spin or note inside our plastic clear cover. YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details Perfect for school, home or office 4 pack 1 inch, 3-ring binders Holds up to 220 sheets each Customizable front sheet Customizable spine insert Easy-to-open and close D-rings Dimensions: 1.0\"x 10.4\" x 11.6\" Colors: Coral, Blush, Mint, Blue"
+     },
+     "price": {
+      "amount": 2199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/4pk1InchBinder-Multicolor3.jpg?v=1622121689"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/39342469546097:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/4pk1InchBinder-Multicolor3.jpg?v=1622121689",
+     "alt_text": "set of four 1-inch, 3-ring binders - blue. mint, coral and blush"
+    }
+   ],
+   "tags": [
+    "2020_newelite",
+    "2021_restock",
+    "all",
+    "best-sellers",
+    "BTS2020",
+    "bundles",
+    "college",
+    "document-organizer",
+    "everyday",
+    "Favorite-Supplies",
+    "high school",
+    "Organization",
+    "over-15",
+    "prime",
+    "professional",
+    "rainbow",
+    "regular_price",
+    "school_essentials",
+    "teacher"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/76963843",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Looking to stock up on school or office essentials? Yoobi's bundled items have you covered! Choose from our colorful pen sets, complete with gel, ballpoint, and felt-tip options. Love pencils? Grab a bundle that includes No. 2 pencils, sharpeners, and erasers, so you're always prepared. Highlight key points with our vibrant highlighters, and bring your creativity to life with bold markers. Keep everything organized with our adorable pencil pouches\u2014perfect for storing all your favorite supplies in one place. With Yoobi bundles, you\u2019ll have everything you need to stay creative and organized!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/435193740",
+     "handle": "document-organizers",
+     "title": "Binders & Folders",
+     "description": {
+      "html": "Organize your life whether it\u2019s with binders for school, document envelopes for travel, or file folders for medical records. Each have multiple pockets, keeping your doucments organized. They come in fun, bright colors or prints, making it easy to find in your backpack. Our binders with unique designs prove that fun can also be functional."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/164477173873",
+     "handle": "best-sellers-1",
+     "title": "Best Sellers",
+     "description": {
+      "html": "Not sure which Yoobi products to buy? All of our products help children in need, so you can't go wrong! There are so many fun and colorful school supplies to choose from, and these are our customers' favorites! Choose from colorful notebooks to binders, gel pens, markers and highlighters. Dont' forget a cute pencil case to store these in too! And for those Marvel fans, we have lots of fun school supplies featuring your favorite super hero, including Spider-Man, Captain American and other Avengers."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4543174312049",
+   "title": "1/2 Inch Binder - 4 pack, Multicolor",
+   "description": {
+    "html": "In a Bind? Not anymore. Our 4 pack of multicolor half-inch binders hold up to 100 sheets with easy-to-open D-rings that allow sheets to lay flat. Twin inside pockets holds loose notes and handouts. Add your own personal spin or note inside our plastic clear cover. YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details Perfect for school, home, or office 4 pack Holds up to 100 sheets each Customizable front sheet Customizable spine insert Easy-to-open and close D-rings Colors: Coral, Blush, Mint, Blue"
+   },
+   "url": "https://yoobi.com/products/4-pk-1-2-inch-binder-multicolor",
+   "handle": "4-pk-1-2-inch-binder-multicolor",
+   "price_range": {
+    "min": {
+     "amount": 1999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39342470430833",
+     "sku": "YOOB1203134",
+     "title": "Default Title",
+     "description": {
+      "html": "In a Bind? Not anymore. Our 4 pack of multicolor half-inch binders hold up to 100 sheets with easy-to-open D-rings that allow sheets to lay flat. Twin inside pockets holds loose notes and handouts. Add your own personal spin or note inside our plastic clear cover. YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details Perfect for school, home, or office 4 pack Holds up to 100 sheets each Customizable front sheet Customizable spine insert Easy-to-open and close D-rings Colors: Coral, Blush, Mint, Blue"
+     },
+     "price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/4pk0.5InchBinder-Multicolor3.jpg?v=1637294424"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/39342470430833:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/4pk0.5InchBinder-Multicolor3.jpg?v=1637294424",
+     "alt_text": "set of four half-inch, 3-ring binders - blue, mint, blush and coral"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "2020_newelite",
+    "2021_restock",
+    "all",
+    "all-desk",
+    "best-sellers",
+    "BTS2020",
+    "bundles",
+    "college",
+    "document-organizer",
+    "everyday",
+    "Favorite-Supplies",
+    "high school",
+    "Organization",
+    "prime",
+    "professional",
+    "rainbow",
+    "regular_price",
+    "school_essentials",
+    "teacher"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/76963843",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Looking to stock up on school or office essentials? Yoobi's bundled items have you covered! Choose from our colorful pen sets, complete with gel, ballpoint, and felt-tip options. Love pencils? Grab a bundle that includes No. 2 pencils, sharpeners, and erasers, so you're always prepared. Highlight key points with our vibrant highlighters, and bring your creativity to life with bold markers. Keep everything organized with our adorable pencil pouches\u2014perfect for storing all your favorite supplies in one place. With Yoobi bundles, you\u2019ll have everything you need to stay creative and organized!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/435193740",
+     "handle": "document-organizers",
+     "title": "Binders & Folders",
+     "description": {
+      "html": "Organize your life whether it\u2019s with binders for school, document envelopes for travel, or file folders for medical records. Each have multiple pockets, keeping your doucments organized. They come in fun, bright colors or prints, making it easy to find in your backpack. Our binders with unique designs prove that fun can also be functional."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/164477173873",
+     "handle": "best-sellers-1",
+     "title": "Best Sellers",
+     "description": {
+      "html": "Not sure which Yoobi products to buy? All of our products help children in need, so you can't go wrong! There are so many fun and colorful school supplies to choose from, and these are our customers' favorites! Choose from colorful notebooks to binders, gel pens, markers and highlighters. Dont' forget a cute pencil case to store these in too! And for those Marvel fans, we have lots of fun school supplies featuring your favorite super hero, including Spider-Man, Captain American and other Avengers."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6588914794609",
+   "title": "1 Inch Binder, 4 Pack - Colorful",
+   "description": {
+    "html": "Add a lot of color to your school day! This binder set includes four 1\u201d binders with some really colorful designs - one bright tie-dye, one black with holographic celestial print, one pastel holographic checker, and one realistic water print with a sea turtle on front. Each binder holds up to 220 sheets of paper with the easy to open and close D rings so you don\u2019t have to worry about where you\u2019ll put your homework. Two interior pockets in each binder hold your loose notes and handouts. YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details Includes: 4 binders 2 Pockets each 2 Holographic designs Holds up to 220 sheets each Easy to open and close D-rings PVC free FSC certified packaging Dimensions each: 1.77\u201d x 10.43\u201d x 11.65\u201d"
+   },
+   "url": "https://yoobi.com/products/colorful-binder-set",
+   "handle": "colorful-binder-set",
+   "price_range": {
+    "min": {
+     "amount": 2199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39383727505521",
+     "sku": "BNGE0769",
+     "title": "Default Title",
+     "description": {
+      "html": "Add a lot of color to your school day! This binder set includes four 1\u201d binders with some really colorful designs - one bright tie-dye, one black with holographic celestial print, one pastel holographic checker, and one realistic water print with a sea turtle on front. Each binder holds up to 220 sheets of paper with the easy to open and close D rings so you don\u2019t have to worry about where you\u2019ll put your homework. Two interior pockets in each binder hold your loose notes and handouts. YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details Includes: 4 binders 2 Pockets each 2 Holographic designs Holds up to 220 sheets each Easy to open and close D-rings PVC free FSC certified packaging Dimensions each: 1.77\u201d x 10.43\u201d x 11.65\u201d"
+     },
+     "price": {
+      "amount": 2199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/4PackColorful1_BinderSet_BNGE0769_1C.jpg?v=1627328238"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/39383727505521:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/4PackColorful1_BinderSet_BNGE0769_1C.jpg?v=1627328238"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "2021_BTS",
+    "all",
+    "all-desk",
+    "all-document-org",
+    "best-sellers",
+    "bundles",
+    "college",
+    "endless-summer",
+    "Favorite-Supplies",
+    "high school",
+    "middle school",
+    "Organization",
+    "prime",
+    "regular_price",
+    "school_essentials",
+    "spring",
+    "summer",
+    "tie-dye",
+    "vsco"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/76963843",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Looking to stock up on school or office essentials? Yoobi's bundled items have you covered! Choose from our colorful pen sets, complete with gel, ballpoint, and felt-tip options. Love pencils? Grab a bundle that includes No. 2 pencils, sharpeners, and erasers, so you're always prepared. Highlight key points with our vibrant highlighters, and bring your creativity to life with bold markers. Keep everything organized with our adorable pencil pouches\u2014perfect for storing all your favorite supplies in one place. With Yoobi bundles, you\u2019ll have everything you need to stay creative and organized!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/435193740",
+     "handle": "document-organizers",
+     "title": "Binders & Folders",
+     "description": {
+      "html": "Organize your life whether it\u2019s with binders for school, document envelopes for travel, or file folders for medical records. Each have multiple pockets, keeping your doucments organized. They come in fun, bright colors or prints, making it easy to find in your backpack. Our binders with unique designs prove that fun can also be functional."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/164477173873",
+     "handle": "best-sellers-1",
+     "title": "Best Sellers",
+     "description": {
+      "html": "Not sure which Yoobi products to buy? All of our products help children in need, so you can't go wrong! There are so many fun and colorful school supplies to choose from, and these are our customers' favorites! Choose from colorful notebooks to binders, gel pens, markers and highlighters. Dont' forget a cute pencil case to store these in too! And for those Marvel fans, we have lots of fun school supplies featuring your favorite super hero, including Spider-Man, Captain American and other Avengers."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4612036231281",
+   "title": "2 Inch Binder - 4 Pack, Multicolor",
+   "description": {
+    "html": "In a Bind? Not anymore. Our 4 pack of multicolor two-inch binders hold up to 500 sheets with easy-to-open D-rings that allow sheets to lay flat. Twin inside pockets holds loose notes and handouts. Add your own personal spin or note inside our plastic clear cover. YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details Perfect for school, home, or office 4 pack 2 inch, 3-ring binders Holds up to 500 sheets each Customizable front sheet Customizable spine insert Easy-to-open and close D-rings Dimensions: 2\" x 10.4\" x 11.6\" Colors: Coral, Blush, Mint, Blue"
+   },
+   "url": "https://yoobi.com/products/4-pk-2-inch-binder-multicolor",
+   "handle": "4-pk-2-inch-binder-multicolor",
+   "price_range": {
+    "min": {
+     "amount": 2799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39342467547249",
+     "sku": "YOOB1202449",
+     "title": "Default Title",
+     "description": {
+      "html": "In a Bind? Not anymore. Our 4 pack of multicolor two-inch binders hold up to 500 sheets with easy-to-open D-rings that allow sheets to lay flat. Twin inside pockets holds loose notes and handouts. Add your own personal spin or note inside our plastic clear cover. YOU BUY, YOOBI GIVES - For every Yoobi item you purchase, a Yoobi item will be donated to a child in need, right here in the U.S. Product Details Perfect for school, home, or office 4 pack 2 inch, 3-ring binders Holds up to 500 sheets each Customizable front sheet Customizable spine insert Easy-to-open and close D-rings Dimensions: 2\" x 10.4\" x 11.6\" Colors: Coral, Blush, Mint, Blue"
+     },
+     "price": {
+      "amount": 2799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/4pk2InchBinder-Multicolor2_cbd0980c-67e3-4518-8af9-bac0becc9ba9.jpg?v=1622119209"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://yoobi.myshopify.com/cart/39342467547249:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0445/6817/products/4pk2InchBinder-Multicolor2_cbd0980c-67e3-4518-8af9-bac0becc9ba9.jpg?v=1622119209",
+     "alt_text": "set of four 2-inch, 3 ring binders - blush, coral, blue, mint"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "2020_newelite",
+    "2021_restock",
+    "all",
+    "best-sellers",
+    "BTS2020",
+    "bundles",
+    "college",
+    "document-organizer",
+    "everyday",
+    "Favorite-Supplies",
+    "high school",
+    "Organization",
+    "prime",
+    "professional",
+    "rainbow",
+    "regular_price",
+    "school_essentials",
+    "teacher"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/60488643",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/76963843",
+     "handle": "bundles",
+     "title": "Bundles",
+     "description": {
+      "html": "Looking to stock up on school or office essentials? Yoobi's bundled items have you covered! Choose from our colorful pen sets, complete with gel, ballpoint, and felt-tip options. Love pencils? Grab a bundle that includes No. 2 pencils, sharpeners, and erasers, so you're always prepared. Highlight key points with our vibrant highlighters, and bring your creativity to life with bold markers. Keep everything organized with our adorable pencil pouches\u2014perfect for storing all your favorite supplies in one place. With Yoobi bundles, you\u2019ll have everything you need to stay creative and organized!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/435193740",
+     "handle": "document-organizers",
+     "title": "Binders & Folders",
+     "description": {
+      "html": "Organize your life whether it\u2019s with binders for school, document envelopes for travel, or file folders for medical records. Each have multiple pockets, keeping your doucments organized. They come in fun, bright colors or prints, making it easy to find in your backpack. Our binders with unique designs prove that fun can also be functional."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/164477173873",
+     "handle": "best-sellers-1",
+     "title": "Best Sellers",
+     "description": {
+      "html": "Not sure which Yoobi products to buy? All of our products help children in need, so you can't go wrong! There are so many fun and colorful school supplies to choose from, and these are our customers' favorites! Choose from colorful notebooks to binders, gel pens, markers and highlighters. Dont' forget a cute pencil case to store these in too! And for those Marvel fans, we have lots of fun school supplies featuring your favorite super hero, including Spider-Man, Captain American and other Avengers."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzBOakV5TURNMk1qTXhNamd4TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}
