@@ -114,3 +114,15 @@ def egress_ledger(limit: int = 500):
     from signoff.obs.egress import rows, summary
     rs = rows()
     return {"rows": rs[-max(1, min(limit, 5000)):], "summary": summary(rs)}
+
+
+def _warm() -> None:
+    try:
+        from signoff.store import ucp
+        ucp.warm(json.loads((ROOT / "sheets" / "sheet1.json").read_text())["stores"])
+    except Exception:  # noqa: BLE001
+        pass
+
+
+if "pytest" not in sys.modules and config.mode() != "replay":
+    threading.Thread(target=_warm, name="store-warm", daemon=True).start()

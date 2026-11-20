@@ -86,21 +86,25 @@ def _write_now_locked(state: dict) -> None:
                 strikes[(line["line_id"], s["product_key"])] = s.get("reason")
             for cand in line["candidates"]:
                 for f in cand["figures"]:
-                    figs[(f["store"], f["product_id"], f["figure"])] = (
+                    key = (f["store"], f["product_id"], f["figure"])
+                    rank = (0 if f.get("span_found_in_text") else 2) + (1 if f.get("unsure") else 0)
+                    if key in figs and figs[key][0] <= rank:  # the engine keeps the first usable figure per name
+                        continue
+                    figs[key] = (rank, (
                         f["store"], f["product_id"], f["figure"], f["kind"], f.get("value"), f.get("low"), f.get("high"),
                         f.get("unit"), f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
-                        1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0)
+                        1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0))
                 pr = cand["product"]
                 decisions.append((state["version"], cand["id"], line["line_id"], pr["store"], pr["product_id"],
                                   pr["product_key"], cand["status"], cand.get("reason"), 1 if cand.get("picked") else 0,
                                   pr["price_cents"], json.dumps(cand)))
         from signoff import obs  # the ledger: this write leaves the process for SingleStore
         obs.egress("singlestore", "write pool, figures, limits, strikes and decision records", {
-            "figures": list(figs.values()), "limits": limit_rows(state), "strikes": list(strikes.items()),
+            "figures": [v[1] for v in figs.values()], "limits": limit_rows(state), "strikes": list(strikes.items()),
             "decisions": decisions}, ["limit", "home_measurement", "store_text", "product", "price", "order"])
         cur.execute("DELETE FROM figures")
         _bulk(cur, "INSERT INTO figures (store, product_id, figure, kind, value, low, high, unit, quote,"
-                   " start_pos, end_pos, extractor, span_found_in_text, unsure)", list(figs.values()))
+                   " start_pos, end_pos, extractor, span_found_in_text, unsure)", [v[1] for v in figs.values()])
         cur.execute("DELETE FROM limits")
         _bulk(cur, "INSERT INTO limits (limit_id, line_id, name, op, figure, shopper_sum, bound, unit, state_version)",
               limit_rows(state))

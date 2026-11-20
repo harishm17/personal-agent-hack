@@ -19,19 +19,19 @@ def profile_url() -> str:
     return base + "/profile/agent-v1.json"
 
 
-def _get(url: str) -> dict:
+def _get(url: str, timeout: float = 20) -> dict:
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=20) as f:
+    with urllib.request.urlopen(req, timeout=timeout) as f:
         return json.loads(f.read())
 
 
-def endpoint(domain: str) -> str:
-    """The store's MCP endpoint from /.well-known/ucp."""
+def endpoint(domain: str, timeout: float = 20) -> str:
+    """The store's MCP endpoint from /.well-known/ucp (cached for the life of the process; see warm())."""
     if domain not in _ENDPOINTS:
         try:
-            prof = _get("https://www." + domain + "/.well-known/ucp")
+            prof = _get("https://www." + domain + "/.well-known/ucp", timeout)
         except Exception:  # noqa: BLE001
-            prof = _get("https://" + domain + "/.well-known/ucp")
+            prof = _get("https://" + domain + "/.well-known/ucp", timeout)
         entries = prof["ucp"]["services"].get("dev.ucp.shopping", [])
         _ENDPOINTS[domain] = next(e["endpoint"] for e in entries if e.get("transport") == "mcp")
     return _ENDPOINTS[domain]
@@ -65,7 +65,16 @@ def _replay(domain: str, tool: str, arguments: dict) -> dict:
 CLASSES = {"search_catalog": ["order"], "ask_business": ["product"], "create_cart": ["product"]}
 
 
-def _live(domain: str, tool: str, arguments: dict, retries: int) -> dict:
+def warm(domains: list[str]) -> None:
+    """Look up the stores' endpoints ahead of time so the first call (a cart at signing) does not pay for it."""
+    for d in domains:
+        try:
+            endpoint(d)
+        except Exception:  # noqa: BLE001
+            pass
+
+
+def _live(domain: str, tool: str, arguments: dict, retries: int, timeout: float = 60) -> dict:
     # the outbound ledger: one row per message; a sealed value (limit, home measurement, person) in it stops the send
     row = obs.egress(domain, tool, arguments, CLASSES.get(tool), kind="store", block_on_hit=True)
     if row.get("blocked"):
@@ -77,8 +86,8 @@ def _live(domain: str, tool: str, arguments: dict, retries: int) -> dict:
     last = None
     for attempt in range(retries + 1):
         try:
-            req = urllib.request.Request(endpoint(domain), data=body, headers=HEADERS)
-            with urllib.request.urlopen(req, timeout=60) as f:
+            req = urllib.request.Request(endpoint(domain, timeout), data=body, headers=HEADERS)
+            with urllib.request.urlopen(req, timeout=timeout) as f:
                 d = json.loads(f.read())
             if "error" in d:
                 raise RuntimeError(json.dumps(d["error"])[:300])
@@ -86,18 +95,19 @@ def _live(domain: str, tool: str, arguments: dict, retries: int) -> dict:
             return res.get("structuredContent") or json.loads(res["content"][0]["text"])
         except Exception as e:  # noqa: BLE001
             last = e
-            time.sleep(1.5 * (attempt + 1))
+            if attempt < retries:
+                time.sleep(1.5 * (attempt + 1))
     raise RuntimeError(f"{domain} {tool} failed: {last!r}"[:400])
 
 
-def call(domain: str, tool: str, arguments: dict, retries: int = 2) -> dict:
+def call(domain: str, tool: str, arguments: dict, retries: int = 2, timeout: float = 60) -> dict:
     """One tools/call. Live: the store's MCP endpoint. SIGNOFF_MODE=replay: saved replies, no network, `mode: "replay"`.
     Each call emits one Amplitude tool-call event. Raises RuntimeError on a store error."""
     if tool not in ALLOWED_TOOLS:
         raise RuntimeError("tool not allowed: " + tool)  # no checkout tool, ever
     replay_mode = config.mode() == "replay"
     return obs.timed("store." + tool, {"store": domain, **{k: v for k, v in arguments.items()}},
-                     (lambda: _replay(domain, tool, arguments)) if replay_mode else (lambda: _live(domain, tool, arguments, retries)),
+                     (lambda: _replay(domain, tool, arguments)) if replay_mode else (lambda: _live(domain, tool, arguments, retries, timeout)),
                      lambda r: _summary(tool, r))
 
 
