@@ -198,13 +198,17 @@ function plan(k) {
     else if (e.verb === "says") card(e.from, e.to, "", "");
     else if (e.verb === "wrote" && nodes.get(e.to)?.kind === "context_message") { if (nodes.get(e.from)?.kind === "context_person") card(e.from, e.to, "", ""); }
     else if (e.verb === "wrote" || e.verb === "measured") card(e.from, e.to, "", eventPhase ? "" : e.verb);
-    else if (e.verb === "searches" && nodes.get(e.to)?.kind === "store" && k >= iSearch && !ranked) card(e.from, e.to, k === iSearch ? "lit" : "", k === iSearch ? e.label : "");
+    else if (e.verb === "searches" && nodes.get(e.to)?.kind === "store" && k >= iSearch && !ranked) card(e.from, e.to, k === iSearch ? "lit" : "", "");
     else if (e.verb === "requires" && nodes.get(e.to)?.kind === "home_fact") { if (vis(e.to) && vis(e.from)) lines.push({ a: e.to, b: e.from, cls: "", toCorner: true, card: true }); }
     else if (e.verb === "waits for" && k >= iSign && iSign >= 0) lines.push({ a: e.from, b: e.to, cls: "lit", toCard: true });
     else if (e.verb === "releases") card(e.from, e.to, "lit", "");
     else if (e.verb === "searches" && e.from === "web:search" && k === iWeb) lines.push({ a: e.from, b: e.to, cls: "", fromCard: true });
   }
   const stage = S[k];
+  if (k === iSearch && stores.length) {                             // the item's own queries, said once
+    const q = data.edges.find((e) => e.verb === "searches" && e.label), last = P.get(stores[stores.length - 1].id);
+    if (q) texts.push({ x: XS + px(2), y: last.y + CH + px(16), cls: "gs", html: "searched for: " + esc(q.label) });
+  }
   if (stage.limit) {                                                // the rule reaches every product it judges
     for (const p of products) {
       const i = asideAt.get(p.id);

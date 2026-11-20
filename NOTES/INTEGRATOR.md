@@ -2217,3 +2217,8 @@ open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` 
   second quote is used only if code finds it on the page with the rating and the scale in it (10 pages asked, 1 changed: Best Buy).
   (2) When the reader rounds ("4.6" for the page's "4.5915494"), the page's own number is kept, with `value_as_reported` beside it.
   `best_reviewed` and `ratings()` now use one rule (out of five, at least 5 reviews); the tie-break text is updated in the reply.
+
+## GRAPH 15:00 — ready to merge (`stream/GRAPH`, main merged in at 012efe2)
+- The changed context file is read (Rosa; seven messages; eleven facts, none dropped, no feed differs: `uv run pytest tests/graph -q` → `19 passed, 1 deselected`; `./hk check` → PASS). The event stage shows "held by Elena's agent" from `held_by.who`; the note's full text is the event node's text on click.
+- Autoplay checked in a headless Chrome from a cold open (no `stage` in the URL): it runs the eleven stages and lands exactly on the last layout. Two faults found and fixed on the way: a tween driven by the frame's timestamp could overshoot, and the canvas was measured before its controls were drawn.
+- /graph/ needs an app restart after the merge (the static mount is made at start-up). URLs for stills: `/graph/?live=0&line_id=L4&stage=N` (N from 0 to 10); `&view=detail` for the five columns.
