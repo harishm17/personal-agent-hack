@@ -72,7 +72,11 @@ def _load_figures(pool, from_data):
         figures = _read(FIXTURES / "figures.json")
     text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
     for f in figures:
-        f["span_found_in_text"] = rules.span_found(f, text.get((f["store"], f["product_id"])))
+        page = text.get((f["store"], f["product_id"]))
+        f["span_found_in_text"] = rules.span_found(f, page)
+        if f["span_found_in_text"]:  # the store's whole sentence, for the screen to show around the quote
+            sentence, a, b = rules.sentence_around(page, f["start"], f["end"])
+            f.update(sentence=sentence, quote_in_sentence=[a, b])
     return figures
 
 

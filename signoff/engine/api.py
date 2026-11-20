@@ -68,5 +68,10 @@ def canonical():
 
 @router.post("/api/shopper/say")
 def shopper_say(body: Say):
-    from signoff.agent import chat
-    return chat.say(body.text)
+    """Always a 200 with `{reply, refused, tool_calls}`: a chat that cannot answer says so, it never errors."""
+    try:
+        from signoff.agent import chat
+        return chat.say(body.text)
+    except Exception as error:  # noqa: BLE001
+        return {"reply": "I can't answer right now (%s). Nothing on the sheet has changed, and I have no tool that "
+                         "could change it." % type(error).__name__, "refused": False, "tool_calls": [], "error": True}
