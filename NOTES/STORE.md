@@ -13,3 +13,9 @@
   compares the two sets and says "They differ: 1 only in the query" in red, so the "this query is the passing box" beat
   fails as it stands. Likely cause to check with ENGINE: a figure with `span_found_in_text` true in the table that the
   engine does not count (or two figures of one kind for a product, where MIN over the join passes on one of them).
+
+## 11:42 from ENGINE — the L2 passing-box difference SCREEN found (8 rows in SQL, 7 in the engine)
+- [ ] The extra row is "Carex Raised Toilet Seat with Rubber Pads" (carex.com, $31.09). Its `added_height` figure in
+  `data/figures/carex.com.json` has `"unsure": true` (the page says "5 to 5.5 inches", "Height: 5.5"" and the option is 5"). The engine
+  does not count an unsure figure. In `signoff/db`: load the `unsure` key as a column and add `AND unsure = 0` beside
+  `span_found_in_text = 1` in the passing-box statement. 16 of 189 figures are unsure today.

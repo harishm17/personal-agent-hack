@@ -46,8 +46,12 @@ def pool_files(folder=None):
     return []
 
 
-def text_key(product, model):
+def text_key(product, model, sheet=None):
+    """Same text, same reader, same instructions: the cached reading stands ("read once, cached")."""
     salt = gliner.MODEL if model == gliner.EXTRACTOR else reader.SYSTEM
+    if sheet is not None and model != gliner.EXTRACTOR:
+        salt += "".join("%s=%d;" % (n, reader.GLOSSARY_REVISION[n]) for n in reader.wanted_figures(product, sheet)
+                        if n in reader.GLOSSARY_REVISION)
     return hashlib.sha256(("%s\n%s\n%s" % (model, salt, product.get("text") or "")).encode()).hexdigest()[:16]
 
 
@@ -66,7 +70,7 @@ def read_one(product, sheet, model, assume_unit):
                                 "unsure": bool(f.get("unsure"))} for f in figures]},
                   True, int((time.time() - started) * 1000))
     return {"store": product["store"], "product_id": product["product_id"], "title": product.get("title"),
-            "key": text_key(product, model), "asked": asked, "extractor": extractor, "proposals": proposals,
+            "key": text_key(product, model, sheet), "asked": asked, "extractor": extractor, "proposals": proposals,
             "figures": figures, "usage": usage, "seconds": round(time.time() - started, 2),
             "read_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds")}
 
@@ -78,7 +82,7 @@ def run_reader(products, sheet, model, out, workers=8, force=False, assume_unit=
     store = products[0]["store"]
     log_path = folder / (store + ".log")
     log = {} if force or not log_path.exists() else {r["product_id"]: r for r in json.loads(log_path.read_text())}
-    todo = [p for p in products if log.get(p["product_id"], {}).get("key") != text_key(p, model)]
+    todo = [p for p in products if log.get(p["product_id"], {}).get("key") != text_key(p, model, sheet)]
     errors = []
     with concurrent.futures.ThreadPoolExecutor(workers) as pool:
         jobs = {pool.submit(read_one, p, sheet, model, assume_unit): p for p in todo}
@@ -169,7 +173,7 @@ def main(argv=None):
         errors = []
         for path in files:
             products = json.loads(pathlib.Path(path).read_text())[:args.limit]
-            rows, failed, _ = run_reader(products, sheet, deciding[0], args.out, args.workers, True, args.assume_unit, "-pass2")
+            rows, failed, _ = run_reader(products, sheet, deciding[0], args.out, args.workers, args.force, args.assume_unit, "-pass2")
             errors += failed
             print("%s: second pass, %d figures" % (products[0]["store"], len(rows)))
         from signoff.extract import score

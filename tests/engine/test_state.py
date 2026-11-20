@@ -153,3 +153,23 @@ def test_the_reader_can_be_switched_to_another_readers_run(tmp_path):
     with pytest.raises(state.EngineError):
         state.set_reader("sie:no-such-model")
     assert state.set_reader(None)["mode"] == "fixture"
+
+
+def test_reset_is_complete_and_text_checks_follow_the_sheet_they_were_run_on():
+    original = state.sheet_hash()
+    state.set_senso([{"id": "c1", "verdict": "verified", "candidate_id": "L2:fixture-store-a.example:fx-A"}])
+    s = state.get_state()
+    assert s["senso_current"] is True and line(s, "L2")["candidates"][0]["senso"]["claims"][0]["id"] == "c1"
+    s = state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 425})
+    assert s["senso"][0]["id"] == "c1" and s["senso_current"] is False  # shown, marked as run on an earlier sheet
+    state.apply_issuer({"type": "strike", "line_id": "L2", "product_key": "fixture d", "reason": "x"})
+    state.set_shopper_fact("mattress_thickness", 9.0)
+    state.set_issuer_key({"enrolled": True, "key_id": "k"})
+    state.mark_signed({"name": "Dana", "at": "2026-11-20T14:00:00-08:00"}, [])
+    started = time.perf_counter()
+    s = state.reset()
+    assert time.perf_counter() - started < 0.2
+    assert state.sheet_hash() == original and s["senso_current"] is True and s["seal"]["signed"] is False
+    assert s["issuer_key"]["enrolled"] is False and [k["product_key"] for k in line(s, "L2")["struck"]] == []
+    assert s["sheet"] == json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+    assert state.set_shopper_fact("mattress_thickness", 12.0)["version"] > s["version"]  # open for changes again

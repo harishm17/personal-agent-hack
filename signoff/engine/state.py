@@ -112,7 +112,7 @@ def _load(keep_changes=False):
     strikes_file = (DATA if from_data else FIXTURES) / "strikes.json"
     _s.update(sheet=_read(SHEETS / (sheet_id + ".json")),
               strikes=_read(strikes_file) if strikes_file.exists() else [],
-              seal=None, issuer_key={"enrolled": False, "key_id": None, "persona": None}, senso=[])
+              seal=None, issuer_key={"enrolled": False, "key_id": None, "persona": None})
 
 
 def _limit(limit_id):
@@ -172,8 +172,13 @@ def _seal(state, current_hash):
 def _attach(state):
     """Adds what is not a rule: who signed, the carts, the issuer's key and the text checks."""
     carts = {c.get("store"): c for c in (_s.get("seal") or {}).get("carts", [])}
+    state["sheet_hash"] = hashlib.sha256(_canonical(state).encode()).hexdigest()
+    # Text checks belong to the sheet they were run on: show the ones for this hash; failing that the last
+    # ones pushed, marked as not current.
+    kept = _s.setdefault("senso_by_hash", {})
+    senso = kept.get(state["sheet_hash"], _s.get("senso") or [])
     by_candidate = {}
-    for check in _s.get("senso") or []:
+    for check in senso:
         for key in (check.get("candidate_id"), (check.get("store"), check.get("product_id"))):
             if key and key != (None, None):
                 by_candidate.setdefault(key, []).append(check)
@@ -191,8 +196,8 @@ def _attach(state):
     if _s.get("readers"):
         used = next((f["extractor"] for f in _s["figures"]), _s["readers"]["reference"])
         state["readers"] = dict(_s["readers"], deciding=used, switched=bool(_s.get("reader")))
-    state["senso"] = list(_s.get("senso") or [])
-    state["sheet_hash"] = hashlib.sha256(_canonical(state).encode()).hexdigest()
+    state["senso"] = list(senso)
+    state["senso_current"] = state["sheet_hash"] in kept
     state["seal"] = _seal(state, state["sheet_hash"])
     return state
 
@@ -354,7 +359,8 @@ def set_senso(checks: list) -> dict:
     with _lock:
         _ensure()
         _s["senso"] = list(checks or [])
-        return _recompute(record=False)
+        _s.setdefault("senso_by_hash", {})[_s["state"]["sheet_hash"]] = _s["senso"]
+        return _recompute(record=False, why="set_senso")
 
 
 def set_reader(name=None) -> dict:
@@ -380,9 +386,17 @@ def reload_data() -> dict:
 
 
 def reset() -> dict:
-    """Back to unsigned, no key, sheet as on disk."""
+    """Back to unsigned, no key, sheet as on disk: limits, the shopper's measurements, strikes, the seal and its
+    carts, the issuer's key, the reader switch and the chat's memory. Pool, store answers and figures are read
+    again from disk. Text checks are kept per sheet hash, so the ones run on the sheet as on disk show again.
+    About 7 ms with the real pool."""
     with _lock:
         _s["reader"] = None
         _load()
+        try:
+            from signoff.agent import chat
+            chat.forget()
+        except Exception:  # noqa: BLE001
+            pass
         obs.session(_s["sheet"]["id"])
         return _recompute(why="reset")

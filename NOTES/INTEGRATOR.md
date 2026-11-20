@@ -186,3 +186,52 @@ Merge `stream/SIGN` (all committed, 71 tests green). Proof, run on my branch wit
 - Relay is not available to us: the guide says a Relay sandbox key comes from their Google form, "only works for Relay", needs `@persona/sdk-node` plus Privacy Pass; our key is the dashboard sandbox org's, i.e. the standard-verification path. Staying on the plain Inquiry flow (it works). Relay answers "does this person meet a condition (live human, 18+/21+)"; standard verification answers "who is this person". Our line for the demo: a signature needs to know who signed, not only that a human did, so standard verification is the right layer. (Persona's own help article says the same: "link the agent only after the Inquiry passes and limit it to what was verified".)
 - What their judges appear to want: the human behind the agent checked in a real flow, the result read back from the backend (not trusted from the client), the agent's authority tied to the verified person, and everything labelled sandbox ("sandbox always passes; use it to check the integration"). We do all four: backend creates the Inquiry and reads its status, the signature record carries inquiry id and status, the seal says "sandbox". A new switch: `PERSONA_REQUIRED=1` in the keys file makes `sign_sheet` refuse until the Inquiry status is completed/approved (error `identity_needed`); off by default so a stalled hosted page cannot block the demo. Say if you want it on for the demo.
 - Extras from the guide: sandbox lets an inquiry pass or fail on purpose (docs "Integration testing"); the startup programme offers 500 free checks a month, sign-up at withpersona.com/tokensand (builder's call); their staff to ask: Ellen or Kerwell.
+
+## 11:42 from ENGINE — answers to (a), (b), (c) of your 11:40 message
+**(a) L5, the grab bar.** Done: the reader now reads the length of the selected option and nothing else (reworded rule for `length`;
+only the nine grab bar pages were read again, the other 102 readings are the cached ones). L5 is still open, and that is the honest
+result: the pool holds each bar's first option, which is the 12 in bar, and the limit is 16 in.
+| product (selected option) | capacity | length | status |
+|---|---|---|---|
+| Carex Ultra Grip Grab Bar (12") | 250 lb | 12 in, `Length: 12" or 16"` | outside: 250 >= 300 is false |
+| Carex Chrome Ultra Grip Bath Handle (12") | 75 lb | 12 in | outside: 75 >= 300 is false |
+| Carex Textured Wall Grab Bar (12") | 250 lb | 12 in, `Available in 12", 16", 18", 24", and 32" length.` | outside: 250 >= 300 is false |
+| Drive White Powder Coated Grab Bar | 300 lb | 12 in, `12" L` | outside: 12 >= 16 is false |
+| Vive Metal Grab Bar (12" / Polished) | 440 lb | 12 in, `12” Grab bar- 15.11” end to end ...` | outside: 12 >= 16 is false |
+| Medline Bathtub Grab Bars · Vive Textured Grab Bars (18 Inch) | 250 · 440 lb | not stated for the selected option | not stated |
+| Vive Angled Metal Grab Bar | not stated | 16 in | not stated |
+| Vive Metal Grab Bar With Toilet Paper Holder | 300 and 350 on one page: unsure | 8 in | not stated |
+A candidate would exist only if STORE fetched a longer option as its own pool row (Vive Metal Grab Bar 16": 440 lb, sold as the 16 in bar).
+If STORE does that, each option needs its own `product_id` (or tell me and I key figures by `variant_id`): today figures are keyed by
+store and product. The line is `pick_up_locally` in the sheet anyway, so an open L5 costs the demo nothing.
+
+**(b) What the picks really rest on** (from `/api/state` now; total $279.04):
+| line | pick | sums | the store's words | kind |
+|---|---|---|---|---|
+| L1 | Deluxe Aluminum Bath Bench by Drive, parentgiving.com, $41.99 | 350 >= 300 · 17 <= 21.5 | `Weight Capacity: 350 lbs.` · `Width (outside legs): 17"` | single, single |
+| L2 | Carex Quick-Lock Raised Toilet Seat, carex.com, $31.10 | 300 >= 300 · 15 + 4 = 19 >= 19 | `Weight Capacity: 300 lbs.` · `Adds 4" of height to the toilet seat.` | single, single |
+| L3 | Carex Deluxe Folding Commode, carex.com, $61.25 | 300 >= 300 · 23.5 >= 19 | `Weight Capacity: 300 lbs.` · `Height is adjustable from 17" to 23.5".` | single, **adjustable** |
+| L4 | Carex Classics Dual-Button Walker, carex.com, $44.71 | 300 >= 300 · 23.5 <= 28 | `Weight Capacity: 300 lbs.` · `Product Dims (h x w x d): 30" - 37" x 23.5" x 18.5"` | single, single |
+| L6 | Wonder Bed Handle, parentgiving.com, $99.99 | 300 >= 300 · 14 >= 12 | `Weight Capacity: 300 lbs` · `Fits traditional bed types with 6-14 in. thick mattress` | single, single (the top of a stated range) |
+- **No pick rests on a spread.** The reviewer is right about L2: "Adds 4"" is one number. The only pick that rests on a range is L3
+  (adjustable 17 to 23.5; the limit 19 lies inside it). Other counted adjustable ranges, not picked: four commodes on L3 and seven bed
+  rails on L6 (for example `Seat Height Range: 19” to 23”`, `Fits Mattress Heights: 10″-15″`).
+- The stated spread exists on one page and does **not** count today: "Carex Raised Toilet Seat with Rubber Pads", carex.com, $31.09,
+  `adds 5 to 5.5 inches of height`. The reference reader marked it unsure (the page also says `Height: 5.5"` and the selected option is
+  `5"`), so the candidate shows as "added height stated, but not clearly for this product". Qwen on SIE and the second Sonnet pass both
+  read it as a spread of 5 to 5.5 and count it.
+- [ ] Decide, and I will not do it unasked because it moves the demo: a reading rule "a stated loose range is a spread; other numbers on
+  the page that lie inside it do not make it unsure" would let that seat count. Then L2 picks it (15 + 5 = 20 >= 19, the low end, $31.09)
+  and the screen shows a real spread sum. But the cross-store jump on L2 goes away: it stays the pick up to a limit of 20 and the line
+  opens at 20.5. Today the jump is real: L2 "finished seat height" 19 → 19.5 moves carex.com Quick-Lock ($31.10) to parentgiving.com
+  "Carex Economy Raised Toilet Seat 5-1/2"" ($31.99, `Adds 5 Inches of height to the toilet seat`). So DEMO.md can truthfully say
+  either "a stated range decides the commode line (adjustable 17 to 23.5)" or show the unsure spread as a rejected candidate with its reason.
+- SCREEN's 11:35 finding (SQL passing box 8 rows on L2, engine 7): the extra row is this same seat. Its figure has `unsure: true`; the
+  SQL has to leave out unsure figures (`span_found_in_text` true **and** `unsure` not true), as in my 11:32 note in NOTES/STORE.md.
+
+**(c) reset().** 6 to 8 ms with the real pool (five runs: 8.2, 6.3, 6.0, 7.2, 6.3). It puts back limits, Elena's measurements, strikes, the
+seal and carts, the issuer key, the reader switch and the chat's memory, and reads pool, answers and figures again from disk. Senso checks
+are now kept per sheet hash: after a reset the checks that were run on the sheet as on disk show again (`senso_current: true`); after a
+limit moves, the last checks stay visible with `senso_current: false` until SIGN runs them again. Test: `test_reset_is_complete_...`.
+After the reading change: 111 products, 67 state every figure, 41 inside, 5 of 6 lines ready. Agreement with the reference:
+Qwen on SIE 170 of 173 (98.3%), the reference's own second pass 167 of 173 (96.5%), SIE extract alone 119 of 173 (68.8%).
