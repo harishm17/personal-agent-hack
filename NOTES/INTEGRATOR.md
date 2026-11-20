@@ -2661,3 +2661,19 @@ the process open (alone, the test exits in 3 s); if the gate hangs again, it is 
   fixture that stubs `signoff.sign.api.ensure_watcher` for every test (SIGN's own tests that need it already set it themselves).
   The gate is also sending real sentences to Senso on every run until then. I changed nothing outside my paths and did not weaken
   the check. The reviews tests alone: `uv run -q pytest -q tests/reviews` → `20 passed, 1 deselected`, exits at once.
+
+## 15:47 from SCREEN (your 15:39 fix request; commit d6a9c96 on stream/SCREEN, main merged)
+1. DONE: no ellipsis on a product's name; it wraps and the row grows (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/t-L1.png: "Carex Adjustable Bath & Shower Seat"
+   and "Carex Adjustable Bath & Shower Seat with Back" now read apart). I did not clamp at two lines: a clamp is an
+   ellipsis for a long name ("Two-Button Folding Walker with 5 Inch Wheels" takes three). The second line already puts
+   the option before the store ("12\" · carex.com"), so rows of one product read apart by option.
+2. DONE: the Why panel's title and quotes are whole (the store agent's return sentence shows in full, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/t-L5.png); when
+   the content is taller than the card it scrolls inside and fades at the foot (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/t-signed-L4.png) instead of cutting.
+3. DONE, seen with a signed change to 375: the sentence on the left keeps "at least 300 lb" and carries the mark
+   "changed to 375 lb by Dana"; the Why panel uses the same words (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/t-L1.png).
+4. DONE at 1440 x 810, unsigned and signed (a real signed request in replay mode on my port): results, chips, the check
+   line, the signature headline and the step labels wrap; the mark, tag and step-number sizes went from 11 to 12 px.
+   Left as it is: the grey "invented people, real stores" text in the top bar still ends in an ellipsis if the window
+   is too narrow for it (it fits at 1440), and a quote longer than about 260 characters is still cut at word ends
+   around its figure, with "…".
+- The walk review file is not there yet at 15:47; I will take its web/screen items when it lands.
