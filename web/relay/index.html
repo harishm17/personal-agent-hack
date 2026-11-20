@@ -1,5 +1,76 @@
 <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sign-Off: live human check</title>
-<p>Placeholder. The Relay step replaces this file.</p>
+<title>Live human check</title>
+<style>
+  :root { --bg: #fbfaf7; --ink: #1d2a2c; --quiet: #6a7578; --line: #dcd9d0; --ok: #1f6b4a; --bad: #9a3a2b; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #14191a; --ink: #e8ecea; --quiet: #98a3a5; --line: #2c3537; --ok: #6cc59b; --bad: #e08a78; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, sans-serif; }
+  main { max-width: 28rem; margin: 0 auto; padding: 2.5rem 16px; }
+  h1 { font-size: 1.15rem; font-weight: 600; margin: 0 0 .25rem; }
+  p { margin: .25rem 0 1rem; color: var(--quiet); }
+  button { font: inherit; padding: .7rem 1.1rem; border: 1px solid var(--ink); background: var(--ink); color: var(--bg); border-radius: 6px; min-height: 44px; }
+  button:disabled { opacity: .5; }
+  #relay-container { margin-top: 1rem; min-height: 0; }
+  #result { margin-top: 1.25rem; font-weight: 600; }
+  #result.ok { color: var(--ok); } #result.bad { color: var(--bad); }
+  small { display: block; margin-top: 1rem; color: var(--quiet); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Live human check</h1>
+  <p>Confirms that a person, not the agent, is signing. Sandbox: the result is simulated.</p>
+  <button id="go">Start</button>
+  <div id="relay-container"></div>
+  <div id="result" role="status" aria-live="polite"></div>
+  <small id="detail"></small>
+</main>
+<script type="module">
+const go = document.getElementById("go"), out = document.getElementById("result"), detail = document.getElementById("detail");
+const post = (path) => fetch(path, { method: "POST" }).then((r) => r.json());
+const say = (text, cls = "") => { out.textContent = text; out.className = cls; };
+
+async function redeem() {
+  say("Checking…");
+  for (let i = 0; i < 20; i++) {
+    const r = await post("/api/issuer/relay/complete");
+    if (r.pending) { await new Promise((ok) => setTimeout(ok, 1500)); continue; }
+    if (!r.ok) { say("Could not finish: " + (r.error || "unknown"), "bad"); return; }
+    const passed = r.result === "passed";
+    say(passed ? "Live human: passed (sandbox)" : "Live human: failed (sandbox)", passed ? "ok" : "bad");
+    detail.textContent = "Claim " + r.claim_type + " at " + r.at + ". Sandbox claims are simulated.";
+    document.getElementById("relay-container").replaceChildren();
+    return;
+  }
+  say("Not finished yet. Start again.", "bad");
+  go.disabled = false;
+}
+
+go.addEventListener("click", async () => {
+  go.disabled = true; say(""); detail.textContent = "";
+  let session;
+  try { session = await post("/api/issuer/relay/start"); } catch { session = { ok: false }; }
+  if (!session.ok) { say("Could not start: " + (session.error || "no connection"), "bad"); go.disabled = false; return; }
+  try {
+    const { default: Relay } = await import("https://cdn.jsdelivr.net/npm/@persona/relay@0.2.2/+esm");
+    new Relay("#relay-container", {
+      accessToken: session.access_token, theme: "auto",
+      onComplete: redeem,
+      onExpire: () => { say("Session ended. Start again.", "bad"); go.disabled = false; },
+      onError: (e) => { say("Could not show the check: " + (e && (e.message || e.code) || "error"), "bad"); go.disabled = false; },
+    });
+  } catch (e) {
+    say("Could not load the check. Open Persona's page instead:", "bad");
+    detail.innerHTML = "";
+    const a = document.createElement("a"); a.href = session.hosted_url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "Open";
+    detail.append(a);
+    go.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
