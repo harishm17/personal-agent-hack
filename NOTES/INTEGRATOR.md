@@ -2200,3 +2200,52 @@ open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` 
   second quote is used only if code finds it on the page with the rating and the scale in it (10 pages asked, 1 changed: Best Buy).
   (2) When the reader rounds ("4.6" for the page's "4.5915494"), the page's own number is kept, with `value_as_reported` beside it.
   `best_reviewed` and `ratings()` now use one rule (out of five, at least 5 reviews); the tie-break text is updated in the reply.
+
+## 15:18 from ENGINE — H1, H5, H4 fixed on stream/ENGINE (commits 5af2cd0 and the one after), each with a test that fails before the fix
+Proof that they fail before: with `state.py` and `verify.py` as they were, `pytest -k "name_the_approver or one_fingerprint or
+refused_as_stale"` → "3 failed"; with the fixes the whole suite → "430 passed, 12 deselected" (15:17).
+- DONE H1: each pick in the canonical sheet carries `title`; `COVERS` says "product name". Test:
+  `tests/engine/test_state.py::test_the_name_the_approver_reads_is_under_the_hash` (another name on the same ids → another hash).
+- DONE H5: `state._one_form`: a whole number has one form (16.0 and 16 are both written 16), applied in `_number` (every limit
+  and measurement that arrives) and over the whole canonical sheet (every number in it, whatever the sheet file wrote). Test:
+  `tests/engine/test_state.py::test_one_value_has_one_fingerprint_however_it_arrived`: L5.length 16.0 → 20 → 16, L2.capacity
+  300 → 325.0 → 300.0, and a home measurement changed and restored each return the first hash and the first text.
+- DONE H4: `signoff/sign/verify.py`: the sequence number is recorded as soon as the signature and the number hold, before the
+  wrong-sheet and stale-hash checks. Test: `tests/sign/test_requests.py::test_a_sign_request_refused_as_stale_is_spent_and_never_accepted_later`
+  (signed for A, sheet to B, refused `stale_hash`, sheet back to A, same bytes → 409 `replayed_seq`, no cart, not signed; a new
+  tap with a higher number is accepted).
+  **Not closed, and not mine to close:** the reviewer's second half of H4. `signoff/sign/api.py:407` still sets `last_seq` back
+  for a refusal marked `retry_ok` (`identity_not_verified`, a store that failed), so that same request may be sent again;
+  `tests/sign/test_persona.py:72` relies on it ("the very same signed request goes through"). Removing it is one line in SIGN's
+  file plus that test; your permission covered verify.py only, so I left it. Say the word and I do it.
+- **Every field shown at signing, against the canonical sheet** (phone: `web/phone/index.html` `itemCard`, `limitRowC`,
+  `prefRowC`, the pick-rule line):
+  | shown | in the canonical sheet |
+  |---|---|
+  | need, line status, pick up locally | `lines[].need`, `status`, `fulfilment` |
+  | product name | `pick.title` (new, H1) |
+  | store, product id, variant, variant name | `pick.store`, `product_id`, `variant_id`, `product_key`, `variant_title` |
+  | price, quantity, currency, line amount, total | `pick.price_cents`, `quantity`, `currency`; `total_cents` |
+  | each check as a sum | `pick.checks[].expr` |
+  | the store's sentences | `pick.quotes` |
+  | delivery sentence, day range, needed by | `pick.delivery` |
+  | each limit: number, unit, comparison, who set it | `limits[].bound`, `unit`, `op`, `set_by` |
+  | each limit's words ("weight capacity", "at least") | `limits[].name`, `limits[].label` (new: the phone takes the label from the state) |
+  | struck products and the reason typed | `struck`; `strike_reasons` (new) |
+  | the ordering, its label, `within`, who asked for it | `pick_rule.id`, `label`, `within` (best value), `set_by` (new: the phone prints "Elena asked for …" from it) |
+  | preferences and the pick's result | `lines[].preferences`, `pick.preferences` |
+  | who picked | `lines[].picked_by` |
+  | rating, review count under a review ordering | `pick.rating`, `pick.review_count` |
+  **Shown and still not under the hash, left so on purpose, your call:** the order's own sentence beside a limit and "changed from
+  the order" (`from_order`, read from the order document; the Senso check is what ties the sheet to that document); the identity
+  label and the Senso verdicts (they are in the signature record, made after the hash); on the laptop only: picture, page link,
+  the return-policy sentence (`undo`), `picked_because` (words made from fields that are covered), products not picked,
+  fetch time.
+- All real hashes change (title, name, label, set_by, number form). **No fixture needed regenerating:** `fixtures/state.json` is
+  the rules' output and holds no hash (`seal.sheet_hash` is null; its equality test passes unchanged);
+  `web/screen/fixture-state.json` pins no hash value that I can find (grep for a quoted `sheet_hash` with hex digits: nothing);
+  `tests/sign` uses its own stand-in canonical text. I changed two older assertions of mine that spelled the canonical
+  `pick_rule` and a preference in full.
+- One change of shape you merged at 14:50: when the shopper changes the ordering, `sheet.pick_rule.set_by` is now `"shopper"`
+  (the role, as sheets 3 and 4 write it), not her name. The phone compares it with "shopper" to print "Elena asked for …", so
+  with the name that line never showed.
