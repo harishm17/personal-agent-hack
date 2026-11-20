@@ -371,3 +371,40 @@ def test_one_value_has_one_fingerprint_however_it_arrived():
     assert state.sheet_hash() == first and state.canonical_sheet() == text
     assert state._one_form({"a": [16.0, 16.5, True, "16.0"]}) == {"a": [16, 16.5, True, "16.0"]}
     assert '16.0' not in json.dumps(json.loads(text)["lines"][4]["limits"])
+
+
+def test_a_home_measurement_says_which_message_its_number_was_quoted_from(monkeypatch, tmp_path):
+    """E33: provenance for the screen, from the sheet's context file; shown, not signed, and never on a limit."""
+    s = state.get_state()
+    assert all("suggested_from" not in f for f in s["sheet"]["shopper_facts"])       # sheet 1 has no context file
+    first_hash, first_text = state.sheet_hash(), state.canonical_sheet()
+    facts = s["sheet"]["shopper_facts"]
+    text = "The rim is %g inches from the floor. I think the limit should be 250." % facts[1]["value"]
+    quote, wish = "The rim is %g inches from the floor" % facts[1]["value"], "the limit should be 250"
+    (tmp_path / "sheet1.json").write_text((ROOT / "sheets" / "sheet1.json").read_text())
+    (tmp_path / "sheet1_context.json").write_text(json.dumps({
+        "messages": [{"id": "m1", "from": "elena", "from_label": "Elena", "at": "2026-11-20T10:41:00-08:00", "text": text}],
+        "facts": [{"id": "rim", "value": facts[1]["value"], "source": "m1", "quote": quote, "start": 0, "end": len(quote),
+                   "feeds": [{"to": "/shopper_facts/1/value", "verb": "became the measurement", "equals": True}]},
+                  {"id": "why", "value": None, "source": "m1", "quote": quote, "start": 0, "end": len(quote),
+                   "feeds": [{"to": "/shopper_facts/0/value", "verb": "is why she measures"}]},          # not `equals`
+                  {"id": "a limit", "value": 250, "source": "m1", "quote": wish, "start": text.index(wish),
+                   "end": text.index(wish) + len(wish),
+                   "feeds": [{"to": "/lines/0/limits/0/bound/value", "verb": "would set a limit", "equals": True}]},
+                  {"id": "not there", "value": 9, "source": "m1", "quote": "nine inches", "start": 0, "end": 11,
+                   "feeds": [{"to": "/shopper_facts/2/value", "verb": "became the measurement", "equals": True}]}]}))
+    monkeypatch.setattr(state, "SHEETS", tmp_path)
+    s = state.reset()
+    facts = s["sheet"]["shopper_facts"]
+    assert facts[1]["suggested_from"] == {"message_id": "m1", "from_label": "Elena", "at": "2026-11-20T10:41:00-08:00",
+                                          "quote": quote, "value": facts[1]["value"], "matches": True}
+    assert "suggested_from" not in facts[0] and "suggested_from" not in facts[2]      # no `equals`; a quote not in its message
+    assert "suggested_from" not in json.dumps(s["sheet"]["lines"])                    # a limit is prescribed, never suggested
+    assert state.sheet_hash() == first_hash and state.canonical_sheet() == first_text  # shown, not signed: no hash moves
+    was = facts[1]["value"]
+    s = state.set_shopper_fact(facts[1]["id"], was + 0.5)                             # she changes it: her value stands
+    fact = s["sheet"]["shopper_facts"][1]
+    assert fact["value"] == was + 0.5 and fact["suggested_from"]["matches"] is False and fact["suggested_from"]["value"] == was
+    assert "suggested_from" not in state.canonical_sheet()
+    s = state.set_shopper_fact(facts[1]["id"], was)
+    assert s["sheet"]["shopper_facts"][1]["suggested_from"]["matches"] is True and state.sheet_hash() == first_hash

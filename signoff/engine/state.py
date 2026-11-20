@@ -768,6 +768,7 @@ def _attach(state):
     if _s.get("memory"):
         state["memory"] = _s["memory"]  # what was applied from memory at the start of this run, and what was ignored
     state["pick_rules"] = rules.pick_rules(rules.within_of(state["sheet"]))  # the orderings the shopper may choose
+    _suggested_from(state["sheet"])
     state["degraded"] = health.all()  # every fallback in use is named here; empty when all is well
     try:
         state["receipts"] = receipts.summary()
@@ -821,6 +822,41 @@ def _apply_choices(state):
                                if c["picked"] and l["status"] in ("ready", "next_candidate"))
     state["counts"]["lines_ready"] = sum(1 for l in state["lines"] if l["status"] in ("ready", "next_candidate"))
     return state
+
+
+_FACT_VALUE = re.compile(r"^/shopper_facts/(\d+)/value$")
+
+
+def _suggested_from(sheet):
+    """Where a home measurement's number was quoted from, when the sheet has a context file. The approver
+    prescribes the limits; the home's numbers come from what the family wrote. Each shopper fact that a context
+    fact feeds with `equals: true` carries the message it was quoted from and whether the sheet's value still
+    equals the quoted one. Only shopper facts are looked at: a limit never gets this, whatever the file points to.
+    It is shown, not signed: nothing here is in the canonical sheet. The file is read by `signoff.graph.context`,
+    which also checks every quote against its message; a fact whose quote is not there is not used."""
+    for fact in sheet["shopper_facts"]:
+        fact.pop("suggested_from", None)
+    try:
+        from signoff.graph import context
+        doc, name = context.load(sheet["id"], SHEETS)
+        checked = context.read(doc, sheet, name) if doc is not None else None
+    except Exception as error:  # noqa: BLE001
+        health.note("context", "the sheet's context file could not be read (%s); no measurement shows where its number "
+                    "came from" % type(error).__name__)
+        return
+    health.clear("context")
+    if not checked:
+        return
+    messages = {m.get("id"): m for m in checked["messages"]}
+    for quoted in checked["facts"]:
+        for feed in quoted["feeds"]:
+            at = _FACT_VALUE.match(str(feed.get("to") or ""))
+            if not at or not feed.get("equals") or not feed.get("found"):
+                continue
+            message = messages.get(quoted.get("source")) or {}
+            sheet["shopper_facts"][int(at.group(1))]["suggested_from"] = {
+                "message_id": message.get("id"), "from_label": message.get("from_label"), "at": message.get("at"),
+                "quote": quoted.get("quote"), "value": quoted.get("value"), "matches": bool(feed.get("matches"))}
 
 
 def _ratings_fn():
