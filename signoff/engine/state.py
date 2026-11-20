@@ -247,7 +247,8 @@ def _canonical_obj(state):
             limits.append({"id": l["id"], "op": l["op"], "unit": l["unit"], "set_by": b["source"],
                            "bound": b["value"] if b["source"] == "issuer" else facts[b["fact"]],
                            "terms": [t.get("figure") or "%s=%g" % (t["fact"], facts[t["fact"]]) for t in l["terms"]]})
-        out = {"line_id": line["line_id"], "need": line["need"], "status": line["status"], "limits": limits,
+        out = {"line_id": line["line_id"], "need": line["need"], "status": line["status"],
+               "fulfilment": sheet_line.get("fulfilment"), "limits": limits,
                "struck": sorted(s["product_key"] for s in line["struck"]), "pick": None}
         pick = next((c for c in line["candidates"] if c["picked"]), None)
         if pick:
@@ -256,20 +257,29 @@ def _canonical_obj(state):
                            "variant_id": p["variant_id"], "product_key": p["product_key"],
                            "price_cents": p["price_cents"],
                            "checks": [{"limit_id": c["limit_id"], "expr": c["expr"]} for c in pick["checks"]],
-                           "quotes": [t["quote"] for c in pick["checks"] for t in c["terms"] if t.get("quote")]}
+                           "quotes": [t["quote"] for c in pick["checks"] for t in c["terms"] if t.get("quote")],
+                           "delivery": {"status": pick["arrival"]["status"], "quote": pick["arrival"]["quote"],
+                                        "days_low": pick["arrival"]["days_low"], "days_high": pick["arrival"]["days_high"],
+                                        "need_by": pick["arrival"]["need_by"]}}
         lines.append(out)
-    return {"sheet_id": state["sheet"]["id"], "lines": lines, "total_cents": state["total_cents"]}
+    rule = state["sheet"]["pick_rule"]
+    return {"sheet_id": state["sheet"]["id"], "pick_rule": {"id": rule["id"], "label": rule["label"]},
+            "lines": lines, "total_cents": state["total_cents"]}
 
 
 def _canonical(state):
     return json.dumps(_canonical_obj(state), sort_keys=True, separators=(",", ":"))
 
 
+# What the signed hash is computed over, in words for the seal. Kept beside `_canonical_obj`: change both together.
+COVERS = ["limits", "strikes", "picks", "prices", "sums", "store quotes", "delivery quotes", "pick rule", "total"]
+
+
 def _seal(state, current_hash):
     seal = _s.get("seal")
     if not seal:
-        return state["seal"]
-    return dict(seal, current=seal["sheet_hash"] == current_hash)
+        return dict(state["seal"], covers=list(COVERS))
+    return dict(seal, current=seal["sheet_hash"] == current_hash, covers=list(COVERS))
 
 
 def _attach(state):
@@ -319,6 +329,9 @@ def _attach(state):
     state["sheet"], order = _with_order(state["sheet"])
     if order:
         state["order"] = order
+    held = _s.get("signing")
+    if held and time.time() < held["until"]:
+        state["signing"] = {"in_progress": True, "sheet_hash": held["sheet_hash"], "since": held["since"]}
     try:
         state["receipts"] = receipts.summary()
     except Exception:  # noqa: BLE001  (the chain is a record; it never stops a change)
@@ -363,6 +376,9 @@ def _key_id(action):
 def _open_for_changes():
     if _s.get("seal"):
         raise EngineError("this sheet is signed and its carts exist; reset to start again", 409)
+    held = _s.get("signing")
+    if held and time.time() < held["until"]:
+        raise EngineError("the sheet is being signed right now (hash %s); try again in a moment" % held["sheet_hash"][:12], 409)
 
 
 # --- decision records go to the database in the background; the app works with the database down ---
@@ -478,16 +494,56 @@ def sheet_hash() -> str:
         return _s["state"]["sheet_hash"]
 
 
+def signed_picks(sheet_hash: str) -> list:
+    """Not in the contract's list: the picks of exactly the sheet that was signed, for `signoff.sign` to create
+    carts from and nothing else: `[{store, variant_id, quantity, line_id, candidate_id, product_id, title,
+    price_cents}]`. Refused if `sheet_hash` is not the sheet as it stands now. From this call until
+    `mark_signed` (or `release_signing`, or 90 seconds) the sheet is held: a change by anyone is refused, so
+    what is sealed is what was signed and what the carts were made from."""
+    with _lock:
+        _ensure()
+        _open_for_changes()
+        if sheet_hash != _s["state"]["sheet_hash"]:
+            raise EngineError("the sheet changed since this hash was made: signed %s, now %s" % (
+                str(sheet_hash)[:12], _s["state"]["sheet_hash"][:12]), 409)
+        picks = [{"store": c["product"]["store"], "variant_id": c["product"]["variant_id"], "quantity": 1,
+                  "line_id": line["line_id"], "candidate_id": c["id"], "product_id": c["product"]["product_id"],
+                  "title": c["product"]["title"], "price_cents": c["product"]["price_cents"]}
+                 for line in _s["state"]["lines"] if line["status"] in ("ready", "next_candidate")
+                 for c in line["candidates"] if c["picked"]]
+        _s["signing"] = {"sheet_hash": sheet_hash, "picks": picks, "since": _now(), "until": time.time() + 90}
+        return [dict(p) for p in picks]
+
+
+def release_signing() -> dict:
+    """Ends a hold that `signed_picks` began, when the signing did not go through (a store refused a cart)."""
+    with _lock:
+        _ensure()
+        _s["signing"] = None
+        return _recompute(record=False, why="signing_released")
+
+
 def mark_signed(signature: dict, carts: list) -> dict:
-    """Called by `signoff.sign` after a verified `sign_sheet` and after the carts were created."""
+    """Called by `signoff.sign` after a verified `sign_sheet` and after the carts were created. The seal records
+    the hash that was signed, `signature["sheet_hash"]`. If the sheet no longer has that hash (someone changed a
+    measurement or a limit while the stores were being called), nothing is sealed and the refusal says so."""
     with _lock:
         _ensure()
         signature, carts = dict(signature or {}), list(carts or [])
+        signed = signature.get("sheet_hash")
+        if not signed:
+            raise EngineError("the signature names no sheet hash, so nothing can be sealed")
+        if signed != _s["state"]["sheet_hash"]:
+            _s["signing"] = None
+            raise EngineError("the sheet changed after it was signed (signed %s, now %s): nothing is sealed. "
+                              "Any cart just created belongs to the signed sheet, not to this one." % (
+                                  str(signed)[:12], _s["state"]["sheet_hash"][:12]), 409)
+        _s["signing"] = None
         name = signature.get("name") or signature.get("signer") or _s["sheet"]["issuer"]["name"]
         at = signature.get("at") or signature.get("signed_at") or _now()
         n = len(carts)
         text = "Signed by %s at %s. %d cart%s created." % (name, str(at)[11:16] or at, n, "" if n == 1 else "s")
-        _s["seal"] = {"signed": True, "text": text, "sheet_hash": _s["state"]["sheet_hash"],
+        _s["seal"] = {"signed": True, "text": text, "sheet_hash": signed,
                       "signature": signature, "carts": carts, "signed_at": at, "signer": name}
         receipts.append("signed", "issuer", _key_id(signature), signature,
                         {"sheet_hash": _s["state"]["sheet_hash"], "signer": name, "total_cents": _s["state"]["total_cents"]})
@@ -567,6 +623,7 @@ def reset() -> dict:
     About 7 ms with the real pool."""
     with _lock:
         _s["reader"] = None
+        _s["signing"] = None
         _load()
         receipts.start("reset")
         try:

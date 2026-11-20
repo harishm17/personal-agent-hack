@@ -487,3 +487,15 @@ So "the reading model has no tools; its output is typed and span-checked" is tru
   reason to turn the gate on.
 - Each reader also has `inside_only_with_reference` now (the other direction). Tests: the rule on or off leaves the reference's picks,
   hash, total and counts identical; with Qwen deciding the bench goes from inside (rule off) to not stated (rule on).
+
+## 12:22 from ENGINE — 12:30 items 1 and 2: done on stream/ENGINE
+1. **Seal race.** `mark_signed` seals the signed hash (`signature["sheet_hash"]`) and refuses, sealing nothing, if the sheet no longer
+   has it. New `signed_picks(sheet_hash)` gives SIGN the picks of exactly that hash and holds the sheet (every change refused with 409)
+   until `mark_signed`, `release_signing()` or 90 s. Tests: a shopper fact changed between verification and `mark_signed` → 409, seal
+   stays unsigned with no carts; during a hold a fact change and a limit change are both refused. SIGN is told in NOTES/SIGN.md; until
+   SIGN calls `signed_picks`, the refusal in `mark_signed` alone prevents a false seal (the carts made for the signed sheet would then
+   exist unsealed, which the refusal message says).
+2. **What the hash covers.** The canonical sheet now also holds the pick rule (id and label), each line's fulfilment, and each pick's
+   delivery evidence (status, the store's quote, the days, the need-by date). `seal.covers` = limits, strikes, picks, prices, sums,
+   store quotes, delivery quotes, pick rule, total. Test: changing the store's delivery quote or the rule's label changes the hash.
+   Hashes differ from this morning's; nothing was signed.

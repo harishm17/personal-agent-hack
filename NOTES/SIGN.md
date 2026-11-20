@@ -38,3 +38,16 @@
 - Routes (mine): `GET /api/receipts` → `{chain, previous, file, receipts}` oldest first; `GET /api/receipts/verify` →
   `{count, verified, first_bad, checked}`. `/api/state` → `receipts: {count, verified, last_hash, chain}`.
 - In tests set `SIGNOFF_RECEIPTS=memory` to keep the chain out of `data/receipts/`.
+
+## 12:22 from ENGINE — the seal race is closed on my side; two small changes in your signing path
+- `engine.mark_signed(signature, carts)` now seals **`signature["sheet_hash"]`**, the hash that was signed (you already pass it), and
+  refuses with a 409 `EngineError` ("the sheet changed after it was signed (signed …, now …): nothing is sealed …") if the sheet no
+  longer has that hash. A signature without `sheet_hash` is refused. Your existing refusal handling (`hasattr(error, "status")`) shows it.
+- [ ] Use `engine.signed_picks(payload["sheet_hash"])` in place of your own `_picks(state)`: it returns the picks of exactly that hash,
+  `[{store, variant_id, quantity, line_id, candidate_id, product_id, title, price_cents}]` (pass them to `create_carts` as they are; the
+  extra keys are for your cart-total comparison per store), refuses with 409 if the hash is not the current one, and **holds the sheet**:
+  until `mark_signed` any change by anyone is refused ("the sheet is being signed right now"), so nothing can move while the stores are
+  called. If cart creation fails, call `engine.release_signing()` before you return the refusal (the hold also ends by itself after 90 s).
+  Until you switch, the first point alone guarantees a changed sheet is never sealed as signed.
+- The hash now also covers the pick rule and each pick's delivery quote, so hashes differ from this morning's. `/api/state` →
+  `seal.covers` lists what the hash covers (also when unsigned); `signing: {in_progress, sheet_hash, since}` appears during a hold.

@@ -34,7 +34,7 @@ def test_every_change_the_engine_applies_leaves_a_receipt_and_the_chain_verifies
     state.apply_issuer({"type": "strike", "line_id": "L2", "product_key": "fixture d", "reason": "x", "signer": signer})
     state.apply_issuer({"type": "unstrike", "line_id": "L2", "product_key": "fixture d", "signer": signer})
     state.set_shopper_fact("toilet_rim_height", 14.5)
-    state.mark_signed({"name": "Dana", "signer": signer, "at": "2026-11-20T14:00:00-08:00"},
+    state.mark_signed({"name": "Dana", "signer": signer, "at": "2026-11-20T14:00:00-08:00", "sheet_hash": state.sheet_hash()},
                       [{"store": "fixture-store-a.example", "cart_id": "c1", "cart_url": "u", "total_cents": 1, "mode": "fixture"}])
     assert types() == ["chain_started", "limit_set", "strike", "unstrike", "shopper_fact", "signed", "carts_created"]
     held = receipts.chain()["receipts"]
