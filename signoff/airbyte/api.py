@@ -44,7 +44,7 @@ def status():
                  "status": j["status"], "rows_synced": j.get("rows_synced"), "duration": j.get("duration"),
                  "rows_copied_to_singlestore": loaded.get(j["stream"])} for j in last.get("jobs", [])]
         out["last"] = {
-            "ok": last["ok"], "finished_at": last["finished_at"], "seconds": last.get("seconds"),
+            "ok": last["ok"], "sheet_id": last.get("sheet_id") or "sheet1", "finished_at": last["finished_at"], "seconds": last.get("seconds"),
             "jobs": jobs, "expected": last.get("expected"), "error": last.get("error"),
             "tunnel": last.get("tunnel"),
             "lines": [f"Airbyte job {j['job_id']}: {j['stream']}, File (HTTPS) to MySQL (local staging), "

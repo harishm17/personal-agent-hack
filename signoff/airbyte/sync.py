@@ -32,6 +32,7 @@ STREAMS = [
     {"name": "airbyte_pool", "file": "pool.jsonl", "format": "jsonl", "count_key": "pool"},
     {"name": "airbyte_store_answers", "file": "store_answers.jsonl", "format": "jsonl", "count_key": "store_answers"},
     {"name": "airbyte_order_limits", "file": "order.csv", "format": "csv", "count_key": "order"},
+    {"name": "airbyte_order_docs", "file": "order_doc.jsonl", "format": "jsonl", "count_key": "order_doc"},
 ]
 WAIT_SECONDS = 900
 
@@ -79,7 +80,7 @@ def short_lived_tunnel():
             raise RuntimeError("the tunnel did not start")
         for _ in range(60):  # the name needs a moment before it answers
             try:
-                if urllib.request.urlopen(f"https://{host}/pool.jsonl", timeout=5).status == 200:
+                if urllib.request.urlopen(f"https://{host}/", timeout=5).status == 200:
                     break
             except Exception:  # noqa: BLE001
                 time.sleep(2)
@@ -110,17 +111,28 @@ def _upsert(kind: str, name: str, create: dict, configuration: dict) -> dict:
     return ab.call("POST", f"/{kind}", {"name": name, **create, "configuration": configuration})
 
 
-def ensure(host: str) -> list[dict]:
-    """Creates or updates source, destination and connection for each stream; returns the connections."""
+def _cleanup_old() -> None:
+    """Removes sources and connections made before the per-sheet naming (their schema predates sheet_id)."""
+    for c in ab.call("GET", "/connections?limit=100")["data"]:
+        if "(sheet" not in c["name"]:
+            ab.call("DELETE", f"/connections/{c['connectionId']}")
+    for src in ab.call("GET", "/sources?limit=100")["data"]:
+        if "(sheet" not in src["name"]:
+            ab.call("DELETE", f"/sources/{src['sourceId']}")
+
+
+def ensure(host: str, sheet_id: str, streams: list[dict]) -> list[dict]:
+    """Creates or updates source, destination and connection for each stream of this sheet."""
     ws = ab.call("GET", "/workspaces")["data"][0]["workspaceId"]
+    _cleanup_old()
     dest = _upsert("destinations", "local MySQL staging", {"workspaceId": ws},
                    {"destinationType": "mysql", "ssl": False, **STAGING})
     out = []
-    for s in STREAMS:
-        src = _upsert("sources", f"export {s['file']}", {"workspaceId": ws},
+    for s in streams:
+        src = _upsert("sources", f"export {s['file']} ({sheet_id})", {"workspaceId": ws},
                       {"sourceType": "file", "dataset_name": s["name"], "format": s["format"],
-                       "url": f"https://{host}/{s['file']}", "provider": {"storage": "HTTPS", "user_agent": False}})
-        cname = f"{s['name']} to staging"
+                       "url": f"https://{host}/{sheet_id}/{s['file']}", "provider": {"storage": "HTTPS", "user_agent": False}})
+        cname = f"{s['name']} ({sheet_id}) to staging"
         conn = _find("connections", cname)
         if not conn:
             conn = ab.call("POST", "/connections", {
@@ -163,37 +175,59 @@ def _singlestore():
     return conn.connect(timeout=10)
 
 
+META = "airbyte_job_id BIGINT, airbyte_synced_at DATETIME"
 DDL = {
-    "airbyte_pool": """CREATE ROWSTORE TABLE IF NOT EXISTS airbyte_pool (
-        store VARCHAR(80) NOT NULL, product_id VARCHAR(120) NOT NULL, variant_id VARCHAR(120), title VARCHAR(400),
-        price_cents INT, url VARCHAR(600), text TEXT, fetched_at VARCHAR(40), product_key VARCHAR(300),
-        line_ids JSON, airbyte_job_id BIGINT, airbyte_synced_at DATETIME, PRIMARY KEY (store, product_id))""",
-    "airbyte_store_answers": """CREATE ROWSTORE TABLE IF NOT EXISTS airbyte_store_answers (
-        store VARCHAR(80) NOT NULL PRIMARY KEY, asked_at VARCHAR(40), question TEXT, answer TEXT,
+    "airbyte_pool": f"""CREATE ROWSTORE TABLE IF NOT EXISTS airbyte_pool (
+        sheet_id VARCHAR(20) NOT NULL, store VARCHAR(80) NOT NULL, product_id VARCHAR(120) NOT NULL,
+        variant_id VARCHAR(120), title VARCHAR(400), price_cents INT, url VARCHAR(600), text TEXT,
+        fetched_at VARCHAR(40), product_key VARCHAR(300), line_ids JSON, {META},
+        PRIMARY KEY (sheet_id, store, product_id))""",
+    "airbyte_store_answers": f"""CREATE ROWSTORE TABLE IF NOT EXISTS airbyte_store_answers (
+        sheet_id VARCHAR(20) NOT NULL, store VARCHAR(80) NOT NULL, asked_at VARCHAR(40), question TEXT, answer TEXT,
         delivery_stated TINYINT, delivery_quote TEXT, days_low INT, days_high INT, returnable VARCHAR(20),
-        return_fee TEXT, return_quote TEXT, airbyte_job_id BIGINT, airbyte_synced_at DATETIME)""",
-    "airbyte_order_limits": """CREATE ROWSTORE TABLE IF NOT EXISTS airbyte_order_limits (
-        limit_id VARCHAR(40) NOT NULL PRIMARY KEY, line_id VARCHAR(20), need VARCHAR(80), name VARCHAR(80),
-        op VARCHAR(2), value DOUBLE, unit VARCHAR(10), bound_source VARCHAR(20), bound_fact VARCHAR(60),
-        issuer VARCHAR(120), issued_at VARCHAR(40), order_note TEXT, airbyte_job_id BIGINT,
-        airbyte_synced_at DATETIME)""",
+        return_fee TEXT, return_quote TEXT, {META}, PRIMARY KEY (sheet_id, store))""",
+    "airbyte_order_limits": f"""CREATE ROWSTORE TABLE IF NOT EXISTS airbyte_order_limits (
+        sheet_id VARCHAR(20) NOT NULL, limit_id VARCHAR(40) NOT NULL, line_id VARCHAR(20), need VARCHAR(80),
+        name VARCHAR(80), op VARCHAR(2), value DOUBLE, unit VARCHAR(10), bound_source VARCHAR(20),
+        bound_fact VARCHAR(60), issuer VARCHAR(120), issued_at VARCHAR(40), order_note TEXT, {META},
+        PRIMARY KEY (sheet_id, limit_id))""",
+    "airbyte_order_docs": f"""CREATE ROWSTORE TABLE IF NOT EXISTS airbyte_order_docs (
+        sheet_id VARCHAR(20) NOT NULL PRIMARY KEY, name VARCHAR(120), text TEXT, {META})""",
     "airbyte_runs": """CREATE ROWSTORE TABLE IF NOT EXISTS airbyte_runs (
         run_id BIGINT AUTO_INCREMENT PRIMARY KEY, finished_at DATETIME, ok TINYINT, detail JSON)""",
 }
 COLUMNS = {
-    "airbyte_order_limits": ["limit_id", "line_id", "need", "name", "op", "value", "unit", "bound_source",
+    "airbyte_pool": ["sheet_id", "store", "product_id", "variant_id", "title", "price_cents", "url", "text",
+                     "fetched_at", "product_key", "line_ids"],
+    "airbyte_store_answers": ["sheet_id", "store", "asked_at", "question", "answer", "delivery_stated",
+                              "delivery_quote", "days_low", "days_high", "returnable", "return_fee", "return_quote"],
+    "airbyte_order_limits": ["sheet_id", "limit_id", "line_id", "need", "name", "op", "value", "unit", "bound_source",
                              "bound_fact", "issuer", "issued_at", "order_note"],
-    "airbyte_pool": ["store", "product_id", "variant_id", "title", "price_cents", "url", "text", "fetched_at",
-                     "product_key", "line_ids"],
-    "airbyte_store_answers": ["store", "asked_at", "question", "answer", "delivery_stated", "delivery_quote",
-                              "days_low", "days_high", "returnable", "return_fee", "return_quote"],
+    "airbyte_order_docs": ["sheet_id", "name", "text"],
 }
+
+
+def _migrate(tc, table: str) -> None:
+    """Tables made before the sheet_id column: copy their rows (sheet1) into the new shape."""
+    tc.execute(f"SHOW TABLES LIKE '{table}'")
+    if not tc.fetchall():
+        return
+    tc.execute(f"SHOW COLUMNS FROM {table}")
+    if any(c[0] == "sheet_id" for c in tc.fetchall()):
+        return
+    old = [c for c in COLUMNS[table] if c != "sheet_id"] + ["airbyte_job_id", "airbyte_synced_at"]
+    tc.execute(f"ALTER TABLE {table} RENAME TO {table}_old")
+    tc.execute(DDL[table])
+    cols = ", ".join(old)
+    tc.execute(f"INSERT INTO {table} (sheet_id, {cols}) SELECT 'sheet1', {cols} FROM {table}_old")
+    tc.execute(f"DROP TABLE {table}_old")
 
 
 def _clean(table: str, row: list) -> list:
     row = list(row)
     if table == "airbyte_pool":
-        row[COLUMNS[table].index("line_ids")] = json.dumps([x for x in (row[-1] or "").split(",") if x])
+        i = COLUMNS[table].index("line_ids")
+        row[i] = json.dumps([x for x in (row[i] or "").split(",") if x])
     if table == "airbyte_order_limits":
         i = COLUMNS[table].index("value")
         row[i] = None if row[i] in (None, "") or row[i] != row[i] else float(row[i])
@@ -204,12 +238,14 @@ def _clean(table: str, row: list) -> list:
     return row
 
 
-def load_into_singlestore(results: list[dict]) -> dict:
-    """Copies what Airbyte delivered to staging into SingleStore; returns row counts per table."""
+def load_into_singlestore(results: list[dict], sheet_id: str) -> dict:
+    """Copies what Airbyte delivered to staging into SingleStore (this sheet's rows only); returns row counts."""
     s, t = _staging(), _singlestore()
     counts = {}
     try:
         sc, tc = s.cursor(), t.cursor()
+        for name in COLUMNS:
+            _migrate(tc, name)
         for name in (*COLUMNS, "airbyte_runs"):
             tc.execute(DDL[name])
         for r in results:
@@ -220,8 +256,8 @@ def load_into_singlestore(results: list[dict]) -> dict:
             # builds from them nulls strings over about 510 characters, so it is not used.
             sc.execute(f"SELECT _airbyte_data FROM airbyte_internal.{STAGING['database']}_raw__stream_{table}")
             records = [json.loads(x[0]) if isinstance(x[0], (str, bytes)) else x[0] for x in sc.fetchall()]
-            rows = [_clean(table, [rec.get(c) for c in cols]) for rec in records]
-            tc.execute(f"DELETE FROM {table}")
+            rows = [_clean(table, [rec.get(c) for c in cols]) for rec in records if rec.get("sheet_id") == sheet_id]
+            tc.execute(f"DELETE FROM {table} WHERE sheet_id = %s", (sheet_id,))
             sql = (f"INSERT INTO {table} ({', '.join(cols)}, airbyte_job_id, airbyte_synced_at) "
                    f"VALUES ({', '.join(['%s'] * len(cols))}, %s, NOW())")
             tc.executemany(sql, [x + [r["job_id"]] for x in rows])
@@ -246,26 +282,29 @@ def record(detail: dict) -> None:
         pass
 
 
-def run() -> dict:
-    """Brings up what a sync needs, runs the jobs, copies to SingleStore, records the run, tears down.
-    Never raises."""
+def run(sheet_id: str | None = None) -> dict:
+    """Brings up what a sync needs, runs the jobs for the sheet (default: the active sheet), copies to SingleStore,
+    records the run, tears down. Never raises."""
     started = time.time()
-    detail = {"ok": False, "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+    detail = {"ok": False, "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "sheet_id": sheet_id,
               "source": "File (HTTPS)", "destination": "MySQL (local staging)",
               "copy": "copied to SingleStore by signoff.airbyte.sync"}
     try:
+        sheet_id = sheet_id or export.active_sheet()
+        detail["sheet_id"] = sheet_id
         ensure_staging()
-        expected = export.write_all()
+        expected = export.write_all(sheet_id)
+        streams = [s for s in STREAMS if expected.get(s["count_key"])]  # a sheet without an order document skips that stream
         with short_lived_tunnel() as host:
             detail["tunnel"] = f"https://{host} (open for this run only)"
-            items = ensure(host)
+            items = ensure(host, sheet_id, streams)
             with ThreadPoolExecutor(len(items)) as pool:
                 results = list(pool.map(_run_one, items))
         detail.update(jobs=results, expected=expected)
-        loaded = load_into_singlestore(results)
+        loaded = load_into_singlestore(results, sheet_id)
         detail.update(loaded=loaded)
         detail["ok"] = all(r["status"] == "succeeded" for r in results) and all(
-            loaded.get(s["name"]) == expected[s["count_key"]] for s in STREAMS)
+            loaded.get(s["name"]) == expected[s["count_key"]] for s in streams)
     except Exception as error:  # noqa: BLE001
         detail["error"] = repr(error)[:400]
     detail["seconds"] = round(time.time() - started, 1)
@@ -274,4 +313,5 @@ def run() -> dict:
 
 
 if __name__ == "__main__":
-    print(json.dumps(run(), indent=1))
+    import sys
+    print(json.dumps(run(sys.argv[1] if len(sys.argv) > 1 else None), indent=1))
