@@ -33,18 +33,14 @@ GLOSSARY = {
     "overall_width": "The widest outside measurement of the whole product: 'overall width', the width in the overall "
                      "or product dimensions, or the width outside the legs or base. Seat width, the width between "
                      "the arms, inside width and depth are different measures: never report them as overall width.",
-    "length": "The length of the product itself. When the page sells several sizes, report only the selected option's "
-              "length (the text may end with 'Selected option: ...'). A size option named by its length (the 12\" bar "
-              "among 'Available in 12\", 16\" and 18\" lengths', or 'Length: 12\" or 16\"') has that length: quote the "
-              "passage that gives the lengths, which must contain the selected option's number, and do not mark it "
-              "unsure for that reason alone. If the page gives the selected size both as a named size and as a longer "
-              "installed or end-to-end measurement, report the named size. If the selected option's length is not "
-              "given anywhere, it is not stated.",
+    "length": "The length of the product itself. When the page sells the product in several sizes, report only the "
+              "length of the selected option (the text may end with 'Selected option: ...'), quoting the passage "
+              "that states that option's length. If the selected option's length is not given, it is not stated.",
     "mattress_thickness_max": "The thickest mattress the product fits. 'Fits mattresses 12 to 16 inches' is an "
                               "adjustable range.",
 }
 
-SYSTEM = """You read the text of one product page from an online store and report specific figures from it.
+SYSTEM_BEFORE_LABEL = """You read the text of one product page from an online store and report specific figures from it.
 You only report what the text states. You do not judge the product and you never fill a gap.
 
 For each figure asked for, return one entry:
@@ -69,9 +65,23 @@ Answer with one JSON object and nothing else:
 {"figures": [{"figure": "<name>", "stated": true, "kind": "single", "value": 300, "low": null, "high": null,
 "unit": "lb", "quote": "...", "unsure": false, "unsure_reason": null}]}"""
 
+# The current instructions: the same, plus one general line. When a quote holds more than one number the reader
+# also returns the label the text itself puts on the number it reports; code then checks that pairing from the
+# quote alone (`spans.apply_unambiguous_rule`). Readings made before this line existed stay cached wherever
+# their quote holds a single number, since the line could not have changed them.
+LABEL_LINE = """- "label": when your quote contains more than one number, the word or words that the text itself puts on
+  the number you report, copied from the quote exactly (the name written beside the number, or its heading in
+  a list of headings). Otherwise null. Code checks from the quote alone that this label belongs to that number.
+
+"""
+SYSTEM = SYSTEM_BEFORE_LABEL.replace("Answer with one JSON object and nothing else:", LABEL_LINE +
+                                     "Answer with one JSON object and nothing else:").replace(
+    '"unsure": false, "unsure_reason": null}]}', '"label": null, "unsure": false, "unsure_reason": null}]}')
+assert SYSTEM != SYSTEM_BEFORE_LABEL and LABEL_LINE in SYSTEM and '"label": null' in SYSTEM
+
 
 # Raised when a figure's meaning above is reworded, so only the products asked for that figure are read again.
-GLOSSARY_REVISION = {"length": 2}
+GLOSSARY_REVISION = {"length": 3}
 
 
 def wanted_figures(product, sheet):
