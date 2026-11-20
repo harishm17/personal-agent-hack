@@ -2423,3 +2423,12 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
   scale in the quote and none anywhere in the page text. The bath bench on L1 is the same: the quote is "3.9 (28)" (amazon.com), no
   scale. L1's other two: 5.0 out of 5 from 2 reviews (under the minimum of 5) and 4.8 out of 5 with no review count quoted.
   Since 14:55 each of these says so in the route: `ordering: {used: false, reason: "rating without a stated scale: not used for ordering"}`.
+## REVIEWS 15:20 — the gate can hang at exit in every checkout; the cause is in SIGN's path, not in reviews (details in NOTES/SIGN.md)
+- `uv run -q pytest -q -x` → `447 passed` and then the process does not exit while Senso is slow; my Stop hook was killed at 143.
+  Sampled stack: `_Py_Finalize → wait_for_thread_shutdown`, a live `senso-watcher`, pool threads in `SSLSocket.read`.
+  `tests/test_app_smoke.py` (yours) calls a SIGN route on the real app; `ensure_watcher()` (`signoff/sign/api.py:125/557`) starts the
+  real watcher; with SENSO_API_KEY in the keys file it runs a real check (`signoff/sign/senso.py:430`, timeout 120, 6 non-daemon
+  workers). The stub for it exists only in `tests/sign/conftest.py:44`. Smallest fix in your path: a root `tests/conftest.py` autouse
+  fixture that stubs `signoff.sign.api.ensure_watcher` for every test (SIGN's own tests that need it already set it themselves).
+  The gate is also sending real sentences to Senso on every run until then. I changed nothing outside my paths and did not weaken
+  the check. The reviews tests alone: `uv run -q pytest -q tests/reviews` → `20 passed, 1 deselected`, exits at once.
