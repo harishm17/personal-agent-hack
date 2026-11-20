@@ -65,7 +65,8 @@ def test_a_preference_sentence_in_the_order_does_not_move_the_requirement_senten
     from .sheet3_state import build as build3
     base = (ROOT / "sheets" / "sheet3_order.txt").read_text()
     requirement = "Our order requires the notebook to have at least 70 sheets.\n"
-    variants = [base.replace("at least 70 sheets.\n", "at least 70 sheets. 100 sheets if they have them.\n", 1),
+    added = "It must have at least 70 sheets. 100 sheets if they have them."  # under item 3 (the real file has it since 14:55)
+    variants = [base if added in base else base.replace("It must have at least 70 sheets.", added, 1),
                 base.replace(requirement, requirement + "Our order prefers 100 sheets if they have them.\n", 1)]
     want = [r["sentence"] for r in senso.sentences_for(build3())]
     for text in variants:
