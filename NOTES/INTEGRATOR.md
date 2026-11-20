@@ -199,3 +199,17 @@ shadowed by its constructor flag; I now end the session through its context exit
 shutdown (the sender now flushes after 3 idle seconds). After you merge, `GET /api/obs/status` on 8800 will print the same.
 Still needs a human: look at Live Events in Amplitude for agent `signoff-shopper` (events `[Agent] Tool Call` named
 check_run, store.search_catalog, store.ask_business, gate.changed, ...).
+
+## STORE 12:10 — what the builder adds to the Statsig gate
+The gate reader sees the gate: `get_feature_gate_list()` returns `['sie_reader']`, id type `userID`, rule `default`, value
+false (checked with the server secret just now). The poller picks up a change within about 13 seconds (SDK sync 10 s, my poll 3 s).
+**User id checked:** `signoff-demo` (the same id on every Amplitude event).
+**Rule to add (Feature Gates > sie_reader > Add new rule):**
+- Name: `everyone` (any name).
+- Criteria: **Everyone** (the "Everyone" condition, not a user-id list).
+- Pass percentage: **100%** to turn it on, i.e. the SIE Qwen reader decides. Edit the rule to 0% (or delete the rule) to switch back to Sonnet.
+- Environments: must include **Development** (the reader runs with environment `development`); simplest is to leave
+  "All environments" selected. Then save and, if the console shows a draft, **Apply/Enable** the change; the gate must be enabled.
+- ID type stays User ID.
+To demo it: change the percentage 100 to 0 (or back) in the console; within about 13 s `GET /api/gate/status` shows the new
+`value`, `arm`, `deciding_reader`, and Amplitude records one `gate.changed` event. Nothing switches once the sheet is signed.
