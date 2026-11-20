@@ -9,6 +9,7 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const params = new URLSearchParams(location.search);
 const SIM = params.get("sim") === "1";
+const FIXTURE = params.get("fixture") === "1";   // draw the committed fixture run, whatever the engine holds
 
 let server = null;            // the last /api/state
 let state = null;             // what is drawn: server, or the sim's recompute of it
@@ -27,7 +28,7 @@ fit();
 // ---------- data ----------
 async function load() {
   try {
-    const res = await fetch("/api/state", { cache: "no-store" });
+    const res = await fetch(FIXTURE ? "/screen/fixture-state.json" : "/api/state", { cache: "no-store" });
     if (!res.ok) throw new Error(res.status);
     const text = await res.text();
     if (text === raw) return;
@@ -47,6 +48,7 @@ function apply() {
 
 let live = false;
 function listen() {
+  if (params.get("live") === "0") return;        // screenshots: no open stream, polling only
   const events = new EventSource("/api/events");
   events.onopen = () => { live = true; };
   events.onmessage = () => load();
@@ -174,9 +176,9 @@ function renderSide(view) {
   const rule = `<span class="shopper"><b>${esc(state.sheet.shopper.name)}'s rule, ${esc(why.rule)}</b></span>`;
   if (shown && pick && shown.id === pick.id) {
     const struck = line.struck.length ? `<span class="issuer"><b>${esc(state.sheet.issuer.name)} struck ${line.struck.length} before it:</b> “${esc(line.struck[0].reason)}”</span> ` : "";
-    html += `<div class="why"><b>Why this one.</b> ${struck}<b>${why.inside} of ${why.total}</b> are inside ${limitsWord}; <b>${why.with_delivery_time}</b> of those
-      state a delivery time. ${rule}, picks <b>${money(why.pick_price_cents)}</b>.
-      ${line.status === "pick_up" ? esc(cap(line.reason || "")) + "." : ""}</div>`;
+    html += `<div class="why"><b>Why this one.</b> ${struck}<b>${why.inside} of ${why.total}</b> are inside ${limitsWord}${line.status === "pick_up"
+      ? `. Nothing is shipped, so no delivery time is needed: ${esc(line.reason || "picked up locally")}. The cheapest inside is <b>${money(why.pick_price_cents)}</b>.`
+      : `; <b>${why.with_delivery_time}</b> of those state a delivery time. ${rule}, picks <b>${money(why.pick_price_cents)}</b>.`}</div>`;
   } else if (shown) {
     const because = shown.status === "inside"
       ? (shown.arrival && shown.arrival.status !== "stated" ? "it is inside the limits, but its store states no delivery time" : "it is inside the limits, but is not the cheapest that states a delivery time")

@@ -92,7 +92,7 @@ export function drawPlot(svg, line, shownId, onInspect) {
   const x0 = gutterW + 4 + tickW, x1 = W - 2, y0 = 2, y1 = H - tickH - (two ? gutterH + 3 : 0);
   const X = axis(line, axes[0], x0 + 14, x1 - 16);
   const Y = two ? axis(line, axes[1], y1 - 14, y0 + (two ? 30 : 14)) : null;
-  const reserved = [[gutterW + 2, y0, x0, y1]];   // boxes no dot label may cover
+  const reserved = [[gutterW + 2, y0, x0, H]];   // boxes no dot label may cover
   const midY = (y0 + y1) / 2, gutterX = gutterW / 2 + 1, gutterY = y1 + tickH + 2 + gutterH / 2;
 
   // the walls: where they stand and what their labels say
@@ -103,7 +103,7 @@ export function drawPlot(svg, line, shownId, onInspect) {
 
   // frame: background, gutters, ticks, axis names
   let f = `<rect class="bg" x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" rx="4"/>`;
-  f += `<rect class="gutter" x="1" y="${y0 + 1}" width="${gutterW}" height="${y1 - y0 - 2}" rx="6"/>`;
+  f += `<rect class="gutter" x="1" y="${y0 + 1}" width="${gutterW}" height="${(two ? H : y1) - y0 - 2}" rx="6"/>`;
   f += `<text x="${gutterX}" y="${y0 + 19}" text-anchor="middle">not stated</text>`;
   reserved.push([0, y0, gutterW, y0 + 24]);
   for (const t of X.ticks) {
@@ -174,18 +174,25 @@ export function drawPlot(svg, line, shownId, onInspect) {
     const cx = X.checks[i], cy = two ? Y.checks[i] : null;
     const xKnown = cx.lhs !== null && cx.lhs !== undefined, yKnown = !two || (cy.lhs !== null && cy.lhs !== undefined);
     let x = xKnown ? X.px(cx.lhs) : gutterX, y = !two ? midY : yKnown ? Y.px(cy.lhs) : gutterY;
-    const spot = Math.round(x) + "," + Math.round(y), stack = seen.get(spot) || 0;   // same figures: fan the dots out
-    seen.set(spot, stack + 1);
-    x += stack * 7; y -= xKnown && yKnown ? stack * 7 : 0;
+    const spot = Math.round(x) + "," + Math.round(y);
+    seen.set(spot, (seen.get(spot) || 0) + 1);
     const inside = c.status === "inside";
-    const noDelivery = inside && c.arrival && c.arrival.status !== "stated";
-    return { c, x, y, xKnown, yKnown,
+    const noDelivery = inside && line.status !== "pick_up" && c.arrival && c.arrival.status !== "stated";
+    return { c, x, y, xKnown, yKnown, spot,
       tailX: xKnown ? X.tails[i].map(X.px) : null, tailY: two && yKnown ? Y.tails[i].map(Y.px) : null,
       texts: c.picked ? [money(c.product.price_cents) + " " + c.product.store, money(c.product.price_cents)] : [money(c.product.price_cents)],
       rank: c.picked ? 3 : inside ? 2 : c.status === "outside" ? 1 : 0,
       cls: `dot ${c.status}${c.picked ? " picked" : ""}${noDelivery ? " nodelivery" : ""}${c.id === shownId ? " shown" : ""}` };
   });
-  placeLabels(dots, W, H, reserved);
+  // products with the same figures share a spot: the best one is drawn, with a count
+  const lead = new Map();
+  for (const d of dots) if (!lead.has(d.spot) || d.rank > lead.get(d.spot).rank) lead.set(d.spot, d);
+  for (const d of dots) {
+    d.hidden = lead.get(d.spot) !== d;
+    const n = seen.get(d.spot);
+    if (!d.hidden && n > 1) d.texts = d.xKnown && d.yKnown ? d.texts.map((t) => `${t} +${n - 1}`) : [`\u00d7${n}`];
+  }
+  placeLabels(dots.filter((d) => !d.hidden), W, H, reserved);
   const have = new Map([...dotsLayer.children].map((n) => [n.dataset.id, n]));
   for (const d of dots) {
     let node = have.get(d.c.id);
@@ -203,6 +210,7 @@ export function drawPlot(svg, line, shownId, onInspect) {
     }
     have.delete(d.c.id);
     node.setAttribute("class", d.cls);
+    node.style.display = d.hidden ? "none" : "";
     const [tx, ty] = node.querySelectorAll(".tail");
     const spanX = d.tailX ? [Math.min(...d.tailX) - d.x - R, Math.abs(d.tailX[1] - d.tailX[0]) + 2 * R] : [0, 0];
     const spanY = d.tailY ? [Math.min(...d.tailY) - d.y - R, Math.abs(d.tailY[1] - d.tailY[0]) + 2 * R] : [0, 0];
