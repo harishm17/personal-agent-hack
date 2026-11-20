@@ -37,6 +37,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | E26 | an option row must not be given a statement about a different option (Vive Textured Grab Bars: the 18 Inch and 36 Inch options read as 12 in); such a row is `unclear`; all option rows on sheets 4 and 3 re-checked | open |
 | E27 | a figure counts only when two independent readers report the same value (reference and Qwen on SIE); otherwise `unclear` ("readers disagree", "only one reader found it"); a switch the gate drives; effect on sheets 4 and 3 reported before it is the default; cut at 14:05 if not feasible | open |
 | E28 | two hooks for memory: on reset and use-sheet the engine applies what `signoff.memory.recall(sheet)` returns (home measurements marked remembered; earlier strikes marked from memory, still under the hash); nothing else in the pick path changes | open |
+| E29 | the shopper may choose any candidate that passes (`POST /api/shopper/choose`); `picked_by` in the state and the canonical sheet; refused for anything not inside; WONTDO if over fifteen minutes | open |
 | E19 | receipts for every state change; `GET /api/receipts/verify` | ok |
 | E20 | seal race, hash covers pick rule, delivery quotes, quantity, currency, variant; scope; `degraded` | ok |
 
@@ -95,6 +96,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | C7 | the unsigned-change control answering in a toast; tabs Decision and Trail; reader chip "switched back" | open |
 | C9 | a quiet sheet switcher in the top bar (from `GET /api/sheets`), laptop only | main |
 | C10 | evidence shows the shortest statement that carries the value for this option, with the reason it was matched; the "Method" line replaced by what guards the right number (two readers agree, the number sits with its label, every stated value passes), only as far as it is true in the state | open |
+| C11 | a passing row can be chosen by the shopper ("choose this one"), shown as chosen by her; only when the route exists | open |
 | C8 | Detail view, dots, rulers, trays and tiles removed | open |
 
 ## TRAIL
@@ -103,6 +105,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | T1 | `GET /api/trail`: real records only, each with `step` and `kind` (evidence, reading, check, approval, action) | ok |
 | T2 | `/trail/`: the seven steps as a timeline, events one line each, side sheet with quote and hash | open |
 | T4 | context per model call made visible from the ledger: given (one page, figure meanings) and not given (limits, prices, other pages, the order, people); one summary line with real counts | open |
+| T5 | the replay at the top of /trail/: real context as cards moving from where it lives into each step and out to the result; a model call's context window; the guard; memory written and recalled; play, step, scrub; on main by 14:45 | open |
 | T3 | the decision screen's visual system; no dots, no arrows | open |
 
 ## MEMORY
@@ -152,6 +155,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I12 | the lead example is sheet 3, the teacher's list (the builder, 13:25); sheet 2 is second and the fallback | ok |
 | I13 | main switched to sheet 4 (the lead) when it holds end to end; sheet 3 reachable through the switcher | ok (13:38; sheet 3 through the switcher still to be seen) |
 | I14 | the lead example is sheet 4, surgery short; sheet 3 the class list is the 15-second second; the plumber and six-item sheets are not shown (the builder: "your choice", 13:30) | ok |
+| I15 | the run of show from the demo director, and the flow designer's spec forwarded to TRAIL and SCREEN | open |
 | I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
 ## The builder
