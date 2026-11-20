@@ -3,8 +3,10 @@
 Run: uv run uvicorn signoff.app:app --port 8800 --reload
 """
 import importlib
+import os
 import json
 import pathlib
+import secrets
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -15,6 +17,32 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
 app = FastAPI(title="Sign-Off")
+
+# Routes that reset the app, switch the reader, reload data or act as the shopper are for the laptop only.
+# A request that arrived through the public tunnel must carry X-Admin-Token (SIGNOFF_ADMIN_TOKEN in the
+# keys file). The approver's own routes (/api/issuer/...) are protected by her key, not by this.
+LOCAL_ONLY = ("/api/admin/", "/api/gate/override", "/api/airbyte/sync", "/api/senso/load",
+              "/api/handcheck/save", "/api/drill/", "/api/shopper/")
+
+
+def _came_through_tunnel(request) -> bool:
+    h = request.headers
+    if h.get("cf-connecting-ip") or h.get("cf-ray") or h.get("x-forwarded-for"):
+        return True
+    host = request.client.host if request.client else ""
+    return host not in ("127.0.0.1", "::1", "localhost", "testclient")
+
+
+@app.middleware("http")
+async def admin_guard(request, call_next):
+    if request.method not in ("GET", "HEAD", "OPTIONS") and request.url.path.startswith(LOCAL_ONLY):
+        if _came_through_tunnel(request):
+            token = os.environ.get("SIGNOFF_ADMIN_TOKEN") or ""
+            given = request.headers.get("x-admin-token") or ""
+            if not (token and given and secrets.compare_digest(given, token)):
+                return JSONResponse({"error": "local_only", "detail": "This route is for the laptop running "
+                                     "the app, or needs X-Admin-Token."}, status_code=403)
+    return await call_next(request)
 
 # Each stream owns one router module. A module that is missing or broken is skipped and reported at
 # /api/health, so one stream's error never stops the others' pages from loading.
