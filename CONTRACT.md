@@ -338,3 +338,17 @@ model as the guard.
 - Tunnel: a quick tunnel; if its process dies the address changes. `scripts/tunnel.sh` restarts it and
   records the new address; never restart it otherwise. `scripts/run_main.sh` restarts the app.
 - Firedrill: keep trying until 14:00 only. Receipt chain: lowest priority, cut at 14:30 if not on main.
+
+## Amendment 12:25 — Persona Relay (optional, time box 13:15), and the Amplitude + Statsig brief
+- **Relay.** The sandbox Persona key works for Relay: with `@persona/sdk-node` 0.5.1 a sandbox session
+  for `live_human_presence` was created and a Privacy Pass issued at 12:20. The AIRBYTE thread (its
+  Airbyte work is done) also owns `signoff/relay/**`, `web/relay/**`, `tests/relay/**` and builds: a
+  "live human" claim taken at the moment of signing, recorded on the signature as optional key `relay`
+  (`{claim_type, result, sandbox: true, at}`). Inquiries answer who signed; Relay answers that a person,
+  not the agent, tapped Sign. Optional router `signoff.relay.api`; the product never depends on it. Not
+  working on main by 13:15: cut. `PERSONA_PRODUCTION_API_KEY` is never read by any code.
+- **Amplitude + Statsig's own brief (their deck):** try a change behind a gate; see what happened in
+  Agent Analytics (tool calls, completion, failures, latency, cost); keep it or switch back; "leave with
+  one feature gate, one useful insight, one better agent; show what changed and why it helped". Ours: the
+  gate is the small reader; the insight is its misread of an `h x w x d` string; the better agent is a
+  code check on multi-dimension strings added because of it, re-measured.
