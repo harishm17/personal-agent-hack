@@ -17,7 +17,7 @@ import time
 import httpx
 
 from signoff import config
-from signoff.engine import obs
+from signoff.engine import health, obs
 
 DEFAULT_MODEL = "claude-sonnet-5-5"  # the reference reader (CONTRACT.md, amendment 11:25)
 ARCEE_URL = "https://api.arcee.ai/api/v1/chat/completions"
@@ -197,11 +197,17 @@ def ask_anthropic(model, system, user, live=False):
                 _api_calls["capped_logged"] = True
                 log.warning("Anthropic API call cap reached (%d calls in this process): using claude -p from now on",
                             API_CALL_CAP)
+                health.note("live model", "the cap of %d API-key calls in this process is reached; live calls now go "
+                            "through the command line, which is slower" % API_CALL_CAP)
         else:
             try:
-                return ask_anthropic_api(model, system, user)
+                made = ask_anthropic_api(model, system, user)
+                health.clear("live model")
+                return made
             except Exception as error:  # noqa: BLE001  (bad key, no credit, a rejected parameter, the network)
                 log.warning("Anthropic API call failed (%s): using claude -p for this one", type(error).__name__)
+                health.note("live model", "the last API-key call failed (%s); it was answered through the command "
+                            "line instead" % type(error).__name__)
     return ask_claude_cli(model, system, user, timeout=25.0 if live else 180.0)  # a person is waiting: fail soon
 
 

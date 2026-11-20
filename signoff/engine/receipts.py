@@ -21,6 +21,8 @@ import os
 import pathlib
 import threading
 
+from signoff.engine import health
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 FOLDER = ROOT / "data" / "receipts"
 ZERO = "0" * 64
@@ -61,6 +63,8 @@ def start(reason="start") -> dict:
                 _c["file"] = FOLDER / (_c["id"] + ".jsonl")
             except OSError as error:
                 log.warning("receipts are in memory only (%s)", type(error).__name__)
+                health.note("receipts", "the receipt file could not be opened (%s); the chain is in memory only and "
+                            "will not survive a restart" % type(error).__name__)
         return _append("chain_started", "system", None, {"reason": reason},
                        {"reason": reason, "chain": _c["id"], "previous": before})
 
@@ -79,6 +83,8 @@ def _append(kind, actor, key_id, body, detail):
                 f.write(canonical(receipt) + "\n")
         except OSError as error:
             log.warning("a receipt was not written to disk (%s)", type(error).__name__)
+            health.note("receipts", "a receipt could not be written to disk (%s); the chain in memory is complete, "
+                        "the file is not" % type(error).__name__)
     return receipt
 
 

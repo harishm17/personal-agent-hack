@@ -70,9 +70,11 @@ def _load_pool():
         try:
             from signoff.store import pool as store_pool
             pool, answers = store_pool.load()
+            health.clear("pool loader")
             return list(pool), list(answers)
-        except Exception:  # noqa: BLE001  (module not merged yet, or it failed: read the files directly)
-            pass
+        except Exception as error:  # noqa: BLE001  (it failed: read the files directly, and say so)
+            health.note("pool loader", "signoff.store.pool.load() failed (%s); the pool and store answers were read "
+                        "straight from the files" % type(error).__name__)
     if _has_data_pool():
         return _read_dir(pool_dir), _read_dir(answers_dir) if answers_dir.is_dir() else []
     return _read(FIXTURES / "pool.json"), _read(FIXTURES / "store_answers.json")
@@ -133,7 +135,9 @@ def _load_order(sheet_id, from_data):
         for row in made["limits"] + made.get("fulfilment", []):
             row["span_found_in_text"] = rules.span_found(row, text)
         return made
-    except (ValueError, KeyError, OSError):
+    except (ValueError, KeyError, OSError) as error:
+        health.note("order", "the limits read from the order could not be loaded (%s); limits show without their "
+                    "sentence from the order" % type(error).__name__)
         return None
 
 
@@ -179,8 +183,12 @@ def _load_variants(pool, from_data):
     (data/<pool>/raw/): the title of the variant in the pool (the one a cart would hold), the currency, and
     how many variants are on sale. `{(store, product_id): {...}}`; empty when the raw replies are not there."""
     raw = _dirs()[0] / "raw"
+    if from_data and not raw.is_dir():
+        health.note("variants", "the stores' raw replies are not in this checkout; variant title, currency and the "
+                    "number of variants are not shown, and the signed pick names the variant by id only")
     if not from_data or not raw.is_dir():
         return {}
+    health.clear("variants")
     seen = {}
     for path in sorted(raw.glob("*/*.json")):
         try:
@@ -497,8 +505,9 @@ def _record_loop():
         try:
             from signoff.db import records
             records.write(state)
-        except Exception:  # noqa: BLE001  (not merged yet, or the database is down)
-            pass
+            health.clear("decision records")
+        except Exception as error:  # noqa: BLE001  (the database writer is missing or failed: the app goes on)
+            health.note("decision records", "decision records are not reaching the database (%s)" % type(error).__name__)
 
 
 # --- the contract's in-process calls ---

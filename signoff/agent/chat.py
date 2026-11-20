@@ -16,7 +16,7 @@ import time
 
 from signoff import config
 from signoff.agent import tools
-from signoff.engine import obs, state
+from signoff.engine import health, obs, state
 from signoff.extract import reader
 
 DEFAULT_MODEL = "claude-sonnet-5-5"
@@ -200,6 +200,8 @@ def say(text: str, source=state, history=None, live=True) -> dict:
                             "not in what the stores state or what code worked out. The screen shows each line's " \
                             "sums, quotes and reasons." % ", ".join(stray)
         except Exception as error:  # noqa: BLE001  (no model: say so; the state is untouched either way)
+            health.note("chat model", "the chat's model could not be reached (%s); plain requests for a change are "
+                        "still refused by code, questions are not answered" % type(error).__name__)
             intent, reply, used = "unavailable", "I can't reach my model right now (%s). Nothing on the sheet has " \
                 "changed; the screen shows every line and reason." % type(error).__name__, model
         refused = intent in CHANGES

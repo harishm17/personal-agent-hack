@@ -241,3 +241,16 @@ def test_a_cart_that_is_pending_or_failed_is_not_counted_as_created_and_a_second
     assert s["seal"]["signed_at"] == "2026-11-20T14:00:00-08:00" and s["seal"]["text"] == "Signed by Dana at 14:00. 2 carts created."
     from signoff.engine import receipts
     assert [r["type"] for r in receipts.chain()["receipts"]][-3:] == ["signed", "carts_created", "carts_updated"]
+
+
+def test_a_fallback_in_use_is_named_in_the_state_never_silent(monkeypatch):
+    from signoff.engine import health
+    assert state.get_state()["degraded"] == []
+    health.note("pool loader", "signoff.store.pool.load() failed (ValueError); the pool was read straight from the files")
+    try:
+        s = state.set_shopper_fact("toilet_rim_height", 15.5)
+        assert s["degraded"] == [{"what": "pool loader", "note": "signoff.store.pool.load() failed (ValueError); "
+                                  "the pool was read straight from the files"}]
+    finally:
+        health.clear("pool loader")
+    assert state.set_shopper_fact("toilet_rim_height", 15.0)["degraded"] == []
