@@ -320,3 +320,21 @@ model as the guard.
 - **The flow layout is approved; SCREEN adds motion.**
 - Firedrill: the builder's account has 2,000 credits and an assigned seat, so
   `native_participant_capacity_exceeded` is on Firedrill's side; he is asking their staff.
+
+## Amendment 12:20 — third review (it ran the live app): fixes ahead of features
+- The reader gate was on and the small model was deciding purchases, with at least one misread
+  (`h x w x d: 1.63" x 31" x 14.75"` read as width 14.75). Switched back at 12:05. The gate's story is
+  "tried behind a gate, measured, **switched back**", shown with the evidence. Its demo beat comes before
+  signing; the gate does nothing once the sheet is signed.
+- The sign tap must answer within about 8 s: Senso runs in the background when the hash changes, never
+  inside the tap; cart creation gets one short try per store; a slow store yields a labelled pending cart.
+- `/api/sql/passing-box` must apply the engine's `unsure` filter so its count equals the screen's.
+- The spine, in this order: order → quoted figures → pick computed in code → signature → carts. Everything
+  else (Airbyte, Persona, the gate, receipts, the ledger, the chat refusal) is "also in the product": one
+  sentence each at most in the demo. Priority for screen and engine: the order's sentence beside each limit.
+- Claim wording: "the agent's reading of the order matches the sheet, N of N limits"; agreement between
+  readers is "same number on N of M figures both found", never a bare percentage. Numbers are read from
+  the screen, never quoted from memory.
+- Tunnel: a quick tunnel; if its process dies the address changes. `scripts/tunnel.sh` restarts it and
+  records the new address; never restart it otherwise. `scripts/run_main.sh` restarts the app.
+- Firedrill: keep trying until 14:00 only. Receipt chain: lowest priority, cut at 14:30 if not on main.
