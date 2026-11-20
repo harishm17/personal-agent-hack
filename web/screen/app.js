@@ -13,7 +13,7 @@ const SIM = params.get("sim") === "1";
 let server = null;            // the last /api/state
 let state = null;             // what is drawn: server, or the sim's recompute of it
 let raw = "";
-const ui = { inspect: null, panel: SIM ? "sim" : "words", sim: { limits: {}, facts: {} }, chat: [], busy: false, note: "" };
+const ui = { inspect: null, panel: params.get("panel") || (SIM ? "sim" : "words"), sim: { limits: {}, facts: {} }, chat: [], busy: false, note: "" };
 
 // ---------- fitting the 960 x 540 canvas to the window ----------
 function fit() {
@@ -164,18 +164,19 @@ function renderSide(view) {
     const { parts, ends } = storeWords(shown);
     html += `<div class="cap">${esc(shown.product.store)} states, in its own words</div>
       <div class="words">${parts.join(" ") || "No sentence with a figure was found on this page."}
-        <a href="${esc(shown.product.url)}" target="_blank" rel="noopener">${esc(shown.product.title)} ↗</a>
+        <a href="${esc(shown.product.url)}" target="_blank" rel="noopener" title="${esc(shown.product.title)}">the store's page ↗</a>
         ${ends.map((e) => `<span class="end">${e}</span>`).join("")}</div>`;
   } else {
     html += `<div class="cap">Nothing is proposed for this line</div>
       <div class="none">${esc(cap(line.reason || "no candidate yet"))}. The agent does not guess a figure a page never states.</div>`;
   }
+  html += `<p class="method">The model reads the figure; code checks that the quote is in the store's text and does the sums.</p>`;
   const rule = `<span class="shopper"><b>${esc(state.sheet.shopper.name)}'s rule, ${esc(why.rule)}</b></span>`;
   if (shown && pick && shown.id === pick.id) {
-    html += `<div class="why"><b>Why this one.</b> <b>${why.inside} of ${why.total}</b> are inside ${limitsWord}; <b>${why.with_delivery_time}</b> of those
+    const struck = line.struck.length ? `<span class="issuer"><b>${esc(state.sheet.issuer.name)} struck ${line.struck.length} before it:</b> “${esc(line.struck[0].reason)}”</span> ` : "";
+    html += `<div class="why"><b>Why this one.</b> ${struck}<b>${why.inside} of ${why.total}</b> are inside ${limitsWord}; <b>${why.with_delivery_time}</b> of those
       state a delivery time. ${rule}, picks <b>${money(why.pick_price_cents)}</b>.
-      ${line.status === "pick_up" ? esc(cap(line.reason || "")) + "." : ""}
-      ${line.struck.length ? `<span class="issuer"><b>${esc(state.sheet.issuer.name)} struck ${line.struck.length} before it:</b> “${esc(line.struck[0].reason)}”</span>` : ""}</div>`;
+      ${line.status === "pick_up" ? esc(cap(line.reason || "")) + "." : ""}</div>`;
   } else if (shown) {
     const because = shown.status === "inside"
       ? (shown.arrival && shown.arrival.status !== "stated" ? "it is inside the limits, but its store states no delivery time" : "it is inside the limits, but is not the cheapest that states a delivery time")
@@ -185,7 +186,6 @@ function renderSide(view) {
   } else {
     html += `<div class="why"><b>${why.inside} of ${why.total}</b> are inside ${limitsWord}. ${rule}, has nothing to choose from.</div>`;
   }
-  html += `<p class="method">The model reads the figure; code checks that the quote is in the store's text and does the sums.</p>`;
   $("side").innerHTML = html;
 }
 
@@ -211,7 +211,7 @@ function renderShopperPanel({ sheetLine }) {
   const facts = factsOfLine(sheetLine);
   const last = ui.chat[ui.chat.length - 1];
   $("side").innerHTML = `<div class="panel">
-    <h2 class="shopper">${esc(shopper.name)}, the shopper${shopper.invented ? " (an invented person)" : ""}: her measurements, her words</h2>
+    <h2 class="shopper">${esc(shopper.name)}, the shopper${shopper.invented ? " (invented)" : ""}: her measurements and her words</h2>
     ${facts.map((f) => slider("shopper", f.id, f.label, f.value, f.unit, f.min, f.max, f.step)).join("") || '<div class="none">This line uses none of her measurements.</div>'}
     <form id="say"><input id="sayText" autocomplete="off" aria-label="Say something to the agent" placeholder="Say something to the agent…">
       <button type="submit">Send</button></form>
@@ -296,14 +296,13 @@ const STATUS = { ready: "Ready", pick_up: "Pick up locally", open: "Open", next_
 function renderTiles({ line }) {
   $("tiles").innerHTML = state.lines.map((l) => {
     const p = pickOf(l);
-    const second = l.tightest ? (l.tightest.margin === 0 ? "✓ nothing to spare" : "✓ " + l.tightest.text) : cap(l.reason || "nothing proposed");
-    const third = l.status === "pick_up" ? cap(l.reason || "") : l.status === "next_candidate" ? `${state.sheet.issuer.name} struck ${l.struck.length}` : "";
     const head = STATUS[l.status] || l.status;
-    return `<button class="tile ${l.status}" data-line="${l.line_id}" aria-current="${l.line_id === line.line_id}" title="${esc(l.need)}: ${esc(head)}. ${esc(l.reason || (l.tightest && l.tightest.text) || "")}">
-      <span class="need">${esc(l.need)}</span>
-      <span class="status">${esc(head)}${p && l.status !== "pick_up" ? " · " + money(p.product.price_cents) : ""}</span>
-      <span class="${third && l.status === "next_candidate" ? "issuer" : ""}" data-k="tile.${l.line_id}">${esc(l.tightest ? second + (third && l.status === "next_candidate" ? " · " + third : "") : second)}</span>
-    </button>`;
+    const price = p && l.status !== "pick_up" ? `<i>${money(p.product.price_cents)}</i>` : "";
+    const body = l.tightest
+      ? `<span class="status">${esc(head)}${price}</span><span data-k="tile.${l.line_id}">✓ ${esc(l.tightest.text)}</span>`
+      : `<span class="wrap"><b class="status">${esc(head)}:</b> ${esc(l.reason || "nothing proposed")}</span>`;
+    return `<button class="tile ${l.status}" data-line="${l.line_id}" aria-current="${l.line_id === line.line_id}">
+      <span class="need">${esc(l.need)}</span>${body}</button>`;
   }).join("");
   for (const tile of document.querySelectorAll(".tile")) tile.onclick = () => { location.hash = tile.dataset.line; };
 }
@@ -316,7 +315,7 @@ function renderSeal() {
   el.classList.toggle("signed", !!seal.signed);
   if (!seal.signed) {
     el.innerHTML = `<span class="state">${esc(seal.text || "Not signed. No cart exists at any store.")}</span>
-      <span class="issuer"><b>Only ${esc(sheet.issuer.name)}'s signature on this exact sheet creates the carts.</b></span>
+      <span class="issuer"><b>Only ${esc(sheet.issuer.name)}'s signature creates the carts.</b></span>
       <span class="grow"></span>${invented}`;
     return;
   }

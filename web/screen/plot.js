@@ -36,29 +36,36 @@ function axis(line, index, from, to) {
   const missing = checks.find((ch) => ch.state === "not_stated");
   return { index, checks, tails, sample, px, ticks, from, to,
     unit: sample.bound.unit, op: sample.op, bound: sample.bound,
+    name: sample.terms.length === 1 ? sample.terms[0].label || sample.name : sample.name,
     missingLabel: missing ? (missing.missing_figure || "figure").replace(/_/g, " ") : sample.name };
 }
 
 function wallLabel(a) {
-  const what = a.bound.owner === "shopper" ? `${a.bound.label} ${num(a.bound.value, a.unit)}` : num(a.bound.value, a.unit);
-  return `${a.bound.owner_name}: ${opWords(a.op)} ${what} ${a.unit}`;
+  if (a.bound.owner === "shopper") return `${a.bound.owner_name}'s ${a.bound.label}: ${num(a.bound.value, a.unit)} ${a.unit}`;
+  return `${a.bound.owner_name}: ${opWords(a.op)} ${num(a.bound.value, a.unit)} ${a.unit}`;
 }
 
 /** Greedy label placement: the pick first; a label that fits nowhere is left out. */
-function placeLabels(dots, W, H) {
-  const taken = dots.map((d) => [d.x - R - 2, d.y - R - 2, d.x + R + 2, d.y + R + 2]);
+function placeLabels(dots, W, H, reserved) {
+  const taken = [...reserved, ...dots.map((d) => [d.x - R - 2, d.y - R - 2, d.x + R + 2, d.y + R + 2])];
   const hits = (b) => b[0] < 0 || b[1] < 0 || b[2] > W || b[3] > H || taken.some((t) => b[0] < t[2] && b[2] > t[0] && b[1] < t[3] && b[3] > t[1]);
   const order = [...dots].sort((a, b) => b.rank - a.rank);
   for (const d of order) {
-    const w = d.text.length * (d.rank >= 3 ? 9.6 : 9) + 2;
-    const spots = [
-      { dx: R + 6, dy: 6, anchor: "start", box: [d.x + R + 4, d.y - 9, d.x + R + 6 + w, d.y + 9] },
-      { dx: 0, dy: -R - 6, anchor: "middle", box: [d.x - w / 2, d.y - R - 22, d.x + w / 2, d.y - R - 3] },
-      { dx: 0, dy: R + 18, anchor: "middle", box: [d.x - w / 2, d.y + R + 3, d.x + w / 2, d.y + R + 21] },
-      { dx: -R - 6, dy: 6, anchor: "end", box: [d.x - R - 6 - w, d.y - 9, d.x - R - 4, d.y + 9] },
-    ];
-    d.label = spots.find((s) => !hits(s.box)) || null;
-    if (d.label) taken.push(d.label.box);
+    for (const text of d.texts) {
+      const w = text.length * (d.rank >= 3 ? 9.6 : 9) + 2;
+      const spots = [
+        { dx: R + 6, dy: 6, anchor: "start", box: [d.x + R + 4, d.y - 9, d.x + R + 6 + w, d.y + 9] },
+        { dx: 0, dy: -R - 6, anchor: "middle", box: [d.x - w / 2, d.y - R - 22, d.x + w / 2, d.y - R - 3] },
+        { dx: 0, dy: R + 18, anchor: "middle", box: [d.x - w / 2, d.y + R + 3, d.x + w / 2, d.y + R + 21] },
+        { dx: -R - 6, dy: 6, anchor: "end", box: [d.x - R - 6 - w, d.y - 9, d.x - R - 4, d.y + 9] },
+        { dx: R, dy: -R - 2, anchor: "start", box: [d.x + R, d.y - R - 18, d.x + R + w, d.y - R] },
+        { dx: R, dy: R + 14, anchor: "start", box: [d.x + R, d.y + R - 2, d.x + R + w, d.y + R + 16] },
+        { dx: -R, dy: -R - 2, anchor: "end", box: [d.x - R - w, d.y - R - 18, d.x - R, d.y - R] },
+        { dx: -R, dy: R + 14, anchor: "end", box: [d.x - R - w, d.y + R - 2, d.x - R, d.y + R + 16] },
+      ];
+      d.label = spots.find((s) => !hits(s.box)) || null;
+      if (d.label) { d.text = text; taken.push(d.label.box); break; }
+    }
   }
 }
 
@@ -81,28 +88,50 @@ export function drawPlot(svg, line, shownId, onInspect) {
   passing.style.display = "";
   const two = axes.length > 1;
   // layout: left gutter (x never stated), plot, tick row, bottom gutter (y never stated)
-  const gutterW = 30, tickW = two ? 34 : 0, tickH = 19, gutterH = two ? 26 : 0;
-  const x0 = gutterW + 6 + tickW, x1 = W - 4, y0 = 2, y1 = H - tickH - (two ? gutterH + 3 : 0);
+  const gutterW = 62, tickW = two ? 30 : 0, tickH = 20, gutterH = two ? 26 : 0;
+  const x0 = gutterW + 4 + tickW, x1 = W - 2, y0 = 2, y1 = H - tickH - (two ? gutterH + 3 : 0);
   const X = axis(line, axes[0], x0 + 14, x1 - 16);
-  const Y = two ? axis(line, axes[1], y1 - 14, y0 + 14) : null;
+  const Y = two ? axis(line, axes[1], y1 - 14, y0 + (two ? 30 : 14)) : null;
+  const reserved = [[gutterW + 2, y0, x0, y1]];   // boxes no dot label may cover
   const midY = (y0 + y1) / 2, gutterX = gutterW / 2 + 1, gutterY = y1 + tickH + 2 + gutterH / 2;
+
+  // the walls: where they stand and what their labels say
+  const wx = X.px(X.bound.value), wy = two ? Y.px(Y.bound.value) : null;
+  const textX = wallLabel(X), widthX = textX.length * 7.6 + 8;
+  const rightX = wx + widthX < x1;                       // the x wall's label sits in the tick row, under the wall
+  const labelBoxX = rightX ? [wx - 4, wx + widthX] : [wx - widthX, wx + 4];
 
   // frame: background, gutters, ticks, axis names
   let f = `<rect class="bg" x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" rx="4"/>`;
   f += `<rect class="gutter" x="1" y="${y0 + 1}" width="${gutterW}" height="${y1 - y0 - 2}" rx="6"/>`;
-  f += `<text transform="translate(${gutterX + 6} ${y1 - 6}) rotate(-90)">never states ${esc(X.missingLabel)}</text>`;
-  for (const t of X.ticks) f += `<text class="tick" x="${X.px(t)}" y="${y1 + 16}" text-anchor="middle">${num(t, X.unit === "in" ? "" : X.unit)}</text>`;
-  f += `<text x="${x1 - 6}" y="${y1 - 7}" text-anchor="end">${esc(X.sample.name)}, ${esc(X.unit)} →</text>`;
+  f += `<text x="${gutterX}" y="${y0 + 19}" text-anchor="middle">not stated</text>`;
+  reserved.push([0, y0, gutterW, y0 + 24]);
+  for (const t of X.ticks) {
+    const tx = X.px(t);
+    if (tx + 20 > labelBoxX[0] && tx - 20 < labelBoxX[1]) continue;
+    f += `<text class="tick" x="${tx}" y="${y1 + 16}" text-anchor="middle">${num(t, X.unit === "in" ? "" : X.unit)}</text>`;
+  }
+  const nameX = `${X.name}, ${X.unit} \u2192`;
+  f += `<text x="${x1 - 6}" y="${y1 - 7}" text-anchor="end">${esc(nameX)}</text>`;
+  reserved.push([x1 - 8 - nameX.length * 7, y1 - 24, x1, y1]);
   if (two) {
     f += `<rect class="gutter" x="${x0}" y="${gutterY - gutterH / 2}" width="${x1 - x0}" height="${gutterH}" rx="6"/>`;
-    f += `<text x="${x1 - 8}" y="${gutterY + 6}" text-anchor="end">never states ${esc(Y.missingLabel)}</text>`;
+    const inGutter = line.candidates.map((c, i) => [X.checks[i].lhs, Y.checks[i].lhs]).filter(([a, b]) => a != null && b == null).map(([a]) => X.px(a));
+    const busyRight = (w) => inGutter.some((gx) => gx > x1 - w - 90), busyLeft = (w) => inGutter.some((gx) => gx < x0 + w + 90);
+    let gutterText = `${Y.missingLabel}: not stated`, gutterTextW = gutterText.length * 7 + 12;
+    if (busyRight(gutterTextW) && busyLeft(gutterTextW)) { gutterText = "not stated"; gutterTextW = 82; }
+    const atLeft = busyRight(gutterTextW) && !busyLeft(gutterTextW);
+    f += `<text x="${atLeft ? x0 + 8 : x1 - 8}" y="${gutterY + 6}" text-anchor="${atLeft ? "start" : "end"}">${esc(gutterText)}</text>`;
+    reserved.push(atLeft ? [x0, gutterY - gutterH / 2, x0 + gutterTextW, H] : [x1 - gutterTextW, gutterY - gutterH / 2, x1, H]);
+    reserved.push([x0, y1, x1, y1 + tickH]);
     for (const t of Y.ticks) f += `<text class="tick" x="${x0 - 5}" y="${Y.px(t) + 6}" text-anchor="end">${num(t, "")}</text>`;
-    f += `<text x="${x0 + 6}" y="${y0 + 17}">↑ ${esc(Y.sample.name)}, ${esc(Y.unit)}</text>`;
+    const nameY = `\u2191 ${Y.name}, ${Y.unit}`;
+    f += `<text x="${x0 + 6}" y="${y0 + 18}">${esc(nameY)}</text>`;
+    reserved.push([x0, y0, x0 + 10 + nameY.length * 7, y0 + 24]);
   }
   frame.innerHTML = f;
 
   // the passing area and the walls
-  const wx = X.px(X.bound.value), wy = two ? Y.px(Y.bound.value) : null;
   const px0 = X.op === ">=" ? wx : x0, px1 = X.op === ">=" ? x1 : wx;
   const py0 = !two ? y0 : Y.op === ">=" ? y0 : wy, py1 = !two ? y1 : Y.op === ">=" ? wy : y1;
   Object.assign(passing.style, { x: px0 + "px", y: py0 + "px", width: Math.max(0, px1 - px0) + "px", height: Math.max(0, py1 - py0) + "px" });
@@ -111,21 +140,32 @@ export function drawPlot(svg, line, shownId, onInspect) {
   }
   const wallX = walls.querySelector(".wx");
   wallX.setAttribute("class", "wall wx " + X.bound.owner);
-  Object.entries({ x1: 0, x2: 0, y1: y0, y2: y1 }).forEach(([k, v]) => wallX.querySelector("line").setAttribute(k, v));
-  const labelX = wallX.querySelector("text"), roomRight = x1 - wx > wallLabel(X).length * 8.2;
-  const sideRight = X.op === ">=" ? roomRight : !(wx - x0 > wallLabel(X).length * 8.2);
-  labelX.textContent = wallLabel(X);
-  labelX.setAttribute("x", sideRight ? 8 : -8); labelX.setAttribute("y", two ? y0 + 38 : y0 + 18);
-  labelX.setAttribute("text-anchor", sideRight ? "start" : "end");
+  Object.entries({ x1: 0, x2: 0, y1: y0, y2: y1 + 3 }).forEach(([k, v]) => wallX.querySelector("line").setAttribute(k, v));
+  const labelX = wallX.querySelector("text");
+  labelX.textContent = textX;
+  labelX.setAttribute("x", rightX ? -2 : 2); labelX.setAttribute("y", y1 + 17);
+  labelX.setAttribute("text-anchor", rightX ? "start" : "end");
   move(wallX, wx, 0);
+  reserved.push([wx - 3, y0, wx + 3, y1]);
+  let wallYBox = null;
   if (two) {
     const wallY = walls.querySelector(".wy");
     wallY.setAttribute("class", "wall wy " + Y.bound.owner);
     Object.entries({ x1: x0, x2: x1, y1: 0, y2: 0 }).forEach(([k, v]) => wallY.querySelector("line").setAttribute(k, v));
-    const labelY = wallY.querySelector("text"), above = Y.op === ">=" ? wy - y0 > 44 : y1 - wy < 44;
-    labelY.textContent = wallLabel(Y);
-    labelY.setAttribute("x", x1 - 8); labelY.setAttribute("y", above ? -8 : 20); labelY.setAttribute("text-anchor", "end");
+    const labelY = wallY.querySelector("text"), textY = wallLabel(Y), widthY = textY.length * 7.6 + 8;
+    labelY.textContent = textY;
+    // the y wall's label goes where no dot sits: passing side first, right end first
+    const up = Y.op === ">=";
+    const spots = [[true, up], [false, up], [true, !up], [false, !up]].map(([right, above]) => ({ right, above,
+      box: [right ? x1 - 8 - widthY : x0 + 6, above ? wy - 24 : wy + 4, right ? x1 - 4 : x0 + 10 + widthY, above ? wy - 3 : wy + 24] }));
+    const dotAt = line.candidates.map((c, i) => [X.checks[i].lhs, Y.checks[i].lhs]).filter(([a, b]) => a != null && b != null).map(([a, b]) => [X.px(a), Y.px(b)]);
+    const free = (b) => b[1] > y0 && b[3] < y1 && !dotAt.some(([dx, dy]) => dx + R > b[0] && dx - R < b[2] && dy + R > b[1] && dy - R < b[3]);
+    const spot = spots.find((sp) => free(sp.box)) || spots[0];
+    labelY.setAttribute("x", spot.right ? x1 - 8 : x0 + 8); labelY.setAttribute("y", spot.above ? -8 : 20);
+    labelY.setAttribute("text-anchor", spot.right ? "end" : "start");
     move(wallY, 0, wy);
+    wallYBox = spot.box;
+    reserved.push(wallYBox, [x0, wy - 3, x1, wy + 3]);
   }
 
   // the dots
@@ -141,11 +181,11 @@ export function drawPlot(svg, line, shownId, onInspect) {
     const noDelivery = inside && c.arrival && c.arrival.status !== "stated";
     return { c, x, y, xKnown, yKnown,
       tailX: xKnown ? X.tails[i].map(X.px) : null, tailY: two && yKnown ? Y.tails[i].map(Y.px) : null,
-      text: money(c.product.price_cents) + (c.picked ? " " + c.product.store : ""),
+      texts: c.picked ? [money(c.product.price_cents) + " " + c.product.store, money(c.product.price_cents)] : [money(c.product.price_cents)],
       rank: c.picked ? 3 : inside ? 2 : c.status === "outside" ? 1 : 0,
       cls: `dot ${c.status}${c.picked ? " picked" : ""}${noDelivery ? " nodelivery" : ""}${c.id === shownId ? " shown" : ""}` };
   });
-  placeLabels(dots, W, H);
+  placeLabels(dots, W, H, reserved);
   const have = new Map([...dotsLayer.children].map((n) => [n.dataset.id, n]));
   for (const d of dots) {
     let node = have.get(d.c.id);

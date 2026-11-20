@@ -31,7 +31,7 @@ export function ownerWords(part) {
 /** What a store term's number is, including which end of a stated range the code used. */
 export function termNote(term, op) {
   const label = term.label || (term.figure || "").replace(/_/g, " ");
-  if (term.value === null || term.value === undefined) return label + ": not stated";
+  if (term.value === null || term.value === undefined) return label;
   if (term.kind === "spread") {
     const end = op === ">=" ? "low" : "high";
     return `${label}: ${end} end of ${num(term.low, term.unit)} to ${num(term.high, term.unit)}`;
@@ -83,7 +83,7 @@ export function skeletonChecks(state, lineId) {
   return sheetLine.limits.map((limit) => ({
     limit_id: limit.id, name: limit.name, op: limit.op,
     terms: limit.terms.map((t) => t.source === "shopper" ? fact(t.fact)
-      : { owner: "store", owner_name: "no store", label: t.figure.replace(/_/g, " "), figure: t.figure, value: null, unit: limit.unit }),
+      : { owner: "store", owner_name: "no page", label: t.figure.replace(/_/g, " "), figure: t.figure, value: null, unit: limit.unit }),
     bound: limit.bound.source === "issuer"
       ? { owner: "issuer", owner_name: state.sheet.issuer.name, value: limit.bound.value, unit: limit.unit }
       : fact(limit.bound.fact),
