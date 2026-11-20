@@ -35,11 +35,13 @@ def _clause(text: str, sent: str) -> str:
 
 _NOT_SAID = re.compile(r"\b(?:does|do|did|is|are)(?: not|n.t)\s+(?:specif|state|say|mention|clear|provid|list|address|cover)|"
                        r"\bnot (?:specified|stated|clear|mentioned|provided)|unclear|no information|cannot tell|can.t tell", re.I)
-_DENIED = re.compile(r"cannot be returned|can.t be returned|not (?:be )?returnable|non-returnable|not eligible|excluded from returns|"
-                     r"no returns|final sale|not accepted|(?:will not|won.t|do not|don.t|does not|doesn.t) accept|unable to be returned", re.I)
-_ABOUT_OPENED = re.compile(r"opened|unboxed|\bused\b", re.I)
-_HEDGED = re.compile(r"\bmay\b|\bmight\b|\bcould\b|generally|typically|usually|depends|only if|\bif\b|\bmust\b|unused|unopened|"
-                     r"original packaging|resalable|provided|unless|conditions?\b|would not meet|not meet", re.I)
+_DENIED = re.compile(r"cannot be returned|can.t be returned|not (?:be )?returnable|non-returnable|not eligible|isn.t eligible|aren.t eligible|"
+                     r"ineligible|excluded from returns|no returns|final sale|not accepted|"
+                     r"(?:will not|won.t|do not|don.t|does not|doesn.t) accept|unable to be returned|"
+                     r"(?:would not|wouldn.t|does not|doesn.t|do not|don.t|will not|won.t) (?:meet|qualify)", re.I)
+_MODAL = re.compile(r"\bmay\b|\bmight\b|\bcould\b|generally|typically|usually|depends|only if|unless", re.I)
+_CONDITION = re.compile(r"\bif\b|\bmust\b|unused|unopened|original packaging|resalable|provided|conditions?\b", re.I)
+_ABOUT_OPENED = re.compile(r"opened|unboxed|\\bused\\b", re.I)
 _AFFIRMED = re.compile(r"can be returned|is returnable|are returnable|accepts? returns?|returns? (?:are |is )?accepted|"
                        r"eligible for (?:a )?(?:return|refund)|will accept", re.I)
 
@@ -47,12 +49,13 @@ _AFFIRMED = re.compile(r"can be returned|is returnable|are returnable|accepts? r
 def returnable_from(sentence: str) -> str:
     """'yes' only when the sentence itself affirms the return of an opened item, with no condition an opened item could fail;
     'no' when it denies; anything else, including a store saying it does not say, is 'unclear'. No phrase list of answers:
-    four checks in a fixed order (does not say, denial, hedge or condition, affirmation)."""
-    if _NOT_SAID.search(sentence):
+    checks in a fixed order: does not say or a modal hedge (may, generally) -> unclear; a denial (cannot, would not qualify) -> no;
+    a condition an opened item could fail -> unclear; a plain affirmation about an opened item -> yes."""
+    if _NOT_SAID.search(sentence) or _MODAL.search(sentence):
         return "unclear"
     if _DENIED.search(sentence):
         return "no"
-    if _HEDGED.search(sentence):
+    if _CONDITION.search(sentence):
         return "unclear"
     # a plain "returns are accepted" says nothing about an opened item: yes needs the sentence to be about the opened item
     return "yes" if _AFFIRMED.search(sentence) and _ABOUT_OPENED.search(sentence) else "unclear"
