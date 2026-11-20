@@ -66,3 +66,8 @@ product's text once (title, description, and still the line "Selected option: <c
 append "Selected option: <options[k].title>." yourself (an option titled "Default Title" or "Each" carries no extra text). The top-level
 `variant_id`, `price_cents`, `variants`, `variant_title` are unchanged (the cheapest in stock). A cart for an option uses that option's
 `variant_id`. `build_pool.build()` and `sheet2.build()` write the key the same way.
+
+## 13:40 from STORE — store agents are no longer asked for figures (audit 13:10, item 3)
+`data/store_answers/asked/<store>.json` now holds only `returns_and_delivery` replies for picks and runner-ups (10 records; the 15 figure
+replies are removed, as are `asked.figure_question` and the not_stated targets). If your reader or `asked` key on a candidate still
+reads a figure from those files, drop it: a store agent said "does not specify" for pages that do state the figure.
