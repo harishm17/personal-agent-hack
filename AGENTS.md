@@ -32,7 +32,7 @@ One 1–3 line entry per non-obvious setup or build quirk, prefixed with your st
 Model and API facts that differ from training data go here too (exact model IDs, parameter traps, limits).
 
 - INTEGRATOR 11:05: keys are read by `signoff/config.py` from `~/.config/tokensand.env` and then `.env`. A worktree has no `.env`; that is fine. Use `config.env("NAME")`, never print a value.
-- INTEGRATOR 11:05: Python is pinned to 3.14 (`.python-version`). Run everything with `uv run`. Ports: main 8000 (the tunnel), ENGINE 8001, STORE 8002, SCREEN 8003, SIGN 8004.
+- INTEGRATOR 11:05: Python is pinned to 3.14 (`.python-version`). Run everything with `uv run`. Ports: main 8800 (the tunnel; 8000 is taken by another program on this Mac), ENGINE 8001, STORE 8002, SCREEN 8003, SIGN 8004.
 - INTEGRATOR 11:05: stores accept a call only with `meta["ucp-agent"].profile` set to a public https URL of `profile/agent-v1.json` served with `Cache-Control`. A changed profile needs a new file name (stores cache it). Prices are in cents. Never call a checkout tool.
 - INTEGRATOR 11:05: SingleStore password contains `=;(^[`; pass host, user and password as separate arguments, or use the URL-encoded `SINGLESTORE_URL`.
 - INTEGRATOR 11:05: Node is 26.13.1 (Firedrill needs 26.13.1 or newer). Codex is not installed, so cross-check uses a fresh Sonnet session.

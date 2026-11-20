@@ -80,10 +80,10 @@ Sponsor notes with install lines and traps: `.../research/sponsors-infra.md`, `.
 - Working reference scripts: `.../research/ucp-probe/probe2.py` and `cart.py`.
 
 ## Interfaces
-One process: `uv run uvicorn signoff.app:app --port 8000`. `signoff/app.py` mounts one router per stream
+One process: `uv run uvicorn signoff.app:app --port 8800`. `signoff/app.py` mounts one router per stream
 (`signoff.engine.api`, `signoff.store.api`, `signoff.sign.api`, each exporting `router`) and the static
 folders. Keys: `signoff/config.py` loads `~/.config/tokensand.env`, then `.env`; use `config.env("NAME")`.
-While developing, each stream runs its own port: ENGINE 8001, STORE 8002, SCREEN 8003, SIGN 8004; 8000 is
+While developing, each stream runs its own port: ENGINE 8001, STORE 8002, SCREEN 8003, SIGN 8004; 8800 is
 main and the only one behind the tunnel.
 
 **Files** (examples of every shape are in `fixtures/`; `fixtures/make_state.py` is the reference code)
@@ -192,3 +192,11 @@ Checkout or payment of any kind. Medical advice or suggesting a limit. A floor p
 phone mirror on the big screen. Accounts, login or more than one sheet at a time. Arrival dates the stores
 do not promise. Any invented product under a real brand name. Guild. Pitching this as a hospital-discharge
 tool: the therapist is the first issuer, not the product.
+
+## Amendment 11:10 — main port, tunnel, Airbyte
+- The main app runs on port **8800**, not 8000 (8000 is used by another program on this Mac). Stream ports
+  8001 to 8004 are unchanged. The tunnel is up and `PUBLIC_URL` is in the keys file; it serves main only.
+- Airbyte (said by their staff at 10:49): "use it locally" means Airbyte Core from the Docker image, not
+  only the agent connector package. The SPONSORS work after 13:10 decides the job once Docker is checked.
+- Firedrill's prize asks to "show what you learned and how you used it to improve your agent".
+- Team: solo.

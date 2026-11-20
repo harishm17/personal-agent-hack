@@ -48,7 +48,7 @@ If sheet 2 is not recorded by 15:30, drop the switch and keep the sentence.
 | What was built today? | All project code, from 11:00. Research, the spec and the starter kit were preparation. |
 
 ## Keys and setup before going on stage
-- [ ] 16:50: warm SIE, open the app at `http://localhost:8000`, tunnel up, phone on the tunnel address
+- [ ] 16:50: warm SIE, open the app at `http://localhost:8800`, tunnel up, phone on the tunnel address
 - [ ] `POST /api/admin/reset`, browser zoom checked on the projector
 - [ ] Replay mode rehearsed once with the network off; hotspot ready
 - [ ] Backup clip on disk; video link opens while logged out

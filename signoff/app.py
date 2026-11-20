@@ -1,6 +1,6 @@
 """The one server process. Integrator-owned: streams add routes in their own router module, never here.
 
-Run: uv run uvicorn signoff.app:app --port 8000 --reload
+Run: uv run uvicorn signoff.app:app --port 8800 --reload
 """
 import importlib
 import json
