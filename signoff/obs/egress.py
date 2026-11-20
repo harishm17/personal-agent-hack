@@ -41,8 +41,10 @@ def _active_sheet() -> tuple[str, dict | None]:
 def _sheet_values() -> dict:
     """Sealed values of the active sheet: issuer limit values with units, the shopper's measurements with units, the names."""
     limits, facts, people, stores = set(), set(), set(), set()
+    units = {}
     _, sh = _active_sheet()
     if sh:
+        units = sh.get("units") or {}  # the sheet's own spellings of each unit ("count": ct, pack, crayons...)
         stores.update(sh.get("stores", []))
         for who in ("issuer", "shopper"):
             if sh.get(who, {}).get("name"):
@@ -54,7 +56,7 @@ def _sheet_values() -> dict:
                 b = lim.get("bound", {})
                 if b.get("source") == "issuer":
                     limits.add((float(b["value"]), lim.get("unit", "")))
-    return {"limits": limits, "facts": facts, "people": people, "stores": stores}
+    return {"limits": limits, "facts": facts, "people": people, "stores": stores, "units": units}
 
 
 def _num_pattern(v: float) -> str:
@@ -69,10 +71,18 @@ def detect(text: str, sealed: dict | None = None) -> list[dict]:
 
     def scan(pairs, cls):
         for v, unit in pairs:
-            u = UNITS.get(unit)
-            if not u:
+            aliases = [re.escape(a) for a in (sealed.get("units") or {}).get(unit, [])]
+            alt = "|".join(aliases)
+            forward = [UNITS[unit]] if UNITS.get(unit) else []
+            if alt:
+                forward.append(r"(?:" + alt + r")\b")
+            if not forward:
                 continue
-            if re.search(_num_pattern(v) + r"\s*-?\s*" + u, text, re.I):
+            n = _num_pattern(v)
+            found = any(re.search(n + r"\s*-?\s*" + u, text, re.I) for u in forward)
+            if not found and alt:  # "crayons 24": the unit's own word before the number
+                found = bool(re.search(r"\b(?:" + alt + r")\b[\s:=-]{0,3}" + n, text, re.I))
+            if found:
                 hits.append({"class": cls, "match": ("%g %s" % (v, unit))})  # one canonical hit per value, however it is spelled
 
     scan(sealed["limits"], "limit")
