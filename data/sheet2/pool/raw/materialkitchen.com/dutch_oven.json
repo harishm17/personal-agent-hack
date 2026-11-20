@@ -1,0 +1,391 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://materialkitchen.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Material",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "materialkitchen.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "23047781"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "23047781"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8142971994174",
+   "title": "French Country Mixing Bowl",
+   "description": {
+    "html": "Bring a touch of vintage charm to your kitchen with Farmhouse Pottery's French Country Mixing Bowl. Handcrafted with care and wheel-thrown in Vermont, this bowl is both practical and beautiful\u2014perfect for all your kitchen needs. Available in three sizes and colors\u2014Oat for the large, Flax for the medium, and Buckwheat for the small\u2014they can nest together or stand out individually. These bowls are oven, dishwasher and microwave safe. Whether you're mixing, whisking, or rising dough, this bowl is up for the task. The handy pour spout makes for easy pouring and everyday convenience. Designed to blend tradition with utility, this bowl is a staple you'll reach for time and again. Set Includes: Small, Medium, Large"
+   },
+   "url": "https://materialkitchen.com/products/french-country-mixing-bowl",
+   "handle": "french-country-mixing-bowl",
+   "price_range": {
+    "min": {
+     "amount": 9500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 61500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42978167554110",
+     "sku": "POT192",
+     "title": "Small",
+     "description": {
+      "html": "Bring a touch of vintage charm to your kitchen with Farmhouse Pottery's French Country Mixing Bowl. Handcrafted with care and wheel-thrown in Vermont, this bowl is both practical and beautiful\u2014perfect for all your kitchen needs. Available in three sizes and colors\u2014Oat for the large, Flax for the medium, and Buckwheat for the small\u2014they can nest together or stand out individually. These bowls are oven, dishwasher and microwave safe. Whether you're mixing, whisking, or rising dough, this bowl is up for the task. The handy pour spout makes for easy pouring and everyday convenience. Designed to blend tradition with utility, this bowl is a staple you'll reach for time and again. Set Includes: Small, Medium, Large"
+     },
+     "price": {
+      "amount": 9500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Small"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/4_5d45a5b6-7423-469e-8714-cced754b2d68.png?v=1783643142"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42978167554110:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42978167586878",
+     "sku": "POT193",
+     "title": "Medium",
+     "description": {
+      "html": "Bring a touch of vintage charm to your kitchen with Farmhouse Pottery's French Country Mixing Bowl. Handcrafted with care and wheel-thrown in Vermont, this bowl is both practical and beautiful\u2014perfect for all your kitchen needs. Available in three sizes and colors\u2014Oat for the large, Flax for the medium, and Buckwheat for the small\u2014they can nest together or stand out individually. These bowls are oven, dishwasher and microwave safe. Whether you're mixing, whisking, or rising dough, this bowl is up for the task. The handy pour spout makes for easy pouring and everyday convenience. Designed to blend tradition with utility, this bowl is a staple you'll reach for time and again. Set Includes: Small, Medium, Large"
+     },
+     "price": {
+      "amount": 19500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Medium"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/2_c8280136-5956-462e-adc0-a1379464225e.png?v=1783643142"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42978167586878:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42978167619646",
+     "sku": "POT194",
+     "title": "Large",
+     "description": {
+      "html": "Bring a touch of vintage charm to your kitchen with Farmhouse Pottery's French Country Mixing Bowl. Handcrafted with care and wheel-thrown in Vermont, this bowl is both practical and beautiful\u2014perfect for all your kitchen needs. Available in three sizes and colors\u2014Oat for the large, Flax for the medium, and Buckwheat for the small\u2014they can nest together or stand out individually. These bowls are oven, dishwasher and microwave safe. Whether you're mixing, whisking, or rising dough, this bowl is up for the task. The handy pour spout makes for easy pouring and everyday convenience. Designed to blend tradition with utility, this bowl is a staple you'll reach for time and again. Set Includes: Small, Medium, Large"
+     },
+     "price": {
+      "amount": 32500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Large"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/1_093c25a3-7524-4fec-beb0-5b2431343b90.png?v=1783643142"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42978167619646:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42978167652414",
+     "sku": "BUN111",
+     "title": "Full Set",
+     "description": {
+      "html": "Bring a touch of vintage charm to your kitchen with Farmhouse Pottery's French Country Mixing Bowl. Handcrafted with care and wheel-thrown in Vermont, this bowl is both practical and beautiful\u2014perfect for all your kitchen needs. Available in three sizes and colors\u2014Oat for the large, Flax for the medium, and Buckwheat for the small\u2014they can nest together or stand out individually. These bowls are oven, dishwasher and microwave safe. Whether you're mixing, whisking, or rising dough, this bowl is up for the task. The handy pour spout makes for easy pouring and everyday convenience. Designed to blend tradition with utility, this bowl is a staple you'll reach for time and again. Set Includes: Small, Medium, Large"
+     },
+     "price": {
+      "amount": 61500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Full Set"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/3_ba9654a3-8c7b-49f9-9848-06819d7c117f.png?v=1783643142"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://material-kitchen.myshopify.com/cart/42978167652414:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "Small"
+      },
+      {
+       "label": "Medium"
+      },
+      {
+       "label": "Large"
+      },
+      {
+       "label": "Full Set"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2304/7781/files/3_ba9654a3-8c7b-49f9-9848-06819d7c117f.png?v=1783643142"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-8-50",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge-Farmhouse Pottery",
+    "badge-MK Finds",
+    "Farmhouse Pottery",
+    "Shopify Collective"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/286254596158",
+     "handle": "ceramics",
+     "title": "Ceramics",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

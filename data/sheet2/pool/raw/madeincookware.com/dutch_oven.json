@@ -1,0 +1,3015 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://checkout.madeincookware.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Made In Cookware",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "checkout.madeincookware.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "21315111"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "21315111"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/6677521727567",
+   "title": "Round Enameled Cast Iron Dutch Oven",
+   "description": {
+    "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+   },
+   "url": "https://checkout.madeincookware.com/products/dutch-oven",
+   "handle": "dutch-oven",
+   "price_range": {
+    "min": {
+     "amount": 13900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 30900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 32900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39891024805967",
+     "sku": "COOK-5DUTCH-BLU",
+     "title": "5.5 QT / Harbour Blue / Standard",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Round_5qt_HarbourBlue_1x1_Hero.jpg?v=1762199179"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39891024805967:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42229706817615",
+     "sku": "COOK-C5DUTCH-BLU",
+     "title": "5.5 QT / Harbour Blue / Engraved",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+     },
+     "price": {
+      "amount": 25999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      },
+      {
+       "name": "Engraving",
+       "label": "Engraved"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Round_5qt_HarbourBlue_1x1_Hero.jpg?v=1762199179"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42229706817615:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39891024937039",
+     "sku": "COOK-5DUTCH-RED",
+     "title": "5.5 QT / Made In Red / Standard",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+     },
+     "price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Made In Red"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Round_5qt_Red_1x1_Hero.jpg?v=1719871257"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39891024937039:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42229707505743",
+     "sku": "COOK-C5DUTCH-RED",
+     "title": "5.5 QT / Made In Red / Engraved",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+     },
+     "price": {
+      "amount": 23999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Made In Red"
+      },
+      {
+       "name": "Engraving",
+       "label": "Engraved"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Round_5qt_Red_1x1_Hero.jpg?v=1719871257"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42229707505743:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40237906886735",
+     "sku": "COOK-5DUTCH-LIN",
+     "title": "5.5 QT / Antique White / Standard",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Antique White"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Round_5qt_White_3q-1x1_Hero.jpg?v=1719871268"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40237906886735:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42229707702351",
+     "sku": "COOK-C5DUTCH-LIN",
+     "title": "5.5 QT / Antique White / Engraved",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+     },
+     "price": {
+      "amount": 25999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Antique White"
+      },
+      {
+       "name": "Engraving",
+       "label": "Engraved"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Round_5qt_White_3q-1x1_Hero.jpg?v=1719871268"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42229707702351:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40810926440527",
+     "sku": "COOK-5DUTCH-LE-BC",
+     "title": "5.5 QT / Ruby Red / Standard",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Ruby Red"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_ECI_5.5qt_Dutch_Oven_Ruby_Red-Profile.jpg?v=1769801312"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40810926440527:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40810926997583",
+     "sku": "COOK-5DUTCH-WG-GD",
+     "title": "5.5 QT / Willow Green / Standard",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Willow Green"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Enamel_Cast_Iron_5qt_Dutch_Willow_Green-Hero-LidOpen.jpg?v=1757343779"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40810926997583:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40386070511695",
+     "sku": "COOK-5DUTCH-LE-ORNG",
+     "title": "5.5 QT / Blood Orange / Standard",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Blood Orange"
+      },
+      {
+       "name": "Engraving",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_ECI_Blood_Orange_5.5qt_001.jpg?v=1727720046"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40386070511695:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42229708357711",
+     "sku": "COOK-C5DUTCH-LE-OR",
+     "title": "5.5 QT / Blood Orange / Engraved",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft the debut piece in our Enameled Cast Iron Collection. The original slow cooker, the Dutch Oven\u2019s exceptional heat retention and circulation transforms even tough cuts into tender, fall-off-the-bone braises. Its light-colored cooking surface makes it easy to keep an eye on fond (and thus flavor) development, and the non stick enamel simplifies cleaning. Our proprietary Cloud Cover Lid boasts pea-sized dimples to trap steam and return moisture to your food. Built with generations of expertise, we have perfected the ratio of cast iron body to enamel cooking surface to bring you an heirloom-quality Dutch Oven."
+     },
+     "price": {
+      "amount": 30900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Blood Orange"
+      },
+      {
+       "name": "Engraving",
+       "label": "Engraved"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_ECI_Blood_Orange_5.5qt_001.jpg?v=1727720046"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42229708357711:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "5.5 QT"
+      },
+      {
+       "label": "3.5 QT"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Harbour Blue"
+      },
+      {
+       "label": "Made In Red"
+      },
+      {
+       "label": "Antique White"
+      },
+      {
+       "label": "Ruby Red"
+      },
+      {
+       "label": "Willow Green"
+      },
+      {
+       "label": "Blood Orange"
+      },
+      {
+       "label": "Ash Grey"
+      },
+      {
+       "label": "Hudson Green"
+      },
+      {
+       "label": "Wholesale"
+      },
+      {
+       "label": "Marigold Yellow"
+      }
+     ]
+    },
+    {
+     "name": "Engraving",
+     "values": [
+      {
+       "label": "Standard"
+      },
+      {
+       "label": "Engraved"
+      },
+      {
+       "label": "UPC - LIN"
+      },
+      {
+       "label": "UPC - BLU"
+      },
+      {
+       "label": "UPC - RED"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Round_5qt_HarbourBlue_1x1_Hero.jpg?v=1762199179"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Seller",
+    "bmsm",
+    "Cast Iron",
+    "collection-filter:Cast Iron",
+    "Country-France",
+    "dan-indexing",
+    "discounteligible",
+    "Enameled Cast Iron Collection",
+    "fake-variants:39813724799055",
+    "Filter-Cast-Iron",
+    "Filter-New-Arrivals",
+    "indexing",
+    "internal",
+    "Logicbroker",
+    "Personalized",
+    "sanity-indexing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/86848864335",
+     "handle": "best-sellers",
+     "title": "Most Popular",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261358157903",
+     "handle": "summer",
+     "title": "Summer Collection",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262005850191",
+     "handle": "summer-sale",
+     "title": "Summer Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8668752642127",
+   "title": "Seasoned Cast Iron Dutch Oven",
+   "description": {
+    "html": "Designed for how chefs actually cook with cast iron, not how it's always been made, our 6QT Seasoned Cast Iron Dutch Oven is built for the long cook. Sized for braises, breads, deep-frying, and meals that feed a table, its interior follows a chef-informed shape with no hard corners, and the cast iron lid traps heat where it matters. The loop handles are weight-balanced for a two-handed lift from cooktop to oven to table, and the knurled knob stays grippable through pot-towels and gloves. Safe for gas, electric, induction, oven, and live fire."
+   },
+   "url": "https://checkout.madeincookware.com/products/cast-iron-dutch-oven",
+   "handle": "cast-iron-dutch-oven",
+   "price_range": {
+    "min": {
+     "amount": 24999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 24999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 29900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45288272035919",
+     "sku": "COOK-6L-DUTCH-CI",
+     "title": "6 QT",
+     "description": {
+      "html": "Designed for how chefs actually cook with cast iron, not how it's always been made, our 6QT Seasoned Cast Iron Dutch Oven is built for the long cook. Sized for braises, breads, deep-frying, and meals that feed a table, its interior follows a chef-informed shape with no hard corners, and the cast iron lid traps heat where it matters. The loop handles are weight-balanced for a two-handed lift from cooktop to oven to table, and the knurled knob stays grippable through pot-towels and gloves. Safe for gas, electric, induction, oven, and live fire."
+     },
+     "price": {
+      "amount": 24999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "6 QT"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Cast_Iron_Dutch_Oven-Hero-LidClosed.jpg?v=1779486082"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45288272035919:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "6 QT"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Cast_Iron_Dutch_Oven-Hero-LidClosed.jpg?v=1779486082"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Country-USA",
+    "disable-overnight-shipping",
+    "discounteligible"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265959080015",
+     "handle": "usa-collection",
+     "title": "USA Collection",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6915102539855",
+   "title": "Enameled Cast Iron Set",
+   "description": {
+    "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+   },
+   "url": "https://checkout.madeincookware.com/products/enameled-cast-iron-set",
+   "handle": "enameled-cast-iron-set",
+   "price_range": {
+    "min": {
+     "amount": 29999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 94900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 44800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 107500,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42178249621583",
+     "sku": "KIT-2-ECI-BLU",
+     "title": "3-Piece / Harbour Blue",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 31999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/EnamelCastIron_3p_set_HarbourBlue.jpg?v=1727384033"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42178249621583:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42178251227215",
+     "sku": "FS-KIT-2-ECI-RED",
+     "title": "3-Piece / Made In Red",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 29999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Made In Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/EnamelCastIron_3p_set_MadeInRed.jpg?v=1727384037"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42178251227215:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42178255519823",
+     "sku": "FS-KIT-2-ECI-LIN",
+     "title": "3-Piece / Antique White",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 34900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Antique White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/EnamelCastIron_3p_set_AntiqueWhite_8aad60ac-3c79-4027-8918-d9bb84045efb.jpg?v=1757713123"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42178255519823:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42178253488207",
+     "sku": "KIT-2-ECI-ORNG",
+     "title": "3-Piece / Blood Orange",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 34900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Blood Orange"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/EnamelCastIron_3p_set_bloodorange-Edit.jpg?v=1727452825"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42178253488207:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40468340801615",
+     "sku": "KIT-5-ECI-2L-SCE-BLU",
+     "title": "5-Piece / Harbour Blue",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 67700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Set_5p_HarbourBlue_1x1_001.jpg?v=1762199887"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40468340801615:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40468340834383",
+     "sku": "KIT-5-ECI-2L-SCE-RED",
+     "title": "5-Piece / Made In Red",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 67700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Made In Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Set_5p_MadeInRed_1x1_001.jpg?v=1719867759"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40468340834383:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40468340768847",
+     "sku": "KIT-5-ECI-2L-SCE-LIN",
+     "title": "5-Piece / Antique White",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 67700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Antique White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/EnameledCastIron_Set_5p_AntiqueWhite_001_HIRES-Edit.jpg?v=1757713144"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40468340768847:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42178256470095",
+     "sku": "KIT-5-ECI-2L-SCE-ORG",
+     "title": "5-Piece / Blood Orange",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 49900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 64700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Blood Orange"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_EnameledCastIron_Set_5p_BloodOrange_001_20c0858c-a06d-4386-9479-d78855b0b1b1.jpg?v=1727384464"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42178256470095:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40823182753871",
+     "sku": "KIT-5-ECI-2L-SCE-BC",
+     "title": "5-Piece / Ruby Red",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 67700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Ruby Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/ECI_5p_Set_Ruby_Red-7537.jpg?v=1769825695"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40823182753871:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "3-Piece"
+      },
+      {
+       "label": "5-Piece"
+      },
+      {
+       "label": "7-Piece"
+      },
+      {
+       "label": "4-Piece"
+      },
+      {
+       "label": "9-Piece"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Harbour Blue"
+      },
+      {
+       "label": "Made In Red"
+      },
+      {
+       "label": "Antique White"
+      },
+      {
+       "label": "Blood Orange"
+      },
+      {
+       "label": "Willow Green"
+      },
+      {
+       "label": "Ruby Red"
+      },
+      {
+       "label": "Hudson Green"
+      },
+      {
+       "label": "Marigold Yellow"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Set_5p_HarbourBlue_1x1_001.jpg?v=1762199887"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Enameled Cast Iron Collection",
+    "Hero Bundle",
+    "sanity-indexing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/439299018",
+     "handle": "main-bundles",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271379759183",
+     "handle": "enameled-cast-iron",
+     "title": "Enameled Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/272645226575",
+     "handle": "hudson-green-collection",
+     "title": "Hudson Green Collection",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15509919989839",
+   "title": "Free Gift - Oval Enameled Cast Iron Dutch Oven",
+   "description": {
+    "html": ""
+   },
+   "handle": "gwp-oval-dutch-oven-2026",
+   "price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 32900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 32900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/67985235902543",
+     "sku": "GWP-7DUTCH-WGGD",
+     "title": "Willow Green",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 0,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Willow Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Enamel_Cast_Iron_7.5qt_Dutch_Willow_Green-Hero-LidOpen_c1f8ddad-da10-4640-a31a-daebe359732a.jpg?v=1793726134"
+      }
+     ],
+     "requires": {
+      "shipping": false
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/67985235902543:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/68243891814479",
+     "sku": "GWP-7DUTCH-WGGD",
+     "title": "Willow Green\u00a0",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 0,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Willow Green\u00a0"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Enamel_Cast_Iron_7.5qt_Dutch_Willow_Green-Hero-LidOpen_c1f8ddad-da10-4640-a31a-daebe359732a.jpg?v=1793726134"
+      }
+     ],
+     "requires": {
+      "shipping": false
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/68243891814479:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Willow Green"
+      },
+      {
+       "label": "Willow Green\u00a0"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Enamel_Cast_Iron_7.5qt_Dutch_Willow_Green-Hero-LidOpen_c1f8ddad-da10-4640-a31a-daebe359732a.jpg?v=1793726134",
+     "alt_text": "Free Gift - Oval Enameled Cast Iron Dutch Oven"
+    }
+   ],
+   "tags": [
+    "bv-exclude"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/280769757263",
+     "handle": "non-stick-carbon-cast-iron",
+     "title": "Non Stick + Carbon + Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8598714024015",
+   "title": "Cast Iron Dutch Oven - Wholesale",
+   "description": {
+    "html": ""
+   },
+   "url": "https://checkout.madeincookware.com/products/cast-iron-dutch-oven-ws",
+   "handle": "cast-iron-dutch-oven-ws",
+   "price_range": {
+    "min": {
+     "amount": 29900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45118263459919",
+     "sku": "COOK-6L-DUTCH-CI-WS2",
+     "title": "6 QT",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "6 QT"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45118263459919:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "6 QT"
+      }
+     ]
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/298905501775",
+     "handle": "employee-discount-eligible",
+     "title": "Employee Discount Eligible",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/312499273807",
+     "handle": "alyssa-test",
+     "title": "Alyssa Test",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8668768534607",
+   "title": "Seasoned Cast Iron Braiser",
+   "description": {
+    "html": ""
+   },
+   "url": "https://checkout.madeincookware.com/products/braiser",
+   "handle": "braiser",
+   "price_range": {
+    "min": {
+     "amount": 19999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 24900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 24900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45288291532879",
+     "sku": "COOK-4L-BRAIS-CI",
+     "title": "4 QT",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 19999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 24900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4 QT"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/braiser-ls-hero_ce099b02-f9a3-4156-bb8b-7b7ae3002bcb.png?v=1790807252"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45288291532879:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "4 QT"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Cast_Iron_Braiser-Hero-LidClosed.jpg?v=1779486543"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-18",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Country-USA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265959080015",
+     "handle": "usa-collection",
+     "title": "USA Collection",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7839330271311",
+   "title": "Enameled Cast Iron Braiser",
+   "description": {
+    "html": "Our first-ever shape designed explicitly for braising, the Enameled Cast Iron Braiser is made from the same hand enameled cast iron as our Dutch Oven. This provides unmatched heat retention, keeping your braise, stew, or chili bubbling away as long as you need it to. The Braiser features a wider surface area than a typical Dutch Oven, allowing you to sear cuts of meat in a single layer before adding your braising liquid. Gradually sloped sides help keep food fully submerged, while the Cloud Cover Lid holds in moisture and distributes it evenly to keep your stew or braise from drying out. Not limited to just braising, this versatile piece of cookware functions similarly to a skillet, making it an equally great choice for tasks like shallow-frying, baking, and saut\u00e9ing."
+   },
+   "url": "https://checkout.madeincookware.com/products/cast-iron-braiser",
+   "handle": "cast-iron-braiser",
+   "price_range": {
+    "min": {
+     "amount": 29900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43577291636815",
+     "sku": "COOK-3BRAISE-WG-GD",
+     "title": "3.5 QT / Willow Green",
+     "description": {
+      "html": "Our first-ever shape designed explicitly for braising, the Enameled Cast Iron Braiser is made from the same hand enameled cast iron as our Dutch Oven. This provides unmatched heat retention, keeping your braise, stew, or chili bubbling away as long as you need it to. The Braiser features a wider surface area than a typical Dutch Oven, allowing you to sear cuts of meat in a single layer before adding your braising liquid. Gradually sloped sides help keep food fully submerged, while the Cloud Cover Lid holds in moisture and distributes it evenly to keep your stew or braise from drying out. Not limited to just braising, this versatile piece of cookware functions similarly to a skillet, making it an equally great choice for tasks like shallow-frying, baking, and saut\u00e9ing."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Willow Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Enamel_Cast_Iron_3.5qt_Braiser_Willow_Green-Profile.jpg?v=1757353334"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43577291636815:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43577291571279",
+     "sku": "COOK-3BRAISE-LIN",
+     "title": "3.5 QT / Antique White",
+     "description": {
+      "html": "Our first-ever shape designed explicitly for braising, the Enameled Cast Iron Braiser is made from the same hand enameled cast iron as our Dutch Oven. This provides unmatched heat retention, keeping your braise, stew, or chili bubbling away as long as you need it to. The Braiser features a wider surface area than a typical Dutch Oven, allowing you to sear cuts of meat in a single layer before adding your braising liquid. Gradually sloped sides help keep food fully submerged, while the Cloud Cover Lid holds in moisture and distributes it evenly to keep your stew or braise from drying out. Not limited to just braising, this versatile piece of cookware functions similarly to a skillet, making it an equally great choice for tasks like shallow-frying, baking, and saut\u00e9ing."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 0,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Antique White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Enamel_Cast_Iron_3.5qt_Braiser_Antique_White-Profile.jpg?v=1757353290"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43577291571279:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43577291538511",
+     "sku": "COOK-3BRAISE-BLU",
+     "title": "3.5 QT / Harbour Blue",
+     "description": {
+      "html": "Our first-ever shape designed explicitly for braising, the Enameled Cast Iron Braiser is made from the same hand enameled cast iron as our Dutch Oven. This provides unmatched heat retention, keeping your braise, stew, or chili bubbling away as long as you need it to. The Braiser features a wider surface area than a typical Dutch Oven, allowing you to sear cuts of meat in a single layer before adding your braising liquid. Gradually sloped sides help keep food fully submerged, while the Cloud Cover Lid holds in moisture and distributes it evenly to keep your stew or braise from drying out. Not limited to just braising, this versatile piece of cookware functions similarly to a skillet, making it an equally great choice for tasks like shallow-frying, baking, and saut\u00e9ing."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 0,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Enamel_Cast_Iron_3.5qt_Braiser_Harbour_Blue-Profile.jpg?v=1762270885"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43577291538511:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43577291604047",
+     "sku": "COOK-3BRAISE-RED",
+     "title": "3.5 QT / Made In Red",
+     "description": {
+      "html": "Our first-ever shape designed explicitly for braising, the Enameled Cast Iron Braiser is made from the same hand enameled cast iron as our Dutch Oven. This provides unmatched heat retention, keeping your braise, stew, or chili bubbling away as long as you need it to. The Braiser features a wider surface area than a typical Dutch Oven, allowing you to sear cuts of meat in a single layer before adding your braising liquid. Gradually sloped sides help keep food fully submerged, while the Cloud Cover Lid holds in moisture and distributes it evenly to keep your stew or braise from drying out. Not limited to just braising, this versatile piece of cookware functions similarly to a skillet, making it an equally great choice for tasks like shallow-frying, baking, and saut\u00e9ing."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3.5 QT"
+      },
+      {
+       "name": "Color",
+       "label": "Made In Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Enamel_Cast_Iron_3.5qt_Braiser_Made_In_Red-Profile.jpg?v=1757353313"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43577291604047:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "3.5 QT"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Willow Green"
+      },
+      {
+       "label": "Antique White"
+      },
+      {
+       "label": "Harbour Blue"
+      },
+      {
+       "label": "Made In Red"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Enamel_Cast_Iron_3.5qt_Braiser_Harbour_Blue-Profile.jpg?v=1762270885"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "discounteligible",
+    "Enameled Cast Iron Collection"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271379759183",
+     "handle": "enameled-cast-iron",
+     "title": "Enameled Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280769757263",
+     "handle": "non-stick-carbon-cast-iron",
+     "title": "Non Stick + Carbon + Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6914998337615",
+   "title": "Enameled Cast Iron Skillet",
+   "description": {
+    "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+   },
+   "url": "https://checkout.madeincookware.com/products/cast-iron-skillet",
+   "handle": "cast-iron-skillet",
+   "price_range": {
+    "min": {
+     "amount": 12999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 17900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40467861798991",
+     "sku": "COOK-ECI-11SK-BLU",
+     "title": "Harbour Blue",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+     },
+     "price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Skillet_11in_HarbourBlue_1x1_Hero.jpg?v=1762199887"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40467861798991:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40467861831759",
+     "sku": "COOK-ECI-11SK-RED",
+     "title": "Made In Red",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+     },
+     "price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Made In Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Skillet_11in_Red_1x1_Hero.jpg?v=1719867890"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40467861831759:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40467861766223",
+     "sku": "COOK-ECI-11SK-LIN",
+     "title": "Antique White",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+     },
+     "price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Antique White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Skillet_11in_White_1x1_Hero.jpg?v=1719867900"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40467861766223:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40467861700687",
+     "sku": "FS-COOK-ECI-11SK-ORG",
+     "title": "Blood Orange",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+     },
+     "price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blood Orange"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_ECI_Blood_Orange_Skillet_002.jpg?v=1727461917"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40467861700687:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40810936598607",
+     "sku": "COOK-ECI-11SK-BC",
+     "title": "Ruby Red",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+     },
+     "price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Ruby Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_ECI_11in_Skillet_Ruby_Red-Hero.jpg?v=1769801062"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40810936598607:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40467861667919",
+     "sku": "COOK-ECI-11SK-GRN",
+     "title": "Hudson Green",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+     },
+     "price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Hudson Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/products/Web_P1_EnameledCast_HudsonGreen_1x1_Hero.jpg?v=1708010735"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40467861667919:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40467861733455",
+     "sku": "COOK-ECI-11SK-CAV",
+     "title": "Ash Grey",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+     },
+     "price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Ash Grey"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/products/Web_P1_EnameledCast_ECISkillet_Ash_1x1_Hero.jpg?v=1669838345"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40467861733455:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161948520527",
+     "title": "Made In Red - Wholesale",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+     },
+     "price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Made In Red - Wholesale"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Skillet_11in_HarbourBlue_1x1_Hero.jpg?v=1762199887"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161948520527:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161948848207",
+     "title": "Harbour Blue - Wholesale",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+     },
+     "price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Harbour Blue - Wholesale"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Skillet_11in_HarbourBlue_1x1_Hero.jpg?v=1762199887"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161948848207:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161954222159",
+     "title": "Linen - Wholesale",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft our growing Enameled Cast Iron Collection. This piece combines the romanticism and versatility of a southern-style cast iron Skillet with the easy-to-care-for enameled surface that made the Dutch Oven famous. This means you can create a golden-brown sear on large cuts of meat and simmer smaller batches of sauce without having to worry about maintaining a seasoning. Plus, you can oven roast up to 580F\u201480 degrees higher than other French-made brands. Each Skillet features a dark surface that\u2019s optimized for high-heat frying, grilling and searing. Discover the hand-enameled, heirloom-quality Enameled Cast Iron Skillet."
+     },
+     "price": {
+      "amount": 16900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Linen - Wholesale"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Skillet_11in_HarbourBlue_1x1_Hero.jpg?v=1762199887"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161954222159:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Harbour Blue"
+      },
+      {
+       "label": "Made In Red"
+      },
+      {
+       "label": "Antique White"
+      },
+      {
+       "label": "Blood Orange"
+      },
+      {
+       "label": "Ruby Red"
+      },
+      {
+       "label": "Hudson Green"
+      },
+      {
+       "label": "Ash Grey"
+      },
+      {
+       "label": "Made In Red - Wholesale"
+      },
+      {
+       "label": "Harbour Blue - Wholesale"
+      },
+      {
+       "label": "Linen - Wholesale"
+      },
+      {
+       "label": "Marigold Yellow"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Skillet_11in_HarbourBlue_1x1_Hero.jpg?v=1762199887"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-13",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "discounteligible",
+    "Enameled Cast Iron Collection",
+    "Logicbroker",
+    "sanity-indexing",
+    "Warehouse Sale"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/265790554191",
+     "handle": "warehouse-sale",
+     "title": "Warehouse Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271379759183",
+     "handle": "enameled-cast-iron",
+     "title": "Enameled Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/272645226575",
+     "handle": "hudson-green-collection",
+     "title": "Hudson Green Collection",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8709252055119",
+   "title": "Pollo Plug\u2122 Chicken Roaster",
+   "description": {
+    "html": "The Pollo Plug Chicken Roaster is made from a single piece of 304 stainless steel with no coating, so there is nothing to flake or wear off into your food. Three legs form a stable tripod base that sits securely inside the cookware you already own, holding a full bird upright without tipping or sliding. The stainless construction is oven safe to 800\u00b0F to handle high-heat roasting, and at just 1.6 pounds it is easy to lift in and out. When the meal is done, it is fully dishwasher safe. We designed the Pollo Plug to roast poultry the way it cooks best \u2014 standing up. Elevated above the pan, hot air circulates around the entire bird for even cooking and skin that crisps on every side, while rendered fat drips away instead of pooling underneath. Those drippings fall onto the potatoes, carrots, and onions roasting below, turning one pan into a complete meal. It fits the Made In Cast Iron 10\" and 12\" Skillet, Braiser, and Dutch Oven, plus the Enameled 11\" Skillet, 3.5QT Braiser, and 5.5QT Dutch Oven."
+   },
+   "url": "https://checkout.madeincookware.com/products/chicken-roaster",
+   "handle": "chicken-roaster",
+   "price_range": {
+    "min": {
+     "amount": 4499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45361091444815",
+     "sku": "ACC-CHICKEN-ROAST",
+     "title": "Pollo Plug",
+     "description": {
+      "html": "The Pollo Plug Chicken Roaster is made from a single piece of 304 stainless steel with no coating, so there is nothing to flake or wear off into your food. Three legs form a stable tripod base that sits securely inside the cookware you already own, holding a full bird upright without tipping or sliding. The stainless construction is oven safe to 800\u00b0F to handle high-heat roasting, and at just 1.6 pounds it is easy to lift in and out. When the meal is done, it is fully dishwasher safe. We designed the Pollo Plug to roast poultry the way it cooks best \u2014 standing up. Elevated above the pan, hot air circulates around the entire bird for even cooking and skin that crisps on every side, while rendered fat drips away instead of pooling underneath. Those drippings fall onto the potatoes, carrots, and onions roasting below, turning one pan into a complete meal. It fits the Made In Cast Iron 10\" and 12\" Skillet, Braiser, and Dutch Oven, plus the Enameled 11\" Skillet, 3.5QT Braiser, and 5.5QT Dutch Oven."
+     },
+     "price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Pollo Plug"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Chicken_Roaster-Hero.jpg?v=1780065882"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45361091444815:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "Pollo Plug"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Chicken_Roaster-Hero.jpg?v=1780065882"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "discounteligible"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638761551",
+     "handle": "klaviyo-site-only",
+     "title": "Klaviyo Site only",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6535766835279",
+   "title": "10x6.6\" Oval Gratin Dish",
+   "description": {
+    "html": "Our Bakeware begins with a 202-year-old recipe held secret by skilled artisans in the Loire Valley. The finest and most precious of all bakeware materials, it is also the most demanding to produce. Kanolins, clays, quartz, and feldspars are mixed, shaped, enameled, and baked three times for over 50 hours at temperatures exceeding 2500F. Between bakes, a green floral design inspired by Nancy Silverton is applied by hand. Porcelain provides a naturally non stick surface and even heating, ensuring crisp corners and gooey middles. Ours is microwave- and oven-safe to 650F and thermal shock resistant, meaning it can go from freezer to oven to table. The Oval Baking Dish is perfect for both savory and sweet dishes like gratins or cobblers. Discover how Porcelain can make your most cherished recipes even better."
+   },
+   "url": "https://checkout.madeincookware.com/products/oval-baking-dish",
+   "handle": "oval-baking-dish",
+   "price_range": {
+    "min": {
+     "amount": 6499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 7900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39894299934799",
+     "sku": "FS-BAKE-3-OVAL-FL",
+     "title": "10x6.6\" / Nancy Silverton",
+     "description": {
+      "html": "Our Bakeware begins with a 202-year-old recipe held secret by skilled artisans in the Loire Valley. The finest and most precious of all bakeware materials, it is also the most demanding to produce. Kanolins, clays, quartz, and feldspars are mixed, shaped, enameled, and baked three times for over 50 hours at temperatures exceeding 2500F. Between bakes, a green floral design inspired by Nancy Silverton is applied by hand. Porcelain provides a naturally non stick surface and even heating, ensuring crisp corners and gooey middles. Ours is microwave- and oven-safe to 650F and thermal shock resistant, meaning it can go from freezer to oven to table. The Oval Baking Dish is perfect for both savory and sweet dishes like gratins or cobblers. Discover how Porcelain can make your most cherished recipes even better."
+     },
+     "price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10x6.6\""
+      },
+      {
+       "name": "Color",
+       "label": "Nancy Silverton"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Bakeware_Oval_10x6.6_NancyHoliday_1x1_Hero.jpg?v=1762198318"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39894299934799:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39879238746191",
+     "sku": "BAKE-3-OVL",
+     "title": "10x6.6\" / White",
+     "description": {
+      "html": "Our Bakeware begins with a 202-year-old recipe held secret by skilled artisans in the Loire Valley. The finest and most precious of all bakeware materials, it is also the most demanding to produce. Kanolins, clays, quartz, and feldspars are mixed, shaped, enameled, and baked three times for over 50 hours at temperatures exceeding 2500F. Between bakes, a green floral design inspired by Nancy Silverton is applied by hand. Porcelain provides a naturally non stick surface and even heating, ensuring crisp corners and gooey middles. Ours is microwave- and oven-safe to 650F and thermal shock resistant, meaning it can go from freezer to oven to table. The Oval Baking Dish is perfect for both savory and sweet dishes like gratins or cobblers. Discover how Porcelain can make your most cherished recipes even better."
+     },
+     "price": {
+      "amount": 6499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10x6.6\""
+      },
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Bakeware_Oval_10x6.6in_Undecorated_1x1_Hero.jpg?v=1740005958"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39879238746191:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39247291711567",
+     "sku": "BAKE-3-OVAL-BLU-RIM",
+     "title": "10x6.6\" / Navy Rim",
+     "description": {
+      "html": "Our Bakeware begins with a 202-year-old recipe held secret by skilled artisans in the Loire Valley. The finest and most precious of all bakeware materials, it is also the most demanding to produce. Kanolins, clays, quartz, and feldspars are mixed, shaped, enameled, and baked three times for over 50 hours at temperatures exceeding 2500F. Between bakes, a green floral design inspired by Nancy Silverton is applied by hand. Porcelain provides a naturally non stick surface and even heating, ensuring crisp corners and gooey middles. Ours is microwave- and oven-safe to 650F and thermal shock resistant, meaning it can go from freezer to oven to table. The Oval Baking Dish is perfect for both savory and sweet dishes like gratins or cobblers. Discover how Porcelain can make your most cherished recipes even better."
+     },
+     "price": {
+      "amount": 6499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10x6.6\""
+      },
+      {
+       "name": "Color",
+       "label": "Navy Rim"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Bakeware_Oval_10x6.6in_MadeInBlue_1x1_Hero.jpg?v=1762270940"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39247291711567:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39247291678799",
+     "sku": "BAKE-3-OVAL-RED-RIM",
+     "title": "10x6.6\" / Red Rim",
+     "description": {
+      "html": "Our Bakeware begins with a 202-year-old recipe held secret by skilled artisans in the Loire Valley. The finest and most precious of all bakeware materials, it is also the most demanding to produce. Kanolins, clays, quartz, and feldspars are mixed, shaped, enameled, and baked three times for over 50 hours at temperatures exceeding 2500F. Between bakes, a green floral design inspired by Nancy Silverton is applied by hand. Porcelain provides a naturally non stick surface and even heating, ensuring crisp corners and gooey middles. Ours is microwave- and oven-safe to 650F and thermal shock resistant, meaning it can go from freezer to oven to table. The Oval Baking Dish is perfect for both savory and sweet dishes like gratins or cobblers. Discover how Porcelain can make your most cherished recipes even better."
+     },
+     "price": {
+      "amount": 6499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10x6.6\""
+      },
+      {
+       "name": "Color",
+       "label": "Red Rim"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Bakeware_Oval_10x6.6_MadeInRed_1x1_Hero.jpg?v=1740005958"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39247291678799:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39376552394831",
+     "sku": "BAKE-3-OVL-BLU",
+     "title": "10x6.6\" / Slate Blue",
+     "description": {
+      "html": "Our Bakeware begins with a 202-year-old recipe held secret by skilled artisans in the Loire Valley. The finest and most precious of all bakeware materials, it is also the most demanding to produce. Kanolins, clays, quartz, and feldspars are mixed, shaped, enameled, and baked three times for over 50 hours at temperatures exceeding 2500F. Between bakes, a green floral design inspired by Nancy Silverton is applied by hand. Porcelain provides a naturally non stick surface and even heating, ensuring crisp corners and gooey middles. Ours is microwave- and oven-safe to 650F and thermal shock resistant, meaning it can go from freezer to oven to table. The Oval Baking Dish is perfect for both savory and sweet dishes like gratins or cobblers. Discover how Porcelain can make your most cherished recipes even better."
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10x6.6\""
+      },
+      {
+       "name": "Color",
+       "label": "Slate Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Ceramic_Slate_Blue_Oval_Baking_Dish_PDP_Angle_2.jpg?v=1740005958"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39376552394831:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39376552591439",
+     "sku": "BAKE-3-OVL-OLIV",
+     "title": "10x6.6\" / Olive Green",
+     "description": {
+      "html": "Our Bakeware begins with a 202-year-old recipe held secret by skilled artisans in the Loire Valley. The finest and most precious of all bakeware materials, it is also the most demanding to produce. Kanolins, clays, quartz, and feldspars are mixed, shaped, enameled, and baked three times for over 50 hours at temperatures exceeding 2500F. Between bakes, a green floral design inspired by Nancy Silverton is applied by hand. Porcelain provides a naturally non stick surface and even heating, ensuring crisp corners and gooey middles. Ours is microwave- and oven-safe to 650F and thermal shock resistant, meaning it can go from freezer to oven to table. The Oval Baking Dish is perfect for both savory and sweet dishes like gratins or cobblers. Discover how Porcelain can make your most cherished recipes even better."
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10x6.6\""
+      },
+      {
+       "name": "Color",
+       "label": "Olive Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Bakeware_Oval_10x6.6_NancyHoliday_1x1_Hero.jpg?v=1762198318"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39376552591439:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "10x6.6\""
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Nancy Silverton"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Navy Rim"
+      },
+      {
+       "label": "Red Rim"
+      },
+      {
+       "label": "Slate Blue"
+      },
+      {
+       "label": "Olive Green"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Bakeware_Oval_10x6.6_NancyHoliday_1x1_Hero.jpg?v=1762198318"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Country-France",
+    "discounteligible",
+    "Filter-Bakeware",
+    "Final Sale",
+    "indexing",
+    "internal",
+    "Logicbroker",
+    "Memorial Day",
+    "sanity-indexing",
+    "YGroup_bakeware"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173608042575",
+     "handle": "bakeware",
+     "title": "Bakeware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/175245721679",
+     "handle": "new-flexify",
+     "title": "Facebook: Flexify Feed",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262005850191",
+     "handle": "summer-sale",
+     "title": "Summer Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262959857743",
+     "handle": "fall-collection",
+     "title": "Fall Collection",
+     "description": {
+      "html": "Fall Collection."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzJOVE0xTnpZMk9ETTFNamM1TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

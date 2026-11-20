@@ -1,0 +1,1900 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://greatjonesgoods.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Great Jones",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "greatjonesgoods.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "6693126202"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "6693126202"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7541352071247",
+   "title": "Big Deal",
+   "description": {
+    "html": "Our 8-quart fully clad stock pot is designed to boil water fast and distribute and hold heat evenly. Our oversized handles allow you to get a confident, four-finger grip on your heaviest hauls of pasta. Big Deal includes Big Lid (a $30 value). Why It's Special Safe for all stovetops (including induction). Welded handles, with no screws, rivets, or seams to trap food or unwanted bacteria."
+   },
+   "url": "https://greatjonesgoods.com/products/big-deal-1",
+   "handle": "big-deal-1",
+   "price_range": {
+    "min": {
+     "amount": 6000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 18000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42023985807439",
+     "sku": "",
+     "title": "Default Title",
+     "description": {
+      "html": "Our 8-quart fully clad stock pot is designed to boil water fast and distribute and hold heat evenly. Our oversized handles allow you to get a confident, four-finger grip on your heaviest hauls of pasta. Big Deal includes Big Lid (a $30 value). Why It's Special Safe for all stovetops (including induction). Welded handles, with no screws, rivets, or seams to trap food or unwanted bacteria."
+     },
+     "price": {
+      "amount": 6000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 18000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/products/big_deal_45_30401_2_copy3_7590c339-4bf1-4e91-8884-6ff8237f041f.png?v=1762452453"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023985807439:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/products/big_deal_45_30401_2_copy3_7590c339-4bf1-4e91-8884-6ff8237f041f.png?v=1762452453",
+     "alt_text": "Family Style - Engraved Cookware Sets Great Jones"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "40% off with OCT40",
+    "badge_End of Year Sale: Up to 75% Off!",
+    "Stainless Steel"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/38576128058",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Here to equip and empower you to cook at home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173661814863",
+     "handle": "cook",
+     "title": "Cook",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173662339151",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": "The whole shebang: cast iron, sheet pans, stainless steel, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263503675471",
+     "handle": "deep-cut-on-page-upsell",
+     "title": "Deep Cut On-Page Upsell",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263506985039",
+     "handle": "pans",
+     "title": "Stainless Steel",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8410904559695",
+   "title": "Big Deal & Saucy",
+   "description": {
+    "html": "A new bundle featuring our 8-quart fully clad stock pot and 3-quart saucier. Designed to boil water fast and distribute and hold heat evenly. Our oversized handles allow you to get a confident, four-finger grip on your heaviest hauls of pasta. Big Deal includes Big Lid (a $30 value). Saucy includes Small Lid (a $20 value). Why It's Special Safe for all stovetops (including induction). Welded handles, with no screws, rivets, or seams to trap food or unwanted bacteria."
+   },
+   "url": "https://greatjonesgoods.com/products/big-deal-saucy",
+   "handle": "big-deal-saucy",
+   "price_range": {
+    "min": {
+     "amount": 10000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 33000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 33000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44838392430671",
+     "title": "Default Title",
+     "description": {
+      "html": "A new bundle featuring our 8-quart fully clad stock pot and 3-quart saucier. Designed to boil water fast and distribute and hold heat evenly. Our oversized handles allow you to get a confident, four-finger grip on your heaviest hauls of pasta. Big Deal includes Big Lid (a $30 value). Saucy includes Small Lid (a $20 value). Why It's Special Safe for all stovetops (including induction). Welded handles, with no screws, rivets, or seams to trap food or unwanted bacteria."
+     },
+     "price": {
+      "amount": 10000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 33000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/BigDeal_Saucy.png?v=1773691933"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/44838392430671:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/BigDeal_Saucy.png?v=1773691933",
+     "alt_text": "Big Deal & Saucy Bundle Great Jones"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge_End of Year Sale: Up to 75% Off!"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/38576128058",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Here to equip and empower you to cook at home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83262144570",
+     "handle": "sets",
+     "title": "Save on Sets",
+     "description": {
+      "html": "Hot tip: the biggest savings are on our curated gift sets."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173661814863",
+     "handle": "cook",
+     "title": "Cook",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173662339151",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": "The whole shebang: cast iron, sheet pans, stainless steel, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263506985039",
+     "handle": "pans",
+     "title": "Stainless Steel",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7853809205327",
+   "title": "Family Style",
+   "description": {
+    "html": "Our seven-piece collection of essential cookware includes a mix of cast-iron and stainless-steel designs \u2014 and $90 in savings. With this set, you can pare down clutter and focus on the pieces you actually need to cook confidently. Why It's Special Safe for all stovetops (including induction). Your choice of Dutchess color! All four pieces nest to save space and share two lids."
+   },
+   "url": "https://greatjonesgoods.com/products/family-style-2",
+   "handle": "family-style-2",
+   "price_range": {
+    "min": {
+     "amount": 26000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 82000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 82000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43627141464143",
+     "title": "Broccoli",
+     "description": {
+      "html": "Our seven-piece collection of essential cookware includes a mix of cast-iron and stainless-steel designs \u2014 and $90 in savings. With this set, you can pare down clutter and focus on the pieces you actually need to cook confidently. Why It's Special Safe for all stovetops (including induction). Your choice of Dutchess color! All four pieces nest to save space and share two lids."
+     },
+     "price": {
+      "amount": 26000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 82000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Broccoli"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/familystyle2019-green_lidleft_1000x700_crop_bottom_1b625d75-4b13-4010-a70d-4ad0a4bc1856.png?v=1758742029"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/43627141464143:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43627141496911",
+     "title": "Blueberry",
+     "description": {
+      "html": "Our seven-piece collection of essential cookware includes a mix of cast-iron and stainless-steel designs \u2014 and $90 in savings. With this set, you can pare down clutter and focus on the pieces you actually need to cook confidently. Why It's Special Safe for all stovetops (including induction). Your choice of Dutchess color! All four pieces nest to save space and share two lids."
+     },
+     "price": {
+      "amount": 26000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 82000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Blueberry"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/FamilyStyleBlueberry.png?v=1762455451"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/43627141496911:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43627141529679",
+     "title": "Pepper",
+     "description": {
+      "html": "Our seven-piece collection of essential cookware includes a mix of cast-iron and stainless-steel designs \u2014 and $90 in savings. With this set, you can pare down clutter and focus on the pieces you actually need to cook confidently. Why It's Special Safe for all stovetops (including induction). Your choice of Dutchess color! All four pieces nest to save space and share two lids."
+     },
+     "price": {
+      "amount": 26000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 82000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Pepper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/familystyle2019-pepper_67a5ea14-c79d-426e-9e85-8756bbac2501.png?v=1758742029"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/43627141529679:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43627141562447",
+     "title": "Taffy",
+     "description": {
+      "html": "Our seven-piece collection of essential cookware includes a mix of cast-iron and stainless-steel designs \u2014 and $90 in savings. With this set, you can pare down clutter and focus on the pieces you actually need to cook confidently. Why It's Special Safe for all stovetops (including induction). Your choice of Dutchess color! All four pieces nest to save space and share two lids."
+     },
+     "price": {
+      "amount": 26000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 82000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Taffy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/familystyle2019-taffy_8eb7628c-447d-495a-a13f-a5b7c52a33e1.png?v=1758742029"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/43627141562447:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43627141595215",
+     "title": "Mustard",
+     "description": {
+      "html": "Our seven-piece collection of essential cookware includes a mix of cast-iron and stainless-steel designs \u2014 and $90 in savings. With this set, you can pare down clutter and focus on the pieces you actually need to cook confidently. Why It's Special Safe for all stovetops (including induction). Your choice of Dutchess color! All four pieces nest to save space and share two lids."
+     },
+     "price": {
+      "amount": 26000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 82000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Mustard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/familystyle2019-mustard_f31ee60e-3833-4fda-bedb-c01bcdc44ff6.png?v=1762452499"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/43627141595215:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43627141627983",
+     "title": "Salt",
+     "description": {
+      "html": "Our seven-piece collection of essential cookware includes a mix of cast-iron and stainless-steel designs \u2014 and $90 in savings. With this set, you can pare down clutter and focus on the pieces you actually need to cook confidently. Why It's Special Safe for all stovetops (including induction). Your choice of Dutchess color! All four pieces nest to save space and share two lids."
+     },
+     "price": {
+      "amount": 26000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 82000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/familystyle2019-white_lidright_b02bb295-b9d6-4730-b083-f5afcb5aa44b.png?v=1758742029"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/43627141627983:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "The Dutchess (Color)",
+     "values": [
+      {
+       "label": "Broccoli"
+      },
+      {
+       "label": "Blueberry"
+      },
+      {
+       "label": "Pepper"
+      },
+      {
+       "label": "Taffy"
+      },
+      {
+       "label": "Mustard"
+      },
+      {
+       "label": "Salt"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/FamilyStyleBlueberry.png?v=1762455451",
+     "alt_text": "Family Style Bundle Great Jones Blueberry"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge_End of Year Sale: Up to 75% Off!"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/38576128058",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Here to equip and empower you to cook at home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83262144570",
+     "handle": "sets",
+     "title": "Save on Sets",
+     "description": {
+      "html": "Hot tip: the biggest savings are on our curated gift sets."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173661814863",
+     "handle": "cook",
+     "title": "Cook",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173662339151",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": "The whole shebang: cast iron, sheet pans, stainless steel, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263506985039",
+     "handle": "pans",
+     "title": "Stainless Steel",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/2026503045178",
+   "title": "The Dutchess",
+   "description": {
+    "html": "A good Dutch oven lasts forever; a Great Jones Dutch oven is your best friend forever. Our 6.75-quart enameled cast-iron Dutchess moves gracefully from stove to oven to table centerpiece. Why It's Special Safe for all stovetops (including induction). Choose between six matte colors to match your style. Our signature oval shape perfectly fits a chicken."
+   },
+   "url": "https://greatjonesgoods.com/products/the-dutchess",
+   "handle": "the-dutchess",
+   "price_range": {
+    "min": {
+     "amount": 7500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 25000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 25000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/20348355149882",
+     "sku": "DUT-07-01-BR1",
+     "title": "Broccoli",
+     "description": {
+      "html": "A good Dutch oven lasts forever; a Great Jones Dutch oven is your best friend forever. Our 6.75-quart enameled cast-iron Dutchess moves gracefully from stove to oven to table centerpiece. Why It's Special Safe for all stovetops (including induction). Choose between six matte colors to match your style. Our signature oval shape perfectly fits a chicken."
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 25000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Broccoli"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/products/dutchess_45_01-green.png?v=1697667565"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/20348355149882:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20348355280954",
+     "sku": "DUT-07-01-BL1",
+     "title": "Blueberry",
+     "description": {
+      "html": "A good Dutch oven lasts forever; a Great Jones Dutch oven is your best friend forever. Our 6.75-quart enameled cast-iron Dutchess moves gracefully from stove to oven to table centerpiece. Why It's Special Safe for all stovetops (including induction). Choose between six matte colors to match your style. Our signature oval shape perfectly fits a chicken."
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 25000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blueberry"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/products/dutchess_45_01-blue.png?v=1697667565"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/20348355280954:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/23364053041210",
+     "sku": "DUT-07-01-PR1",
+     "title": "Pepper",
+     "description": {
+      "html": "A good Dutch oven lasts forever; a Great Jones Dutch oven is your best friend forever. Our 6.75-quart enameled cast-iron Dutchess moves gracefully from stove to oven to table centerpiece. Why It's Special Safe for all stovetops (including induction). Choose between six matte colors to match your style. Our signature oval shape perfectly fits a chicken."
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 25000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pepper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/products/dutchess_45_01-black.png?v=1697667592"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/23364053041210:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39251885949007",
+     "sku": "DUT-07-01-TF1",
+     "title": "Taffy",
+     "description": {
+      "html": "A good Dutch oven lasts forever; a Great Jones Dutch oven is your best friend forever. Our 6.75-quart enameled cast-iron Dutchess moves gracefully from stove to oven to table centerpiece. Why It's Special Safe for all stovetops (including induction). Choose between six matte colors to match your style. Our signature oval shape perfectly fits a chicken."
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 25000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Taffy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/products/dutchess_45_01-pink.png?v=1697667592"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/39251885949007:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/20348355248186",
+     "sku": "DUT-07-01-MU1",
+     "title": "Mustard",
+     "description": {
+      "html": "A good Dutch oven lasts forever; a Great Jones Dutch oven is your best friend forever. Our 6.75-quart enameled cast-iron Dutchess moves gracefully from stove to oven to table centerpiece. Why It's Special Safe for all stovetops (including induction). Choose between six matte colors to match your style. Our signature oval shape perfectly fits a chicken."
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 25000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Mustard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/products/dutchess_45_01-yellow.png?v=1762440585"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/20348355248186:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/23364054188090",
+     "sku": "DUT-07-01-ST1",
+     "title": "Salt",
+     "description": {
+      "html": "A good Dutch oven lasts forever; a Great Jones Dutch oven is your best friend forever. Our 6.75-quart enameled cast-iron Dutchess moves gracefully from stove to oven to table centerpiece. Why It's Special Safe for all stovetops (including induction). Choose between six matte colors to match your style. Our signature oval shape perfectly fits a chicken."
+     },
+     "price": {
+      "amount": 7500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 25000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/products/dutchess_45_01-white.png?v=1697667592"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/23364054188090:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Broccoli"
+      },
+      {
+       "label": "Blueberry"
+      },
+      {
+       "label": "Pepper"
+      },
+      {
+       "label": "Taffy"
+      },
+      {
+       "label": "Mustard"
+      },
+      {
+       "label": "Salt"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/products/dutchess_45_01-yellow.png?v=1762440585",
+     "alt_text": "The Dutchess cookware Great Jones Mustard"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge_End of Year Sale: Up to 75% Off!"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/38576128058",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Here to equip and empower you to cook at home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173661814863",
+     "handle": "cook",
+     "title": "Cook",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173662339151",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": "The whole shebang: cast iron, sheet pans, stainless steel, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261920718927",
+     "handle": "home-slider",
+     "title": "Home slider",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263503577167",
+     "handle": "small-fry-on-page-upsell",
+     "title": "Small Fry On-Page Upsell",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7853823623247",
+   "title": "Precious Metals",
+   "description": {
+    "html": "Precious Metals is the group text you want to ping every day \u2014 easy, reliable, and stress-free. Our fully clad stainless-steel pans are oven-friendly, induction compatible, and dishwasher-safe. Why It's Special Safe for all stovetops (including induction). With bronzed handles and mirrored stainless, these pans look like fine jewelry. Fully clad stainless for fast and even heat distribution. Large Fry contains a ceramic, nonstick coating. All four pieces nest to save space and share two lids."
+   },
+   "url": "https://greatjonesgoods.com/products/precious-metals-2",
+   "handle": "precious-metals-2",
+   "price_range": {
+    "min": {
+     "amount": 18500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 57000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 57000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43627166466127",
+     "title": "Default Title",
+     "description": {
+      "html": "Precious Metals is the group text you want to ping every day \u2014 easy, reliable, and stress-free. Our fully clad stainless-steel pans are oven-friendly, induction compatible, and dishwasher-safe. Why It's Special Safe for all stovetops (including induction). With bronzed handles and mirrored stainless, these pans look like fine jewelry. Fully clad stainless for fast and even heat distribution. Large Fry contains a ceramic, nonstick coating. All four pieces nest to save space and share two lids."
+     },
+     "price": {
+      "amount": 18500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 57000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/PreciousMetalswLargeFry.png?v=1758822854"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/43627166466127:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/PreciousMetalswLargeFry.png?v=1758822854",
+     "alt_text": "Precious Metals Bundle Great Jones"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge_End of Year Sale: Up to 75% Off!"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/38576128058",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Here to equip and empower you to cook at home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83262144570",
+     "handle": "sets",
+     "title": "Save on Sets",
+     "description": {
+      "html": "Hot tip: the biggest savings are on our curated gift sets."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173661814863",
+     "handle": "cook",
+     "title": "Cook",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173662339151",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": "The whole shebang: cast iron, sheet pans, stainless steel, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263506985039",
+     "handle": "pans",
+     "title": "Stainless Steel",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7541356822607",
+   "title": "Double Dutch",
+   "description": {
+    "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+   },
+   "url": "https://greatjonesgoods.com/products/double-dutch-1",
+   "handle": "double-dutch-1",
+   "price_range": {
+    "min": {
+     "amount": 12000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 47000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 47000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42023994949711",
+     "sku": "",
+     "title": "Broccoli / Mustard",
+     "description": {
+      "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Broccoli"
+      },
+      {
+       "name": "Dutch Baby (Color)",
+       "label": "Mustard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/double-dutch-broccoli-mustard-baby.png?v=1773164036"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023994949711:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42023994982479",
+     "sku": "",
+     "title": "Broccoli / Taffy",
+     "description": {
+      "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Broccoli"
+      },
+      {
+       "name": "Dutch Baby (Color)",
+       "label": "Taffy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/double-dutch-broccoli-taffy-baby.png?v=1772586037"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023994982479:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42023995015247",
+     "sku": "",
+     "title": "Broccoli / Salt",
+     "description": {
+      "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Broccoli"
+      },
+      {
+       "name": "Dutch Baby (Color)",
+       "label": "Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/double-dutch-broccoli-salt-baby.png?v=1772586037"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023995015247:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42023995048015",
+     "sku": "",
+     "title": "Broccoli / Pepper",
+     "description": {
+      "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Broccoli"
+      },
+      {
+       "name": "Dutch Baby (Color)",
+       "label": "Pepper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/double-dutch-broccoli-pepper-baby.png?v=1772586037"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023995048015:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42023995080783",
+     "sku": "",
+     "title": "Broccoli / Broccoli",
+     "description": {
+      "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Broccoli"
+      },
+      {
+       "name": "Dutch Baby (Color)",
+       "label": "Broccoli"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/products/DoubleDutch_Broccoli1_bd805510-1fe9-4bea-8f93-613aef454449.png?v=1772586037"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023995080783:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42023995113551",
+     "sku": "",
+     "title": "Broccoli / Blueberry",
+     "description": {
+      "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Broccoli"
+      },
+      {
+       "name": "Dutch Baby (Color)",
+       "label": "Blueberry"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/double-dutch-broccoli-blueberry-baby.png?v=1773164036"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023995113551:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42023995146319",
+     "sku": "",
+     "title": "Taffy / Mustard",
+     "description": {
+      "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Taffy"
+      },
+      {
+       "name": "Dutch Baby (Color)",
+       "label": "Mustard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/double-dutch-taffy-mustard-baby.png?v=1772586037"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023995146319:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42023995179087",
+     "sku": "",
+     "title": "Taffy / Taffy",
+     "description": {
+      "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Taffy"
+      },
+      {
+       "name": "Dutch Baby (Color)",
+       "label": "Taffy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/double_dutch_hover.png?v=1772586037"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023995179087:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42023995211855",
+     "sku": "",
+     "title": "Taffy / Salt",
+     "description": {
+      "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Taffy"
+      },
+      {
+       "name": "Dutch Baby (Color)",
+       "label": "Salt"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/double-dutch-taffy-salt-baby.png?v=1772586037"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023995211855:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42023995244623",
+     "sku": "",
+     "title": "Taffy / Pepper",
+     "description": {
+      "html": "Get the best of both worlds \u2014 and $100 in savings \u2014 with our two-piece set of Dutch ovens. The Dutchess, our 6.75-quart enameled cast-iron Dutch oven, is perfect for family-style cooking (it fits a whole roast chicken); our round, 3.5-quart Dutch Baby is ideal when you\u2019re making a side dish, or just cooking for yourself and a pal. Plus, Dutch Baby nests perfectly inside The Dutchess for easy storage. Why It\u2019s Special: Safe for all stovetops (including induction). Choose between six matte colors to match your style. Dutch Baby nests inside The Dutchess to save space."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "The Dutchess (Color)",
+       "label": "Taffy"
+      },
+      {
+       "name": "Dutch Baby (Color)",
+       "label": "Pepper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/double-dutch-taffy-pepper-baby.png?v=1772586037"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42023995244623:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "The Dutchess (Color)",
+     "values": [
+      {
+       "label": "Broccoli"
+      },
+      {
+       "label": "Blueberry"
+      },
+      {
+       "label": "Pepper"
+      },
+      {
+       "label": "Taffy"
+      },
+      {
+       "label": "Mustard"
+      },
+      {
+       "label": "Salt"
+      }
+     ]
+    },
+    {
+     "name": "Dutch Baby (Color)",
+     "values": [
+      {
+       "label": "Blueberry"
+      },
+      {
+       "label": "Taffy"
+      },
+      {
+       "label": "Salt"
+      },
+      {
+       "label": "Broccoli"
+      },
+      {
+       "label": "Pepper"
+      },
+      {
+       "label": "Mustard"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/double-dutch-blueberry-broccoli-baby.png?v=1773164036",
+     "alt_text": "Double Dutch Bundle Great Jones Blueberry Broccoli"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge_End of Year Sale: Up to 75% Off!"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/38576128058",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": "Here to equip and empower you to cook at home."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83262144570",
+     "handle": "sets",
+     "title": "Save on Sets",
+     "description": {
+      "html": "Hot tip: the biggest savings are on our curated gift sets."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173662339151",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": "The whole shebang: cast iron, sheet pans, stainless steel, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263507050575",
+     "handle": "cast-iron",
+     "title": "Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263545487439",
+     "handle": "engraving",
+     "title": "Engraving",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7552363495503",
+   "title": "The Lid Family",
+   "description": {
+    "html": "Why It's Special Are you one of those cooks who can juggle four pans on four burners and a pot in the oven? One, we're impressed. Two, you'll need extra lids."
+   },
+   "url": "https://greatjonesgoods.com/products/the-lid-family",
+   "handle": "the-lid-family",
+   "price_range": {
+    "min": {
+     "amount": 4000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 7000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42055026671695",
+     "sku": "",
+     "title": "Default Title",
+     "description": {
+      "html": "Why It's Special Are you one of those cooks who can juggle four pans on four burners and a pot in the oven? One, we're impressed. Two, you'll need extra lids."
+     },
+     "price": {
+      "amount": 4000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/family-set_hd_1000x700_920b1aba-1f90-44f9-b878-10a63ced35c2.png?v=1762452507"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://great-jones-goods.myshopify.com/cart/42055026671695:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0066/9312/6202/files/family-set_hd_1000x700_920b1aba-1f90-44f9-b878-10a63ced35c2.png?v=1762452507",
+     "alt_text": "The Lid Family Bundle Great Jones"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "badge_End of Year Sale: Up to 75% Off!"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/82333794362",
+     "handle": "sides",
+     "title": "Sides",
+     "description": {
+      "html": "A roundup of our favorite kitchen accessories, appliances, and tools."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173662339151",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": "The whole shebang: cast iron, sheet pans, stainless steel, and more."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263506985039",
+     "handle": "pans",
+     "title": "Stainless Steel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/264553889871",
+     "handle": "best-sellers",
+     "title": "Most Popular",
+     "description": {
+      "html": "Our community's top picks!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270783545423",
+     "handle": "gifts-under-100",
+     "title": "Gifts Under $100",
+     "description": {
+      "html": "For good friends, family, and everyone in between."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

@@ -4,7 +4,7 @@ import re
 import time
 import urllib.request
 
-from signoff import config
+from signoff import config, obs
 
 UA = "signoff-store/0.1"
 HEADERS = {"User-Agent": UA, "Accept": "application/json, text/event-stream", "Content-Type": "application/json"}
@@ -37,10 +37,32 @@ def endpoint(domain: str) -> str:
     return _ENDPOINTS[domain]
 
 
-def call(domain: str, tool: str, arguments: dict, retries: int = 2) -> dict:
-    """One tools/call. Returns the structured result; raises RuntimeError on a store error."""
-    if tool not in ALLOWED_TOOLS:
-        raise RuntimeError("tool not allowed: " + tool)  # no checkout tool, ever
+def _summary(tool: str, r: dict) -> dict:
+    if tool == "search_catalog":
+        return {"products": len(r.get("products", [])), "titles": [p.get("title") for p in r.get("products", [])[:5]],
+                "mode": r.get("mode", "live")}
+    if tool == "ask_business":
+        return {"answer": (r.get("answer") or {}).get("plain"), "mode": r.get("mode", "live")}
+    if tool == "create_cart":
+        c = r.get("cart", r)
+        return {"cart_id": c.get("id"), "totals": c.get("totals"), "has_continue_url": bool(c.get("continue_url")),
+                "mode": r.get("mode", "live")}
+    return {}
+
+
+def _replay(domain: str, tool: str, arguments: dict) -> dict:
+    from signoff.store import replay
+    if tool == "search_catalog":
+        return replay.search_catalog(domain, arguments["catalog"]["query"])
+    if tool == "ask_business":
+        return replay.ask_business(domain, arguments["ask"]["query"])
+    if tool == "create_cart":
+        return replay.create_cart(domain, [(i["item"]["id"], int(i.get("quantity", 1)))
+                                           for i in arguments["cart"]["line_items"]])
+    raise RuntimeError("replay: no saved reply for " + tool)
+
+
+def _live(domain: str, tool: str, arguments: dict, retries: int) -> dict:
     args = {"meta": {"ucp-agent": {"profile": profile_url()}}, **arguments}
     body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
                        "params": {"name": tool, "arguments": args}}).encode()
@@ -58,6 +80,17 @@ def call(domain: str, tool: str, arguments: dict, retries: int = 2) -> dict:
             last = e
             time.sleep(1.5 * (attempt + 1))
     raise RuntimeError(f"{domain} {tool} failed: {last!r}"[:400])
+
+
+def call(domain: str, tool: str, arguments: dict, retries: int = 2) -> dict:
+    """One tools/call. Live: the store's MCP endpoint. SIGNOFF_MODE=replay: saved replies, no network, `mode: "replay"`.
+    Each call emits one Amplitude tool-call event. Raises RuntimeError on a store error."""
+    if tool not in ALLOWED_TOOLS:
+        raise RuntimeError("tool not allowed: " + tool)  # no checkout tool, ever
+    replay_mode = config.mode() == "replay"
+    return obs.timed("store." + tool, {"store": domain, **{k: v for k, v in arguments.items()}},
+                     (lambda: _replay(domain, tool, arguments)) if replay_mode else (lambda: _live(domain, tool, arguments, retries)),
+                     lambda r: _summary(tool, r))
 
 
 def search_catalog(domain: str, query: str) -> dict:
