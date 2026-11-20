@@ -255,3 +255,39 @@ def test_a_fallback_in_use_is_named_in_the_state_never_silent(monkeypatch):
     finally:
         health.clear("pool loader")
     assert state.set_shopper_fact("toilet_rim_height", 15.0)["degraded"] == []
+
+
+def test_what_memory_recalls_is_applied_at_the_start_of_a_run_and_nowhere_else(monkeypatch):
+    import sys
+    import types
+    asked = []
+
+    def recall(sheet):
+        asked.append(sheet["id"])
+        return {"facts": [{"fact_id": "toilet_rim_height", "value": 14.0, "measured_by": "Elena", "measured_at": "2026-11-18T09:00:00-08:00"},
+                          {"fact_id": "toilet_rim_height", "value": 99.0}, {"fact_id": "not_a_fact", "value": 1}],
+                "strikes": [{"line_id": "L2", "product_key": "fixture a", "reason": "seat too soft (remembered)"},
+                            {"line_id": "L2", "product_key": "not in the pool", "reason": "x"}]}
+    fake = types.ModuleType("signoff.memory")
+    fake.recall = recall
+    monkeypatch.setitem(sys.modules, "signoff.memory", fake)
+    import signoff
+    monkeypatch.setattr(signoff, "memory", fake, raising=False)
+    s = state.reset()
+    fact = next(f for f in s["sheet"]["shopper_facts"] if f["id"] == "toilet_rim_height")
+    assert (fact["value"], fact["remembered"], fact["measured_by"]) == (14.0, True, "Elena")
+    l2 = line(s, "L2")
+    assert l2["struck"][0]["from_memory"] is True and l2["struck"][0]["reason"] == "seat too soft (remembered)"
+    assert next(c for c in l2["candidates"] if c["product"]["product_key"] == "fixture a")["status"] == "struck"
+    assert len(s["memory"]["facts"]) == 1 and len(s["memory"]["strikes"]) == 1 and len(s["memory"]["ignored"]) == 3
+    assert "fixture a" in state.canonical_sheet()  # a remembered strike is under the hash like any other
+    # it is undone only the way any strike is: by the issuer's request
+    s = state.apply_issuer({"type": "unstrike", "line_id": "L2", "product_key": "fixture a"})
+    assert line(s, "L2")["struck"] == [] and asked == ["sheet1"]  # memory is asked once, at the start, not on a change
+
+    def broken(sheet):
+        raise RuntimeError("memory store is down")
+    fake.recall = broken
+    s = state.reset()
+    assert "memory" not in s and [d["what"] for d in s["degraded"]] == ["memory"]
+    assert next(f for f in s["sheet"]["shopper_facts"] if f["id"] == "toilet_rim_height")["value"] == 15.0
