@@ -1069,3 +1069,33 @@ Notes: (a) the 3-second Senso wait did not matter here because the verdicts for 
 Port 8006 is now held by a server started from the AIRBYTE worktree (pid 38120, 13:01:54). I did not touch it; TRAIL
 develops on **8016** from here on. `data/obs/events.jsonl` (written by `signoff.obs` when a server runs in a worktree) is
 untracked and not ignored; I left it in place and did not commit it (STORE's path): it probably wants a `.gitignore` line.
+
+## STORE 14:50 — DONE S16: sheet 3 pool and counts (pattern count)
+**Where.** `data/sheet3/pool/<store>.json` (raw replies `data/sheet3/pool/raw/`), `data/sheet3/store_answers/`, `data/sheet3/pool_summary.json`. Eight stores, 3 queries for K1, 2 for K2, 1 for K3 (the sheet's own),
+every query to every store (24 calls per... 8 stores x 6 queries = 48 searches, one call a second per store, none refused: the project's client sends the profile header). No cart, no checkout call.
+**Products kept by the relevance rule (title or the store's own labels name the need)**: K1 headphones: jlab 22 of 25 candidates, purosound 12 of 12, onanoff 12 of 12, skullcandy 14 of 16 (60 products, 133 options);
+K2 electric scooter: hiboy 12 of 12, gotrax 15 of 15 (27 products, 59 options); K3 energy drink: alaninu 10 of 10 (10 products, 10 options), **guayaki 0 of 10: Guayaki's own labels say "Cans", "Higher Power Cans",
+"Sparkling Cans", never "energy drink", and no title names one, so the rule drops all ten (reason recorded per product). If you want Guayaki in K3 the sheet's need or a query must say what the store says (for example "yerba mate"); I did not
+override the rule.** The scooter stores also returned headphones queries and the other way round: those candidates (hiboy 14, gotrax 20 for K1) are dropped with the reason.
+**Pattern counts of the deciding figure in the text (regular expressions, not a model read):**
+| line | store | products | state the figure |
+|---|---|---|---|
+| K1 volume in dB | jlab | 22 | any dB figure on 21; in a volume, limit, hearing or max context on 10; two or more different levels in that context on 5 |
+| | purosound | 12 | any dB 11 (context 11); two levels 1 |
+| | onanoff | 12 | any dB 7 (context 7); two levels 1 |
+| | skullcandy | 14 | **0** (no dB, no "decibel" on any of the 14 pages) |
+| | all | 60 | any dB 39 (65%); volume-context 28 (47%); two levels in context 7 |
+| K2 top speed in mph | gotrax | 15 | 6 |
+| | hiboy | 12 | 9 |
+| | all | 27 | 15 (56%); the 12 without are mostly accessories-free models whose speed is in km/h or not given (MAX has none) |
+| K3 caffeine in mg | alaninu | 10 | 10 (all 200 mg) |
+Note on K1: "any dB figure" also counts sensitivity (-38 dB) and noise levels, so the volume-context count is the better one; and a page that states two levels (a cap of 85 dB or 95 dB) is the case that needs a rule.
+**The probe's findings, confirmed from the data:**
+1. JLab JBuddies Pop Wireless (Kids Headphones, Pink): $17.99 (1799 cents), one option; text: "A hearing protection switch lets you cap output at 85 dB or 95 dB, with 95 dB as the default and 85 dB available", "Output: 85 / 95 dB (switchable)",
+   "Hearing protection switch: Yes (85 dB / 95 dB, 95 dB default)Volume limiting: Yes (85 dB..." : both levels are stated, 95 dB is the default. Confirmed. Under `<= 85` a spread 85 to 95 fails at its larger end (the default), which is the point of the example.
+2. Gotrax Rival Electric Scooter: 29900 cents; text states "15.5 MPH top speed" (pattern value 15.5). Confirmed.
+3. Hiboy: S2 Electric Scooter 28499 cents, "Max Speed: 19MPH" (19); S2 Lite 25499 cents, "top speed of 13 mph" (13). Also S2 SE 19, S2 Nova 19, S2 Pro 19; S2 MAX states no mph. Confirmed.
+4. Alani Nu: all ten cans (energy drink - orange kiss and nine more flavours, 2999 cents each, one option) state 200 mg of caffeine. Confirmed.
+**Store answers (delivery / returns, verbatim in the files):** jlab 2-7 business days; onanoff 10-14 business days (registered airmail from Hong Kong); hiboy 2-5 working days; gotrax 4-8 business days; alaninu orders processed and shipped within 3-10 business days; purosound, skullcandy and guayaki state no delivery time
+(skullcandy: only that standard, 2nd Day and Next Day air exist). Returns: skullcandy and purosound say they do not say whether opened headphones qualify; jlab says opened or used items may be restricted; guayaki: "doesn't accept returns or exchanges, including for opened drinks" (no).
+Two fixes the new replies forced in my reader (all earlier sheets re-read, no saved answer changed): a refund window ("within 14 days of the ship date") is no longer taken for a delivery time, and a plain "returns accepted within 30 days" is `unclear` for an opened item unless the sentence is about an opened or used item.
