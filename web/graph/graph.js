@@ -8,7 +8,10 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const cap = (s) => String(s || "").charAt(0).toUpperCase() + String(s || "").slice(1);
 
-const WIDTHS = [150, 150, 150, 124, 210], H = 42, ROW = 54, GROUP = 14, BUS = 30;  // column widths, node height, row pitch, space between products, right margin
+// Sizes follow the page's rem (style.css scales it with the window): column widths, node height, row pitch,
+// space between products, right margin for the stores' lanes.
+const REM = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16;
+const [WIDTHS, H, ROW, GROUP, BUS] = [[150, 150, 150, 124, 210].map((w) => w * REM), 42 * REM, 54 * REM, 14 * REM, 30 * REM];
 const KIND = { person: "Person", store: "Store", order_item: "Order item", home_fact: "Home fact", limit: "Rule",
   statement: "Page quote", product: "Product", strike: "Strike", purchase: "Signature" };
 const STATUS = { inside: "meets the order", outside: "outside", unclear: "unclear", not_stated: "not stated", struck: "struck" };
@@ -137,21 +140,24 @@ function draw() {
 
 // ---------- top bar, band, side ----------
 function renderTop() {
-  const s = data.sheet || {};
-  $("#top").innerHTML = `<span class="brand">Sign-Off</span>
-    <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/" aria-current="page">Memory</a></nav>
-    <span class="sheet">${esc(s.title || "")}</span><span class="meta">${s.invented ? "invented" : ""}</span>
-    <span class="grow"></span>
-    <span class="pill" title="${esc(data.backend_note)}">Graph: the run's records</span>
-    <span class="pill ${answer?.answered ? "signed" : ""}">${answer?.answered ? "Answer: Cognee" : "Cognee: no answer yet"}</span>`;
+  const s = data.sheet || {}, b = data.bar || {};
+  const mode = b.mode === "fixture" ? "fixture data" : b.mode === "replay" ? "replay of cached store data" : "";
+  const meta = [b.items ? `${b.items} items` : "", s.invented ? "invented people, real stores" : "", mode].filter(Boolean).join(" · ");
+  $("#top").innerHTML = `<span class="brand">Sign-Off</span><span class="sheet">${esc(s.title || "")}</span>
+    <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/" aria-current="page">Memory</a><a href="/talk/">Conversations</a></nav>
+    <span class="meta">${esc(meta)}</span><span class="grow"></span>
+    <span class="pill ${b.signed ? "signed" : ""}">${b.signed ? "Signed " + clock(b.signed_at) : "Not signed"}</span>
+    ${typeof b.total_cents === "number" ? `<span class="total">$${(b.total_cents / 100).toFixed(2)}</span>` : ""}`;
 }
 
 function renderBand() {
   const chips = data.lines.map((l) => `<button class="chip" data-line="${esc(l.line_id)}" aria-pressed="${l.line_id === data.line_id}">${esc(cap(l.need))}</button>`).join("");
   const who = [["issuer", data.people.issuer], ["shopper", data.people.shopper], ["store", "a store"]]
     .map(([c, n]) => `<span><i class="od ${c}"></i>${esc(n)}</span>`).join("");
-  $("#band").innerHTML = `${chips}<span class="grow"></span><span class="legend" title="The mark shows whose knowledge it is">${who}</span>
-    <span class="cap">${data.nodes.length} of ${data.whole.nodes} nodes</span>`;
+  $("#band").innerHTML = `${chips}<span class="grow"></span>
+    <span class="legend" title="The mark shows whose knowledge it is">${who}</span>
+    <span class="pill" title="${esc(data.backend_note)}">Graph: the run's records</span>
+    <span class="pill ${answer?.answered ? "signed" : ""}">${answer?.answered ? "Answer: Cognee" : "Cognee: no answer"}</span>`;
 }
 
 function sourceLine(s) {

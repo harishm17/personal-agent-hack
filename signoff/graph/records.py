@@ -27,19 +27,17 @@ def _local():
     held = receipts.chain()["receipts"]
     try:
         from signoff.memory import api as memory_api  # the MEMORY stream's rows, when that stream is merged
-        memory = memory_api.everything() if hasattr(memory_api, "everything") else None
-    except Exception:  # noqa: BLE001  (an absent or unfinished stream means no rows, and `read` says so)
+        memory = memory_api.memory()
+    except Exception:  # noqa: BLE001  (an absent or failing memory means no rows, and `read` says so)
         memory = None
     return body, held, memory
 
 
 def _rows(memory) -> list:
-    """Memory rows from whatever shape GET /api/memory has: a list, or lists nested under owners."""
-    if isinstance(memory, list):
-        return [r for r in memory if isinstance(r, dict) and "kind" in r and "owner" in r]
-    if isinstance(memory, dict):
-        return [r for v in memory.values() for r in _rows(v)]
-    return []
+    """Every row of GET /api/memory (`owners[].rows[]`, the shape MEMORY gave in NOTES/GRAPH.md)."""
+    if not isinstance(memory, dict):
+        return []
+    return [r for o in memory.get("owners") or [] for r in o.get("rows") or [] if isinstance(r, dict)]
 
 
 def read() -> dict:

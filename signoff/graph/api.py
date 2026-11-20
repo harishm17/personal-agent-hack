@@ -50,7 +50,10 @@ def graph(line_id: str | None = None, near: int = 2):
             "sheet": {k: sheet.get(k) for k in ("id", "title", "invented")},
             "people": {role: (sheet.get(role) or {}).get("name") for role in ("issuer", "shopper")},
             "lines": [{"line_id": l["id"], "need": l["need"]} for l in sheet.get("lines") or []],
-            "whole": build.counts(g), "memory_rows": len(r["memory"]), "memory_available": r["memory_available"],
+            "whole": build.counts(g), "memory": dict(g["memory"], available=r["memory_available"], rows=len(r["memory"])),
+            "bar": {"items": len(sheet.get("lines") or []), "mode": r["state"].get("mode"),
+                    "signed": bool((r["state"].get("seal") or {}).get("signed")),
+                    "signed_at": (r["state"].get("seal") or {}).get("signed_at"), "total_cents": r["state"].get("total_cents")},
             "cognee": _held(sheet.get("id"))}
     if line_id is None:
         return JSONResponse(base, headers=NO_STORE)
