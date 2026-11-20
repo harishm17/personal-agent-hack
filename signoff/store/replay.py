@@ -53,14 +53,22 @@ def ask_business(store: str, query: str) -> dict:
 
 
 def create_cart(store: str, items: list[tuple[str, int]]) -> dict:
-    """No cart is created at the store: the continue_url is the first product's page, the id is derived and labelled."""
-    rows = {r["variant_id"]: r for r in _pool_rows() if r["store"] == store}
-    missing = [v for v, _ in items if v not in rows]
+    """No cart is created at the store: the continue_url is the first product's page, the id is derived and labelled. The lines
+    come back in the store's own shape (line_items with item id, title, price in cents, quantity)."""
+    prices = {}
+    for r in _pool_rows():
+        if r["store"] == store:
+            prices[r["variant_id"]] = (r["price_cents"], r["title"], r["url"])
+            for o in r.get("options") or []:
+                prices[o["variant_id"]] = (o["price_cents"], r["title"] + (" - " + o["title"] if o.get("title") else ""), r["url"])
+    missing = [v for v, _ in items if v not in prices]
     if missing:
         raise RuntimeError("replay: variant not in the saved pool")
     cid = "replay-" + hashlib.sha256(f"{store}|{sorted(items)}".encode()).hexdigest()[:16]
-    total = sum(rows[v]["price_cents"] * q for v, q in items)
+    total = sum(prices[v][0] * q for v, q in items)
     return {"id": cid, "currency": "USD", "mode": "replay",
+            "line_items": [{"id": "replay-line-%d" % i, "quantity": q,
+                            "item": {"id": v, "title": prices[v][1], "price": prices[v][0]}} for i, (v, q) in enumerate(items)],
             "totals": [{"type": "subtotal", "amount": total}, {"type": "total", "amount": total}],
-            "continue_url": rows[items[0][0]]["url"],
+            "continue_url": prices[items[0][0]][2],
             "created_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds")}

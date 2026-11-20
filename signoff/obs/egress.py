@@ -110,6 +110,23 @@ def _load() -> None:
         pass
 
 
+def _next_n() -> int:
+    """The next row number: one more than the last row of the saved log (several processes write the same file), else of memory."""
+    try:
+        if LEDGER.exists():
+            with LEDGER.open("rb") as f:
+                f.seek(0, 2)
+                size = f.tell()
+                f.seek(max(0, size - 4096))
+                tail = f.read().decode(errors="ignore").splitlines()
+            for line in reversed(tail):
+                if line.strip():
+                    return int(json.loads(line)["n"]) + 1
+    except Exception:  # noqa: BLE001
+        pass
+    return (_rows[-1]["n"] + 1) if _rows else 1
+
+
 def record(recipient: str, purpose: str, payload=None, fact_classes=None, kind: str | None = None,
            block_on_hit: bool = False, mask: list | None = None) -> dict:
     """Add one row and return it (`sealed_hits` empty means clean). Never raises. With block_on_hit, a store payload with a
@@ -135,7 +152,7 @@ def record(recipient: str, purpose: str, payload=None, fact_classes=None, kind: 
             row["blocked"] = True
         with _lock:
             _load()
-            row["n"] = (_rows[-1]["n"] + 1) if _rows else 1
+            row["n"] = _next_n()
             _rows.append(row)
             del _rows[:-5000]
             try:

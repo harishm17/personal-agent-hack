@@ -115,13 +115,14 @@ def finish(proposal, product, extractor, assume_unit=None, target_unit=None):
         unsure, reason = True, reason or "no number was reported"
     elif found and not all(_in(v, numbers_in(record["quote"])) for v in wanted):
         unsure, reason = True, "the reported number is not in the quoted words"
+        record["number_in_quote"] = False  # not a statement of the page: it is never put to a test
 
     stated_unit = rules.unit_name(proposal.get("unit"))
     if stated_unit is None:
         if assume_unit:
             record.update(unit=assume_unit, unit_assumed=True)
         else:
-            unsure, reason = True, reason or "the page gives the number without a unit"
+            record["unit"] = None  # stated with a label and no unit: shown, and "unclear: no unit stated" when compared
     else:
         # the unit the sheet's limit is written in; without one, pounds for weights and inches for lengths
         base = rules.unit_name(target_unit) or ("lb" if stated_unit in ("lb", "kg") else
@@ -284,11 +285,13 @@ def pairing(quote, label, chosen):
 
 
 def apply_unambiguous_rule(row):
-    """The rule, for every reader. Returns True when this call marked the figure unsure.
-    A figure that is already unsure, or whose span was not found, keeps its own reason."""
-    for key in ("number_check",):
+    """The rule, for every reader. When the quote holds other candidate numbers and the text does not pair the
+    reader's label with the number it chose, the page does not settle which number is the figure: the others
+    are recorded in `possible` and every one of them is tested downstream (all pass: inside; all fail: outside;
+    they differ: unclear). Returns True when this call found the number unsettled."""
+    for key in ("number_check", "possible"):
         row.pop(key, None)
-    if not row.get("span_found_in_text") or row.get("unsure"):
+    if not row.get("span_found_in_text") or row.get("number_in_quote") is False:
         return False
     chosen = [n for n in chosen_numbers(row) if isinstance(n, (int, float))]
     others = other_numbers(row)
@@ -299,9 +302,10 @@ def apply_unambiguous_rule(row):
     row["number_check"] = {"other_numbers": [("%g" % n["value"]) for n in others][:8], "label": label, "paired": ok, "how": how}
     if ok is True:
         return False
-    row.update(unsure=True, caught_by="code: one number, or a number the text labels",
-               unsure_reason="%s (%s) and %s" % (AMBIGUOUS, ", ".join(row["number_check"]["other_numbers"]),
-                                                 "the text pairs the label %r with another number" % label if ok is False else how))
+    scale = 1.0
+    if row.get("stated_unit") and row.get("kind") == "single" and row.get("stated_value"):
+        scale = (row.get("value") or 0) / row["stated_value"] if row["stated_value"] else 1.0  # same conversion as the chosen number
+    row["possible"] = [round(n["value"] * scale, 2) for n in others][:8]
     return True
 
 
@@ -316,7 +320,8 @@ def apply_option_rule(row, variant):
     """A product sold in several options: when the quote itself names an option that is not the one in the pool
     and does not name the one that is, the text ties the figure to another option, so it is unsure. Nothing is
     marked merely because a product has several options. Returns True when this call marked the figure."""
-    if row.get("unsure") or not variant.get("other_option_labels"):
+    row.pop("for_other_option", None)
+    if not variant.get("other_option_labels"):
         return False
     quote = _fold_label(row.get("quote") or "")
     def named(label):
@@ -325,7 +330,22 @@ def apply_option_rule(row, variant):
     others = [l for l in variant["other_option_labels"] if named(l)]
     if not others or any(named(l) for l in variant.get("option_labels") or []):
         return False
-    row.update(unsure=True, caught_by="code: the quote names another option",
-               unsure_reason="the text ties this figure to the option %s; the option in the pool is %s" % (
-                   ", ".join(others[:3]), variant.get("variant_title")))
+    row["for_other_option"] = "stated for the option %s, not for %s" % (", ".join(others[:3]), variant.get("variant_title"))
     return True
+
+
+def ready(row, text):
+    """A cached figure record made ready for the rules, the same way wherever it is loaded: the quote is looked
+    up again in the text, marks left by the earlier, stricter handling are taken off (code's own, not the
+    reader's), and the number rule records any other number the quote leaves possible."""
+    row["span_found_in_text"] = rules.span_found(row, text)
+    if str(row.get("caught_by") or "").startswith("code:") or row.get("unsure_reason") == "the page gives the number without a unit":
+        for key in ("unsure", "unsure_reason", "caught_by"):
+            row.pop(key, None)
+    if row.get("unsure_reason") == "the reported number is not in the quoted words":
+        row["number_in_quote"] = False
+    if row.get("unsure"):
+        row["reader_note"] = row.get("unsure_reason")
+    if row["span_found_in_text"]:
+        apply_unambiguous_rule(row)
+    return row

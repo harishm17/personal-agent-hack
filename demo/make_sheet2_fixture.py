@@ -86,6 +86,19 @@ def main():
               "for (const l of s.lines) console.log(l.line_id, l.need, '|', l.status, '|', l.pick, '|', l.tightest && l.tightest.text, '|', JSON.stringify(l.why));"
               "console.log(JSON.stringify(s.counts), s.total_cents);")
     subprocess.run(["node", "--input-type=module", "-e", script], cwd=ROOT, check=True)
+    # Shapes the reference code does not make, added by hand so the screen can be looked at: a page that states the
+    # figure but not one clear value (status `unclear`), and one product sold in two options (two rows, one name).
+    state = json.loads(raw.read_text())
+    t1 = next(l for l in state["lines"] if l["line_id"] == "T1")
+    by = {c["product"]["product_id"]: c for c in t1["candidates"]}
+    u = by["fx2-11"]
+    u["status"], u["reason"] = "unclear", "rough in stated, but not clearly for this product: the page states both 10 and 12 in"
+    u["checks"][0].update({"state": "unclear", "pass": False, "lhs": None, "margin": None, "expr": None})
+    u["checks"][0]["terms"][0].update({"values": [10, 12], "quote": "Available in 10 or 12 inch rough-in."})
+    for pid, option in (("fx2-01", "10 in rough-in"), ("fx2-02", "12 in rough-in")):
+        by[pid]["product"]["title"] = "Fixture product fx2-01"
+        by[pid]["product"]["variant_title"] = option
+    raw.write_text(json.dumps(state, indent=1) + "\n")
 
 
 if __name__ == "__main__":

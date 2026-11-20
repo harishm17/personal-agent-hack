@@ -155,7 +155,7 @@ export function simulate(state, overrides = {}) {
       for (const ch of c.checks) {
         for (const t of ch.terms) if (t.owner === "shopper") t.value = facts[t.fact].value;
         ch.bound.value = ch.bound.owner === "issuer" ? limits[ch.limit_id].bound.value : facts[ch.bound.fact].value;
-        if (ch.state === "not_stated") continue;
+        if (ch.state === "not_stated" || ch.state === "unclear") continue;
         const lhs = ch.terms.reduce((sum, t) => sum + t.value, 0), b = ch.bound.value;
         let ok = holds(ch.op, lhs, b);
         const adj = ch.terms.find((t) => t.kind === "adjustable");
@@ -174,7 +174,9 @@ export function simulate(state, overrides = {}) {
       if (c.status === "struck") continue;
       const missing = c.checks.find((ch) => ch.state === "not_stated");
       const bad = c.checks.find((ch) => !ch.pass);
-      if (missing) {
+      if (c.checks.some((ch) => ch.state === "unclear")) {
+        c.status = "unclear";
+      } else if (missing) {
         c.status = "not_stated"; c.reason = `${missing.missing_figure.replace(/_/g, " ")} never stated on the page`;
       } else if (!bad) {
         c.status = "inside"; c.reason = null;
