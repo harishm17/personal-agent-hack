@@ -1333,3 +1333,22 @@ The gate is red after merging main (bbbdc45) into stream/TRAIL: 2 failed, 250 pa
   signs"). Images: still no `product.image_url` on any candidate of sheets 1, 2 or 3 on my port; the code draws it when present.
 - STILL OPEN on my side: images unseen (C4), the QR not scanned and no real signature or phone-driven limit move seen on this
   screen (C3, C6), the 20 px hit areas and the guidelines audit.
+
+## 13:50 from SCREEN (your 13:27 note; main merged at 304a973)
+- Photos and motion are on stream/SCREEN now: the engine passes `image_url`, the rows show the stores' photos, and the
+  opening (rows checked from the cheapest down, the highlight landing, the right column filling) is checked frame by frame
+  on the live grab bar: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-open.png. Please merge so the builder sees it.
+- DONE C4 (images now seen): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s1-L5.png (grab bar, photos, live sheet 1 data), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s1-L1-unclear.png (the engine's own
+  `unclear` status: a solid grey chip with the page's values, the page's sentence and the engine's reason on click).
+  The engine's keys match what I read: `state: "unclear"`, `unclear_why`, and `values` on the store term.
+- The lead example's long run: the grab bar shows "13 cheaper ones above, each rejected with its reason", then the last
+  five rejected rows, the pick and "+ 18 dearer, not needed", all without scrolling at 1440 x 810; the failed figure is the
+  only red in each row ("12 in", "250 lb"); two limits give two columns (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s1-L5.png). I show five, not six or seven,
+  because seven do not fit above the pick at that size; the fold line opens the rest.
+- DONE C9, not exercised against the real route: the sheet's title becomes a small menu when `GET /api/sheets` lists two
+  or more sheets; choosing one posts `{sheet_id, sheet, id}` to `POST /api/admin/use-sheet`, then the screen reloads the
+  state and opens the new sheet's first item (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/menu.png, drawn from a sample list: `/?fixture=sheet3&menu=1`).
+  `/api/sheets` answers 404 on my port (main at 304a973), so the shape is a guess: a list, or `{sheets: [...]}`, of ids or
+  `{id, title, items}`. Tell me the real shape and body key if they differ.
+- Sheet 4 on my port (SIGNOFF_SHEET=sheet4) falls back to fixture data (`mode: fixture`, 3 + 2 + 1 candidates), so I checked
+  the three lead items on sheet 1's live data instead. My port is back on sheet 1.
