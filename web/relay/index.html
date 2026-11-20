@@ -27,6 +27,7 @@
   <button id="go">Start</button>
   <div id="relay-container"></div>
   <div id="result" role="status" aria-live="polite"></div>
+  <button id="check" hidden style="background:none;color:var(--quiet);border-color:var(--line);margin-top:1rem">I finished the check</button>
   <small id="detail"></small>
 </main>
 <script type="module">
@@ -43,15 +44,18 @@ async function redeem() {
     const passed = r.result === "passed";
     say(passed ? "Live human: passed (sandbox)" : "Live human: failed (sandbox)", passed ? "ok" : "bad");
     detail.textContent = "Claim " + r.claim_type + " at " + r.at + ". Sandbox claims are simulated.";
-    document.getElementById("relay-container").replaceChildren();
+    document.getElementById("relay-container").replaceChildren(); check.hidden = true;
     return;
   }
   say("Not finished yet. Start again.", "bad");
   go.disabled = false;
 }
 
+const check = document.getElementById("check");
+check.addEventListener("click", () => { check.hidden = true; redeem(); });
+
 go.addEventListener("click", async () => {
-  go.disabled = true; say(""); detail.textContent = "";
+  go.disabled = true; check.hidden = true; say(""); detail.textContent = "";
   let session;
   try { session = await post("/api/issuer/relay/start"); } catch { session = { ok: false }; }
   if (!session.ok) { say("Could not start: " + (session.error || "no connection"), "bad"); go.disabled = false; return; }
@@ -59,10 +63,11 @@ go.addEventListener("click", async () => {
     const { default: Relay } = await import("https://cdn.jsdelivr.net/npm/@persona/relay@0.2.2/+esm");
     new Relay("#relay-container", {
       accessToken: session.access_token, theme: "auto",
-      onComplete: redeem,
+      onComplete: () => { check.hidden = true; redeem(); },
       onExpire: () => { say("Session ended. Start again.", "bad"); go.disabled = false; },
       onError: (e) => { say("Could not show the check: " + (e && (e.message || e.code) || "error"), "bad"); go.disabled = false; },
     });
+    check.hidden = false;
   } catch (e) {
     say("Could not load the check. Open Persona's page instead:", "bad");
     detail.innerHTML = "";
