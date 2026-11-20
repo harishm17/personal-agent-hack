@@ -25,8 +25,12 @@ def _refuse(error: state.EngineError):
 
 
 @router.get("/api/state")
-def get_state():
-    return Response(state.state_json(), media_type="application/json", headers={"Cache-Control": "no-store"})
+def get_state(request: Request):
+    headers = {"Cache-Control": "no-store", "Vary": "Accept-Encoding"}
+    if "gzip" in request.headers.get("accept-encoding", ""):
+        return Response(state.state_json(gzipped=True), media_type="application/json",
+                        headers=dict(headers, **{"Content-Encoding": "gzip"}))
+    return Response(state.state_json(), media_type="application/json", headers=headers)
 
 
 @router.get("/api/events")

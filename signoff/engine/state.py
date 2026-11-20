@@ -5,6 +5,7 @@ read it, do not change it. Limits and strikes change only through `apply_issuer`
 calls after it has verified a signed request. Nothing here is reachable from a model.
 """
 import datetime
+import gzip
 import hashlib
 import json
 import os
@@ -255,10 +256,16 @@ def get_state() -> dict:
         return _s["state"]
 
 
-def state_json() -> bytes:
+def state_json(gzipped=False) -> bytes:
+    """The state as JSON bytes, made once per version. Gzipped it is about a tenth of the size, which matters
+    for the phone on the tunnel."""
     with _lock:
         _ensure()
-        return _s["json"]
+        if not gzipped:
+            return _s["json"]
+        if _s.get("gz_version") != _s["version"]:
+            _s.update(gz=gzip.compress(_s["json"], 5), gz_version=_s["version"])
+        return _s["gz"]
 
 
 def version() -> int:
