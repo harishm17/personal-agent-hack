@@ -96,7 +96,8 @@ function eventRow(e, fresh) {
 function stepRow(s, fresh) {
   const mine = feed.events.filter((e) => e.step === s.id), rows = mine.filter(shown), isOpen = open.has(s.id);
   const tally = feed.kinds.filter((k) => s.kinds[k]).map((k) => `<span class="kt" title="${cap(k)}">${icon(k)}${s.kinds[k]}</span>`).join("");
-  const when = [clock(s.first_at, 5), s.duration_ms != null ? `<i>${dur(s.duration_ms)}</i>` : ""].filter(Boolean).join(" · ");
+  // a clock time only for a step of this run; cached evidence was read earlier and its time says nothing of the order
+  const when = [s.in_run ? clock(s.first_at, 5) : "", s.duration_ms != null ? `<i>${dur(s.duration_ms)}</i>` : ""].filter(Boolean).join(" · ");
   const receipts = (s.refused ? `<em>${s.refused} refused</em>` : "") + (s.receipts ? `${s.receipts}<span class="rt">${TICK}</span>` : "");
   return `<div class="step ${s.done ? "done" : "todo"}${isOpen ? " open" : ""}" id="${s.id}">
     <button class="sr" data-step="${s.id}" aria-expanded="${isOpen}" ${mine.length ? "" : "disabled"}>

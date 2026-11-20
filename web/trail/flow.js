@@ -21,7 +21,7 @@ function html(f) {
   const rail = f.rail.map((s, i) => `<button class="st" data-go="${i}"><span>${esc(s.label)}</span><i>${esc(s.sub)}</i></button>`).join("");
   const orderCard = order ? `<div class="fc" data-s="0" id="fl-order"><div class="cap">${dot("issuer")}${esc(order.who)} · the order</div>
       <p>${order.sentences.map((s) => (s.marked ? `<mark data-s="0" data-a="sweep" data-d="700">${esc(s.text)}</mark>` : esc(s.text))).join(" ")}</p></div>` : none("No order record");
-  const homeCards = home.map((h, i) => `<div class="fc" data-s="0" data-d="300" id="fl-home-${i}"><div class="cap">${dot("shopper")}${esc(h.who)} · the home</div>
+  const homeCards = home.map((h, i) => `<div class="fc" data-s="0" data-d="300" id="fl-home-${i}"><div class="cap two"><span>${dot("shopper")}${esc(h.who)} · the home</span>${h.recalled ? `<span>recalled from memory</span>` : ""}</div>
       <p>${esc(h.label.charAt(0).toUpperCase() + h.label.slice(1))} <b>${esc(h.value)}</b></p></div>`).join("");
   const pageCard = page ? `<div class="fc" data-s="1" data-a="slide" id="fl-page"><div class="cap">${dot("store")}${esc(page.store)} · product page</div>
       <div class="pr">${page.image ? `<img class="thumb" src="${esc(page.image)}" alt="">` : ""}<div><b>${esc(page.title)}</b><span>${esc(page.price)}</span></div></div>
@@ -56,16 +56,48 @@ function html(f) {
         </div>
       </div>
       <div class="cap up">To the store's own agent</div>
-      <div class="fl-guard">
-        ${f.asked ? `<div class="fc" data-s="4" data-d="1300"><div class="cap">our agent wrote</div><p>${esc(f.asked.question)}</p></div>` : none("No question record")}
-        ${f.talk ? "" : `<div class="gate" data-s="4" data-d="1600"><b class="cap">Guard</b><span class="chip">no guard record</span></div>`}
-        ${f.asked ? `<div class="fc" data-s="4" data-d="1900"><div class="cap">${dot("store")}${esc(f.asked.store)}'s agent replied</div><p>“<mark>${esc(clip(f.asked.reply, 150))}</mark>”</p></div>` : none("No reply record")}
-      </div>
-      <div class="cap up">Memory</div>
-      <div class="fl-mem">${f.memory ? "" : none("No memory record")}</div>
+      <div class="fl-guard">${guardRow(f)}</div>
+      <div class="cap up">Memory · each fact has an owner</div>
+      <div class="fl-mem">${f.memory ? f.memory.map(slot).join("") : none("No memory record")}</div>
       <svg class="fl-lines" id="fl-lines" aria-hidden="true"></svg>
     </div></div>`;
 }
+/** The draft with the spans the guard removed shown in it, in the order they stand. */
+function draftHtml(t) {
+  let text = String(t.draft || ""), out = "";
+  for (const r of t.removed) {
+    const i = r.text ? text.indexOf(r.text) : -1;
+    if (i < 0) continue;
+    out += esc(text.slice(0, i)) + `<span class="rm">${esc(r.text)}</span>`;
+    text = text.slice(i + r.text.length);
+  }
+  return out + esc(text);
+}
+
+/** To the store's own agent: the draft, the guard as a line the message crosses, the store's reply.
+ *  With a guard record (TALK's), the removed spans stop at the line; without one, the question and reply as saved. */
+function guardRow(f) {
+  const t = f.talk, a = f.asked;
+  if (t) {
+    const chips = t.removed.map((r, i) => `<span class="chip x" data-s="4" data-a="from" data-from="#fl-draft" data-d="${1300 + i * 110}" title="${esc(r.mark)}">${esc(r.text)}</span>`).join("");
+    return `<div class="fc" data-s="4" data-d="900" id="fl-draft"><div class="cap">the agent's draft · ${esc(t.at)}</div><p class="dr">${draftHtml(t)}</p></div>
+      <div class="gate" data-s="4" data-d="1100"><b class="cap">Guard · ${t.removed.length ? "stopped here" : "nothing stopped"}</b><div class="stopped">${chips}</div>
+        ${t.left.length ? `<span class="cap">left: ${esc(t.left.join(" · "))}</span>` : ""}</div>
+      <div class="fc" data-s="4" data-d="2300"><div class="cap">${dot("store")}${esc(t.store)}'s agent replied</div><p class="dr">“<mark>${esc(clip(t.reply, 170))}</mark>”</p></div>`;
+  }
+  return `${a ? `<div class="fc" data-s="4" data-d="900"><div class="cap">our agent wrote</div><p class="dr">${esc(a.question)}</p></div>` : none("No question record")}
+    <div class="gate" data-s="4" data-d="1100"><b class="cap">Guard</b><span class="chip">no guard record</span></div>
+    ${a ? `<div class="fc" data-s="4" data-d="2300"><div class="cap">${dot("store")}${esc(a.store)}'s agent replied</div><p class="dr">“<mark>${esc(clip(a.reply, 170))}</mark>”</p></div>` : none("No reply record")}`;
+}
+
+/** One owner's slot on the memory shelf: what a new run would recall, or that it is empty. */
+function slot(s, i) {
+  const items = s.items.map((it) => `<p class="mi">${esc(it.text)}</p>`).join("");
+  const more = s.count > s.items.length ? `${s.count - s.items.length} more · ` : "";
+  return `<div class="fc ms ${s.count ? "" : "empty"}" data-s="6" data-a="drop" data-d="${i * 200}"><div class="cap">${dot(s.owner)}${esc(s.label)}</div>
+    ${s.count ? `${items}<div class="cap">${esc(more)}${esc(s.items[0].age ? "from " + s.items[0].age + " ago" : "")}</div>` : `<p class="faint">nothing yet</p>`}</div>`;
+}
+
 const none = (words) => `<div class="fc quiet absent">${esc(words)}</div>`;
 
 // ---------- lines, measured from where the things really are ----------
@@ -129,6 +161,8 @@ function animate(el) {
     el.animate([{ transform: `translate(${a.cx - b.cx}px, ${a.cy - b.cy}px) scale(.9)`, opacity: 0 }, { opacity: 1, offset: 0.25 }, { transform: "none", opacity: 1 }], opts(700, TRAVEL));
   } else if (kind === "slide") {
     el.animate([{ transform: "translateX(-24px)", opacity: 0 }, { transform: "none", opacity: 1 }], opts(700, ARRIVE));
+  } else if (kind === "drop") {
+    el.animate([{ transform: "translateY(-20px)", opacity: 0 }, { transform: "none", opacity: 1 }], opts(700, ARRIVE));
   } else if (kind === "pop") {
     el.animate([{ transform: "scale(.8)", opacity: 0 }, { transform: "none", opacity: 1 }], opts(600, ARRIVE));
   } else {
