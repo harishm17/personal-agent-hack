@@ -10,6 +10,8 @@ keeps it. Where no timing was recorded, `duration_ms` is null.
 """
 import datetime
 import re
+import threading
+import time
 
 GAP_S = 90          # records of one kind closer together than this are one event
 ITEMS = 30          # at most this many records are listed inside one event; the rest are counted in `more`
@@ -43,11 +45,16 @@ RECEIPT_PLACE = {
     "carts_updated": ("agent", "stores", "action", "carts", "cart"),
     "reader_switched": ("agent", "reader", "action", None, "reader"),
 }
-# The agent's own tool calls, as logged with their measured time (signoff.obs.recent): name -> (step, kind).
-# A name not listed is an action in the step in progress.
-TOOL_PLACE = {"figure_read": ("pages_read", "reading"), "check_run": ("checked", "check"),
-              "search_catalog": ("stores_searched", "action"), "ask_business": ("pages_read", "action"),
-              "create_cart": ("carts", "action")}
+# The agent's own tool calls, as logged with their measured time (signoff.obs.recent), by the last part of the
+# name: (step, kind, one, many). A name not listed is an action in the step in progress, "<name> call".
+TOOL_PLACE = {"figure_read": ("pages_read", "reading", "page read", "pages read"),
+              "check_run": ("checked", "check", "check run", "check runs"),
+              "search_catalog": ("stores_searched", "action", "search", "searches"),
+              "ask_business": ("pages_read", "action", "question asked", "questions asked"),
+              "create_cart": ("carts", "action", "cart request", "cart requests")}
+# A receipt whose type is not in RECEIPT_PLACE is placed by who wrote it: (from, to, kind, step).
+ACTOR_PLACE = {"issuer": ("approver", "agent", "approval", "signs"), "shopper": ("shopper", "agent", "evidence", None),
+               "system": ("agent", "agent", "check", None)}
 # Steps whose results outlive a reset (cached evidence and its reading). The other steps are worked out again
 # for every run, so a record of theirs from before the current receipt chain began belongs to an earlier run.
 KEPT_ACROSS_RESETS = {"list_read", "stores_searched", "pages_read"}
@@ -182,7 +189,8 @@ def _atoms(src: dict) -> list:
             add(o.get("derived_at"), "list_read", "evidence", "order", "approver", "agent", "order sentence",
                 "order sentences", detail=o.get("title") or "", ref=f.get("doc"), source="order", facts=["order"],
                 group=("order_sentence",), verified=_yes(f.get("span_found_in_text")), proof="quoted in the order",
-                item={"title": line.get("need") or "", "quote": f.get("quote") or "", "source": f.get("doc")})
+                item={"title": line.get("need") or "", "quote": f.get("quote") or "", "source": f.get("doc"),
+                      "at": o.get("derived_at")})
             value = " ".join(x for x in (_span(None, None, f.get("value")), f.get("unit") or lim.get("unit") or "") if x) \
                 if f.get("value") is not None else "(%s)" % ((f.get("measurement") or {}).get("label") or "a measurement")
             add(o.get("derived_at"), "list_read", "reading", "limit", "reader", "agent", "limit read", "limits read",
@@ -232,20 +240,21 @@ def _atoms(src: dict) -> list:
         add(p["fetched_at"], "stores_searched", "evidence", "page", "stores", "agent", "page", "pages",
             detail=store or "", source="pool", facts=["store_text"], group=("page", store),
             item={"title": p.get("title") or "", "source": store, "link": p.get("url"),
-                  "price": _money(p.get("price_cents"))})
+                  "price": _money(p.get("price_cents")), "at": p.get("fetched_at")})
     for (store, _, _), (p, a) in answers.items():
         found = bool(a.get("answered")) and a.get("start") is not None
         add(a["asked_at"], "pages_read", "evidence", "answer", "stores", "agent", "answer", "answers",
             detail=store or "", source="asked", facts=["store_text"], group=("answer", store),
             verified=True if found else None, proof="stated, quote found",
             item={"title": a.get("question") or "", "quote": a.get("quote") or a.get("reply") or "",
-                  "about": p.get("title") or "", "source": store})
+                  "about": p.get("title") or "", "source": store, "at": a.get("asked_at")})
     for a in state.get("store_answers") or []:
         if a.get("asked_at"):
             add(a["asked_at"], "pages_read", "evidence", "answer", "stores", "agent", "answer", "answers",
                 detail=a.get("store") or "", source="store_answers", facts=["store_text"],
                 group=("answer", a.get("store")),
-                item={"title": a.get("question") or "", "quote": a.get("answer") or "", "source": a.get("store")})
+                item={"title": a.get("question") or "", "quote": a.get("answer") or "", "source": a.get("store"),
+                      "at": a.get("asked_at")})
     for (_, store, _, _), (need, p, f) in figures.items():
         found = _yes(f.get("span_found_in_text"))
         add(f.get("read_at"), "pages_read", "reading", "figure", "reader", "agent", "figure read", "figures read",
@@ -254,7 +263,8 @@ def _atoms(src: dict) -> list:
             item={"title": " ".join(x for x in (_plain(f.get("figure")) + ":", _span(f.get("low"), f.get("high"), f.get("value")),
                                                 f.get("unit") or "") if x),
                   "quote": f.get("quote") or "", "about": p.get("title") or "", "source": store, "link": p.get("url"),
-                  "by": f.get("extractor"), "status": "unsure" if f.get("unsure") else None})
+                  "by": f.get("extractor"), "status": "unsure" if f.get("unsure") else None,
+                  "at": f.get("read_at"), "page_at": p.get("fetched_at")})
 
     # everything that left the process
     for r in src.get("egress") or []:
@@ -277,8 +287,10 @@ def _atoms(src: dict) -> list:
     bad = (check or {}).get("first_bad")
     for r in chain:
         d = r.get("detail") if isinstance(r.get("detail"), dict) else {}
-        lane, to_lane, kind, step, mark = RECEIPT_PLACE.get(r.get("type"), ("agent", "agent", "check", None, "receipt"))
-        refused = r.get("type") == "request_refused"
+        actor = str(r.get("actor") or "")
+        by_actor = ("checks", "agent", "check", CHECKERS[actor]) if actor in CHECKERS else ACTOR_PLACE.get(actor, ACTOR_PLACE["system"])
+        lane, to_lane, kind, step, mark = RECEIPT_PLACE.get(r.get("type"), by_actor + ("receipt",))
+        refused = bool(d.get("refused_because")) or d.get("accepted") is False
         words = _plain(r.get("type"))
         if mark == "request":
             mark = REQUEST_MARK.get(d.get("request"), "request")
@@ -293,14 +305,15 @@ def _atoms(src: dict) -> list:
 
     # the agent's tool calls, each with the time it took
     for c in src.get("tools") or []:
-        step, kind = TOOL_PLACE.get(c.get("name"), (None, "action"))
-        ok, name = c.get("success") is not False, _plain(str(c.get("name") or "tool call").replace(".", " "))
-        ms = c.get("duration_ms")
+        name = str(c.get("name") or "tool").split(".")[-1]
+        words = _plain(name)
+        step, kind, one, many = TOOL_PLACE.get(name, (None, "action", words + " call", words + " calls"))
+        ok, ms = c.get("success") is not False, c.get("duration_ms")
         add(c.get("at"), step if _epoch(c.get("at")) is not None else None, kind, "tool", "agent", "agent",
-            name if ok else name + " failed", (name + "s") if ok else name + " failed", source="tools",
+            one if ok else one + " failed", many if ok else many + " failed", source="tools",
             detail="measured" if ok else str(c.get("error") or "failed"), stopped=not ok, group=("tool", c.get("name"), ok),
             duration_ms=int(round(ms)) if isinstance(ms, (int, float)) and not isinstance(ms, bool) else None,
-            item={"title": name, "status": None if ok else "failed", "quote": str(c.get("error") or ""),
+            item={"title": _plain(c.get("name")), "status": None if ok else "failed", "quote": str(c.get("error") or ""),
                   "at": c.get("at"), "ms": ms})
 
     # the reader gate's changes
@@ -320,13 +333,7 @@ def _atoms(src: dict) -> list:
             items=[{"title": c.get("sentence") or "", "quote": c.get("quote") or "", "status": c.get("verdict"),
                     "source": "Senso", "run": c.get("run_id")} for c in checks])
 
-    # the signer's checks: who (Persona Inquiry) and that a person tapped (Relay)
-    p = src.get("persona") or {}
-    if p.get("inquiry_id"):
-        at = next((p[k] for k in ("checked_at", "completed_at", "at", "created_at") if p.get(k)), None)
-        add(at, "signs", "check", "identity", "checks", "agent", "Identity check", "", detail=p.get("label") or "",
-            ref=p.get("inquiry_id"), source="persona", verified=_yes(p.get("verified")), proof="identity checked",
-            item={"title": p.get("label") or "", "status": p.get("status"), "source": "Persona"})
+    # that a person, not the agent, tapped Sign (Relay). Persona's inquiry results are receipts in the chain.
     rl = src.get("relay") or {}
     if rl.get("claim_type"):
         add(rl.get("at"), "signs", "check", "identity", "checks", "agent",
@@ -368,8 +375,8 @@ def _events(atoms: list, run_started=None) -> tuple:
             a["step"] = current
         else:
             current = a["step"]
-    # the run began with the receipt chain; a record within GAP_S before it is part of the same burst
-    kept = [a for a in timed if run_started is None or a["t"] >= run_started - GAP_S or a["step"] in KEPT_ACROSS_RESETS]
+    # the run began with the receipt chain: exactly then, so a reset straight after a signed rehearsal shows none of it
+    kept = [a for a in timed if run_started is None or a["t"] >= run_started or a["step"] in KEPT_ACROSS_RESETS]
     earlier = len(timed) - len(kept)
     open_groups, events = {}, []
     untimed = sorted((a for a in atoms if a["t"] is None), key=lambda a: STEP_IDS.index(a["step"]))   # by step; stable
@@ -499,6 +506,38 @@ def build(src: dict) -> dict:
     }
 
 
+# A source that asks a database is read at most every SLOW_S seconds, in the background after the first time,
+# so the feed answers at the speed of memory. The value shown is the last one read.
+SLOW_S = 20
+_slow = {}
+_slow_lock = threading.Lock()
+
+
+def _held(name, fn):
+    def refresh():
+        try:
+            value, error = fn(), None
+        except Exception as e:  # noqa: BLE001
+            value, error = None, e
+        with _slow_lock:
+            _slow[name].update(value=value, error=error, at=time.monotonic(), busy=False)
+
+    with _slow_lock:
+        slot = _slow.setdefault(name, {"value": None, "error": None, "at": None, "busy": False})
+        first = slot["at"] is None and not slot["busy"]
+        stale = slot["at"] is not None and time.monotonic() - slot["at"] > SLOW_S and not slot["busy"]
+        if first or stale:
+            slot["busy"] = True
+    if first:
+        refresh()
+    elif stale:
+        threading.Thread(target=refresh, daemon=True).start()
+    with _slow_lock:
+        if _slow[name]["error"] is not None:
+            raise _slow[name]["error"]
+        return _slow[name]["value"]
+
+
 def collect() -> dict:
     """Every source, read in-process. Never raises: a source that fails is left out and named in `sources`."""
     src, sources = {}, []
@@ -541,10 +580,6 @@ def collect() -> dict:
         from signoff.sign import senso
         return senso.checks()
 
-    def _persona():
-        from signoff.sign import persona
-        return persona.record()
-
     def _relay():
         from signoff.relay import core
         return core.status()
@@ -554,7 +589,8 @@ def collect() -> dict:
         return api.status()
 
     for name, fn in (("state", _state), ("receipts", _receipts), ("egress", _egress), ("tools", _tools), ("gate", _gate),
-                     ("senso", _senso), ("persona", _persona), ("relay", _relay), ("airbyte", _airbyte)):
+                     ("senso", _senso), ("relay", _relay),
+                     ("airbyte", lambda: _held("airbyte", _airbyte))):
         src[name] = read(name, fn)
     src["sources"] = sources
     return src

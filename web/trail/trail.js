@@ -37,6 +37,12 @@ function dur(ms) {
   return s < 60 ? s + " s" : Math.floor(s / 60) + " min" + (s % 60 ? " " + (s % 60) + " s" : "");
 }
 const short = (h) => String(h || "").slice(0, 10);
+/** A detail for the surface: its facts (the parts between " · "), each cut at its colon and at five words.
+ *  The whole text is in the side sheet. */
+const brief = (detail) => String(detail || "").split(" · ").map((part) => {
+  const words = part.split(": ")[0].replace(/_/g, " ").split(/\s+/);
+  return words.length > 5 ? words.slice(0, 5).join(" ") + "…" : words.join(" ");
+}).join(" · ");
 const records = (e) => e.items.length + e.more;
 
 // ---------- top bar and band ----------
@@ -82,7 +88,7 @@ function eventRow(e, fresh) {
   const when = [clock(e.at), e.duration_ms != null ? `<i>${dur(e.duration_ms)}</i>` : ""].filter(Boolean).join(" · ");
   const tick = e.receipt != null ? `<span class="rt ${e.verified === false ? "bad" : ""}" data-tip="receipt ${e.receipt}" data-code="${esc(short(e.hash))}">${e.verified === false ? CROSS : TICK}</span>` : "";
   return `<button class="${cls}" data-k="${esc(k)}" title="${esc(cap(e.kind))}">${icon(e.stopped ? "stop" : e.kind)}
-    <span class="lb">${esc(e.label)}</span><span class="dt">${esc(e.detail)}</span><span class="at">${when}</span><span class="er">${tick}</span></button>`;
+    <span class="lb">${esc(e.label)}</span><span class="dt">${esc(brief(e.detail))}</span><span class="at">${when}</span><span class="er">${tick}</span></button>`;
 }
 
 function stepRow(s, fresh) {
@@ -118,7 +124,8 @@ function marked(text, quote) {
 
 function itemHtml(it, e) {
   const src = it.link ? `<a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.source || "source")}</a>` : esc(it.source || "");
-  const meta = [it.about ? esc(it.about) : "", src, esc(it.price || ""), it.by ? "read by " + esc(String(it.by).split(":").pop()) : "",
+  const read = it.at ? "read " + clock(it.at) : it.page_at ? "page read " + clock(it.page_at) : "";
+  const meta = [it.about ? esc(it.about) : "", src, esc(it.price || ""), read, it.by ? "by " + esc(String(it.by).split(":").pop()) : "",
     it.bytes != null ? `${it.bytes} bytes` : "", (it.facts || []).map((f) => esc(f.replace(/_/g, " "))).join(", ")].filter(Boolean).join(" · ");
   const status = it.status ? ` <span class="g">· ${esc(it.status)}</span>` : "";
   const title = it.title && it.title.toLowerCase() !== e.label.toLowerCase() ? `<div class="ti">${esc(it.title)}${status}</div>` : "";
@@ -142,7 +149,7 @@ function nearHtml(e) {
   } else return "";
   const row = (word, r, self) => (r ? `<${self ? 'div class="now"' : `button data-receipt="${r.n}"`}><span>${word}</span><span>${r.n} · ${esc(String(r.type).replace(/_/g, " "))}</span><code>${esc(short(r.hash))}</code></${self ? "div" : "button"}>` : "");
   const body = row("before", before) + row("this", now, true) + row("after", after);
-  return body ? `<div class="lab">Receipts</div><div class="near">${body}</div>` : "";
+  return body ? `<div class="cap">Receipts</div><div class="near">${body}</div>` : "";
 }
 
 function renderSheet() {

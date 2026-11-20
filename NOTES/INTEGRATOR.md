@@ -1238,3 +1238,34 @@ Returns of an opened item: no store says yes; bazic, ooly, pencils.com, yoobi sa
 **Carts, pre-test:** one cart at each of the 11 stores in one call, timeout 6 s, one try: all eleven answered in 1.1 s, `mode: "live"`, each with its own store link and the right line (quantity 1, unit price). Price accuracy: pencils.com's cheapest product (Custom Screen Printed Pencils) is 31 cents in the search reply and **33 cents in the cart**; the other ten carts equal their search prices. I will repeat the cart test for the stores that actually get a pick when ENGINE has read the sheet.
 **Two things in the sheet (yours):** (1) the C2 query "crayons 24" contains the limit (24, unit count): the ledger guard now knows the sheet's own unit words (`units`: count = ct, pack, crayons, ...), so a live search for it is **blocked**; I fetched it at 14:50, before the guard knew the word "crayons" was a unit, so it went to the 11 stores once and its replies are in the raw files. Change the query (for example "crayons") if the demo says no store is told a limit. (2) `units.count` includes "pencils" and "crayons", so "12 pencils" in any message to a store counts as the limit 12.
 **Also changed:** returns: "would not meet / does not qualify / aren't eligible" for the opened item is now `no` (was unclear); "may", "generally", "if", "must" stay `unclear`; horow (sheet 2) and the sheet 3 stores re-read, sheet 1's answers unchanged.
+## 13:09 from TRAIL
+DONE T1 (again, after the form change): every event carries `step` (seven) and `kind` (five). `uv run -q pytest -q tests/trail`
+→ 10 passed. Sources read in-process, each guarded: state, receipts, outbound ledger, tool-call log (S10), gate history,
+Senso, Relay, Airbyte. Records of an earlier run stay out of the steps a reset redoes.
+DONE T2: `/trail/` on port 8016, sheet 2, `SIGNOFF_MODE=replay`, one run from reset to a signed sheet (driven with a real
+P-256 key: unsigned request refused, enrolment, limit 1.28 → 1.29 gpf, replayed seq refused, stale hash refused, signature
+refused until the Persona sandbox inquiry is approved, then signed, three replay carts): 48 events, 0 limits sent to
+stores, 14 of 14 receipts verified; seven step rows, events one line each with kind mark, words, time and receipt tick;
+five kind chips filter; click opens the side sheet (quote, source link, time read, hash, receipt before and after).
+Looked-at screenshots: web/trail/shots/trail.png, trail-signed.png, trail-reading.png, trail-evidence.png,
+trail-refused.png, trail-150.png (960 x 540, the 150% zoom view).
+DONE T3: the page links SCREEN's `/screen/style.css` (tokens, rem scale, top bar, cards, pills); trail.css holds layout
+only. No dots, no arrows; red only on refusals.
+Not done, written down so it is not lost: (a) figures, comparisons and picks have no time of their own, so those lines
+show none (asked ENGINE for `read_at` and a `pick` receipt in NOTES/ENGINE.md); (b) live arrival (a new event sliding in
+under its step) is built but I have only seen the final state in headless screenshots, not the motion in a real browser;
+(c) the signs-and-carts run above used replay carts and one Persona sandbox inquiry per run (three inquiries created
+from my port while testing).
+
+## 13:10 from TRAIL
+The gate is red after merging main (bbbdc45) into stream/TRAIL: 2 failed, 250 passed, both in `tests/engine/test_sheet2.py`
+(pool is 179 pages, the instruction scan covers 145). Not TRAIL's paths; details in NOTES/ENGINE.md (13:10).
+`uv run -q pytest -q tests/trail` → 10 passed.
+
+## 13:12 from TRAIL
+- Live arrival seen in a real (headless, real-time) browser session on port 8016: after a reset and one refused request
+  the page redrew 69 ms later (the `/api/events` signal), the new events' steps opened and their rows slid in over
+  about 250 ms; later events (Senso's verdicts) arrived by themselves at 2.3 s and 4.5 s. No script errors.
+- `GET /api/trail` took 0.6 s per call because the Airbyte status asks a database each time; the feed now holds that
+  one source for 20 s and refreshes it in the background: 5 ms per call after the first (`curl -w '%{time_total}'`).
+  SCREEN's stepper fetches the feed too, so this also speeds up `/`.

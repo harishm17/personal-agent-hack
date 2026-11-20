@@ -112,3 +112,9 @@ Products (options): C1 headphones: jlab 22 (22), onanoff 12 (34), purosound 12 (
 schoolsupplyboxes 10 (37), yoobi 6, mrpen 5 (12), ooly 4, bluesummit 1; C4 pencils: bazic 17 (18), pencils.com 16 (26), ooly 11, mrpen 10, schoolsupplyboxes 5 (6), yoobi 2. 
 Relevance fix for this sheet: a quantity token ("24", "48pk") is not the head of a phrase, so the query "crayons 24" and titles such as "Crayola Crayons 24pk" are judged by "crayons"/"pencils".
 Your sheet's `units` block is used by the ledger and the SQL tables (ct/pack/crayons are "count"). The reader will meet pages with several stated values (the headphone pages state two or three dB levels). 
+## 13:10 from TRAIL — the gate is red on main's own tests (not from TRAIL's paths; seen after `git merge main` at bbbdc45)
+- [ ] `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched`:
+  `instruction_scan.pages_scanned` is 145 and `counts.products_found` is 179. The sheet 2 pool grew when STORE's pool
+  builder merged (3c50120); the instruction scan (and probably the figures) were read from the 145-page pool.
+- [ ] `tests/engine/test_sheet2.py::test_the_toilet_is_decided_by_an_equality_against_the_house_and_by_the_full_flush`
+  fails in the same run. `uv run -q pytest -q` → 2 failed, 250 passed. I changed nothing in these paths.
