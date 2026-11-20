@@ -4,21 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sign-Off</title>
-<link rel="stylesheet" href="/screen/style.css">
 </head>
 <body>
-<!-- A 960 x 540 canvas, scaled to the window (200% on a 1920 x 1080 projector). Everything is drawn from /api/state. -->
-<main id="stage" aria-live="polite">
-  <header id="head"></header>
-  <section id="sums" aria-label="The checks on this line as sums"></section>
-  <section id="mid">
-    <div id="plot"><svg id="box" role="img" aria-label="Every candidate of this line against its limits"></svg></div>
-    <div id="side"></div>
-  </section>
-  <nav id="tiles" aria-label="The sheet: every line"></nav>
-  <footer id="seal"></footer>
-  <p id="wait">Waiting for <a href="/api/state">/api/state</a></p>
-</main>
-<script type="module" src="/screen/app.js"></script>
+<!-- Main view: the flow of one order line (flow.js). The earlier line view is at ?view=detail (app.js). Both draw /api/state. -->
+<script type="module">
+  const detail = new URLSearchParams(location.search).get("view") === "detail";
+  const css = document.createElement("link");
+  css.rel = "stylesheet";
+  css.href = detail ? "/screen/style.css" : "/screen/flow.css";
+  const ready = new Promise((done) => { css.onload = done; css.onerror = done; });
+  document.head.appendChild(css);
+  await ready;
+  if (detail) {
+    document.body.innerHTML = `<main id="stage">
+      <header id="head"></header>
+      <div id="trail" aria-label="The steps the agent took on this line"></div>
+      <section id="main"></section>
+      <nav id="tiles" aria-label="The sheet: every line"></nav>
+      <footer id="seal" aria-live="polite"></footer>
+      <div id="fly" aria-hidden="true"></div>
+      <p id="wait">Waiting for <a href="/api/state">/api/state</a></p>
+    </main>`;
+  }
+  await import(detail ? "/screen/app.js" : "/screen/flow.js");
+</script>
 </body>
 </html>

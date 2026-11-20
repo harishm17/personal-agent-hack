@@ -1,0 +1,4208 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://shop.carawayhome.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Caraway",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "shop.carawayhome.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "25862733906"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "25862733906"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/6717567172690",
+   "title": "Large Baking Sheet",
+   "description": {
+    "html": "Our 18x13\" Large Baking Sheet is the easy-to-handle answer for big batches of everything. Use for baking, roasting, and more. Featuring a non-toxic, naturally slick ceramic coating, healthy baking has never been easier."
+   },
+   "url": "https://shop.carawayhome.com/products/large-baking-sheet",
+   "handle": "large-baking-sheet",
+   "price_range": {
+    "min": {
+     "amount": 6500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39592304279634",
+     "sku": "BW-SHET-LR-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our 18x13\" Large Baking Sheet is the easy-to-handle answer for big batches of everything. Use for baking, roasting, and more. Featuring a non-toxic, naturally slick ceramic coating, healthy baking has never been easier."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/large-baking-sheet_cream_hero.jpg?v=1784589608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39592304279634:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39592304345170",
+     "sku": "BW-SHET-LR-SLA",
+     "title": "Slate",
+     "description": {
+      "html": "Our 18x13\" Large Baking Sheet is the easy-to-handle answer for big batches of everything. Use for baking, roasting, and more. Featuring a non-toxic, naturally slick ceramic coating, healthy baking has never been easier."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/large-baking-sheet_slate_hero.jpg?v=1784589608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39592304345170:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39592304410706",
+     "sku": "BW-SHET-LR-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our 18x13\" Large Baking Sheet is the easy-to-handle answer for big batches of everything. Use for baking, roasting, and more. Featuring a non-toxic, naturally slick ceramic coating, healthy baking has never been easier."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/large-baking-sheet_gray_hero.jpg?v=1784589608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39592304410706:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39592304312402",
+     "sku": "BW-SHET-LR-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our 18x13\" Large Baking Sheet is the easy-to-handle answer for big batches of everything. Use for baking, roasting, and more. Featuring a non-toxic, naturally slick ceramic coating, healthy baking has never been easier."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/large-baking-sheet_navy_hero.jpg?v=1784589608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39592304312402:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39592304377938",
+     "sku": "BW-SHET-LR-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our 18x13\" Large Baking Sheet is the easy-to-handle answer for big batches of everything. Use for baking, roasting, and more. Featuring a non-toxic, naturally slick ceramic coating, healthy baking has never been easier."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/large-baking-sheet_perracotta_hero.jpg?v=1784589608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39592304377938:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39939980230738",
+     "sku": "BW-SHET-LR-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our 18x13\" Large Baking Sheet is the easy-to-handle answer for big batches of everything. Use for baking, roasting, and more. Featuring a non-toxic, naturally slick ceramic coating, healthy baking has never been easier."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/large-baking-sheet_marigold_hero.jpg?v=1784589608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39939980230738:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39939980689490",
+     "sku": "BW-SHET-LR-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our 18x13\" Large Baking Sheet is the easy-to-handle answer for big batches of everything. Use for baking, roasting, and more. Featuring a non-toxic, naturally slick ceramic coating, healthy baking has never been easier."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/large-baking-sheet_sage_hero.jpg?v=1784589608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39939980689490:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363302682706",
+     "sku": "BW-SHET-LR-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our 18x13\" Large Baking Sheet is the easy-to-handle answer for big batches of everything. Use for baking, roasting, and more. Featuring a non-toxic, naturally slick ceramic coating, healthy baking has never been easier."
+     },
+     "price": {
+      "amount": 8500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/large-baking-sheet_white_hero.jpg?v=1784589608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363302682706:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363302813778",
+     "sku": "BW-SHET-LR-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our 18x13\" Large Baking Sheet is the easy-to-handle answer for big batches of everything. Use for baking, roasting, and more. Featuring a non-toxic, naturally slick ceramic coating, healthy baking has never been easier."
+     },
+     "price": {
+      "amount": 8500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/large-baking-sheet_black_hero.jpg?v=1784589608"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363302813778:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/large-baking-sheet_cream_hero.jpg?v=1784589608",
+     "alt_text": "Caraway large baking sheet in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bakeware",
+    "ceramic",
+    "chord_origin: contentful",
+    "chord_origin_id: 6I1on3COVH88VSWrh6DJU3",
+    "customTag",
+    "YGroup_bakeware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263477461074",
+     "handle": "bakeware",
+     "title": "Bakeware",
+     "description": {
+      "html": "Caraway's non-toxic bakeware collection features ceramic-coated pans, including the best non-toxic cake pans, ensuring safe and healthy baking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280345051218",
+     "handle": "gifts-for-dad",
+     "title": "Gifts for Dad",
+     "description": {
+      "html": "Give Dad a break from his endless collection of novelty socks and \u201cWorld\u2019s Best Dad\u201d mugs. Instead, upgrade his culinary game with Caraway\u2019s sleek, non-toxic kitchen products. Perfect for the dad who insists he \u201cdoesn\u2019t need directions,\u201d Caraway\u2019s user-friendly cookware will have him whipping up gourmet meals with the same confidence he has when assembling Ikea furniture\u2014minus the leftover screws. After all, the way to a man\u2019s heart is through his stomach, and Caraway ensures the journey is smooth and stylish."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6806928982098",
+   "title": "Baking Sheet Duo",
+   "description": {
+    "html": "Baking essentials for any kitchen, meet the Baking Sheet Duo\u2014an oven-ready pairing of our 18x13\" Large & 15x10\" Medium Baking Sheets. Featuring a naturally slick non-toxic ceramic-coated interior, these sheets make healthy baking (and clean up) easier than ever."
+   },
+   "url": "https://shop.carawayhome.com/products/baking-sheet-duo",
+   "handle": "baking-sheet-duo",
+   "price_range": {
+    "min": {
+     "amount": 12000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39767345823826",
+     "sku": "BW-BSDU-101",
+     "title": "Cream",
+     "description": {
+      "html": "Baking essentials for any kitchen, meet the Baking Sheet Duo\u2014an oven-ready pairing of our 18x13\" Large & 15x10\" Medium Baking Sheets. Featuring a naturally slick non-toxic ceramic-coated interior, these sheets make healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-duo_cream_hero.jpg?v=1785830420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39767345823826:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39767345922130",
+     "sku": "BW-BSDU-103",
+     "title": "Gray",
+     "description": {
+      "html": "Baking essentials for any kitchen, meet the Baking Sheet Duo\u2014an oven-ready pairing of our 18x13\" Large & 15x10\" Medium Baking Sheets. Featuring a naturally slick non-toxic ceramic-coated interior, these sheets make healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-duo_gray_hero.jpg?v=1785830420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39767345922130:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39767345856594",
+     "sku": "BW-BSDU-102",
+     "title": "Navy",
+     "description": {
+      "html": "Baking essentials for any kitchen, meet the Baking Sheet Duo\u2014an oven-ready pairing of our 18x13\" Large & 15x10\" Medium Baking Sheets. Featuring a naturally slick non-toxic ceramic-coated interior, these sheets make healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-duo_navy_hero.jpg?v=1785830420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39767345856594:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39767345889362",
+     "sku": "BW-BSDU-107",
+     "title": "Slate",
+     "description": {
+      "html": "Baking essentials for any kitchen, meet the Baking Sheet Duo\u2014an oven-ready pairing of our 18x13\" Large & 15x10\" Medium Baking Sheets. Featuring a naturally slick non-toxic ceramic-coated interior, these sheets make healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-duo_slate_hero.jpg?v=1785830420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39767345889362:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39767345954898",
+     "sku": "BW-BSDU-105",
+     "title": "Perracotta",
+     "description": {
+      "html": "Baking essentials for any kitchen, meet the Baking Sheet Duo\u2014an oven-ready pairing of our 18x13\" Large & 15x10\" Medium Baking Sheets. Featuring a naturally slick non-toxic ceramic-coated interior, these sheets make healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-duo_perracotta_hero.jpg?v=1785830420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39767345954898:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39948250447954",
+     "sku": "BW-BSDU-104",
+     "title": "Sage",
+     "description": {
+      "html": "Baking essentials for any kitchen, meet the Baking Sheet Duo\u2014an oven-ready pairing of our 18x13\" Large & 15x10\" Medium Baking Sheets. Featuring a naturally slick non-toxic ceramic-coated interior, these sheets make healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-duo_sage_hero.jpg?v=1785830420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39948250447954:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39948250480722",
+     "sku": "BW-BSDU-106",
+     "title": "Marigold",
+     "description": {
+      "html": "Baking essentials for any kitchen, meet the Baking Sheet Duo\u2014an oven-ready pairing of our 18x13\" Large & 15x10\" Medium Baking Sheets. Featuring a naturally slick non-toxic ceramic-coated interior, these sheets make healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 12000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-duo_marigold_hero.jpg?v=1785830420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39948250480722:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363312709714",
+     "sku": "BW-BSDU-202",
+     "title": "White",
+     "description": {
+      "html": "Baking essentials for any kitchen, meet the Baking Sheet Duo\u2014an oven-ready pairing of our 18x13\" Large & 15x10\" Medium Baking Sheets. Featuring a naturally slick non-toxic ceramic-coated interior, these sheets make healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 15000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-duo_white_hero.jpg?v=1785830420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363312709714:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363312840786",
+     "sku": "BW-BSDU-201",
+     "title": "Black",
+     "description": {
+      "html": "Baking essentials for any kitchen, meet the Baking Sheet Duo\u2014an oven-ready pairing of our 18x13\" Large & 15x10\" Medium Baking Sheets. Featuring a naturally slick non-toxic ceramic-coated interior, these sheets make healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 15000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-duo_black_hero.jpg?v=1785830420"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363312840786:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-duo_cream_hero.jpg?v=1785830420",
+     "alt_text": "Caraway baking sheet duo in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bakeware",
+    "ceramic",
+    "set",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263477461074",
+     "handle": "bakeware",
+     "title": "Bakeware",
+     "description": {
+      "html": "Caraway's non-toxic bakeware collection features ceramic-coated pans, including the best non-toxic cake pans, ensuring safe and healthy baking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280345051218",
+     "handle": "gifts-for-dad",
+     "title": "Gifts for Dad",
+     "description": {
+      "html": "Give Dad a break from his endless collection of novelty socks and \u201cWorld\u2019s Best Dad\u201d mugs. Instead, upgrade his culinary game with Caraway\u2019s sleek, non-toxic kitchen products. Perfect for the dad who insists he \u201cdoesn\u2019t need directions,\u201d Caraway\u2019s user-friendly cookware will have him whipping up gourmet meals with the same confidence he has when assembling Ikea furniture\u2014minus the leftover screws. After all, the way to a man\u2019s heart is through his stomach, and Caraway ensures the journey is smooth and stylish."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6717567402066",
+   "title": "Medium Baking Sheet",
+   "description": {
+    "html": "Our 10x15\" Medium Baking Sheet is all you'll need for no-fuss non-toxic baking: use it for half a dozen cookies, sweet potato fries, and more. Featuring a naturally slick ceramic-coated interior, this sheet makes healthy baking (and clean-up) easier than ever."
+   },
+   "url": "https://shop.carawayhome.com/products/medium-baking-sheet",
+   "handle": "medium-baking-sheet",
+   "price_range": {
+    "min": {
+     "amount": 5500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39592305459282",
+     "sku": "BW-SHET-MD-101",
+     "title": "Cream",
+     "description": {
+      "html": "Our 10x15\" Medium Baking Sheet is all you'll need for no-fuss non-toxic baking: use it for half a dozen cookies, sweet potato fries, and more. Featuring a naturally slick ceramic-coated interior, this sheet makes healthy baking (and clean-up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/medium-baking-sheet_cream_hero.jpg?v=1784589629"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39592305459282:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39592305524818",
+     "sku": "BW-SHET-MD-SLA",
+     "title": "Slate",
+     "description": {
+      "html": "Our 10x15\" Medium Baking Sheet is all you'll need for no-fuss non-toxic baking: use it for half a dozen cookies, sweet potato fries, and more. Featuring a naturally slick ceramic-coated interior, this sheet makes healthy baking (and clean-up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/medium-baking-sheet_slate_hero.jpg?v=1784589629"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39592305524818:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39592305557586",
+     "sku": "BW-SHET-MD-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our 10x15\" Medium Baking Sheet is all you'll need for no-fuss non-toxic baking: use it for half a dozen cookies, sweet potato fries, and more. Featuring a naturally slick ceramic-coated interior, this sheet makes healthy baking (and clean-up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/medium-baking-sheet_gray_hero.jpg?v=1784589629"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39592305557586:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39592305426514",
+     "sku": "BW-SHET-MD-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our 10x15\" Medium Baking Sheet is all you'll need for no-fuss non-toxic baking: use it for half a dozen cookies, sweet potato fries, and more. Featuring a naturally slick ceramic-coated interior, this sheet makes healthy baking (and clean-up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/medium-baking-sheet_navy_hero.jpg?v=1784589629"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39592305426514:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39592305492050",
+     "sku": "BW-SHET-MD-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our 10x15\" Medium Baking Sheet is all you'll need for no-fuss non-toxic baking: use it for half a dozen cookies, sweet potato fries, and more. Featuring a naturally slick ceramic-coated interior, this sheet makes healthy baking (and clean-up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/medium-baking-sheet_perracotta_hero.jpg?v=1784589629"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39592305492050:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39939981738066",
+     "sku": "BW-SHET-MD-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our 10x15\" Medium Baking Sheet is all you'll need for no-fuss non-toxic baking: use it for half a dozen cookies, sweet potato fries, and more. Featuring a naturally slick ceramic-coated interior, this sheet makes healthy baking (and clean-up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/medium-baking-sheet_sage_hero.jpg?v=1784589629"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39939981738066:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39939982262354",
+     "sku": "BW-SHET-MD-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our 10x15\" Medium Baking Sheet is all you'll need for no-fuss non-toxic baking: use it for half a dozen cookies, sweet potato fries, and more. Featuring a naturally slick ceramic-coated interior, this sheet makes healthy baking (and clean-up) easier than ever."
+     },
+     "price": {
+      "amount": 5500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/medium-baking-sheet_marigold_hero.jpg?v=1784589629"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39939982262354:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363306188882",
+     "sku": "BW-SHET-MD-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our 10x15\" Medium Baking Sheet is all you'll need for no-fuss non-toxic baking: use it for half a dozen cookies, sweet potato fries, and more. Featuring a naturally slick ceramic-coated interior, this sheet makes healthy baking (and clean-up) easier than ever."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/medium-baking-sheet_white_hero.jpg?v=1784589629"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363306188882:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363306680402",
+     "sku": "BW-SHET-MD-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our 10x15\" Medium Baking Sheet is all you'll need for no-fuss non-toxic baking: use it for half a dozen cookies, sweet potato fries, and more. Featuring a naturally slick ceramic-coated interior, this sheet makes healthy baking (and clean-up) easier than ever."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/medium-baking-sheet_black_hero.jpg?v=1784589629"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363306680402:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/medium-baking-sheet_cream_hero.jpg?v=1784589629",
+     "alt_text": "Caraway medium baking sheet in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bakeware",
+    "ceramic",
+    "chord_origin: contentful",
+    "chord_origin_id: cND0cmeSGATmdpza8u0Uu",
+    "customTag",
+    "YGroup_bakeware",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263477461074",
+     "handle": "bakeware",
+     "title": "Bakeware",
+     "description": {
+      "html": "Caraway's non-toxic bakeware collection features ceramic-coated pans, including the best non-toxic cake pans, ensuring safe and healthy baking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280345051218",
+     "handle": "gifts-for-dad",
+     "title": "Gifts for Dad",
+     "description": {
+      "html": "Give Dad a break from his endless collection of novelty socks and \u201cWorld\u2019s Best Dad\u201d mugs. Instead, upgrade his culinary game with Caraway\u2019s sleek, non-toxic kitchen products. Perfect for the dad who insists he \u201cdoesn\u2019t need directions,\u201d Caraway\u2019s user-friendly cookware will have him whipping up gourmet meals with the same confidence he has when assembling Ikea furniture\u2014minus the leftover screws. After all, the way to a man\u2019s heart is through his stomach, and Caraway ensures the journey is smooth and stylish."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7415634952274",
+   "title": "Small Baking Sheet",
+   "description": {
+    "html": "Bake smarter with the Caraway 13x9\u201d Small Baking Sheet\u2014non-toxic, ceramic-coated, and perfectly sized for compact kitchens and toaster ovens. Offering effortless non-stick performance and easy food release, this versatile pan is perfect for roasting veggies, baking cookies, and more. Oven-safe up to 550\u00baF. Pairs perfectly with our 13x9\u201d Small Cooling Rack."
+   },
+   "url": "https://shop.carawayhome.com/products/small-baking-sheet",
+   "handle": "small-baking-sheet",
+   "price_range": {
+    "min": {
+     "amount": 4500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41311131959378",
+     "sku": "BW-MNBS-101",
+     "title": "Cream",
+     "description": {
+      "html": "Bake smarter with the Caraway 13x9\u201d Small Baking Sheet\u2014non-toxic, ceramic-coated, and perfectly sized for compact kitchens and toaster ovens. Offering effortless non-stick performance and easy food release, this versatile pan is perfect for roasting veggies, baking cookies, and more. Oven-safe up to 550\u00baF. Pairs perfectly with our 13x9\u201d Small Cooling Rack."
+     },
+     "price": {
+      "amount": 4500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/small-baking-sheet_cream_hero.jpg?v=1784590231"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41311131959378:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41311131992146",
+     "sku": "BW-MNBS-102",
+     "title": "Navy",
+     "description": {
+      "html": "Bake smarter with the Caraway 13x9\u201d Small Baking Sheet\u2014non-toxic, ceramic-coated, and perfectly sized for compact kitchens and toaster ovens. Offering effortless non-stick performance and easy food release, this versatile pan is perfect for roasting veggies, baking cookies, and more. Oven-safe up to 550\u00baF. Pairs perfectly with our 13x9\u201d Small Cooling Rack."
+     },
+     "price": {
+      "amount": 4500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/small-baking-sheet_navy_hero.jpg?v=1784590231"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41311131992146:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41311132024914",
+     "sku": "BW-MNBS-103",
+     "title": "Gray",
+     "description": {
+      "html": "Bake smarter with the Caraway 13x9\u201d Small Baking Sheet\u2014non-toxic, ceramic-coated, and perfectly sized for compact kitchens and toaster ovens. Offering effortless non-stick performance and easy food release, this versatile pan is perfect for roasting veggies, baking cookies, and more. Oven-safe up to 550\u00baF. Pairs perfectly with our 13x9\u201d Small Cooling Rack."
+     },
+     "price": {
+      "amount": 4500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/small-baking-sheet_gray_hero.jpg?v=1784590232"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41311132024914:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41311132057682",
+     "sku": "BW-MNBS-104",
+     "title": "Sage",
+     "description": {
+      "html": "Bake smarter with the Caraway 13x9\u201d Small Baking Sheet\u2014non-toxic, ceramic-coated, and perfectly sized for compact kitchens and toaster ovens. Offering effortless non-stick performance and easy food release, this versatile pan is perfect for roasting veggies, baking cookies, and more. Oven-safe up to 550\u00baF. Pairs perfectly with our 13x9\u201d Small Cooling Rack."
+     },
+     "price": {
+      "amount": 4500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/small-baking-sheet_sage_hero.jpg?v=1784590231"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41311132057682:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41311132090450",
+     "sku": "BW-MNBS-105",
+     "title": "Perracotta",
+     "description": {
+      "html": "Bake smarter with the Caraway 13x9\u201d Small Baking Sheet\u2014non-toxic, ceramic-coated, and perfectly sized for compact kitchens and toaster ovens. Offering effortless non-stick performance and easy food release, this versatile pan is perfect for roasting veggies, baking cookies, and more. Oven-safe up to 550\u00baF. Pairs perfectly with our 13x9\u201d Small Cooling Rack."
+     },
+     "price": {
+      "amount": 4500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/small-baking-sheet_perracotta_hero.jpg?v=1784590232"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41311132090450:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41311132123218",
+     "sku": "BW-MNBS-106",
+     "title": "Marigold",
+     "description": {
+      "html": "Bake smarter with the Caraway 13x9\u201d Small Baking Sheet\u2014non-toxic, ceramic-coated, and perfectly sized for compact kitchens and toaster ovens. Offering effortless non-stick performance and easy food release, this versatile pan is perfect for roasting veggies, baking cookies, and more. Oven-safe up to 550\u00baF. Pairs perfectly with our 13x9\u201d Small Cooling Rack."
+     },
+     "price": {
+      "amount": 4500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/small-baking-sheet_marigold_hero.jpg?v=1784590232"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41311132123218:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41311132155986",
+     "sku": "BW-MNBS-107",
+     "title": "Slate",
+     "description": {
+      "html": "Bake smarter with the Caraway 13x9\u201d Small Baking Sheet\u2014non-toxic, ceramic-coated, and perfectly sized for compact kitchens and toaster ovens. Offering effortless non-stick performance and easy food release, this versatile pan is perfect for roasting veggies, baking cookies, and more. Oven-safe up to 550\u00baF. Pairs perfectly with our 13x9\u201d Small Cooling Rack."
+     },
+     "price": {
+      "amount": 4500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/small-baking-sheet_slate_hero.jpg?v=1784590232"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41311132155986:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41311132188754",
+     "sku": "BW-MNBS-201",
+     "title": "Black",
+     "description": {
+      "html": "Bake smarter with the Caraway 13x9\u201d Small Baking Sheet\u2014non-toxic, ceramic-coated, and perfectly sized for compact kitchens and toaster ovens. Offering effortless non-stick performance and easy food release, this versatile pan is perfect for roasting veggies, baking cookies, and more. Oven-safe up to 550\u00baF. Pairs perfectly with our 13x9\u201d Small Cooling Rack."
+     },
+     "price": {
+      "amount": 5000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/small-baking-sheet_black_hero.jpg?v=1784590232"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41311132188754:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41311132221522",
+     "sku": "BW-MNBS-202",
+     "title": "White",
+     "description": {
+      "html": "Bake smarter with the Caraway 13x9\u201d Small Baking Sheet\u2014non-toxic, ceramic-coated, and perfectly sized for compact kitchens and toaster ovens. Offering effortless non-stick performance and easy food release, this versatile pan is perfect for roasting veggies, baking cookies, and more. Oven-safe up to 550\u00baF. Pairs perfectly with our 13x9\u201d Small Cooling Rack."
+     },
+     "price": {
+      "amount": 5000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/small-baking-sheet_white_hero.jpg?v=1784590232"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41311132221522:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/small-baking-sheet_cream_hero.jpg?v=1784590231",
+     "alt_text": "Caraway small baking sheet in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bakeware",
+    "YBlocklist"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263477461074",
+     "handle": "bakeware",
+     "title": "Bakeware",
+     "description": {
+      "html": "Caraway's non-toxic bakeware collection features ceramic-coated pans, including the best non-toxic cake pans, ensuring safe and healthy baking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280345051218",
+     "handle": "gifts-for-dad",
+     "title": "Gifts for Dad",
+     "description": {
+      "html": "Give Dad a break from his endless collection of novelty socks and \u201cWorld\u2019s Best Dad\u201d mugs. Instead, upgrade his culinary game with Caraway\u2019s sleek, non-toxic kitchen products. Perfect for the dad who insists he \u201cdoesn\u2019t need directions,\u201d Caraway\u2019s user-friendly cookware will have him whipping up gourmet meals with the same confidence he has when assembling Ikea furniture\u2014minus the leftover screws. After all, the way to a man\u2019s heart is through his stomach, and Caraway ensures the journey is smooth and stylish."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/287805014098",
+     "handle": "cx-warranty-bakeware",
+     "title": "{CX Warranty} Bakeware",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7514011828306",
+   "title": "Cookie Sheet",
+   "description": {
+    "html": ""
+   },
+   "url": "https://shop.carawayhome.com/products/cookie-sheet",
+   "handle": "cookie-sheet",
+   "price_range": {
+    "min": {
+     "amount": 6500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42248968863826",
+     "sku": "BW-LCSP-101",
+     "title": "Cream",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet_cream_hero.jpg?v=1784590677"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42248968863826:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42248968896594",
+     "sku": "BW-LCSP-102",
+     "title": "Navy",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet_navy_hero.jpg?v=1784590677"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42248968896594:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42248968929362",
+     "sku": "BW-LCSP-107",
+     "title": "Slate",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet_slate_hero.jpg?v=1784590677"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42248968929362:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42248968962130",
+     "sku": "BW-LCSP-103",
+     "title": "Gray",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet_gray_hero.jpg?v=1784590677"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42248968962130:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42248968994898",
+     "sku": "BW-LCSP-105",
+     "title": "Perracotta",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet_perracotta_hero.jpg?v=1784590677"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42248968994898:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42248969027666",
+     "sku": "BW-LCSP-104",
+     "title": "Sage",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet_sage_hero.jpg?v=1784590677"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42248969027666:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42248969060434",
+     "sku": "BW-LCSP-106",
+     "title": "Marigold",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet_marigold_hero.jpg?v=1784590677"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42248969060434:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42248969093202",
+     "sku": "BW-LCSP-201",
+     "title": "Iconics Black",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 8000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Iconics Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet_iconics-black_hero.jpg?v=1787336002"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42248969093202:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42248969125970",
+     "sku": "BW-LCSP-202",
+     "title": "Iconics White",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 8000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Iconics White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet_iconics-white_hero.jpg?v=1787336002"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42248969125970:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Iconics Black"
+      },
+      {
+       "label": "Iconics White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet_cream_hero.jpg?v=1784590677",
+     "alt_text": "Caraway ceramic cookie sheet in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bakeware"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263477461074",
+     "handle": "bakeware",
+     "title": "Bakeware",
+     "description": {
+      "html": "Caraway's non-toxic bakeware collection features ceramic-coated pans, including the best non-toxic cake pans, ensuring safe and healthy baking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/287805014098",
+     "handle": "cx-warranty-bakeware",
+     "title": "{CX Warranty} Bakeware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295849623634",
+     "handle": "savenow-10-off-products",
+     "title": "SAVENOW 10% OFF Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6856551006290",
+   "title": "Baking & Cooling Duo",
+   "description": {
+    "html": "For all your baking needs, our Large Baking Sheet & Cooling Rack Duo is designed to make your life in the kitchen that much easier. The 18x13\" Large Baking Sheet features a non-toxic, naturally slick ceramic surface and is sized perfectly for the 18x13\" stainless steel Cooling Rack to nest inside."
+   },
+   "url": "https://shop.carawayhome.com/products/baking-cooling-duo",
+   "handle": "baking-cooling-duo",
+   "price_range": {
+    "min": {
+     "amount": 11000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39866601865298",
+     "sku": "BW-BND1-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "For all your baking needs, our Large Baking Sheet & Cooling Rack Duo is designed to make your life in the kitchen that much easier. The 18x13\" Large Baking Sheet features a non-toxic, naturally slick ceramic surface and is sized perfectly for the 18x13\" stainless steel Cooling Rack to nest inside."
+     },
+     "price": {
+      "amount": 11000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-cooling-duo_cream_hero.jpg?v=1785830399"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866601865298:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866601898066",
+     "sku": "BW-BND1-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "For all your baking needs, our Large Baking Sheet & Cooling Rack Duo is designed to make your life in the kitchen that much easier. The 18x13\" Large Baking Sheet features a non-toxic, naturally slick ceramic surface and is sized perfectly for the 18x13\" stainless steel Cooling Rack to nest inside."
+     },
+     "price": {
+      "amount": 11000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-cooling-duo_sage_hero.jpg?v=1785830400"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866601898066:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866601930834",
+     "sku": "BW-BND1-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "For all your baking needs, our Large Baking Sheet & Cooling Rack Duo is designed to make your life in the kitchen that much easier. The 18x13\" Large Baking Sheet features a non-toxic, naturally slick ceramic surface and is sized perfectly for the 18x13\" stainless steel Cooling Rack to nest inside."
+     },
+     "price": {
+      "amount": 11000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-cooling-duo_gray_hero.jpg?v=1785830399"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866601930834:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866601963602",
+     "sku": "BW-BND1-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "For all your baking needs, our Large Baking Sheet & Cooling Rack Duo is designed to make your life in the kitchen that much easier. The 18x13\" Large Baking Sheet features a non-toxic, naturally slick ceramic surface and is sized perfectly for the 18x13\" stainless steel Cooling Rack to nest inside."
+     },
+     "price": {
+      "amount": 11000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-cooling-duo_marigold_hero.jpg?v=1785830399"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866601963602:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866601996370",
+     "sku": "BW-BND1-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "For all your baking needs, our Large Baking Sheet & Cooling Rack Duo is designed to make your life in the kitchen that much easier. The 18x13\" Large Baking Sheet features a non-toxic, naturally slick ceramic surface and is sized perfectly for the 18x13\" stainless steel Cooling Rack to nest inside."
+     },
+     "price": {
+      "amount": 11000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-cooling-duo_navy_hero.jpg?v=1785830400"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866601996370:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602029138",
+     "sku": "BW-BND1-SLA",
+     "title": "Slate",
+     "description": {
+      "html": "For all your baking needs, our Large Baking Sheet & Cooling Rack Duo is designed to make your life in the kitchen that much easier. The 18x13\" Large Baking Sheet features a non-toxic, naturally slick ceramic surface and is sized perfectly for the 18x13\" stainless steel Cooling Rack to nest inside."
+     },
+     "price": {
+      "amount": 11000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-cooling-duo_slate_hero.jpg?v=1785830400"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602029138:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602061906",
+     "sku": "BW-BND1-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "For all your baking needs, our Large Baking Sheet & Cooling Rack Duo is designed to make your life in the kitchen that much easier. The 18x13\" Large Baking Sheet features a non-toxic, naturally slick ceramic surface and is sized perfectly for the 18x13\" stainless steel Cooling Rack to nest inside."
+     },
+     "price": {
+      "amount": 11000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-cooling-duo_perracotta_hero.jpg?v=1785830400"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602061906:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363313037394",
+     "sku": "BW-BND1-WTG",
+     "title": "White",
+     "description": {
+      "html": "For all your baking needs, our Large Baking Sheet & Cooling Rack Duo is designed to make your life in the kitchen that much easier. The 18x13\" Large Baking Sheet features a non-toxic, naturally slick ceramic surface and is sized perfectly for the 18x13\" stainless steel Cooling Rack to nest inside."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-cooling-duo_white_hero.jpg?v=1785830399"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363313037394:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363313201234",
+     "sku": "BW-BND1-BKG",
+     "title": "Black",
+     "description": {
+      "html": "For all your baking needs, our Large Baking Sheet & Cooling Rack Duo is designed to make your life in the kitchen that much easier. The 18x13\" Large Baking Sheet features a non-toxic, naturally slick ceramic surface and is sized perfectly for the 18x13\" stainless steel Cooling Rack to nest inside."
+     },
+     "price": {
+      "amount": 14500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-cooling-duo_black_hero.jpg?v=1785830399"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363313201234:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-cooling-duo_cream_hero.jpg?v=1785830399",
+     "alt_text": "Caraway baking & cooling duo in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bakeware",
+    "ceramic",
+    "set",
+    "stainless steel",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263477461074",
+     "handle": "bakeware",
+     "title": "Bakeware",
+     "description": {
+      "html": "Caraway's non-toxic bakeware collection features ceramic-coated pans, including the best non-toxic cake pans, ensuring safe and healthy baking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/274065588306",
+     "handle": "stainless-steel",
+     "title": "Stainless Steel Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7423241519186",
+   "title": "Baking Sheet Trio",
+   "description": {
+    "html": ""
+   },
+   "url": "https://shop.carawayhome.com/products/baking-sheet-trio",
+   "handle": "baking-sheet-trio",
+   "price_range": {
+    "min": {
+     "amount": 16500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41342506172498",
+     "title": "Cream",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-trio_cream_hero.jpg?v=1785830395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41342506172498:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41342506205266",
+     "title": "Navy",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-trio_navy_hero.jpg?v=1785830395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41342506205266:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41342506238034",
+     "title": "Gray",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-trio_gray_hero.jpg?v=1785830395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41342506238034:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41342506270802",
+     "title": "Sage",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-trio_sage_hero.jpg?v=1785830395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41342506270802:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41342506303570",
+     "title": "Perracotta",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-trio_perracotta_hero.jpg?v=1785830395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41342506303570:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41342506336338",
+     "title": "Marigold",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-trio_marigold_hero.jpg?v=1785830395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41342506336338:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41342506369106",
+     "title": "Slate",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 16500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-trio_slate_hero.jpg?v=1785830395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41342506369106:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41342506401874",
+     "title": "Black",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 20000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-trio_black_hero.jpg?v=1785830395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41342506401874:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41342506434642",
+     "title": "White",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 20000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-trio_white_hero.jpg?v=1785830395"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/41342506434642:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/baking-sheet-trio_cream_hero.jpg?v=1785830395",
+     "alt_text": "Caraway baking sheet trio in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bakeware"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263477461074",
+     "handle": "bakeware",
+     "title": "Bakeware",
+     "description": {
+      "html": "Caraway's non-toxic bakeware collection features ceramic-coated pans, including the best non-toxic cake pans, ensuring safe and healthy baking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280345051218",
+     "handle": "gifts-for-dad",
+     "title": "Gifts for Dad",
+     "description": {
+      "html": "Give Dad a break from his endless collection of novelty socks and \u201cWorld\u2019s Best Dad\u201d mugs. Instead, upgrade his culinary game with Caraway\u2019s sleek, non-toxic kitchen products. Perfect for the dad who insists he \u201cdoesn\u2019t need directions,\u201d Caraway\u2019s user-friendly cookware will have him whipping up gourmet meals with the same confidence he has when assembling Ikea furniture\u2014minus the leftover screws. After all, the way to a man\u2019s heart is through his stomach, and Caraway ensures the journey is smooth and stylish."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295849623634",
+     "handle": "savenow-10-off-products",
+     "title": "SAVENOW 10% OFF Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7519346819154",
+   "title": "Complete Baking Sheet Bundle",
+   "description": {
+    "html": ""
+   },
+   "url": "https://shop.carawayhome.com/products/complete-baking-sheet-bundle",
+   "handle": "complete-baking-sheet-bundle",
+   "price_range": {
+    "min": {
+     "amount": 23000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 28000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42266971799634",
+     "title": "Cream",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 23000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/complete-baking-sheet-bundle_cream_hero.jpg?v=1784590739"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266971799634:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266971832402",
+     "title": "Gray",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 23000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/complete-baking-sheet-bundle_gray_hero.jpg?v=1784590739"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266971832402:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266971865170",
+     "title": "Perracotta",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 23000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/complete-baking-sheet-bundle_perracotta_hero.jpg?v=1784590739"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266971865170:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266971897938",
+     "title": "Sage",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 23000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/complete-baking-sheet-bundle_sage_hero.jpg?v=1784590740"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266971897938:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266971930706",
+     "title": "Navy",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 23000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/complete-baking-sheet-bundle_navy_hero.jpg?v=1784590740"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266971930706:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266971963474",
+     "title": "Slate",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 23000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/complete-baking-sheet-bundle_slate_hero.jpg?v=1784590739"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266971963474:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266971996242",
+     "title": "Marigold",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 23000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/complete-baking-sheet-bundle_marigold_hero.jpg?v=1784590739"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266971996242:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266972029010",
+     "title": "White",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 28000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/complete-baking-sheet-bundle_white_hero.jpg?v=1784590739"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266972029010:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266972061778",
+     "title": "Black",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 28000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/complete-baking-sheet-bundle_black_hero.jpg?v=1784590739"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266972061778:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/complete-baking-sheet-bundle_cream_hero.jpg?v=1784590739",
+     "alt_text": "Caraway complete baking sheet bundle in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280345051218",
+     "handle": "gifts-for-dad",
+     "title": "Gifts for Dad",
+     "description": {
+      "html": "Give Dad a break from his endless collection of novelty socks and \u201cWorld\u2019s Best Dad\u201d mugs. Instead, upgrade his culinary game with Caraway\u2019s sleek, non-toxic kitchen products. Perfect for the dad who insists he \u201cdoesn\u2019t need directions,\u201d Caraway\u2019s user-friendly cookware will have him whipping up gourmet meals with the same confidence he has when assembling Ikea furniture\u2014minus the leftover screws. After all, the way to a man\u2019s heart is through his stomach, and Caraway ensures the journey is smooth and stylish."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295849623634",
+     "handle": "savenow-10-off-products",
+     "title": "SAVENOW 10% OFF Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295963164754",
+     "handle": "bakeware-sets",
+     "title": "Bakeware Sets",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7519345115218",
+   "title": "Cookie Sheet Duo",
+   "description": {
+    "html": ""
+   },
+   "url": "https://shop.carawayhome.com/products/cookie-sheet-duo",
+   "handle": "cookie-sheet-duo",
+   "price_range": {
+    "min": {
+     "amount": 13000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42266967310418",
+     "title": "Cream",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 13000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet-duo_cream_hero.jpg?v=1784590715"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266967310418:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266967343186",
+     "title": "Gray",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 13000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet-duo_gray_hero.jpg?v=1784590715"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266967343186:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266967375954",
+     "title": "Perracotta",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 13000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet-duo_perracotta_hero.jpg?v=1784590715"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266967375954:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266967408722",
+     "title": "Sage",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 13000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet-duo_sage_hero.jpg?v=1784590716"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266967408722:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266967441490",
+     "title": "Navy",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 13000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet-duo_navy_hero.jpg?v=1784590715"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266967441490:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266967474258",
+     "title": "Slate",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 13000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet-duo_slate_hero.jpg?v=1784590715"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266967474258:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266967507026",
+     "title": "Marigold",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 13000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet-duo_marigold_hero.jpg?v=1784590716"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266967507026:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266967539794",
+     "title": "White",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 16000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet-duo_white_hero.jpg?v=1784590715"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266967539794:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42266967572562",
+     "title": "Black",
+     "description": {
+      "html": ""
+     },
+     "price": {
+      "amount": 16000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet-duo_black_hero.jpg?v=1784590715"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/42266967572562:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookie-sheet-duo_cream_hero.jpg?v=1784590715",
+     "alt_text": "Caraway ceramic cookie sheet duo in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/287805014098",
+     "handle": "cx-warranty-bakeware",
+     "title": "{CX Warranty} Bakeware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295849623634",
+     "handle": "savenow-10-off-products",
+     "title": "SAVENOW 10% OFF Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295963164754",
+     "handle": "bakeware-sets",
+     "title": "Bakeware Sets",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6856551235666",
+   "title": "Rectangle Pan",
+   "description": {
+    "html": "Our 9x13\" Rectangle Pan enables you to bake goods without any of the bads: use for brownies, lasagnas, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+   },
+   "url": "https://shop.carawayhome.com/products/rectangle-pan",
+   "handle": "rectangle-pan",
+   "price_range": {
+    "min": {
+     "amount": 6500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39866602815570",
+     "sku": "BW-BRWN-CRM",
+     "title": "Cream",
+     "description": {
+      "html": "Our 9x13\" Rectangle Pan enables you to bake goods without any of the bads: use for brownies, lasagnas, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cream"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/rectangle-pan_cream_hero.jpg?v=1784589707"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602815570:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602946642",
+     "sku": "BW-BRWN-NVY",
+     "title": "Navy",
+     "description": {
+      "html": "Our 9x13\" Rectangle Pan enables you to bake goods without any of the bads: use for brownies, lasagnas, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Navy"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/rectangle-pan_navy_hero.jpg?v=1784589708"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602946642:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602881106",
+     "sku": "BW-BRWN-GRY",
+     "title": "Gray",
+     "description": {
+      "html": "Our 9x13\" Rectangle Pan enables you to bake goods without any of the bads: use for brownies, lasagnas, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/rectangle-pan_gray_hero.jpg?v=1784589707"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602881106:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602848338",
+     "sku": "BW-BRWN-GRE",
+     "title": "Sage",
+     "description": {
+      "html": "Our 9x13\" Rectangle Pan enables you to bake goods without any of the bads: use for brownies, lasagnas, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Sage"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/rectangle-pan_sage_hero.jpg?v=1784589707"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602848338:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866603012178",
+     "sku": "BW-BRWN-TER",
+     "title": "Perracotta",
+     "description": {
+      "html": "Our 9x13\" Rectangle Pan enables you to bake goods without any of the bads: use for brownies, lasagnas, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Perracotta"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/rectangle-pan_perracotta_hero.jpg?v=1784589707"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866603012178:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602913874",
+     "sku": "BW-BRWN-MRG",
+     "title": "Marigold",
+     "description": {
+      "html": "Our 9x13\" Rectangle Pan enables you to bake goods without any of the bads: use for brownies, lasagnas, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Marigold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/rectangle-pan_marigold_hero.jpg?v=1784589707"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602913874:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39866602979410",
+     "sku": "BW-BRWN-SLA",
+     "title": "Slate",
+     "description": {
+      "html": "Our 9x13\" Rectangle Pan enables you to bake goods without any of the bads: use for brownies, lasagnas, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Slate"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/rectangle-pan_slate_hero.jpg?v=1784589707"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/39866602979410:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363308318802",
+     "sku": "BW-BRWN-BKG",
+     "title": "Black",
+     "description": {
+      "html": "Our 9x13\" Rectangle Pan enables you to bake goods without any of the bads: use for brownies, lasagnas, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 8500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/rectangle-pan_black_hero.jpg?v=1784589707"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363308318802:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40363308187730",
+     "sku": "BW-BRWN-WTG",
+     "title": "White",
+     "description": {
+      "html": "Our 9x13\" Rectangle Pan enables you to bake goods without any of the bads: use for brownies, lasagnas, and more. Featuring a non-toxic, naturally slick ceramic coating, this durable pan makes healthy baking (and clean up) easier than ever."
+     },
+     "price": {
+      "amount": 8500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/rectangle-pan_white_hero.jpg?v=1784589707"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://caraway-home.myshopify.com/cart/40363308187730:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Cream"
+      },
+      {
+       "label": "Navy"
+      },
+      {
+       "label": "Gray"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Perracotta"
+      },
+      {
+       "label": "Marigold"
+      },
+      {
+       "label": "Slate"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/rectangle-pan_cream_hero.jpg?v=1784589707",
+     "alt_text": "Caraway ceramic rectangle pan in Cream."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bakeware",
+    "ceramic",
+    "zest-gift"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263477461074",
+     "handle": "bakeware",
+     "title": "Bakeware",
+     "description": {
+      "html": "Caraway's non-toxic bakeware collection features ceramic-coated pans, including the best non-toxic cake pans, ensuring safe and healthy baking."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270619902034",
+     "handle": "all",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270748188754",
+     "handle": "merchery-co-2",
+     "title": "Merchery.co 2",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280245436498",
+     "handle": "all-products-ss-week",
+     "title": "Caraway Month - Stackable",
+     "description": {
+      "html": "Does not include stainless steel"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/281648267346",
+     "handle": "iconics",
+     "title": "Iconics",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzJPRFUyTlRVeE1qTTFOalkyTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

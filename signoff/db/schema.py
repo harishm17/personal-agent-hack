@@ -29,7 +29,12 @@ TABLES = {
 }
 
 
+_done: set = set()
+
+
 def ensure() -> None:
+    if conn.DB in _done:
+        return
     root = conn.connect(database=None)
     try:
         cur = root.cursor()
@@ -43,3 +48,4 @@ def ensure() -> None:
             cur.execute(ddl)
     finally:
         c.close()
+    _done.add(conn.DB)

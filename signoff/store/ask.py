@@ -68,7 +68,15 @@ def ask(store: str, query: str = QUESTION) -> dict:
     r = ucp.ask_business(store, query)
     answer = ((r.get("answer") or {}).get("plain")) or json.dumps(r.get("answer"))
     now = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
-    return parse_reply(store, query, answer, now)
+    rec = parse_reply(store, query, answer, now)
+    if r.get("mode") == "replay":
+        rec["mode"] = "replay"
+        saved = ANSWERS / f"{store}.json"
+        if saved.exists():  # the saved record keeps its own question and time
+            old = json.loads(saved.read_text())
+            old = old[0] if isinstance(old, list) else old
+            rec.update(question=old.get("question", query), asked_at=old.get("asked_at", now))
+    return rec
 
 
 def refresh(stores: list[str]) -> list[dict]:

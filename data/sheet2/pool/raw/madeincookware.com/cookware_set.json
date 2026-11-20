@@ -1,0 +1,3949 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://checkout.madeincookware.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Made In Cookware",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "checkout.madeincookware.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "21315111"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "21315111"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7656712536143",
+   "title": "CeramiClad\u00ae 2.0 Non Stick Cookware Set",
+   "description": {
+    "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+   },
+   "url": "https://checkout.madeincookware.com/products/ceramic-cookware-set",
+   "handle": "ceramic-cookware-set",
+   "price_range": {
+    "min": {
+     "amount": 29499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 59900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 44700,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 80600,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43792760143951",
+     "sku": "KIT-3-FRY-CC-GWP",
+     "title": "3-Piece / Sand / Stainless",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 29499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_CeramiClad_3p_Fry_Set-0973_b35c631f-a091-4726-86d3-e40597eea8be.jpg?v=1762893223"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43792760143951:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43792760176719",
+     "sku": "KIT-3-FRY-CC-G-GWP",
+     "title": "3-Piece / Sand / Antique Brass",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 29499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_CeramiClad_Antique_Brass_3p_Fry_Set-0972_c02ebf14-1bf9-4baf-9c8c-897af67c7c35.jpg?v=1762893220"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43792760176719:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44105784655951",
+     "title": "3-Piece / Sand / Brushed Copper",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 34900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_7piece_Set_003_HIRES_LidsOff.jpg?v=1762269541"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/44105784655951:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43792760209487",
+     "title": "3-Piece / Sand / Wholesale - Stainless",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 59900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 80600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Wholesale - Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_7piece_Set_003_HIRES_LidsOff.jpg?v=1762269541"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43792760209487:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43792760242255",
+     "title": "3-Piece / Sand / Wholesale - Antique Brass",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 59900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 80600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Wholesale - Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_7piece_Set_003_HIRES_LidsOff.jpg?v=1762269541"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43792760242255:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43792760012879",
+     "sku": "KIT-5-FSS-ICC",
+     "title": "5-Piece / Sand / Stainless",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 36099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 49700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_CeramiClad_Bundle_F5F6F2_Background_0a957383-b4e2-4394-90b7-e404fe17427b.jpg?v=1762893216"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43792760012879:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43792760045647",
+     "sku": "KIT-5-FSS-CC-G",
+     "title": "5-Piece / Sand / Antique Brass",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 36099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 49700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/CeramiClad_5piece_Set_AntiqueBrass_0477cbba-f293-4ff2-b5b9-6d60ae0e020e.jpg?v=1762893211"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43792760045647:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44105784688719",
+     "title": "5-Piece / Sand / Brushed Copper",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 34900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_7piece_Set_003_HIRES_LidsOff.jpg?v=1762269541"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/44105784688719:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43792760078415",
+     "title": "5-Piece / Sand / Wholesale - Stainless",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 59900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 80600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Wholesale - Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_7piece_Set_003_HIRES_LidsOff.jpg?v=1762269541"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43792760078415:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43792760111183",
+     "title": "5-Piece / Sand / Wholesale - Antique Brass",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 59900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 80600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Wholesale - Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_7piece_Set_003_HIRES_LidsOff.jpg?v=1762269541"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43792760111183:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "3-Piece"
+      },
+      {
+       "label": "5-Piece"
+      },
+      {
+       "label": "7-Piece"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Sand"
+      },
+      {
+       "label": "Obsidian Black"
+      },
+      {
+       "label": "Sage"
+      },
+      {
+       "label": "Willow Green"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      },
+      {
+       "label": "Brushed Copper"
+      },
+      {
+       "label": "Wholesale - Stainless"
+      },
+      {
+       "label": "Wholesale - Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Ceramic_7piece_Set_003_HIRES_LidsOff.jpg?v=1762269541"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "CeramiClad Collection",
+    "Hero Bundle",
+    "Logicbroker"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/439299018",
+     "handle": "main-bundles",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173933527119",
+     "handle": "non-stick",
+     "title": "Non Stick",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280769757263",
+     "handle": "non-stick-carbon-cast-iron",
+     "title": "Non Stick + Carbon + Cast Iron",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7192211062863",
+   "title": "Limited Edition Stainless Sets",
+   "description": {
+    "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+   },
+   "url": "https://checkout.madeincookware.com/products/le-stainless-sets",
+   "handle": "le-stainless-sets",
+   "price_range": {
+    "min": {
+     "amount": 24999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 79900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 35700,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 102400,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40985057984591",
+     "sku": "KIT-10-ISS-V2-GOLD",
+     "title": "10-Piece / Antique Brass",
+     "description": {
+      "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+     },
+     "price": {
+      "amount": 67900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 102400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10-Piece"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_PVD_StainlessSet_Brass__10p_Hero_1x1_HIRES.jpg?v=1762201456"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40985057984591:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43975719387215",
+     "sku": "KIT-10-ISS-V2-RG",
+     "title": "10-Piece / Brushed Copper",
+     "description": {
+      "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+     },
+     "price": {
+      "amount": 67900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 102400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10-Piece"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/PHOTOSHOPPED_Stainless_Brushed_Copper_10p_Set-Bcopy.jpg?v=1766078332"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43975719387215:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40985058017359",
+     "sku": "KIT-10-ISS-V2",
+     "title": "10-Piece / Stainless",
+     "description": {
+      "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+     },
+     "price": {
+      "amount": 67900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 102400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10-Piece"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Set_10p_CookwareSet_002_f02e57e9-f392-46c3-878b-6f48e194570b.jpg?v=1724958494"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40985058017359:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42129187831887",
+     "sku": "KIT-10-ISS-R2-BLK",
+     "title": "10-Piece / Graphite",
+     "description": {
+      "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+     },
+     "price": {
+      "amount": 79900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 99400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10-Piece"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_PVD_StainlessSet_Graphite__10p_Hero_1x1_HIRES_731fff2f-c447-4253-837e-2f7b654a6835.jpg?v=1724958556"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42129187831887:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43762599886927",
+     "sku": "KIT-5-FSS-ISS-G",
+     "title": "5-Piece / Antique Brass",
+     "description": {
+      "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+     },
+     "price": {
+      "amount": 37999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_Stainless_Brass_Handle_Bundle_F5F6F2_Background_f201a516-9527-4574-9175-a220f04f3186.jpg?v=1761941643"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43762599886927:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43975719419983",
+     "title": "5-Piece / Brushed Copper",
+     "description": {
+      "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+     },
+     "price": {
+      "amount": 34900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_Stainless_Brass_Handle_Bundle_F5F6F2_Background_f201a516-9527-4574-9175-a220f04f3186.jpg?v=1761941643"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43975719419983:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43762599919695",
+     "sku": "KIT-5-FSS-ISS",
+     "title": "5-Piece / Stainless",
+     "description": {
+      "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+     },
+     "price": {
+      "amount": 37999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_Stainless_Bundle_F5F6F2_Background_681fc6f3-814b-4895-84ad-32069255f0fc.jpg?v=1761941737"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43762599919695:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42129198776399",
+     "sku": "KIT-3-FRY-ISS-G-P",
+     "title": "3-Piece / Antique Brass",
+     "description": {
+      "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+     },
+     "price": {
+      "amount": 24999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_3_Piece_Fry_PVD_Antique_Brass_Set-Hero.jpg?v=1724959242"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42129198776399:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43975719452751",
+     "sku": "KIT-3-FRY-SS-RG-P",
+     "title": "3-Piece / Brushed Copper",
+     "description": {
+      "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+     },
+     "price": {
+      "amount": 28999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Set_3p_FryingPan_Hero_HIRES_PRODUCT-Editcopy_8c564b63-c55c-4c6b-966c-a9f10fb7b552.jpg?v=1766425706"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43975719452751:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42129198743631",
+     "sku": "KIT-3-FRY-ISS-P-V2",
+     "title": "3-Piece / Stainless",
+     "description": {
+      "html": "Our high-performing Stainless Clad Cookware gets an elegant upgrade in this new, Limited-Edition 10-Piece Set. A true kitchen workhorse, Stainless Clad offers stellar heat control, responsiveness, and a durable, easy-to-clean surface. To make each piece of our award-winning Stainless Clad cookware, we layer professional-grade stainless steel with highly conductive materials like aluminum for quick, even heating and lightning-fast temperature response. This makes for deeper, more flavorful sears, as well as fewer hot spots and burnt-on messes. For this set, we\u2019ve added display-worthy Antique Brass Finish handles for a fresh twist on your favorite cookware, with the same world-class performance and durability."
+     },
+     "price": {
+      "amount": 24999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_Set_3p_FryingPan_1x1_Hero_61a20852-592e-40ef-86e1-2876fa0573c8.jpg?v=1724959301"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42129198743631:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "10-Piece"
+      },
+      {
+       "label": "5-Piece"
+      },
+      {
+       "label": "3-Piece"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Antique Brass"
+      },
+      {
+       "label": "Brushed Copper"
+      },
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Graphite"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_PVD_StainlessSet_Brass__10p_Hero_1x1_HIRES.jpg?v=1762201456"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Stainless Clad Collection",
+    "Stainless Clad Sets",
+    "Stainless-MC"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74378969167",
+     "handle": "stainless-clad",
+     "title": "Stainless Clad",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279466606671",
+     "handle": "stainless-clad-sets",
+     "title": "Stainless Clad Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/287188844623",
+     "handle": "bfcm-2024-all-cookware",
+     "title": "BFCM 2024: All Cookware",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7815433158735",
+   "title": "Small Spaces Set",
+   "description": {
+    "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces Set has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan, Saucier, and Saucepan\u2014plus their corresponding lids, this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA, and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+   },
+   "url": "https://checkout.madeincookware.com/products/small-spaces-set",
+   "handle": "small-spaces-set",
+   "price_range": {
+    "min": {
+     "amount": 36099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 37999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 46700,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 49700,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43474875940943",
+     "sku": "KIT-5-FSS-ISS",
+     "title": "Stainless / Stainless",
+     "description": {
+      "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces Set has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan, Saucier, and Saucepan\u2014plus their corresponding lids, this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA, and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+     },
+     "price": {
+      "amount": 37999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "Stainless"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_Stainless_Bundle_F5F6F2_Background_a9b73b94-f8cd-4b6a-b53e-ac9e570e6d95.jpg?v=1764355546"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43474875940943:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43474875973711",
+     "sku": "KIT-5-FSS-ISS-G",
+     "title": "Stainless / Antique Brass",
+     "description": {
+      "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces Set has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan, Saucier, and Saucepan\u2014plus their corresponding lids, this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA, and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+     },
+     "price": {
+      "amount": 37999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "Stainless"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_Stainless_Brass_Handle_Bundle_F5F6F2_Background.jpg?v=1754416119"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43474875973711:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43474876006479",
+     "sku": "KIT-5-FSS-ICC",
+     "title": "CeramiClad\u00ae / Stainless",
+     "description": {
+      "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces Set has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan, Saucier, and Saucepan\u2014plus their corresponding lids, this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA, and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+     },
+     "price": {
+      "amount": 36099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 49700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "CeramiClad\u00ae"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_CeramiClad_Bundle_F5F6F2_Background.jpg?v=1754416130"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43474876006479:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43474876039247",
+     "sku": "KIT-5-FSS-CC-G",
+     "title": "CeramiClad\u00ae / Antique Brass",
+     "description": {
+      "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces Set has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan, Saucier, and Saucepan\u2014plus their corresponding lids, this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA, and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+     },
+     "price": {
+      "amount": 36099,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 49700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Material",
+       "label": "CeramiClad\u00ae"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/CeramiClad_5p_Set_AntiqueBrass--4_copy.jpg?v=1755789552"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43474876039247:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Material",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "CeramiClad\u00ae"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Rich_People-Small_House_Stainless_Bundle_copy.jpg?v=1754071623"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Hero Bundle",
+    "Stainless-MC"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/439299018",
+     "handle": "main-bundles",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6718247632975",
+   "title": "Stainless Set",
+   "description": {
+    "html": "With a high-performing mix of our best sellers, the 10-Piece Set is curated by chefs to bring you a much-needed cookware reset. This Set features a range of nearly indestructible Stainless Clad tools that will help you craft chef-quality meals, fill the gaps in your kitchen, breathe new life into your routine recipes, and inspire new favorites. Crafted in Italy, our Stainless Clad Cookware is constructed from 5 layers of metals for improved heat conduction. This prevents stuck-on messes and ensures the 5-ply construction cleans up in seconds, while rolled rims easily pour without spilling."
+   },
+   "url": "https://checkout.madeincookware.com/products/the-stainless-sets",
+   "handle": "the-stainless-sets",
+   "price_range": {
+    "min": {
+     "amount": 55900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 269999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 67600,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 371900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39921335697487",
+     "sku": "KIT-10-ISS-V2",
+     "title": "10-Piece",
+     "description": {
+      "html": "With a high-performing mix of our best sellers, the 10-Piece Set is curated by chefs to bring you a much-needed cookware reset. This Set features a range of nearly indestructible Stainless Clad tools that will help you craft chef-quality meals, fill the gaps in your kitchen, breathe new life into your routine recipes, and inspire new favorites. Crafted in Italy, our Stainless Clad Cookware is constructed from 5 layers of metals for improved heat conduction. This prevents stuck-on messes and ensures the 5-ply construction cleans up in seconds, while rolled rims easily pour without spilling."
+     },
+     "price": {
+      "amount": 67900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 102400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10-Piece"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Sets_Stainless_10p_Set-001_F5F6F2.jpg?v=1761747880"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39921335697487:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39921335763023",
+     "sku": "KIT-EXEC-13-R9-GWP",
+     "title": "13-Piece",
+     "description": {
+      "html": "With a high-performing mix of our best sellers, the 10-Piece Set is curated by chefs to bring you a much-needed cookware reset. This Set features a range of nearly indestructible Stainless Clad tools that will help you craft chef-quality meals, fill the gaps in your kitchen, breathe new life into your routine recipes, and inspire new favorites. Crafted in Italy, our Stainless Clad Cookware is constructed from 5 layers of metals for improved heat conduction. This prevents stuck-on messes and ensures the 5-ply construction cleans up in seconds, while rolled rims easily pour without spilling."
+     },
+     "price": {
+      "amount": 109999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 148800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "13-Piece"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/cookware-set-v2-with-seasoning-wax-smaller_1.png?v=1792509524"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39921335763023:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43583488917583",
+     "sku": "KIT-KITCHEN-ALL-V16-GWP",
+     "title": "Complete Kitchen",
+     "description": {
+      "html": "With a high-performing mix of our best sellers, the 10-Piece Set is curated by chefs to bring you a much-needed cookware reset. This Set features a range of nearly indestructible Stainless Clad tools that will help you craft chef-quality meals, fill the gaps in your kitchen, breathe new life into your routine recipes, and inspire new favorites. Crafted in Italy, our Stainless Clad Cookware is constructed from 5 layers of metals for improved heat conduction. This prevents stuck-on messes and ensures the 5-ply construction cleans up in seconds, while rolled rims easily pour without spilling."
+     },
+     "price": {
+      "amount": 269999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 371900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Complete Kitchen"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/curated-griddle.jpg?v=1790196980"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43583488917583:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39921335631951",
+     "sku": "KIT-6-ISS-CC-KP",
+     "title": "6-Piece",
+     "description": {
+      "html": "With a high-performing mix of our best sellers, the 10-Piece Set is curated by chefs to bring you a much-needed cookware reset. This Set features a range of nearly indestructible Stainless Clad tools that will help you craft chef-quality meals, fill the gaps in your kitchen, breathe new life into your routine recipes, and inspire new favorites. Crafted in Italy, our Stainless Clad Cookware is constructed from 5 layers of metals for improved heat conduction. This prevents stuck-on messes and ensures the 5-ply construction cleans up in seconds, while rolled rims easily pour without spilling."
+     },
+     "price": {
+      "amount": 55900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 67600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "6-Piece"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_Set_6p_Multi_Hero_Ceramic_002.jpg?v=1763060310"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/39921335631951:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161900187727",
+     "title": "10-Piece - Wholesale UPC",
+     "description": {
+      "html": "With a high-performing mix of our best sellers, the 10-Piece Set is curated by chefs to bring you a much-needed cookware reset. This Set features a range of nearly indestructible Stainless Clad tools that will help you craft chef-quality meals, fill the gaps in your kitchen, breathe new life into your routine recipes, and inspire new favorites. Crafted in Italy, our Stainless Clad Cookware is constructed from 5 layers of metals for improved heat conduction. This prevents stuck-on messes and ensures the 5-ply construction cleans up in seconds, while rolled rims easily pour without spilling."
+     },
+     "price": {
+      "amount": 119900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 140800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10-Piece - Wholesale UPC"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Set_10p_CookwareSet_002.jpg?v=1762199310"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161900187727:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43161950683215",
+     "title": "6-Piece - Wholesale UPC",
+     "description": {
+      "html": "With a high-performing mix of our best sellers, the 10-Piece Set is curated by chefs to bring you a much-needed cookware reset. This Set features a range of nearly indestructible Stainless Clad tools that will help you craft chef-quality meals, fill the gaps in your kitchen, breathe new life into your routine recipes, and inspire new favorites. Crafted in Italy, our Stainless Clad Cookware is constructed from 5 layers of metals for improved heat conduction. This prevents stuck-on messes and ensures the 5-ply construction cleans up in seconds, while rolled rims easily pour without spilling."
+     },
+     "price": {
+      "amount": 119900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 140800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "6-Piece - Wholesale UPC"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Set_10p_CookwareSet_002.jpg?v=1762199310"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43161950683215:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "10-Piece"
+      },
+      {
+       "label": "13-Piece"
+      },
+      {
+       "label": "Complete Kitchen"
+      },
+      {
+       "label": "6-Piece"
+      },
+      {
+       "label": "10-Piece - Wholesale UPC"
+      },
+      {
+       "label": "6-Piece - Wholesale UPC"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Set_10p_CookwareSet_002.jpg?v=1762199310"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Seller",
+    "collection-filter:cookware",
+    "Country-Italy",
+    "disable-overnight-shipping",
+    "Filter-Sets",
+    "Filter-Stainless-Clad",
+    "Hero Bundle",
+    "indexing",
+    "Logicbroker",
+    "Memorial Day",
+    "Stainless Clad",
+    "Stainless Clad Collection",
+    "Stainless Clad Sets",
+    "Stainless-MC",
+    "YGroup_stainlessclad"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/439299018",
+     "handle": "main-bundles",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74378969167",
+     "handle": "stainless-clad",
+     "title": "Stainless Clad",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/86848864335",
+     "handle": "best-sellers",
+     "title": "Most Popular",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261526126671",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7938415984719",
+   "title": "Stainless Essential Set",
+   "description": {
+    "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan and Saucier\u2014this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+   },
+   "url": "https://checkout.madeincookware.com/products/stainless-essential-set",
+   "handle": "stainless-essential-set",
+   "price_range": {
+    "min": {
+     "amount": 24900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 24900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 31800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 31800,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43928734761039",
+     "sku": "KIT-3-ESS-ISS",
+     "title": "Saucier + Frying Pan Set",
+     "description": {
+      "html": "Whether you\u2019re outfitting your first kitchen or downsizing to a smaller space, the Small Spaces has everything you need\u2014and nothing you don\u2019t. With three of our most essential pieces of Stainless Clad Cookware\u2014a Frying Pan and Saucier\u2014this Set is designed to do more with less. It\u2019s ideal for apartments, condos, or anyone looking to streamline their kitchen without sacrificing performance. Crafted in Italy and the USA and trusted in Michelin-starred kitchens, our Award-Winning Stainless Clad Cookware features 5-ply construction for superior heat conduction and durability. Rolled rims make for drip-free pouring, while a polished cooking surface ensures easy cleanup and exceptional results every time. Whether you\u2019re saut\u00e9ing, simmering, or boiling, this compact Set delivers pro-level results in any size kitchen."
+     },
+     "price": {
+      "amount": 24900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 31800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Saucier + Frying Pan Set"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Frame_2_3.jpg?v=1765378762"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43928734761039:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "Saucier + Frying Pan Set"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Frame_2_3.jpg?v=1765378762"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Hero Bundle",
+    "Stainless Clad Collection",
+    "Stainless Clad Sets",
+    "Stainless-MC"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/439299018",
+     "handle": "main-bundles",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74378969167",
+     "handle": "stainless-clad",
+     "title": "Stainless Clad",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279466606671",
+     "handle": "stainless-clad-sets",
+     "title": "Stainless Clad Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6915102539855",
+   "title": "Enameled Cast Iron Set",
+   "description": {
+    "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+   },
+   "url": "https://checkout.madeincookware.com/products/enameled-cast-iron-set",
+   "handle": "enameled-cast-iron-set",
+   "price_range": {
+    "min": {
+     "amount": 29999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 94900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 44800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 107500,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42178249621583",
+     "sku": "KIT-2-ECI-BLU",
+     "title": "3-Piece / Harbour Blue",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 31999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/EnamelCastIron_3p_set_HarbourBlue.jpg?v=1727384033"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42178249621583:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42178251227215",
+     "sku": "FS-KIT-2-ECI-RED",
+     "title": "3-Piece / Made In Red",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 29999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Made In Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/EnamelCastIron_3p_set_MadeInRed.jpg?v=1727384037"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42178251227215:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42178255519823",
+     "sku": "FS-KIT-2-ECI-LIN",
+     "title": "3-Piece / Antique White",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 34900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Antique White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/EnamelCastIron_3p_set_AntiqueWhite_8aad60ac-3c79-4027-8918-d9bb84045efb.jpg?v=1757713123"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42178255519823:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42178253488207",
+     "sku": "KIT-2-ECI-ORNG",
+     "title": "3-Piece / Blood Orange",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 34900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Blood Orange"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/EnamelCastIron_3p_set_bloodorange-Edit.jpg?v=1727452825"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42178253488207:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40468340801615",
+     "sku": "KIT-5-ECI-2L-SCE-BLU",
+     "title": "5-Piece / Harbour Blue",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 67700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Set_5p_HarbourBlue_1x1_001.jpg?v=1762199887"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40468340801615:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40468340834383",
+     "sku": "KIT-5-ECI-2L-SCE-RED",
+     "title": "5-Piece / Made In Red",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 67700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Made In Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Set_5p_MadeInRed_1x1_001.jpg?v=1719867759"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40468340834383:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40468340768847",
+     "sku": "KIT-5-ECI-2L-SCE-LIN",
+     "title": "5-Piece / Antique White",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 67700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Antique White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/EnameledCastIron_Set_5p_AntiqueWhite_001_HIRES-Edit.jpg?v=1757713144"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40468340768847:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42178256470095",
+     "sku": "KIT-5-ECI-2L-SCE-ORG",
+     "title": "5-Piece / Blood Orange",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 49900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 64700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Blood Orange"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_EnameledCastIron_Set_5p_BloodOrange_001_20c0858c-a06d-4386-9479-d78855b0b1b1.jpg?v=1727384464"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42178256470095:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40823182753871",
+     "sku": "KIT-5-ECI-2L-SCE-BC",
+     "title": "5-Piece / Ruby Red",
+     "description": {
+      "html": "The world\u2019s finest Enameled Cast Iron hails from Northeast France, where craftsmen have been pouring professional-grade cast iron since the early 1920s. So that\u2019s exactly where we headed to craft each piece in our Enameled Cast Iron Collection. From weeknight meals to extravagant entertaining, this dual Set will help you craft a nearly infinite range of dishes. The Award-Winning Round Dutch Oven boasts exceptional heat retention and circulation that transforms tough cuts into tender, fall-off-the-bone braises, while the Skillet brings those benefits to a Southern-style frying pan silhouette, allowing you to sear and maneuver with ease. Stock your kitchen in one click with the heirloom-quality Enameled Cast Iron Set."
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 67700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "5-Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Ruby Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/ECI_5p_Set_Ruby_Red-7537.jpg?v=1769825695"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40823182753871:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "3-Piece"
+      },
+      {
+       "label": "5-Piece"
+      },
+      {
+       "label": "7-Piece"
+      },
+      {
+       "label": "4-Piece"
+      },
+      {
+       "label": "9-Piece"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Harbour Blue"
+      },
+      {
+       "label": "Made In Red"
+      },
+      {
+       "label": "Antique White"
+      },
+      {
+       "label": "Blood Orange"
+      },
+      {
+       "label": "Willow Green"
+      },
+      {
+       "label": "Ruby Red"
+      },
+      {
+       "label": "Hudson Green"
+      },
+      {
+       "label": "Marigold Yellow"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_EnameledCastIron_Set_5p_HarbourBlue_1x1_001.jpg?v=1762199887"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Enameled Cast Iron Collection",
+    "Hero Bundle",
+    "sanity-indexing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/439299018",
+     "handle": "main-bundles",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271379759183",
+     "handle": "enameled-cast-iron",
+     "title": "Enameled Cast Iron",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/272645226575",
+     "handle": "hudson-green-collection",
+     "title": "Hudson Green Collection",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4822975414351",
+   "title": "ProCoat Non Stick Set",
+   "description": {
+    "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Whether cooking eggs, fish, or pasta, our 7-piece Italian-made Non Stick Set has you covered for every meal. This set is perfect for oil-free cooking and its zero-stick surface makes clean-up easy, even with temperamental sauces like caramel. Discover the difference our chef-loved Non Stick Cookware will make in your kitchen."
+   },
+   "url": "https://checkout.madeincookware.com/products/non-stick-set",
+   "handle": "non-stick-set",
+   "price_range": {
+    "min": {
+     "amount": 26900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 89900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 29800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 103400,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32696833933391",
+     "sku": "KIT-7-NS-PE-ITA",
+     "title": "7-Piece Set / Graphite",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Whether cooking eggs, fish, or pasta, our 7-piece Italian-made Non Stick Set has you covered for every meal. This set is perfect for oil-free cooking and its zero-stick surface makes clean-up easy, even with temperamental sauces like caramel. Discover the difference our chef-loved Non Stick Cookware will make in your kitchen."
+     },
+     "price": {
+      "amount": 59900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 72600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "7-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_NonStickSet_7p_Graphite_1x1_Hero.jpg?v=1762198085"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/32696833933391:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32696833867855",
+     "sku": "KIT-7-NS-MB-ITA",
+     "title": "7-Piece Set / Harbour Blue",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Whether cooking eggs, fish, or pasta, our 7-piece Italian-made Non Stick Set has you covered for every meal. This set is perfect for oil-free cooking and its zero-stick surface makes clean-up easy, even with temperamental sauces like caramel. Discover the difference our chef-loved Non Stick Cookware will make in your kitchen."
+     },
+     "price": {
+      "amount": 59900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 72600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "7-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_NonStickSet_7p_HarbourBlue_1x1_Hero.jpg?v=1745422166"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/32696833867855:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40495585525839",
+     "sku": "KIT-7-NS-CH",
+     "title": "7-Piece Set / Champagne",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Whether cooking eggs, fish, or pasta, our 7-piece Italian-made Non Stick Set has you covered for every meal. This set is perfect for oil-free cooking and its zero-stick surface makes clean-up easy, even with temperamental sauces like caramel. Discover the difference our chef-loved Non Stick Cookware will make in your kitchen."
+     },
+     "price": {
+      "amount": 59900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 73600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "7-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Champagne"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_P1_7-Piece_Champagne_NonStick_Set_1x1_lid.jpg?v=1745422166"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40495585525839:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42307679682639",
+     "sku": "KIT-6-NS-PE-ITA",
+     "title": "6-Piece Set / Graphite",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Whether cooking eggs, fish, or pasta, our 7-piece Italian-made Non Stick Set has you covered for every meal. This set is perfect for oil-free cooking and its zero-stick surface makes clean-up easy, even with temperamental sauces like caramel. Discover the difference our chef-loved Non Stick Cookware will make in your kitchen."
+     },
+     "price": {
+      "amount": 59900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 66600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "6-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/NonStick_6piece_NonStick_Set_Graphite.jpg?v=1745422166"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42307679682639:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40747767103567",
+     "sku": "KIT-3-NS-PE",
+     "title": "3-Piece Set / Graphite",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Whether cooking eggs, fish, or pasta, our 7-piece Italian-made Non Stick Set has you covered for every meal. This set is perfect for oil-free cooking and its zero-stick surface makes clean-up easy, even with temperamental sauces like caramel. Discover the difference our chef-loved Non Stick Cookware will make in your kitchen."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/3_piece_non_stick_set.jpg?v=1745422166"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40747767103567:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40747767136335",
+     "sku": "KIT-3-NS-MB",
+     "title": "3-Piece Set / Harbour Blue",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Whether cooking eggs, fish, or pasta, our 7-piece Italian-made Non Stick Set has you covered for every meal. This set is perfect for oil-free cooking and its zero-stick surface makes clean-up easy, even with temperamental sauces like caramel. Discover the difference our chef-loved Non Stick Cookware will make in your kitchen."
+     },
+     "price": {
+      "amount": 26900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "3-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/products/3piecenonsticksetharborblue827_1_1.jpg?v=1745422166"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40747767136335:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40747767169103",
+     "sku": "KIT-10-NS-PE",
+     "title": "10-Piece Set / Graphite",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Whether cooking eggs, fish, or pasta, our 7-piece Italian-made Non Stick Set has you covered for every meal. This set is perfect for oil-free cooking and its zero-stick surface makes clean-up easy, even with temperamental sauces like caramel. Discover the difference our chef-loved Non Stick Cookware will make in your kitchen."
+     },
+     "price": {
+      "amount": 89900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 103400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/products/10pieceNonStickSetGraphite821_1_1.jpg?v=1745422166"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40747767169103:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40747767201871",
+     "sku": "KIT-10-NS-MB-V2",
+     "title": "10-Piece Set / Harbour Blue",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Whether cooking eggs, fish, or pasta, our 7-piece Italian-made Non Stick Set has you covered for every meal. This set is perfect for oil-free cooking and its zero-stick surface makes clean-up easy, even with temperamental sauces like caramel. Discover the difference our chef-loved Non Stick Cookware will make in your kitchen."
+     },
+     "price": {
+      "amount": 89900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 103400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "10-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Harbour Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/products/10pieceNonStickSetHarbourBlue821_1_1_b62c82c9-0bf7-4416-b9f6-5a2113a41435.jpg?v=1745422166"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40747767201871:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40583573078095",
+     "sku": "V1-KIT-6-NS-PE",
+     "title": "6 Piece / Graphite",
+     "description": {
+      "html": "Crafted in Italy, we coat each piece of our Award-Winning 5-Ply Stainless Clad Cookware with multiple layers of professional-grade Non Stick. The result is an even-heating stainless base with a frictionless cooking surface that is durable enough for high-volume restaurant kitchens, and is the easiest to clean. Whether cooking eggs, fish, or pasta, our 7-piece Italian-made Non Stick Set has you covered for every meal. This set is perfect for oil-free cooking and its zero-stick surface makes clean-up easy, even with temperamental sauces like caramel. Discover the difference our chef-loved Non Stick Cookware will make in your kitchen."
+     },
+     "price": {
+      "amount": 55900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 58600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "6 Piece"
+      },
+      {
+       "name": "Color",
+       "label": "Graphite"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_NonStickSet_7p_Graphite_1x1_Hero.jpg?v=1762198085"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/40583573078095:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "7-Piece Set"
+      },
+      {
+       "label": "6-Piece Set"
+      },
+      {
+       "label": "3-Piece Set"
+      },
+      {
+       "label": "10-Piece Set"
+      },
+      {
+       "label": "6 Piece"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Graphite"
+      },
+      {
+       "label": "Harbour Blue"
+      },
+      {
+       "label": "Champagne"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_NonStickSet_7p_Graphite_1x1_Hero.jpg?v=1762198085"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Seller",
+    "collection-filter:cookware",
+    "Filter-New-Arrivals",
+    "Filter-Non-Stick",
+    "Filter-Sets",
+    "indexing",
+    "internal",
+    "Logicbroker",
+    "mds-indexing",
+    "Memorial Day",
+    "PrimeSale",
+    "YGroup_nonstick"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/74353672271",
+     "handle": "collection-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/86848864335",
+     "handle": "best-sellers",
+     "title": "Most Popular",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173933527119",
+     "handle": "non-stick",
+     "title": "Non Stick",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/261526126671",
+     "handle": "cookware",
+     "title": "Cookware",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262005850191",
+     "handle": "summer-sale",
+     "title": "Summer Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7619849650255",
+   "title": "Stainless Set*",
+   "description": {
+    "html": "Whether you\u2019re overhauling a mismatched set or starting from scratch, this streamlined collection of top-performing Stainless Clad and Carbon Steel pieces has everything you\u2019ll need to execute any meal with ease. Crafted in Italy, our Stainless Clad Cookware is constructed from 5 layers of metals for improved heat conduction. This prevents stuck-on messes and ensures the 5-ply construction cleans up in seconds, while rolled rims easily pour without spilling. Our Non Stick Collection also begins as Award-Winning 5-Ply Stainless Clad Cookware. We then add two layers of professional-grade Non Stick, creating an even-heating stainless base with a frictionless cooking surface that\u2019s durable and easy to clean. Carbon Steel combines the best of Cast Iron and Stainless Clad, creating a naturally non stick alternative. It seasons faster, responds quicker, and is rugged enough for your grill or an open flame. Our manufacturers live and work in a picturesque French village where Carbon Steel has been made since the 1700s."
+   },
+   "handle": "so-annoying",
+   "price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 99900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 24900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 133800,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42238835884111",
+     "sku": "TEST-GWP-PARENT-1",
+     "title": "13-Piece",
+     "description": {
+      "html": "Whether you\u2019re overhauling a mismatched set or starting from scratch, this streamlined collection of top-performing Stainless Clad and Carbon Steel pieces has everything you\u2019ll need to execute any meal with ease. Crafted in Italy, our Stainless Clad Cookware is constructed from 5 layers of metals for improved heat conduction. This prevents stuck-on messes and ensures the 5-ply construction cleans up in seconds, while rolled rims easily pour without spilling. Our Non Stick Collection also begins as Award-Winning 5-Ply Stainless Clad Cookware. We then add two layers of professional-grade Non Stick, creating an even-heating stainless base with a frictionless cooking surface that\u2019s durable and easy to clean. Carbon Steel combines the best of Cast Iron and Stainless Clad, creating a naturally non stick alternative. It seasons faster, responds quicker, and is rugged enough for your grill or an open flame. Our manufacturers live and work in a picturesque French village where Carbon Steel has been made since the 1700s."
+     },
+     "price": {
+      "amount": 99900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 133800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Parent vs Child Item",
+       "label": "13-Piece"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/1_13Piece_GWP_a11ad09b-a98d-4e3e-affb-402968da3675.png?v=1793829056"
+      }
+     ],
+     "requires": {
+      "shipping": false
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42238835884111:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42238835916879",
+     "sku": "TEST-GWP-CHILD-1",
+     "title": "FREE GIFT: Dutch Oven",
+     "description": {
+      "html": "Whether you\u2019re overhauling a mismatched set or starting from scratch, this streamlined collection of top-performing Stainless Clad and Carbon Steel pieces has everything you\u2019ll need to execute any meal with ease. Crafted in Italy, our Stainless Clad Cookware is constructed from 5 layers of metals for improved heat conduction. This prevents stuck-on messes and ensures the 5-ply construction cleans up in seconds, while rolled rims easily pour without spilling. Our Non Stick Collection also begins as Award-Winning 5-Ply Stainless Clad Cookware. We then add two layers of professional-grade Non Stick, creating an even-heating stainless base with a frictionless cooking surface that\u2019s durable and easy to clean. Carbon Steel combines the best of Cast Iron and Stainless Clad, creating a naturally non stick alternative. It seasons faster, responds quicker, and is rugged enough for your grill or an open flame. Our manufacturers live and work in a picturesque French village where Carbon Steel has been made since the 1700s."
+     },
+     "price": {
+      "amount": 0,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 24900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Parent vs Child Item",
+       "label": "FREE GIFT: Dutch Oven"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/VALUE_TAPE_1_-_5.5QT_Dutch_Oven_-_Orange.jpg?v=1730921849"
+      }
+     ],
+     "requires": {
+      "shipping": false
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42238835916879:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Parent vs Child Item",
+     "values": [
+      {
+       "label": "13-Piece"
+      },
+      {
+       "label": "FREE GIFT: Dutch Oven"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_13_Piece_Set_002_HIRES.jpg?v=1762269428"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288527679567",
+     "handle": "all-products-except-sc-saute",
+     "title": "All Products Except SC Saute",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/291526180943",
+     "handle": "klaviyo-feed-all-products",
+     "title": "Klaviyo Feed - All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638761551",
+     "handle": "klaviyo-site-only",
+     "title": "Klaviyo Site only",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7739630125135",
+   "title": "CeramiClad\u00ae 2.0 Non Stick Frying Pan Set",
+   "description": {
+    "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+   },
+   "url": "https://checkout.madeincookware.com/products/ceramiclad-non-stick-frying-pan-set",
+   "handle": "ceramiclad-non-stick-frying-pan-set",
+   "price_range": {
+    "min": {
+     "amount": 22999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 30800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 44700,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46447814934607",
+     "sku": "KIT-3-FRY-ICC-BLK-GWP",
+     "title": "3-Piece Set / Obsidian Black / Stainless",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 29499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "3-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Obsidian Black"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/2026_Q3_CeramiClad_Black_3p_Set_Hero.jpg?v=1787161515"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46447814934607:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42773292023887",
+     "sku": "KIT-3-FRY-CC-GWP",
+     "title": "3-Piece Set / Sand / Stainless",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 29499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "3-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_CeramiClad_3p_Fry_Set-0973_33cfd87f-6943-41c1-b347-756f50b2a1f3.jpg?v=1762270220"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42773292023887:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42773292056655",
+     "sku": "KIT-3-FRY-CC-G-GWP",
+     "title": "3-Piece Set / Sand / Antique Brass",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 29499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "3-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_CeramiClad_Antique_Brass_3p_Fry_Set-0972_e5849b40-aeac-4f82-9282-3d115328262d.jpg?v=1744837857"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42773292056655:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45159742865487",
+     "sku": "KIT-3-FRY-ICC-OLV-GWP",
+     "title": "3-Piece Set / Willow Green / Stainless",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 29499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "3-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Willow Green"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/CeramiClad_Olive_3p_Fry_Set-Hero.jpg?v=1778164740"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45159742865487:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45078271918159",
+     "sku": "KIT-2-FRY-ICC",
+     "title": "2-Piece Set / Sand / Stainless",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 30800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "2-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_10_12_1.jpg?v=1775851939"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45078271918159:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45078271950927",
+     "sku": "KIT-2-FRY-ICC-G",
+     "title": "2-Piece Set / Sand / Antique Brass",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 30800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "2-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Sand"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/CeramiClad_10in_12in_Fry_Set_AntiqueBrass--4.jpg?v=1775851941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45078271950927:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46756897751119",
+     "sku": "KIT-3-FRY-ICC-SGE",
+     "title": "3-Piece Set / Sage / Stainless",
+     "description": {
+      "html": "The first of its kind, the CeramiClad\u2122 Frying Pan combines the even and responsive heat control of our Award Winning 5-Ply Stainless Clad Cookware with a proprietary Non Stick ceramic coating. Simple to use and just as simple to maintain, our American-Made ceramic coating is made without PFAS, PFOA, PTFE, lead, and cadmium, making for a clean staple that'll last longer than lower-cost counterparts. Designed for everyday cooking, our multi-purpose CeramiClad\u2122 Frying Pans are compatible with electric, gas, and induction cooktops. With solid-but-light construction, and wall curvature, they\u2019re workhorses for everything from saut\u00e9ed vegetables to crisp-skinned seared fish, over-easy fried eggs, stacks of pancakes, and beyond. Unlike cheaper alternatives, they\u2019re safe up to 550 degrees and feature a Stay Cool Handle\u2122\u2014ideal for dishes that start on the stove and get finished in the oven."
+     },
+     "price": {
+      "amount": 29499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "3-Piece Set"
+      },
+      {
+       "name": "Color",
+       "label": "Sage"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/2026_Q3_CeramiClad_Sage_Green_3p_Fry_Set_Hero.jpg?v=1792173111"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/46756897751119:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Upgrade & Save",
+     "values": [
+      {
+       "label": "3-Piece Set"
+      },
+      {
+       "label": "2-Piece Set"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Obsidian Black"
+      },
+      {
+       "label": "Sand"
+      },
+      {
+       "label": "Willow Green"
+      },
+      {
+       "label": "Sage"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_CeramiClad_3p_Fry_Set-0973_33cfd87f-6943-41c1-b347-756f50b2a1f3.jpg?v=1762270220"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "CeramiClad Collection",
+    "Hero Bundle",
+    "klaviyo-reviews-ceramiclad-frying-pan"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/439299018",
+     "handle": "main-bundles",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/173933527119",
+     "handle": "non-stick",
+     "title": "Non Stick",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/280769757263",
+     "handle": "non-stick-carbon-cast-iron",
+     "title": "Non Stick + Carbon + Cast Iron",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7735402299471",
+   "title": "Stainless Clad Frying Pan Set",
+   "description": {
+    "html": "Get the professional performance of Stainless Clad in every size. Our Stainless Clad Frying Pan put us on the map and with this bundle, you get all three of our Award-Winning Frying Pans. Each Frying Pan is crafted from five layers of premium metals for optimized heat distribution and conduction. The long, Stay Cool Handle and relative light weight lets you move the pan around with ease. The 8\u201d is perfect for searing a filet mignon or frying up a morning egg. If you\u2019re cooking for two, the 10\u201d pan can be used for several portions of vegetables or two chicken breasts. Finally, our large 12\u201d Frying Pan allows you to cook a whole pack of bacon without trimming the strips or baking a Dutch Baby. Discover why this pan is beloved in professional kitchens nationwide."
+   },
+   "url": "https://checkout.madeincookware.com/products/stainless-clad-frying-pan-set",
+   "handle": "stainless-clad-frying-pan-set",
+   "price_range": {
+    "min": {
+     "amount": 22999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 28999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 28800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 41700,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45078271787087",
+     "sku": "KIT-2-FRY-ISS-V2",
+     "title": "2-Piece Set / Stainless",
+     "description": {
+      "html": "Get the professional performance of Stainless Clad in every size. Our Stainless Clad Frying Pan put us on the map and with this bundle, you get all three of our Award-Winning Frying Pans. Each Frying Pan is crafted from five layers of premium metals for optimized heat distribution and conduction. The long, Stay Cool Handle and relative light weight lets you move the pan around with ease. The 8\u201d is perfect for searing a filet mignon or frying up a morning egg. If you\u2019re cooking for two, the 10\u201d pan can be used for several portions of vegetables or two chicken breasts. Finally, our large 12\u201d Frying Pan allows you to cook a whole pack of bacon without trimming the strips or baking a Dutch Baby. Discover why this pan is beloved in professional kitchens nationwide."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "2-Piece Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_10_12.jpg?v=1775851934"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45078271787087:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45078271819855",
+     "sku": "KIT-2-FRY-ISS-R2-G",
+     "title": "2-Piece Set / Antique Brass",
+     "description": {
+      "html": "Get the professional performance of Stainless Clad in every size. Our Stainless Clad Frying Pan put us on the map and with this bundle, you get all three of our Award-Winning Frying Pans. Each Frying Pan is crafted from five layers of premium metals for optimized heat distribution and conduction. The long, Stay Cool Handle and relative light weight lets you move the pan around with ease. The 8\u201d is perfect for searing a filet mignon or frying up a morning egg. If you\u2019re cooking for two, the 10\u201d pan can be used for several portions of vegetables or two chicken breasts. Finally, our large 12\u201d Frying Pan allows you to cook a whole pack of bacon without trimming the strips or baking a Dutch Baby. Discover why this pan is beloved in professional kitchens nationwide."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "2-Piece Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_10in_12in_AntiqueBrass_Fry_Set-02-2.jpg?v=1775851930"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45078271819855:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45078271852623",
+     "sku": "KIT-2-FRY-SS-RG",
+     "title": "2-Piece Set / Brushed Copper",
+     "description": {
+      "html": "Get the professional performance of Stainless Clad in every size. Our Stainless Clad Frying Pan put us on the map and with this bundle, you get all three of our Award-Winning Frying Pans. Each Frying Pan is crafted from five layers of premium metals for optimized heat distribution and conduction. The long, Stay Cool Handle and relative light weight lets you move the pan around with ease. The 8\u201d is perfect for searing a filet mignon or frying up a morning egg. If you\u2019re cooking for two, the 10\u201d pan can be used for several portions of vegetables or two chicken breasts. Finally, our large 12\u201d Frying Pan allows you to cook a whole pack of bacon without trimming the strips or baking a Dutch Baby. Discover why this pan is beloved in professional kitchens nationwide."
+     },
+     "price": {
+      "amount": 24900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 28800,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "2-Piece Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/KIT-2-FRY-SS-RG_02_HERO-ALT_3000.jpg?v=1793828334"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/45078271852623:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42759042826319",
+     "sku": "KIT-3-FRY-ISS-P-R3",
+     "title": "3-Piece Set / Stainless",
+     "description": {
+      "html": "Get the professional performance of Stainless Clad in every size. Our Stainless Clad Frying Pan put us on the map and with this bundle, you get all three of our Award-Winning Frying Pans. Each Frying Pan is crafted from five layers of premium metals for optimized heat distribution and conduction. The long, Stay Cool Handle and relative light weight lets you move the pan around with ease. The 8\u201d is perfect for searing a filet mignon or frying up a morning egg. If you\u2019re cooking for two, the 10\u201d pan can be used for several portions of vegetables or two chicken breasts. Finally, our large 12\u201d Frying Pan allows you to cook a whole pack of bacon without trimming the strips or baking a Dutch Baby. Discover why this pan is beloved in professional kitchens nationwide."
+     },
+     "price": {
+      "amount": 24999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "3-Piece Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Stainless"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_Set_3p_FryingPan_1x1_Hero_9c32b795-a872-4cde-bfe8-c3ffbac3aa04.jpg?v=1762270194"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42759042826319:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42769263951951",
+     "sku": "KIT-3-FRY-ISS-G-P",
+     "title": "3-Piece Set / Antique Brass",
+     "description": {
+      "html": "Get the professional performance of Stainless Clad in every size. Our Stainless Clad Frying Pan put us on the map and with this bundle, you get all three of our Award-Winning Frying Pans. Each Frying Pan is crafted from five layers of premium metals for optimized heat distribution and conduction. The long, Stay Cool Handle and relative light weight lets you move the pan around with ease. The 8\u201d is perfect for searing a filet mignon or frying up a morning egg. If you\u2019re cooking for two, the 10\u201d pan can be used for several portions of vegetables or two chicken breasts. Finally, our large 12\u201d Frying Pan allows you to cook a whole pack of bacon without trimming the strips or baking a Dutch Baby. Discover why this pan is beloved in professional kitchens nationwide."
+     },
+     "price": {
+      "amount": 24999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "3-Piece Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Antique Brass"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_1x1_Stainless_3_Piece_Fry_PVD_Antique_Brass_Set-Hero_f6849720-5bb2-4220-80d9-664782acc6be.jpg?v=1744652989"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/42769263951951:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43975784300623",
+     "sku": "KIT-3-FRY-SS-RG-P",
+     "title": "3-Piece Set / Brushed Copper",
+     "description": {
+      "html": "Get the professional performance of Stainless Clad in every size. Our Stainless Clad Frying Pan put us on the map and with this bundle, you get all three of our Award-Winning Frying Pans. Each Frying Pan is crafted from five layers of premium metals for optimized heat distribution and conduction. The long, Stay Cool Handle and relative light weight lets you move the pan around with ease. The 8\u201d is perfect for searing a filet mignon or frying up a morning egg. If you\u2019re cooking for two, the 10\u201d pan can be used for several portions of vegetables or two chicken breasts. Finally, our large 12\u201d Frying Pan allows you to cook a whole pack of bacon without trimming the strips or baking a Dutch Baby. Discover why this pan is beloved in professional kitchens nationwide."
+     },
+     "price": {
+      "amount": 28999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Upgrade & Save",
+       "label": "3-Piece Set"
+      },
+      {
+       "name": "Handle Finish",
+       "label": "Brushed Copper"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Stainless_Set_3p_FryingPan_Hero_HIRES_PRODUCT-Editcopy.jpg?v=1766081340"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://madeincookware.myshopify.com/cart/43975784300623:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Upgrade & Save",
+     "values": [
+      {
+       "label": "2-Piece Set"
+      },
+      {
+       "label": "3-Piece Set"
+      }
+     ]
+    },
+    {
+     "name": "Handle Finish",
+     "values": [
+      {
+       "label": "Stainless"
+      },
+      {
+       "label": "Antique Brass"
+      },
+      {
+       "label": "Brushed Copper"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2131/5111/files/Web_Stainless_Set_3p_FryingPan_1x1_Hero_9c32b795-a872-4cde-bfe8-c3ffbac3aa04.jpg?v=1762270194"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-11-2-3-13-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Hero Bundle",
+    "klaviyo-reviews-stainless-frying-pan",
+    "pdq-memorial-day-upsell",
+    "Stainless Clad Collection",
+    "Stainless Clad Sets",
+    "Stainless-MC"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/439299018",
+     "handle": "main-bundles",
+     "title": "Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/74378969167",
+     "handle": "stainless-clad",
+     "title": "Stainless Clad",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263154925647",
+     "handle": "black-friday",
+     "title": "Cyber Week Sale",
+     "description": {
+      "html": "This is a description here."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279466606671",
+     "handle": "stainless-clad-sets",
+     "title": "Stainless Clad Sets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/279777181775",
+     "handle": "memorial-day-sale",
+     "title": "Memorial Day Sale",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzNOek0xTkRBeU1qazVORGN4TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

@@ -9,8 +9,15 @@ ALIASES = {
     "in": "in", "in.": "in", "inch": "in", "inches": "in", '"': "in", "”": "in", "″": "in",
     "cm": "cm", "centimeter": "cm", "centimeters": "cm", "mm": "mm", "millimeters": "mm",
     "kg": "kg", "kgs": "kg", "kilograms": "kg", "ft": "ft", "feet": "ft", "foot": "ft",
+    "qt": "qt", "qts": "qt", "qt.": "qt", "quart": "qt", "quarts": "qt", "l": "L", "liter": "L", "liters": "L",
+    "litre": "L", "litres": "L", "°f": "°F", "f": "°F", "fahrenheit": "°F", "degrees f": "°F",
+    "°c": "°C", "c": "°C", "celsius": "°C", "oz": "oz", "ounce": "oz", "ounces": "oz",
 }
-TO_BASE = {("cm", "in"): 1 / 2.54, ("mm", "in"): 1 / 25.4, ("ft", "in"): 12.0, ("kg", "lb"): 2.2046226}
+TO_BASE = {("cm", "in"): 1 / 2.54, ("mm", "in"): 1 / 25.4, ("ft", "in"): 12.0, ("in", "cm"): 2.54,
+           ("kg", "lb"): 2.2046226, ("oz", "lb"): 1 / 16, ("lb", "kg"): 1 / 2.2046226,
+           ("L", "qt"): 1.0566882, ("qt", "L"): 1 / 1.0566882}
+FAMILY = {"lb": "weight", "kg": "weight", "oz": "weight", "in": "length", "cm": "length", "mm": "length",
+          "ft": "length", "qt": "volume", "L": "volume", "°F": "temperature", "°C": "temperature"}
 
 
 def unit_name(unit):
@@ -24,6 +31,10 @@ def convert(value, unit, to):
         return None
     if unit == to:
         return value
+    if (unit, to) == ("°C", "°F"):
+        return round(value * 9 / 5 + 32, 1)
+    if (unit, to) == ("°F", "°C"):
+        return round((value - 32) * 5 / 9, 1)
     factor = TO_BASE.get((unit, to))
     return None if factor is None else round(value * factor, 2)
 
@@ -34,6 +45,28 @@ def span_found(figure, text):
     if not isinstance(start, int) or not isinstance(end, int) or not quote or text is None:
         return False
     return 0 <= start < end <= len(text) and text[start:end] == quote
+
+
+def sentence_around(text, start, end, most=260):
+    """(sentence, a, b): the store's sentence holding the span, and where the span sits inside it.
+    A very long sentence is cut at word ends near the span and marked with ellipses."""
+    left = max(text.rfind(". ", 0, start) + 2 if text.rfind(". ", 0, start) >= 0 else 0,
+               text.rfind("\n", 0, start) + 1, text.rfind("? ", 0, start) + 2 if text.rfind("? ", 0, start) >= 0 else 0)
+    stops = [i for i in (text.find(". ", end - 1), text.find("\n", end), text.find("? ", end)) if i >= 0]
+    right = min(min(stops) + 1 if stops else len(text), len(text))
+    right = max(right, end)
+    head, tail = "", ""
+    if right - left > most:
+        room = max((most - (end - start)) // 2, 20)
+        if start - left > room:
+            cut = text.find(" ", start - room, start)
+            left, head = (cut + 1 if cut >= 0 else start - room), "… "
+        if right - end > room:
+            cut = text.rfind(" ", end, end + room)
+            right, tail = (cut if cut >= 0 else end + room), " …"
+    sentence = head + text[left:right].rstrip() + tail
+    a = len(head) + start - left
+    return sentence, a, a + (end - start)
 
 
 def deciding(fig, op):
@@ -86,6 +119,8 @@ def check(limit, product, figs, facts, sheet):
                       "figure": t["figure"], "value": v, "unit": fig["unit"], "kind": fig["kind"],
                       "low": fig["low"], "high": fig["high"], "quote": fig["quote"],
                       "start": fig["start"], "end": fig["end"]})
+        if fig.get("sentence"):
+            terms[-1].update(sentence=fig["sentence"], quote_in_sentence=fig["quote_in_sentence"])
         lhs += v
     b = limit["bound"]
     if b["source"] == "issuer":
@@ -191,8 +226,14 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
                         "text": "nothing to spare" if t["margin"] == 0 else "%g %s to spare" % (t["margin"], t["bound"]["unit"])}
         else:
             status, tightest = "open", None
-            reason = "no page states every figure" if not inside and any(c["status"] == "not_stated" for c in cands) \
-                else ("nothing inside the limits" if not inside else "nothing inside the limits states a delivery time")
+            if inside:
+                reason = "nothing inside the limits states a delivery time"
+            elif any(c["status"] == "outside" for c in cands):  # pages that state every figure exist, and all fail
+                reason = "nothing inside the limits"
+            elif any(c["status"] == "not_stated" for c in cands):
+                reason = "no page states every figure"
+            else:
+                reason = "nothing inside the limits"
         lines.append({"line_id": line["id"], "need": line["need"], "room": line["room"], "status": status,
                       "reason": reason, "pick": pick["id"] if pick else None, "tightest": tightest,
                       "why": {"total": len(cands), "inside": len(inside), "with_delivery_time": len(eligible),

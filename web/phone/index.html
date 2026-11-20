@@ -338,6 +338,23 @@ function limitWords(line, limit) {
   const left = limit.terms.map((t) => (t.source === "store" ? "the store's " + t.figure.replace(/_/g, " ") : "the shopper's " + t.fact.replace(/_/g, " "))).join(" + ");
   return left + " " + limit.op + " " + bound;
 }
+let sensoRunning = false, sensoFor = null;
+function sensoCard(s) {
+  if (s.configured === false) return `<p class="mute">${esc(s.label || "Senso not connected")}</p>`;
+  const fresh = canon && s.for_hash === canon.sheet_hash;
+  const rows = fresh ? (s.checks || []) : [];
+  const tag = (v) => ({ verified: "ok", conflict: "bad", unsupported: "warn", error: "warn" }[v] || "");
+  const head = sensoRunning || !fresh ? "Senso is checking each sentence…" : rows.length + " sentences checked, " + (s.blocking || []).length + " stop the signature";
+  return `<p class="mute">${esc(head)}</p><ul class="sheet">${rows.map((c) => `<li><span class="tag ${tag(c.verdict)}">${esc(c.verdict)}</span>${c.blocks ? "" : ' <span class="mute">advisory</span>'}<br>${esc(c.sentence)}${c.moved_from_order ? '<br><span class="mute">Dana moved this from the order.</span>' : ""}</li>`).join("")}</ul>`;
+}
+async function ensureSenso() {
+  if (sensoRunning || !canon || !issuer || !issuer.senso || issuer.senso.configured === false || issuer.senso.for_hash === canon.sheet_hash || sensoFor === canon.sheet_hash) return;
+  sensoRunning = true; sensoFor = canon.sheet_hash;
+  try { await fetch("/api/senso/run", { method: "POST" }); await refreshIssuer(); }
+  catch (e) { /* the sign button still works; the server checks again */ }
+  sensoRunning = false;
+  if (tab === "sign" && !busy) renderSign();
+}
 function renderSign() {
   const main = $("#main");
   const buy = state.lines.filter((L) => (L.status === "ready" || L.status === "next_candidate") && pickOf(L));
@@ -371,8 +388,9 @@ function renderSign() {
       <p class="mute" id="plabel">${esc(per.label || "identity not checked")}</p>
       ${per.link ? `<p><a href="${esc(per.link)}" target="_blank" rel="noopener">Open the identity check (sandbox)</a></p>` : ""}
       <div class="btns"><button class="act" id="pstart">Check my identity</button><button class="act" id="pstatus">Refresh status</button></div></div>
-    <div class="card"><h2>Senso checks</h2><p class="mute">${esc(senso.configured === false ? (senso.label || "not connected") : ((senso.checks || []).length + " sentences checked, " + (senso.blocking || []).length + " blocking"))}</p></div>
+    <div class="card"><h2>Senso checks</h2>${sensoCard(senso)}</div>
     <div class="btns"><button class="act primary big" id="sign" ${canon && buy.length ? "" : "disabled"}>Sign and create carts</button></div>`;
+  ensureSenso();
   $("#pstart").onclick = async () => {
     try { persona = await getJSON("/api/issuer/persona/start", { method: "POST" }); await refreshIssuer(); renderSign();
       if (!persona.link) toast(persona.reason || persona.label); } catch (e) { toast(e.message); }
