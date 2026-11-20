@@ -57,6 +57,11 @@ def test_the_pages_own_code_agrees(proof):
     assert out["firstBound"] == "300" and out["same"] is True
     assert out["oneChar"]["fingerprint"] != proof["sheet_hash"] and out["oneChar"]["messageVerifies"] is True
     assert out["oneChar"]["coversThis"] is False and out["oneChar"]["valid"] is False
+    # change 300 to 250 and back: the first fingerprint returns, and the signature is valid again
+    assert out["to250"] == "250" and out["back"] == [None, None, None]
+    assert out["changed"]["valid"] is False and out["changed"]["fingerprint"] != proof["sheet_hash"]
+    assert out["restored"]["valid"] is True and out["restored"]["fingerprint"] == proof["sheet_hash"]
+    assert out["keyId"] == proof["public_key"]["key_id"] == out["real"]["keyId"]  # the key's fingerprint, computed in the page
     assert out["roundTrip"] is False  # why the page edits the text in place: a re-serialised copy is not the signed bytes
     assert out["quote"] == json.dumps('1–5 days "x"')
 

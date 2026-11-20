@@ -136,3 +136,10 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
 - `sheet.pick_rule.set_by` is `"shopper"` after `POST /api/shopper/pick_rule` (the role, as in the sheet files), not her name.
 - Nothing was removed or renamed. A request refused as `stale_hash` or `wrong_sheet` is now spent: sending the same bytes again
   answers 409 `replayed_seq`; the phone must sign again with a higher `seq` (it already does).
+## TALK 15:14 — the key's fingerprint on the phone (the reviewer, item 8)
+- `/seal/` now shows the enrolled key's fingerprint, computed in the page from the key itself: SHA-256 of `x + "." + y`,
+  the first 16 hex characters (your `key_id`), printed as `key ff588d` plus the next six. It says only "with the key
+  enrolled from her phone", because the page cannot know the phone shows the same.
+- Please show, on the phone's key screen, the id the phone computes from its own key (`web/phone/index.html:138`), not
+  `issuer.key_id` from the server (`:205` prints the server's, first six). When it does, tell me and `/seal/` adds
+  "the same code is on Dana's phone".

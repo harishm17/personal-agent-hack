@@ -1,6 +1,6 @@
 // Signature: draws GET /api/seal/proof and checks the signature here, in this browser (verify.js, WebCrypto).
 // Nothing on this page writes anything: an edit changes a copy of the canonical text held in the page.
-import { check, scan, splice, jsonString, sha256, hex } from "/seal/verify.js";
+import { check, scan, splice, sha256, hex, keyId, rawFor } from "/seal/verify.js";
 
 const q = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -10,6 +10,7 @@ const money = (cents) => "$" + (cents / 100).toFixed(2);
 const P = new URLSearchParams(location.search);
 const ui = { tried: {}, trying: false, key: "", proof: null, groups: [], nodes: new Map(), edits: new Map(), real: null, now: null, editing: null, cartOnly: P.get("view") === "cart", played: P.has("still") };  // ?still: no arrival motion
 const LANE = { phone: 2, agent: 3, stores: 4 };
+const LAID_OUT = new Set(["quotes", "product_key", "title", "variant_title", "price_cents", "quantity", "delivery", "store", "checks", "currency"]);
 const OPS = { ">=": "≥", "<=": "≤", "==": "=", ">": ">", "<": "<" };
 const ICON = {
   key: '<svg viewBox="0 0 12 12"><circle cx="3.5" cy="8.5" r="2"/><path d="M5 7l5-5M8 4l1.5 1.5"/></svg>',
@@ -32,14 +33,20 @@ function build(proof) {
     }
     if (L.struck.items.length) rows.push({ owner: "issuer", label: "struck", text: `${L.struck.items.length} products` });
     if (L.pick.type === "object") {
-      const p = L.pick.items;
+      const p = L.pick.items, name = p.title && p.title.type === "string" ? p.title : p.product_key;
       for (const quote of p.quotes.items) rows.push({ owner: "store", label: "store's words", parts: [part(quote, "text")] });
       rows.push({ owner: "store", label: "pick", cart: true, tail: p.store.value,
-        parts: [part(p.product_key, "text"), ...(p.variant_title.type === "string" ? [part(p.variant_title, "text")] : [])] });
+        parts: [part(name, "text"), ...(p.variant_title.type === "string" ? [part(p.variant_title, "text")] : [])] });
       rows.push({ owner: "store", label: "price", cart: true, parts: [part(p.price_cents, "money")], lead2: "×", parts2: [part(p.quantity, "num")] });
       rows.push(p.delivery.items.quote.type === "string"
         ? { owner: "store", label: "delivery", parts: [part(p.delivery.items.quote, "text")] }
         : { owner: "store", label: "delivery", text: "not stated" });
+      // any other text or number the canonical sheet holds for the pick gets its own row, named by its key, so a
+      // field added to the sheet later is shown and can be changed without a change here (ids and codes stay out)
+      for (const [key, node] of Object.entries(p)) {
+        if (LAID_OUT.has(key) || node === name || /(^|_)id$/.test(key) || !["string", "number"].includes(node.type)) continue;
+        rows.push({ owner: "store", label: key.replace(/_/g, " "), parts: [part(node, key.endsWith("_cents") ? "money" : node.type === "number" ? "num" : "text")] });
+      }
     } else rows.push({ owner: "none", label: "pick", text: "none" });
     groups.push({ title: L.need.value, rows });
   }
@@ -92,7 +99,9 @@ function renderCheck() {
   const onPhone = real.signedFingerprint || real.fingerprint;  // the phone computes it from the same canonical text
   const same = r.fingerprint === onPhone;
   q("#codes").innerHTML = `<span class="code ${same ? "" : "off"}" title="${esc(r.fingerprint)}">${esc(short(r.fingerprint))}</span>
-    <span class="phone">${ICON.phone}<span>${esc(who)}'s phone ${p.signed ? "showed" : p.public_key ? "shows" : "will show"} ${same ? "the same code" : `<code>${esc(short(onPhone))}</code>`}</span></span>`;
+    <span class="phone">${ICON.phone}<span>${p.signed
+      ? (same ? "the message her key signed names the same code" : `the message her key signed names <code>${esc(short(onPhone))}</code>`)
+      : "no signed message names this code yet"}</span></span>`;
   q("#sum").textContent = p.summary.text;
   const restore = edited ? `<button class="link" id="restore">Restore</button>` : "";
   let html;
@@ -100,8 +109,9 @@ function renderCheck() {
     html = `<div class="verdict none">Nothing is signed yet: no cart can exist</div>
       <div class="steps"><span>${edited ? "the fingerprint changed with your edit" : "change a value: the fingerprint follows"}</span></div>${restore}`;
   } else if (r.valid) {
-    html = `<div class="verdict"><span class="tickmark">✓</span>Verified in this browser with ${esc(who)}'s public key</div>
-      <div class="steps"><span class="ok">SHA-256 recomputed</span><span class="ok">ECDSA P-256 signature</span><span>seq ${esc(p.signature.seq)}</span></div>`;
+    html = `<div class="verdict"><span class="tickmark">✓</span>Checked in this browser: ${esc(who)}'s key signed this</div>
+      <div class="steps"><span class="ok">SHA-256 recomputed</span><span class="ok">ECDSA P-256 signature</span><span>seq ${esc(p.signature.seq)}</span></div>
+      <div class="steps"><span>with the key enrolled from her phone · <code>key ${esc(r.keyId.slice(0, 6))}</code>${esc(r.keyId.slice(6, 12))}</span></div>`;
   } else if (edited) {
     html = `<div class="verdict bad">Not what ${esc(who)} signed</div>
       <div class="steps"><span class="no">fingerprint differs</span><span class="${r.coversThis ? "ok" : "no"}">signature over this copy</span></div>${restore}`;
@@ -122,11 +132,9 @@ async function recompute() {
 function commit(id, text) {
   const { node, kind } = ui.nodes.get(id);
   ui.editing = null;
-  let raw = null, value = text;
-  if (kind === "text") raw = jsonString(text);
-  else if (/^\s*-?\d+(\.\d+)?\s*$/.test(text)) raw = kind === "money" ? String(Math.round(Number(text) * 100)) : text.trim();
-  if (raw === null || raw === (node.raw ?? jsonString(node.value))) ui.edits.delete(id);  // not a number, or unchanged
-  else ui.edits.set(id, { raw, value });
+  const raw = rawFor(node, kind, text);
+  if (raw === null) ui.edits.delete(id);  // not a value of this kind, or the value that was there: the original bytes
+  else ui.edits.set(id, { raw, value: text });
   recompute();
 }
 
@@ -194,7 +202,7 @@ function renderLanes() {
   q("#lanes").innerHTML = `<div class="cap">Who holds what</div>
     <div class="lg head"><span></span>
       <div class="lane"><b>${esc(who)}'s phone</b>${p.public_key ? holds("priv", ICON.key, "private key") : holds("none", ICON.key, "no key yet")}<span class="cap">made on the phone, never leaves it</span></div>
-      <div class="lane"><b>Sign-Off, the agent</b>${p.public_key ? holds("", ICON.key, "public key " + p.public_key.key_id.slice(0, 8)) : holds("none", ICON.key, "no public key")}<span class="cap">can check a signature, cannot make one</span></div>
+      <div class="lane"><b>Sign-Off, the agent</b>${p.public_key ? holds("", ICON.key, "public key " + p.public_key.key_id.slice(0, 6)) : holds("none", ICON.key, "no public key")}<span class="cap">can check a signature, cannot make one</span></div>
       <div class="lane"><b>The stores</b>${carts ? holds("", "", carts + (carts === 1 ? " cart" : " carts")) : holds("none", "", "no cart")}<span class="cap">${carts ? "made after the check, from the signed picks" : "none until a signature verifies"}</span></div>
     </div><div class="evs">${events.join("") || `<div class="lg ev" style="--a:2"><time></time><span class="at empty">Nothing has happened in this run yet</span></div>`}</div>`;
   ui.played = true;
