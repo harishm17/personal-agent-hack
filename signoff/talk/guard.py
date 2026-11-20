@@ -204,3 +204,15 @@ def gaps(text: str) -> list:
     """A gap mark left in a rewritten message: the message is not whole, so it does not leave."""
     return [{"start": m.start(), "end": m.end(), "text": m.group(0), "kind": "gap", "mark": "gap mark", "by": "code",
              "rule": "a message with a gap mark in it is not sent"} for m in re.finditer(r"\[\s*(?:…|\.{3})\s*\]", text)]
+
+
+def left(text: str, sheet: dict, product: dict | None = None, recipient_kind: str = "store") -> list:
+    """The permitted facts a message carries: [{"class", "mark", "text"}], one per kind, in the order of KINDS."""
+    may, known, out = allowed(sheet, recipient_kind), facts(sheet, product), []
+    for kind in KINDS:
+        if kind in may:
+            hit = next((m.group(0) for s in known[kind] if isinstance(s, str) and s
+                        for m in [re.search(re.escape(s), text or "", re.I)] if m), None)
+            if hit:
+                out.append({"class": kind, "mark": MARK[kind], "text": hit})
+    return out

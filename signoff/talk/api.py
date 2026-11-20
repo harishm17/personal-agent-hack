@@ -18,7 +18,9 @@ class Ask(BaseModel):
 def threads(sheet: str | None = None):
     """The saved conversations of the active sheet (or `sheet`), oldest first, with the sharing rule in force."""
     sid = sheet or sheetctx.active_id()
-    return {"sheet": sid, "rule": guard.rule(sheetctx.sheet(sid)), "threads": talk.threads(sid)}
+    sh = sheetctx.sheet(sid)
+    return {"sheet": sid, "title": sh.get("title"), "rule": guard.rule(sh), "marks": guard.MARK, "threads": talk.threads(sid),
+            "messages": talk.messages(sh)}
 
 
 @router.post("/api/talk/ask")

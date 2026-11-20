@@ -123,7 +123,7 @@ def _ledger(store: str, turn: dict, prod: dict | None) -> None:
 
 
 def _turn(n: int, text: str, questions: list, thread: dict, sheet: dict, prod: dict | None, deps: dict) -> dict:
-    turn = {"n": n, "questions": questions, **_decide(text, sheet, prod, deps["finder"], deps["rewrite"])}
+    turn = {"n": n, "at": _now(), "questions": questions, **_decide(text, sheet, prod, deps["finder"], deps["rewrite"])}
     _ledger(thread["store"], turn, prod)
     if turn["sent"]:
         saved = exchange(thread["store"], turn["sent"])
@@ -193,4 +193,30 @@ def plan(state: dict, sheet: dict) -> list:
             if c.get("picked") and need:
                 out.append({"store": c["product"]["store"], "product_id": c["product"]["product_id"],
                             "purpose": purpose_for(need, sheet)})
+    return out
+
+
+def messages(sheet: dict) -> list:
+    """Every outbound message of the sheet's saved threads, flat and oldest first: what the model wrote, what the guard
+    stopped and by which rule, what left, which permitted facts it carried, and the store agent's reply with the
+    offsets of the answering words."""
+    out = []
+    for t in threads(sheet["id"]):
+        prod = {"product_id": t.get("product_id"), "title": t.get("title")} if t.get("title") else None
+        for turn in t["turns"]:
+            reply = None
+            if turn.get("reply"):
+                reply = {"text": turn["reply"], "at": turn.get("reply_at"),
+                         "answers": [{"start": a["start"], "end": a["end"], "quote": a["quote"], "question": a["question"]}
+                                     for a in turn.get("answers", [])]}
+            out.append({
+                "id": "%s:%d" % (t["id"], turn["n"]), "thread": t["id"], "n": turn["n"], "origin": t["origin"],
+                "store": t["store"], "product": prod and {"id": prod["product_id"], "title": prod["title"]},
+                "at": turn.get("at") or turn.get("reply_at") or t["asked_at"], "purpose": t["purpose"],
+                "draft": turn["draft"],
+                "removed": [{"text": s["text"], "class": s["kind"], "mark": s["mark"], "rule": s["rule"], "by": s["by"],
+                             "start": s["start"], "end": s["end"]} for s in turn["removed"]],
+                "decision": turn["decision"], "why": turn.get("why"), "sent": turn["sent"],
+                "left": guard.left(turn["sent"], sheet, prod) if turn["sent"] else [],
+                "reply": reply})
     return out

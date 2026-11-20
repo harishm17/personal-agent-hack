@@ -136,3 +136,19 @@ def test_a_rewrite_that_keeps_a_gap_mark_is_not_sent(sheet, finder):
     store = Store()
     t = run(sheet, finder, store, LEAKS[0][1], rewritten="It must hold […]. Can it be returned?")
     assert store.got == [] and t["turns"][0]["decision"] == "refused" and t["turns"][0]["still"][0]["kind"] == "gap"
+
+
+def test_messages_give_the_flat_shape_the_trail_draws(sheet, finder):
+    run(sheet, finder, Store(), "It is for my mother and must hold 300 lb. Can it be returned by December 2, 2026?",
+        rewritten=CLEAN)
+    m = talk.messages(sheet)[0]
+    first = m["thread"]
+    assert set(m) == {"id", "thread", "n", "origin", "store", "product", "at", "purpose", "draft", "removed", "decision",
+                      "why", "sent", "left", "reply"}
+    assert [(r["text"], r["class"]) for r in m["removed"]] == [("my mother", "person"), ("300 lb.", "limit")]
+    assert all(r["rule"] and m["draft"][r["start"]:r["end"]] == r["text"] for r in m["removed"])
+    assert m["sent"] == CLEAN and m["left"] == [{"class": "need_by", "mark": "need-by date", "text": "December 2, 2026"}]
+    assert m["reply"]["text"][m["reply"]["answers"][0]["start"]:m["reply"]["answers"][0]["end"]] == "Yes"
+    run(sheet, finder, Store(), "It must hold 300 lb.", rewritten="It must hold 300 lb.", purpose="b")
+    refused = next(x for x in talk.messages(sheet) if x["thread"] != first)
+    assert refused["sent"] is None and refused["reply"] is None and refused["left"] == [] and refused["why"]
