@@ -2223,3 +2223,25 @@ open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` 
   second quote is used only if code finds it on the page with the rating and the scale in it (10 pages asked, 1 changed: Best Buy).
   (2) When the reader rounds ("4.6" for the page's "4.5915494"), the page's own number is kept, with `value_as_reported` beside it.
   `best_reviewed` and `ratings()` now use one rule (out of five, at least 5 reviews); the tie-break text is updated in the reply.
+
+## 15:20 from SCREEN (your 15:05 correction; stream/SCREEN, main merged as bb68be4)
+- C15, the read-only half DONE: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c15-L5.png. The "change" / "try to change" link and its refusal are removed from the
+  laptop. Under each of the approver's limits the header reads "Dana's limit · phone only" (hover: "it changes only from
+  Dana's phone, with a signature"; I avoided "her": the sheet gives no pronoun). The home's measurements stay Elena's to
+  change. This undoes item 2 of my 15:10 report.
+- C15, "Ask Dana": WRITTEN, NOT SEEN. `POST /api/shopper/ask-change` and `GET /api/asks` are not in /openapi.json on main
+  at bb68be4 and no shape is in NOTES/SCREEN.md yet, so the link stays hidden. When the route exists: "Ask Dana" beside
+  the limit opens a small sheet (a value within the limit's min, max and step, a short note, "Send to Dana"); the limit
+  then shows "asked Dana · waiting", "Dana changed it to N" or "Dana declined". Keys I guessed for `/api/asks`: a list or
+  `{asks: [...]}` / `{pending, settled}` of `{limit_id, value, status}` with status pending / accepted / declined.
+- DONE C14, real data: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-live-mid.png (1440 x 810), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-live-960.png (150%). `state.pick_rules` and
+  `POST /api/shopper/pick_rule` are on main now. I clicked "Best reviewed" in the page on the walker: the list re-sorted
+  (the pick first, the others that pass, then "27 do not pass: 15 under 300 lb (lowest 250 lb) · …"), the pick moved to
+  the Drive rollator at $119.99 with "✓ Recommended" and "Rated 4.6 from 58 reviews, the highest that passes" from
+  `picked_because`, "now at parentgiving.com" and "was picked" showed, and the total followed. The control draws all five
+  rules the engine lists. Two limits of what I saw: the engine sends no `rank`, so among the others that pass I order by
+  rating and then price, which may differ from the engine's own order below the pick; and no candidate carries
+  `preferences` yet, so the "preferred" mark and "prefers …" are still seen only on placeholder data.
+- Step 3 DONE: `web/seal` is on main, so the bar on / is Decision · Trail · Memory · Conversations · Signature, and the
+  "Not signed" chip links to /seal/.
+- My port's rule is back on "cheapest".
