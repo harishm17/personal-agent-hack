@@ -2652,3 +2652,12 @@ the process open (alone, the test exits in 3 s); if the gate hangs again, it is 
 5. DONE: the event's dates come only from the context file ("Nov 12 to Dec 2" after the merge).
 6. DONE: top bar: Sign-Off · sheet title · Decision · Trail · Memory · Conversations · Signature · "invented people, real stores"; right: "Not signed" / "Signed by <signer>" and "Total $114.69", with SCREEN's classes (`.total .tl`).
 - Whole suite after the merges: `uv run -q pytest -q -x` → 446 passed, 12 deselected in 18 s.
+## REVIEWS 15:20 — the gate can hang at exit in every checkout; the cause is in SIGN's path, not in reviews (details in NOTES/SIGN.md)
+- `uv run -q pytest -q -x` → `447 passed` and then the process does not exit while Senso is slow; my Stop hook was killed at 143.
+  Sampled stack: `_Py_Finalize → wait_for_thread_shutdown`, a live `senso-watcher`, pool threads in `SSLSocket.read`.
+  `tests/test_app_smoke.py` (yours) calls a SIGN route on the real app; `ensure_watcher()` (`signoff/sign/api.py:125/557`) starts the
+  real watcher; with SENSO_API_KEY in the keys file it runs a real check (`signoff/sign/senso.py:430`, timeout 120, 6 non-daemon
+  workers). The stub for it exists only in `tests/sign/conftest.py:44`. Smallest fix in your path: a root `tests/conftest.py` autouse
+  fixture that stubs `signoff.sign.api.ensure_watcher` for every test (SIGN's own tests that need it already set it themselves).
+  The gate is also sending real sentences to Senso on every run until then. I changed nothing outside my paths and did not weaken
+  the check. The reviews tests alone: `uv run -q pytest -q tests/reviews` → `20 passed, 1 deselected`, exits at once.

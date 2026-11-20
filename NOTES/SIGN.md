@@ -167,3 +167,18 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
 - Please show, on the phone's key screen, the id the phone computes from its own key (`web/phone/index.html:138`), not
   `issuer.key_id` from the server (`:205` prints the server's, first six). When it does, tell me and `/seal/` adds
   "the same code is on Dana's phone".
+## REVIEWS 15:20 — the gate hangs at exit: a real Senso run is started from a test outside tests/sign (found by sampling the stuck process)
+- What happens: `uv run -q pytest -q -x` prints `447 passed` in 18 s and then does not exit (seen 3 times between 15:10 and 15:16 in
+  the REVIEWS checkout; the Stop hook killed one at exit code 143). `sample <pid>` of the stuck process: main thread in
+  `_Py_Finalize → wait_for_thread_shutdown`, a live `senso-watcher` thread, and `ThreadPoolExecutor-14_*` threads in `SSLSocket.read`.
+- Cause: `ensure_watcher()` is called from the route handlers at `signoff/sign/api.py:125` (GET /api/issuer/status), `:359`, `:557`
+  (GET /api/senso/checks), `:564`, `:622`. `tests/sign/conftest.py:44` stubs it, but only for tests/sign. `tests/test_app_smoke.py`
+  calls a SIGN route on the real app, the real watcher starts, `senso.configured()` is true (the key is in the shared keys file), and
+  `signoff/sign/senso.py:430` runs a real check: `httpx.Client(timeout=120)` with `ThreadPoolExecutor(6)`. Pool threads are not
+  daemons, so the interpreter waits for Senso at exit, up to 120 s per call when Senso queues. Since 0861875 (14:15, G21).
+- It also means every stream's gate sends real sentences to Senso on every run, which the gate must not do (`-m 'not live'`).
+- Exact change asked, general: the watcher must not start a run in a test process unless a test asks for it. One way: in
+  `ensure_watcher()` return when `config.env("SIGNOFF_OBS") == "off"` is not the right switch; better a switch of your own read in
+  one place (`SIGNOFF_SENSO_WATCH=off`), set for the whole suite by the integrator in `pyproject.toml` (`env`) or a root
+  `tests/conftest.py` fixture that stubs `api.ensure_watcher` for every test, as your own conftest already does. And give the run a
+  bounded wait at exit: submit with a pool you shut down with `cancel_futures=True`, or make the workers daemon threads.
