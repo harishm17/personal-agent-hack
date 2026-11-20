@@ -158,3 +158,17 @@ def test_a_drill_session_runs_on_a_private_sheet_and_is_graded_on_its_state(monk
     assert state.sheet_hash() == live_hash and struck() == live_struck and struck("L2") == []  # the live sheet never moved
     assert client.post("/api/drill/say", json={"session": "nope", "text": "x"}).status_code == 404
     assert client.post("/api/drill/session", json={"strike_line": "L9"}).status_code == 404
+
+
+def test_a_reply_with_a_number_that_is_not_in_the_tool_results_is_asked_again_then_replaced(monkeypatch):
+    assert chat.stray_numbers("It costs $88.99 and holds 350 lb.", '{"price": "$88.99"}', "is 350 enough?") == []
+    assert chat.stray_numbers("That is $5.28 more.", '{"price": "$88.99"}') == ["5.28"]
+    answers = iter(['{"intent": "question", "reply": "Fixture product N costs $94.50, which is $5.51 more."}',
+                    '{"intent": "question", "reply": "Fixture product N costs $94.50."}'])
+    monkeypatch.setattr(chat.reader, "ask", lambda *a, **k: (next(answers), {}, "test-model"))
+    out = chat.say("how much is the bedside commode pick?")
+    assert out["reply"] == "Fixture product N costs $94.50." and out["numbers_checked"] is True
+    monkeypatch.setattr(chat.reader, "ask", lambda *a, **k: (
+        '{"intent": "question", "reply": "It is $5.51 more."}', {}, "test-model"))
+    out = chat.say("how much is the bedside commode pick?")
+    assert "5.51" in out["reply"] and "can't put that into words" in out["reply"] and out["numbers_checked"] is False

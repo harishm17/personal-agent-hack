@@ -46,6 +46,9 @@ How to answer:
 - Two to four plain sentences. Neutral and practical. No lists, no headings, no emoji.
 - Use only facts from the tool results. Quote numbers exactly as they appear there. Say a store "states" a
   figure, never that anything is proved. If the results do not hold the answer, say so.
+- Do no arithmetic. Every number in your answer must appear, digit for digit, in the tool results or in her
+  message; code checks this and throws away an answer that has any other number. Do not work out differences,
+  totals, percentages or dates; code did the sums and they are in the results.
 - Never suggest, estimate or comment on what a limit should be, and give no medical advice.
 - {shopper_name} can change her own measurements herself, with the sliders on the screen; you cannot.
 
@@ -130,6 +133,19 @@ def _context(text, s, source=state):
     return calls, results
 
 
+NUMERAL = re.compile(r"\d+(?:,\d{3})*(?:\.\d+)?")
+
+
+def stray_numbers(reply, *sources):
+    """Numbers in a reply that are in none of the sources (the tool results, her message). Code, not a model:
+    a number the model worked out or misremembered is not shown."""
+    known = set()
+    for source in sources:
+        for n in NUMERAL.findall(source):
+            known.add(float(n.replace(",", "")))
+    return [n for n in NUMERAL.findall(reply) if float(n.replace(",", "")) not in known]
+
+
 def _parse(reply):
     start, end = reply.find("{"), reply.rfind("}")
     obj = json.loads(reply[start:end + 1])
@@ -164,15 +180,27 @@ def say(text: str, source=state, history=None, live=True) -> dict:
         user = "Tool results:\n%s\n\n%s%s says: %s" % (
             json.dumps(results, ensure_ascii=False), ("Earlier in this chat:\n%s\n" % earlier) if earlier else "",
             sheet["shopper"]["name"], text)
+        stray = []
         try:
             raw, _, used = reader.ask(model, system, user, live=live)
             intent, reply = _parse(raw)
+            stray = stray_numbers(reply, user)
+            if stray and intent not in CHANGES:  # once more, naming the numbers; then code's own words
+                raw, _, used = reader.ask(model, system, user + "\n\nYour last answer contained numbers that are not "
+                                          "in the tool results: %s. Answer again without them." % ", ".join(stray), live=live)
+                intent, reply = _parse(raw)
+                stray = stray_numbers(reply, user)
+                if stray:
+                    reply = "I can't put that into words I can stand behind: my answer held a number (%s) that is " \
+                            "not in what the stores state or what code worked out. The screen shows each line's " \
+                            "sums, quotes and reasons." % ", ".join(stray)
         except Exception as error:  # noqa: BLE001  (no model: say so; the state is untouched either way)
             intent, reply, used = "unavailable", "I can't reach my model right now (%s). Nothing on the sheet has " \
                 "changed; the screen shows every line and reason." % type(error).__name__, model
         refused = intent in CHANGES
         out = {"reply": refusal(intent, s) if refused else reply, "refused": refused, "intent": intent,
-               "decided_by": "model intent, code refusal" if refused else "model", "tool_calls": calls, "model": used}
+               "decided_by": "model intent, code refusal" if refused else "model", "tool_calls": calls, "model": used,
+               "numbers_checked": not stray}
     with _lock:
         history.extend([(s["sheet"]["shopper"]["name"], text), ("Agent", out["reply"])])
         del history[:-12]

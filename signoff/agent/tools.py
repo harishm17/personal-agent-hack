@@ -57,7 +57,15 @@ def read_candidates(line_id: str, source=state) -> dict:
     line = next((l for l in s["lines"] if l["line_id"] == line_id), None)
     if line is None:
         return {"error": "no line %s" % line_id}
-    return {"line_id": line_id, "need": line["need"], "candidates": [_candidate(c) for c in line["candidates"]]}
+    pick = next((c["product"]["price_cents"] for c in line["candidates"] if c["picked"]), None)
+    out = []
+    for c in sorted(line["candidates"], key=lambda c: (c["product"]["price_cents"], c["id"])):  # cheapest first
+        row = _candidate(c)
+        if pick is not None and not c["picked"]:  # the comparison is code's, so the model need not make it
+            price = c["product"]["price_cents"]
+            row["price_against_pick"] = "cheaper" if price < pick else ("dearer" if price > pick else "same price")
+        out.append(row)
+    return {"line_id": line_id, "need": line["need"], "order": "cheapest first", "candidates": out}
 
 
 TOOLS = {"read_state": read_state, "read_candidates": read_candidates}
