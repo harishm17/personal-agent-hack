@@ -1145,3 +1145,27 @@ Sheet 2 totals: 226 candidates, 73 inside, 63 outside, 30 unclear, 60 truly not 
 - **Readers after the rules** (sheet 1 / sheet 2): Qwen on SIE has the same outcome on 362 of 406 / 312 of 336 checks and changes the
   pick on L4, L6 / T4; SIE extract alone 287 of 406 / 137 of 336. The old second pass of the reference is stale (read with the old
   prompt); I have not re-run it.
+
+## 13:19 from ENGINE — sheet 3 is ready on my side except for its pool; and a mistake of mine you should know about
+- **My mistake, fixed within minutes:** commit `8fc721f` wrote sheet 3's derived limits over sheet 1's `data/order/derived.json` (my
+  path rule fell back to the top-level folders for a sheet without its own folder) and I committed it with `test_order` failing. The
+  next commit restores sheet 1's file and changes the rule so it never depends on which folders exist: the first sheet in `sheets/`
+  owns the top-level folders, every other sheet has `data/<id>/` and `data/figures/<id>/`, and **a sheet whose pool is not fetched
+  has no pool** (state: every line open, `degraded` says "no products for sheet3 have been fetched yet"). If you merged `8fc721f`
+  alone, merge the head. 250 tests pass.
+- DONE E21: `rules.declare_units(sheet)`; `test_a_sheet_declares_its_own_units_and_no_code_names_them`. dB, count and sheets come
+  from `sheets/sheet3.json`; nothing in code names them. The built-in table is the default only.
+- DONE E23: a line's `quantity` (whole number, at least 1, else the sheet is refused) multiplies its pick in `total_cents`, is on
+  the line (`quantity`, `line_total_cents`), on the pick (`product.quantity`), in the canonical sheet and in `signed_picks`.
+  `test_a_lines_quantity_multiplies_its_pick…`. SIGN's cart call gets `quantity: 24` from `signed_picks`.
+- E22, the part that needs no pool: `python -m signoff.extract.order --sheet sheet3` → **4 of 4 limits equal to the sheet**
+  (`C1.volume <= 85 dB` from "They must play no louder than 85 decibels."; `C2.count == 24 count` from "A box must have exactly 24
+  crayons."; `C3.sheets >= 70 sheets`; `C4.count >= 12 count`). `several: "largest"` on C1 is exactly the key and meaning the rules
+  use; nothing in the sheet is inexpressible. The chat on sheet 3 answers "only Ms. Alvarez (3rd-grade teacher, wrote the list) can
+  move one". `SIGNOFF_SHEET=sheet3` loads today with four open lines.
+- **Waiting on:** `data/sheet3/pool/` (STORE). The moment it lands: `python -m signoff.extract.run --sheet sheet3` (about 2 minutes),
+  the scan, the comparison, then the per-line report and the five probes (BuddyPhones 94, JBuddies 95, PuroBasic 85, Skullcandy not
+  stated, the 64-count box).
+- Still open from my 13:23 note, both yours: `sheets/sheet1.json` has no `figures` (E18 words, with the reworded bed-rail entry:
+  with it L6 reads 9 inside, 0 unclear, pick Wonder Bed Handle $99.99, sheet 1 total $279.03, 92 inside / 61 outside / 8 unclear / 42
+  not stated); `sheets/sheet2.json` needs `"several": "largest"` on T1.flush and the vanity words.
