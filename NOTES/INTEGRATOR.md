@@ -2696,3 +2696,21 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
 ## GRAPH 15:34 — final state for the 15:39 merge
 - Product nodes are photos, nothing under 12 px: WORKING on `stream/GRAPH` with main (15:29 polling line included) merged in. Rules stage: `web/graph/shots/explore-6.png` (1440 x 810; 73 walker photos, 17 pulled aside grey under "15 outside · 2 unclear"). The embed's last frame after a cold autoplay: `web/graph/shots/embed-last.png` (1320 x 700; five survivors at 72 px, the gate, "Back to the list"). `uv run pytest tests/graph -q` → 20 passed, 1 deselected. /graph/ needs the app restarted after the merge to pick up nothing new in routes, only static files: a reload is enough if the mount already exists.
 - Not checked by me: motion in a non-headless browser; a real 150% zoom (the canvas scales by viewBox; 960 x 540 looked right); the embed inside the decision screen's iframe.
+
+## TALK 15:49 — the "Without Dana's signature" card reshaped (the builder, 15:51 message); what it sends is unchanged
+- Leads with the record: "N refused in this run", then one row per refusal from the receipt chain, newest first (four
+  shown, "+N earlier"): what was attempted in the sheet's words, whether the refusal is one raised before or after a
+  signature of hers verified, the server's own sentence from the receipt, the time. With none: "No one has tried in this run."
+- "Send one yourself": four plain rows with a small "Send". A sent row opens to the exact request (method, path, the JSON
+  body as sent, the signature shortened to 16 characters) and the exact response (status and the raw body text).
+- "copy as curl" on each row, for `PUBLIC_URL` when the proof has it (`public_url`), else the page's own origin. The line
+  reads "these are real requests to this server. Send them from anywhere." The slogan line is gone.
+- Two things the records do not hold, so the page does not show them: where a request came from (laptop, outside, phone)
+  and the HTTP status of a past refusal. The receipt keeps the refusal's code and sentence only. The page says "no
+  signature from Dana's key" or "signed by Dana's key", which follows from the code (`unsigned`, `no_key` are raised
+  before a signature verifies; the others after). If you want the origin shown, SIGN has to write it into the receipt.
+- Not checked: "copy as curl" was not pressed in a real browser (headless Chrome has no clipboard), and the curl line was
+  not run against the tunnel. The same four bodies are the ones the tests post.
+- Seen against main's new canonical sheet on my port: titles as the store writes them, 28 in and 16 in, no "Default Title".
+- `uv run pytest tests/seal tests/talk -q` → `65 passed`. Shots, looked at: `web/seal/shots/seal-without-none.png`,
+  `seal-without-one-open.png`. The other `/seal/` shots are from 15:30 and show the earlier card.
