@@ -143,6 +143,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | H3 | `GET /api/graph?line_id=` (nodes and edges for one item, with which backend answered) and `/graph/` drawing it quietly | open |
 | H5 | `/graph/` opens on the run explored as a graph that grows: the order, the searches, every product found as a node, each rule sweeping the products that fail it aside with the reason, web review searches attaching ratings to those that pass, the ranking by the chosen ordering, the signature as the last gate before a cart; Play and step; every node clickable to its text and source; real records only (the builder, 14:31) | open |
 | H6 | the exploration also shows what the agent already knew and whom it asked: recalled memories as nodes with owner and age (measurement, earlier strike, earlier purchase, what a store said), the patient's facts from the order as sealed nodes that explain a limit and never travel, and the conversation with the store's agent with the guard's removed parts on the edge; `memory_rows` no longer 0 in `/api/graph` (the builder, 14:38) | open |
+| H7 | the surgery as an event the agent already holds, at the root of the graph: `sheets/sheet4_context.json` (invented messages; each fact an exact quote with offsets; `feeds` pointers into the sheet, `equals` checked by code); facts that feed the order light up (discharge date sets the need-by date, 280 lb is why 300 lb, Dana has not seen the house so Elena measures), facts that do not (who drops off, who picks up) stay dim as "held, not used for this order"; each with its sharing class (the builder, 14:45) | open |
 
 ## REVIEWS (what the web says, quoted with its source)
 | id | item | status |
@@ -178,6 +179,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I14 | the lead example is sheet 4, surgery short; sheet 3 the class list is the 15-second second; the plumber and six-item sheets are not shown (the builder: "your choice", 13:30) | ok |
 | I15 | the run of show from the demo director, and the flow designer's spec forwarded to TRAIL and SCREEN | ok |
 | I16 | one preference in a real order: sheet 3's notebook ("at least 70 sheets; 100 if they have them") once E31 is on main; decide at 15:20 whether the lead sheet gets one | open |
+| I17 | the judge review of 14:43 (`NOTES/REVIEW-judge-1440.md`, 21 items): 1, 2, 5 to 12, 15, 21 to SCREEN; 3, 4, 13, 14 to TRAIL; 16, 17 to GRAPH; 18, 19 to TALK; 20 to SIGN; each checked on main at 15:20; his run of show weighed against the builder's asks when DEMO.md is rewritten | open |
 | I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
 ## The builder

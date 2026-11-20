@@ -32,11 +32,11 @@ KEY_OR_QUOTA = (401, 402, 403, 429)
 RESULTS = 4
 MAX_CHARS = 3000
 MOST_CANDIDATES = 6
-MINIMUM_REVIEWS = 5
+from signoff.reviews import MINIMUM_REVIEWS  # noqa: E402  (stated once, in the package)
 SPACING_SECONDS = 0.6
 SENTENCE_MOST = 300
 READER = "sie:Qwen/Qwen3.8-27B-FP8"
-TIE_BREAK = "highest quoted rating as a share of its scale; then more reviews; then lower price; then candidate id"
+TIE_BREAK = "highest quoted rating out of five; then more reviews; then lower price; then candidate id"
 NAME_RULE = ("a page counts only if its title holds every word of the product's title (words of three letters "
              "or more, and numbers), and only if the name the page itself gives to the product it rates, quoted "
              "from the page, holds every one of those words too")
@@ -204,6 +204,16 @@ def _span(quote, text):
     return span if span["span_found_in_text"] else None
 
 
+def _written(value, numbers):
+    """The number in the quote that the reported value stands for: the same number, or one the reader rounded
+    (4.5915494 reported as 4.6). The page's number is returned, never the reader's; None when there is none."""
+    exact = next((n for n in numbers if abs(value - n) < 1e-6), None)
+    if exact is not None:
+        return exact
+    places = len(repr(float(value)).split(".")[1].rstrip("0"))
+    return next((n for n in numbers if abs(round(n, places) - value) < 1e-6), None)
+
+
 def _first_sentence(span, text):
     """One sentence at most: the span is cut at its first sentence end and at the length limit (still an exact quote)."""
     quote = span["quote"]
@@ -250,13 +260,17 @@ def check(proposal, text):
             drop("rating", "the quote is not in the page's text")
         elif not _number(value):
             drop("rating", "no rating was reported")
-        elif not any(abs(value - n) < 1e-6 for n in numbers):
+        elif _written(value, numbers) is None:
             drop("rating", "the reported rating is not in the quoted words")
         elif any(d["reason"] == "the page states 0 reviews" for d in dropped):
             drop("rating", "the page states 0 reviews")
         else:
-            # the scale counts only if it is written in the quote as a number of its own, beside the rating
-            numbers.remove(next(n for n in numbers if abs(value - n) < 1e-6))
+            # the page's own number is the rating (the reader may have rounded it); the scale counts only if
+            # it is written in the quote as a number of its own, beside the rating
+            reported, value = value, _written(value, numbers)
+            if abs(reported - value) > 1e-6:
+                span["value_as_reported"] = reported
+            numbers.remove(value)
             stated = _number(out_of) and any(abs(out_of - n) < 1e-6 for n in numbers)
             if value <= 0 or (stated and value > out_of):
                 drop("rating", "%g%s is not a rating" % (value, (" out of %g" % out_of) if stated else ""))
@@ -294,20 +308,65 @@ def propose(title, result):
         title, page_title(result)[0], result.get("text") or "")
     reply, _usage, name = reader.ask(READER, SYSTEM, user, purpose="propose review quotes from one web page",
                                      fact_classes=("product",))
-    return {"proposal": _parse(reply), "reader": name, "at": _now(), "asked": ASKED}
+    said = {"proposal": _parse(reply), "reader": name, "at": _now(), "asked": ASKED}
+    return quote_again(title, result, said)
+
+
+AGAIN = """Code checked the rating you quoted from this page, %r, and it does not contain the scale the rating is out of.
+If the page text writes this same product's average rating together with its scale in one place, reply with one JSON
+object {"rating": {"quote": "...", "value": 4.6, "out_of": 5}} whose quote is copied character for character from
+that place. If the page writes no scale for the rating, reply {"rating": null}. Never guess a scale."""
+
+
+def effective(said, text):
+    """The proposal code judges: the reader's first, with its second rating quote in place of the first when
+    code finds the second on the page with the rating and its scale both written in it."""
+    proposal = dict(said.get("proposal")) if isinstance(said.get("proposal"), dict) else {}
+    second = said.get("rating_second")
+    if isinstance(second, dict):
+        kept, _ = check({"rating": second}, text)
+        if "rating" in kept and kept["rating"]["out_of"] is not None:
+            proposal["rating"] = second
+    return proposal
+
+
+def lacks_scale(said, result):
+    """The reader quoted a rating and code found it on the page, but the quoted words state no scale."""
+    kept, _ = check(effective(said, result.get("text") or ""), result.get("text") or "")
+    return "rating" in kept and kept["rating"]["out_of"] is None
+
+
+def quote_again(title, result, said):
+    """The verification loop, once per page: when the quoted rating states no scale, code says so and the reader
+    may quote the place where the page writes both. The second quote is kept beside the first and used only if
+    code finds it on the page with the rating and its scale in it (`effective`). Nothing is supplied by code."""
+    from signoff.extract import reader
+    if said.get("asked_again") or not lacks_scale(said, result):
+        return said
+    first = said["proposal"]["rating"]
+    user = "Product: %s\n\nPage title: %s\n\nPage text, between the markers:\n<<<TEXT\n%s\nTEXT>>>\n\n%s" % (
+        title, page_title(result)[0], result.get("text") or "", AGAIN % (first.get("quote"),))
+    said["asked_again"] = _now()
+    reply, _usage, _name = reader.ask(READER, SYSTEM, user, purpose="quote a rating's scale from one web page",
+                                      fact_classes=("product",))
+    said["rating_second"] = _parse(reply).get("rating")  # judged by `effective` on every load
+    return said
 
 
 def read_pages(title, entry):
     """Ask the reader about every page that names the product and has no proposal yet; save what it said.
     Returns the errors of this run (a failed page is asked again next time; it is never filled in)."""
-    todo = [r for r in entry["reply"].get("results", [])
-            if r.get("url") and (entry["proposals"].get(r["url"]) or {}).get("asked") != ASKED
-            and names_product(title, r)[0] and (r.get("text") or "").strip()]
+    pages = [r for r in entry["reply"].get("results", [])
+             if r.get("url") and names_product(title, r)[0] and (r.get("text") or "").strip()]
+    todo = [(propose, r) for r in pages if (entry["proposals"].get(r["url"]) or {}).get("asked") != ASKED]
+    todo += [(lambda t, r: quote_again(t, r, entry["proposals"][r["url"]]), r) for r in pages
+             if (entry["proposals"].get(r["url"]) or {}).get("asked") == ASKED
+             and not entry["proposals"][r["url"]].get("asked_again") and lacks_scale(entry["proposals"][r["url"]], r)]
     errors = {}
     if not todo or config.mode() != "live":
         return errors
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
-        jobs = {pool.submit(propose, title, r): r["url"] for r in todo}
+        jobs = {pool.submit(job, title, r): r["url"] for job, r in todo}
         for job in concurrent.futures.as_completed(jobs):
             try:
                 entry["proposals"][jobs[job]] = job.result()
@@ -340,7 +399,7 @@ def product_reviews(title, store=None, errors=None):
             dropped.append({"url": url, "site": site, "reason": "the reader has not read this page"
                             + ((" (%s)" % errors[url]) if errors and url in errors else "")})
             continue
-        proposal = said.get("proposal") if isinstance(said.get("proposal"), dict) else {}
+        proposal = effective(said, text)
         if not any(isinstance(proposal.get(k), dict) for k in ("rating", "review_count", "sentence")):
             dropped.append({"url": url, "site": site, "reason": "the page states no rating, count or reviewer sentence"})
             continue
@@ -349,7 +408,7 @@ def product_reviews(title, store=None, errors=None):
             dropped.append({"url": url, "site": site, "reason": reason})
             continue
         rated_as = reason
-        kept, lost = check(said.get("proposal"), text)
+        kept, lost = check(proposal, text)
         for d in lost:
             dropped.append({"url": url, "site": site, "what": d["what"], "reason": d["reason"]})
         if not kept:
@@ -402,6 +461,23 @@ def _note(out, head, rating_sites):
     return "%g %s, %s, on one site: %s%s%s" % (out["rating"], scale, count, head["site"], own, more)
 
 
+RATINGS_RULE = ("a product has a rating here only when code found, on a page that names it, an exact quote that "
+                "writes the rating and the scale of five, and a quoted count of at least %d reviews" % MINIMUM_REVIEWS)
+
+
+def rankable(row):
+    """A candidate's reviews can order it: a quoted rating out of five and at least the minimum of quoted reviews."""
+    return row.get("rating") is not None and row.get("out_of") == 5 and (row.get("review_count") or 0) >= MINIMUM_REVIEWS
+
+
+def ratings(line_id, line=None):
+    """{candidate_id: {"rating": float, "out_of": 5, "review_count": int}} for one line, from the cache only."""
+    if line is None:
+        from signoff.engine import state as engine
+        line = next((l for l in engine.get_state().get("lines", []) if l.get("line_id") == line_id), None)
+    return for_line(line)["ratings"] if line else {}
+
+
 def passing(line):
     """The candidates of a line that pass every rule (the ones the shopper may choose), six cheapest at most."""
     inside = [c for c in line.get("candidates", []) if c.get("status") == "inside"]
@@ -425,23 +501,26 @@ def for_line(line, errors=None):
         rows.append(dict(got, candidate_id=c["id"], store=p.get("store"), title=p["title"],
                          variant_title=p.get("variant_title"), price_cents=p.get("price_cents"),
                          picked=bool(c.get("picked"))))
-    eligible = [r for r in rows if r["rating"] is not None and r["out_of"] and (r["review_count"] or 0) >= MINIMUM_REVIEWS]
-    eligible.sort(key=lambda r: (-r["rating"] / r["out_of"], -r["review_count"], r["price_cents"] or 0, r["candidate_id"]))
+    eligible = [r for r in rows if rankable(r)]
+    eligible.sort(key=lambda r: (-r["rating"], -r["review_count"], r["price_cents"] or 0, r["candidate_id"]))
     best = None
     if eligible:
         b = eligible[0]
         best = {"candidate_id": b["candidate_id"], "title": b["title"], "store": b["store"], "price_cents": b["price_cents"],
                 "rating": b["rating"], "out_of": b["out_of"], "review_count": b["review_count"], "site": b["rating_site"],
                 "is_the_current_pick": b["picked"],
-                "why": "%s; the highest among the %d passing product%s with a quoted rating, its scale stated, and at least %d reviews" % (
+                "why": "%s; the highest among the %d passing product%s with a quoted rating out of five and at least %d reviews" % (
                     b["note"], len(eligible), "" if len(eligible) == 1 else "s", MINIMUM_REVIEWS),
                 "to_take_it": {"method": "POST", "path": "/api/shopper/choose",
                                "body": {"line_id": line["line_id"], "candidate_id": b["candidate_id"]}}}
     searched = [r for r in rows if r["searched"]]
     return {"line_id": line["line_id"], "need": line.get("need"), "candidates": rows,
+            "ratings": {r["candidate_id"]: {"rating": float(r["rating"]), "out_of": 5, "review_count": int(r["review_count"])}
+                        for r in eligible},
+            "ratings_rule": RATINGS_RULE,
             "best_reviewed": best,
             "best_reviewed_reason": None if best else (
-                "no passing product has a quoted rating with its scale stated and at least %d reviews" % MINIMUM_REVIEWS if searched
+                "no passing product has a quoted rating out of five with at least %d reviews" % MINIMUM_REVIEWS if searched
                 else "not searched yet"),
             "summary": {"passing_considered": len(rows), "searched": len(searched),
                         "with_reviews": sum(1 for r in rows if r["found"]),

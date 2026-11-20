@@ -262,7 +262,7 @@ def _order_text(sheet: dict) -> str:
 
 
 def _block(text: str, heading: str) -> list[str]:
-    """The sentences under a heading in the order document, up to the next blank line."""
+    """The requirement sentences under a heading in the order document, up to the next blank line."""
     out, on = [], False
     for line in text.splitlines():
         if line.strip().lower().startswith(heading.lower()):
@@ -273,7 +273,8 @@ def _block(text: str, heading: str) -> list[str]:
                 if out:
                     break
                 continue
-            out.append(line.strip())
+            if line.strip().startswith("Our order requires"):   # a requirement; a sentence about what the order prefers is not one
+                out.append(line.strip())
     return out
 
 

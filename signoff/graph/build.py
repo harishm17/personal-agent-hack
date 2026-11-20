@@ -77,6 +77,21 @@ def _stated(term):
     return (" or ".join(_num(v) for v in values) + " " + (term.get("unit") or "")).strip()
 
 
+def _remembered(memory, skipped) -> dict:
+    """The MEMORY stream's proved rows, by what they are about. A row that no record proves, or that names no
+    source, is never used: it is counted in `skipped`."""
+    held = {"home_measurement": {}, "strike": {}, "store_answer": {}, "purchase": {}}
+    for row in sorted(memory or [], key=lambda r: str(r.get("created_at") or "")):
+        value = row.get("value") if isinstance(row.get("value"), dict) else {}
+        if row.get("proved") is not True or not isinstance(row.get("source"), dict) or not row["source"] or row.get("kind") not in held:
+            skipped.append({"id": "memory:%s" % row.get("id"), "kind": row.get("kind"), "why": "not proved by a record"})
+            continue
+        key = {"home_measurement": row.get("key"), "strike": (value.get("line_id"), row.get("key")),
+               "store_answer": (row.get("owner"), row.get("key")), "purchase": row.get("key")}[row["kind"]]
+        held[row["kind"]][key] = dict(row, source=dict(row["source"], record="memory", memory_id=row.get("id")))
+    return held
+
+
 def build(state: dict, receipts: list | None = None, order_text: str | None = None,
           memory: list | None = None, sheet_file: str | None = None) -> dict:
     g = Graph()
@@ -84,6 +99,17 @@ def build(state: dict, receipts: list | None = None, order_text: str | None = No
     receipts = receipts or []
     sheet_file = sheet_file or "sheets/%s.json" % sheet.get("id")
     order_doc = sheet.get("order_doc") or (state.get("order") or {}).get("doc")
+
+    mem = _remembered(memory, g.skipped)
+    used = set()
+
+    def recall(kind, key):
+        """(source, True) from a proved memory of this, or (None, None)."""
+        row = mem[kind].get(key)
+        if not row:
+            return None, None
+        used.add(row.get("id"))
+        return row["source"], True
 
     def in_sheet(pointer):
         return {"record": "sheet", "file": sheet_file, "pointer": pointer}
@@ -101,11 +127,13 @@ def build(state: dict, receipts: list | None = None, order_text: str | None = No
     facts = {}
     for i, f in enumerate(sheet.get("shopper_facts") or []):
         r = _last(receipts, "shopper_fact", fact_id=f["id"])
-        source = _receipt(r) if r else in_sheet("/shopper_facts/%d" % i)
+        before, remembered = (None, None) if r else recall("home_measurement", f["id"])
+        source = _receipt(r) if r else before or in_sheet("/shopper_facts/%d" % i)
         value = "%s %s" % (_num(f.get("value")), f.get("unit") or "")
         facts[f["id"]] = g.node("fact:" + f["id"], "home_fact", "%s %s" % (f.get("short") or f.get("label"), value),
-                                "shopper", source, sub="measured at the house",
-                                text="%s: %s" % (f.get("label"), value), value=f.get("value"), unit=f.get("unit"))
+                                "shopper", source, sub="remembered" if remembered else "measured at the house",
+                                text="%s: %s" % (f.get("label"), value), value=f.get("value"), unit=f.get("unit"),
+                                remembered=remembered)
         g.edge("person:shopper", "measured", facts[f["id"]], "shopper", source)
 
     # the order: items and their limits
@@ -174,9 +202,11 @@ def build(state: dict, receipts: list | None = None, order_text: str | None = No
                     g.edge(sid, CHECK_VERB.get(check.get("state"), "unclear"), limit, "system", source)
         for s in line.get("struck") or []:
             r = _last(receipts, "strike", line_id=s.get("line_id"), product_key=s.get("product_key"))
-            source = _receipt(r) if r else None
-            sid = g.node("strike:%s:%s" % (line["line_id"], s.get("product_key")), "strike", "struck", "issuer", source,
-                         sub=s.get("at"), text=s.get("reason"), line_id=line["line_id"])
+            before, remembered = (None, None) if r else recall("strike", (s.get("line_id"), s.get("product_key")))
+            source = _receipt(r) if r else before
+            sid = g.node("strike:%s:%s" % (line["line_id"], s.get("product_key")), "strike",
+                         "struck before" if remembered else "struck", "issuer", source,
+                         sub=str(s.get("at") or "")[11:16], text=s.get("reason"), line_id=line["line_id"], remembered=remembered)
             if sid:
                 g.edge("person:issuer", "struck", sid, "issuer", source)
                 for n in list(g.nodes.values()):
@@ -190,17 +220,17 @@ def build(state: dict, receipts: list | None = None, order_text: str | None = No
             quote = (a.get(topic) or {}).get("quote")
             if not quote or not a.get("asked_at"):
                 continue
-            source = {"record": "store_answer", "store": store, "asked_at": a["asked_at"],
-                      "start": (a.get("answer") or "").find(quote), "end": (a.get("answer") or "").find(quote) + len(quote)}
+            before, remembered = recall("store_answer", (store, topic))
+            source = before or {"record": "store_answer", "store": store, "asked_at": a["asked_at"]}
             sid = g.node("statement:answer:%s:%s" % (store, topic), "statement", topic, store, source,
-                         sub="the store's agent", text=a.get("answer"), quote=quote, topic=topic)
+                         sub="the store's agent", text=a.get("answer"), quote=quote, topic=topic, remembered=remembered)
             g.edge("store:%s" % store, "states", sid, store, source)
 
     # the signature
     seal = state.get("seal") or {}
     if seal.get("signed"):
         r = _last(receipts, "signed", sheet_hash=seal.get("sheet_hash"))
-        source = _receipt(r) if r else None
+        source = _receipt(r) if r else recall("purchase", seal.get("sheet_hash"))[0]
         total = _money(state.get("total_cents"))
         sid = g.node("purchase:" + str(seal.get("sheet_hash")), "purchase", "signed", "issuer", source,
                      sub=total, text=seal.get("text"), carts=len(seal.get("carts") or []))
@@ -210,23 +240,9 @@ def build(state: dict, receipts: list | None = None, order_text: str | None = No
                 if n["kind"] == "product" and n.get("picked"):
                     g.edge(sid, "covers", n["id"], "issuer", source)
 
-    # what is remembered from earlier runs (the MEMORY stream's rows): each keeps its own owner and source
-    kind_of = {"home_measurement": ("home_fact", "measured"), "strike": ("strike", "struck"),
-               "store_answer": ("statement", "states"), "purchase": ("purchase", "signed")}
-    for row in memory or []:
-        kind, verb = kind_of.get(row.get("kind"), (None, None))
-        owner = row.get("owner")
-        who = "person:" + owner if owner in ("issuer", "shopper") else "store:%s" % owner
-        if not kind or who not in g.nodes:
-            g.skipped.append({"id": "memory:%s" % row.get("id"), "kind": row.get("kind"), "why": "unknown kind or owner"})
-            continue
-        source = dict(row["source"], record="memory", memory_id=row.get("id")) if isinstance(row.get("source"), dict) and row["source"] else None
-        mid = g.node("memory:%s" % row.get("id"), kind, str(row.get("key") or row.get("kind")), owner, source,
-                     sub="remembered", text=row.get("text"), remembered=True, sheet_id=row.get("sheet_id"))
-        if mid:
-            g.edge(who, verb, mid, owner, source)
+    rows = sum(len(v) for v in mem.values())
+    return dict(g.body(), memory={"proved_rows": rows, "used_as_source": len(used)})
 
-    return g.body()
 
 
 def view(graph: dict, line_id: str, near: int = 2) -> dict | None:
