@@ -41,6 +41,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | E30 | the shopper chooses the ordering among the products that pass: `cheapest`, `best_reviewed`, `best_value` (`POST /api/shopper/pick_rule {id}`); each rule is one sort key, stated on the line (`why.rule`, how many had a quoted rating); ratings come from the reviews cache only; the hash already covers the rule (the builder, 14:24) | open |
 | E31 | an order's rule may be a preference, not a requirement: a line's optional `preferences` (same shape as a limit), checked with the same function on figures already read; never changes whether a product passes; among those that pass, more preferences met come first; each candidate carries `preferences: [{id, label, status}]`; under the hash (the builder, 14:24) | open |
 | E32 | a fourth ordering, `most_popular`: the most reviews counted, from the same quoted review counts (the builder, 14:31) | open |
+| E33 | the house's numbers carry where they came from: each measurement fed by a context fact has `suggested_from` (the message, its sender, date and quote; `matches`); never on a limit; not under the hash (the builder, 15:26: the doctor does not prescribe the dimensions) | open |
 | E19 | receipts for every state change; `GET /api/receipts/verify` | ok |
 | E20 | seal race, hash covers pick rule, delivery quotes, quantity, currency, variant; scope; `degraded` | ok |
 
