@@ -26,9 +26,6 @@ function renderTop() {
   q("#band").innerHTML = `<span class="rule">A store's agent may receive: ${d.rule.may.map(mark).join(" · ")}. Never: ${d.rule.sealed.map(mark).join(" · ")}</span>
     <span class="grow"></span><span class="tally">${cut} withheld · ${d.count.not_sent} of ${d.count.messages} messages not sent${d.count.over_cautious ? `, ${d.count.over_cautious} of those over-cautious` : ""}</span>`;
 }
-    <span class="cap">never</span>${d.rule.sealed.map((k) => `<span class="pill sealed">${mark(k)}</span>`).join("")}
-    <span class="grow"></span><span class="tally">${cut} withheld · ${d.count.not_sent} of ${d.count.messages} messages not sent${d.count.over_cautious ? `, ${d.count.over_cautious} of those over-cautious` : ""}</span>`;
-}
 
 // The default view: the one lead blocked share (marked `lead` in its record), then one of the agent's own exchanges
 // per store. The shopper's asks were typed to test the guard: they say so, and the rest are behind a count.
