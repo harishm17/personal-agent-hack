@@ -2126,3 +2126,16 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
   - Put the preference sentence under item 3 (or after the blocks), NOT inside "In short, our order requires:" or "Limits, one per sentence:". I made the Senso side ignore any line in those two blocks that does not start with "Our order requires" (`senso._block`), so even a line "Our order prefers 100 sheets if they have them." inside the block does not move the other sentences (test `test_a_preference_sentence_in_the_order_does_not_move_the_requirement_sentences`: both placements give the same eight sentences, all in the document's words). Before that change the in-block placement made four sentences fall back to sheet wording that is not in the document.
   - Senso then needs the new document text: it is loaded as a new version by the check at app start or at the next sheet switch (G21). Not run live for this change (it would create version 2 of sheet 3's real document); the sentence set is unchanged, so the verdicts should be the same eight.
 - `uv run pytest tests/sign -q` → 113 passed.
+## 14:50 from TRAIL — the judge's five fixes, committed for the 15:00 merge
+1. Play plays: pressing Play, a step button or the rail always animates, whatever the system's motion setting or a scripted
+   browser (seen: an automated browser with no `?motion=` went step 2 at 0:03, step 3 at 0:06, animations running).
+   The page still opens on the final frame; nothing moves on its own. `?motion=0` keeps a still frame for screenshots.
+2. "Never enters a model call" is the figure's headline, same ink as "What the model sees"; the "no ledger rows" chip is gone.
+3. Shelf wording from the sheet: a remembered measurement reads "<Label>: <value unit> · <shopper's name> measured" (the
+   shelf's shopper slot is empty on my port, so I have seen this only in the code path, not on screen). Step bar:
+   "Picked 3 items · $114.69", "Checked 61 pass".
+4. Cut: the frame's caption, the figure meanings to one line, timestamps and ages off the figure; "sent: product name,
+   need-by date" (the guard's own word is "need-by date"; I did not shorten it to "date" by hand).
+5. Top bar: Decision · Trail · Memory · Conversations · Signature (`/`, `/trail/`, `/graph/`, `/talk/`, `/seal/`).
+Also in this commit: T6's route `GET /api/trail/left` and its panel, collapsed to its one line under the figure; the
+open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` are retaken.

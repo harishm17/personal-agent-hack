@@ -182,3 +182,35 @@ def test_the_guard_row_is_the_message_about_the_picked_product_with_the_most_rem
     g = build(state=state(), talk=talk)["flow"]["talk"]
     assert g["draft"] == "my mum, 280 lb" and g["removed"] == [{"text": "280 lb", "mark": "health detail"}]
     assert g["left"] == ["product name"] and g["reply"] == "ok" and g["messages"] == 3 and g["stopped"] == 3
+
+
+def test_what_left_is_read_from_the_ledger_and_the_guard_and_never_claims_what_no_record_shows():
+    from signoff.trail import left
+    sheet = {"id": "s", "issuer": {"name": "Dana"}, "shopper": {"name": "Elena"}, "need_by": "2026-12-02",
+             "shopper_facts": [{"id": "tub", "value": 21.5, "unit": "in"}],
+             "lines": [{"limits": [{"id": "L1", "unit": "lb", "bound": {"source": "issuer", "value": 300}}]}]}
+    rows = [ledger(1, "2026-11-20T11:30:00-08:00", "anthropic:x", "read", "model", ["store_text"], declared_classes=["store_text"],
+                   sealed_found_in_payload=[]),
+            ledger(2, "2026-11-20T11:30:01-08:00", "anthropic:x", "read", "model", ["limit", "store_text"],
+                   declared_classes=["store_text"], sealed_found_in_payload=["limit: 300 lb"]),
+            ledger(3, "2026-11-20T11:30:02-08:00", "senso", "check", "sponsor service", ["limit", "order"],
+                   declared_classes=["limit", "order"], sealed_found_in_payload=["limit: 300 lb"])]
+    messages = [{"store": "shop.example", "draft": "mum is 280 lb", "sent": "hello", "decision": "rewritten",
+                 "removed": [{"class": "health", "text": "280 lb"}], "left": [{"class": "product", "text": "A thing"}]},
+                {"store": "shop.example", "draft": "hi", "sent": "hi", "decision": "sent", "removed": [], "left": []}]
+    rule = {"may": ["product", "need_by"], "sealed": ["limit", "home_measurement", "person", "health"]}
+    out = left.build(sheet, None, rows, messages, rule, {"health": "health detail", "limit": "order limit"})
+    cell = lambda c, col: out["cells"][c][col]
+    assert [c["id"] for c in out["columns"]] == ["anthropic:x", "senso", "agents"]
+    assert cell("store_text", "anthropic:x")["state"] == "sent" and cell("store_text", "anthropic:x")["sent"] == 2
+    assert cell("limit", "anthropic:x")["state"] == "found" and cell("limit", "anthropic:x")["found_items"][0]["match"] == "300 lb"
+    assert cell("limit", "senso")["state"] == "sent" and cell("person", "senso")["state"] == "never"
+    assert cell("health", "senso")["state"] == "not_recorded"            # the ledger cannot find a health detail
+    assert cell("health", "agents")["state"] == "stopped" and cell("health", "agents")["stopped_items"][0]["words"] == ["280 lb"]
+    assert cell("product", "agents")["state"] == "sent" and cell("limit", "agents")["state"] == "never"
+    assert cell("store_text", "agents")["state"] == "not_recorded"       # the guard does not look for page text
+    t = out["totals"]
+    assert (t["payloads"], t["recipients"], t["carried"], t["undeclared"], t["messages_stopped"], t["spans_stopped"]) == (3, 2, 2, 1, 1, 1)
+    row = {r["id"]: r for r in out["rows"]}
+    assert row["limit"]["example"] == "300 lb" and row["health"]["example"] == "280 lb" and row["person"]["example"] == "Dana, Elena"
+    assert left.build({}, None, [], [])["rows"] == []
