@@ -4,11 +4,32 @@
   "invented": true,
   "invented_note": "Invented homeowner, plumber and fixture list. Real stores, real product text, real carts.",
   "order_doc": "sheets/sheet2_order.txt",
-  "issuer": {"id": "marco", "name": "Marco", "role": "plumber", "role_label": "licensed plumber, installs and guarantees the fixtures", "invented": true},
-  "shopper": {"id": "priya", "name": "Priya", "role": "shopper", "role_label": "homeowner, buys the fixtures", "invented": true},
-  "stores": ["swissmadison.com", "horow.com", "deervalleybath.com", "kingstonbrass.com"],
+  "issuer": {
+    "id": "marco",
+    "name": "Marco",
+    "role": "plumber",
+    "role_label": "licensed plumber, installs and guarantees the fixtures",
+    "invented": true
+  },
+  "shopper": {
+    "id": "priya",
+    "name": "Priya",
+    "role": "shopper",
+    "role_label": "homeowner, buys the fixtures",
+    "invented": true
+  },
+  "stores": [
+    "swissmadison.com",
+    "horow.com",
+    "deervalleybath.com",
+    "kingstonbrass.com"
+  ],
   "need_by": "2026-12-04",
-  "pick_rule": {"id": "cheapest", "label": "cheapest inside the limits", "set_by": "shopper"},
+  "pick_rule": {
+    "id": "cheapest",
+    "label": "cheapest inside the limits",
+    "set_by": "shopper"
+  },
   "figures": {
     "rough_in": "the toilet's rough-in: the distance from the finished wall to the centre of the floor drain that the toilet is made for, in inches. A product page that offers several rough-in sizes states more than one; the size of the selected option is the one that counts.",
     "flush_volume": "how much water one flush uses, in gallons per flush (gpf). A dual-flush toilet states two volumes, a light flush and a full flush: read them as one spread from the smaller to the larger.",
@@ -16,37 +37,186 @@
     "overall_width": "the measured outside width of the vanity cabinet with its top, in inches, as given in the page's dimensions or specifications. A size class in a product name is a nominal size, not the overall width."
   },
   "shopper_facts": [
-    {"id": "rough_in_measured", "label": "rough-in measured at the house (wall to drain centre)", "short": "drain from wall", "value": 10.0, "unit": "in", "min": 8.0, "max": 14.0, "step": 1.0, "set_by": "shopper"},
-    {"id": "alcove_width", "label": "width of the alcove the vanity goes in", "short": "alcove width", "value": 30.0, "unit": "in", "min": 20.0, "max": 48.0, "step": 0.5, "set_by": "shopper"}
+    {
+      "id": "rough_in_measured",
+      "label": "rough-in measured at the house (wall to drain centre)",
+      "short": "drain from wall",
+      "value": 10.0,
+      "unit": "in",
+      "min": 8.0,
+      "max": 14.0,
+      "step": 1.0,
+      "set_by": "shopper"
+    },
+    {
+      "id": "alcove_width",
+      "label": "width of the alcove the vanity goes in",
+      "short": "alcove width",
+      "value": 30.0,
+      "unit": "in",
+      "min": 20.0,
+      "max": 48.0,
+      "step": 0.5,
+      "set_by": "shopper"
+    }
   ],
   "lines": [
     {
-      "id": "T1", "need": "toilet", "room": "bathroom", "fulfilment": "cart",
-      "queries": ["toilet", "one piece toilet", "10 inch rough in toilet"],
+      "id": "T1",
+      "need": "toilet",
+      "room": "bathroom",
+      "fulfilment": "cart",
+      "queries": [
+        "toilet",
+        "one piece toilet",
+        "10 inch rough in toilet"
+      ],
       "limits": [
-        {"id": "T1.rough_in", "name": "rough-in", "label": "rough-in matches the drain", "terms": [{"source": "store", "figure": "rough_in"}], "op": "==", "bound": {"source": "shopper", "fact": "rough_in_measured"}, "unit": "in", "set_by": "issuer", "issuer_role": "plumber", "set_at": "2026-11-20T12:45:00-08:00"},
-        {"id": "T1.flush", "name": "flush volume", "label": "flush at most", "terms": [{"source": "store", "figure": "flush_volume"}], "op": "<=", "bound": {"source": "issuer", "value": 1.28, "min": 0.8, "max": 1.6, "step": 0.01}, "unit": "gpf", "set_by": "issuer", "issuer_role": "plumber", "set_at": "2026-11-20T12:45:00-08:00"}
+        {
+          "id": "T1.rough_in",
+          "name": "rough-in",
+          "label": "rough-in matches the drain",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "rough_in"
+            }
+          ],
+          "op": "==",
+          "bound": {
+            "source": "shopper",
+            "fact": "rough_in_measured"
+          },
+          "unit": "in",
+          "set_by": "issuer",
+          "issuer_role": "plumber",
+          "set_at": "2026-11-20T12:45:00-08:00"
+        },
+        {
+          "id": "T1.flush",
+          "name": "flush volume",
+          "label": "flush at most",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "flush_volume"
+            }
+          ],
+          "op": "<=",
+          "bound": {
+            "source": "issuer",
+            "value": 1.28,
+            "min": 0.8,
+            "max": 1.6,
+            "step": 0.01
+          },
+          "unit": "gpf",
+          "set_by": "issuer",
+          "issuer_role": "plumber",
+          "set_at": "2026-11-20T12:45:00-08:00",
+          "several": "largest"
+        }
       ]
     },
     {
-      "id": "T2", "need": "bathroom sink faucet", "room": "bathroom", "fulfilment": "cart",
-      "queries": ["bathroom faucet", "bathroom sink faucet"],
+      "id": "T2",
+      "need": "bathroom sink faucet",
+      "room": "bathroom",
+      "fulfilment": "cart",
+      "queries": [
+        "bathroom faucet",
+        "bathroom sink faucet"
+      ],
       "limits": [
-        {"id": "T2.flow", "name": "flow rate", "label": "flow at most", "terms": [{"source": "store", "figure": "flow_rate"}], "op": "<=", "bound": {"source": "issuer", "value": 1.2, "min": 0.5, "max": 2.2, "step": 0.1}, "unit": "gpm", "set_by": "issuer", "issuer_role": "plumber", "set_at": "2026-11-20T12:45:00-08:00"}
+        {
+          "id": "T2.flow",
+          "name": "flow rate",
+          "label": "flow at most",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "flow_rate"
+            }
+          ],
+          "op": "<=",
+          "bound": {
+            "source": "issuer",
+            "value": 1.2,
+            "min": 0.5,
+            "max": 2.2,
+            "step": 0.1
+          },
+          "unit": "gpm",
+          "set_by": "issuer",
+          "issuer_role": "plumber",
+          "set_at": "2026-11-20T12:45:00-08:00"
+        }
       ]
     },
     {
-      "id": "T3", "need": "shower head", "room": "bathroom", "fulfilment": "cart",
-      "queries": ["shower head"],
+      "id": "T3",
+      "need": "shower head",
+      "room": "bathroom",
+      "fulfilment": "cart",
+      "queries": [
+        "shower head"
+      ],
       "limits": [
-        {"id": "T3.flow", "name": "flow rate", "label": "flow at most", "terms": [{"source": "store", "figure": "flow_rate"}], "op": "<=", "bound": {"source": "issuer", "value": 1.8, "min": 1.0, "max": 2.5, "step": 0.1}, "unit": "gpm", "set_by": "issuer", "issuer_role": "plumber", "set_at": "2026-11-20T12:45:00-08:00"}
+        {
+          "id": "T3.flow",
+          "name": "flow rate",
+          "label": "flow at most",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "flow_rate"
+            }
+          ],
+          "op": "<=",
+          "bound": {
+            "source": "issuer",
+            "value": 1.8,
+            "min": 1.0,
+            "max": 2.5,
+            "step": 0.1
+          },
+          "unit": "gpm",
+          "set_by": "issuer",
+          "issuer_role": "plumber",
+          "set_at": "2026-11-20T12:45:00-08:00"
+        }
       ]
     },
     {
-      "id": "T4", "need": "bathroom vanity", "room": "bathroom", "fulfilment": "cart",
-      "queries": ["bathroom vanity", "30 inch vanity"],
+      "id": "T4",
+      "need": "bathroom vanity",
+      "room": "bathroom",
+      "fulfilment": "cart",
+      "queries": [
+        "bathroom vanity",
+        "30 inch vanity"
+      ],
       "limits": [
-        {"id": "T4.width", "name": "fits the alcove", "label": "overall width fits the alcove", "terms": [{"source": "store", "figure": "overall_width"}], "op": "<=", "bound": {"source": "shopper", "fact": "alcove_width"}, "unit": "in", "set_by": "issuer", "issuer_role": "plumber", "set_at": "2026-11-20T12:45:00-08:00"}
+        {
+          "id": "T4.width",
+          "name": "fits the alcove",
+          "label": "overall width fits the alcove",
+          "terms": [
+            {
+              "source": "store",
+              "figure": "overall_width"
+            }
+          ],
+          "op": "<=",
+          "bound": {
+            "source": "shopper",
+            "fact": "alcove_width"
+          },
+          "unit": "in",
+          "set_by": "issuer",
+          "issuer_role": "plumber",
+          "set_at": "2026-11-20T12:45:00-08:00"
+        }
       ]
     }
   ]

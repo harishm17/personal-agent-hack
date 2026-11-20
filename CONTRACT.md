@@ -491,3 +491,29 @@ After the three rules: both sheets are re-read and re-counted, and the integrato
   exists (kits and list-to-cart services do).
 - **First twenty seconds of the pitch**: "Every August a teacher writes a list. Twenty-five families
   guess. Here the list itself shops, and buys nothing it cannot quote."
+
+## Amendment 13:40 — the demo's examples are decided (the builder: "your choice", after a blind pick)
+A blind judge, given all four examples neutrally and no files, ranked them: home after surgery, class
+list, teenager, plumber. Its reason: "the therapist knows the patient, the daughter knows the house, the
+store knows the product": it is the only example where nobody can name the right product alone, because
+the rule-writer has not measured the house. The earlier confusion came from the telling (six items, a
+sum, a screen of dots), not from the case.
+- **Lead: sheet 4, "Home after surgery", short** (`sheets/sheet4.json`, `sheets/sheet4_order.txt`). Three
+  items from sheet 1 with the same line and limit ids: shower chair (holds 300 lb; fits inside the tub),
+  walker (holds 300 lb; passes the bathroom door), grab bar (holds 300 lb; at least 16 in long; bought
+  through the cart). It names `"data_from": "sheet1"`: it uses sheet 1's fetched pages, readings and store
+  answers and fetches nothing. Found in the live data at 13:27: seventeen grab bars cheaper than the pick
+  are rejected, among them a $16 suction handle whose page states 75 lb; a bathing stool states its width
+  with no unit (unclear).
+- **Second, about 15 seconds: sheet 3, the teacher's class list**, for one finding (headphones that state
+  a level above 85 dB, and a brand that states none) and to show the same engine runs any list. No
+  signing in this part of the demo. The each-family arrangement (the teacher signs the list once, each
+  parent signs their own purchase) is said aloud as what comes next; it is not built today.
+- **Not shown**: sheet 2 (the plumber) and the six-item sheet 1; both stay in the repo with their tests.
+- **Work.** ENGINE: `data_from` in the one path rule; sheet 4 read from sheet 1's data with its own order
+  document; a laptop-only way to switch the running sheet (`POST /api/admin/use-sheet`), which resets the
+  run and starts a new receipt chain. SIGN: Senso's order document for sheet 4; one phone rehearsal on
+  sheet 4. SCREEN: a quiet sheet switcher in the top bar. STORE: tables, SQL, ledger and carts follow
+  sheet 4 through `data_from`. The integrator switches main to sheet 4 when it holds.
+- Also in this commit: `figures` for sheet 1 in the order's words (E18), and `"several": "largest"` on
+  sheet 2's flush limit, as ENGINE asked.
