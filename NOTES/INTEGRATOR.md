@@ -1046,3 +1046,8 @@ Screenshots are local files (demo/shots is not committed). Checked on live sheet
   noted in NOTES/ENGINE.md.
 - On live sheet 2 the vanity's pick shows the store agent's return sentence about "an opened toilet" (scope "store-wide").
   The screen prints the scope; whether to show a store-wide reply on another product kind is ENGINE's call.
+- 13:24 from SCREEN, C3 follow-up: the signing motion is now watched on this screen with the placeholder signed fixture
+  (`/?fixture=1&motion=1&sign=2600#L3`): the last two steps fill, then signer, identity line, hash and the cart links arrive
+  one by one. Still not seen: a real signature and a real limit move from the phone.
+- Quirk for the log (AGENTS.md is yours): headless Chrome never finishes loading a page that holds an open EventSource;
+  add `?live=0` for scripted screenshots. Motion is off under `navigator.webdriver`; `?motion=1` forces it.
