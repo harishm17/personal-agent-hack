@@ -36,9 +36,8 @@ class Phone:
         return {"payload": payload, "sig": self.sign(payload), "key_id": self.key_id}
 
 
-@pytest.fixture
-def env(monkeypatch):
-    engine, cart = FakeEngine(), FakeCart()
+def _make_env(monkeypatch, engine, sheet_id):
+    cart = FakeCart()
     monkeypatch.setattr(api, "get_engine", lambda: engine)
     monkeypatch.setattr(api, "get_cart", lambda: cart)
     monkeypatch.setattr(api, "keystore", KeyStore(path=None))
@@ -49,8 +48,20 @@ def env(monkeypatch):
     app = FastAPI()
     app.include_router(api.router)
     client = TestClient(app)
-    phone = Phone()
+    phone = Phone(sheet_id)
     enrolled = client.post("/api/issuer/enroll", json={"public_key_jwk": phone.jwk, "name": "Dana", "code": api.keystore.code})
     assert enrolled.status_code == 200, enrolled.text
     phone.key_id = enrolled.json()["key_id"]
     return type("Env", (), {"client": client, "phone": phone, "engine": engine, "cart": cart})
+
+
+@pytest.fixture
+def env(monkeypatch):
+    return _make_env(monkeypatch, FakeEngine(), "sheet1")
+
+
+@pytest.fixture
+def env2(monkeypatch):
+    """The plumber's fixture list: four stores, lines T1 to T4, an `==` limit, units gpf and gpm."""
+    from .sheet2_state import build
+    return _make_env(monkeypatch, FakeEngine(build), "sheet2")
