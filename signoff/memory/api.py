@@ -11,25 +11,46 @@ def _active_sheet() -> dict:
     return sheetctx.sheet()
 
 
+def _shelf(sheet: dict, recalled: dict) -> list:
+    """The four owner slots for the sheet on the table: the shopper's, the approver's, each store's, what was signed for."""
+    def cards(entries, kind, owner=None):
+        return [{"memory_id": e["memory_id"], "owner": owner or e["store"], "kind": kind, "text": e["text"],
+                 "source": e["source"], "at": e["source"].get("at"), "age": e.get("age") or recalling.age(e["source"].get("at")),
+                 **{k: e[k] for k in ("fact_id", "value", "unit", "line_id", "product_key", "title", "reason", "key",
+                                      "total_cents", "carts") if k in e}} for e in entries]
+    return [{"slot": "shopper", "owner": "shopper", "name": (sheet.get("shopper") or {}).get("name"),
+             "items": cards(recalled["facts"], "home_measurement", "shopper")},
+            {"slot": "approver", "owner": "issuer", "name": (sheet.get("issuer") or {}).get("name"),
+             "items": cards(recalled["strikes"], "strike", "issuer")},
+            {"slot": "stores", "owner": "each store", "name": None, "items": cards(recalled["store_answers"], "store_answer")},
+            {"slot": "bought", "owner": "issuer", "name": (sheet.get("issuer") or {}).get("name"),
+             "items": cards(recalled["purchases"], "purchase", "issuer")}]
+
+
 @router.get("/api/memory")
 def memory():
-    """Everything remembered, grouped by owner, each row with the record that proves it.
-    `{read_from, database, mirror, counts, owners: [{owner, owner_name, rows: [...]}], not_memories}`."""
+    """Everything remembered, grouped by owner, each row with the record that proves it and its age; and `shelf`, the
+    four owner slots holding what a new run of the sheet on the table would recall.
+    `{read_from, database, mirror, counts, shelf, owners: [{owner, owner_name, rows: [...]}], not_memories}`."""
     held = store.read()
     if held["database"]["state"] == "ok":
         meaning.index_in_background()  # new memories get their vectors; the reply does not wait for it
-    owners = {}
+    sheet = _active_sheet()
+    recalled = recalling.recall(sheet)
+    on_shelf = {e["memory_id"] for part in ("facts", "strikes", "store_answers", "purchases") for e in recalled[part]}
+    owners, kinds = {}, {}
     for row in held["rows"]:
+        row["age"] = recalling.age(row.get("created_at"))
+        row["on_shelf"] = row["proved"] and row["id"] in on_shelf
         group = owners.setdefault(row["owner"], {"owner": row["owner"], "owner_name": row.get("owner_name"), "rows": []})
         group["owner_name"] = group["owner_name"] or row.get("owner_name")
         group["rows"].append(row)
-    kinds = {}
-    for row in held["rows"]:
         kinds[row["kind"]] = kinds.get(row["kind"], 0) + 1
     return {"read_from": held["read_from"], "database": held["database"], "mirror": held["mirror"],
             "counts": {"rows": len(held["rows"]), "proved": sum(1 for r in held["rows"] if r["proved"]),
                        "not_proved": sum(1 for r in held["rows"] if not r["proved"]), "by_kind": kinds,
-                       "records_refused": len(held["not_memories"])},
+                       "on_shelf": len(on_shelf), "records_refused": len(held["not_memories"])},
+            "sheet_id": sheet.get("id"), "shelf": _shelf(sheet, recalled), "recall_error": recalled.get("error"),
             "meaning": meaning.status(), "owners": list(owners.values()), "not_memories": held["not_memories"],
             "rule": "A memory is made only from a receipt in a chain that recomputes or from a saved store answer. "
                     "A row no record proves is shown as not proved and is never recalled."}

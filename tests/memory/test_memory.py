@@ -165,6 +165,7 @@ def test_the_routes_group_by_owner_and_say_why_a_memory_bears_on_an_item(records
     _measure(22.5)
     signed_strike(product, "too flimsy")
     monkeypatch.setattr(api, "_active_sheet", lambda: sheet)
+    monkeypatch.setattr(api.meaning, "search", lambda *a, **k: {"ranked": [], "error": "not run in this test"})
     app = FastAPI()
     app.include_router(api.router)
     client = TestClient(app)
@@ -173,6 +174,13 @@ def test_the_routes_group_by_owner_and_say_why_a_memory_bears_on_an_item(records
     assert {"shopper", "issuer", *sheet["stores"]} <= set(owners)
     assert all(r["source"] and r["proved"] for o in everything["owners"] for r in o["rows"])
     assert everything["counts"]["rows"] == everything["counts"]["proved"] and "mirror" in everything["read_from"]
+    shelf = {slot["slot"]: slot for slot in everything["shelf"]}
+    assert list(shelf) == ["shopper", "approver", "stores", "bought"] and shelf["shopper"]["name"] == "Elena"
+    assert [(c["kind"], c["value"]) for c in shelf["shopper"]["items"]] == [("home_measurement", 22.5)]
+    assert [(c["kind"], c["reason"]) for c in shelf["approver"]["items"]] == [("strike", "too flimsy")]
+    assert {c["owner"] for c in shelf["stores"]["items"]} == set(sheet["stores"]) and shelf["bought"]["items"] == []
+    assert all(c["text"] and c["source"] and c["at"] and c["age"]["text"] for slot in everything["shelf"] for c in slot["items"])
+    assert all(r["age"]["text"] for o in everything["owners"] for r in o["rows"])
     one = client.get("/api/memory/recall", params={"line_id": product["line_id"]}).json()
     assert [r["kind"] for r in one["recalled"] if r["kind"] != "store_answer"] == ["strike"]
     tub = client.get("/api/memory/recall", params={"line_id": "L1"}).json()

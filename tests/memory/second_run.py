@@ -46,7 +46,9 @@ def picture(http) -> dict:
 def main(base="http://127.0.0.1:8007", reason="Suction mounts are not for a person's full weight."):
     http = httpx.Client(base_url=base, timeout=60)
     post = lambda path, body=None: http.post(path, json=body or {})  # noqa: E731
-    assert post("/api/admin/reset").status_code == 200
+    sheet_id = http.get("/api/state").json()["sheet"]["id"]
+    # the sheet is put on the table the way the laptop does it: a fresh run and a new receipt chain that names the sheet
+    assert post("/api/admin/use-sheet", {"sheet_id": sheet_id}).status_code == 200
     start = picture(http)
     phone = Phone(start["sheet"])
     code = http.get("/api/issuer/enroll-code").json()["code"]
