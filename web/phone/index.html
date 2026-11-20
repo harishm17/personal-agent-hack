@@ -113,7 +113,10 @@ let keyRec = null;      // { privateKey, jwk, key_id|null, seq }
 let issuer = null;      // { enrolled, key_id, name, persona, senso }
 let state = null, persona = null, canon = null, notice = "", lastSheetId = null;
 let tab = "sheet", signed = false, busy = false, openLimit = null;
-let lastKey = null, armedUntil = 0, signNote = "";
+let lastKey = null, armedUntil = 0, armedHash = null, signNote = "";
+/* arm:start */
+function armed(now, until, armedFor, current) { return now < until && !!armedFor && armedFor === current; }   // armed only for the sheet that was on screen at the first tap
+/* arm:end */
 const shown = new Set();   // limit ids whose order sentence is open
 const dragging = new Set();
 
@@ -185,6 +188,7 @@ async function loadState() {
     const mine = await sha256hex(c.canonical);
     canon = { text: c.canonical, obj: JSON.parse(c.canonical), hash: mine, serverHash: c.sheet_hash, match: mine === c.sheet_hash };
   } catch (e) { canon = null; }
+  if (armedHash && (!canon || canon.hash !== armedHash)) { armedUntil = 0; armedHash = null; }   // the sheet changed: the armed tap is void at once
 }
 function startEvents() {
   let pending = false, again = false;
@@ -405,24 +409,24 @@ function renderSheet() {
     <div class="rule"></div>
     <div class="stack"><div class="cap">What you sign</div><div class="hash">${esc(canon.hash)}</div>
     <div class="sub" style="color:${canon.match ? "var(--ok)" : "var(--bad)"}">${canon.match ? "Computed on this phone from the sheet above; the server's hash is the same." : "This phone computed a different hash from the one the server sent. It will not sign."}</div></div></div>
-    <button class="act primary big" id="sign" ${canon.match && buyable ? "" : "disabled"}>${Date.now() < armedUntil ? "Tap again to sign" : "Sign"}</button>
+    <button class="act primary big" id="sign" ${canon.match && buyable ? "" : "disabled"}>${armed(Date.now(), armedUntil, armedHash, hashNow()) ? "Tap again to sign" : "Sign"}</button>
     ${signNote ? `<div class="sub" style="color:var(--bad)">Not signed: ${esc(signNote)}</div>` : ""}`);
   main.querySelectorAll("details[data-why]").forEach((d) => { d.open = openWhy.has(d.dataset.why); d.addEventListener("toggle", () => (d.open ? openWhy.add(d.dataset.why) : openWhy.delete(d.dataset.why))); });
   ensureSenso();
   $("#pstart").onclick = async () => {
     try {
-      persona = await getJSON(per.inquiry_id ? "/api/issuer/persona/status" : "/api/issuer/persona/start", per.inquiry_id ? undefined : { method: "POST" });
+      persona = per.inquiry_id ? await getJSON("/api/issuer/persona/status") : await signedRequest("persona_start", {});   // a new inquiry is a signed request
       await refreshIssuer(); renderSheet(); if (!persona.link && !persona.inquiry_id) toast(persona.reason || persona.label);
     } catch (e) { toast(e.message); }
   };
   $("#sign").onclick = async () => {
     const btn = $("#sign"), seen = hashNow();
-    if (Date.now() >= armedUntil) {   // the first tap arms the button; a second tap within four seconds signs
-      armedUntil = Date.now() + 4000; btn.textContent = "Tap again to sign";
+    if (!armed(Date.now(), armedUntil, armedHash, seen)) {   // the first tap arms the button; a second tap within four seconds, on the same sheet, signs
+      armedUntil = Date.now() + 4000; armedHash = seen; btn.textContent = "Tap again to sign";
       setTimeout(() => { if ($("#sign") && !busy && Date.now() >= armedUntil) $("#sign").textContent = "Sign"; }, 4100);
       return;
     }
-    armedUntil = 0; signNote = "";
+    armedUntil = 0; armedHash = null; signNote = "";
     busy = true; btn.disabled = true; btn.textContent = "Signing…";
     try { await signedRequest("sign_sheet", { sheet_hash: seen }); await loadState(); busy = false; renderSheet(); }
     catch (e) { busy = false; signNote = e.message; await loadState().catch(() => {}); renderSheet(); }
