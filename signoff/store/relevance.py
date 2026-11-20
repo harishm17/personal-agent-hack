@@ -37,8 +37,11 @@ def phrases(label: str) -> list[list[str]]:
     out = []
     for p in parts:
         w = words(p)
-        while w and _is_count(w[-1]):  # a trailing size or count ("5-1/2", "48pk") is not the thing's name
-            w.pop()
+        while w:  # a trailing size or count ("5-1/2", "48pk", "7 pack", "set of 4") is not the thing's name
+            if _is_count(w[-1]) or w[-1] == "of" or (len(w) > 1 and _is_count(w[-2]) and w[-2].isdigit()):
+                w.pop()
+            else:
+                break
         if w:
             out.append(w)
     return out
@@ -67,17 +70,34 @@ def head_in(label: str, head: str) -> bool:
     return any(ph[-1] == head for ph in phrases(label))
 
 
+_FOR = re.compile(r"\b(?:for|fits?|compatible with)\b", re.I)
+
+
 def belongs(prod: dict, need: str) -> tuple[bool, str]:
     """(kept, why). The product's own title or one of the store's labels (collections, tags, text categories) has a phrase that
     ends with the head word of the need ("toilet", "seat", "rail": what the thing is), and, when the need has more words, the
-    rest of the need is named somewhere in the title or the labels (what kind). `why` is recorded for kept and dropped alike."""
+    rest of the need is named somewhere in the title or the labels (what kind). Two things in the title overrule the labels:
+      - a title that says it is *for* the thing ("Replacement Leg Tips for Carex Shower Chair") is a part or an accessory: the
+        thing named after "for" is not what is sold;
+      - a title whose own head word is a different thing that the store's labels also name as a thing of its own ("Commode
+        Liner" under a label "... Commode Liners") is that other thing.
+    `why` is recorded for kept and dropped alike."""
     head, rest = need_parts(need)
     labels = store_labels(prod)
     title = prod.get("title", "")
-    sources = [("title", title)] + [("label", l) for l in labels]
+    m = _FOR.search(title)
+    own = title[:m.start()] if m else title  # what the title says it is, before any "for ..."
+    if m and not any(ph[-1] == head for ph in phrases(own)):
+        return False, "its title says it is for a %s (%r), not a %s itself" % (need, title[m.start():][:60], need)
+    sources = [("title", own)] + [("label", l) for l in labels]
     found = next((src for src in sources if head_in(src[1], head)), None)
     if not found:
         return False, "no phrase of its title or its %d store labels ends with %r" % (len(labels), head)
+    first = phrases(own)[0] if phrases(own) else []
+    if first and first[-1] != head and not any(ph[-1] == head for ph in phrases(own)):
+        if any(ph[-1] == first[-1] and head in ph[:-1] for l in labels for ph in phrases(l)):  # e.g. a label "Commode Liners"
+            return False, "its title names a %s, which the store's own labels list as a kind of its own (a %s of the %s), not a %s" % (
+                first[-1], first[-1], head, head)
     named = set(words(" ".join([title] + labels)))
     if rest and not (rest & named):
         return False, "its %s %r ends with %r, but nothing in its title or labels names %s" % (
