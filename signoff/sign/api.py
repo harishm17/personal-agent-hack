@@ -40,25 +40,15 @@ def _now() -> str:
     return datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
 
 
-def receipt(kind: str, outcome: str, detail: str = "", payload: dict | None = None) -> None:
-    """Writes a receipt for a signed request, accepted or refused, if the engine's receipt chain is on main.
-    Never raises, never waits."""
+def receipt(body: dict, accepted: bool, reason: str = "") -> None:
+    """One receipt in the engine's chain for a signed request that arrived, accepted or refused. Never raises."""
     try:
-        mod = importlib.import_module("signoff.engine.receipts")
-        fn = getattr(mod, "add", None) or getattr(mod, "record", None) or getattr(mod, "append", None)
-        if fn:
-            key = keystore.key
-            fn(type=kind, actor=key.name if key else None, key_id=key.key_id if key else None,
-               body={"outcome": outcome, "reason": detail, **(payload or {})})
+        from signoff.engine import receipts
+        key = keystore.key
+        receipts.signed_request(body.get("payload") if isinstance(body, dict) else None, key.key_id if key else None,
+                                accepted, reason or None)
     except Exception:  # noqa: BLE001
         pass
-
-
-def _kind_of(body: dict) -> str:
-    try:
-        return str(json.loads(body["payload"]).get("type") or "request")
-    except Exception:  # noqa: BLE001
-        return "request"
 
 
 def _fail(error: Refused) -> JSONResponse:
@@ -182,6 +172,73 @@ def _picks(state: dict) -> list[dict]:
 _late: dict = {}  # the signed record, so a cart that answers after the seal can still be added to it
 
 
+def _signed_picks(engine, signed_hash: str, state: dict) -> list[dict]:
+    """The picks of exactly the signed hash from the engine, which holds the sheet until it is sealed or released."""
+    fn = getattr(engine, "signed_picks", None)
+    if fn is None:
+        return _picks(state)
+    try:
+        return fn(signed_hash)
+    except ValueError as error:
+        if getattr(error, "status", None) == 409:
+            raise Refused("sheet_moved", str(error), 409, retry_ok=True) from error
+        raise
+
+
+def _release(engine) -> None:
+    fn = getattr(engine, "release_signing", None)
+    if fn:
+        try:
+            fn()
+        except Exception:  # noqa: BLE001
+            pass
+
+
+def _relay() -> dict | None:
+    try:
+        from signoff import relay
+        r = relay.status()
+        return r if r and r.get("result") == "passed" else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _check_lines(carts: list[dict], picks: list[dict]) -> list[dict]:
+    """The store's cart lines against the signed picks: variant id, quantity and unit price. A difference goes on the
+    cart with both values, never hidden and never re-priced. A store client that returns no lines is said so."""
+    out = []
+    for c in carts:
+        c = dict(c)
+        if c.get("mode") not in ("pending", "failed") and c.get("cart_url"):
+            signed = {p["variant_id"]: p for p in picks if p["store"] == c["store"]}
+            lines = c.get("lines")
+            if lines is None:
+                c["lines_checked"] = False
+            else:
+                c["lines_checked"] = True
+                diffs = []
+                got = {l.get("variant_id"): l for l in lines}
+                for vid, p in signed.items():
+                    l = got.get(vid)
+                    if l is None:
+                        diffs.append({"variant_id": vid, "field": "line", "signed": "present", "store": "missing"})
+                        continue
+                    if int(l.get("quantity", 1)) != int(p.get("quantity", 1)):
+                        diffs.append({"variant_id": vid, "field": "quantity", "signed": p.get("quantity", 1), "store": l.get("quantity")})
+                    unit = l.get("unit_price_cents")
+                    if unit is not None and p.get("price_cents") is not None and unit != p["price_cents"]:
+                        diffs.append({"variant_id": vid, "field": "unit price", "signed": p["price_cents"], "store": unit})
+                for vid in got:
+                    if vid not in signed:
+                        diffs.append({"variant_id": vid, "field": "line", "signed": "absent", "store": "present"})
+                if diffs:
+                    c["line_differences"] = diffs
+                    c["note"] = (c.get("note") + "; " if c.get("note") else "") + "store cart differs from the signed picks: " + "; ".join(
+                        "%s %s: signed %s, store %s" % (d["variant_id"].rsplit("/", 1)[-1], d["field"], d["signed"], d["store"]) for d in diffs)
+        out.append(c)
+    return out
+
+
 def _check_totals(carts: list[dict], picks: list[dict], state: dict) -> list[dict]:
     """The store's cart total against the signed total, per store. A difference is shown on the cart ("store total
     differs", both numbers), never hidden and never re-priced."""
@@ -191,7 +248,8 @@ def _check_totals(carts: list[dict], picks: list[dict], state: dict) -> list[dic
             price[(c["product"]["store"], c["product"]["variant_id"])] = c["product"]["price_cents"]
     signed = {}
     for p in picks:
-        signed[p["store"]] = signed.get(p["store"], 0) + price.get((p["store"], p["variant_id"]), 0) * int(p.get("quantity", 1))
+        unit = p["price_cents"] if p.get("price_cents") is not None else price.get((p["store"], p["variant_id"]), 0)
+        signed[p["store"]] = signed.get(p["store"], 0) + unit * int(p.get("quantity", 1))
     out = []
     for c in carts:
         c = dict(c, signed_total_cents=signed.get(c["store"]))
@@ -214,7 +272,7 @@ def _carts_within(picks: list[dict], budget: float) -> list[dict]:
     def work(store: str, items: list[dict]) -> None:
         try:
             create = get_cart().create_carts
-            extra = {k: v for k, v in (("timeout_s", 20), ("tries", 1)) if k in inspect.signature(create).parameters}
+            extra = {k: v for k, v in (("timeout_s", 4), ("tries", 1)) if k in inspect.signature(create).parameters}
             made = create(items, **extra)
             box[store] = {"carts": made}
         except Exception as error:  # noqa: BLE001
@@ -253,7 +311,7 @@ def _late_fill(store: str, got: dict) -> None:
     with ctx["lock"]:
         carts = [c for c in ctx["carts"] if not (c["store"] == store and c["mode"] == "pending")]
         if got.get("carts"):
-            carts += _check_totals(got["carts"], ctx["picks"], ctx["state"])
+            carts += _check_lines(_check_totals(got["carts"], ctx["picks"], ctx["state"]), ctx["picks"])
         else:
             carts.append({"store": store, "cart_id": None, "cart_url": None, "total_cents": None, "created_at": _now(),
                           "mode": "failed", "note": "the store answered with an error (%s)" % got.get("error")})
@@ -273,6 +331,7 @@ async def issuer_request(request: Request):
 def _handle_request(body: dict):
     ensure_watcher()
     with _lock:
+        held = False
         try:
             engine = get_engine()
             state = engine.get_state()
@@ -285,6 +344,7 @@ def _handle_request(body: dict):
             signer = {"key_id": keystore.key.key_id, "name": keystore.key.name}
             if payload["type"] != "sign_sheet":
                 result = engine.apply_issuer({**payload, "signer": signer})
+                receipt(body, True)
                 return {"ok": True, "applied": payload["type"], "version": _version(result, engine)}
             who = persona.status() if persona.record().get("inquiry_id") else persona.record()  # read from Persona's backend
             if config.env("PERSONA_REQUIRED") == "1" and not who.get("verified"):
@@ -292,41 +352,47 @@ def _handle_request(body: dict):
             gate = _senso_gate(engine)
             if gate["blocking"]:
                 raise Refused("senso_blocked", "Senso found %d sentence(s) in conflict or unsupported" % len(gate["blocking"]), 409, retry_ok=True)
-            picks = _picks(state)
+            picks = _signed_picks(engine, payload["sheet_hash"], state)  # exactly the signed sheet's picks; holds the sheet
+            held = True
             if not picks:
+                _release(engine)
                 raise Refused("nothing_to_buy", "no line has a pick to put in a cart", 409, retry_ok=True)
             carts = _carts_within(picks, CART_BUDGET_S)
             if not any(c["mode"] in ("pending",) or c.get("cart_url") for c in carts):
+                _release(engine)
                 raise Refused("cart_failed", "no store created a cart (%s); nothing is signed" % "; ".join(c.get("note", "") for c in carts), 502, retry_ok=True)
             at = _now()
-            basis = "identity checked, sandbox" if who.get("verified") else "self-declared"
-            carts = _check_totals(carts, picks, state)
+            relay = _relay()
+            basis = ("identity checked, sandbox" if who.get("verified") else
+                     "live human checked, sandbox" if relay else "self-declared")
+            carts = _check_lines(_check_totals(carts, picks, state), picks)
             signature = {"name": "%s (%s)" % (signer["name"], basis), "name_basis": basis, "signer": signer, "at": at, "signed_at": at, "sheet_hash": payload["sheet_hash"], "sig": body["sig"],
-                         "payload": body["payload"], "seq": payload["seq"], "persona": who,
+                         "payload": body["payload"], "seq": payload["seq"], "persona": who, **({"relay": relay} if relay else {}),
                          "senso": {"status": gate["status"], "for_hash": gate.get("for_hash"), "checks": gate["checks"],
                                    "label": "Senso check still running" if gate["status"] == "pending" else None}}
             try:
-                mark = engine.mark_signed
-                result = mark(signature, carts, signed_hash=payload["sheet_hash"]) if "signed_hash" in inspect.signature(mark).parameters \
-                    else mark(signature, carts)
-            except ValueError as error:  # the engine saw the sheet move while the carts were being made
+                result = engine.mark_signed(signature, carts)
+            except ValueError as error:  # the engine's own refusal: the sheet no longer has the signed hash
+                _release(engine)
                 if getattr(error, "status", None) == 409:
-                    raise Refused("sheet_moved", "the sheet changed while signing; nothing is signed. Carts made for the old sheet: %s"
-                                  % ", ".join(c["cart_url"] for c in carts if c.get("cart_url")) , 409, retry_ok=True) from error
+                    raise Refused("sheet_moved", "the sheet changed while signing; nothing is signed. Carts made for the signed sheet: %s"
+                                  % ", ".join(c["cart_url"] for c in carts if c.get("cart_url")), 409, retry_ok=True) from error
                 raise
             _late["ctx"] = {"engine": engine, "signature": signature, "carts": carts, "lock": threading.Lock(), "picks": picks, "state": state}
-            receipt("sign_sheet", "accepted", "", {"sheet_hash": payload["sheet_hash"]})
+            receipt(body, True)
             return {"ok": True, "applied": "sign_sheet", "carts": carts, "senso": gate["status"], "version": _version(result, engine)}
         except Refused as error:
+            if held:
+                _release(get_engine())
             if error.retry_ok and keystore.key and prev_seq is not None:
                 keystore.update(last_seq=prev_seq)  # nothing happened, so the same signed request may be sent again
-            if error.retry_ok or error.code in ("stale_hash", "replayed_seq", "bad_signature", "unsigned", "not_enrolled", "unknown_key", "wrong_sheet", "already_signed"):
-                receipt(_kind_of(body), "refused", error.code + ": " + error.detail)
+            receipt(body, False, error.code + ": " + error.detail)
             return _fail(error)
         except ModuleNotFoundError as error:
             return _fail(Refused("engine_unavailable", "the engine is not loaded (%s)" % error.name, 503))
         except ValueError as error:  # the engine's own refusal (EngineError carries an HTTP status)
             if hasattr(error, "status"):
+                receipt(body, False, "engine: " + str(error))
                 return _fail(Refused("engine_refused", str(error), error.status))
             raise
 

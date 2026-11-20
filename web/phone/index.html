@@ -94,8 +94,9 @@ const b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(
 
 let keyRec = null;      // { privateKey, jwk, key_id|null, seq }
 let issuer = null;      // { enrolled, key_id, name, persona, senso }
-let state = null, persona = null;
+let state = null, persona = null, canon = null;
 let tab = "sheet", signed = false, busy = false, openLimit = null;
+let lastKey = null;
 const shown = new Set();   // limit ids whose order sentence is open
 const dragging = new Set();
 
@@ -130,7 +131,8 @@ function toast(text, ms = 4500) { const t = $("#toast"); t.textContent = text; t
 async function getJSON(url, opts) { const r = await fetch(url, opts); if (!r.ok) throw new Error(url + " " + r.status); return r.json(); }
 const lineOf = (id) => state.lines.find((l) => l.line_id === id);
 const pickOf = (line) => (line && line.pick ? line.candidates.find((c) => c.id === line.pick) : null);
-const hashNow = () => state && state.sheet_hash;
+const hashNow = () => canon && canon.hash;               // computed on this phone from the canonical sheet
+const serverHashNow = () => canon && canon.serverHash;   // what the server says (Senso verdicts are keyed by it)
 const mine = () => issuer && issuer.enrolled && keyRec && keyRec.key_id === issuer.key_id;
 
 /* ---------- boot ---------- */
@@ -152,7 +154,20 @@ async function boot() {
   render();
 }
 async function refreshIssuer() { issuer = await getJSON("/api/issuer/status"); }
-async function loadState() { state = await getJSON("/api/state"); signed = !!(state.seal && state.seal.signed); }
+async function sha256hex(text) {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+/* Display binding: what is shown is rendered from the canonical sheet, and what is signed is the hash this phone
+   computed from that exact string. If the server's hash differs from ours, we do not sign. */
+async function loadState() {
+  state = await getJSON("/api/state"); signed = !!(state.seal && state.seal.signed);
+  try {
+    const c = await getJSON("/api/sheet/canonical");
+    const mine = await sha256hex(c.canonical);
+    canon = { text: c.canonical, obj: JSON.parse(c.canonical), hash: mine, serverHash: c.sheet_hash, match: mine === c.sheet_hash };
+  } catch (e) { canon = null; }
+}
 function startEvents() {
   let pending = false, again = false;
   const refetch = async () => {
@@ -182,7 +197,7 @@ function render() {
 function renderLive() {
   if (!mine()) return;
   head();
-  if (tab === "sheet") { if (!busy) renderSheet(); }
+  if (tab === "sheet") { const key = [state.version, canon && canon.hash, issuer && issuer.senso && issuer.senso.for_hash, sensoRunning].join("|"); if (!busy && key !== lastKey) { lastKey = key; renderSheet(); } }
   else if (tab === "lines") { if (!document.activeElement || document.activeElement.tagName !== "INPUT") renderLines(); }
   else updateAdjust();
 }
@@ -213,43 +228,65 @@ function renderNotMine() {
     <div class="sub">This phone can look but not sign. After a rehearsal reset, reload to enrol it instead.</div></div>
     <div class="item sub">To start over, reset from the laptop.</div>`;
 }
-/* limit helpers */
-function sheetLine(id) { return state.sheet.lines.find((x) => x.id === id); }
-function limitText(l) {
-  const b = l.bound;
-  if (b.source === "issuer") return esc(l.label) + ' <b class="num">' + fmt(b.value) + " " + esc(l.unit) + "</b>";
-  const f = state.sheet.shopper_facts.find((x) => x.id === b.fact);
-  return esc(l.label) + (f ? ' <b class="num">' + fmt(f.value) + " " + esc(f.unit) + "</b>" : "");
+/* limit helpers: the numbers come from the canonical sheet, the wording and the order's sentence from the sheet file */
+function sheetLimit(id) { for (const line of state.sheet.lines) for (const l of line.limits) if (l.id === id) return l; return null; }
+function stateCandidate(pick) {
+  for (const L of state.lines) for (const c of L.candidates) if (c.product.variant_id === pick.variant_id && c.product.store === pick.store) return c;
+  return null;
 }
-function limitSource(l) {
-  if (l.bound.source !== "issuer") return { text: "from the home", changed: false };
-  const fo = l.from_order;
-  if (fo && fo.matches === false) return { text: "changed from the order", changed: true };
-  return { text: fo ? "from the order" : "set before the order", changed: false };
+const OPS = { ">=": "at least", "<=": "at most" };
+function limitRowC(l) {
+  const sl = sheetLimit(l.id), label = sl ? sl.label : l.id;
+  let src = "from the home", changed = false, quote = "A measurement of the home.";
+  if (l.set_by === "issuer") {
+    const fo = sl && sl.from_order;
+    if (fo && Math.abs(fo.value - l.bound) > 1e-9) { src = "changed from the order"; changed = true; quote = (fo.quote ? "“" + fo.quote + "” The order says " + fmt(fo.value) + " " + l.unit + "." : "The order says " + fmt(fo.value) + " " + l.unit + "."); }
+    else if (fo) { src = "from the order"; quote = fo.quote ? "“" + fo.quote + "”" : "The order text is not available here."; }
+    else { src = "set before the order"; quote = "No sentence from the order is attached to this limit."; }
+  }
+  const open = shown.has(l.id);
+  return `<button class="lim ${changed ? "changed" : ""}" data-lim="${esc(l.id)}" aria-expanded="${open}">${esc(label)} <b class="num">${fmt(l.bound)} ${esc(l.unit)}</b> <span class="src">· ${esc(src)}</span></button>` +
+    (open ? `<div class="quote">${esc(quote)}</div>` : "");
 }
-function limitRow(l) {
-  const s = limitSource(l), fo = l.from_order, open = shown.has(l.id);
-  return `<button class="lim ${s.changed ? "changed" : ""}" data-lim="${esc(l.id)}" aria-expanded="${open}">${limitText(l)} <span class="src">· ${esc(s.text)}</span></button>` +
-    (open ? `<div class="quote">${fo && fo.quote ? "“" + esc(fo.quote) + "”" : (l.bound.source === "issuer" ? "The order text is not available here." : "A measurement of the home.")}</div>` : "");
+function ruleText(c) { const r = c.pick_rule; return r ? "Pick rule: " + (typeof r === "string" ? r : (r.label || r.id || JSON.stringify(r))) : ""; }
+function itemCard(L, c) {
+  const p = L.pick;
+  const head = `<div class="row"><span class="need">${esc(L.need)}</span><span class="num">${p && L.status !== "pick_up" ? money(p.price_cents * (p.quantity || 1)) : ""}</span></div>`;
+  let body;
+  if (L.status === "pick_up") body = `<div class="pick sub">pick up locally, not in a cart</div>`;
+  else if (!p) body = `<div class="pick sub">no pick: ${esc(L.status)}</div>`;
+  else {
+    const cand = stateCandidate(p), title = p.title || (cand && cand.product.title) || p.product_key;
+    const variant = p.variant_title ? " · " + p.variant_title : "";
+    body = `<div class="pick">${esc(title)}</div><div class="sub">${esc(p.store)}${esc(variant)} · × ${esc(p.quantity || 1)}${p.currency ? " · " + esc(p.currency) : ""}</div>`;
+  }
+  const limits = (L.limits || []).map(limitRowC).join("");
+  const why = p && L.status !== "pick_up" ? `<details data-why="${esc(L.line_id)}" style="margin-top:4px"><summary>Why this one</summary>
+      ${(p.checks || []).length ? `<ul class="plain">${p.checks.map((k) => `<li>${esc(k.expr)}</li>`).join("")}</ul>` : ""}
+      ${(p.quotes || []).map((q) => `<div class="quote">the store states: “${esc(q)}”</div>`).join("")}
+      ${p.delivery && p.delivery.quote ? `<div class="quote">delivery: “${esc(p.delivery.quote)}”${p.delivery.need_by ? " · needed by " + esc(p.delivery.need_by) : ""}</div>` : ""}
+      ${(L.struck || []).length ? `<div class="sub">struck here: ${esc(L.struck.join(", "))}</div>` : ""}</details>` : (L.struck || []).length ? `<div class="sub">struck here: ${esc(L.struck.join(", "))}</div>` : "";
+  return `<div class="item">${head}${body}<div>${limits}</div>${why}</div>`;
 }
+const openWhy = new Set();
 
 /* sheet: what is being signed, then one button */
 let sensoRunning = false, sensoFor = null;
 function sensoLine() {
   const s = (issuer && issuer.senso) || {};
   if (s.configured === false) return { text: "Senso is not connected", rows: [] };
-  const fresh = s.for_hash && s.for_hash === hashNow();
+  const fresh = s.for_hash && s.for_hash === serverHashNow();
   if (sensoRunning || !fresh) return { text: "Checking the sheet against the order…", rows: [] };
   const rows = s.checks || [], ok = rows.filter((r) => r.verdict === "verified").length;
   return { text: "Checked against the order: " + ok + " of " + rows.length + " verified" + ((s.blocking || []).length ? ", " + s.blocking.length + " stop the signature" : ""), rows };
 }
 async function ensureSenso() {
   const s = issuer && issuer.senso;
-  if (sensoRunning || !hashNow() || !s || s.configured === false || s.for_hash === hashNow() || sensoFor === hashNow()) return;
-  sensoRunning = true; sensoFor = hashNow();
+  if (sensoRunning || !serverHashNow() || !s || s.configured === false || s.for_hash === serverHashNow() || sensoFor === serverHashNow()) return;
+  sensoRunning = true; sensoFor = serverHashNow();
   try {
     await fetch("/api/senso/run", { method: "POST" });          // returns at once; the server runs it in the background
-    for (let i = 0; i < 45 && issuer.senso.for_hash !== hashNow(); i++) { await new Promise((r) => setTimeout(r, 2000)); await refreshIssuer(); }
+    for (let i = 0; i < 45 && issuer.senso.for_hash !== serverHashNow(); i++) { await new Promise((r) => setTimeout(r, 2000)); await refreshIssuer(); }
   } catch (e) { /* the server signs with the check marked pending */ }
   sensoRunning = false;
   if (tab === "sheet" && !busy) renderSheet();
@@ -267,23 +304,22 @@ function renderSheet() {
       <div class="label">Rehearsal</div><div class="sub">To start over, reset from the laptop.</div>`;
     return;
   }
+  if (!canon) { main.innerHTML = '<div class="item"><div class="need">The sheet could not be loaded</div><div class="sub">Trying again.</div></div>'; return; }
   const per = persona || (issuer && issuer.persona) || { label: "identity not checked" };
-  const sl = sensoLine();
-  const buyable = state.lines.filter((L) => (L.status === "ready" || L.status === "next_candidate") && pickOf(L)).length;
-  main.innerHTML = state.lines.map((L) => {
-    const p = pickOf(L), sl2 = sheetLine(L.line_id);
-    const pickHtml = L.status === "pick_up" ? `<div class="pick sub">pick up locally, not in a cart</div>` :
-      p ? `<div class="pick">${esc(p.product.title)}</div><div class="sub">${esc(p.product.store)}</div>` : `<div class="pick sub">no pick: ${esc(L.reason || "")}</div>`;
-    return `<div class="item"><div class="row"><span class="need">${esc(L.need)}</span><span class="num">${p && L.status !== "pick_up" ? money(p.product.price_cents) : ""}</span></div>${pickHtml}
-      <div>${sl2.limits.map(limitRow).join("")}</div></div>`;
-  }).join("") +
-    `<div class="rule"></div><div class="label">Total in carts</div><div class="total">${money(state.total_cents)}</div>
+  const sl = sensoLine(), c = canon.obj;
+  const buyable = c.lines.filter((L) => L.status === "ready" || L.status === "next_candidate").length;
+  main.innerHTML = c.lines.map((L) => itemCard(L, c)).join("") +
+    `<div class="rule"></div><div class="label">Total in carts</div><div class="total">${money(c.total_cents)}</div>
+    <div class="sub">${esc(ruleText(c))}</div>
     <div class="label">Checks</div>
     <div class="sub">${esc(per.label || "identity not checked")} · <button class="link" id="pstart">${per.inquiry_id ? "refresh" : "check identity"}</button>${per.link ? ` · <a href="${esc(per.link)}" target="_blank" rel="noopener">open</a>` : ""}</div>
     <div class="sub" style="margin-top:4px">${esc(sl.text)}</div>
-    ${sl.rows.length ? `<details style="margin-top:4px"><summary>Sentences</summary><ul class="plain">${sl.rows.map((c) => `<li><span class="tag ${c.verdict === "verified" ? "ok" : c.verdict === "conflict" ? "bad" : ""}">${esc(c.verdict)}</span>${c.blocks ? "" : ' <span class="sub">advisory</span>'}<br>${esc(c.sentence)}${c.moved_from_order ? '<br><span class="sub">changed from the order</span>' : ""}</li>`).join("")}</ul></details>` : ""}
-    <div class="label">Sheet</div><div class="hash">${esc(hashNow() || "")}</div>
-    <div class="btns"><button class="act primary big" id="sign" ${hashNow() && buyable ? "" : "disabled"}>Sign</button></div>`;
+    ${sl.rows.length ? `<details style="margin-top:4px"><summary>Sentences</summary><ul class="plain">${sl.rows.map((r) => `<li><span class="tag ${r.verdict === "verified" ? "ok" : r.verdict === "conflict" ? "bad" : ""}">${esc(r.verdict)}</span>${r.blocks ? "" : ' <span class="sub">advisory</span>'}<br>${esc(r.sentence)}${r.moved_from_order ? '<br><span class="sub">changed from the order</span>' : ""}</li>`).join("")}</ul></details>` : ""}
+    <div class="label">What you sign</div>
+    <div class="hash">${esc(canon.hash)}</div>
+    <div class="sub" style="margin-top:4px;color:${canon.match ? "var(--ok)" : "var(--bad)"}">${canon.match ? "Computed on this phone from the sheet above; the server's hash is the same." : "This phone computed a different hash from the one the server sent. It will not sign."}</div>
+    <div class="btns"><button class="act primary big" id="sign" ${canon.match && buyable ? "" : "disabled"}>Sign</button></div>`;
+  main.querySelectorAll("details[data-why]").forEach((d) => { d.open = openWhy.has(d.dataset.why); d.addEventListener("toggle", () => (d.open ? openWhy.add(d.dataset.why) : openWhy.delete(d.dataset.why))); });
   ensureSenso();
   $("#pstart").onclick = async () => {
     try {
