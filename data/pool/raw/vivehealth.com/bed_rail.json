@@ -1,0 +1,1717 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.vivehealth.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Vive Health",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.vivehealth.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "7634541"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "7634541"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4820961886308",
+   "title": "Electric Bed Frame",
+   "description": {
+    "html": "60 Day Guarantee View Details > Product Description The Vive electric bed frame gives you full control over your sleep position without leaving the bed. Dual motors raise the head up to 80 degrees and the foot up to 55 degrees and the steel frame handles up to 350 lbs combined across the mattress, bedding and user. It fits twin and twin XL mattresses and sits 13.5\" off the floor. The zero gravity setting takes pressure off the lower back and supports better circulation, making this adjustable twin bed a solid pick for back pain, acid reflux or post-op recovery. A backlit wireless remote handles all adjustments in a dark room and a flat button resets the frame to level in one press. For added comfort while resting or recovering, our Pillows & Wedges collection is worth a look. This electric twin bed ships partially pre-assembled with an illustrated manual and Allen wrench, so setup is quick. A three-pocket bed rail pouch and dual USB charging ports keep your essentials close without cluttering the nightstand. If you spend time resting or working from bed, our Overbed Tables pair well with this frame. Features RELAXING ELEVATION Elevate the head or foot of the bed to promote peaceful rest and relaxation ZERO GRAVITY Features a zero-gravity position to increase circulation and relieve pain QUIET AND SMOOTH Powerful dual motors smoothly and quietly elevate the bed frame to the desired position WIRELESS OPERATION Easily adjust the bed frame in dim and darkened rooms with the backlit wireless remote control BEDSIDE ORGANIZATION Includes a bed rail pouch with three mesh pockets as well as dual USB ports for conveniently powering electronic devices STRONG STEEL FRAME Sized to fit a twin or twin XL mattress, the adjustable electric bed frame is constructed with durable steel to support up to 350 pounds Customer Reviews Based on 23 reviews Write a review Is the Vive electric bed frame easy to set up? Yes! The electric bed frame arrives partially pre-assembled and requires a few simple step to complete the set up. Watch a full assembly video below. How to Reprogram the Electric Bed Frame Remote? Can I raise the head and the foot at the same time? Yes, the head and foot of the bed base frame may be elevated at the same time. Is there a button to lower the bed frame back to flat? Yes! The wireless remote control features a \u201cflat\u201d button that automatically resets the electric bedframe in a flat position. What size of mattress will I need to use the Vive bed frame? The Vive electric bed frame accommodates twin and twinXL mattresses. Are the motors quiet? Yes! The dual motors are quiet to promote greater rest and relaxation. Does the adjustable bed frame have a seated setting? Yes, the adjustable bed frame can be elevated to create a supportive seated position. How far can I elevate the head of the Vive electric bed frame? The head of the adjustable bed can be elevated to 80 degrees. How far can I elevate the foot of the VIve electric bed frame? The foot of the adjustable bed frame can be elevated to 55 degrees. Does this include the adjustable electric frame only? Yes, the Vive electric bed frame includes the frame, a wireless remote and a bed rail organizer. It does not include a mattress. What is the weight limit for the electric bed frame? The bed frame safely supports a combined weight of 350 pounds. This includes the weight of mattress, bedding and the user. How high off of the floor does the electric bed frame sit? The electric bed frame measures 13.5\u201d from the floor to the base of the frame. Uses: For elevating the head or foot of the bed For positioning the bed in zero-gravity position or supportive seated position Dimensions: 75.98\u201d by 38.98\u201d Frame height from the floor: 13.5\u201d Bed rail height from the floor: 24\u201d Maximum elevation at the head of the bed: 80 degrees Maximum elevation at the foot of the bed: 55 degrees Weight: 73 lbs Supports a combined total (mattress, bedding and user weight) of 350 pounds Materials: Steel Care Instructions: Wipe the adjustable bed frame off with a damp cloth and mild detergent as needed Dry immediately with a lint-free cloth What\u2019s Included: Vive Electric Bed Frame Wireless remote control Bed rail organizer pouch Allen wrench Illustrated manual 60 day guarantee UPC: 810041981608 Product Number: LVA2043 Shipping Weight: 84 pounds User Manual: Electric Bed Frame"
+   },
+   "url": "https://www.vivehealth.com/products/electric-bed-frame",
+   "handle": "electric-bed-frame",
+   "price_range": {
+    "min": {
+     "amount": 69999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 69999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 54999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 54999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39407188901988",
+     "sku": "LVA2043TWN",
+     "title": "Twin",
+     "description": {
+      "html": "60 Day Guarantee View Details > Product Description The Vive electric bed frame gives you full control over your sleep position without leaving the bed. Dual motors raise the head up to 80 degrees and the foot up to 55 degrees and the steel frame handles up to 350 lbs combined across the mattress, bedding and user. It fits twin and twin XL mattresses and sits 13.5\" off the floor. The zero gravity setting takes pressure off the lower back and supports better circulation, making this adjustable twin bed a solid pick for back pain, acid reflux or post-op recovery. A backlit wireless remote handles all adjustments in a dark room and a flat button resets the frame to level in one press. For added comfort while resting or recovering, our Pillows & Wedges collection is worth a look. This electric twin bed ships partially pre-assembled with an illustrated manual and Allen wrench, so setup is quick. A three-pocket bed rail pouch and dual USB charging ports keep your essentials close without cluttering the nightstand. If you spend time resting or working from bed, our Overbed Tables pair well with this frame. Features RELAXING ELEVATION Elevate the head or foot of the bed to promote peaceful rest and relaxation ZERO GRAVITY Features a zero-gravity position to increase circulation and relieve pain QUIET AND SMOOTH Powerful dual motors smoothly and quietly elevate the bed frame to the desired position WIRELESS OPERATION Easily adjust the bed frame in dim and darkened rooms with the backlit wireless remote control BEDSIDE ORGANIZATION Includes a bed rail pouch with three mesh pockets as well as dual USB ports for conveniently powering electronic devices STRONG STEEL FRAME Sized to fit a twin or twin XL mattress, the adjustable electric bed frame is constructed with durable steel to support up to 350 pounds Customer Reviews Based on 23 reviews Write a review Is the Vive electric bed frame easy to set up? Yes! The electric bed frame arrives partially pre-assembled and requires a few simple step to complete the set up. Watch a full assembly video below. How to Reprogram the Electric Bed Frame Remote? Can I raise the head and the foot at the same time? Yes, the head and foot of the bed base frame may be elevated at the same time. Is there a button to lower the bed frame back to flat? Yes! The wireless remote control features a \u201cflat\u201d button that automatically resets the electric bedframe in a flat position. What size of mattress will I need to use the Vive bed frame? The Vive electric bed frame accommodates twin and twinXL mattresses. Are the motors quiet? Yes! The dual motors are quiet to promote greater rest and relaxation. Does the adjustable bed frame have a seated setting? Yes, the adjustable bed frame can be elevated to create a supportive seated position. How far can I elevate the head of the Vive electric bed frame? The head of the adjustable bed can be elevated to 80 degrees. How far can I elevate the foot of the VIve electric bed frame? The foot of the adjustable bed frame can be elevated to 55 degrees. Does this include the adjustable electric frame only? Yes, the Vive electric bed frame includes the frame, a wireless remote and a bed rail organizer. It does not include a mattress. What is the weight limit for the electric bed frame? The bed frame safely supports a combined weight of 350 pounds. This includes the weight of mattress, bedding and the user. How high off of the floor does the electric bed frame sit? The electric bed frame measures 13.5\u201d from the floor to the base of the frame. Uses: For elevating the head or foot of the bed For positioning the bed in zero-gravity position or supportive seated position Dimensions: 75.98\u201d by 38.98\u201d Frame height from the floor: 13.5\u201d Bed rail height from the floor: 24\u201d Maximum elevation at the head of the bed: 80 degrees Maximum elevation at the foot of the bed: 55 degrees Weight: 73 lbs Supports a combined total (mattress, bedding and user weight) of 350 pounds Materials: Steel Care Instructions: Wipe the adjustable bed frame off with a damp cloth and mild detergent as needed Dry immediately with a lint-free cloth What\u2019s Included: Vive Electric Bed Frame Wireless remote control Bed rail organizer pouch Allen wrench Illustrated manual 60 day guarantee UPC: 810041981608 Product Number: LVA2043 Shipping Weight: 84 pounds User Manual: Electric Bed Frame"
+     },
+     "price": {
+      "amount": 69999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 54999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Twin"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/main_image_c7cb0e80__E30XI.jpg?v=1630608964"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39407188901988:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "Twin"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/main_image_c7cb0e80__E30XI.jpg?v=1630608964",
+     "alt_text": "Electric Bed Frame"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bestseller",
+    "EBF",
+    "fsa-hsa",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59769258019",
+     "handle": "bed-assist-safety-aids",
+     "title": "Bedroom Safety & Mobility Aids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10116540100",
+   "title": "Compact Toilet Rail",
+   "description": {
+    "html": "Two-year guarantee View Details > Product Description Stay steady in the bathroom with the Toilet Safety Rails from Vive Health. Our toilet rails give you something solid to hold when sitting down or standing up from the toilet. Where balance concerns make bathroom visits stressful, these toilet rails for elderly users bring confidence back to daily routines. The aluminum construction on this toilet rail supports 300 pounds while weighing just over 5 pounds. Padded handles adjust from 18.5 to 21 inches wide to fit round and elongated bowls. These toilet handrails attach using your existing seat bolts without any tools or wall drilling. Soft foam grips on our toilet rails for seniors prevent slipping when hands are wet or weak. The compact frame on this toilet safety rail stays out of the way during normal use and shifts easily for cleaning underneath. Whether recovering from hip surgery, managing arthritis, or helping an aging parent, these toilet safety rails restore independence where it counts most. Explore our collection of Commodes and Bathroom Accessories to find additional solutions for enhanced mobility and safety. Features Prevents Slips and Falls Promotes essential bathroom safety for seniors, disabled individuals and patients recovering from injury or surgery SUPPORTS UP TO 300 POUNDS Sturdy lightweight aluminum frame provides stable, secure support while remaining easy to position and adjust FITS ON ANY TOILET Compact design fits on both round and elongated toilets without interfering with normal use or bathroom accessibility SUPPORTIVE HANDRAILS Dual rails adjust from 18.5\" to 21\" wide for customized fit and optimal stability during transfers COMFORTABLE GRIP Handrails are padded with a soft nonslip foam for strong support EASY TO ASSEMBLE AND INSTALL No tools, hardware or drilling required Customer Reviews Based on 23 reviews Write a review What are the dimensions of the compact toilet safety rail? The compact safety rail is 18.5\" to 21\u201dW x16\u201dD x 10\u201dH. How much weight will the compact toilet safety rail hold? The safety rail will support up to 300 pounds. How much does the compact toilet safety rail weigh? The shipping weight is 5.3 pounds. Is there latex in the padding on the handrails? No, there is no latex in the foam padding. Will the compact toilet safety rail fit on an elongated toilet? Yes, the safety rail will fit on any toilet, including an elongated toilet. How do I install the compact toilet safety rail? The compact safety rail is installed by utilizing the existing seat bolts. Assemble the handrails using the included bracket, resters, and locking pins. Remove the seat and lid, center the safety rail on the toilet, put seat and lid back in place. Replace the seat bolts.Watch the short assembly video below: How to Attach the Locking Screw to the Compact Toilet Rail? How much space is between the handrails? The handrails can be adjusted between 18.5 and 21 inches wide for a customized fit. Can the handrails be lowered? No, the handrails cannot be lowered. Is the compact toilet safety rail transportable? While the safety rail is lightweight, it is not suitable for travel. Can the toilet seat be lifted for cleaning when the compact safety toilet frame is installed? Yes, the frame does not interfere with properly cleaning the toilet rim or bowl. Simply shift the rails to clean under the Vive safety rails. How do I clean the compact toilet safety rail? The rail is easily cleaned with a wet cloth and any bathroom cleaner. Is the compact toilet safety rail suitable for long term use? Yes, the safety rail is made with corrosion-resistant aluminum so it will withstand daily use. Uses: Provides safety and security when sitting down or standing up from toilet Ideal for seniors and elderly individuals Perfect for post-surgery or injury recovery Assists individuals with disabilities or limited mobility Prevents bathroom slips and falls Dimensions: Width: 18.5\" to 21\" (adjustable) Depth: 16\" Height: 10\" Shipping Weight: 5.3 pounds Maximum Weight Capacity: 300 pounds Materials: Lightweight aluminum frame Corrosion-resistant construction Soft foam grips (latex-free) Nonslip padding Features: Adjustable width for customized fit Fits round and elongated toilets Compact space-saving design Does not interfere with toilet seat lifting Easy to clean and maintain Durable for long-term daily use Lightweight but stable construction Installation Instructions: Assemble handrails using included bracket, rests and locking pins Remove the existing toilet seat and lid Center safety rail on the toilet Replace the seat and lid on top of the rail Secure using existing seat bolts Adjust width as needed for optimal fit No Tools Required: Uses existing toilet seat bolts No additional hardware needed No drilling into walls or floor Quick assembly with included components Cleaning and Maintenance: Wipe down with a wet cloth and bathroom cleaner Rails can be shifted for cleaning under the frame Does not interfere with cleaning the toilet rim or bowl Corrosion-resistant for moisture environments Care Instructions: Clean regularly with standard bathroom cleaners Check bolts periodically to ensure a secure fit Wipe foam grips to maintain nonslip properties What's Included: Compact Toilet Safety Rail Assembly brackets and components Locking pins Installation manual Two-year guarantee Guarantee Policy: 2-year guarantee on product Product Information: UPC: 818323020335 Product Number: LVA1055 Note: While lightweight and easy to adjust, this safety rail is designed for permanent home installation rather than travel use. User Manual: Compact Toilet Rail by Vive"
+   },
+   "url": "https://www.vivehealth.com/products/toilet-rail",
+   "handle": "toilet-rail",
+   "price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/37268707076",
+     "sku": "LVA1055",
+     "title": "Default Title",
+     "description": {
+      "html": "Two-year guarantee View Details > Product Description Stay steady in the bathroom with the Toilet Safety Rails from Vive Health. Our toilet rails give you something solid to hold when sitting down or standing up from the toilet. Where balance concerns make bathroom visits stressful, these toilet rails for elderly users bring confidence back to daily routines. The aluminum construction on this toilet rail supports 300 pounds while weighing just over 5 pounds. Padded handles adjust from 18.5 to 21 inches wide to fit round and elongated bowls. These toilet handrails attach using your existing seat bolts without any tools or wall drilling. Soft foam grips on our toilet rails for seniors prevent slipping when hands are wet or weak. The compact frame on this toilet safety rail stays out of the way during normal use and shifts easily for cleaning underneath. Whether recovering from hip surgery, managing arthritis, or helping an aging parent, these toilet safety rails restore independence where it counts most. Explore our collection of Commodes and Bathroom Accessories to find additional solutions for enhanced mobility and safety. Features Prevents Slips and Falls Promotes essential bathroom safety for seniors, disabled individuals and patients recovering from injury or surgery SUPPORTS UP TO 300 POUNDS Sturdy lightweight aluminum frame provides stable, secure support while remaining easy to position and adjust FITS ON ANY TOILET Compact design fits on both round and elongated toilets without interfering with normal use or bathroom accessibility SUPPORTIVE HANDRAILS Dual rails adjust from 18.5\" to 21\" wide for customized fit and optimal stability during transfers COMFORTABLE GRIP Handrails are padded with a soft nonslip foam for strong support EASY TO ASSEMBLE AND INSTALL No tools, hardware or drilling required Customer Reviews Based on 23 reviews Write a review What are the dimensions of the compact toilet safety rail? The compact safety rail is 18.5\" to 21\u201dW x16\u201dD x 10\u201dH. How much weight will the compact toilet safety rail hold? The safety rail will support up to 300 pounds. How much does the compact toilet safety rail weigh? The shipping weight is 5.3 pounds. Is there latex in the padding on the handrails? No, there is no latex in the foam padding. Will the compact toilet safety rail fit on an elongated toilet? Yes, the safety rail will fit on any toilet, including an elongated toilet. How do I install the compact toilet safety rail? The compact safety rail is installed by utilizing the existing seat bolts. Assemble the handrails using the included bracket, resters, and locking pins. Remove the seat and lid, center the safety rail on the toilet, put seat and lid back in place. Replace the seat bolts.Watch the short assembly video below: How to Attach the Locking Screw to the Compact Toilet Rail? How much space is between the handrails? The handrails can be adjusted between 18.5 and 21 inches wide for a customized fit. Can the handrails be lowered? No, the handrails cannot be lowered. Is the compact toilet safety rail transportable? While the safety rail is lightweight, it is not suitable for travel. Can the toilet seat be lifted for cleaning when the compact safety toilet frame is installed? Yes, the frame does not interfere with properly cleaning the toilet rim or bowl. Simply shift the rails to clean under the Vive safety rails. How do I clean the compact toilet safety rail? The rail is easily cleaned with a wet cloth and any bathroom cleaner. Is the compact toilet safety rail suitable for long term use? Yes, the safety rail is made with corrosion-resistant aluminum so it will withstand daily use. Uses: Provides safety and security when sitting down or standing up from toilet Ideal for seniors and elderly individuals Perfect for post-surgery or injury recovery Assists individuals with disabilities or limited mobility Prevents bathroom slips and falls Dimensions: Width: 18.5\" to 21\" (adjustable) Depth: 16\" Height: 10\" Shipping Weight: 5.3 pounds Maximum Weight Capacity: 300 pounds Materials: Lightweight aluminum frame Corrosion-resistant construction Soft foam grips (latex-free) Nonslip padding Features: Adjustable width for customized fit Fits round and elongated toilets Compact space-saving design Does not interfere with toilet seat lifting Easy to clean and maintain Durable for long-term daily use Lightweight but stable construction Installation Instructions: Assemble handrails using included bracket, rests and locking pins Remove the existing toilet seat and lid Center safety rail on the toilet Replace the seat and lid on top of the rail Secure using existing seat bolts Adjust width as needed for optimal fit No Tools Required: Uses existing toilet seat bolts No additional hardware needed No drilling into walls or floor Quick assembly with included components Cleaning and Maintenance: Wipe down with a wet cloth and bathroom cleaner Rails can be shifted for cleaning under the frame Does not interfere with cleaning the toilet rim or bowl Corrosion-resistant for moisture environments Care Instructions: Clean regularly with standard bathroom cleaners Check bolts periodically to ensure a secure fit Wipe foam grips to maintain nonslip properties What's Included: Compact Toilet Safety Rail Assembly brackets and components Locking pins Installation manual Two-year guarantee Guarantee Policy: 2-year guarantee on product Product Information: UPC: 818323020335 Product Number: LVA1055 Note: While lightweight and easy to adjust, this safety rail is designed for permanent home installation rather than travel use. User Manual: Compact Toilet Rail by Vive"
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/81.jpg?v=1785862905"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/37268707076:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/81.jpg?v=1785862905",
+     "alt_text": "Compact Toilet Rail"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ABRA",
+    "APSA",
+    "bestseller",
+    "BTR",
+    "fsa-hsa",
+    "guarantee-two-year",
+    "HLHA",
+    "HLHB",
+    "HLHF",
+    "HLHL",
+    "HLSH",
+    "HLTI",
+    "KACT",
+    "KMCT",
+    "KMTE",
+    "Prop65"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/516855496739",
+   "title": "Bed Ladder",
+   "description": {
+    "html": "Extra assistance for sitting up in bed Wide ladder design Comfortable foam hand grips Buckle strap easily installs on any bed frame Durable webbing supports up to 300 pounds 60 Day Guarantee View Details > Product Description The bed ladder loops around the foot of the bed frame and adjusts from 48\" to 72\" to position the top handle at waist height when lying down. From there, a hand-over-hand pull through each rung brings you to a seated position without pushing off the mattress. It fits any bed size including adjustable frames, installs tool-free and supports up to 300 pounds. The wide rungs keep your hands spaced for controlled movement and the 5\" polypropylene foam handles give a firm, non-slip grip at every step. The strap wipes clean with a damp cloth and takes seconds to remove. This bed ladder assists those with reduced core strength, spinal conditions, lower extremity weakness or surgery recovery and keeps that process independent. Our Bed Rails are also worth browsing for broader bedside support options. Backed by Vive Health's 60-day guarantee, this bed ladder for elderly users and post-surgery recovery ships same day for orders placed before 5pm. If repositioning your legs in bed is also a challenge, our Stand Assists help with the move from seated to standing once you're up. Features BED ASSIST LADDER Designed for individuals recovering from surgery, managing spinal injuries, lower extremity weakness or navigating pregnancy. Provides reliable support exactly when getting up is hardest. COMFORT GRIP HANDLES Soft foam handles give a firm, non-slip grip that does not fatigue the hands during repeated use. INSTALLS ON ANY BED Installs without tools in minutes and removes just as quickly. Compatible with all bed sizes including adjustable frames. ADJUSTABLE LENGTH A secure slide buckle lets you set the ladder to the exact length that works for your bed height and reach. LADDER DESIGN The broad rung spacing gives both hands a natural contact point, making it easier to shift weight and rise to a seated position without strain. DURABLE WEBBING Built with heavy-duty webbing that holds up under daily use and wipes clean without any special care. Customer Reviews Based on 23 reviews Write a review Are the handles wide enough to have two hands on simultaneously? As hands sizes vary, using both hands on one handle simultaneously would depend on the width of a person\u2019s hand. Each ladder handle is five inches in length to easily accommodate most hand sizes. Will it work on an adjustable bed? Yes, it easily attaches to any bed frame with an adjustable buckle strap. Can it be used only for a twin bed or will it work on any size bed? The bed ladder can be easily installed on any size bed frame. Do the arms fold down? The arms are fixed and do not fold down. What is the maximum height from seat to floor? The Vive bed ladder is six feet in length and is adjustable to fit any bed. What is the ladder made of? The bed ladder is made with a durable webbing, with a strong composite buckle and soft foam handles. Where do I attach it my bed? The ladder strap should be looped around the bed frame at the foot of the bed. Then securely snap the buckle and adjust the strap so that the top handle meets the waist level when lying down. Can I use this with only one arm? Yes, provided the usable arm has enough strength to pull the body into a seated position. Uses: For assisting in rising to a seated position in bed Dimensions: Strap Length: Adjustable 48\u201d \u2013 72\u201d Length between handles: 10.5\u201d Handle Grip: 5\u201d Weight Capacity: 300 lbs Materials: Strap: Polypropylene Handle: EVA with PP plastic How To Install: Loop bed ladder strap around the bed frame at the foot of the bed. Snap the buckle and adjust the strap so that the top handle meets the waist level when lying down. How To Use: Using a hand-over-hand movement, sit up in bed by pulling on successive rungs of the ladder until reaching a seated position. Care Instructions: Wipe strap and handles with a damp cloth and dry immediately What\u2019s Included: Bed ladder 60 Day Guarantee UPC: 818323021080 Product Number: LVA1069BLK Shipping Weight: 8 ounces User Manual: Bed Ladder"
+   },
+   "url": "https://www.vivehealth.com/products/bed-ladder",
+   "handle": "bed-ladder",
+   "price_range": {
+    "min": {
+     "amount": 1499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/13898434314275",
+     "sku": "LVA1069BLK",
+     "title": "Default Title",
+     "description": {
+      "html": "Extra assistance for sitting up in bed Wide ladder design Comfortable foam hand grips Buckle strap easily installs on any bed frame Durable webbing supports up to 300 pounds 60 Day Guarantee View Details > Product Description The bed ladder loops around the foot of the bed frame and adjusts from 48\" to 72\" to position the top handle at waist height when lying down. From there, a hand-over-hand pull through each rung brings you to a seated position without pushing off the mattress. It fits any bed size including adjustable frames, installs tool-free and supports up to 300 pounds. The wide rungs keep your hands spaced for controlled movement and the 5\" polypropylene foam handles give a firm, non-slip grip at every step. The strap wipes clean with a damp cloth and takes seconds to remove. This bed ladder assists those with reduced core strength, spinal conditions, lower extremity weakness or surgery recovery and keeps that process independent. Our Bed Rails are also worth browsing for broader bedside support options. Backed by Vive Health's 60-day guarantee, this bed ladder for elderly users and post-surgery recovery ships same day for orders placed before 5pm. If repositioning your legs in bed is also a challenge, our Stand Assists help with the move from seated to standing once you're up. Features BED ASSIST LADDER Designed for individuals recovering from surgery, managing spinal injuries, lower extremity weakness or navigating pregnancy. Provides reliable support exactly when getting up is hardest. COMFORT GRIP HANDLES Soft foam handles give a firm, non-slip grip that does not fatigue the hands during repeated use. INSTALLS ON ANY BED Installs without tools in minutes and removes just as quickly. Compatible with all bed sizes including adjustable frames. ADJUSTABLE LENGTH A secure slide buckle lets you set the ladder to the exact length that works for your bed height and reach. LADDER DESIGN The broad rung spacing gives both hands a natural contact point, making it easier to shift weight and rise to a seated position without strain. DURABLE WEBBING Built with heavy-duty webbing that holds up under daily use and wipes clean without any special care. Customer Reviews Based on 23 reviews Write a review Are the handles wide enough to have two hands on simultaneously? As hands sizes vary, using both hands on one handle simultaneously would depend on the width of a person\u2019s hand. Each ladder handle is five inches in length to easily accommodate most hand sizes. Will it work on an adjustable bed? Yes, it easily attaches to any bed frame with an adjustable buckle strap. Can it be used only for a twin bed or will it work on any size bed? The bed ladder can be easily installed on any size bed frame. Do the arms fold down? The arms are fixed and do not fold down. What is the maximum height from seat to floor? The Vive bed ladder is six feet in length and is adjustable to fit any bed. What is the ladder made of? The bed ladder is made with a durable webbing, with a strong composite buckle and soft foam handles. Where do I attach it my bed? The ladder strap should be looped around the bed frame at the foot of the bed. Then securely snap the buckle and adjust the strap so that the top handle meets the waist level when lying down. Can I use this with only one arm? Yes, provided the usable arm has enough strength to pull the body into a seated position. Uses: For assisting in rising to a seated position in bed Dimensions: Strap Length: Adjustable 48\u201d \u2013 72\u201d Length between handles: 10.5\u201d Handle Grip: 5\u201d Weight Capacity: 300 lbs Materials: Strap: Polypropylene Handle: EVA with PP plastic How To Install: Loop bed ladder strap around the bed frame at the foot of the bed. Snap the buckle and adjust the strap so that the top handle meets the waist level when lying down. How To Use: Using a hand-over-hand movement, sit up in bed by pulling on successive rungs of the ladder until reaching a seated position. Care Instructions: Wipe strap and handles with a damp cloth and dry immediately What\u2019s Included: Bed ladder 60 Day Guarantee UPC: 818323021080 Product Number: LVA1069BLK Shipping Weight: 8 ounces User Manual: Bed Ladder"
+     },
+     "price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/bedladder_main_5c7c9c69-d506-4ef9-8c0c-db30d2085c42.jpg?v=1621892652"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/13898434314275:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/bedladder_main_5c7c9c69-d506-4ef9-8c0c-db30d2085c42.jpg?v=1621892652",
+     "alt_text": "Bed Ladder"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BBL",
+    "Bed Ladders",
+    "fsa-hsa",
+    "guarantee-60-day",
+    "MTA",
+    "Prop65"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59769258019",
+     "handle": "bed-assist-safety-aids",
+     "title": "Bedroom Safety & Mobility Aids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59806810147",
+     "handle": "transfer-belts-aids",
+     "title": "Transfer Belts & Patient Transfer Aids",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Transfer Aids & Recommendations Here: Choosing A Transfer Device For additional questions or comments, contact our product specialist today.Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7299065872484",
+   "title": "Blanket Lifter",
+   "description": {
+    "html": "One Year Guarantee View Details > Features PROMOTE REST, COMFORT, AND RELIEF Experience better rest and relief by keeping heavy blankets or comforters off your legs and sensitive body parts with the Vive blanket lifter. Ideal for chronic pain and long-term illness, this blanket lifter is great for those with neuropathy, arthritis, or chronic pain and sensitivity STURDY STEEL DESIGN FOR RELIABLE SUPPORT The Vive blanket lifter features strong and durable steel construction that is capable of securely supporting heavy blankets, sheets, or comforters. Stay warm and comfortable while preventing friction and direct contact body parts ADJUSTABLE HEIGHT FOR PERSONALIZED COMFORT Customize the height of the blanket lifter between 26\u201d and 34\u201d with easy-to-use push buttons. This ensures that you can choose the perfect height to suit your needs, so you can rest comfortably VERSATILE FOR ANY BED TYPE The universal design of the Vive blanket lifter allows it to be used with any bed type. Simply attach it under your mattress or secure it to the floor for lower beds, ensuring convenience and compatibility QUICK AND EASY TO ASSEMBLE Get immediate relief and support with the Vive blanket lifter. This blanket lifter comes with a step-by-step manual and all the necessary tools for hassle-free assembly, so you can start using it right away for uninterrupted rest Customer Reviews Based on 23 reviews Write a review Who can benefit from using the Vive blanket lifter? The Vive blanket lifter is perfect for individuals who want to keep a blanket or comforter off their legs or other body parts. It is also great for those with conditions like neuropathy, arthritis, or skin sensitivity, as well as individuals with limited mobility who struggle to reposition blankets during the night. How does the Vive blanket lifter provide help? By lifting the blanket away from sensitive body parts, this blanket lifter allows you to stay warm while preventing direct contact and friction. This allows for better rest and recovery. Can the Vive blanket lifter support heavy blankets or comforters? Yes, the Vive blanket lifter is designed to be sturdy and strong. The reliable steel construction is capable of supporting heavy blankets, sheets, or comforters, and ensures that you stay warm during the night. Can the height of the blanket lifter be adjusted? Yes, the Vive blanket lifter features easily-adjustable push buttons so you can adjust the height from anywhere between 26\u201d and 34\u201d to suit your individual needs and preferences. Is the Vive blanket lifter compatible with different bed types? Yes! This blanket lifter has a universal design that can be used with any bed type. Simply attach it to your mattress or secure it to the floor for lower beds. How easy is the assembly process for the Vive blanket lifter? The assembly process is hassle-free and straightforward. The blanket lifter includes a step-by-step manual and comes with all the necessary tools required for immediate use. Uses: A blanket lifter keeps blankets or comforters off of iinjured areas of the body while providing warmth. Great for those with diabetes, arthritis, neuropathy, or other sensitivities Dimensions: 17\" x 13.5\" Product Materials Steel Care Instructions: N/A What\u2019s Included: 1 Extendable Rail 2 Clips for Holding the Blanket Color(s): Black Size(s): N/A UPC: Product Number: LVA3013BLK Shipping Weight:"
+   },
+   "url": "https://www.vivehealth.com/products/blanket-lifter",
+   "handle": "blanket-lifter",
+   "price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42356779876452",
+     "sku": "LVA3013BLK",
+     "title": "Default Title",
+     "description": {
+      "html": "One Year Guarantee View Details > Features PROMOTE REST, COMFORT, AND RELIEF Experience better rest and relief by keeping heavy blankets or comforters off your legs and sensitive body parts with the Vive blanket lifter. Ideal for chronic pain and long-term illness, this blanket lifter is great for those with neuropathy, arthritis, or chronic pain and sensitivity STURDY STEEL DESIGN FOR RELIABLE SUPPORT The Vive blanket lifter features strong and durable steel construction that is capable of securely supporting heavy blankets, sheets, or comforters. Stay warm and comfortable while preventing friction and direct contact body parts ADJUSTABLE HEIGHT FOR PERSONALIZED COMFORT Customize the height of the blanket lifter between 26\u201d and 34\u201d with easy-to-use push buttons. This ensures that you can choose the perfect height to suit your needs, so you can rest comfortably VERSATILE FOR ANY BED TYPE The universal design of the Vive blanket lifter allows it to be used with any bed type. Simply attach it under your mattress or secure it to the floor for lower beds, ensuring convenience and compatibility QUICK AND EASY TO ASSEMBLE Get immediate relief and support with the Vive blanket lifter. This blanket lifter comes with a step-by-step manual and all the necessary tools for hassle-free assembly, so you can start using it right away for uninterrupted rest Customer Reviews Based on 23 reviews Write a review Who can benefit from using the Vive blanket lifter? The Vive blanket lifter is perfect for individuals who want to keep a blanket or comforter off their legs or other body parts. It is also great for those with conditions like neuropathy, arthritis, or skin sensitivity, as well as individuals with limited mobility who struggle to reposition blankets during the night. How does the Vive blanket lifter provide help? By lifting the blanket away from sensitive body parts, this blanket lifter allows you to stay warm while preventing direct contact and friction. This allows for better rest and recovery. Can the Vive blanket lifter support heavy blankets or comforters? Yes, the Vive blanket lifter is designed to be sturdy and strong. The reliable steel construction is capable of supporting heavy blankets, sheets, or comforters, and ensures that you stay warm during the night. Can the height of the blanket lifter be adjusted? Yes, the Vive blanket lifter features easily-adjustable push buttons so you can adjust the height from anywhere between 26\u201d and 34\u201d to suit your individual needs and preferences. Is the Vive blanket lifter compatible with different bed types? Yes! This blanket lifter has a universal design that can be used with any bed type. Simply attach it to your mattress or secure it to the floor for lower beds. How easy is the assembly process for the Vive blanket lifter? The assembly process is hassle-free and straightforward. The blanket lifter includes a step-by-step manual and comes with all the necessary tools required for immediate use. Uses: A blanket lifter keeps blankets or comforters off of iinjured areas of the body while providing warmth. Great for those with diabetes, arthritis, neuropathy, or other sensitivities Dimensions: 17\" x 13.5\" Product Materials Steel Care Instructions: N/A What\u2019s Included: 1 Extendable Rail 2 Clips for Holding the Blanket Color(s): Black Size(s): N/A UPC: Product Number: LVA3013BLK Shipping Weight:"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1MainImage.jpg?v=1699052422"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/42356779876452:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1MainImage.jpg?v=1699052422",
+     "alt_text": "Blanket Lifter"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-3-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BBR",
+    "BEA",
+    "guarantee-one-year"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59769258019",
+     "handle": "bed-assist-safety-aids",
+     "title": "Bedroom Safety & Mobility Aids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4288414916",
+   "title": "Toilet Safety Rail",
+   "description": {
+    "html": "Lifetime Guarantee View Details > Features ADDED BATHROOM STABILITY Reduces the risk of slips and falls when sitting or standing USE WITH ANY TOILET Adjustable safety rail fits all standard, elongated and irregular toilets EASY INSTALLATION Uses existing seat bolts, no drilling or cementing required COMFORTABLY PADDED HANDLES Closed cell foam handles provide a comfortable and secure grip and are easily cleaned with a standard disinfectant wipe or solution ADJUSTABLE SAFETY RAIL Rails can be adjusted between 21.5\u201d to 26.5\u201d wide and 26\u201d to 31.5\u201d in height for a customized fit DURABLE CORROSION-RESISTANT FRAME Lightweight, durable aluminum frame supports up to 300 pounds Customer Reviews Based on 23 reviews Write a review Is this toilet rail good for travel? The lightweight toilet rail can be easily disassembled for convenient travel. Is the width of the handles adjustable? Yes! The rail handles can be adjusted from 21.5 to 26.5\u201d. Is it safe to use on a tile floor? Yes! Each leg is capped with a rubber, non-slip cap for added stability on any surface. How do I assemble the toilet safety rail? Detach the existing toilet seat. Position the rail bracket screw holes in alignment with seat holes ensuring the bracket is flush against the toilet. Replace toilet seat lid with original screws and covers. Next, insert rail arms into the rear bracket at the desired width, ensuring the brass locking pins are clearly visible. Insert assist rails into the rail arms and secure with the included snap clips. Adjust the leg height to accommodate the height of the toilet using the brass locking pins. How high are the armrests? The toilet safety rail handles are adjustable from 26\u201d to 31.5\u201d. Will this work with a seat riser? Yes, the safety rail can be used in addition to a seat riser by adjusting the rail height to a comfortable level. What is the weight limit for the safety rail? The rails can safely support up to 300 pounds. How far apart are the mounting holes on the bracket? The holes are 5.5\u201d apart. Does the toilet safety rail fold so I can carry it in a suitcase? The toilet rail does not fold but can be taken apart for storage or travel. How do I clean the handles? The handles can be wiped down with disinfectant solution. Uses: Added stability when sitting or standing Dimensions: Length: 21.5\" - 26.5\" Width: 19.5\" Height: 26\" - 31.5\" Bracket size: 11.5\" x 3\" x 1.5\" Materials: Aluminum frame Closed-cell foam handles Care Instructions: Wipe down using a mild soap or disinfectant What\u2019s Included: Toilet safety rail Lifetime Guarantee Note: Not suitable for low profile toilets UPC: 683405233831 Product Number: LVA1010 Shipping Weight: 5.2 pounds User Manual: Toilet Safety Rail Manual"
+   },
+   "url": "https://www.vivehealth.com/products/toilet-safety-frame",
+   "handle": "toilet-safety-frame",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/14137366468",
+     "sku": "LVA1010",
+     "title": "Default Title",
+     "description": {
+      "html": "Lifetime Guarantee View Details > Features ADDED BATHROOM STABILITY Reduces the risk of slips and falls when sitting or standing USE WITH ANY TOILET Adjustable safety rail fits all standard, elongated and irregular toilets EASY INSTALLATION Uses existing seat bolts, no drilling or cementing required COMFORTABLY PADDED HANDLES Closed cell foam handles provide a comfortable and secure grip and are easily cleaned with a standard disinfectant wipe or solution ADJUSTABLE SAFETY RAIL Rails can be adjusted between 21.5\u201d to 26.5\u201d wide and 26\u201d to 31.5\u201d in height for a customized fit DURABLE CORROSION-RESISTANT FRAME Lightweight, durable aluminum frame supports up to 300 pounds Customer Reviews Based on 23 reviews Write a review Is this toilet rail good for travel? The lightweight toilet rail can be easily disassembled for convenient travel. Is the width of the handles adjustable? Yes! The rail handles can be adjusted from 21.5 to 26.5\u201d. Is it safe to use on a tile floor? Yes! Each leg is capped with a rubber, non-slip cap for added stability on any surface. How do I assemble the toilet safety rail? Detach the existing toilet seat. Position the rail bracket screw holes in alignment with seat holes ensuring the bracket is flush against the toilet. Replace toilet seat lid with original screws and covers. Next, insert rail arms into the rear bracket at the desired width, ensuring the brass locking pins are clearly visible. Insert assist rails into the rail arms and secure with the included snap clips. Adjust the leg height to accommodate the height of the toilet using the brass locking pins. How high are the armrests? The toilet safety rail handles are adjustable from 26\u201d to 31.5\u201d. Will this work with a seat riser? Yes, the safety rail can be used in addition to a seat riser by adjusting the rail height to a comfortable level. What is the weight limit for the safety rail? The rails can safely support up to 300 pounds. How far apart are the mounting holes on the bracket? The holes are 5.5\u201d apart. Does the toilet safety rail fold so I can carry it in a suitcase? The toilet rail does not fold but can be taken apart for storage or travel. How do I clean the handles? The handles can be wiped down with disinfectant solution. Uses: Added stability when sitting or standing Dimensions: Length: 21.5\" - 26.5\" Width: 19.5\" Height: 26\" - 31.5\" Bracket size: 11.5\" x 3\" x 1.5\" Materials: Aluminum frame Closed-cell foam handles Care Instructions: Wipe down using a mild soap or disinfectant What\u2019s Included: Toilet safety rail Lifetime Guarantee Note: Not suitable for low profile toilets UPC: 683405233831 Product Number: LVA1010 Shipping Weight: 5.2 pounds User Manual: Toilet Safety Rail Manual"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/111111.jpg?v=1786366872"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/14137366468:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/111111.jpg?v=1786366872",
+     "alt_text": "Toilet Safety Rail"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-1-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ABRA",
+    "APSA",
+    "BTR",
+    "guarantee-lifetime",
+    "HLHA",
+    "HLHB",
+    "HLHF",
+    "HLHL",
+    "HLSH",
+    "HLTI",
+    "KACT",
+    "KMCT",
+    "KMTE",
+    "Prop65"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4288414148",
+   "title": "Stand Alone Toilet Rail - Lightweight & Portable",
+   "description": {
+    "html": "Lifetime Guarantee View Details > Features PROVIDES TOILET SAFETY Designed to prevent slip and falls when getting on or off a toilet STURDY SUPPORT Durable aluminum frame doesn\u2019t wobble and holds up to 300 pounds UNIVERSAL SIZING Fits around most standard or elongated toilets or at a sink or vanity FREESTANDING DESIGN No need to attach to the floor or wall, making it easy to remove NO TOOLS NEEDED The corrosion-resistant frame snaps together easily and installs in seconds COMFORTABLE GRIP Padded foam handrails are easy to grasp and extra secure Customer Reviews Based on 23 reviews Write a review Who is the stand alone toilet safety rail recommended for? The safety rail is perfect for anyone who has limited mobility or is recovering from surgery or injury. This includes those who are elderly or disabled. What are the dimensions of the stand alone toilet safety rail? The safety rail is 26.5\u201d long, 19\u201d deep and 25.5\u201d high. How wide is the space between the handrails? There is 21\u201d inside the handrails. How high are the handrails? The handrails are 25.5\u201d high. What are the dimensions of the magazine holder? The magazine holder is 8.5\u201d x 7.5\u201d x 2\u201d. Is the magazine holder removable? Yes, the magazine holder can be hung on one of the handrails and is completely removable. Will the stand alone toilet safety rail fit around an elongated toilet bowl? Yes, the safety rail will fit around most toilet bowls including an elongated style. Are tools needed to assemble the stand alone toilet safety rail? No tools are needed to assemble. How many parts does the toilet safety rail come in? The parts list includes: 2x frames with armrests2x U-shaped support bars1x magazine basket8x hand knob screws How do I assemble the stand alone safety rail? The assembly instructions can be found on this video. How do I install the stand alone safety rail? Once fully assembled, place the safety rail up against the toilet so that the handrails are on either side of the toilet. Refer to instructional video above. How much weight will the stand alone toilet safety rail support? The safety rail will support up to 300 pounds. How sturdy is the stand alone toilet safety rail? The safety rail is constructed with safe, durable and strong aluminum that can support up to 300 pounds. Is the stand alone toilet safety rail sturdy enough for long term use? Yes, the aluminum frame is corrosion-resistant making it perfect for long term daily use. Will the stand alone toilet safety rail work around a tub? No, this rail was designed to fit around a toilet or sink, not a tub. Does the bottom rail stick out past the toilet bowl and become a tripping hazard? No, the bottom support rail should tuck right up against the base of the toilet and will not impede your footing. Can the bottom rails be placed behind the toilet bowl? No, the bottom support rails should tuck right up against the front of the toilet. When placed correctly, it should not impede your footing at all. Is there latex in the padded handrails? No, there is no latex in the foam padding. If I put weight on only one side of the stand alone toilet safety rail, will it move or flip? It\u2019s best to use both sides at once for complete security. Is the height of the stand alone toilet safety rail adjustable? No, the height is not adjustable. Will the stand alone toilet safety rail slide on a tile floor? The safety rail is strong and sturdy enough to stay secure on any floor. For added security, your could add weatherstripping to the bottom of the rails. Will the stand alone toilet safety rail work to get up from a couch? No, this rail was designed to fit around a toilet or sink, not to use to get off a couch. Uses: Designed to assist those who struggle getting on and off the toilet Materials: Lightweight and corrosion-resistant aluminum Cleaning Instructions: Wipe down with a wet cloth and a mild soap or disinfectant Air dry What's Included: Single freestanding rail Lifetime warranty UPC: 028841241390 Product Number: LVA1023 Shipping Weight: 5 lbs User Manual: Stand Alone Toilet Rail"
+   },
+   "url": "https://www.vivehealth.com/products/toilet-safety-rail",
+   "handle": "toilet-safety-rail",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/14137360516",
+     "sku": "LVA1023",
+     "title": "Default Title",
+     "description": {
+      "html": "Lifetime Guarantee View Details > Features PROVIDES TOILET SAFETY Designed to prevent slip and falls when getting on or off a toilet STURDY SUPPORT Durable aluminum frame doesn\u2019t wobble and holds up to 300 pounds UNIVERSAL SIZING Fits around most standard or elongated toilets or at a sink or vanity FREESTANDING DESIGN No need to attach to the floor or wall, making it easy to remove NO TOOLS NEEDED The corrosion-resistant frame snaps together easily and installs in seconds COMFORTABLE GRIP Padded foam handrails are easy to grasp and extra secure Customer Reviews Based on 23 reviews Write a review Who is the stand alone toilet safety rail recommended for? The safety rail is perfect for anyone who has limited mobility or is recovering from surgery or injury. This includes those who are elderly or disabled. What are the dimensions of the stand alone toilet safety rail? The safety rail is 26.5\u201d long, 19\u201d deep and 25.5\u201d high. How wide is the space between the handrails? There is 21\u201d inside the handrails. How high are the handrails? The handrails are 25.5\u201d high. What are the dimensions of the magazine holder? The magazine holder is 8.5\u201d x 7.5\u201d x 2\u201d. Is the magazine holder removable? Yes, the magazine holder can be hung on one of the handrails and is completely removable. Will the stand alone toilet safety rail fit around an elongated toilet bowl? Yes, the safety rail will fit around most toilet bowls including an elongated style. Are tools needed to assemble the stand alone toilet safety rail? No tools are needed to assemble. How many parts does the toilet safety rail come in? The parts list includes: 2x frames with armrests2x U-shaped support bars1x magazine basket8x hand knob screws How do I assemble the stand alone safety rail? The assembly instructions can be found on this video. How do I install the stand alone safety rail? Once fully assembled, place the safety rail up against the toilet so that the handrails are on either side of the toilet. Refer to instructional video above. How much weight will the stand alone toilet safety rail support? The safety rail will support up to 300 pounds. How sturdy is the stand alone toilet safety rail? The safety rail is constructed with safe, durable and strong aluminum that can support up to 300 pounds. Is the stand alone toilet safety rail sturdy enough for long term use? Yes, the aluminum frame is corrosion-resistant making it perfect for long term daily use. Will the stand alone toilet safety rail work around a tub? No, this rail was designed to fit around a toilet or sink, not a tub. Does the bottom rail stick out past the toilet bowl and become a tripping hazard? No, the bottom support rail should tuck right up against the base of the toilet and will not impede your footing. Can the bottom rails be placed behind the toilet bowl? No, the bottom support rails should tuck right up against the front of the toilet. When placed correctly, it should not impede your footing at all. Is there latex in the padded handrails? No, there is no latex in the foam padding. If I put weight on only one side of the stand alone toilet safety rail, will it move or flip? It\u2019s best to use both sides at once for complete security. Is the height of the stand alone toilet safety rail adjustable? No, the height is not adjustable. Will the stand alone toilet safety rail slide on a tile floor? The safety rail is strong and sturdy enough to stay secure on any floor. For added security, your could add weatherstripping to the bottom of the rails. Will the stand alone toilet safety rail work to get up from a couch? No, this rail was designed to fit around a toilet or sink, not to use to get off a couch. Uses: Designed to assist those who struggle getting on and off the toilet Materials: Lightweight and corrosion-resistant aluminum Cleaning Instructions: Wipe down with a wet cloth and a mild soap or disinfectant Air dry What's Included: Single freestanding rail Lifetime warranty UPC: 028841241390 Product Number: LVA1023 Shipping Weight: 5 lbs User Manual: Stand Alone Toilet Rail"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/toilet_safety_rail_1_1SKub.jpg?v=1619201880"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/14137360516:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/toilet_safety_rail_1_1SKub.jpg?v=1619201880",
+     "alt_text": "Stand Alone Toilet Rail"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-1-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ABRA",
+    "APSA",
+    "bestseller",
+    "BTR",
+    "fsa-hsa",
+    "guarantee-lifetime",
+    "KACT",
+    "KMCT",
+    "KMTE",
+    "Prop65",
+    "Stand Alone Toilet Rails"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14679902159211",
+   "title": "Rise-Up Toilet Rail",
+   "description": {
+    "html": "One Year Guarantee View Details > Features STRONG AND RELIABLE SUPPORT Constructed from durable, high-quality materials, this toilet safety frame provides steady and wobble-free assistance, supporting up to 450 pounds for enhanced safety and stability. COMPACT SPACE-SAVING FRAME Designed to fit most standard toilets, this low-profile safety rail offers secure support while maintaining a sleek, space-saving design that blends with any bathroom decor. FOLDABLE ARMRESTS The swing-away armrests provide easy access, allowing users to enter and exit with ease. The fold-away design makes it ideal for shared or small bathrooms. FAST TOOL-FREE SETUP Designed for quick and effortless assembly, this frame installs in minutes with no tools required. Its adjustable fit accommodates various toilet sizes for a customized experience. COMFORTABLE AND SECURE GRIP Equipped with non-slip armrests, this frame ensures a firm and comfortable grip, reducing strain and improving bathroom safety for daily use. Customer Reviews Based on 23 reviews Write a review What is the weight capacity of this safety frame? This heavy-duty toilet safety frame supports up to 450 pounds, providing exceptional stability for individuals needing assistance while sitting or standing. Does this frame fit all toilets? Yes! The adjustable design allows it to fit most standard toilets, ensuring a secure and comfortable fit in different bathroom setups. Can the armrests be moved out of the way? Absolutely! The swing-back armrests fold away for easy entry and exit, making it ideal for shared bathrooms or users who need extra space when not in use. Is installation difficult? No, the tool-free assembly allows you to set up the frame in minutes using the included support screws, making it quick and hassle-free. Does this frame take up a lot of space? Not at all! The slim, space-saving design fits discreetly around most toilets, offering strong support without taking up excess room. Is this toilet rail stable, or does it wobble? The sturdy, reinforced frame is designed to prevent wobbling, ensuring reliable support every time you use it. What materials is the frame made from? The safety rail is built from high-quality, durable materials, ensuring long-lasting performance and reliable strength for daily use. Is this frame easy to clean? Yes! The smooth, non-porous surfaces allow for quick and easy cleaning, preventing buildup in hard-to-reach areas. Can I remove the frame when not in use? Yes, the lightweight and compact design allows you to easily detach and store the frame if needed. Uses: A toilet safety rail for safer rising and sitting. Dimensions: Outer Dims Arms: 22\u201d Inner Dimensions of Arm: 17\u201d Arm Rest Size: 10\u201d x 2.5\u201d Toilet bolt fittings: Can fit sizes 5.5\u201d apart (standard) to 8\u201d apart (not typical in the US) Plate Size: 22\u201d x 5\u201d Arm Height: 9\u201d from base Weight: 15 pounds Color White Size(s) One size Material (s) Steel Care Instructions: Wipe down in between uses. What\u2019s Included: 1x toilet safety rail with swing-back arms 2x supporting screw sets UPC: 0810178880515 Product Number: LVA3082 Shipping Weight: 16 lbs User Manual: Rise-Up Toilet Rail"
+   },
+   "url": "https://www.vivehealth.com/products/rise-up-toilet-rail",
+   "handle": "rise-up-toilet-rail",
+   "price_range": {
+    "min": {
+     "amount": 10999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51938828026219",
+     "sku": "LVA3082WHT",
+     "title": "Default Title",
+     "description": {
+      "html": "One Year Guarantee View Details > Features STRONG AND RELIABLE SUPPORT Constructed from durable, high-quality materials, this toilet safety frame provides steady and wobble-free assistance, supporting up to 450 pounds for enhanced safety and stability. COMPACT SPACE-SAVING FRAME Designed to fit most standard toilets, this low-profile safety rail offers secure support while maintaining a sleek, space-saving design that blends with any bathroom decor. FOLDABLE ARMRESTS The swing-away armrests provide easy access, allowing users to enter and exit with ease. The fold-away design makes it ideal for shared or small bathrooms. FAST TOOL-FREE SETUP Designed for quick and effortless assembly, this frame installs in minutes with no tools required. Its adjustable fit accommodates various toilet sizes for a customized experience. COMFORTABLE AND SECURE GRIP Equipped with non-slip armrests, this frame ensures a firm and comfortable grip, reducing strain and improving bathroom safety for daily use. Customer Reviews Based on 23 reviews Write a review What is the weight capacity of this safety frame? This heavy-duty toilet safety frame supports up to 450 pounds, providing exceptional stability for individuals needing assistance while sitting or standing. Does this frame fit all toilets? Yes! The adjustable design allows it to fit most standard toilets, ensuring a secure and comfortable fit in different bathroom setups. Can the armrests be moved out of the way? Absolutely! The swing-back armrests fold away for easy entry and exit, making it ideal for shared bathrooms or users who need extra space when not in use. Is installation difficult? No, the tool-free assembly allows you to set up the frame in minutes using the included support screws, making it quick and hassle-free. Does this frame take up a lot of space? Not at all! The slim, space-saving design fits discreetly around most toilets, offering strong support without taking up excess room. Is this toilet rail stable, or does it wobble? The sturdy, reinforced frame is designed to prevent wobbling, ensuring reliable support every time you use it. What materials is the frame made from? The safety rail is built from high-quality, durable materials, ensuring long-lasting performance and reliable strength for daily use. Is this frame easy to clean? Yes! The smooth, non-porous surfaces allow for quick and easy cleaning, preventing buildup in hard-to-reach areas. Can I remove the frame when not in use? Yes, the lightweight and compact design allows you to easily detach and store the frame if needed. Uses: A toilet safety rail for safer rising and sitting. Dimensions: Outer Dims Arms: 22\u201d Inner Dimensions of Arm: 17\u201d Arm Rest Size: 10\u201d x 2.5\u201d Toilet bolt fittings: Can fit sizes 5.5\u201d apart (standard) to 8\u201d apart (not typical in the US) Plate Size: 22\u201d x 5\u201d Arm Height: 9\u201d from base Weight: 15 pounds Color White Size(s) One size Material (s) Steel Care Instructions: Wipe down in between uses. What\u2019s Included: 1x toilet safety rail with swing-back arms 2x supporting screw sets UPC: 0810178880515 Product Number: LVA3082 Shipping Weight: 16 lbs User Manual: Rise-Up Toilet Rail"
+     },
+     "price": {
+      "amount": 10999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1.2MainImage.jpg?v=1742572943"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/51938828026219:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1.2MainImage.jpg?v=1742572943",
+     "alt_text": "Vive Rise Up Toilet Rail"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BTR",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/160661733476",
+     "handle": "vive",
+     "title": "Vive",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/1763317710883",
+   "title": "Stand Assist",
+   "description": {
+    "html": "Lifetime Guarantee View Details > Product Description Getting up from a low sofa or deep recliner quietly gets harder over time and that's exactly the problem the Vive Health stand assist solves. Two foam-padded handrails give you something solid to push off from, taking the strain off weak knees and unsteady legs without drilling into walls or making permanent changes to your furniture. The lightweight aluminum frame supports up to 300 lbs and locks into place under or around seat cushions in minutes. The open frame design works as a couch stand up assist on sofas, loveseats and recliners alike, fitting under removable cushions or wrapping around fixed ones. Width adjusts from 19.25\" to 22.25\" and depth from 24\" to 27\", covering most upholstered seating. The push-button handle height adjusts from 9\" to 12\", making this a well-fitted stand assist for recliner users who need a specific grip position. For broader seating upgrades, our Lift Chairs collection is worth a look. No tools, no installation, just slide it into place and it's ready. At under 3 lbs, this stand assist for elderly users is easy to move between rooms and simple to adjust day to day. It comes backed by a lifetime guarantee. For more daily living support options, our Stand Assists collection covers additional styles. Features SELF TRANSFER ASSIST Independently rise from the sofa, loveseat or recliner with the stable support of the stand assist FITS ANY UPHOLSTERED SEAT Versatile open design fits under any removable seat cushion and wraps around fixed cushions on upholstered chairs, recliners, sofas and loveseats FULLY ADJUSTABLE FRAME Easily adjust the length and width of the durable aluminum frame for greater stability in any seat PUSH BUTTON HEIGHT ADJUSTMENTS Raise and lower the hand grips with easy push-button adjustments DUAL HAND GRIPS Each armrest-style handle is covered with soft foam material for greater comfort EASY TOOL-FREE ASSEMBLY Simple to assemble, adjust and install without the use of any tools Customer Reviews Based on 23 reviews Write a review Will this work on wide arm recliners? Yes! The stabilizing bar easily adjusts to securely fit around most recliner seats. How wide is the space between the armrests? The width of the stand assist is easily adjustable from 19.25\u201d to 22.25\u201d. How far does the frame extend? The frame adjusts to a depth of 24\u201d to 27\u201d to secure around most seat cushions. How do I assemble the stand assist? Can I use the stand assist on top of a cushion? The Vive stand assist can be used when placed on top of a seat cushion, however, care must be taken to ensure the entire frame rests on the cushion to prevent the stand assist from sliding forward. Will this stand assist fit on a lift chair? Yes! The stand assist frame is adjustable to fit most upholstered seats including lift chairs. What is the maximum weight it will support? The Vive stand assist frame is designed to support up to 300 pounds. The stand assist device is for balance and support only and is not intended to be fully weight bearing. Does it matter how heavy the chair is? No, because the stand assist is for balance and support only by pushing down on the handles as you rise should not be affected by the weight of the chair. Could this be used under a mattress to help me get out of bed? The stand assist is designed for balance and support only with arm rails that curve backward, making it impractical for use under a mattress. For bedside assistance, please look at the Vive bedrail found here or the Vive bed ladder found here. Can I adjust the height of the handrails? Yes! The handrails are easily adjusted with a push button system between 9\u201d to 12\u201d in height. Will this work with my couch that does not have separate cushions? Yes, the stand assist can be used on top of a seat cushion, however, care must be taken to ensure the entire frame rests on the cushion to prevent the stand assist from sliding forward. Is this good for people with disablities / handicapped people? Yes, this product is specifically designed for individuals who require ongoing assistance with daily mobility, such as standing up. Built with long-term durability in mind, the transport stand assist supports those who will continue to need reliable aid for years to come. Uses: For aiding in rising from a seated position on a couch, recliner or similar upholstered chair Dimensions: Width: 19.25\u201d- 22.25\u201d Handle height: 9\u201d- 12\u201d Depth: 24\u201d-27\u201d Materials: Lightweight aluminum Foam padding How to Install: Adjust the depth of the stabilizing bar to the depth of the cushion, ensuring the arm of the stand assist will be supported and not hanging over the edge of the cushion Place the stabilizing bar under a loose cushion or around a secured cushion Warning: Never place the stand assist where part of the structure is hanging over the edge of the sofa or chair. Doing so increases the likelihood the stand assist could slip forward during use Care Instructions: Wipe down with a damp cloth or disinfectant wipe Dry immediately with a lint-free cloth What\u2019s Included: Vive Stand Assist Lifetime guarantee UPC: 818323025439 Product Number: SUP1090 Shipping Weight: 2.8 pounds User Manual: Stand Assist User Manual"
+   },
+   "url": "https://www.vivehealth.com/products/stand-assist-handrails",
+   "handle": "stand-assist-handrails",
+   "price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/14992945578019",
+     "sku": "SUP1090BLK",
+     "title": "Default Title",
+     "description": {
+      "html": "Lifetime Guarantee View Details > Product Description Getting up from a low sofa or deep recliner quietly gets harder over time and that's exactly the problem the Vive Health stand assist solves. Two foam-padded handrails give you something solid to push off from, taking the strain off weak knees and unsteady legs without drilling into walls or making permanent changes to your furniture. The lightweight aluminum frame supports up to 300 lbs and locks into place under or around seat cushions in minutes. The open frame design works as a couch stand up assist on sofas, loveseats and recliners alike, fitting under removable cushions or wrapping around fixed ones. Width adjusts from 19.25\" to 22.25\" and depth from 24\" to 27\", covering most upholstered seating. The push-button handle height adjusts from 9\" to 12\", making this a well-fitted stand assist for recliner users who need a specific grip position. For broader seating upgrades, our Lift Chairs collection is worth a look. No tools, no installation, just slide it into place and it's ready. At under 3 lbs, this stand assist for elderly users is easy to move between rooms and simple to adjust day to day. It comes backed by a lifetime guarantee. For more daily living support options, our Stand Assists collection covers additional styles. Features SELF TRANSFER ASSIST Independently rise from the sofa, loveseat or recliner with the stable support of the stand assist FITS ANY UPHOLSTERED SEAT Versatile open design fits under any removable seat cushion and wraps around fixed cushions on upholstered chairs, recliners, sofas and loveseats FULLY ADJUSTABLE FRAME Easily adjust the length and width of the durable aluminum frame for greater stability in any seat PUSH BUTTON HEIGHT ADJUSTMENTS Raise and lower the hand grips with easy push-button adjustments DUAL HAND GRIPS Each armrest-style handle is covered with soft foam material for greater comfort EASY TOOL-FREE ASSEMBLY Simple to assemble, adjust and install without the use of any tools Customer Reviews Based on 23 reviews Write a review Will this work on wide arm recliners? Yes! The stabilizing bar easily adjusts to securely fit around most recliner seats. How wide is the space between the armrests? The width of the stand assist is easily adjustable from 19.25\u201d to 22.25\u201d. How far does the frame extend? The frame adjusts to a depth of 24\u201d to 27\u201d to secure around most seat cushions. How do I assemble the stand assist? Can I use the stand assist on top of a cushion? The Vive stand assist can be used when placed on top of a seat cushion, however, care must be taken to ensure the entire frame rests on the cushion to prevent the stand assist from sliding forward. Will this stand assist fit on a lift chair? Yes! The stand assist frame is adjustable to fit most upholstered seats including lift chairs. What is the maximum weight it will support? The Vive stand assist frame is designed to support up to 300 pounds. The stand assist device is for balance and support only and is not intended to be fully weight bearing. Does it matter how heavy the chair is? No, because the stand assist is for balance and support only by pushing down on the handles as you rise should not be affected by the weight of the chair. Could this be used under a mattress to help me get out of bed? The stand assist is designed for balance and support only with arm rails that curve backward, making it impractical for use under a mattress. For bedside assistance, please look at the Vive bedrail found here or the Vive bed ladder found here. Can I adjust the height of the handrails? Yes! The handrails are easily adjusted with a push button system between 9\u201d to 12\u201d in height. Will this work with my couch that does not have separate cushions? Yes, the stand assist can be used on top of a seat cushion, however, care must be taken to ensure the entire frame rests on the cushion to prevent the stand assist from sliding forward. Is this good for people with disablities / handicapped people? Yes, this product is specifically designed for individuals who require ongoing assistance with daily mobility, such as standing up. Built with long-term durability in mind, the transport stand assist supports those who will continue to need reliable aid for years to come. Uses: For aiding in rising from a seated position on a couch, recliner or similar upholstered chair Dimensions: Width: 19.25\u201d- 22.25\u201d Handle height: 9\u201d- 12\u201d Depth: 24\u201d-27\u201d Materials: Lightweight aluminum Foam padding How to Install: Adjust the depth of the stabilizing bar to the depth of the cushion, ensuring the arm of the stand assist will be supported and not hanging over the edge of the cushion Place the stabilizing bar under a loose cushion or around a secured cushion Warning: Never place the stand assist where part of the structure is hanging over the edge of the sofa or chair. Doing so increases the likelihood the stand assist could slip forward during use Care Instructions: Wipe down with a damp cloth or disinfectant wipe Dry immediately with a lint-free cloth What\u2019s Included: Vive Stand Assist Lifetime guarantee UPC: 818323025439 Product Number: SUP1090 Shipping Weight: 2.8 pounds User Manual: Stand Assist User Manual"
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/stand_assist_1_d75ca88c-af33-446a-bc78-94034ff91f56.jpg?v=1619622023"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/14992945578019:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/stand_assist_1_d75ca88c-af33-446a-bc78-94034ff91f56.jpg?v=1619622023",
+     "alt_text": "Stand Assist Rail"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-1-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BSA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30002400",
+     "handle": "mobility-aids",
+     "title": "Mobility",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4433480253540",
+   "title": "Stand Alone Rail",
+   "description": {
+    "html": "Lifetime guarantee Features SAFE STABLE ASSISTANCE Providing a strong, stable base, the stand-alone rail allows you to easily rise from a toilet, a sofa or your favorite chair MODERN DESIGN Sleek, open design seamlessly blends with any home decor SOFT HANDRAILS Lightly padded, the handrails feature a PU leather covering for a soft, yet secure grip EASY TO ASSEMBLE Ready to use in minutes, the stand-alone rail features a positionable stabilizing bar DURABLE STEEL FRAME Sturdy freestanding steel frame safely supports up to 250 pounds Customer Reviews Based on 23 reviews Write a review How much does the Vive stand-alone rail weigh? The Vive stand-alone rail weighs 26 pounds, providing a strong, stable base for assistance. How wide is the stand-alone rail on the inside? The width between the handrails measures 20.25\u201d. Are the handrails padded? Yes! The handrails are lightly padded with a soft, sleek PU leather. How tall is the Vive stand-alone rail? The Vive stand-alone rail stands 28\u201d tall. Does the stand alone rail have non-slip feet? Yes! The base is lined with non-slip, non marking feet to prevent slipping and sliding on smooth surfaces. Can I use this to help get up from the couch? Yes! The stand alone rail is ideal for providing assistance when rising from a couch or chair. Is this stand alone rail safe to use in the bathroom? Yes, the open design allows the stand alone rail to be used in many locations, including the bathroom. How high is the stabilizing bar across the back of the stand alone rail? The stabilizing bar height is repositionable between 16.5\u201d to 22.75\u201d to best fit your needs. What is the maximum weight limit for the stand alone rail? The Vive stand alone rail safely supports up to 250 pounds, however, the rail is not designed to be weight-bearing and should not be used without both feet being firmly planted on the floor. Uses: For stabilizing support when rising from a seated position Ideal for assistance at the toilet, sofa or chair. Dimensions: Total width: 25\u201d Armrest inside width: 20.25\u201d Depth to stabilization bar: 17\u201d Stabilization bar height: 16.5\u201d to 22.75\u201d Total height: 28\u201d Materials: Steel frame PU leather armrests Care Instructions: Wipe the stand alone rail down with a standard household disinfectant and dry immediately Do not use harsh, corrosive or abrasive cleaners to clean the stand alone rail What\u2019s Included: Vive Stand Alone Rail - Modern Mobility Collection Lifetime guarantee UPC: 810041981486 Product Number: LVA2041WHT Shipping Weight: 22.27 pounds"
+   },
+   "url": "https://www.vivehealth.com/products/stand-alone-rail-modern-mobility-collection",
+   "handle": "stand-alone-rail-modern-mobility-collection",
+   "price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 17999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31519049842788",
+     "sku": "LVA3018WHT",
+     "title": "Default Title",
+     "description": {
+      "html": "Lifetime guarantee Features SAFE STABLE ASSISTANCE Providing a strong, stable base, the stand-alone rail allows you to easily rise from a toilet, a sofa or your favorite chair MODERN DESIGN Sleek, open design seamlessly blends with any home decor SOFT HANDRAILS Lightly padded, the handrails feature a PU leather covering for a soft, yet secure grip EASY TO ASSEMBLE Ready to use in minutes, the stand-alone rail features a positionable stabilizing bar DURABLE STEEL FRAME Sturdy freestanding steel frame safely supports up to 250 pounds Customer Reviews Based on 23 reviews Write a review How much does the Vive stand-alone rail weigh? The Vive stand-alone rail weighs 26 pounds, providing a strong, stable base for assistance. How wide is the stand-alone rail on the inside? The width between the handrails measures 20.25\u201d. Are the handrails padded? Yes! The handrails are lightly padded with a soft, sleek PU leather. How tall is the Vive stand-alone rail? The Vive stand-alone rail stands 28\u201d tall. Does the stand alone rail have non-slip feet? Yes! The base is lined with non-slip, non marking feet to prevent slipping and sliding on smooth surfaces. Can I use this to help get up from the couch? Yes! The stand alone rail is ideal for providing assistance when rising from a couch or chair. Is this stand alone rail safe to use in the bathroom? Yes, the open design allows the stand alone rail to be used in many locations, including the bathroom. How high is the stabilizing bar across the back of the stand alone rail? The stabilizing bar height is repositionable between 16.5\u201d to 22.75\u201d to best fit your needs. What is the maximum weight limit for the stand alone rail? The Vive stand alone rail safely supports up to 250 pounds, however, the rail is not designed to be weight-bearing and should not be used without both feet being firmly planted on the floor. Uses: For stabilizing support when rising from a seated position Ideal for assistance at the toilet, sofa or chair. Dimensions: Total width: 25\u201d Armrest inside width: 20.25\u201d Depth to stabilization bar: 17\u201d Stabilization bar height: 16.5\u201d to 22.75\u201d Total height: 28\u201d Materials: Steel frame PU leather armrests Care Instructions: Wipe the stand alone rail down with a standard household disinfectant and dry immediately Do not use harsh, corrosive or abrasive cleaners to clean the stand alone rail What\u2019s Included: Vive Stand Alone Rail - Modern Mobility Collection Lifetime guarantee UPC: 810041981486 Product Number: LVA2041WHT Shipping Weight: 22.27 pounds"
+     },
+     "price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/Image_1_39.jpg?v=1689622340"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/31519049842788:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/Image_1_39.jpg?v=1689622340"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ABRA",
+    "APSA",
+    "BSA",
+    "BTR",
+    "fsa-hsa",
+    "HLHA",
+    "HLHB",
+    "HLHF",
+    "HLHL",
+    "HLSH",
+    "HLTI",
+    "KACT",
+    "KMCT",
+    "KMTE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/524904202275",
+   "title": "Bed Risers",
+   "description": {
+    "html": "Additional height for beds, sofas and chairs Make sit to stand transitioning easier for limited mobility Stackable for customized elevation from 3\u201d to 8\u201d Safe for all floor types Holds up to 1760 Pounds 60 Day Guarantee View Details > Features CUSTOMIZE HOME TO FIT YOUR NEEDS For those who with limited mobility who may have difficulties rising from chairs & beds or bending over tables ELEVATES MOST FURNITURE Suitable for couches, chairs, beds, tables and desks 8 STACKABLE RISERS The unique design and mixed height set allows you to customize the elevation from 3\u201d to 8\u201d NON-SKID AND NON-SNAG Versatile risers are safe to use on most flooring including carpet, hardwood and tile DURABLE MOULDED PLASTIC Super strong plastic will support up to 1760 pounds without sagging or cracking INSTANTLY CREATE EXTRA STORAGE An added benefit of raising the furniture is creating needed under-furniture storage, perfect for tiny homes Customer Reviews Based on 23 reviews Write a review What are the bed risers made of? The risers are fabricated from extra strong moulded plastic. What is the height of the bed risers? The risers are 3\u201d and 5\u201d high. How many bed risers do I receive? You will receive eight 3\u201d risers and four 5\u201d risers, for a total of twelve risers. How wide are the bed risers? The top of each bed riser is 2.9\" x 2.9\u201d. How deep is the indentation at the top of the bed riser? The indentation is about \u00be \u201c deep. I have a futon with legs that are 2.5x2.5. Will they fit in the bed risers? Yes, since the top of each riser is 2.9\" x 2.9\", your futon legs should fit. How much weight will the bed risers hold? The bed risers will support up to 1,760 pounds. Will the bed risers work with a bed with wheels? It is recommended that you remove the wheels before placing the bed on the risers. Can I stack the 3\u201d risers together? No, the 3\u201d risers can only be stacked on the 5\u201d risers. Do I have to stack the risers? No, choose the height that\u2019s best for you. If the 3\u201d or 5\u201d height is best, just use the appropriate risers. Can I use the bed risers to make my office desk taller? Yes, the risers will work for any piece of furniture including tables and desks. Can I create under bed storage with the bed risers? Yes, the bed risers have the added benefit of creating safe and secure storage under your bed. Uses: Customize the height of beds, sofas, and chairs to aid in sitting or rising for those with mobility issues Dimensions: Top Opening: 2.9\" x 2.9\" Top Indentation: \u00be\u201d Height: 3\u201d or 5\u201d Materials: Molded plastic What\u2019s Included: Four - 5\u201d Vive bed risers Four - 3\u201d Vive bed risers Instructional Insert 60 day guarantee UPC: 818323020311 Product Number: LVA1044BLK Shipping Weight: 6.7 pounds"
+   },
+   "url": "https://www.vivehealth.com/products/bed-risers",
+   "handle": "bed-risers",
+   "price_range": {
+    "min": {
+     "amount": 2299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32551315865700",
+     "sku": "LVA1044BLK",
+     "title": "8-Pack (4 Each Size- 5\" and 3\")",
+     "description": {
+      "html": "Additional height for beds, sofas and chairs Make sit to stand transitioning easier for limited mobility Stackable for customized elevation from 3\u201d to 8\u201d Safe for all floor types Holds up to 1760 Pounds 60 Day Guarantee View Details > Features CUSTOMIZE HOME TO FIT YOUR NEEDS For those who with limited mobility who may have difficulties rising from chairs & beds or bending over tables ELEVATES MOST FURNITURE Suitable for couches, chairs, beds, tables and desks 8 STACKABLE RISERS The unique design and mixed height set allows you to customize the elevation from 3\u201d to 8\u201d NON-SKID AND NON-SNAG Versatile risers are safe to use on most flooring including carpet, hardwood and tile DURABLE MOULDED PLASTIC Super strong plastic will support up to 1760 pounds without sagging or cracking INSTANTLY CREATE EXTRA STORAGE An added benefit of raising the furniture is creating needed under-furniture storage, perfect for tiny homes Customer Reviews Based on 23 reviews Write a review What are the bed risers made of? The risers are fabricated from extra strong moulded plastic. What is the height of the bed risers? The risers are 3\u201d and 5\u201d high. How many bed risers do I receive? You will receive eight 3\u201d risers and four 5\u201d risers, for a total of twelve risers. How wide are the bed risers? The top of each bed riser is 2.9\" x 2.9\u201d. How deep is the indentation at the top of the bed riser? The indentation is about \u00be \u201c deep. I have a futon with legs that are 2.5x2.5. Will they fit in the bed risers? Yes, since the top of each riser is 2.9\" x 2.9\", your futon legs should fit. How much weight will the bed risers hold? The bed risers will support up to 1,760 pounds. Will the bed risers work with a bed with wheels? It is recommended that you remove the wheels before placing the bed on the risers. Can I stack the 3\u201d risers together? No, the 3\u201d risers can only be stacked on the 5\u201d risers. Do I have to stack the risers? No, choose the height that\u2019s best for you. If the 3\u201d or 5\u201d height is best, just use the appropriate risers. Can I use the bed risers to make my office desk taller? Yes, the risers will work for any piece of furniture including tables and desks. Can I create under bed storage with the bed risers? Yes, the bed risers have the added benefit of creating safe and secure storage under your bed. Uses: Customize the height of beds, sofas, and chairs to aid in sitting or rising for those with mobility issues Dimensions: Top Opening: 2.9\" x 2.9\" Top Indentation: \u00be\u201d Height: 3\u201d or 5\u201d Materials: Molded plastic What\u2019s Included: Four - 5\u201d Vive bed risers Four - 3\u201d Vive bed risers Instructional Insert 60 day guarantee UPC: 818323020311 Product Number: LVA1044BLK Shipping Weight: 6.7 pounds"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "8-Pack (4 Each Size- 5\" and 3\")"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1bMainImage_15.jpg?v=1771009271"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/32551315865700:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32551315898468",
+     "sku": "LVA1044BLKL",
+     "title": "4-Pack (5 Inches)",
+     "description": {
+      "html": "Additional height for beds, sofas and chairs Make sit to stand transitioning easier for limited mobility Stackable for customized elevation from 3\u201d to 8\u201d Safe for all floor types Holds up to 1760 Pounds 60 Day Guarantee View Details > Features CUSTOMIZE HOME TO FIT YOUR NEEDS For those who with limited mobility who may have difficulties rising from chairs & beds or bending over tables ELEVATES MOST FURNITURE Suitable for couches, chairs, beds, tables and desks 8 STACKABLE RISERS The unique design and mixed height set allows you to customize the elevation from 3\u201d to 8\u201d NON-SKID AND NON-SNAG Versatile risers are safe to use on most flooring including carpet, hardwood and tile DURABLE MOULDED PLASTIC Super strong plastic will support up to 1760 pounds without sagging or cracking INSTANTLY CREATE EXTRA STORAGE An added benefit of raising the furniture is creating needed under-furniture storage, perfect for tiny homes Customer Reviews Based on 23 reviews Write a review What are the bed risers made of? The risers are fabricated from extra strong moulded plastic. What is the height of the bed risers? The risers are 3\u201d and 5\u201d high. How many bed risers do I receive? You will receive eight 3\u201d risers and four 5\u201d risers, for a total of twelve risers. How wide are the bed risers? The top of each bed riser is 2.9\" x 2.9\u201d. How deep is the indentation at the top of the bed riser? The indentation is about \u00be \u201c deep. I have a futon with legs that are 2.5x2.5. Will they fit in the bed risers? Yes, since the top of each riser is 2.9\" x 2.9\", your futon legs should fit. How much weight will the bed risers hold? The bed risers will support up to 1,760 pounds. Will the bed risers work with a bed with wheels? It is recommended that you remove the wheels before placing the bed on the risers. Can I stack the 3\u201d risers together? No, the 3\u201d risers can only be stacked on the 5\u201d risers. Do I have to stack the risers? No, choose the height that\u2019s best for you. If the 3\u201d or 5\u201d height is best, just use the appropriate risers. Can I use the bed risers to make my office desk taller? Yes, the risers will work for any piece of furniture including tables and desks. Can I create under bed storage with the bed risers? Yes, the bed risers have the added benefit of creating safe and secure storage under your bed. Uses: Customize the height of beds, sofas, and chairs to aid in sitting or rising for those with mobility issues Dimensions: Top Opening: 2.9\" x 2.9\" Top Indentation: \u00be\u201d Height: 3\u201d or 5\u201d Materials: Molded plastic What\u2019s Included: Four - 5\u201d Vive bed risers Four - 3\u201d Vive bed risers Instructional Insert 60 day guarantee UPC: 818323020311 Product Number: LVA1044BLK Shipping Weight: 6.7 pounds"
+     },
+     "price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4-Pack (5 Inches)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1bMainImage_15.jpg?v=1771009271"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/32551315898468:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32551315931236",
+     "sku": "LVA1044BLKS",
+     "title": "4-Pack (3 Inches)",
+     "description": {
+      "html": "Additional height for beds, sofas and chairs Make sit to stand transitioning easier for limited mobility Stackable for customized elevation from 3\u201d to 8\u201d Safe for all floor types Holds up to 1760 Pounds 60 Day Guarantee View Details > Features CUSTOMIZE HOME TO FIT YOUR NEEDS For those who with limited mobility who may have difficulties rising from chairs & beds or bending over tables ELEVATES MOST FURNITURE Suitable for couches, chairs, beds, tables and desks 8 STACKABLE RISERS The unique design and mixed height set allows you to customize the elevation from 3\u201d to 8\u201d NON-SKID AND NON-SNAG Versatile risers are safe to use on most flooring including carpet, hardwood and tile DURABLE MOULDED PLASTIC Super strong plastic will support up to 1760 pounds without sagging or cracking INSTANTLY CREATE EXTRA STORAGE An added benefit of raising the furniture is creating needed under-furniture storage, perfect for tiny homes Customer Reviews Based on 23 reviews Write a review What are the bed risers made of? The risers are fabricated from extra strong moulded plastic. What is the height of the bed risers? The risers are 3\u201d and 5\u201d high. How many bed risers do I receive? You will receive eight 3\u201d risers and four 5\u201d risers, for a total of twelve risers. How wide are the bed risers? The top of each bed riser is 2.9\" x 2.9\u201d. How deep is the indentation at the top of the bed riser? The indentation is about \u00be \u201c deep. I have a futon with legs that are 2.5x2.5. Will they fit in the bed risers? Yes, since the top of each riser is 2.9\" x 2.9\", your futon legs should fit. How much weight will the bed risers hold? The bed risers will support up to 1,760 pounds. Will the bed risers work with a bed with wheels? It is recommended that you remove the wheels before placing the bed on the risers. Can I stack the 3\u201d risers together? No, the 3\u201d risers can only be stacked on the 5\u201d risers. Do I have to stack the risers? No, choose the height that\u2019s best for you. If the 3\u201d or 5\u201d height is best, just use the appropriate risers. Can I use the bed risers to make my office desk taller? Yes, the risers will work for any piece of furniture including tables and desks. Can I create under bed storage with the bed risers? Yes, the bed risers have the added benefit of creating safe and secure storage under your bed. Uses: Customize the height of beds, sofas, and chairs to aid in sitting or rising for those with mobility issues Dimensions: Top Opening: 2.9\" x 2.9\" Top Indentation: \u00be\u201d Height: 3\u201d or 5\u201d Materials: Molded plastic What\u2019s Included: Four - 5\u201d Vive bed risers Four - 3\u201d Vive bed risers Instructional Insert 60 day guarantee UPC: 818323020311 Product Number: LVA1044BLK Shipping Weight: 6.7 pounds"
+     },
+     "price": {
+      "amount": 2299,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4-Pack (3 Inches)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1bMainImage_15.jpg?v=1771009271"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/32551315931236:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/32551315964004",
+     "sku": "LVA1044BLKXL",
+     "title": "16-Pack (8 Each Size- 5\" and 3\")",
+     "description": {
+      "html": "Additional height for beds, sofas and chairs Make sit to stand transitioning easier for limited mobility Stackable for customized elevation from 3\u201d to 8\u201d Safe for all floor types Holds up to 1760 Pounds 60 Day Guarantee View Details > Features CUSTOMIZE HOME TO FIT YOUR NEEDS For those who with limited mobility who may have difficulties rising from chairs & beds or bending over tables ELEVATES MOST FURNITURE Suitable for couches, chairs, beds, tables and desks 8 STACKABLE RISERS The unique design and mixed height set allows you to customize the elevation from 3\u201d to 8\u201d NON-SKID AND NON-SNAG Versatile risers are safe to use on most flooring including carpet, hardwood and tile DURABLE MOULDED PLASTIC Super strong plastic will support up to 1760 pounds without sagging or cracking INSTANTLY CREATE EXTRA STORAGE An added benefit of raising the furniture is creating needed under-furniture storage, perfect for tiny homes Customer Reviews Based on 23 reviews Write a review What are the bed risers made of? The risers are fabricated from extra strong moulded plastic. What is the height of the bed risers? The risers are 3\u201d and 5\u201d high. How many bed risers do I receive? You will receive eight 3\u201d risers and four 5\u201d risers, for a total of twelve risers. How wide are the bed risers? The top of each bed riser is 2.9\" x 2.9\u201d. How deep is the indentation at the top of the bed riser? The indentation is about \u00be \u201c deep. I have a futon with legs that are 2.5x2.5. Will they fit in the bed risers? Yes, since the top of each riser is 2.9\" x 2.9\", your futon legs should fit. How much weight will the bed risers hold? The bed risers will support up to 1,760 pounds. Will the bed risers work with a bed with wheels? It is recommended that you remove the wheels before placing the bed on the risers. Can I stack the 3\u201d risers together? No, the 3\u201d risers can only be stacked on the 5\u201d risers. Do I have to stack the risers? No, choose the height that\u2019s best for you. If the 3\u201d or 5\u201d height is best, just use the appropriate risers. Can I use the bed risers to make my office desk taller? Yes, the risers will work for any piece of furniture including tables and desks. Can I create under bed storage with the bed risers? Yes, the bed risers have the added benefit of creating safe and secure storage under your bed. Uses: Customize the height of beds, sofas, and chairs to aid in sitting or rising for those with mobility issues Dimensions: Top Opening: 2.9\" x 2.9\" Top Indentation: \u00be\u201d Height: 3\u201d or 5\u201d Materials: Molded plastic What\u2019s Included: Four - 5\u201d Vive bed risers Four - 3\u201d Vive bed risers Instructional Insert 60 day guarantee UPC: 818323020311 Product Number: LVA1044BLK Shipping Weight: 6.7 pounds"
+     },
+     "price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "16-Pack (8 Each Size- 5\" and 3\")"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1bMainImage_15.jpg?v=1771009271"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/32551315964004:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "8-Pack (4 Each Size- 5\" and 3\")"
+      },
+      {
+       "label": "4-Pack (5 Inches)"
+      },
+      {
+       "label": "4-Pack (3 Inches)"
+      },
+      {
+       "label": "16-Pack (8 Each Size- 5\" and 3\")"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1bMainImage_15.jpg?v=1771009271",
+     "alt_text": "Bed Risers"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bed Risers",
+    "BRI",
+    "fsa-hsa",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59769258019",
+     "handle": "bed-assist-safety-aids",
+     "title": "Bedroom Safety & Mobility Aids",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzFNalE1TURReU1ESXlOelVzSW5KbGRtVnljMlVpT25SeWRXVXNJbTltWm5ObGRDSTZPWDA9IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

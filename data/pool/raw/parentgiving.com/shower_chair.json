@@ -1,0 +1,1567 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.parentgiving.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Parentgiving",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.parentgiving.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "43026907301"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "43026907301"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8045696417957",
+   "title": "Deluxe Bariatric Shower Chair by Drive Medical",
+   "description": {
+    "html": "With a 500-pound weight capacity, this bariatric shower chair from Drive Medical is strong and sturdy. A cross brace attached with aircraft style rivets provides dependable strength. The blow molding on the back and seat are contoured to provide extra comfort. Drainage holes in the seat reduce slipping, while adjustable height legs ensure a proper fit. The aluminum frame is lightweight, durable and corrosion proof. The bench is protected with a manufacturers limited lifetime warranty. This bench is available in two versions: with or without back. Specifications: Outside Legs: 17.5\" (W) x 17.25\" (D) Seat Dimensions: 20\" (W) x 12\" (D) Seat Height: 14\" - 19\" Weight: 7.5 lbs. Carton Shipping Weight: 8.5 lbs. Weight Limit: 500 lbs. Warranty: Limited Lifetime"
+   },
+   "url": "https://www.parentgiving.com/products/deluxe-bariatric-shower-chair",
+   "handle": "deluxe-bariatric-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 8899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 10932,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994460135589",
+     "sku": "12022KD-1",
+     "title": "Without Back / Each",
+     "description": {
+      "html": "With a 500-pound weight capacity, this bariatric shower chair from Drive Medical is strong and sturdy. A cross brace attached with aircraft style rivets provides dependable strength. The blow molding on the back and seat are contoured to provide extra comfort. Drainage holes in the seat reduce slipping, while adjustable height legs ensure a proper fit. The aluminum frame is lightweight, durable and corrosion proof. The bench is protected with a manufacturers limited lifetime warranty. This bench is available in two versions: with or without back. Specifications: Outside Legs: 17.5\" (W) x 17.25\" (D) Seat Dimensions: 20\" (W) x 12\" (D) Seat Height: 14\" - 19\" Weight: 7.5 lbs. Carton Shipping Weight: 8.5 lbs. Weight Limit: 500 lbs. Warranty: Limited Lifetime"
+     },
+     "price": {
+      "amount": 8899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10932,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Options",
+       "label": "Without Back"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-deluxe-bariatric-shower-chair-3752-2341.jpg?v=1664820168"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994460135589:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41994460168357",
+     "sku": "12021KD-1",
+     "title": "With Back / Each",
+     "description": {
+      "html": "With a 500-pound weight capacity, this bariatric shower chair from Drive Medical is strong and sturdy. A cross brace attached with aircraft style rivets provides dependable strength. The blow molding on the back and seat are contoured to provide extra comfort. Drainage holes in the seat reduce slipping, while adjustable height legs ensure a proper fit. The aluminum frame is lightweight, durable and corrosion proof. The bench is protected with a manufacturers limited lifetime warranty. This bench is available in two versions: with or without back. Specifications: Outside Legs: 17.5\" (W) x 17.25\" (D) Seat Dimensions: 20\" (W) x 12\" (D) Seat Height: 14\" - 19\" Weight: 7.5 lbs. Carton Shipping Weight: 8.5 lbs. Weight Limit: 500 lbs. Warranty: Limited Lifetime"
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Options",
+       "label": "With Back"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-deluxe-bariatric-shower-chair-3752-2341.jpg?v=1664820168"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994460168357:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Options",
+     "values": [
+      {
+       "label": "Without Back"
+      },
+      {
+       "label": "With Back"
+      }
+     ]
+    },
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-deluxe-bariatric-shower-chair-3752-2341.jpg?v=1664820168",
+     "alt_text": "Deluxe Bariatric Shower Chair by Drive Medical"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289872314533",
+     "handle": "bariatric-bathroom-aids",
+     "title": "Bariatric Bathroom Aids",
+     "description": {
+      "html": "Parentgiving stocks a variety of bathroom aids for bariatric patients that make using the shower or toilet more comfortable. Larger individuals require home supplies that support their weight and fit their frame, and you'll find them here at a great price. Our bariatric urination devices include standalone commodes with extra-wide chairs and raised toilet seats that make it easier to get down and up. These height-adjustable items are made with lightweight materials that are strong and easy to clean. Plus-size grab bars and poles provide an additional boost for maneuvering anywhere in the bathroom. For additional support, check out our wheelchair for obese person options. When it comes time to shower, caregivers and patients will want our heavy-duty bathing accessories. It will be far easier to get into or out of the tub with our bariatric shower transfer chairs, bathtub steps and other bariatric transfer aids. And if someone can't stand for extended periods, a plus-size bath seat, stool or bench provides safety and security. Most bariatric bathroom aids hold 500 pounds or more for long-term use by almost any heavier person. For more comfort, check out our urinal for elderly options. Get great prices on products that save time and hassle plus free shipping on orders over $50 when you choose Parentgiving for home health care."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045809008805",
+   "title": "Elements Microban Shower Chair, with Back",
+   "description": {
+    "html": "Microban\u00ae antimicrobial product protection inhibits the growth of stains and odors from bacteria, mold and mildew. This product does not protect users or others against bacteria, viruses, germs or other disease organisms. Height adjustable backrest, seat and armrests provide a customizable fit. Extra-wide contoured seat offers added stability. Available with or without backrest Dark bronze finish and style suits most decors. 350 lb. weight capacity Seat height from floor: 15\" \u2014 21\" 18\" in-between arms Overall height at top of back: 32\" \u2014 37\" Legs are 18\"- 19\" Width, 17.3\"- 19.8\" Depth"
+   },
+   "url": "https://www.parentgiving.com/products/elements-microban-shower-chair-with-back",
+   "handle": "elements-microban-shower-chair-with-back",
+   "price_range": {
+    "min": {
+     "amount": 10999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994632495269",
+     "sku": "MDS89745ELMBH",
+     "title": "Each",
+     "description": {
+      "html": "Microban\u00ae antimicrobial product protection inhibits the growth of stains and odors from bacteria, mold and mildew. This product does not protect users or others against bacteria, viruses, germs or other disease organisms. Height adjustable backrest, seat and armrests provide a customizable fit. Extra-wide contoured seat offers added stability. Available with or without backrest Dark bronze finish and style suits most decors. 350 lb. weight capacity Seat height from floor: 15\" \u2014 21\" 18\" in-between arms Overall height at top of back: 32\" \u2014 37\" Legs are 18\"- 19\" Width, 17.3\"- 19.8\" Depth"
+     },
+     "price": {
+      "amount": 10999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-elements-microban-shower-chair-with-back-7539-3021.jpg?v=1675886539"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994632495269:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-elements-microban-shower-chair-with-back-7539-3021.jpg?v=1675886539",
+     "alt_text": "Elements Microban Shower Chair, with Back"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300360171685",
+     "handle": "bathtub-safety-top-picks",
+     "title": "Bathtub Shower Bench & Chair Top Picks",
+     "description": {
+      "html": "Bathtubs are an unforgiving environment for the frail: they are comprised of hard surfaces (porcelain and tile), can become slick with condensation and moisture, and require transition from bath or shower. All of these factors can lead to falls or undue strain on caregivers. We have carefully compiled the best bathtub safety products to better navigate from preventing falls and tasks to keep a loved one safer in their home environment."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14696549220724",
+   "title": "Medline Knockdown Shower Chair with Arms and Back",
+   "description": {
+    "html": "Features: 350 lb. weight capacity Tool-free assembly Comes in retail packaging Specifications: Seat Width: 16 inches Seat Depth: 13.5 inches Seat Height Range: 16 inches to 21 inches, adjustable in 1-inch increments Width Inside Arms: 19 inches Overall Width: 21.5 inches"
+   },
+   "url": "https://www.parentgiving.com/products/medline-knockdown-shower-chair-with-arms-and-back",
+   "handle": "medline-knockdown-shower-chair-with-arms-and-back",
+   "price_range": {
+    "min": {
+     "amount": 4299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4299,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51987612139892",
+     "sku": "MDS89745RAH",
+     "title": "Each",
+     "description": {
+      "html": "Features: 350 lb. weight capacity Tool-free assembly Comes in retail packaging Specifications: Seat Width: 16 inches Seat Depth: 13.5 inches Seat Height Range: 16 inches to 21 inches, adjustable in 1-inch increments Width Inside Arms: 19 inches Overall Width: 21.5 inches"
+     },
+     "price": {
+      "amount": 4299,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/KnockdownShowerChair-1.jpg?v=1743520557"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/51987612139892:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/KnockdownShowerChair-1.jpg?v=1743520557"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Shower & Bath Chairs with Backs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045895123109",
+   "title": "ProBasics Bariatric Shower Chair with Back",
+   "description": {
+    "html": "ProBasics Bariatric Shower Chair with Back Features: Two-hole handles in seat provide additional support for wrists as patient sits or stand Lightweight corrosion-proof aluminum frame Wide-based, non-skid crutch feet for added sturdiness and safety in the bath or shower Adjustable Seat: 16\" to 20\" Product Weight: 16.5 lbs Seat Dimensions: 20\"W x 12\"D 550lb Weight Capacity."
+   },
+   "url": "https://www.parentgiving.com/products/probasics-bariatric-shower-chair-with-back",
+   "handle": "probasics-bariatric-shower-chair-with-back",
+   "price_range": {
+    "min": {
+     "amount": 8499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42668106449061",
+     "sku": "CPHBSBCWB",
+     "title": "Each",
+     "description": {
+      "html": "ProBasics Bariatric Shower Chair with Back Features: Two-hole handles in seat provide additional support for wrists as patient sits or stand Lightweight corrosion-proof aluminum frame Wide-based, non-skid crutch feet for added sturdiness and safety in the bath or shower Adjustable Seat: 16\" to 20\" Product Weight: 16.5 lbs Seat Dimensions: 20\"W x 12\"D 550lb Weight Capacity."
+     },
+     "price": {
+      "amount": 8499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-probasics-bariatric-shower-chair-with-back-9033-3433.jpg?v=1675893529"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/42668106449061:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-probasics-bariatric-shower-chair-with-back-9033-3433.jpg?v=1675893529",
+     "alt_text": "ProBasics Bariatric Shower Chair with Back"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15044762861940",
+   "title": "Drive Folding Shower Chair",
+   "description": {
+    "html": "Features: Blow-molded bench provides comfort and strength Drainage holes in seat reduce slipping Aluminum frame is lightweight, durable and corrosion proof Angled legs provide additional stability Made using recycled materials Specifications: Seat Dimensions: 19.75\" (W) x 12\" (D)|18\" (W) x 11\" (D) Weight Capacity: 300 lbs. Weight: 4.5 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/drive-folding-shower-chair",
+   "handle": "drive-folding-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 5499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/54554952860020",
+     "sku": "12486",
+     "title": "Each",
+     "description": {
+      "html": "Features: Blow-molded bench provides comfort and strength Drainage holes in seat reduce slipping Aluminum frame is lightweight, durable and corrosion proof Angled legs provide additional stability Made using recycled materials Specifications: Seat Dimensions: 19.75\" (W) x 12\" (D)|18\" (W) x 11\" (D) Weight Capacity: 300 lbs. Weight: 4.5 lbs."
+     },
+     "price": {
+      "amount": 5499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/DriveShowerStool-1.jpg?v=1777566491"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/54554952860020:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/DriveShowerStool-1.jpg?v=1777566491"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858551973",
+     "handle": "bathroom-safety",
+     "title": "Bath Safety & Bathroom Safety Products",
+     "description": {
+      "html": "The bathroom is a potentially dangerous place for most people, and the risks go up tenfold for those with limited mobility. Elderly people and those who are disabled or injured face further hazards in the form of slick wet surfaces and hard fixtures. But you don't need to completely renovate your bathroom to make it safer and easier to navigate. Our bathroom elderly safety products are an inexpensive temporary or long-term solution for you and your loved ones. Safety in the bathroom should always be a leading priority, and our low prices on trusted brands mean you don't have to choose between security and affordability. Parentgiving has a variety of devices and bathroom accessories for safety. Get in and out of the tub more easily with bath mats, lift seats for elderly, bath rails grab bars and other products for maintaining your footing. For those with injuries, our cast protectors will keep your arm or leg cast from being ruined by water. Shower chairs and benches allow people to sit in the shower without standing for long periods, and with a transfer bench, patients don't have to climb over the tub wall. Don't underestimate toilet safety either \u2014 commode support rails and raised toilet seats provide stability and reduce the effort needed to get up or down. We have shower commode chairs as well for those with bladder conditions. Our bath safety products for seniors are made from waterproof and rust-resistant materials that are strong enough to handle everyday use while light enough to quickly move and set up. In addition to our standard-sized accessories, caregivers and patients can order bariatric bathroom safety aids for larger people and pediatric bath safety devices for younger people. Parentgiving is one of the leading medical supply and equipment sellers, and we are committed to bathtub safety for seniors, adults and kids who need mobility assistance. Contact us today for industry-leading customer service from knowledgeable staff that can help you find the right product while saving money."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045708509349",
+   "title": "Drive Premium Series Bath Bench with Back and Arms",
+   "description": {
+    "html": "The new Drive Medical Premium Series Bath Bench with Back and Arms is designed for individuals who require additional safety measures with balance in the bath or shower. The seat fits all shapes and sizes and the lightweight design has large stable legs with soft non-slip feet, ensuring user safety. This bath bench has tool free height adjustment and tool free back, leg and arm removal as well. 350lbs weight capacity. Width 21\", depth 14\", seat depth 2.25\", seat high 20.5\", seat low 16\"."
+   },
+   "url": "https://www.parentgiving.com/products/premium-series-bath-bench-with-back-and-arms-by-drive",
+   "handle": "premium-series-bath-bench-with-back-and-arms-by-drive",
+   "price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994471604389",
+     "sku": "RTL12505",
+     "title": "Case of 4",
+     "description": {
+      "html": "The new Drive Medical Premium Series Bath Bench with Back and Arms is designed for individuals who require additional safety measures with balance in the bath or shower. The seat fits all shapes and sizes and the lightweight design has large stable legs with soft non-slip feet, ensuring user safety. This bath bench has tool free height adjustment and tool free back, leg and arm removal as well. 350lbs weight capacity. Width 21\", depth 14\", seat depth 2.25\", seat high 20.5\", seat low 16\"."
+     },
+     "price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Case of 4"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/DriveBathChair-1.jpg?v=1735566166"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994471604389:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Case of 4"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/DriveBathChair-1.jpg?v=1735566166"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300360171685",
+     "handle": "bathtub-safety-top-picks",
+     "title": "Bathtub Shower Bench & Chair Top Picks",
+     "description": {
+      "html": "Bathtubs are an unforgiving environment for the frail: they are comprised of hard surfaces (porcelain and tile), can become slick with condensation and moisture, and require transition from bath or shower. All of these factors can lead to falls or undue strain on caregivers. We have carefully compiled the best bathtub safety products to better navigate from preventing falls and tasks to keep a loved one safer in their home environment."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8201294086309",
+   "title": "Drive Medical PreserveTech 360\u00b0 Swivel Bath Chair",
+   "description": {
+    "html": "Compact bath chair designed to aid in preventing friction and shearing injuries featuring 360 degree swivel action and locking at every 90 degrees. Eliminate the need for dangerous tub transfers caused by stepping over and in or out of the tub. Both lightweight and durable the rust-resistant aluminum frame supports up to 350lbs. Each leg includes a non-skid, non-slip tip offering security on wet surfaces. Padded armrests provide superior support and create a comfortable, non-slip surface for a safe and secure grip when sitting or standing. Pivoting armrests can be raised out of the way. Simply and quickly adjust the height with the help of a push pin to achieve the ideal seated position. Seat height adjustments on this model range from 15\" to 22\". Drainage holes help to prevent water from pooling, making the bench more comfortable, less slippery and ensuring transfer from bathing to exiting the tub is more secure. Push button, snap together design requires no tools and assembles in just minutes. Antimicrobial* treated seat, backrest and non-slip tips, helps to minimize the growth of bacterial odors, mold, and fungi on treated surfaces."
+   },
+   "url": "https://www.parentgiving.com/products/drive-medical-preservetech-360-swivel-bath-chair",
+   "handle": "drive-medical-preservetech-360-swivel-bath-chair",
+   "price_range": {
+    "min": {
+     "amount": 15999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42389373649061",
+     "sku": "RTL12A001-GR",
+     "title": "Each",
+     "description": {
+      "html": "Compact bath chair designed to aid in preventing friction and shearing injuries featuring 360 degree swivel action and locking at every 90 degrees. Eliminate the need for dangerous tub transfers caused by stepping over and in or out of the tub. Both lightweight and durable the rust-resistant aluminum frame supports up to 350lbs. Each leg includes a non-skid, non-slip tip offering security on wet surfaces. Padded armrests provide superior support and create a comfortable, non-slip surface for a safe and secure grip when sitting or standing. Pivoting armrests can be raised out of the way. Simply and quickly adjust the height with the help of a push pin to achieve the ideal seated position. Seat height adjustments on this model range from 15\" to 22\". Drainage holes help to prevent water from pooling, making the bench more comfortable, less slippery and ensuring transfer from bathing to exiting the tub is more secure. Push button, snap together design requires no tools and assembles in just minutes. Antimicrobial* treated seat, backrest and non-slip tips, helps to minimize the growth of bacterial odors, mold, and fungi on treated surfaces."
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Swivelbathchair-1.jpg?v=1686323954"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/42389373649061:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Swivelbathchair-1.jpg?v=1686323954"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Shower & Bath Chairs with Backs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045764509861",
+   "title": "Nova Wall Mounted Foldable Shower Seat",
+   "description": {
+    "html": "The Wall mounted Foldable Shower Seat by Nova mounts directly to shower wall and saves space by folding up when not in use.All bath items are non-returnable for hygienic reasons. Specifications: Weight Capacity: 250 lbs Overall Weight: 7 lbs Folded Width: 5\" Seat Height: 18\"-21\" Seat Dimension: 16\"w x 16\"d Overall Dimensions: 19\"w x 19.5\"d Note: Wall mounted foldable shower seat, can only be used on concrete or sheetrock walls."
+   },
+   "url": "https://www.parentgiving.com/products/wall-mounted-foldable-shower-seat-by-nova",
+   "handle": "wall-mounted-foldable-shower-seat-by-nova",
+   "price_range": {
+    "min": {
+     "amount": 12995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12995,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994530390181",
+     "sku": "9404",
+     "title": "Each",
+     "description": {
+      "html": "The Wall mounted Foldable Shower Seat by Nova mounts directly to shower wall and saves space by folding up when not in use.All bath items are non-returnable for hygienic reasons. Specifications: Weight Capacity: 250 lbs Overall Weight: 7 lbs Folded Width: 5\" Seat Height: 18\"-21\" Seat Dimension: 16\"w x 16\"d Overall Dimensions: 19\"w x 19.5\"d Note: Wall mounted foldable shower seat, can only be used on concrete or sheetrock walls."
+     },
+     "price": {
+      "amount": 12995,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/NovaWallMount.jpg?v=1735567787"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994530390181:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/NovaWallMount.jpg?v=1735567787"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045756022949",
+   "title": "Adjustable Height Bathing Stool by Drive",
+   "description": {
+    "html": "Product DescriptionManufactured with 1 aluminum tubing, this bath stool by Drive Medical is lightweight yet does not skimp on stability. At 3.5 lbs. this bath stool is portable and great for travel. Additional leg support collars provide increased strength and support. Impact-resistant, composite seat is both crack-proof and tarnish resistant. The bath stools attractive white finish is sure to match any bathroom style. Features and Benefits Aluminum frame is lightweight, durable and corrosion proof Impact resistant, composite seat is crack-proof and tarnish resistant Support collar reduces rattle Product Specification Outside Legs (Width): 13.5. Weight Capacity: 300 lbs. Outside Legs (Depth): 13.5. Seat (Width): 13. Seat (Depth): 13. Seat (Height): 13.5-17. Product Weight: 3.5 lbs. Model # RTL12004KD"
+   },
+   "url": "https://www.parentgiving.com/products/adjustable-height-bath-stool",
+   "handle": "adjustable-height-bath-stool",
+   "price_range": {
+    "min": {
+     "amount": 3899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3899,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994523279525",
+     "sku": "RTL12004KD",
+     "title": "White / Each",
+     "description": {
+      "html": "Product DescriptionManufactured with 1 aluminum tubing, this bath stool by Drive Medical is lightweight yet does not skimp on stability. At 3.5 lbs. this bath stool is portable and great for travel. Additional leg support collars provide increased strength and support. Impact-resistant, composite seat is both crack-proof and tarnish resistant. The bath stools attractive white finish is sure to match any bathroom style. Features and Benefits Aluminum frame is lightweight, durable and corrosion proof Impact resistant, composite seat is crack-proof and tarnish resistant Support collar reduces rattle Product Specification Outside Legs (Width): 13.5. Weight Capacity: 300 lbs. Outside Legs (Depth): 13.5. Seat (Width): 13. Seat (Depth): 13. Seat (Height): 13.5-17. Product Weight: 3.5 lbs. Model # RTL12004KD"
+     },
+     "price": {
+      "amount": 3899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3899,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      },
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-adjustable-height-bath-stool-5896.jpg?v=1675882775"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994523279525:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      }
+     ]
+    },
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-adjustable-height-bath-stool-5896.jpg?v=1675882775",
+     "alt_text": "Adjustable Height Bathing Stool by Drive"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289869168805",
+     "handle": "bathtub-safety",
+     "title": "Bathtub & Shower Safety",
+     "description": {
+      "html": "Make your time in the bathtub the safest possible for yourself or loved ones with our selection of bathroom safety aids and products. According to the Centers for Disease Control and Prevention, slips and falls are the leading cause of fatal and nonfatal injuries among adults over the age of 65. There are numerous products available including bath lifts, bath mats, grab bars, shower and bath seats and more that are designed to help prevent such dangerous injuries. Shop our quality selection from some of the most trusted brands that medical professionals turn to time and again, such as HealthSmart, Lumex, Nova and Drive Medical. When outfitting your bath & shower with safety features, start from the ground up. Ensure non-slip protection while bathing or showering with our no-skid bath mats. These sturdy mats fit most standard bathtubs and feature multiple suction cups to keep mats securely in place. Whether you're nursing a broken bone or healing from surgery, cast and bandage protectors conveniently prevent water from entering inside when bathing or showering."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300360171685",
+     "handle": "bathtub-safety-top-picks",
+     "title": "Bathtub Shower Bench & Chair Top Picks",
+     "description": {
+      "html": "Bathtubs are an unforgiving environment for the frail: they are comprised of hard surfaces (porcelain and tile), can become slick with condensation and moisture, and require transition from bath or shower. All of these factors can lead to falls or undue strain on caregivers. We have carefully compiled the best bathtub safety products to better navigate from preventing falls and tasks to keep a loved one safer in their home environment."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045699104933",
+   "title": "Deluxe Aluminum Bath Bench by Drive",
+   "description": {
+    "html": "With a lightweight aluminum frame and angled legs with suction style tips, this deluxe bath bench from Drive Medical combines strength, comfort and added security. The blow molded bench features drainage holes that help reduce slipping. The aluminum frame is not only light, it is durable and corrosion proof. The seat and legs snap together easily, while suction-style tips secure the bench in place. The product comes with a limited lifetime warranty. Features: Easy snap-together assembly seat and legs. Adjustable height. Blow molded bench provides comfort and strength. Drainage holes in bench reduce slipping. Aluminum frame is lightweight, durable and corrosion proof. Angled legs with suction style tips provide additional stability. Limited Lifetime Warranty. Specifications: Width (outside legs): 17\" Depth (outside legs): 17\" Seat Dimensions: 20\"W x 14.5\"D x 15.75\"-19.75\"H Product Weight: 6.5 lbs. Weight Capacity: 350 lbs. Colors: Gray"
+   },
+   "url": "https://www.parentgiving.com/products/deluxe-aluminum-bath-bench-by-drive",
+   "handle": "deluxe-aluminum-bath-bench-by-drive",
+   "price_range": {
+    "min": {
+     "amount": 4199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5332,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5332,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994462658725",
+     "sku": "RTL12203KDR",
+     "title": "Gray",
+     "description": {
+      "html": "With a lightweight aluminum frame and angled legs with suction style tips, this deluxe bath bench from Drive Medical combines strength, comfort and added security. The blow molded bench features drainage holes that help reduce slipping. The aluminum frame is not only light, it is durable and corrosion proof. The seat and legs snap together easily, while suction-style tips secure the bench in place. The product comes with a limited lifetime warranty. Features: Easy snap-together assembly seat and legs. Adjustable height. Blow molded bench provides comfort and strength. Drainage holes in bench reduce slipping. Aluminum frame is lightweight, durable and corrosion proof. Angled legs with suction style tips provide additional stability. Limited Lifetime Warranty. Specifications: Width (outside legs): 17\" Depth (outside legs): 17\" Seat Dimensions: 20\"W x 14.5\"D x 15.75\"-19.75\"H Product Weight: 6.5 lbs. Weight Capacity: 350 lbs. Colors: Gray"
+     },
+     "price": {
+      "amount": 4199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5332,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Gray"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-deluxe-aluminum-bath-bench-by-drive-3806.jpg?v=1675885238"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994462658725:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Gray"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-deluxe-aluminum-bath-bench-by-drive-3806.jpg?v=1675885238",
+     "alt_text": "Deluxe Aluminum Bath Bench by Drive"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bath Benches & Shower Benches",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNRFExTmprNU1UQTBPVE16TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

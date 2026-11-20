@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hand-check sheet</title>
+<style>
+  :root { --bg:#f6f5f1; --ink:#1d1d1b; --mute:#6b6a64; --line:#d9d6cc; --card:#fff; --accent:#1a5fb4; --ok:#2a7a3b; --warn:#a15c00; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#161614; --ink:#eeede8; --mute:#a09f97; --line:#3a3935; --card:#1f1f1c; --accent:#78aeed; --ok:#6cc47d; --warn:#e8a64a; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.45 system-ui, sans-serif; }
+  header { display:flex; gap:16px; align-items:center; padding:10px 20px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--bg); z-index:2; }
+  header h1 { font-size:17px; margin:0; }
+  #bar { flex:1; height:8px; background:var(--line); border-radius:4px; overflow:hidden; }
+  #bar i { display:block; height:100%; background:var(--ok); width:0; transition:width .2s; }
+  #count { font-variant-numeric:tabular-nums; color:var(--mute); min-width:7em; text-align:right; }
+  #banner { background:var(--warn); color:#fff; padding:8px 20px; display:none; }
+  main { display:grid; grid-template-columns: minmax(0,1.6fr) minmax(300px,1fr); gap:20px; padding:20px; max-width:1400px; margin:0 auto; }
+  @media (max-width:800px) { main { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  h2 { font-size:18px; margin:0 0 4px; }
+  .meta { color:var(--mute); font-size:14px; margin-bottom:12px; }
+  .meta a { color:var(--accent); }
+  #text { white-space:pre-wrap; max-height:68vh; overflow:auto; font:15px/1.5 ui-monospace, Menlo, monospace; border-top:1px solid var(--line); padding-top:12px; }
+  mark { background:#ffe08a; color:#1d1d1b; border-radius:2px; padding:0 1px; }
+  .field { margin-bottom:18px; }
+  .field label { display:block; font-weight:600; margin-bottom:6px; }
+  .field .row { display:flex; gap:8px; }
+  input[type=text] { flex:1; font:inherit; font-size:22px; padding:8px 10px; border:2px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); min-width:0; }
+  input[type=text]:focus { outline:none; border-color:var(--accent); }
+  input.ns { color:var(--mute); font-style:italic; }
+  button { font:inherit; padding:8px 12px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; }
+  button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  button.on { background:var(--ink); color:var(--bg); }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  .kind { display:flex; gap:6px; margin-bottom:6px; }
+  .nav { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  .hint { color:var(--mute); font-size:13px; margin-top:12px; }
+  #list { display:flex; flex-wrap:wrap; gap:4px; margin-top:14px; }
+  #list button { padding:2px 8px; font-size:13px; min-width:34px; }
+  #list button.done { background:var(--ok); color:#fff; border-color:var(--ok); }
+  #list button.cur { outline:2px solid var(--accent); }
+  #status { color:var(--ok); font-size:14px; height:1.4em; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Hand-check sheet</h1>
+  <div id="bar"><i></i></div>
+  <div id="count"></div>
+</header>
+<div id="banner"></div>
+<main>
+  <section class="card">
+    <h2 id="title"></h2>
+    <div class="meta" id="meta"></div>
+    <div id="text" tabindex="0"></div>
+  </section>
+  <section class="card">
+    <p class="meta">Read each number from the text on the left only. Type the number, or <b>n</b> for "not stated".</p>
+    <div class="field">
+      <label for="f_weight_capacity">Weight capacity (lb)</label>
+      <div class="row"><input type="text" id="f_weight_capacity" inputmode="decimal" autocomplete="off"><button type="button" data-ns="weight_capacity" tabindex="-1">not stated</button></div>
+    </div>
+    <div class="field">
+      <label for="f_height">Seat height or added height (in)</label>
+      <div class="kind" role="group" aria-label="Which height">
+        <button type="button" data-kind="added_height" tabindex="-1">added height</button>
+        <button type="button" data-kind="seat_height" tabindex="-1">seat height</button>
+      </div>
+      <div class="row"><input type="text" id="f_height" inputmode="decimal" autocomplete="off"><button type="button" data-ns="height" tabindex="-1">not stated</button></div>
+    </div>
+    <div class="field">
+      <label for="f_overall_width">Overall width (in)</label>
+      <div class="row"><input type="text" id="f_overall_width" inputmode="decimal" autocomplete="off"><button type="button" data-ns="overall_width" tabindex="-1">not stated</button></div>
+    </div>
+    <div class="nav">
+      <button type="button" id="prev">← Back</button>
+      <button type="button" id="save" class="primary">Save and next (Enter on last field)</button>
+    </div>
+    <div id="status" role="status"></div>
+    <p class="hint">Enter moves to the next field; on the last one it saves. For a height, pick added or seat first (keys <b>a</b> / <b>s</b> in the height box when it is empty). "not stated" means the page never says it.</p>
+    <div id="list" aria-label="Products"></div>
+  </section>
+</main>
+<script>
+const FIELDS = ["weight_capacity", "height", "overall_width"];
+let items = [], answers = {}, cur = 0, kind = null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+function mark(text) {
+  return esc(text).replace(/(\d+(?:\.\d+)?\s*(?:-|to)?\s*(?:\d+(?:\.\d+)?)?\s*(?:lbs?\.?|pounds?|inch(?:es)?|in\b|"|”|′|cm))/gi, "<mark>$1</mark>");
+}
+function fieldEl(f) { return $("f_" + f); }
+function setNS(f, on) {
+  const el = fieldEl(f);
+  el.classList.toggle("ns", on);
+  el.dataset.ns = on ? "1" : "";
+  el.value = on ? "not stated" : "";
+  if (f === "height") renderKind();
+}
+function readField(f) {
+  const el = fieldEl(f), v = el.value.trim().toLowerCase();
+  if (el.dataset.ns === "1" || v === "n" || v === "not stated" || v === "-") return { ok: true, value: null };
+  if (v === "") return { ok: false };
+  const n = parseFloat(v.replace(",", "."));
+  return Number.isFinite(n) ? { ok: true, value: n } : { ok: false };
+}
+function renderKind() {
+  document.querySelectorAll("[data-kind]").forEach((b) => b.classList.toggle("on", b.dataset.kind === kind));
+}
+function show(i) {
+  cur = Math.max(0, Math.min(items.length - 1, i));
+  const it = items[cur], a = answers[it.id];
+  $("title").textContent = it.title || it.product_id;
+  const price = it.price_cents != null ? "$" + (it.price_cents / 100).toFixed(2) : "";
+  $("meta").innerHTML = esc(it.store) + " · " + price + " · " + (it.url ? '<a href="' + esc(it.url) + '" target="_blank" rel="noopener">open page</a>' : "") + " · line " + esc((it.line_ids || []).join(", "));
+  $("text").innerHTML = mark(it.text);
+  $("text").scrollTop = 0;
+  kind = a ? (a.height_kind === "none" ? null : a.height_kind) : null;
+  for (const f of FIELDS) {
+    const el = fieldEl(f);
+    el.classList.remove("ns"); el.dataset.ns = ""; el.value = "";
+    if (a) { if (a[f] === null) setNS(f, true); else el.value = a[f]; }
+  }
+  renderKind();
+  $("status").textContent = a ? "saved " + a.checked_at.replace("T", " ").slice(0, 16) : "";
+  renderList();
+  fieldEl("weight_capacity").focus();
+}
+function renderList() {
+  const done = items.filter((it) => answers[it.id]).length;
+  $("count").textContent = done + " of " + items.length + " done";
+  document.querySelector("#bar i").style.width = (items.length ? (100 * done) / items.length : 0) + "%";
+  $("list").innerHTML = items.map((it, i) => '<button type="button" tabindex="-1" data-go="' + i + '" class="' + (answers[it.id] ? "done " : "") + (i === cur ? "cur" : "") + '">' + (i + 1) + "</button>").join("");
+}
+async function save() {
+  const it = items[cur], body = { store: it.store, product_id: it.product_id, product_key: it.product_key, title: it.title };
+  for (const f of FIELDS) {
+    const r = readField(f);
+    if (!r.ok) { $("status").textContent = "Fill in " + f.replace("_", " ") + " (a number, or n for not stated)"; fieldEl(f).focus(); return false; }
+    body[f] = r.value;
+  }
+  if (body.height !== null && !kind) { $("status").textContent = "Pick added height or seat height"; return false; }
+  body.height_kind = body.height === null ? "none" : kind;
+  const res = await fetch("/api/handcheck/save", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const out = await res.json();
+  if (!out.ok) { $("status").textContent = "Not saved: " + out.error; return false; }
+  answers[it.id] = out.row;
+  renderList();
+  if (cur < items.length - 1) show(cur + 1); else $("status").textContent = "All saved. That was the last one.";
+  return true;
+}
+document.addEventListener("click", (e) => {
+  const t = e.target;
+  if (t.dataset.ns) { setNS(t.dataset.ns, fieldEl(t.dataset.ns).dataset.ns !== "1"); fieldEl(t.dataset.ns).focus(); }
+  else if (t.dataset.kind) { kind = t.dataset.kind; renderKind(); fieldEl("height").focus(); }
+  else if (t.dataset.go) show(+t.dataset.go);
+});
+$("save").onclick = save;
+$("prev").onclick = () => show(cur - 1);
+FIELDS.forEach((f, idx) => fieldEl(f).addEventListener("keydown", (e) => {
+  const el = e.target;
+  if (el.dataset.ns === "1" && e.key.length === 1) { el.dataset.ns = ""; el.classList.remove("ns"); el.value = ""; }
+  if (f === "height" && el.value === "" && (e.key === "a" || e.key === "s")) { kind = e.key === "a" ? "added_height" : "seat_height"; renderKind(); e.preventDefault(); return; }
+  if (e.key === "Enter") { e.preventDefault(); if (idx < FIELDS.length - 1) fieldEl(FIELDS[idx + 1]).focus(); else save(); }
+  if ((e.key === "n" || e.key === "N") && el.value === "") { e.preventDefault(); setNS(f, true); }
+}));
+(async () => {
+  const res = await fetch("/api/handcheck/items");
+  const data = await res.json();
+  items = data.items; answers = data.answers;
+  if (data.source !== "data/pool") { $("banner").style.display = "block"; $("banner").textContent = "Placeholder products from " + data.source + ". The real pool is not there yet; do not fill these in. Reload when data/pool has files."; }
+  cur = Math.max(0, items.findIndex((it) => !answers[it.id]));
+  if (items.length) show(cur); else $("title").textContent = "No products yet";
+})();
+</script>
+</body>
+</html>

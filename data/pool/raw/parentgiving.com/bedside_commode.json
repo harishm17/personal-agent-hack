@@ -1,0 +1,1534 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.parentgiving.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Parentgiving",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.parentgiving.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "43026907301"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "43026907301"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8045702217893",
+   "title": "3-in-1 Steel Drop Arm Bedside Commode with Padded Seat by Drive Medical",
+   "description": {
+    "html": "The deluxe steel drop arm bedside commode by Drive Medical is designed to meet your needs. The frame can be configured to be used as a bedside commode, toilet safety frame, elevated toilet seat or over your existing toilet. The tool free removable back makes configuring the commode easy for any application. The padded seat provides a comfortable place to rest on when sitting and the padded arm rests indicate a safe place to grab making sitting and standing easier. For consumers using a wheelchair the tool free drop arms makes lateral transfer to and from this commode easy and safe. The drop arms feature a large, easy to push release lever which is great for users with limited finger or hand dexterity. The push button height adjustable legs makes sizing a breeze allowing this commode to be used as an elevated toilet seat. In addition to comfort this commode can be disassembled without tools making storage and travel convenient. The grey power coated steel welded construction ensures strength and durability able to hold up to 300 lbs. The product comes complete with a snap on seat, 12-quart commode bucket with convenient carry handle, plus splash guard. The product is protected by a manufacturers limited lifetime warranty. Specifications: Width (between arms): 19\" Outside Width: 24\" Seat (Width): 15.25\" Seat (Depth): 16.5\" Height: 19\"-23\" Product Weight: 20.2 lbs. Weight Capacity: 300 lbs."
+   },
+   "url": "https://www.parentgiving.com/products/3-in-1-steel-drop-arm-bedside-commode-with-padded-seat-arms",
+   "handle": "3-in-1-steel-drop-arm-bedside-commode-with-padded-seat-arms",
+   "price_range": {
+    "min": {
+     "amount": 18999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 18999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994465542309",
+     "sku": "11125PSKD-1",
+     "title": "Each",
+     "description": {
+      "html": "The deluxe steel drop arm bedside commode by Drive Medical is designed to meet your needs. The frame can be configured to be used as a bedside commode, toilet safety frame, elevated toilet seat or over your existing toilet. The tool free removable back makes configuring the commode easy for any application. The padded seat provides a comfortable place to rest on when sitting and the padded arm rests indicate a safe place to grab making sitting and standing easier. For consumers using a wheelchair the tool free drop arms makes lateral transfer to and from this commode easy and safe. The drop arms feature a large, easy to push release lever which is great for users with limited finger or hand dexterity. The push button height adjustable legs makes sizing a breeze allowing this commode to be used as an elevated toilet seat. In addition to comfort this commode can be disassembled without tools making storage and travel convenient. The grey power coated steel welded construction ensures strength and durability able to hold up to 300 lbs. The product comes complete with a snap on seat, 12-quart commode bucket with convenient carry handle, plus splash guard. The product is protected by a manufacturers limited lifetime warranty. Specifications: Width (between arms): 19\" Outside Width: 24\" Seat (Width): 15.25\" Seat (Depth): 16.5\" Height: 19\"-23\" Product Weight: 20.2 lbs. Weight Capacity: 300 lbs."
+     },
+     "price": {
+      "amount": 18999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 18999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/SteelDrop-Drive.jpg?v=1708530592"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994465542309:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/SteelDrop-Drive.jpg?v=1708530592"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "3-in-1 Commodes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289861402789",
+     "handle": "commode-chairs",
+     "title": "Commode Chairs",
+     "description": {
+      "html": "Commode chairs are an essential device for many people who have severe mobility problems. Having a portable toilet chair in the bedroom is convenient for home caregivers and their patients when they are unable to make the long trip to a regular commode. They can also be placed in a bathroom or shower to provide additional support and function. At Parentgiving, we carry many types of commode chairs for users of all needs. With low prices on the top manufacturers of home medical equipment such as Complete Medical, Drive Medical, Invacare and Lumex, it's easy to find a lightweight portable commode for elderly and disabled people that will always be at hand. Every portable commode seat in our inventory has a waste receptacle designed for easy removal and cleaning, and a solid frame made from rust-resistant steel or aluminum. From there, you can choose the style that is the best fit for your or your loved one. We have standard bedside commodes along with folding bedside commodes that are easy to store and transport. Shower commode chairs and transfer benches are especially useful if someone needs to go when bathing. A drop-arm elderly potty chair has movable armrests to help people on and off the toilet, while padded commode seats have additional cushioning on the seats, arms and/or backrests for added contentment. Be sure to also browse our urinal for elderly options and other bariatric bathroom equipment. A number of weight capacities are available, including bariatric toilet chairs for plus-size people. You can also choose an ideal seat width, get a commode chair with wheels and find an adjustable height portable commode for multiple-user situations. We even have 3-in-1 commode chairs that can be used as toilet safety rails or elevated toilet seats. If extra assistance is needed, consider our chair lifts for the elderly or a lift for disabled person. Whatever your caregiving needs, you can count on Parentgiving's expert staff to offer a professional perspective and guidance. Our fast and free shipping on orders over $50 lets people save even more. Select a category below or visit our Buyer's Guide for more information on commode chairs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864450213",
+     "handle": "drop-arm-commodes",
+     "title": "Drop-Arm Commodes",
+     "description": {
+      "html": "Drop-arm commodes provide caregivers with a convenient way to safely transfer patients to and from the commode. Drop-arm commodes are useful for transferring wheelchair patients and facilitating nighttime transfers when placed near a bed. Choose from a variety of models to find the one that best fits your needs. We carry everything from heavy-duty bariatric commodes to 3-in-1 bedside commodes to drop-arm commode transport chairs with wheels. Notable brands such as Nova, Medline Industries, Guardian and Drive Medical who have long earned their reputation for manufacturing quality, trustworthy products fill our inventory. Some of the many comfort and useful features you'll find include padded arms and backrests, push-button arm releases, easy height adjustable legs and soft foam handles. In addition, all of our drop-arm commodes come standard with a pail, lid and splash guard. In addition to comfort and convenience, our selection of drop-arm commodes offers durability and strength. Power coated steel frames and welded construction make them strong and supportive."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864482981",
+     "handle": "3-in-1-commodes",
+     "title": "3-in-1 Commodes",
+     "description": {
+      "html": "Everyone needs to go, and an all-in-one commode chair is a very useful tool for those with limited mobility. These chairs can be used as a bedroom commode for those who are bedridden, as a raised toilet seat for an existing bathroom commode or as a safety frame to assist with getting up or down. They are quickly reconfigurable and can perform all three functions in one day if needed. We have a variety of commode bathroom and bedroom chairs from leading manufacturers such as Drive Medical, Invacare and Lumex, so you can get the right 3-in-1 commode chair at the right price. Parentgiving has steel and aluminum bathroom commodes that are lightweight, resist rust, have high weight capacities and are easy to move and clean. Some of our options include folding commodes, height-adjustable toilet seats and commodes with padded seats. We also offer drop-arm commodes for use with patients in wheelchairs. Each toilet and commode has padded arms for comfort and backs that can be removed. With fast free shipping on orders over $50 and a satisfaction guarantee, we offer more ways to save money on products that make home care less stressful."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294567313573",
+     "handle": "all-mobility-products",
+     "title": "All Mobility Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045704249509",
+   "title": "Bariatric Drop Arm Bedside Commode Chair by Drive Medical",
+   "description": {
+    "html": "Able to withstand a weight capacity of 1000 lbs, this heavy-duty bariatric commode by Drive Medical is designed with the extra space and comfort you need. Featuring a deeper and wider seat as well as padded arms and backrest this commode is great for everyday use. The armrests provide a comfortable place to rest on when sitting and indicate a safe place to grab, making sitting and standing easier. For consumers using a wheelchair the tool free drop arms makes lateral transfer to and from this commode easy and safe. The grey powder coated steel construction provides strength, and comes complete with an extra-large commode bucket that can be removed. The product is protected by a manufacturers limited lifetime warranty. Features: Easy-to-release arm mechanism allows for safe lateral patient transfers to and from commode Accommodates individuals up to 1000 lbs. Durable, heavy duty, powder coated steel tubing is sturdy and easy to maintain Large, durable \u2014snap-on\" seat Padded armrests and backrest Pail easily slides in from the front of the commode Large backrest provides patient comfort Specifications: Width (between arms): 25.75\" Outside Width: 26.25\" Seat (Width): 23.5\" Seat (Depth): 18.5\" Height: 17.5\"-22\" Product Weight: 21 lbs. Bucket capacity: 12 quart Bowl opening dimensions: 10\" d x 8.5\" w"
+   },
+   "url": "https://www.parentgiving.com/products/oversized-heavy-duty-bariatric-drop-arm-bedside-commode-chair",
+   "handle": "oversized-heavy-duty-bariatric-drop-arm-bedside-commode-chair",
+   "price_range": {
+    "min": {
+     "amount": 27499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 27499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 27499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 27499,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994468032677",
+     "sku": "11135-1",
+     "title": "Case of 1",
+     "description": {
+      "html": "Able to withstand a weight capacity of 1000 lbs, this heavy-duty bariatric commode by Drive Medical is designed with the extra space and comfort you need. Featuring a deeper and wider seat as well as padded arms and backrest this commode is great for everyday use. The armrests provide a comfortable place to rest on when sitting and indicate a safe place to grab, making sitting and standing easier. For consumers using a wheelchair the tool free drop arms makes lateral transfer to and from this commode easy and safe. The grey powder coated steel construction provides strength, and comes complete with an extra-large commode bucket that can be removed. The product is protected by a manufacturers limited lifetime warranty. Features: Easy-to-release arm mechanism allows for safe lateral patient transfers to and from commode Accommodates individuals up to 1000 lbs. Durable, heavy duty, powder coated steel tubing is sturdy and easy to maintain Large, durable \u2014snap-on\" seat Padded armrests and backrest Pail easily slides in from the front of the commode Large backrest provides patient comfort Specifications: Width (between arms): 25.75\" Outside Width: 26.25\" Seat (Width): 23.5\" Seat (Depth): 18.5\" Height: 17.5\"-22\" Product Weight: 21 lbs. Bucket capacity: 12 quart Bowl opening dimensions: 10\" d x 8.5\" w"
+     },
+     "price": {
+      "amount": 27499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 27499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Case of 1"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/DriveBariatricDrop-2.jpg?v=1792421265"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994468032677:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Case of 1"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/DriveBariatricDrop-2.jpg?v=1792421265"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Drop-Arm Commodes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289861402789",
+     "handle": "commode-chairs",
+     "title": "Commode Chairs",
+     "description": {
+      "html": "Commode chairs are an essential device for many people who have severe mobility problems. Having a portable toilet chair in the bedroom is convenient for home caregivers and their patients when they are unable to make the long trip to a regular commode. They can also be placed in a bathroom or shower to provide additional support and function. At Parentgiving, we carry many types of commode chairs for users of all needs. With low prices on the top manufacturers of home medical equipment such as Complete Medical, Drive Medical, Invacare and Lumex, it's easy to find a lightweight portable commode for elderly and disabled people that will always be at hand. Every portable commode seat in our inventory has a waste receptacle designed for easy removal and cleaning, and a solid frame made from rust-resistant steel or aluminum. From there, you can choose the style that is the best fit for your or your loved one. We have standard bedside commodes along with folding bedside commodes that are easy to store and transport. Shower commode chairs and transfer benches are especially useful if someone needs to go when bathing. A drop-arm elderly potty chair has movable armrests to help people on and off the toilet, while padded commode seats have additional cushioning on the seats, arms and/or backrests for added contentment. Be sure to also browse our urinal for elderly options and other bariatric bathroom equipment. A number of weight capacities are available, including bariatric toilet chairs for plus-size people. You can also choose an ideal seat width, get a commode chair with wheels and find an adjustable height portable commode for multiple-user situations. We even have 3-in-1 commode chairs that can be used as toilet safety rails or elevated toilet seats. If extra assistance is needed, consider our chair lifts for the elderly or a lift for disabled person. Whatever your caregiving needs, you can count on Parentgiving's expert staff to offer a professional perspective and guidance. Our fast and free shipping on orders over $50 lets people save even more. Select a category below or visit our Buyer's Guide for more information on commode chairs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864450213",
+     "handle": "drop-arm-commodes",
+     "title": "Drop-Arm Commodes",
+     "description": {
+      "html": "Drop-arm commodes provide caregivers with a convenient way to safely transfer patients to and from the commode. Drop-arm commodes are useful for transferring wheelchair patients and facilitating nighttime transfers when placed near a bed. Choose from a variety of models to find the one that best fits your needs. We carry everything from heavy-duty bariatric commodes to 3-in-1 bedside commodes to drop-arm commode transport chairs with wheels. Notable brands such as Nova, Medline Industries, Guardian and Drive Medical who have long earned their reputation for manufacturing quality, trustworthy products fill our inventory. Some of the many comfort and useful features you'll find include padded arms and backrests, push-button arm releases, easy height adjustable legs and soft foam handles. In addition, all of our drop-arm commodes come standard with a pail, lid and splash guard. In addition to comfort and convenience, our selection of drop-arm commodes offers durability and strength. Power coated steel frames and welded construction make them strong and supportive."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290244559013",
+     "handle": "best-bariatric-bath-safety-mobility",
+     "title": "Best Bariatric and Mobility Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300335562917",
+     "handle": "bariatric-mobility-product-top-picks",
+     "title": "Bariatric Mobility Top Picks",
+     "description": {
+      "html": "Bariatric mobility caters for the larger person with heavy-duty supports, increased weight capacity, and wider widths. A welcomed improvement for those that feel cramped, unsteady, or uncomfortable. Our Products include Walkers, Rollator, Transport chairs and more. Our top picks highlight top brands and great value."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045947125925",
+   "title": "3-in-1 Folding Steel Commode by Medline",
+   "description": {
+    "html": "Features: Folding frame design assembles in seconds without tools Commode folds down to reduce storage space by 35% and simplify delivery and transport Includes pail, lid and splash guard 16\" (41 cm) seat depth; adjustable seat height 21.25\" (54 cm) overall width Depth of splash bucket: 5.71\" 19\" (48 cm) width between arms; Clip-on seats can be removed for easy cleaning Casters: No Drop Arm: No"
+   },
+   "url": "https://www.parentgiving.com/products/3-in-1-folding-steel-commode-by-medline",
+   "handle": "3-in-1-folding-steel-commode-by-medline",
+   "price_range": {
+    "min": {
+     "amount": 3199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 3799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3799,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994785161381",
+     "sku": "G1-200X1",
+     "title": "Each",
+     "description": {
+      "html": "Features: Folding frame design assembles in seconds without tools Commode folds down to reduce storage space by 35% and simplify delivery and transport Includes pail, lid and splash guard 16\" (41 cm) seat depth; adjustable seat height 21.25\" (54 cm) overall width Depth of splash bucket: 5.71\" 19\" (48 cm) width between arms; Clip-on seats can be removed for easy cleaning Casters: No Drop Arm: No"
+     },
+     "price": {
+      "amount": 3199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 3799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-3-in-1-folding-steel-commode-by-medline-9664-2240.jpg?v=1675881740"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994785161381:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-3-in-1-folding-steel-commode-by-medline-9664-2240.jpg?v=1675881740",
+     "alt_text": "3-in-1 Folding Steel Commode by Medline"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "3-in-1 Commodes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289861402789",
+     "handle": "commode-chairs",
+     "title": "Commode Chairs",
+     "description": {
+      "html": "Commode chairs are an essential device for many people who have severe mobility problems. Having a portable toilet chair in the bedroom is convenient for home caregivers and their patients when they are unable to make the long trip to a regular commode. They can also be placed in a bathroom or shower to provide additional support and function. At Parentgiving, we carry many types of commode chairs for users of all needs. With low prices on the top manufacturers of home medical equipment such as Complete Medical, Drive Medical, Invacare and Lumex, it's easy to find a lightweight portable commode for elderly and disabled people that will always be at hand. Every portable commode seat in our inventory has a waste receptacle designed for easy removal and cleaning, and a solid frame made from rust-resistant steel or aluminum. From there, you can choose the style that is the best fit for your or your loved one. We have standard bedside commodes along with folding bedside commodes that are easy to store and transport. Shower commode chairs and transfer benches are especially useful if someone needs to go when bathing. A drop-arm elderly potty chair has movable armrests to help people on and off the toilet, while padded commode seats have additional cushioning on the seats, arms and/or backrests for added contentment. Be sure to also browse our urinal for elderly options and other bariatric bathroom equipment. A number of weight capacities are available, including bariatric toilet chairs for plus-size people. You can also choose an ideal seat width, get a commode chair with wheels and find an adjustable height portable commode for multiple-user situations. We even have 3-in-1 commode chairs that can be used as toilet safety rails or elevated toilet seats. If extra assistance is needed, consider our chair lifts for the elderly or a lift for disabled person. Whatever your caregiving needs, you can count on Parentgiving's expert staff to offer a professional perspective and guidance. Our fast and free shipping on orders over $50 lets people save even more. Select a category below or visit our Buyer's Guide for more information on commode chairs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864482981",
+     "handle": "3-in-1-commodes",
+     "title": "3-in-1 Commodes",
+     "description": {
+      "html": "Everyone needs to go, and an all-in-one commode chair is a very useful tool for those with limited mobility. These chairs can be used as a bedroom commode for those who are bedridden, as a raised toilet seat for an existing bathroom commode or as a safety frame to assist with getting up or down. They are quickly reconfigurable and can perform all three functions in one day if needed. We have a variety of commode bathroom and bedroom chairs from leading manufacturers such as Drive Medical, Invacare and Lumex, so you can get the right 3-in-1 commode chair at the right price. Parentgiving has steel and aluminum bathroom commodes that are lightweight, resist rust, have high weight capacities and are easy to move and clean. Some of our options include folding commodes, height-adjustable toilet seats and commodes with padded seats. We also offer drop-arm commodes for use with patients in wheelchairs. Each toilet and commode has padded arms for comfort and backs that can be removed. With fast free shipping on orders over $50 and a satisfaction guarantee, we offer more ways to save money on products that make home care less stressful."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045947158693",
+   "title": "Medline Padded Drop Arm Commode",
+   "description": {
+    "html": "Features: Arms swing out of the way for easy lateral transfers on and off the commode, even for patients using wheelchairs Place commodes near the bed with closer arm down for patients transferring during the night Supplied standard with pail, lid and splash guard Clip-on seat can be removed for easy cleaning Thick, resilient foam padded seat and back increase comfort Specifications: Seat Height Range: 19\u201d to 23\u201d Seat Dimensions: 15.25\u201d x 16.75\u201d Weight Capacity: 300 lbs. Seat Width in-between the arms: 19\u201d Seat Width outside the arms: 21.5\u201d"
+   },
+   "url": "https://www.parentgiving.com/products/medline-padded-drop-arm-commode",
+   "handle": "medline-padded-drop-arm-commode",
+   "price_range": {
+    "min": {
+     "amount": 8699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8699,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994785194149",
+     "sku": "G1-301DPX1",
+     "title": "Each",
+     "description": {
+      "html": "Features: Arms swing out of the way for easy lateral transfers on and off the commode, even for patients using wheelchairs Place commodes near the bed with closer arm down for patients transferring during the night Supplied standard with pail, lid and splash guard Clip-on seat can be removed for easy cleaning Thick, resilient foam padded seat and back increase comfort Specifications: Seat Height Range: 19\u201d to 23\u201d Seat Dimensions: 15.25\u201d x 16.75\u201d Weight Capacity: 300 lbs. Seat Width in-between the arms: 19\u201d Seat Width outside the arms: 21.5\u201d"
+     },
+     "price": {
+      "amount": 8699,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8699,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-padded-drop-arm-commode-9665-3022.jpg?v=1675891002"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994785194149:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-padded-drop-arm-commode-9665-3022.jpg?v=1675891002",
+     "alt_text": "Medline Padded Drop Arm Commode"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Drop-Arm Commodes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289861402789",
+     "handle": "commode-chairs",
+     "title": "Commode Chairs",
+     "description": {
+      "html": "Commode chairs are an essential device for many people who have severe mobility problems. Having a portable toilet chair in the bedroom is convenient for home caregivers and their patients when they are unable to make the long trip to a regular commode. They can also be placed in a bathroom or shower to provide additional support and function. At Parentgiving, we carry many types of commode chairs for users of all needs. With low prices on the top manufacturers of home medical equipment such as Complete Medical, Drive Medical, Invacare and Lumex, it's easy to find a lightweight portable commode for elderly and disabled people that will always be at hand. Every portable commode seat in our inventory has a waste receptacle designed for easy removal and cleaning, and a solid frame made from rust-resistant steel or aluminum. From there, you can choose the style that is the best fit for your or your loved one. We have standard bedside commodes along with folding bedside commodes that are easy to store and transport. Shower commode chairs and transfer benches are especially useful if someone needs to go when bathing. A drop-arm elderly potty chair has movable armrests to help people on and off the toilet, while padded commode seats have additional cushioning on the seats, arms and/or backrests for added contentment. Be sure to also browse our urinal for elderly options and other bariatric bathroom equipment. A number of weight capacities are available, including bariatric toilet chairs for plus-size people. You can also choose an ideal seat width, get a commode chair with wheels and find an adjustable height portable commode for multiple-user situations. We even have 3-in-1 commode chairs that can be used as toilet safety rails or elevated toilet seats. If extra assistance is needed, consider our chair lifts for the elderly or a lift for disabled person. Whatever your caregiving needs, you can count on Parentgiving's expert staff to offer a professional perspective and guidance. Our fast and free shipping on orders over $50 lets people save even more. Select a category below or visit our Buyer's Guide for more information on commode chairs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864450213",
+     "handle": "drop-arm-commodes",
+     "title": "Drop-Arm Commodes",
+     "description": {
+      "html": "Drop-arm commodes provide caregivers with a convenient way to safely transfer patients to and from the commode. Drop-arm commodes are useful for transferring wheelchair patients and facilitating nighttime transfers when placed near a bed. Choose from a variety of models to find the one that best fits your needs. We carry everything from heavy-duty bariatric commodes to 3-in-1 bedside commodes to drop-arm commode transport chairs with wheels. Notable brands such as Nova, Medline Industries, Guardian and Drive Medical who have long earned their reputation for manufacturing quality, trustworthy products fill our inventory. Some of the many comfort and useful features you'll find include padded arms and backrests, push-button arm releases, easy height adjustable legs and soft foam handles. In addition, all of our drop-arm commodes come standard with a pail, lid and splash guard. In addition to comfort and convenience, our selection of drop-arm commodes offers durability and strength. Power coated steel frames and welded construction make them strong and supportive."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8083110920357",
+   "title": "Padded Drop-Arm Commode with Splash Guard by Medline",
+   "description": {
+    "html": "Features: Arms swing out of the way for easier lateral transfers on and off the commode Transfers are easier for patients using a wheelchair Place near the bed with near arm down for patients transferring during the night Comes standard with pail, lids and splash guard. 350-lb weight capacity Seat Height Range: 18\" - 22\" Seat Depth: 18\" - 20\" Product Weight: 18 lbs. Width Between Arms: 20\" Overall Width: 23\" Please note: There is some assembly required"
+   },
+   "url": "https://www.parentgiving.com/products/drop-arm-commode",
+   "handle": "drop-arm-commode",
+   "price_range": {
+    "min": {
+     "amount": 11499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42032908861605",
+     "sku": "G98204",
+     "title": "Each",
+     "description": {
+      "html": "Features: Arms swing out of the way for easier lateral transfers on and off the commode Transfers are easier for patients using a wheelchair Place near the bed with near arm down for patients transferring during the night Comes standard with pail, lids and splash guard. 350-lb weight capacity Seat Height Range: 18\" - 22\" Seat Depth: 18\" - 20\" Product Weight: 18 lbs. Width Between Arms: 20\" Overall Width: 23\" Please note: There is some assembly required"
+     },
+     "price": {
+      "amount": 11499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drop-arm-commode-7623-4933.jpg?v=1675892001"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/42032908861605:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-drop-arm-commode-7623-4933.jpg?v=1675892001",
+     "alt_text": "Padded Drop-Arm Commode with Splash Guard by Medline"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Drop-Arm Commodes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289861402789",
+     "handle": "commode-chairs",
+     "title": "Commode Chairs",
+     "description": {
+      "html": "Commode chairs are an essential device for many people who have severe mobility problems. Having a portable toilet chair in the bedroom is convenient for home caregivers and their patients when they are unable to make the long trip to a regular commode. They can also be placed in a bathroom or shower to provide additional support and function. At Parentgiving, we carry many types of commode chairs for users of all needs. With low prices on the top manufacturers of home medical equipment such as Complete Medical, Drive Medical, Invacare and Lumex, it's easy to find a lightweight portable commode for elderly and disabled people that will always be at hand. Every portable commode seat in our inventory has a waste receptacle designed for easy removal and cleaning, and a solid frame made from rust-resistant steel or aluminum. From there, you can choose the style that is the best fit for your or your loved one. We have standard bedside commodes along with folding bedside commodes that are easy to store and transport. Shower commode chairs and transfer benches are especially useful if someone needs to go when bathing. A drop-arm elderly potty chair has movable armrests to help people on and off the toilet, while padded commode seats have additional cushioning on the seats, arms and/or backrests for added contentment. Be sure to also browse our urinal for elderly options and other bariatric bathroom equipment. A number of weight capacities are available, including bariatric toilet chairs for plus-size people. You can also choose an ideal seat width, get a commode chair with wheels and find an adjustable height portable commode for multiple-user situations. We even have 3-in-1 commode chairs that can be used as toilet safety rails or elevated toilet seats. If extra assistance is needed, consider our chair lifts for the elderly or a lift for disabled person. Whatever your caregiving needs, you can count on Parentgiving's expert staff to offer a professional perspective and guidance. Our fast and free shipping on orders over $50 lets people save even more. Select a category below or visit our Buyer's Guide for more information on commode chairs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864450213",
+     "handle": "drop-arm-commodes",
+     "title": "Drop-Arm Commodes",
+     "description": {
+      "html": "Drop-arm commodes provide caregivers with a convenient way to safely transfer patients to and from the commode. Drop-arm commodes are useful for transferring wheelchair patients and facilitating nighttime transfers when placed near a bed. Choose from a variety of models to find the one that best fits your needs. We carry everything from heavy-duty bariatric commodes to 3-in-1 bedside commodes to drop-arm commode transport chairs with wheels. Notable brands such as Nova, Medline Industries, Guardian and Drive Medical who have long earned their reputation for manufacturing quality, trustworthy products fill our inventory. Some of the many comfort and useful features you'll find include padded arms and backrests, push-button arm releases, easy height adjustable legs and soft foam handles. In addition, all of our drop-arm commodes come standard with a pail, lid and splash guard. In addition to comfort and convenience, our selection of drop-arm commodes offers durability and strength. Power coated steel frames and welded construction make them strong and supportive."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8431863529637",
+   "title": "Medline Bariatric Steel Drop-Arm Commode",
+   "description": {
+    "html": "Bariatric commode with easy-to-release drop-arm mechanism allows larger patients to laterally transfer safely and with ease Powder-coated steel frame is rust-resistant and is reinforced for greater weight-bearing capability Comes with pail, lid, and solid seat 1,000 lb. weight capacity, seat height 17.5\"-21.5\", seat depth 18.5\", inside arm width 25\", overall width 31\" Latex Free"
+   },
+   "url": "https://www.parentgiving.com/products/medline-bariatric-steel-drop-arm-commode",
+   "handle": "medline-bariatric-steel-drop-arm-commode",
+   "price_range": {
+    "min": {
+     "amount": 10699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 10699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10699,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43090151833765",
+     "sku": "G1-400BDX1",
+     "title": "Each",
+     "description": {
+      "html": "Bariatric commode with easy-to-release drop-arm mechanism allows larger patients to laterally transfer safely and with ease Powder-coated steel frame is rust-resistant and is reinforced for greater weight-bearing capability Comes with pail, lid, and solid seat 1,000 lb. weight capacity, seat height 17.5\"-21.5\", seat depth 18.5\", inside arm width 25\", overall width 31\" Latex Free"
+     },
+     "price": {
+      "amount": 10699,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10699,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Commode_Medline-1.jpg?v=1791817996"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/43090151833765:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/Commode_Medline-1.jpg?v=1791817996"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Drop-Arm Commodes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289861402789",
+     "handle": "commode-chairs",
+     "title": "Commode Chairs",
+     "description": {
+      "html": "Commode chairs are an essential device for many people who have severe mobility problems. Having a portable toilet chair in the bedroom is convenient for home caregivers and their patients when they are unable to make the long trip to a regular commode. They can also be placed in a bathroom or shower to provide additional support and function. At Parentgiving, we carry many types of commode chairs for users of all needs. With low prices on the top manufacturers of home medical equipment such as Complete Medical, Drive Medical, Invacare and Lumex, it's easy to find a lightweight portable commode for elderly and disabled people that will always be at hand. Every portable commode seat in our inventory has a waste receptacle designed for easy removal and cleaning, and a solid frame made from rust-resistant steel or aluminum. From there, you can choose the style that is the best fit for your or your loved one. We have standard bedside commodes along with folding bedside commodes that are easy to store and transport. Shower commode chairs and transfer benches are especially useful if someone needs to go when bathing. A drop-arm elderly potty chair has movable armrests to help people on and off the toilet, while padded commode seats have additional cushioning on the seats, arms and/or backrests for added contentment. Be sure to also browse our urinal for elderly options and other bariatric bathroom equipment. A number of weight capacities are available, including bariatric toilet chairs for plus-size people. You can also choose an ideal seat width, get a commode chair with wheels and find an adjustable height portable commode for multiple-user situations. We even have 3-in-1 commode chairs that can be used as toilet safety rails or elevated toilet seats. If extra assistance is needed, consider our chair lifts for the elderly or a lift for disabled person. Whatever your caregiving needs, you can count on Parentgiving's expert staff to offer a professional perspective and guidance. Our fast and free shipping on orders over $50 lets people save even more. Select a category below or visit our Buyer's Guide for more information on commode chairs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864450213",
+     "handle": "drop-arm-commodes",
+     "title": "Drop-Arm Commodes",
+     "description": {
+      "html": "Drop-arm commodes provide caregivers with a convenient way to safely transfer patients to and from the commode. Drop-arm commodes are useful for transferring wheelchair patients and facilitating nighttime transfers when placed near a bed. Choose from a variety of models to find the one that best fits your needs. We carry everything from heavy-duty bariatric commodes to 3-in-1 bedside commodes to drop-arm commode transport chairs with wheels. Notable brands such as Nova, Medline Industries, Guardian and Drive Medical who have long earned their reputation for manufacturing quality, trustworthy products fill our inventory. Some of the many comfort and useful features you'll find include padded arms and backrests, push-button arm releases, easy height adjustable legs and soft foam handles. In addition, all of our drop-arm commodes come standard with a pail, lid and splash guard. In addition to comfort and convenience, our selection of drop-arm commodes offers durability and strength. Power coated steel frames and welded construction make them strong and supportive."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045750747301",
+   "title": "Guardian Commode Bucket",
+   "description": {
+    "html": "The Guardian Commode Bucket is constructed of high-impact, gray polyethylene. This commode bucket fits all Medline commodes and comes with a handle and lid. The bucket holds up to a 2 gallon capacity. Limited lifetime warranty on frame. Six month warranty on handles feet seat & lid push buttons wearable parts. Universal design with 11-inch diameter to fit all non-platform Medline commodes."
+   },
+   "url": "https://www.parentgiving.com/products/guardian-commode-bucket",
+   "handle": "guardian-commode-bucket",
+   "price_range": {
+    "min": {
+     "amount": 1199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1199,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994518626469",
+     "sku": "MDS80306BH",
+     "title": "Each",
+     "description": {
+      "html": "The Guardian Commode Bucket is constructed of high-impact, gray polyethylene. This commode bucket fits all Medline commodes and comes with a handle and lid. The bucket holds up to a 2 gallon capacity. Limited lifetime warranty on frame. Six month warranty on handles feet seat & lid push buttons wearable parts. Universal design with 11-inch diameter to fit all non-platform Medline commodes."
+     },
+     "price": {
+      "amount": 1199,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/CommodeBucket.jpg?v=1790188074"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994518626469:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/CommodeBucket.jpg?v=1790188074"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Commode Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289866842277",
+     "handle": "patient-room-supplies-and-furniture",
+     "title": "Patient Room Supplies and Furniture",
+     "description": {
+      "html": "Provide the best patient care possible. Choose from a wide selection of patient room supplies such as wheeled stools, instrument stands, I.V. poles, as well as respiratory care items."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/632386814324",
+     "handle": "all-medical-home-supplies",
+     "title": "All Medical Home Supplies",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045947486373",
+   "title": "Medline Standard Drop Arm Commode",
+   "description": {
+    "html": "Features: Arms drop down out of the way for easy lateral transfers on and off the commode, even for patients using wheelchairs Place commodes near the bed with closer arm down for patients transferring during the night Supplied standard with pail, lid and splash guard Clip-on seat can be removed for easy cleaning Weight Capacity: 300 lbs. Specifications: Product Weight: 20 lbs. Seat Width: 16\u201d Width between the Arms: 20\u201d Height Adjustable: Low setting seat height- 20.25\u201d /Top setting seat height- 24.25\u201d Cushion seat depth: 16.25\u201d Back bar to tip of cushion: 19.25\u201d Overall width: 23.25\u201d Overall: depth with 20.34\u201d"
+   },
+   "url": "https://www.parentgiving.com/products/medline-drop-arm-commode",
+   "handle": "medline-drop-arm-commode",
+   "price_range": {
+    "min": {
+     "amount": 8399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8399,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8399,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8399,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994786472101",
+     "sku": "G1-301DX1",
+     "title": "Each",
+     "description": {
+      "html": "Features: Arms drop down out of the way for easy lateral transfers on and off the commode, even for patients using wheelchairs Place commodes near the bed with closer arm down for patients transferring during the night Supplied standard with pail, lid and splash guard Clip-on seat can be removed for easy cleaning Weight Capacity: 300 lbs. Specifications: Product Weight: 20 lbs. Seat Width: 16\u201d Width between the Arms: 20\u201d Height Adjustable: Low setting seat height- 20.25\u201d /Top setting seat height- 24.25\u201d Cushion seat depth: 16.25\u201d Back bar to tip of cushion: 19.25\u201d Overall width: 23.25\u201d Overall: depth with 20.34\u201d"
+     },
+     "price": {
+      "amount": 8399,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8399,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-drop-arm-commode-9679-0355.jpg?v=1675891151"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994786472101:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-drop-arm-commode-9679-0355.jpg?v=1675891151",
+     "alt_text": "Medline Standard Drop Arm Commode"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Drop-Arm Commodes"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289861402789",
+     "handle": "commode-chairs",
+     "title": "Commode Chairs",
+     "description": {
+      "html": "Commode chairs are an essential device for many people who have severe mobility problems. Having a portable toilet chair in the bedroom is convenient for home caregivers and their patients when they are unable to make the long trip to a regular commode. They can also be placed in a bathroom or shower to provide additional support and function. At Parentgiving, we carry many types of commode chairs for users of all needs. With low prices on the top manufacturers of home medical equipment such as Complete Medical, Drive Medical, Invacare and Lumex, it's easy to find a lightweight portable commode for elderly and disabled people that will always be at hand. Every portable commode seat in our inventory has a waste receptacle designed for easy removal and cleaning, and a solid frame made from rust-resistant steel or aluminum. From there, you can choose the style that is the best fit for your or your loved one. We have standard bedside commodes along with folding bedside commodes that are easy to store and transport. Shower commode chairs and transfer benches are especially useful if someone needs to go when bathing. A drop-arm elderly potty chair has movable armrests to help people on and off the toilet, while padded commode seats have additional cushioning on the seats, arms and/or backrests for added contentment. Be sure to also browse our urinal for elderly options and other bariatric bathroom equipment. A number of weight capacities are available, including bariatric toilet chairs for plus-size people. You can also choose an ideal seat width, get a commode chair with wheels and find an adjustable height portable commode for multiple-user situations. We even have 3-in-1 commode chairs that can be used as toilet safety rails or elevated toilet seats. If extra assistance is needed, consider our chair lifts for the elderly or a lift for disabled person. Whatever your caregiving needs, you can count on Parentgiving's expert staff to offer a professional perspective and guidance. Our fast and free shipping on orders over $50 lets people save even more. Select a category below or visit our Buyer's Guide for more information on commode chairs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289864450213",
+     "handle": "drop-arm-commodes",
+     "title": "Drop-Arm Commodes",
+     "description": {
+      "html": "Drop-arm commodes provide caregivers with a convenient way to safely transfer patients to and from the commode. Drop-arm commodes are useful for transferring wheelchair patients and facilitating nighttime transfers when placed near a bed. Choose from a variety of models to find the one that best fits your needs. We carry everything from heavy-duty bariatric commodes to 3-in-1 bedside commodes to drop-arm commode transport chairs with wheels. Notable brands such as Nova, Medline Industries, Guardian and Drive Medical who have long earned their reputation for manufacturing quality, trustworthy products fill our inventory. Some of the many comfort and useful features you'll find include padded arms and backrests, push-button arm releases, easy height adjustable legs and soft foam handles. In addition, all of our drop-arm commodes come standard with a pail, lid and splash guard. In addition to comfort and convenience, our selection of drop-arm commodes offers durability and strength. Power coated steel frames and welded construction make them strong and supportive."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15478171042164",
+   "title": "Medline Aluminum Padded Shower Chair Commode",
+   "description": {
+    "html": "Features: Padded seating and backrest provide comfort and support during extended use in the shower or as a commode. Removable center section allows use as both a comfortable shower chair and functional bedside commode, reducing the need for multiple transfers. Equipped with locking casters that allow the chair to be moved when unlocked and secured in place during use by engaging the wheel brakes. Sturdy frame safely supports user up to 300 lbs. Comes with 12 quart removable pail, splash shield and carry handle for hygenic waste disposable and easy cleaning Seat, back, and legs snap together securely using durable plastic clamps for quick setup"
+   },
+   "url": "https://www.parentgiving.com/products/medline-aluminum-padded-shower-chair-commode",
+   "handle": "medline-aluminum-padded-shower-chair-commode",
+   "price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/56821047722356",
+     "sku": "G1-502PWX1",
+     "title": "Each",
+     "description": {
+      "html": "Features: Padded seating and backrest provide comfort and support during extended use in the shower or as a commode. Removable center section allows use as both a comfortable shower chair and functional bedside commode, reducing the need for multiple transfers. Equipped with locking casters that allow the chair to be moved when unlocked and secured in place during use by engaging the wheel brakes. Sturdy frame safely supports user up to 300 lbs. Comes with 12 quart removable pail, splash shield and carry handle for hygenic waste disposable and easy cleaning Seat, back, and legs snap together securely using durable plastic clamps for quick setup"
+     },
+     "price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package Size",
+       "label": "Each"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/MedlineShowerChair-1.jpg?v=1794510425"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/56821047722356:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package Size",
+     "values": [
+      {
+       "label": "Each"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/files/MedlineShowerChair-1.jpg?v=1794510425"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Commode Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289858551973",
+     "handle": "bathroom-safety",
+     "title": "Bath Safety & Bathroom Safety Products",
+     "description": {
+      "html": "The bathroom is a potentially dangerous place for most people, and the risks go up tenfold for those with limited mobility. Elderly people and those who are disabled or injured face further hazards in the form of slick wet surfaces and hard fixtures. But you don't need to completely renovate your bathroom to make it safer and easier to navigate. Our bathroom elderly safety products are an inexpensive temporary or long-term solution for you and your loved ones. Safety in the bathroom should always be a leading priority, and our low prices on trusted brands mean you don't have to choose between security and affordability. Parentgiving has a variety of devices and bathroom accessories for safety. Get in and out of the tub more easily with bath mats, lift seats for elderly, bath rails grab bars and other products for maintaining your footing. For those with injuries, our cast protectors will keep your arm or leg cast from being ruined by water. Shower chairs and benches allow people to sit in the shower without standing for long periods, and with a transfer bench, patients don't have to climb over the tub wall. Don't underestimate toilet safety either \u2014 commode support rails and raised toilet seats provide stability and reduce the effort needed to get up or down. We have shower commode chairs as well for those with bladder conditions. Our bath safety products for seniors are made from waterproof and rust-resistant materials that are strong enough to handle everyday use while light enough to quickly move and set up. In addition to our standard-sized accessories, caregivers and patients can order bariatric bathroom safety aids for larger people and pediatric bath safety devices for younger people. Parentgiving is one of the leading medical supply and equipment sellers, and we are committed to bathtub safety for seniors, adults and kids who need mobility assistance. Contact us today for industry-leading customer service from knowledgeable staff that can help you find the right product while saving money."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289858748581",
+     "handle": "shower-chairs-benches",
+     "title": "Shower Chairs, Bath Benches & Shower Benches",
+     "description": {
+      "html": "When standing up in the shower becomes difficult, a shower chair or bath bench can offer security and comfort. Shower seats are available in several designs and models from the simplest bath bench to a fully-equipped wheel-chair style that you can roll directly into a stall shower. Be sure to check out our bariatric bathroom supplies as well. Read our bath bench Buyers Guide for help finding the right product."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289861402789",
+     "handle": "commode-chairs",
+     "title": "Commode Chairs",
+     "description": {
+      "html": "Commode chairs are an essential device for many people who have severe mobility problems. Having a portable toilet chair in the bedroom is convenient for home caregivers and their patients when they are unable to make the long trip to a regular commode. They can also be placed in a bathroom or shower to provide additional support and function. At Parentgiving, we carry many types of commode chairs for users of all needs. With low prices on the top manufacturers of home medical equipment such as Complete Medical, Drive Medical, Invacare and Lumex, it's easy to find a lightweight portable commode for elderly and disabled people that will always be at hand. Every portable commode seat in our inventory has a waste receptacle designed for easy removal and cleaning, and a solid frame made from rust-resistant steel or aluminum. From there, you can choose the style that is the best fit for your or your loved one. We have standard bedside commodes along with folding bedside commodes that are easy to store and transport. Shower commode chairs and transfer benches are especially useful if someone needs to go when bathing. A drop-arm elderly potty chair has movable armrests to help people on and off the toilet, while padded commode seats have additional cushioning on the seats, arms and/or backrests for added contentment. Be sure to also browse our urinal for elderly options and other bariatric bathroom equipment. A number of weight capacities are available, including bariatric toilet chairs for plus-size people. You can also choose an ideal seat width, get a commode chair with wheels and find an adjustable height portable commode for multiple-user situations. We even have 3-in-1 commode chairs that can be used as toilet safety rails or elevated toilet seats. If extra assistance is needed, consider our chair lifts for the elderly or a lift for disabled person. Whatever your caregiving needs, you can count on Parentgiving's expert staff to offer a professional perspective and guidance. Our fast and free shipping on orders over $50 lets people save even more. Select a category below or visit our Buyer's Guide for more information on commode chairs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045846823077",
+   "title": "Medline Commode Liner with Absorbent Pad",
+   "description": {
+    "html": "Features: Commode liners can be used with most commode buckets. Liners include an absorbent pad which solidifies the waste and makes clean up easy and hygienic. Great add-on to any commode. 6 Boxes/12 Liners each box."
+   },
+   "url": "https://www.parentgiving.com/products/medline-commode-liner-with-absorbent-pad",
+   "handle": "medline-commode-liner-with-absorbent-pad",
+   "price_range": {
+    "min": {
+     "amount": 4799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41994677190821",
+     "sku": "MDS89664LINER",
+     "title": "Case of 72",
+     "description": {
+      "html": "Features: Commode liners can be used with most commode buckets. Liners include an absorbent pad which solidifies the waste and makes clean up easy and hygienic. Great add-on to any commode. 6 Boxes/12 Liners each box."
+     },
+     "price": {
+      "amount": 4799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Package size",
+       "label": "Case of 72"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-commode-liner-with-absorbent-pad-7945-2320.jpg?v=1675890675"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://parentgiving.myshopify.com/cart/41994677190821:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Package size",
+     "values": [
+      {
+       "label": "Case of 72"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0430/2690/7301/products/l-medline-commode-liner-with-absorbent-pad-7945-2320.jpg?v=1675890675",
+     "alt_text": "Medline Commode Liner with Absorbent Pad"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Commode Liners"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289861402789",
+     "handle": "commode-chairs",
+     "title": "Commode Chairs",
+     "description": {
+      "html": "Commode chairs are an essential device for many people who have severe mobility problems. Having a portable toilet chair in the bedroom is convenient for home caregivers and their patients when they are unable to make the long trip to a regular commode. They can also be placed in a bathroom or shower to provide additional support and function. At Parentgiving, we carry many types of commode chairs for users of all needs. With low prices on the top manufacturers of home medical equipment such as Complete Medical, Drive Medical, Invacare and Lumex, it's easy to find a lightweight portable commode for elderly and disabled people that will always be at hand. Every portable commode seat in our inventory has a waste receptacle designed for easy removal and cleaning, and a solid frame made from rust-resistant steel or aluminum. From there, you can choose the style that is the best fit for your or your loved one. We have standard bedside commodes along with folding bedside commodes that are easy to store and transport. Shower commode chairs and transfer benches are especially useful if someone needs to go when bathing. A drop-arm elderly potty chair has movable armrests to help people on and off the toilet, while padded commode seats have additional cushioning on the seats, arms and/or backrests for added contentment. Be sure to also browse our urinal for elderly options and other bariatric bathroom equipment. A number of weight capacities are available, including bariatric toilet chairs for plus-size people. You can also choose an ideal seat width, get a commode chair with wheels and find an adjustable height portable commode for multiple-user situations. We even have 3-in-1 commode chairs that can be used as toilet safety rails or elevated toilet seats. If extra assistance is needed, consider our chair lifts for the elderly or a lift for disabled person. Whatever your caregiving needs, you can count on Parentgiving's expert staff to offer a professional perspective and guidance. Our fast and free shipping on orders over $50 lets people save even more. Select a category below or visit our Buyer's Guide for more information on commode chairs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289863106725",
+     "handle": "commode-liners",
+     "title": "Commode Liners",
+     "description": {
+      "html": "Disposable commode liners make cleanup at home, in hospitals and in nursing homes fast and easy and cut down on the time needed to properly clean and disinfect commode pails. When used to line the commode, both the user and caregiver are protected from the spread of pathogenic organisms by direct or indirect contact, thus minimizing risk of cross infection. They're highly recommended for infectious patients and isolation rooms. Our liners conveniently fit any standard sized commode pail, and come with such features as a gelling agent that turns liquid waste into gel in seconds for high absorbency, a decaying catalyst and odor neutralizers. Many come with an adhesive sealing strip for hygienic disposal. What's more, most of our commode liners are biodegradable and landfill approved. Choose from single use liners to ones that are good for three to five uses. Extremely simple to use, safe and convenient, commode liners from Sani-Bag, Drive Medical and Medline Industries securely collect waste allowing for easy disposal."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294562660517",
+     "handle": "all-safety-products",
+     "title": "All Safety Home Care Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/308131823781",
+     "handle": "all-incontinence",
+     "title": "Premium Incontinence Products for Adults",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/617755148660",
+     "handle": "additional-products",
+     "title": "Additional Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNRFExT0RRMk9ESXpNRGMzTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

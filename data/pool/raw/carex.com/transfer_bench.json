@@ -1,0 +1,1311 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://carex.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Carex",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "carex.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "24065048681"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "24065048681"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4121096257641",
+   "title": "Carex Universal Transfer Bench",
+   "description": {
+    "html": "The Universal Transfer Bench features a backrest with two built-in handles to make positioning easier and our patented Exact Level height adjustable legs. Compact in size yet features an added weight capacity and has no metal parts to rust or corrode. This bench also converts easily for either left or right hand bathtub entry. Fits most bathtubs and showers. Makes getting in and out of the shower/bath easier. Bath tub benches are perfect for improving bath safety and maintaining independence. One side sits outside of the tub allowing users to slide into the tub without a struggle. Shower benches for elderly and disabled people can make a significant difference in quality of life. Height adjustable 17.5\" to 22.5\". The shower bench seat features exact level height adjustable legs to level the bath bench to the perfect height without tools. This makes it easy for multiple users to use the adjustable shower bench without struggling to adjust it. Durable, holds up to 400 lbs. The heavy duty shower bench is compact yet durable with no metal parts to rust or corrode. The waterproof shower bench is made of lightweight plastic designed to be used in water without being damaged or wearing down. Easily converts for left- or right-hand bathing entry. The removable backrest can be switched to both sides for left or right-hand entry. This feature makes it universal for users that may be more comfortable using their left or right side. Disassembles quickly for storage or travel. The tub transfer bench can be easily disassembled for easy storage and travel. Its lightweight design makes it easy to insert and remove from any shower or bath. Comfortable seat & backrest with two built-in handles. The bath seat features a backrest with two built-in handles for easy positioning and adjusting. The slip-resistant tips mean the shower transfer bench won't move or budge when sitting down or up. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Bucket Opening: No Backrest: Left or Right Weight Capacity: 400lbs Product Dims(h x w x d): 17.5-22.5\" x 29.75\" x 19\" Where Made: U.S.A. Package Weight: 17.7lbs Product Weight: 14.5lbs Padded: No Package Dims(h x w x d): 9.5\" x 19.5\" x 29.75\" Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-universal-transfer-bench",
+   "handle": "carex-universal-transfer-bench",
+   "price_range": {
+    "min": {
+     "amount": 8045,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8045,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 10670,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10670,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226793594985",
+     "sku": "FGB170C0 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Universal Transfer Bench features a backrest with two built-in handles to make positioning easier and our patented Exact Level height adjustable legs. Compact in size yet features an added weight capacity and has no metal parts to rust or corrode. This bench also converts easily for either left or right hand bathtub entry. Fits most bathtubs and showers. Makes getting in and out of the shower/bath easier. Bath tub benches are perfect for improving bath safety and maintaining independence. One side sits outside of the tub allowing users to slide into the tub without a struggle. Shower benches for elderly and disabled people can make a significant difference in quality of life. Height adjustable 17.5\" to 22.5\". The shower bench seat features exact level height adjustable legs to level the bath bench to the perfect height without tools. This makes it easy for multiple users to use the adjustable shower bench without struggling to adjust it. Durable, holds up to 400 lbs. The heavy duty shower bench is compact yet durable with no metal parts to rust or corrode. The waterproof shower bench is made of lightweight plastic designed to be used in water without being damaged or wearing down. Easily converts for left- or right-hand bathing entry. The removable backrest can be switched to both sides for left or right-hand entry. This feature makes it universal for users that may be more comfortable using their left or right side. Disassembles quickly for storage or travel. The tub transfer bench can be easily disassembled for easy storage and travel. Its lightweight design makes it easy to insert and remove from any shower or bath. Comfortable seat & backrest with two built-in handles. The bath seat features a backrest with two built-in handles for easy positioning and adjusting. The slip-resistant tips mean the shower transfer bench won't move or budge when sitting down or up. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Bucket Opening: No Backrest: Left or Right Weight Capacity: 400lbs Product Dims(h x w x d): 17.5-22.5\" x 29.75\" x 19\" Where Made: U.S.A. Package Weight: 17.7lbs Product Weight: 14.5lbs Padded: No Package Dims(h x w x d): 9.5\" x 19.5\" x 29.75\" Instruction Manual"
+     },
+     "price": {
+      "amount": 8045,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10670,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-universal-transfer-bench-28288242942057.png?v=1679947680"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226793594985:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-universal-transfer-bench-28288242942057.png?v=1679947680",
+     "alt_text": "Carex Universal Transfer Bench - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Height_17.5\" to 23.5\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic",
+    "Padded Seat_No",
+    "Product Category_Bathroom Safety",
+    "Product Type_Transfer Bench",
+    "TransferBenches",
+    "Weight Capacity_400 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221062249",
+     "handle": "bathtub-and-shower-transfer-benches",
+     "title": "Bathtub and Shower Transfer Benches",
+     "description": {
+      "html": "Carex offers an easy way to transfer in and out of the shower/bathtub with our collection of shower benches and universal sliding transfer benches. Our shower chairs feature reversible backs for left or right handed entry, handles, height adjustment, water drainage holes, and slip resistant tips with the ability to accommodate any bathroom. Our bariatric tub transfer benches support weights of up to 300 lbs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121095733353",
+   "title": "Carex Classics Transfer Bench",
+   "description": {
+    "html": "The Bathtub Transfer Bench is an economical and safe option for transferring. This transfer bench features a reversible seat back for left- or right-handed bathing entry and an oversized handle for added safety. Comes standard with an adjustable seat height, a textured, non-slip surface on both the seat and back, and oversized slip-resistant tips for increased stability. Tub transfer bench for easy transfer into the shower or bath tub. Bath tub benches add a new level of bath safety and independence. One side of the bath bench sits on the outside of the tub while the other sits inside. This lowers the chances of tripping or falling while getting in and out. Features a removable seat back for left or right-handed entry. The shower bench seat can be used on either side for those with injuries or weakness in specific sides. The back can be easily switched making it perfect for multiple users. The shower bench has a non-slip texture on both the bench and backrest to prevent slipping. Durable, holds up to 300 lbs. The heavy-duty shower bench provides a reliable support surface and comes standard with over-sized slip-resistant tips for increased stability. Its a waterproof shower bench that won't corrode from being in contact with water. Height adjustable 17.5\" to 23.5\". The height-adjustable shower bench offers flexibility and comfort for multiple users with no tools required. It disassembled quickly for storage and travel making it universal for multiple homes. Fits most bathtubs. The shower transfer bench can fit most bathtubs with easy installation. No need to worry about it not fitting in any standard bathtubs. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Padded: No Bucket Opening: No Package Dims (h x w x d): 19\" x 17.5\" x 30.5\" Package Weight: 10.3 lbs. Product Dims (h x w x d): 17.5\" - 23.5\" x 26.25\" x 16\" Product Weight: 10.3 lbs. Product Type: Transfer Bench Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-classics-transfer-bench",
+   "handle": "carex-classics-transfer-bench",
+   "price_range": {
+    "min": {
+     "amount": 7450,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7450,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9882,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9882,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226790514793",
+     "sku": "FGB15577 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Bathtub Transfer Bench is an economical and safe option for transferring. This transfer bench features a reversible seat back for left- or right-handed bathing entry and an oversized handle for added safety. Comes standard with an adjustable seat height, a textured, non-slip surface on both the seat and back, and oversized slip-resistant tips for increased stability. Tub transfer bench for easy transfer into the shower or bath tub. Bath tub benches add a new level of bath safety and independence. One side of the bath bench sits on the outside of the tub while the other sits inside. This lowers the chances of tripping or falling while getting in and out. Features a removable seat back for left or right-handed entry. The shower bench seat can be used on either side for those with injuries or weakness in specific sides. The back can be easily switched making it perfect for multiple users. The shower bench has a non-slip texture on both the bench and backrest to prevent slipping. Durable, holds up to 300 lbs. The heavy-duty shower bench provides a reliable support surface and comes standard with over-sized slip-resistant tips for increased stability. Its a waterproof shower bench that won't corrode from being in contact with water. Height adjustable 17.5\" to 23.5\". The height-adjustable shower bench offers flexibility and comfort for multiple users with no tools required. It disassembled quickly for storage and travel making it universal for multiple homes. Fits most bathtubs. The shower transfer bench can fit most bathtubs with easy installation. No need to worry about it not fitting in any standard bathtubs. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Padded: No Bucket Opening: No Package Dims (h x w x d): 19\" x 17.5\" x 30.5\" Package Weight: 10.3 lbs. Product Dims (h x w x d): 17.5\" - 23.5\" x 26.25\" x 16\" Product Weight: 10.3 lbs. Product Type: Transfer Bench Instruction Manual"
+     },
+     "price": {
+      "amount": 7450,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9882,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-classics-transfer-bench-28288236486761.jpg?v=1679937000"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226790514793:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-classics-transfer-bench-28288236486761.jpg?v=1679937000",
+     "alt_text": "Carex Classics Transfer Bench - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Condition_Hip Injury",
+    "Condition_Osteoporosis",
+    "Height_17.5\" to 23.5\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic & Aluminum",
+    "Padded Seat_No",
+    "Product Category_Bathroom Safety",
+    "Product Type_Transfer Bench",
+    "TransferBenches",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221062249",
+     "handle": "bathtub-and-shower-transfer-benches",
+     "title": "Bathtub and Shower Transfer Benches",
+     "description": {
+      "html": "Carex offers an easy way to transfer in and out of the shower/bathtub with our collection of shower benches and universal sliding transfer benches. Our shower chairs feature reversible backs for left or right handed entry, handles, height adjustment, water drainage holes, and slip resistant tips with the ability to accommodate any bathroom. Our bariatric tub transfer benches support weights of up to 300 lbs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121096159337",
+   "title": "Carex Easy Transfer Bench",
+   "description": {
+    "html": "The Easy Transfer Bench features a large handle to make sitting down and getting up safer and easier. The seat back can be adjusted for left or right entry and the back and legs can be removed for convenient, compact storage. It is height adjustable, has non-slip tips and features drainage holes to prevent water pooling. This transfer bench features sturdy construction with a stylish contemporary look. Makes getting in and out of the shower or tub easier. Tub transfer benches offer a convenient and safe way to get in and out of the shower or tub. One side of the bath bench sits on the outside of the tub with the other inside. This provides a support surface enabling users to slide in and out. Height adjustable from 17\" to 23\". Having the proper height is essential when selecting a bath tub bench. The adjustable shower bench offers flexibility and comfort with easy to adjust legs. Simply press the inner button of each leg to adjust to your needs. Supports up to 300 lbs. The heavy duty shower bench is constructed of waterproof molded plastic. This reliable bath safety device is ideal for everyday use and won't warp from being in contact with water. Large size handle for even more safety. The shower bench seat comes fitted with an extra-large handle for easy gripping and support. Its design makes it perfect for anyone with a weak grip and more prone to slips and falls. Sleek blue secondary color. Add a sense of style and decor in your bathroom. The sleek and stylish blue color of the handle and tips compliments any bathroom. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Padded: No Product Dims (h x w x d): 19.6\" H x 30.3\" W x 4.1\" D UPC: 023601021663"
+   },
+   "url": "https://carex.com/products/carex-easy-transfer-bench",
+   "handle": "carex-easy-transfer-bench",
+   "price_range": {
+    "min": {
+     "amount": 8293,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8293,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 11000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11000,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226793103465",
+     "sku": "FGB16600 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Easy Transfer Bench features a large handle to make sitting down and getting up safer and easier. The seat back can be adjusted for left or right entry and the back and legs can be removed for convenient, compact storage. It is height adjustable, has non-slip tips and features drainage holes to prevent water pooling. This transfer bench features sturdy construction with a stylish contemporary look. Makes getting in and out of the shower or tub easier. Tub transfer benches offer a convenient and safe way to get in and out of the shower or tub. One side of the bath bench sits on the outside of the tub with the other inside. This provides a support surface enabling users to slide in and out. Height adjustable from 17\" to 23\". Having the proper height is essential when selecting a bath tub bench. The adjustable shower bench offers flexibility and comfort with easy to adjust legs. Simply press the inner button of each leg to adjust to your needs. Supports up to 300 lbs. The heavy duty shower bench is constructed of waterproof molded plastic. This reliable bath safety device is ideal for everyday use and won't warp from being in contact with water. Large size handle for even more safety. The shower bench seat comes fitted with an extra-large handle for easy gripping and support. Its design makes it perfect for anyone with a weak grip and more prone to slips and falls. Sleek blue secondary color. Add a sense of style and decor in your bathroom. The sleek and stylish blue color of the handle and tips compliments any bathroom. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Padded: No Product Dims (h x w x d): 19.6\" H x 30.3\" W x 4.1\" D UPC: 023601021663"
+     },
+     "price": {
+      "amount": 8293,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-easy-transfer-bench-28288064749673.jpg?v=1679939590"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226793103465:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-easy-transfer-bench-28288064749673.jpg?v=1679939590",
+     "alt_text": "Carex Easy Transfer Bench - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Condition_Hip Injury",
+    "Condition_Osteoporosis",
+    "Height_17\" to 23\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic & Aluminum",
+    "Padded Seat_No",
+    "Product Category_Bathroom Safety",
+    "Product Type_Transfer Bench",
+    "TransferBenches",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221062249",
+     "handle": "bathtub-and-shower-transfer-benches",
+     "title": "Bathtub and Shower Transfer Benches",
+     "description": {
+      "html": "Carex offers an easy way to transfer in and out of the shower/bathtub with our collection of shower benches and universal sliding transfer benches. Our shower chairs feature reversible backs for left or right handed entry, handles, height adjustment, water drainage holes, and slip resistant tips with the ability to accommodate any bathroom. Our bariatric tub transfer benches support weights of up to 300 lbs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121095340137",
+   "title": "Carex Deluxe Padded Transfer Bench With Opening & Bucket",
+   "description": {
+    "html": "Add comfort and security to your bath safety with the Carex Delux Padded Transfer Bench with Opening & Bucket. The Deluxe Vinyl Padded Transfer bench features an adjustable seat height and a convenient side rail to provide support for an easy transfer. A thick, tear-resistant padded seat and backrest provides extra comfort, and it comes standard with oversized tips for a more secure, slip-resistant bench. Makes getting in and out of the shower or tub easier. Tub transfer benches offer an easy and secure way to get in and out of the tub or shower. One side sits on the outside of the tub while the other inside. This gives users a secure surface to transfer in and out. Padded seat and backrest for added comfort. Add a layer of comfort with the padded shower bench. The vinyl padding offers a cushy feel that's slip-resistant. The bath bench is the perfect solution for anyone with fragile skin and bones. Features a commode opening and bucket. Anyone with health conditions such as incontinence knows the inconvenience it can cause. The bath tub bench features a commode opening and bucket for added convenience and independence. The bucket is easily replaceable and slides out for cleaning. It pairs well with commode liners for even more convenience. Durable, supports up to 300 lbs. This heavy duty shower bench is made of supportive molded plastic. The waterproof design makes it a reliable support surface for everyday use. No need to worry about it corroding or wearing out from being in constant contact with water. Reversible seat back for left- or right-handed entry. The shower bench seat has a reversible back for left or right-handed entry. This is perfect for anyone with an injury or weakness on one side of their body. Height adjustable from 18\" to 22\". The height-adjustable shower bench offers more comfort and convenience with its adjustable legs. The legs easily adjust to meet the needs or the user while its slip-resistant tips keep it from moving or budging. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 13.5 lbs. Weight Capacity: 300 lbs. Package Weight: 14 lbs. Bucket Opening: Yes Padded: Yes Package Dims (h x w x d): 17.9\" x 27.75\" x 12.75\" Product Dims (h x w x d): 18\" - 22\" x 30.5\" x 22.25\" Product Type: Transfer Bench Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-deluxe-padded-transfer-bench-with-opening-bucket",
+   "handle": "carex-deluxe-padded-transfer-bench-with-opening-bucket",
+   "price_range": {
+    "min": {
+     "amount": 14896,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14896,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226786549865",
+     "sku": "FGB15211 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Add comfort and security to your bath safety with the Carex Delux Padded Transfer Bench with Opening & Bucket. The Deluxe Vinyl Padded Transfer bench features an adjustable seat height and a convenient side rail to provide support for an easy transfer. A thick, tear-resistant padded seat and backrest provides extra comfort, and it comes standard with oversized tips for a more secure, slip-resistant bench. Makes getting in and out of the shower or tub easier. Tub transfer benches offer an easy and secure way to get in and out of the tub or shower. One side sits on the outside of the tub while the other inside. This gives users a secure surface to transfer in and out. Padded seat and backrest for added comfort. Add a layer of comfort with the padded shower bench. The vinyl padding offers a cushy feel that's slip-resistant. The bath bench is the perfect solution for anyone with fragile skin and bones. Features a commode opening and bucket. Anyone with health conditions such as incontinence knows the inconvenience it can cause. The bath tub bench features a commode opening and bucket for added convenience and independence. The bucket is easily replaceable and slides out for cleaning. It pairs well with commode liners for even more convenience. Durable, supports up to 300 lbs. This heavy duty shower bench is made of supportive molded plastic. The waterproof design makes it a reliable support surface for everyday use. No need to worry about it corroding or wearing out from being in constant contact with water. Reversible seat back for left- or right-handed entry. The shower bench seat has a reversible back for left or right-handed entry. This is perfect for anyone with an injury or weakness on one side of their body. Height adjustable from 18\" to 22\". The height-adjustable shower bench offers more comfort and convenience with its adjustable legs. The legs easily adjust to meet the needs or the user while its slip-resistant tips keep it from moving or budging. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Product Weight: 13.5 lbs. Weight Capacity: 300 lbs. Package Weight: 14 lbs. Bucket Opening: Yes Padded: Yes Package Dims (h x w x d): 17.9\" x 27.75\" x 12.75\" Product Dims (h x w x d): 18\" - 22\" x 30.5\" x 22.25\" Product Type: Transfer Bench Instruction Manual"
+     },
+     "price": {
+      "amount": 14896,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-deluxe-padded-transfer-bench-with-opening-bucket-28288220561513.jpg?v=1679937926"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226786549865:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-deluxe-padded-transfer-bench-with-opening-bucket-28288220561513.jpg?v=1679937926",
+     "alt_text": "Carex Deluxe Padded Transfer Bench With Opening & Bucket - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Commodes",
+    "Condition_Hip Injury",
+    "Condition_Incontinence",
+    "Condition_Osteoporosis",
+    "Height_18\" to 22\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "incontinence",
+    "Material_Molded Plastic & Aluminum",
+    "Padded Seat_Yes",
+    "Product Category_Bathroom Safety",
+    "Product Type_Commode",
+    "Product Type_Transfer Bench",
+    "TransferBenches",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221062249",
+     "handle": "bathtub-and-shower-transfer-benches",
+     "title": "Bathtub and Shower Transfer Benches",
+     "description": {
+      "html": "Carex offers an easy way to transfer in and out of the shower/bathtub with our collection of shower benches and universal sliding transfer benches. Our shower chairs feature reversible backs for left or right handed entry, handles, height adjustment, water drainage holes, and slip resistant tips with the ability to accommodate any bathroom. Our bariatric tub transfer benches support weights of up to 300 lbs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221848681",
+     "handle": "bedside-and-bathroom-commodes-and-commode-liners",
+     "title": "Bedside and Bathroom Commodes and Commode Liners",
+     "description": {
+      "html": "Our Commodes are designed as a three-in-one function to be used as a stand-alone commode, raised toilet seat or a toilet safety frame making them a great solution for elderly bathroom options. Complete with a commode bucket with lid and splash guard. Don't forget to add a commode liner for quick and easy clean up. Our portable commodes are foldable, making them an easy solution for those in need of a portable toilet or bedside commode toilet. Our commodes feature wrap around safety rails to increase safety and support."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121095766121",
+   "title": "Carex Bathtub Transfer Bench With Opening & Bucket",
+   "description": {
+    "html": "A safe and economical option for transferring, the Bathtub Transfer Bench features a commode opening and bucket, a reversible seat back for right- or left-handed bathing entry, and an oversized handle for added safety. It comes standard with a textured, non-slip surface on the seat and back, an adjustable seat height, and oversized slip-resistant tips for increased stability. Features a commode seat opening and bucket. For anyone with incontinence or IBS, bathing can become difficult. This shower bench with commode opening brings independence and safety back allowing the user to not have to worry. Reversible seat back for left- or right-handed entry. The bath bench can be flipped around for left or right-handed entry. This is perfect if someone has an injury or weak side they prefer not to put weight on. Non-slip texture on bench and backrest. The non-slip texture prevents slips and ensures safety. This helps the user adjust without having to worry about falling. Height adjustable 18\" to 21\". Having the right height is essential when using any bath tub bench. The adjustable shower bench can be easily adjusted without a struggle. Its wide height range makes it perfect for multiple users. Lightweight and durable, has to 300 lbs weight capacity. The lightweight yet durable plastic material makes this tub transfer bench a reliable source for support. Its a heavy duty shower bench capable of daily use and can withstand being in contact with water without sustaining any damage. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Padded: No Bucket Opening: Yes Package Dims (h x w x d): 17\" x 28\" x 10.4\" Package Weight: 14.1 lbs. Product Dims (h x w x d): 18\" - 21\" x 32.75\" x 22.5\" Product Weight: 12 lbs. Product Type: Transfer Bench Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-bathtub-transfer-bench-with-opening-bucket",
+   "handle": "carex-bathtub-transfer-bench-with-opening-bucket",
+   "price_range": {
+    "min": {
+     "amount": 9489,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9489,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12587,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12587,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226791366761",
+     "sku": "FGB15611 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "A safe and economical option for transferring, the Bathtub Transfer Bench features a commode opening and bucket, a reversible seat back for right- or left-handed bathing entry, and an oversized handle for added safety. It comes standard with a textured, non-slip surface on the seat and back, an adjustable seat height, and oversized slip-resistant tips for increased stability. Features a commode seat opening and bucket. For anyone with incontinence or IBS, bathing can become difficult. This shower bench with commode opening brings independence and safety back allowing the user to not have to worry. Reversible seat back for left- or right-handed entry. The bath bench can be flipped around for left or right-handed entry. This is perfect if someone has an injury or weak side they prefer not to put weight on. Non-slip texture on bench and backrest. The non-slip texture prevents slips and ensures safety. This helps the user adjust without having to worry about falling. Height adjustable 18\" to 21\". Having the right height is essential when using any bath tub bench. The adjustable shower bench can be easily adjusted without a struggle. Its wide height range makes it perfect for multiple users. Lightweight and durable, has to 300 lbs weight capacity. The lightweight yet durable plastic material makes this tub transfer bench a reliable source for support. Its a heavy duty shower bench capable of daily use and can withstand being in contact with water without sustaining any damage. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Padded: No Bucket Opening: Yes Package Dims (h x w x d): 17\" x 28\" x 10.4\" Package Weight: 14.1 lbs. Product Dims (h x w x d): 18\" - 21\" x 32.75\" x 22.5\" Product Weight: 12 lbs. Product Type: Transfer Bench Instruction Manual"
+     },
+     "price": {
+      "amount": 9489,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12587,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-bathtub-transfer-bench-with-opening-bucket-28288232816745.jpg?v=1679936471"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226791366761:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-bathtub-transfer-bench-with-opening-bucket-28288232816745.jpg?v=1679936471",
+     "alt_text": "Carex Bathtub Transfer Bench With Opening & Bucket - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Commodes",
+    "Condition_Hip Injury",
+    "Condition_Incontinence",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Height_18\" to 21\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "incontinence",
+    "Material_Molded Plastic & Aluminum",
+    "Padded Seat_No",
+    "Product Category_Bathroom Safety",
+    "Product Type_Commode",
+    "Product Type_Transfer Bench",
+    "TransferBenches",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221062249",
+     "handle": "bathtub-and-shower-transfer-benches",
+     "title": "Bathtub and Shower Transfer Benches",
+     "description": {
+      "html": "Carex offers an easy way to transfer in and out of the shower/bathtub with our collection of shower benches and universal sliding transfer benches. Our shower chairs feature reversible backs for left or right handed entry, handles, height adjustment, water drainage holes, and slip resistant tips with the ability to accommodate any bathroom. Our bariatric tub transfer benches support weights of up to 300 lbs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221848681",
+     "handle": "bedside-and-bathroom-commodes-and-commode-liners",
+     "title": "Bedside and Bathroom Commodes and Commode Liners",
+     "description": {
+      "html": "Our Commodes are designed as a three-in-one function to be used as a stand-alone commode, raised toilet seat or a toilet safety frame making them a great solution for elderly bathroom options. Complete with a commode bucket with lid and splash guard. Don't forget to add a commode liner for quick and easy clean up. Our portable commodes are foldable, making them an easy solution for those in need of a portable toilet or bedside commode toilet. Our commodes feature wrap around safety rails to increase safety and support."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121099665513",
+   "title": "Carex Portable Shower Bench",
+   "description": {
+    "html": "Stay comfortable, agile, and safe in any bathtub with the Carex Portable Shower Bench. The Portable Bath and Shower Bench has a contoured seating area and adjusts easily to fit standard bathtubs ranging from 19 inches to 28 inches wide. This bench is convenient, comfortable, and portable for easy storage and travel. It features a built-in soap dish with drainage holes and has rubber stops to protect the bathtub from scratches. Portable shower chair for travel. The adjustable shower bench weight less than 5 lbs and is quick and easy to install. Its lightweight and compact design makes it suitable for travel and use in multiple bathtubs. Adjusts to fit most standard bathtubs from 19\" to 28\" in width. The portable extended shower bench offers the perfect solution for anyone in need of a portable bath tub bench. It can adjust to meet the dimensions of most standard bathtubs to fit perfectly. Contoured seating area for comfort. The contoured shower bench seat adds maximum comfort making it more supportive than most shower chairs or stools. The device's comfortable contoured seating area makes it perfect for long-term, everyday use. Rubber stops protect the bathtub from scratches. No need to worry about damaging your bathtub. The bath bench comes with rubber stops underneath to prevent marks and scratches. Durable, holds up to 300 lbs. Don't let its size fool you, the tub transfer bench can hold up to 300 lbs making it a reliable source of support and bath safety. Makes transferring into the tub easier. The extended bath bench makes getting in and out of the bath easy and quick. Sit on the outside part of the bench and slide the legs around to the inside bath side. The bench is designed with safety and comfort in mind to make bathing for older adults and those with disabilities easier. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lb. Height Adjustable: No Handles: Yes Back: No Package Dims (h x w x d): 31.38\" x 14.38\" x 1.5\" Product Dims (h x w x d): 1.63\" x 31\" x 14.75\" Product Weight: 4.6 lb. UPC: 086876154955 Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-portable-shower-bench",
+   "handle": "carex-portable-shower-bench",
+   "price_range": {
+    "min": {
+     "amount": 4422,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4422,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226832359529",
+     "sku": "FGB21701 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Stay comfortable, agile, and safe in any bathtub with the Carex Portable Shower Bench. The Portable Bath and Shower Bench has a contoured seating area and adjusts easily to fit standard bathtubs ranging from 19 inches to 28 inches wide. This bench is convenient, comfortable, and portable for easy storage and travel. It features a built-in soap dish with drainage holes and has rubber stops to protect the bathtub from scratches. Portable shower chair for travel. The adjustable shower bench weight less than 5 lbs and is quick and easy to install. Its lightweight and compact design makes it suitable for travel and use in multiple bathtubs. Adjusts to fit most standard bathtubs from 19\" to 28\" in width. The portable extended shower bench offers the perfect solution for anyone in need of a portable bath tub bench. It can adjust to meet the dimensions of most standard bathtubs to fit perfectly. Contoured seating area for comfort. The contoured shower bench seat adds maximum comfort making it more supportive than most shower chairs or stools. The device's comfortable contoured seating area makes it perfect for long-term, everyday use. Rubber stops protect the bathtub from scratches. No need to worry about damaging your bathtub. The bath bench comes with rubber stops underneath to prevent marks and scratches. Durable, holds up to 300 lbs. Don't let its size fool you, the tub transfer bench can hold up to 300 lbs making it a reliable source of support and bath safety. Makes transferring into the tub easier. The extended bath bench makes getting in and out of the bath easy and quick. Sit on the outside part of the bench and slide the legs around to the inside bath side. The bench is designed with safety and comfort in mind to make bathing for older adults and those with disabilities easier. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lb. Height Adjustable: No Handles: Yes Back: No Package Dims (h x w x d): 31.38\" x 14.38\" x 1.5\" Product Dims (h x w x d): 1.63\" x 31\" x 14.75\" Product Weight: 4.6 lb. UPC: 086876154955 Instruction Manual"
+     },
+     "price": {
+      "amount": 4422,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-portable-shower-bench-28288294977641.png?v=1679943157"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226832359529:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-portable-shower-bench-28288294977641.png?v=1679943157",
+     "alt_text": "Carex Portable Shower Bench - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic",
+    "Material_Molded Plastic & Aluminum",
+    "Padded Seat_No",
+    "Product Category_Bathroom Safety",
+    "Product Type_Transfer Bench",
+    "TransferBenches",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221062249",
+     "handle": "bathtub-and-shower-transfer-benches",
+     "title": "Bathtub and Shower Transfer Benches",
+     "description": {
+      "html": "Carex offers an easy way to transfer in and out of the shower/bathtub with our collection of shower benches and universal sliding transfer benches. Our shower chairs feature reversible backs for left or right handed entry, handles, height adjustment, water drainage holes, and slip resistant tips with the ability to accommodate any bathroom. Our bariatric tub transfer benches support weights of up to 300 lbs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4462512341097",
+   "title": "Replacement Leg Tips for Carex Universal Shower Chair and Transfer Bench - Set of 4",
+   "description": {
+    "html": "Four replacement leg tips for items: Carex Universal Bath Seat / FGB670C0 0000 / B670 Carex Universal Bath Seat with Back / FGB671C0 0000 / B671 Carex Universal Transfer Bench / FGB170C0 0000 / B170 DISCLAIMER: Any products purchased before 2017 may or may not fit with our current list of replacement parts as they have been upgraded with new models. If you are unsure, please reach out to our customer service team before purchasing."
+   },
+   "url": "https://carex.com/products/replacement-leg-tips-for-carex-universal-shower-chair-and-transfer-bench-set-of-4",
+   "handle": "replacement-leg-tips-for-carex-universal-shower-chair-and-transfer-bench-set-of-4",
+   "price_range": {
+    "min": {
+     "amount": 1500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31745288667241",
+     "sku": "FGB656L4 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Four replacement leg tips for items: Carex Universal Bath Seat / FGB670C0 0000 / B670 Carex Universal Bath Seat with Back / FGB671C0 0000 / B671 Carex Universal Transfer Bench / FGB170C0 0000 / B170 DISCLAIMER: Any products purchased before 2017 may or may not fit with our current list of replacement parts as they have been upgraded with new models. If you are unsure, please reach out to our customer service team before purchasing."
+     },
+     "price": {
+      "amount": 1500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-replacement-leg-tips-for-carex-universal-shower-chair-and-transfer-bench-set-of-4-28288436961385.jpg?v=1679950426"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/31745288667241:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carex-com-replacement-leg-tips-for-carex-universal-shower-chair-and-transfer-bench-set-of-4-28288436961385.jpg?v=1679950426",
+     "alt_text": "Replacement Leg Tips for Carex Universal Shower Chair and Transfer Bench - Set of 4 - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "ReplacementParts"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150729195625",
+     "handle": "replacement-parts",
+     "title": "Replacement Parts",
+     "description": {
+      "html": "We carry a wide selection of replacement parts should any of your Carex products break. If you don't see the replacement part you're looking for, please reach out to our customer service team at 800-526-8051 or through our contact form. DISCLAIMER: Any products purchased before 2017 may or may not fit with our current list of replacement parts as they have been upgraded with new models. If you are unsure, please reach out to our customer service team before purchasing."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539619433",
+     "handle": "best-selling-collection",
+     "title": "Best selling products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121099763817",
+   "title": "Carex Bath Mat",
+   "description": {
+    "html": "Stay safe from bathroom slips and falls with the Carex nonslip bath mat. Its unique shape allows the bath tub mat to fit perfectly in most bathtubs and showers and be used in unison with bath seats and transfer benches. Hundreds of suction cups keep the slip-resistant bath mat in place and from coming undone. Small holes throughout the nonslip bath mat keep water from pooling for added safety. Fits in most showers and tubs. The elongated shape of the bath mat rug makes it perfect for most bathrooms. Its shape allows the shower bath mat to be used in unison with most shower seats and transfer benches. Stays in place via suction cups. Hundreds of suction cups keep the narrow bath mat in place. This feature prevents users safe and from tripping. Drainage holes keep water from pooling. Small holes through the rubber bath mat keep water from pooling. This feature ensures users won't be prone to tripping over water build-up. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve their bathroom safety. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Color: Blue Product Dims (h x w x d): 0.5\" x 16\" x 32\" Product Weight: 1.43 lbs"
+   },
+   "url": "https://carex.com/products/carex-bath-mat",
+   "handle": "carex-bath-mat",
+   "price_range": {
+    "min": {
+     "amount": 1696,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1696,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226838880361",
+     "sku": "FGB22100 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Stay safe from bathroom slips and falls with the Carex nonslip bath mat. Its unique shape allows the bath tub mat to fit perfectly in most bathtubs and showers and be used in unison with bath seats and transfer benches. Hundreds of suction cups keep the slip-resistant bath mat in place and from coming undone. Small holes throughout the nonslip bath mat keep water from pooling for added safety. Fits in most showers and tubs. The elongated shape of the bath mat rug makes it perfect for most bathrooms. Its shape allows the shower bath mat to be used in unison with most shower seats and transfer benches. Stays in place via suction cups. Hundreds of suction cups keep the narrow bath mat in place. This feature prevents users safe and from tripping. Drainage holes keep water from pooling. Small holes through the rubber bath mat keep water from pooling. This feature ensures users won't be prone to tripping over water build-up. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve their bathroom safety. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Color: Blue Product Dims (h x w x d): 0.5\" x 16\" x 32\" Product Weight: 1.43 lbs"
+     },
+     "price": {
+      "amount": 1696,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-bath-mat-carex-bath-mat-28288046497897.png?v=1679935461"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226838880361:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-bath-mat-carex-bath-mat-28288046497897.png?v=1679935461",
+     "alt_text": "Carex Bath Mat - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-1-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BathMats",
+    "Brand_Carex",
+    "Carex",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Product Category_Bathroom Safety",
+    "Product Type_Non-Slip Bath Mat"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150236069993",
+     "handle": "non-slip-safety-bath-mats",
+     "title": "Non Slip Safety Bath Mats",
+     "description": {
+      "html": "A Bath Mat is a safety must for all households. Hundreds of suction cups secure the tub mats to the bath or shower floor to prevent slips. Carex mats work well as tub and shower mats for slip resistance when bathing. Our extra long form ensures a wide bath tub and shower floor coverage. Our non slip bath mats are perfect for seniors, elderly, handicapped, or those at risk falling in the bathtub."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/155980103785",
+     "handle": "all",
+     "title": "all",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/168539586665",
+     "handle": "new-collection",
+     "title": "New products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

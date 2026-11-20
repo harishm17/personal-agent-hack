@@ -1,0 +1,1593 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://carex.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Carex",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "carex.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "24065048681"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "24065048681"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7425343357033",
+   "title": "Carex Shower Chair with Padded Arms",
+   "description": {
+    "html": "Experience the ultimate safety and comfort with the Carex Shower Chair with Padded Arms. This thoughtfully designed chair delivers crucial support for anyone requiring assistance during showering. Its lightweight construction and easy-to-clean surfaces make it an ideal and practical solution for any bathroom, ensuring a worry-free bathing experience. Promotes bathing independence. Experience a secure and comfortable place to sit, significantly reducing the risk of slips and falls during showers. Effortlessly portable and lightweight. Weighing just 7.5 lbs, this chair is easy to move and store, making it ideal for compact bathrooms or those with limited mobility. Tested and designed with durability to support up to 300 lbs. Our dedicated product team has meticulously tested and designed a robust shower seat, combining durable aluminum and molded plastic for ultimate reliability. Engineered to support up to 300 lbs, it effortlessly endures the demands of a wet bathroom environment, ensuring safety and comfort. Height adjustable for optimal comfort and support. Ensuring the correct height is essential for a safe and comfortable bathing experience. Our shower chair offers an adjustable height range of 17.5\" to 21.5\", allowing you to find the perfect fit for your needs. Padded handles offer exceptional support and comfort. Ergonomically designed padded handles provide excellent grip and stability, making both sitting and standing safer and more secure. Quick and tool-free installation. Transform your bathing area in just moments, with no tools required, making it effortless to customize your space. Bathing Independence for Those in Need The ability to bathe independently is essential for enjoying a high quality of life. However, this independence can be compromised by challenges with balance and stability. The Carex Shower Seat with Padded Handles enhances safety and confidence for those at risk of falls, offering a reliable and comfortable support option that fosters independence and peace of mind. Padded Armrests for Even More Support The padded armrests provide the perfect solution for those who find sitting or standing challenging. Their sturdy construction and cushioned materials ensure optimal support, making them ideal for comfort and stability. Designed to withstand We Conditions Our dedicated team of product specialists has meticulously designed and tested a shower seat that can support up to 300 lbs, ensuring reliable performance even in wet conditions. Crafted from robust aluminum and molded plastic, this seat combines durability with a lightweight design, making it easy to remove and store while providing long-lasting use."
+   },
+   "url": "https://carex.com/products/carex-shower-chair-with-padded-arms",
+   "handle": "carex-shower-chair-with-padded-arms",
+   "price_range": {
+    "min": {
+     "amount": 7538,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7538,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41898615111785",
+     "sku": "FGE813C0 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Experience the ultimate safety and comfort with the Carex Shower Chair with Padded Arms. This thoughtfully designed chair delivers crucial support for anyone requiring assistance during showering. Its lightweight construction and easy-to-clean surfaces make it an ideal and practical solution for any bathroom, ensuring a worry-free bathing experience. Promotes bathing independence. Experience a secure and comfortable place to sit, significantly reducing the risk of slips and falls during showers. Effortlessly portable and lightweight. Weighing just 7.5 lbs, this chair is easy to move and store, making it ideal for compact bathrooms or those with limited mobility. Tested and designed with durability to support up to 300 lbs. Our dedicated product team has meticulously tested and designed a robust shower seat, combining durable aluminum and molded plastic for ultimate reliability. Engineered to support up to 300 lbs, it effortlessly endures the demands of a wet bathroom environment, ensuring safety and comfort. Height adjustable for optimal comfort and support. Ensuring the correct height is essential for a safe and comfortable bathing experience. Our shower chair offers an adjustable height range of 17.5\" to 21.5\", allowing you to find the perfect fit for your needs. Padded handles offer exceptional support and comfort. Ergonomically designed padded handles provide excellent grip and stability, making both sitting and standing safer and more secure. Quick and tool-free installation. Transform your bathing area in just moments, with no tools required, making it effortless to customize your space. Bathing Independence for Those in Need The ability to bathe independently is essential for enjoying a high quality of life. However, this independence can be compromised by challenges with balance and stability. The Carex Shower Seat with Padded Handles enhances safety and confidence for those at risk of falls, offering a reliable and comfortable support option that fosters independence and peace of mind. Padded Armrests for Even More Support The padded armrests provide the perfect solution for those who find sitting or standing challenging. Their sturdy construction and cushioned materials ensure optimal support, making them ideal for comfort and stability. Designed to withstand We Conditions Our dedicated team of product specialists has meticulously designed and tested a shower seat that can support up to 300 lbs, ensuring reliable performance even in wet conditions. Crafted from robust aluminum and molded plastic, this seat combines durability with a lightweight design, making it easy to remove and store while providing long-lasting use."
+     },
+     "price": {
+      "amount": 7538,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGE813C00000_Web_Images-01.jpg?v=1729609746"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/41898615111785:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGE813C00000_Web_Images-01.jpg?v=1729609746",
+     "alt_text": "A white shower chair with padded armrests"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back Support_Yes",
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Handles_Yes",
+    "Height_17.5\" to 21.5\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic & Aluminum",
+    "Product Category_Bathroom Safety",
+    "Product Type_Shower Seat",
+    "Style_Chair",
+    "Swivels_No",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7425336475753",
+   "title": "Carex Shower Chair",
+   "description": {
+    "html": "Did you know that 80% of in-home falls happen in the bathroom? No wonder this space is often called the most dangerous room in the house. Introducing the Carex Shower Chair\u2014your perfect ally for safer, more enjoyable bathing experiences. With its adjustable height, three sturdy handles, and a comfortable curved seat, this chair provides the ultimate support for those who value their independence while bathing. Embrace confidence and comfort with the Carex Shower Chair. Curved seat offers additional support. Standard shower chairs typically feature a flat seat. Our upgraded model boasts a beautifully curved seat that enhances your comfort and support while seated. This innovative design not only offers a snug fit but also provides increased stability and support during movement. Adjustable from 14.25\" to 20.5\" for multiple heights. Experience ultimate comfort with our shower chair, designed to cater to users of all heights. Plus, the easy-to-use snap buttons on each leg make it a breeze to customize your chair in seconds. Three handles provide ample support. With two sturdy side handles and an extra backrest handle, you'll find all the support you need for sitting, standing, and transferring. This thoughtful design ensures that your bathing experience is not only safe but also comfortable and secure. Lightweight and portable. Weighing in at just 5.5 lbs, the Carex Shower Chair is a breeze to install and remove, making it the perfect companion for any bathroom. Its lightweight design ensures you can easily adapt it to fit your needs, providing comfort and convenience wherever needed. Designed and tested to support up to 300 lbs. Our talented product designers have poured their creativity and expertise into crafting a chair that not only lasts but also easily supports up to 300 lbs. Using top-notch aluminum and molded plastic, we've designed a piece built to thrive in the humid bathroom environment."
+   },
+   "url": "https://carex.com/products/carex-shower-chair",
+   "handle": "carex-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 4523,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4523,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41898572382313",
+     "sku": "FGE812C0 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Did you know that 80% of in-home falls happen in the bathroom? No wonder this space is often called the most dangerous room in the house. Introducing the Carex Shower Chair\u2014your perfect ally for safer, more enjoyable bathing experiences. With its adjustable height, three sturdy handles, and a comfortable curved seat, this chair provides the ultimate support for those who value their independence while bathing. Embrace confidence and comfort with the Carex Shower Chair. Curved seat offers additional support. Standard shower chairs typically feature a flat seat. Our upgraded model boasts a beautifully curved seat that enhances your comfort and support while seated. This innovative design not only offers a snug fit but also provides increased stability and support during movement. Adjustable from 14.25\" to 20.5\" for multiple heights. Experience ultimate comfort with our shower chair, designed to cater to users of all heights. Plus, the easy-to-use snap buttons on each leg make it a breeze to customize your chair in seconds. Three handles provide ample support. With two sturdy side handles and an extra backrest handle, you'll find all the support you need for sitting, standing, and transferring. This thoughtful design ensures that your bathing experience is not only safe but also comfortable and secure. Lightweight and portable. Weighing in at just 5.5 lbs, the Carex Shower Chair is a breeze to install and remove, making it the perfect companion for any bathroom. Its lightweight design ensures you can easily adapt it to fit your needs, providing comfort and convenience wherever needed. Designed and tested to support up to 300 lbs. Our talented product designers have poured their creativity and expertise into crafting a chair that not only lasts but also easily supports up to 300 lbs. Using top-notch aluminum and molded plastic, we've designed a piece built to thrive in the humid bathroom environment."
+     },
+     "price": {
+      "amount": 4523,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGE812C00000_Web_Images-01.jpg?v=1729607747"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/41898572382313:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/files/FGE812C00000_Web_Images-01.jpg?v=1729607747",
+     "alt_text": "A white shower chair with curved seat"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back Support_Yes",
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Handles_Yes",
+    "Height_14\" to 20\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic & Aluminum",
+    "Product Category_Bathroom Safety",
+    "Product Type_Shower Seat",
+    "Style_Chair",
+    "Swivels_No",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121102876777",
+   "title": "Carex Universal Bath Seat without Back",
+   "description": {
+    "html": "The Universal Bath Seat without Back fits into virtually every tub or shower, whether at home or away. It features an innovative design to support up to 400 lbs comfortably. The patented Exact Level height adjustment makes height adjustment easy. There are drainage holes in the shower chair to eliminate water pooling and a convenient notch for a hand-held shower spray. This bath chair is easy to assemble without the need for tools. Created for comfort. The shower chair's innovative design provides an uplevel of comfort and shower safety. The wide 18\" set provides a comfortable level of seating for movement. Height adjustable 16\" to 21\". Our patented Exact Level height adjustment makes adjusting the height easy and quick. No more struggling to get shower seat height even on all legs. The adjustable shower chair's height range is perfect for a wide array of users. Supports up to 400 lbs. The heavy-duty shower chair is made of durable molded plastic for reliable shower assistance for elderly persons and handicapped. Its been designed to withstand everyday use and never warp from water, a feature critical to assistive bathing shower seats. Easy, tool-free assembly. The shower chair for elderly persons comes ready to be assembled with no tools required. The legs are removable, making it an excellent travel shower chair. Assembly takes only a few minutes. Fits most tubs and showers. The shower chair's size makes it a universal fit for most bathtubs and showers. It's ideal for anyone in need of a bath seat to take everywhere with them. Built-in side handles for support. The added handles offer an extra support surface. The handicap shower seat provides security to prevent slips and falls. Drainage holes prevent water from pooling. A significant problem with most shower seats is water pooling. This poses a fall and slip risk. The drainage holes avoid build-up water for safety and comfort. Convenient notch to hold hand-held shower spray. The notch adds another level of convenience. Available with or without a back. You can find the version with the back here. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 400 lb Height Adjustable: Yes Handles: Yes Back: No Package Dims (h x w x d): 23.25\" x 18\" x 10.25\" Package Weight: 9.8 lb Product Dims (h x w x d): 16\" - 21\" x 21\" x 18\" Product Weight: 8.5 lb Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-universal-bath-seat-without-back",
+   "handle": "carex-universal-bath-seat-without-back",
+   "price_range": {
+    "min": {
+     "amount": 4711,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4711,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31045940641897",
+     "sku": "FGB670C0 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Universal Bath Seat without Back fits into virtually every tub or shower, whether at home or away. It features an innovative design to support up to 400 lbs comfortably. The patented Exact Level height adjustment makes height adjustment easy. There are drainage holes in the shower chair to eliminate water pooling and a convenient notch for a hand-held shower spray. This bath chair is easy to assemble without the need for tools. Created for comfort. The shower chair's innovative design provides an uplevel of comfort and shower safety. The wide 18\" set provides a comfortable level of seating for movement. Height adjustable 16\" to 21\". Our patented Exact Level height adjustment makes adjusting the height easy and quick. No more struggling to get shower seat height even on all legs. The adjustable shower chair's height range is perfect for a wide array of users. Supports up to 400 lbs. The heavy-duty shower chair is made of durable molded plastic for reliable shower assistance for elderly persons and handicapped. Its been designed to withstand everyday use and never warp from water, a feature critical to assistive bathing shower seats. Easy, tool-free assembly. The shower chair for elderly persons comes ready to be assembled with no tools required. The legs are removable, making it an excellent travel shower chair. Assembly takes only a few minutes. Fits most tubs and showers. The shower chair's size makes it a universal fit for most bathtubs and showers. It's ideal for anyone in need of a bath seat to take everywhere with them. Built-in side handles for support. The added handles offer an extra support surface. The handicap shower seat provides security to prevent slips and falls. Drainage holes prevent water from pooling. A significant problem with most shower seats is water pooling. This poses a fall and slip risk. The drainage holes avoid build-up water for safety and comfort. Convenient notch to hold hand-held shower spray. The notch adds another level of convenience. Available with or without a back. You can find the version with the back here. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 400 lb Height Adjustable: Yes Handles: Yes Back: No Package Dims (h x w x d): 23.25\" x 18\" x 10.25\" Package Weight: 9.8 lb Product Dims (h x w x d): 16\" - 21\" x 21\" x 18\" Product Weight: 8.5 lb Instruction Manual"
+     },
+     "price": {
+      "amount": 4711,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-universal-bath-seat-without-back-28288074940521.png?v=1679947592"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/31045940641897:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-universal-bath-seat-without-back-28288074940521.png?v=1679947592",
+     "alt_text": "Carex Universal Bath Seat without Back - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Back Support_No",
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Handles_Yes",
+    "Height_16\" to 21\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic",
+    "Product Category_Bathroom Safety",
+    "Product Type_Shower Seat",
+    "Style_Chair",
+    "Swivels_No",
+    "Weight Capacity_400 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121102385257",
+   "title": "Carex Adjustable Bath & Shower Seat with Back",
+   "description": {
+    "html": "The Adjustable Bath & Shower Seat With Back can be used in a shower stall or bathtub. The bath seat is constructed of durable plastic with easy-to-grip handles and a notch to hold a hand-held shower spray. The aluminum legs are flared to help prevent tipping, and the slip-resistant rubber tips provide added stability. Comfortable contoured seat and backrest. The bath chair combines shower safety and comfort with a contoured design for long periods of sitting. Holds up to 350 lbs. The heavy-duty shower chair is made of durable molded plastic with aluminum legs. The aluminum frame flares help distribute weight for safety and stability. Built-in handles provide stability. The shower seat for seniors features side handles for a grippable support surface. This makes it an ideal handicap shower seat by preventing falls and slips. Height adjustable from 14\" to 20\". The adjustable shower chair easily adjusted with the push-of-a-button on each leg. Having the correct shower seat height is essential. Easy, tool-free assembly. The shower chair for elderly assembles in minutes with no tools needed. It can be taken apart to be used as a convenient travel shower chair. Available with or without back. Find the bath and shower chair without a back here. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 350 lbs. Height Adjustable: Yes Back: Yes Handles: Yes Product Dims (h x w x d): 13.5\" - 20.5\" x 20\" x 18\" Package Dims (h x w x d): 22\" x 13.5\" x 4.5\" Product Weight: 5.46 lbs. YOUTUBE VIDEO: The B651 Adjustable Bath & Shower Seat with Back Instruction Manual (PDF)"
+   },
+   "url": "https://carex.com/products/carex-adjustable-bath-and-shower-seat-with-back",
+   "handle": "carex-adjustable-bath-and-shower-seat-with-back",
+   "price_range": {
+    "min": {
+     "amount": 4711,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4711,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226868240489",
+     "sku": "FGB75300 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Adjustable Bath & Shower Seat With Back can be used in a shower stall or bathtub. The bath seat is constructed of durable plastic with easy-to-grip handles and a notch to hold a hand-held shower spray. The aluminum legs are flared to help prevent tipping, and the slip-resistant rubber tips provide added stability. Comfortable contoured seat and backrest. The bath chair combines shower safety and comfort with a contoured design for long periods of sitting. Holds up to 350 lbs. The heavy-duty shower chair is made of durable molded plastic with aluminum legs. The aluminum frame flares help distribute weight for safety and stability. Built-in handles provide stability. The shower seat for seniors features side handles for a grippable support surface. This makes it an ideal handicap shower seat by preventing falls and slips. Height adjustable from 14\" to 20\". The adjustable shower chair easily adjusted with the push-of-a-button on each leg. Having the correct shower seat height is essential. Easy, tool-free assembly. The shower chair for elderly assembles in minutes with no tools needed. It can be taken apart to be used as a convenient travel shower chair. Available with or without back. Find the bath and shower chair without a back here. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 350 lbs. Height Adjustable: Yes Back: Yes Handles: Yes Product Dims (h x w x d): 13.5\" - 20.5\" x 20\" x 18\" Package Dims (h x w x d): 22\" x 13.5\" x 4.5\" Product Weight: 5.46 lbs. YOUTUBE VIDEO: The B651 Adjustable Bath & Shower Seat with Back Instruction Manual (PDF)"
+     },
+     "price": {
+      "amount": 4711,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-adjustable-bath-shower-seat-with-back-28288226459753.png?v=1679935285"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226868240489:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-adjustable-bath-shower-seat-with-back-28288226459753.png?v=1679935285",
+     "alt_text": "Carex Adjustable Bath & Shower Seat with Back - Carex Health Brands"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back Support_Yes",
+    "Brand_Carex",
+    "ClearanceRack",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Handles_Yes",
+    "Height_14\" to 20\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic & Aluminum",
+    "Product Category_Bathroom Safety",
+    "Product Type_Shower Seat",
+    "Style_Chair",
+    "Swivels_No",
+    "Weight Capacity_350 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121102811241",
+   "title": "Carex E-Z Bath & Shower Seat with Handles",
+   "description": {
+    "html": "The E-Z Bath and Shower Seat with Handles features large handles to make sitting down and getting up in the bath safer and more accessible. The legs can be removed, and the seat back folds for convenient, compact storage. It is height adjustable, has non-slip tips and features drainage holes to prevent water pooling. This bath seat features sturdy construction with a stylish contemporary look. Large handles assist with sitting down and standing up. Large handles offer added support and bathroom safety. Users can use them to transfer from sitting to standing as well as adjusting their position. The large handles make it perfect as a handicap shower seat. Height adjustable 16.6\" to 22.5\". The adjustable shower chair offers a wide height range for multiple users. Adjusting the shower seat height is easy, with just the push-of-a-button. Easily folds for compact storage and travel. The bath chair's back folds up, and the legs are easily removable. The travel shower chair can be easily transported and is easy to assemble with no tools required. Supports up to 300 lbs. The heavy-duty shower chair features durable aluminum legs. Its design allows it to withstand daily use without warping from water contact. Its lightweight makes it an excellent shower chair for elderly persons and disabled people. 21\" Wide seat for added comfort. The extra-wide seat adds room for users to adjust and move. This feature adds comfort and shower safety. The drainage holes help prevent water build-up to avoid slips and falls. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Height Adjustable: Yes Back: Yes Handles: Yes Package Dims (h x w x d): 22.25\" x 14.13\" x 8.13\" Product Weight: 9.65 lbs. YOUTUBE VIDEO: Assembly Instructions YOUTUBE VIDEO: Demonstration & Features"
+   },
+   "url": "https://carex.com/products/carex-e-z-bath-shower-seat-with-handles",
+   "handle": "carex-e-z-bath-shower-seat-with-handles",
+   "price_range": {
+    "min": {
+     "amount": 6219,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6219,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226869583977",
+     "sku": "FGB66000 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The E-Z Bath and Shower Seat with Handles features large handles to make sitting down and getting up in the bath safer and more accessible. The legs can be removed, and the seat back folds for convenient, compact storage. It is height adjustable, has non-slip tips and features drainage holes to prevent water pooling. This bath seat features sturdy construction with a stylish contemporary look. Large handles assist with sitting down and standing up. Large handles offer added support and bathroom safety. Users can use them to transfer from sitting to standing as well as adjusting their position. The large handles make it perfect as a handicap shower seat. Height adjustable 16.6\" to 22.5\". The adjustable shower chair offers a wide height range for multiple users. Adjusting the shower seat height is easy, with just the push-of-a-button. Easily folds for compact storage and travel. The bath chair's back folds up, and the legs are easily removable. The travel shower chair can be easily transported and is easy to assemble with no tools required. Supports up to 300 lbs. The heavy-duty shower chair features durable aluminum legs. Its design allows it to withstand daily use without warping from water contact. Its lightweight makes it an excellent shower chair for elderly persons and disabled people. 21\" Wide seat for added comfort. The extra-wide seat adds room for users to adjust and move. This feature adds comfort and shower safety. The drainage holes help prevent water build-up to avoid slips and falls. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Height Adjustable: Yes Back: Yes Handles: Yes Package Dims (h x w x d): 22.25\" x 14.13\" x 8.13\" Product Weight: 9.65 lbs. YOUTUBE VIDEO: Assembly Instructions YOUTUBE VIDEO: Demonstration & Features"
+     },
+     "price": {
+      "amount": 6219,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-e-z-bath-shower-seat-with-handles-28288067862633.png?v=1679938521"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226869583977:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-e-z-bath-shower-seat-with-handles-28288067862633.png?v=1679938521",
+     "alt_text": "Carex E-Z Bath & Shower Seat with Handles - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Back Support_Yes",
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Handles_Yes",
+    "Height_16.6\" to 22.5\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic & Aluminum",
+    "Product Category_Bathroom Safety",
+    "Product Type_Shower Seat",
+    "Style_Chair",
+    "Swivels_No",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121102352489",
+   "title": "Carex Adjustable Bath & Shower Seat",
+   "description": {
+    "html": "The Adjustable Bath & Shower Seat can be used in a shower stall or bathtub. The seat is constructed of durable plastic with easy-to-grip handles and a notch to hold a hand-held shower spray. The aluminum legs are flared to help prevent tipping, and the slip-resistant rubber tips provide added stability. Comfortable contoured seat and backrest. The bath chair combines shower safety and comfort with a contoured design for long periods of sitting. Holds up to 350 lbs. The heavy-duty shower chair is made of durable molded plastic with aluminum legs. The aluminum frame flares help distribute weight for safety and stability. Built-in handles provide stability. The shower seat for seniors features side handles for a grippable support surface. This makes it an ideal handicap shower seat by preventing falls and slips. Height adjustable from 14\" to 20\". The adjustable shower chair easily adjusted with the push-of-a-button on each leg. Having the correct shower seat height is essential. Easy, tool-free assembly. The shower chair for elderly assembles in minutes with no tools needed. It can be taken apart to be used as a convenient travel shower chair. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 350 lbs. Height Adjustable: Yes Back: No Handles: No Package Dims (h x w x d): 22\" x 13.5\" x 4\" Product Dims (h x w x d): 13.5\" - 20.5\" x 20\" x 18\" Product Weight: 4.1 lbs. Package Weight: 6.3 lbs. Instruction Manual (PDF)"
+   },
+   "url": "https://carex.com/products/carex-adjustable-bath-shower-seat",
+   "handle": "carex-adjustable-bath-shower-seat",
+   "price_range": {
+    "min": {
+     "amount": 4536,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4536,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226868207721",
+     "sku": "FGB75200 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Adjustable Bath & Shower Seat can be used in a shower stall or bathtub. The seat is constructed of durable plastic with easy-to-grip handles and a notch to hold a hand-held shower spray. The aluminum legs are flared to help prevent tipping, and the slip-resistant rubber tips provide added stability. Comfortable contoured seat and backrest. The bath chair combines shower safety and comfort with a contoured design for long periods of sitting. Holds up to 350 lbs. The heavy-duty shower chair is made of durable molded plastic with aluminum legs. The aluminum frame flares help distribute weight for safety and stability. Built-in handles provide stability. The shower seat for seniors features side handles for a grippable support surface. This makes it an ideal handicap shower seat by preventing falls and slips. Height adjustable from 14\" to 20\". The adjustable shower chair easily adjusted with the push-of-a-button on each leg. Having the correct shower seat height is essential. Easy, tool-free assembly. The shower chair for elderly assembles in minutes with no tools needed. It can be taken apart to be used as a convenient travel shower chair. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 350 lbs. Height Adjustable: Yes Back: No Handles: No Package Dims (h x w x d): 22\" x 13.5\" x 4\" Product Dims (h x w x d): 13.5\" - 20.5\" x 20\" x 18\" Product Weight: 4.1 lbs. Package Weight: 6.3 lbs. Instruction Manual (PDF)"
+     },
+     "price": {
+      "amount": 4536,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-adjustable-bath-shower-seat-28288221544553.jpg?v=1679935240"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226868207721:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-adjustable-bath-shower-seat-28288221544553.jpg?v=1679935240",
+     "alt_text": "Carex Adjustable Bath & Shower Seat - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Back Support_No",
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Handles_Yes",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic & Aluminum",
+    "Product Category_Bathroom Safety",
+    "Product Type_Shower Seat",
+    "Style_Chair",
+    "Swivels_No",
+    "Weight Capacity_350 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121102057577",
+   "title": "Carex Compact Round Shower Stool",
+   "description": {
+    "html": "The Adjustable Round Shower Stool is ideal for narrow tubs and showers. It features adjustable aluminum legs that help provide a stable base and slip-resistant tips. The medical shower stool is height adjustable from 16\" to 21\" to match the user's height. It comes ready for easy assembly with no tools required. With a weight capacity of 250 lbs, the bathroom shower stool offers stable and dependable shower safety. Ideal for narrow tubs and showers. Designed for smaller, more confined bathing areas, the handicap shower stool has 13\" x 13\" dimensions. Height adjustable 16\" to 21\". Having the correct shower stool for elderly persons and handicapped is vital. The adjustable height bath stool offers a wide range to meet user heights. Supports up to 250 lbs. The aluminum bath seat offers a durable and dependable support surface. Its aluminum make up means it won't corrode from water. The lightweight means it can be easily moved and adjusted. The handicap shower stool features non-slip tips for added safety. Easy, tool-free assembly. The bath and shower safety seat stool comes ready to be assembled in minutes. No tools are needed making it an excellent travel shower chair. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 250 lb Height Adjustable: Yes Back: No Handles: No Product Dims (h x w x d): 15.5\" - 20.5\" x 13\" x 13\" Product Weight: 3.66 lb Package Dims (h x w x d): 14.38\" x 15.63\" x 3.25\" Assembly Instructions (PDF)"
+   },
+   "url": "https://carex.com/products/carex-compact-round-shower-stool",
+   "handle": "carex-compact-round-shower-stool",
+   "price_range": {
+    "min": {
+     "amount": 4609,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4609,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226863751273",
+     "sku": "FGB600TF 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Adjustable Round Shower Stool is ideal for narrow tubs and showers. It features adjustable aluminum legs that help provide a stable base and slip-resistant tips. The medical shower stool is height adjustable from 16\" to 21\" to match the user's height. It comes ready for easy assembly with no tools required. With a weight capacity of 250 lbs, the bathroom shower stool offers stable and dependable shower safety. Ideal for narrow tubs and showers. Designed for smaller, more confined bathing areas, the handicap shower stool has 13\" x 13\" dimensions. Height adjustable 16\" to 21\". Having the correct shower stool for elderly persons and handicapped is vital. The adjustable height bath stool offers a wide range to meet user heights. Supports up to 250 lbs. The aluminum bath seat offers a durable and dependable support surface. Its aluminum make up means it won't corrode from water. The lightweight means it can be easily moved and adjusted. The handicap shower stool features non-slip tips for added safety. Easy, tool-free assembly. The bath and shower safety seat stool comes ready to be assembled in minutes. No tools are needed making it an excellent travel shower chair. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 250 lb Height Adjustable: Yes Back: No Handles: No Product Dims (h x w x d): 15.5\" - 20.5\" x 13\" x 13\" Product Weight: 3.66 lb Package Dims (h x w x d): 14.38\" x 15.63\" x 3.25\" Assembly Instructions (PDF)"
+     },
+     "price": {
+      "amount": 4609,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-compact-round-shower-stool-28288198312041.png?v=1679937321"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226863751273:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-compact-round-shower-stool-28288198312041.png?v=1679937321",
+     "alt_text": "Carex Compact Round Shower Stool - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Back Support_No",
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic & Aluminum",
+    "Product Category_Bathroom Safety",
+    "Product Type_Shower Seat",
+    "Style_Stool",
+    "Swivels_No",
+    "Weight Capacity_250 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121102155881",
+   "title": "Carex Swivel Stool",
+   "description": {
+    "html": "The Carex Swivel Stool features a 360 spinning seat to make getting in and out more comfortable and accessible. It is height adjustable from 14.5\" to 21\" to meet the user's height. The bathroom shower stool features non-slip tips for stability and shower safety. It can support up to 300 lbs making it dependable and durable. Swivels for easy entry into and exit from bathtubs. The 360 degrees spinning seat offers an easy way to get in and out of showers and bathtubs. This helps reduce strain from turning to enter or exit. Height adjustable from 14.5\" to 21\". When selecting any medical shower stool, height is critical. The adjustable height bath stool allows users to meet their comfort level. Padded seat for comfort. The handicap shower stool combines bath safety and bathing comfort. The extra padding makes sitting for long periods more comfortable. This feature makes it an excellent shower stool for elderly persons. Supports up to 300 lbs. Dependable and durable, the shower seat can help eliminate the worries of falling. The bath and shower safety seat stool has non-slip suction feet to keep the shower chair stable. Quick, easy, tool-free assembly. User-friendly assembly takes only a few minutes with no tools needed. Combined with lightweight, it works great as a travel shower stool. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Product Dims (h x w x d): 13.5\" - 20.63\" x 13\" x 13\" Product Weight: 4.4 lbs. Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-swivel-stool",
+   "handle": "carex-swivel-stool",
+   "price_range": {
+    "min": {
+     "amount": 5560,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5560,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226866339945",
+     "sku": "FGB61000 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Carex Swivel Stool features a 360 spinning seat to make getting in and out more comfortable and accessible. It is height adjustable from 14.5\" to 21\" to meet the user's height. The bathroom shower stool features non-slip tips for stability and shower safety. It can support up to 300 lbs making it dependable and durable. Swivels for easy entry into and exit from bathtubs. The 360 degrees spinning seat offers an easy way to get in and out of showers and bathtubs. This helps reduce strain from turning to enter or exit. Height adjustable from 14.5\" to 21\". When selecting any medical shower stool, height is critical. The adjustable height bath stool allows users to meet their comfort level. Padded seat for comfort. The handicap shower stool combines bath safety and bathing comfort. The extra padding makes sitting for long periods more comfortable. This feature makes it an excellent shower stool for elderly persons. Supports up to 300 lbs. Dependable and durable, the shower seat can help eliminate the worries of falling. The bath and shower safety seat stool has non-slip suction feet to keep the shower chair stable. Quick, easy, tool-free assembly. User-friendly assembly takes only a few minutes with no tools needed. Combined with lightweight, it works great as a travel shower stool. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Product Dims (h x w x d): 13.5\" - 20.63\" x 13\" x 13\" Product Weight: 4.4 lbs. Instruction Manual"
+     },
+     "price": {
+      "amount": 5560,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-swivel-stool-28288214925417.png?v=1679945259"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226866339945:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-swivel-stool-28288214925417.png?v=1679945259",
+     "alt_text": "Carex Swivel Stool - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Back Support_No",
+    "Brand_Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Handles_No",
+    "Height_14.75\" to 20.75\"",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic & Aluminum",
+    "Product Category_Bathroom Safety",
+    "Product Type_Shower Seat",
+    "Style_Stool",
+    "Swivels_No",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150237577321",
+     "handle": "osteoporosis-treatment-and-prevention-products",
+     "title": "Osteoporosis Treatment and Prevention Products",
+     "description": {
+      "html": "Osteoporosis is a painful condition that results in bone mass and density being reduced. This increases the risk of fractures and broken bones while reducing bone health. Carex offers a natural treatment for osteoporosis in the form of weight support equipment ranging from canes, walkers, to seat lifts. In bone density treatment, it is highly recommended to perform weight-bearing exercises to prevent osteoporosis. Our products empower those that may struggle with mobility and help them regain a long term healthy lifestyle while preventing further bone loss."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121102581865",
+   "title": "Carex Classics Bath & Shower Seat",
+   "description": {
+    "html": "The Classics Bath & Shower Seat can be used in a shower stall or bathtub. The seat is constructed of durable plastic with easy-to-grip handles and a notch to hold a hand-held shower spray. The aluminum legs are flared to help prevent tipping, and the slip resistant rubber tips provide added stability. Comfortable contoured seat and backrest. The bath chair combines shower safety and comfort with a contoured design for long periods of sitting. Holds up to 300 lbs. The heavy-duty shower chair is made of durable molded plastic with aluminum legs. The aluminum frame flares help distribute weight for safety and stability. Built-in handles provide stability. The shower seat for seniors features side handles for a grippable support surface. This makes it an ideal handicap shower seat by preventing falls and slips. Height adjustable from 14\" to 20\". The adjustable shower chair easily adjusted with the push-of-a-button on each leg. Having the correct shower seat height is essential. Easy, tool-free assembly. The shower chair for elderly assembles in minutes with no tools needed. It can be taken apart to be used as a convenient travel shower chair. Available with or without back. Find the bath and shower chair with a back here. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Height Adjustable: Yes Handles: Yes Back: No Package Dims (h x w x d): 22\" x 13.5\" x 4\" Product Dims (h x w x d): 13.5\" - 20.5\" x 20\" x 18\" Product Weight: 4.1 lbs. UPC: 023601026576 Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-classics-bath-shower-seat",
+   "handle": "carex-classics-bath-shower-seat",
+   "price_range": {
+    "min": {
+     "amount": 4711,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4711,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226868863081",
+     "sku": "FGB65777 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "The Classics Bath & Shower Seat can be used in a shower stall or bathtub. The seat is constructed of durable plastic with easy-to-grip handles and a notch to hold a hand-held shower spray. The aluminum legs are flared to help prevent tipping, and the slip resistant rubber tips provide added stability. Comfortable contoured seat and backrest. The bath chair combines shower safety and comfort with a contoured design for long periods of sitting. Holds up to 300 lbs. The heavy-duty shower chair is made of durable molded plastic with aluminum legs. The aluminum frame flares help distribute weight for safety and stability. Built-in handles provide stability. The shower seat for seniors features side handles for a grippable support surface. This makes it an ideal handicap shower seat by preventing falls and slips. Height adjustable from 14\" to 20\". The adjustable shower chair easily adjusted with the push-of-a-button on each leg. Having the correct shower seat height is essential. Easy, tool-free assembly. The shower chair for elderly assembles in minutes with no tools needed. It can be taken apart to be used as a convenient travel shower chair. Available with or without back. Find the bath and shower chair with a back here. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right shower seat? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lbs. Height Adjustable: Yes Handles: Yes Back: No Package Dims (h x w x d): 22\" x 13.5\" x 4\" Product Dims (h x w x d): 13.5\" - 20.5\" x 20\" x 18\" Product Weight: 4.1 lbs. UPC: 023601026576 Instruction Manual"
+     },
+     "price": {
+      "amount": 4711,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-classics-bath-shower-seat-28288066551913.jpg?v=1679936815"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226868863081:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-shower-seat-carex-classics-bath-shower-seat-28288066551913.jpg?v=1679936815",
+     "alt_text": "Carex Classics Bath & Shower Seat - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Back Support_No",
+    "Brand_Carex",
+    "ClearanceRack",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "Handles_Yes",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic & Aluminum",
+    "Product Category_Bathroom Safety",
+    "Product Type_Shower Seat",
+    "Style_Chair",
+    "Swivels_No",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150174236777",
+     "handle": "clearance-rack",
+     "title": "Clearance Rack",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4121099665513",
+   "title": "Carex Portable Shower Bench",
+   "description": {
+    "html": "Stay comfortable, agile, and safe in any bathtub with the Carex Portable Shower Bench. The Portable Bath and Shower Bench has a contoured seating area and adjusts easily to fit standard bathtubs ranging from 19 inches to 28 inches wide. This bench is convenient, comfortable, and portable for easy storage and travel. It features a built-in soap dish with drainage holes and has rubber stops to protect the bathtub from scratches. Portable shower chair for travel. The adjustable shower bench weight less than 5 lbs and is quick and easy to install. Its lightweight and compact design makes it suitable for travel and use in multiple bathtubs. Adjusts to fit most standard bathtubs from 19\" to 28\" in width. The portable extended shower bench offers the perfect solution for anyone in need of a portable bath tub bench. It can adjust to meet the dimensions of most standard bathtubs to fit perfectly. Contoured seating area for comfort. The contoured shower bench seat adds maximum comfort making it more supportive than most shower chairs or stools. The device's comfortable contoured seating area makes it perfect for long-term, everyday use. Rubber stops protect the bathtub from scratches. No need to worry about damaging your bathtub. The bath bench comes with rubber stops underneath to prevent marks and scratches. Durable, holds up to 300 lbs. Don't let its size fool you, the tub transfer bench can hold up to 300 lbs making it a reliable source of support and bath safety. Makes transferring into the tub easier. The extended bath bench makes getting in and out of the bath easy and quick. Sit on the outside part of the bench and slide the legs around to the inside bath side. The bench is designed with safety and comfort in mind to make bathing for older adults and those with disabilities easier. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lb. Height Adjustable: No Handles: Yes Back: No Package Dims (h x w x d): 31.38\" x 14.38\" x 1.5\" Product Dims (h x w x d): 1.63\" x 31\" x 14.75\" Product Weight: 4.6 lb. UPC: 086876154955 Instruction Manual"
+   },
+   "url": "https://carex.com/products/carex-portable-shower-bench",
+   "handle": "carex-portable-shower-bench",
+   "price_range": {
+    "min": {
+     "amount": 4422,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4422,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/30226832359529",
+     "sku": "FGB21701 0000",
+     "title": "Default Title",
+     "description": {
+      "html": "Stay comfortable, agile, and safe in any bathtub with the Carex Portable Shower Bench. The Portable Bath and Shower Bench has a contoured seating area and adjusts easily to fit standard bathtubs ranging from 19 inches to 28 inches wide. This bench is convenient, comfortable, and portable for easy storage and travel. It features a built-in soap dish with drainage holes and has rubber stops to protect the bathtub from scratches. Portable shower chair for travel. The adjustable shower bench weight less than 5 lbs and is quick and easy to install. Its lightweight and compact design makes it suitable for travel and use in multiple bathtubs. Adjusts to fit most standard bathtubs from 19\" to 28\" in width. The portable extended shower bench offers the perfect solution for anyone in need of a portable bath tub bench. It can adjust to meet the dimensions of most standard bathtubs to fit perfectly. Contoured seating area for comfort. The contoured shower bench seat adds maximum comfort making it more supportive than most shower chairs or stools. The device's comfortable contoured seating area makes it perfect for long-term, everyday use. Rubber stops protect the bathtub from scratches. No need to worry about damaging your bathtub. The bath bench comes with rubber stops underneath to prevent marks and scratches. Durable, holds up to 300 lbs. Don't let its size fool you, the tub transfer bench can hold up to 300 lbs making it a reliable source of support and bath safety. Makes transferring into the tub easier. The extended bath bench makes getting in and out of the bath easy and quick. Sit on the outside part of the bench and slide the legs around to the inside bath side. The bench is designed with safety and comfort in mind to make bathing for older adults and those with disabilities easier. Trust in Carex for all of your bathroom safety needs. Our wide selection, guaranteed product warranty, and 35+ year experience make us the trusted brand for anyone looking to improve the safety of their bathroom. Our mission and reason for being are to enable our customers to live healthier, more comfortable, and independent lives. Need help selecting the right transfer bench? Need help with bathroom safety? Read our guide to bathroom safety where we'll cover helpful tips, tools, and tricks to improve the overall safety of your bathroom. Weight Capacity: 300 lb. Height Adjustable: No Handles: Yes Back: No Package Dims (h x w x d): 31.38\" x 14.38\" x 1.5\" Product Dims (h x w x d): 1.63\" x 31\" x 14.75\" Product Weight: 4.6 lb. UPC: 086876154955 Instruction Manual"
+     },
+     "price": {
+      "amount": 4422,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-portable-shower-bench-28288294977641.png?v=1679943157"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://carexshop.myshopify.com/cart/30226832359529:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0240/6504/8681/products/carexshop-transfer-bench-carex-portable-shower-bench-28288294977641.png?v=1679943157",
+     "alt_text": "Carex Portable Shower Bench - Carex Health Brands"
+    }
+   ],
+   "tags": [
+    "Brand_Carex",
+    "Carex",
+    "Condition_Hip Injury",
+    "Condition_Muscle Weakness",
+    "Condition_Osteoporosis",
+    "HSA/FSA Eligible",
+    "HSA/FSA Eligible_Yes",
+    "Material_Molded Plastic",
+    "Material_Molded Plastic & Aluminum",
+    "Padded Seat_No",
+    "Product Category_Bathroom Safety",
+    "Product Type_Transfer Bench",
+    "TransferBenches",
+    "Weight Capacity_300 LBS"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/141125386345",
+     "handle": "carex",
+     "title": "Carex Home Health Care Products",
+     "description": {
+      "html": "The Carex\u00ae brand provides a full line of Home Health Care Mobility, Bath Safety and Personal Care products that improve quality of life. The brand's line of products ranges from grab bars, transfer benches, shower chairs, wheelchairs, and other physical therapy products to aid in daily living or with various types of illnesses or injuries. Carex takes pride in providing a wide range of home health aides and safety products to improve the quality of life for those in need."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150220570729",
+     "handle": "bathroom-safety-and-assistance-equipment",
+     "title": "Bathroom Safety and Assistance Equipment",
+     "description": {
+      "html": "Seventy percent of home accidents occur in the bathroom making it the most dangerous room in the house for seniors. Carex bathroom safety products provide security while blending with your current bathroom decor. Use these products as a collection to create a bathroom with dignity, safety, and peace of mind. Getting in and out of the bath can be hard. Our bathtub assistive devices \u2013 such as grab bars and transfer benches \u2013 improve bath safety and reduce the risk of injury. These items also serve as handicap accessories and bath aids for elderly people with limited mobility. Bathe with confidence and reclaim one of the most important rooms of your home with Carex bath safety products."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150221062249",
+     "handle": "bathtub-and-shower-transfer-benches",
+     "title": "Bathtub and Shower Transfer Benches",
+     "description": {
+      "html": "Carex offers an easy way to transfer in and out of the shower/bathtub with our collection of shower benches and universal sliding transfer benches. Our shower chairs feature reversible backs for left or right handed entry, handles, height adjustment, water drainage holes, and slip resistant tips with the ability to accommodate any bathroom. Our bariatric tub transfer benches support weights of up to 300 lbs."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150228140137",
+     "handle": "hip-injury-and-hip-pain-relief-products",
+     "title": "Hip Injury and Hip Pain Relief Products",
+     "description": {
+      "html": "Hip injuries like short-term conditions of pulled muscles or tendons or long-term condition like bursitis of the hip, result in minor to severe pain. By affecting affect the range of motion and mobility of individuals, these hip problems reduce the quality of life of patients. Carex offers a wide variety of hip injury relief, no matter what the medical condition. Use our natural hip pain relief products by themselves or in conjunction with any anti-inflammatory medications."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/150232465513",
+     "handle": "muscle-weakness-and-fatigue-treatment-products",
+     "title": "Muscle Weakness and Fatigue Treatment Products",
+     "description": {
+      "html": "For those suffering from muscle weakness and fatigue, Carex offers a wide array of products to meet many individual needs. Use our bath safety items to assist in sit-to-stand movements, maintain balance, and reduce falls in the bathroom. Mobility aids such as walking canes, wheelchairs, and rollators will help keep you independent and comfortable when on the move. Carex's versatile offering is sure to have a device to make living with muscle weakness and fatigue more comfortable and improve patient outcomes."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzBNVEl4TURrNU5qWTFOVEV6TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

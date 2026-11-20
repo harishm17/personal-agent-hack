@@ -1,0 +1,1548 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.vivehealth.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Vive Health",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.vivehealth.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "7634541"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "7634541"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/835775108",
+   "title": "Shower Chair",
+   "description": {
+    "html": "Safely shower independently Wide, self-draining seat Nonslip leg caps for added stability Lightweight and adjustable seat height Corrosion-resistant frame supports up to 300 pounds Lifetime Guarantee View Details > Features SAFELY SIT AND SHOWER Provides a safe and secure way to shower independently for those who have balance issues, limited mobility or difficulty standing CONTOURED SEAT Lightly textured for added stability, the 15.75\u201d by 13\u201d seat has multiple drainage holes to eliminate pooling water for a comfort & safety COMPACT AND LIGHTWEIGHT Base is 17.75\u201d wide to easily fit in most showers and is lightweight for easy repositioning ADJUSTABLE NONSLIP DESIGN Capped with slip-resistant rubber tips + easily adjustable leg height from 16\u201d to 21\u201d COMFORT GRIP HANDLES Padded with a waterproof foam for a secure, nonslip grip DURABLE ALUMINUM FRAME Supporting up to 300 pounds, the aluminum frame is corrosion-resistant for long-term usability Customer Reviews Based on 31 reviews Write a review What are the dimensions of the chair base? The shower chair base is 17.75\u201d by 17\u201d. Will the shower chair be stable on top of a shower mat? Yes, the nonslip caps allow the chair to sit safely on a lightly textured shower mat. Can I remove the backrest? Yes! The backrest can be removed if desired. Does the shower chair fold up for storage? The chair does not fold up, but it can be easily disassembled for storage or travel. How tall is the shower chair? The seat is adjustable from 16\u201d to 21\u201d and the overall height with the backrest attached is 27.5\u201d to 33\u201d. What is the weight limit? The chair will safely support up to 300 pounds. Is the backrest curved? Yes, the backrest is curved for greater comfort. Will it fit in a shower stall? Yes, the compact design allows the shower chair to easily fit in most single shower stalls and shower/tub combinations. Is this chair rust resistant? Yes! The lightweight aluminum frame is corrosion-resistant. Does the chair seat have holes in it for draining water? Yes, the seat has drainage holes to reduce pooling water. How wide are the seat handles? The chair is 21.5\u201d wide at the top of the handles. How high are the seat handles? The handles are 6\u201d from the seat. Is it mildew and mold resistant? Yes, the shower chair is resistant to mold and mildew. How do I assembly the shower chair? Uses: Designed to assist those who struggle standing while showering Materials: Aluminum Composite material Closed-cell foam Dimensions: Seat: 15.75\u201d x 13\u201d Base: 17.75\u201d x 17\u201d Adjustable seat height: 16\u201d to 21\u201d Armrest Height: 6.5\" above seat Seatback Height: 12.5\" above seat Cleaning Instructions: Wipe down with wet cloth and mild soap or disinfectant Air dry What\u2019s Included: Shower chair Lifetime guarantee UPC: 683405234036 Product Number: LVA1009 Shipping Weight: 10 pounds User Manual: Shower Chair by Vive"
+   },
+   "url": "https://www.vivehealth.com/products/shower-chair",
+   "handle": "shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 8999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/53800338555243",
+     "sku": "LVA3124",
+     "title": "Shower Chair with Removable Back",
+     "description": {
+      "html": "Safely shower independently Wide, self-draining seat Nonslip leg caps for added stability Lightweight and adjustable seat height Corrosion-resistant frame supports up to 300 pounds Lifetime Guarantee View Details > Features SAFELY SIT AND SHOWER Provides a safe and secure way to shower independently for those who have balance issues, limited mobility or difficulty standing CONTOURED SEAT Lightly textured for added stability, the 15.75\u201d by 13\u201d seat has multiple drainage holes to eliminate pooling water for a comfort & safety COMPACT AND LIGHTWEIGHT Base is 17.75\u201d wide to easily fit in most showers and is lightweight for easy repositioning ADJUSTABLE NONSLIP DESIGN Capped with slip-resistant rubber tips + easily adjustable leg height from 16\u201d to 21\u201d COMFORT GRIP HANDLES Padded with a waterproof foam for a secure, nonslip grip DURABLE ALUMINUM FRAME Supporting up to 300 pounds, the aluminum frame is corrosion-resistant for long-term usability Customer Reviews Based on 31 reviews Write a review What are the dimensions of the chair base? The shower chair base is 17.75\u201d by 17\u201d. Will the shower chair be stable on top of a shower mat? Yes, the nonslip caps allow the chair to sit safely on a lightly textured shower mat. Can I remove the backrest? Yes! The backrest can be removed if desired. Does the shower chair fold up for storage? The chair does not fold up, but it can be easily disassembled for storage or travel. How tall is the shower chair? The seat is adjustable from 16\u201d to 21\u201d and the overall height with the backrest attached is 27.5\u201d to 33\u201d. What is the weight limit? The chair will safely support up to 300 pounds. Is the backrest curved? Yes, the backrest is curved for greater comfort. Will it fit in a shower stall? Yes, the compact design allows the shower chair to easily fit in most single shower stalls and shower/tub combinations. Is this chair rust resistant? Yes! The lightweight aluminum frame is corrosion-resistant. Does the chair seat have holes in it for draining water? Yes, the seat has drainage holes to reduce pooling water. How wide are the seat handles? The chair is 21.5\u201d wide at the top of the handles. How high are the seat handles? The handles are 6\u201d from the seat. Is it mildew and mold resistant? Yes, the shower chair is resistant to mold and mildew. How do I assembly the shower chair? Uses: Designed to assist those who struggle standing while showering Materials: Aluminum Composite material Closed-cell foam Dimensions: Seat: 15.75\u201d x 13\u201d Base: 17.75\u201d x 17\u201d Adjustable seat height: 16\u201d to 21\u201d Armrest Height: 6.5\" above seat Seatback Height: 12.5\" above seat Cleaning Instructions: Wipe down with wet cloth and mild soap or disinfectant Air dry What\u2019s Included: Shower chair Lifetime guarantee UPC: 683405234036 Product Number: LVA1009 Shipping Weight: 10 pounds User Manual: Shower Chair by Vive"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "With Removable Backrest",
+       "label": "Shower Chair with Removable Back"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1cMainImage_26.jpg?v=1788865442"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/53800338555243:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "With Removable Backrest",
+     "values": [
+      {
+       "label": "Shower Chair with Removable Back"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1cMainImage_26.jpg?v=1788865442",
+     "alt_text": "Core Shower Chair"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bestseller",
+    "BSC",
+    "guarantee-two-year",
+    "Prop65",
+    "Shower Chairs"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6580895809636",
+   "title": "Swivel Shower Chair",
+   "description": {
+    "html": "Two Year Guarantee View Details > Product Description The shower chair presents safe, comfy and effortless seating that swivels 360 degrees at 90-degree intervals, making transfers in and out of the tub easy and safe. At Vive Health, our bathing chair is engineered with independence and confidence in mind for seniors, people who have trouble standing for long periods, those with limited mobility and individuals with balance problems. This shower chair offers safe showering without the feelings of embarrassment and self-consciousness. The contoured seat has a surface with drainage holes that prevent water pooling and slips to ensure safe seating throughout your shower. Swivel shower chair rotates freely and locks for stability at intervals to allow safe transfers and bathing. The armrests are padded with closed-cell foam, which is waterproof and provides a comfy grip. The grip points are non-slip, 19 inches apart and essential in helping users to sit and stand safely. The rustproof-aluminum-framed shower chair weighs 12 lbs, making it easy to reposition and supports up to 300 lbs! With a non-slip rubber foot design and height adjustable at 16 to 19 inches, it accommodates a range of shower heights. The compact design and dual-purpose base maintain a coveted space in most shower stalls, even in a shower-over-bath arrangement. Durable and bathroom safe, it is mildew and mold-resistant. This swivel shower chair provides the convenience and support required to maintain bathing independence, even with the most demanding arthritic restrictions, following major surgery, or simply for enhanced shower security. Browse our full range of shower chairs and bathroom safety essentials designed for comfort, stability, and safer daily routines. Features 360-Degree Swivel Rotation: Seat rotates smoothly in 90-degree increments and locks securely for effortless, safe transfers in and out of tub Contoured Anti-Slip Seat: 16\" x 13\" textured surface with drainage holes prevents water pooling and slipping for secure, comfortable seating Compact Lightweight Design: 17\" x 19\" base fits most shower stalls and tub combinations while weighing only 12 pounds for easy repositioning Height-Adjustable Support: Adjusts from 16\" to 19\" seat height with non-slip rubber feet for customized comfort and stability Padded Comfort Arms: 19\" wide waterproof foam-covered armrests provide secure, non-slip grip for safe transfers and added stability Durable Rust-Proof Frame: Corrosion-resistant aluminum construction supports up to 300 pounds for reliable long-term bathroom use Customer Reviews Based on 23 reviews Write a review Does the swivel shower chair turn completely around? Yes! The swivel shower chair rotates 360 degrees in 90-degree increments. The seat base then locks in place for added stability. What are the dimensions of the chair base? The swivel shower chair base is 17\u201d by 19\u201d. Will the swivel shower chair be stable on top of a shower mat? Yes, the nonslip caps allow the chair to sit safely on a lightly textured shower mat. Does the swivel shower chair fold up for storage? The swivel shower chair does not fold up, but it can be disassembled for storage or travel. How tall is the shower chair seat? The swivel shower seat is adjustable from 16\u201d to 19\u201d. What is the shower chair\u2019s weight limit? The Vive swivel shower chair will safely support up to 300 pounds. Is the swivel shower seat\u2019s backrest curved? Yes, the backrest is curved for greater comfort and support. Will the Vive swivel shower chair fit in a shower stall? Yes, the compact design allows the Vive swivel shower chair to easily fit in most single shower stalls and shower/tub combinations. How much does the Vive swivel shower chair weigh? The Vive swivel shower chair weighs 12 pounds for easily moving as needed. Is this chair rust-resistant? Yes! The lightweight aluminum frame is corrosion-resistant for long-term use. Does the chair seat have holes in it for draining water? Yes, the swivel seat has drainage holes to reduce pooling water for greater comfort. How wide is the space between the swivel chair seat handles? The Vive swivel shower chair measures 19\u201d wide when measured between the armrests. Is the Vive swivel shower chair mildew and mold resistant? Yes, the Vive shower chair is resistant to mold and mildew, however, we do recommend regularly cleaning the swivel shower chair. Uses: Assists those with difficulty standing while showering Ideal for seniors and elderly individuals Perfect for users with balance issues or limited mobility Supports recovery from surgery or injury Enhances bathroom safety and independence Dimensions: Chair Base: 17\" x 19\" Seat Height: 16\" - 19\" (adjustable) Seat Size: 16\" x 13\" Width Between Armrests: 19\" Weight: 12 pounds Maximum Weight Capacity: 300 pounds Color: White Materials: Rust-proof aluminum frame Durable composite seat material Waterproof closed-cell foam padding on armrests Non-slip rubber feet Features: 360-degree rotation in 90-degree increments Locking mechanism for stability Curved backrest for comfort and support Textured seat surface prevents slipping Drainage holes eliminate water pooling Height-adjustable legs Padded waterproof armrests Non-slip rubber feet Compact space-saving design Lightweight for easy movement Mold and mildew resistant Can be disassembled for storage or travel Seat Rotation: Rotates 360 degrees total Locks in 90-degree increments Secure locking mechanism Smooth rotation mechanism Easy transfer positioning Safety Features: Non-slip textured seat Drainage holes prevent pooling Padded armrests for secure grip Locking swivel mechanism Non-slip rubber feet Curved supportive backrest Stable 300 lb weight capacity Corrosion-resistant materials Assembly: Simple assembly required Can be disassembled for storage No tools required for height adjustment Lightweight for easy setup Care Instructions: Wipe down with mild soap or disinfectant after each use Air dry completely Regular cleaning prevents mold and mildew buildup Check locking mechanism periodically Inspect rubber feet for wear What's Included: Vive Swivel Shower Chair Assembly instructions Two-year guarantee Guarantee Policy: 2-year guarantee on product Product Information: UPC: 810041986726 Product Number: LVA2088 Shipping Weight: 14 lbs Ideal For: Seniors requiring shower assistance Individuals with balance problems Post-surgery recovery Arthritis management Limited mobility situations Users who tire easily while standing Anyone needing secure shower seating"
+   },
+   "url": "https://www.vivehealth.com/products/swivel-shower-chair",
+   "handle": "swivel-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 11999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39365550211172",
+     "sku": "LVA2088",
+     "title": "White",
+     "description": {
+      "html": "Two Year Guarantee View Details > Product Description The shower chair presents safe, comfy and effortless seating that swivels 360 degrees at 90-degree intervals, making transfers in and out of the tub easy and safe. At Vive Health, our bathing chair is engineered with independence and confidence in mind for seniors, people who have trouble standing for long periods, those with limited mobility and individuals with balance problems. This shower chair offers safe showering without the feelings of embarrassment and self-consciousness. The contoured seat has a surface with drainage holes that prevent water pooling and slips to ensure safe seating throughout your shower. Swivel shower chair rotates freely and locks for stability at intervals to allow safe transfers and bathing. The armrests are padded with closed-cell foam, which is waterproof and provides a comfy grip. The grip points are non-slip, 19 inches apart and essential in helping users to sit and stand safely. The rustproof-aluminum-framed shower chair weighs 12 lbs, making it easy to reposition and supports up to 300 lbs! With a non-slip rubber foot design and height adjustable at 16 to 19 inches, it accommodates a range of shower heights. The compact design and dual-purpose base maintain a coveted space in most shower stalls, even in a shower-over-bath arrangement. Durable and bathroom safe, it is mildew and mold-resistant. This swivel shower chair provides the convenience and support required to maintain bathing independence, even with the most demanding arthritic restrictions, following major surgery, or simply for enhanced shower security. Browse our full range of shower chairs and bathroom safety essentials designed for comfort, stability, and safer daily routines. Features 360-Degree Swivel Rotation: Seat rotates smoothly in 90-degree increments and locks securely for effortless, safe transfers in and out of tub Contoured Anti-Slip Seat: 16\" x 13\" textured surface with drainage holes prevents water pooling and slipping for secure, comfortable seating Compact Lightweight Design: 17\" x 19\" base fits most shower stalls and tub combinations while weighing only 12 pounds for easy repositioning Height-Adjustable Support: Adjusts from 16\" to 19\" seat height with non-slip rubber feet for customized comfort and stability Padded Comfort Arms: 19\" wide waterproof foam-covered armrests provide secure, non-slip grip for safe transfers and added stability Durable Rust-Proof Frame: Corrosion-resistant aluminum construction supports up to 300 pounds for reliable long-term bathroom use Customer Reviews Based on 23 reviews Write a review Does the swivel shower chair turn completely around? Yes! The swivel shower chair rotates 360 degrees in 90-degree increments. The seat base then locks in place for added stability. What are the dimensions of the chair base? The swivel shower chair base is 17\u201d by 19\u201d. Will the swivel shower chair be stable on top of a shower mat? Yes, the nonslip caps allow the chair to sit safely on a lightly textured shower mat. Does the swivel shower chair fold up for storage? The swivel shower chair does not fold up, but it can be disassembled for storage or travel. How tall is the shower chair seat? The swivel shower seat is adjustable from 16\u201d to 19\u201d. What is the shower chair\u2019s weight limit? The Vive swivel shower chair will safely support up to 300 pounds. Is the swivel shower seat\u2019s backrest curved? Yes, the backrest is curved for greater comfort and support. Will the Vive swivel shower chair fit in a shower stall? Yes, the compact design allows the Vive swivel shower chair to easily fit in most single shower stalls and shower/tub combinations. How much does the Vive swivel shower chair weigh? The Vive swivel shower chair weighs 12 pounds for easily moving as needed. Is this chair rust-resistant? Yes! The lightweight aluminum frame is corrosion-resistant for long-term use. Does the chair seat have holes in it for draining water? Yes, the swivel seat has drainage holes to reduce pooling water for greater comfort. How wide is the space between the swivel chair seat handles? The Vive swivel shower chair measures 19\u201d wide when measured between the armrests. Is the Vive swivel shower chair mildew and mold resistant? Yes, the Vive shower chair is resistant to mold and mildew, however, we do recommend regularly cleaning the swivel shower chair. Uses: Assists those with difficulty standing while showering Ideal for seniors and elderly individuals Perfect for users with balance issues or limited mobility Supports recovery from surgery or injury Enhances bathroom safety and independence Dimensions: Chair Base: 17\" x 19\" Seat Height: 16\" - 19\" (adjustable) Seat Size: 16\" x 13\" Width Between Armrests: 19\" Weight: 12 pounds Maximum Weight Capacity: 300 pounds Color: White Materials: Rust-proof aluminum frame Durable composite seat material Waterproof closed-cell foam padding on armrests Non-slip rubber feet Features: 360-degree rotation in 90-degree increments Locking mechanism for stability Curved backrest for comfort and support Textured seat surface prevents slipping Drainage holes eliminate water pooling Height-adjustable legs Padded waterproof armrests Non-slip rubber feet Compact space-saving design Lightweight for easy movement Mold and mildew resistant Can be disassembled for storage or travel Seat Rotation: Rotates 360 degrees total Locks in 90-degree increments Secure locking mechanism Smooth rotation mechanism Easy transfer positioning Safety Features: Non-slip textured seat Drainage holes prevent pooling Padded armrests for secure grip Locking swivel mechanism Non-slip rubber feet Curved supportive backrest Stable 300 lb weight capacity Corrosion-resistant materials Assembly: Simple assembly required Can be disassembled for storage No tools required for height adjustment Lightweight for easy setup Care Instructions: Wipe down with mild soap or disinfectant after each use Air dry completely Regular cleaning prevents mold and mildew buildup Check locking mechanism periodically Inspect rubber feet for wear What's Included: Vive Swivel Shower Chair Assembly instructions Two-year guarantee Guarantee Policy: 2-year guarantee on product Product Information: UPC: 810041986726 Product Number: LVA2088 Shipping Weight: 14 lbs Ideal For: Seniors requiring shower assistance Individuals with balance problems Post-surgery recovery Arthritis management Limited mobility situations Users who tire easily while standing Anyone needing secure shower seating"
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/Untitleddesign-2023-07-31T093132.374.png?v=1690810341"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39365550211172:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/Untitleddesign-2023-07-31T093132.374.png?v=1690810341",
+     "alt_text": "swivel shower chair"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ABRA",
+    "APSA",
+    "BSC",
+    "fsa-hsa",
+    "guarantee-two-year",
+    "KACT",
+    "KMCT",
+    "KMTE",
+    "Prop65"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7419364114532",
+   "title": "Folding Shower Chair",
+   "description": {
+    "html": "60 Day Guarantee View Details > Product Description The Folding Shower Chair from Vive Health gives you a safer, more comfortable place to shower without taking up permanent space in your bathroom. It folds flat in seconds, making it easy to store behind a door, in a closet, or toss in a bag when traveling. For anyone recovering from surgery, managing limited mobility, or just wanting more stability in the shower, this collapsible shower chair is a practical solution that doesn't get in the way. The oxidized aluminum frame holds firm at up to 300 pounds and won't rust with regular wet use. Foam padding cushions your back and thighs during longer showers and the large non-slip rubber feet keep the chair planted on the floor even when things get slippery. If you're building out a safer bathroom setup, our Shower Chairs collection has a full range worth browsing. Height-adjustable legs let you set the seat at a level that works for you, making this a comfortable fit for most users. As one of the more dependable folding shower seats for elderly users and those with limited mobility, the combination of padded seating, stable footing and a quick fold makes it easy to use every day without any hassle. For added grip and security in the bathroom, pairing it with our Grab Bars is a smart move. Features COMPACT AND PORTABLE FOLDING DESIGN This shower chair boasts an innovative folding mechanism, making storage and transport effortless. Perfect for maximizing space in your home, it is easy to store when not in use and convenient to carry while traveling, providing a smart, space-saving solution STURDY ALUMINUM FRAME FOR MAXIMUM SAFETY Experience reliable support with the foldable shower chair\u2019s robust aluminum frame, capable of holding up to 300 pounds. This oxidized aluminum construction prevents rust, ensuring long-lasting safety and stability for a more secure shower experience PLUSH FOAM PADDING FOR ADDED COMFORT Enjoy a more comfortable shower with the shower chair\u2019s soft foam padding. Designed to relieve pressure on your back and thighs, the integrated foam support enhances your showering experience, promoting relaxation and comfort NON-SLIP RUBBER FEET FOR SUPERIOR STABILITY The folding shower chair features large, non-slip rubber feet that provide steadfast and reliable stability. These rubber feet grip the surface of your shower or bath, to prevent slipping even in wet conditions EASY TO CLEAN AND MAINTAIN Designed with hygiene in mind, this shower chair is easy to clean and maintain. The durable materials resist water and mildew damage, allowing you to keep your chair in prime condition with minimal effort. .vimeo-video-box { position: relative; width: 100%; max-width: 1150px; aspect-ratio: 16 / 9; margin: 30px 0 30px 0; overflow: hidden; background: #000;} .vimeo-video-thumbnail { position: relative; width: 100%; height: 100%; cursor: pointer; background-color: #000;} .vimeo-video-thumbnail img { width: 100%; height: 100%; display: block; object-fit: cover; opacity: 0.8;} /* Play Button */ .vimeo-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 72px; height: 72px; padding: 0; border: 0; border-radius: 50%; background: #fff; color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;transition: transform 0.25s ease;} .vimeo-play-btn:hover { transform: translate(-50%, -50%) scale(1.08);} /* Vimeo iframe */ .vimeo-video-box iframe { width: 100%; height: 100%; display: block; border: 0;} /* Mobile */ @media screen and (max-width: 749px) { .vimeo-video-box { margin: 20px 0;} .vimeo-play-btn { width: 58px; height: 58px; } } document.addEventListener('click', function(event) { const thumbnail = event.target.closest('.vimeo-video-thumbnail'); if (!thumbnail) return; const videoBox = thumbnail.closest('.vimeo-video-box'); if (!videoBox) return; const vimeoId = videoBox.dataset.vimeoId; const vimeoHash = videoBox.dataset.vimeoHash; if (!vimeoId) return; let videoUrl = `https://player.vimeo.com/video/${vimeoId}?autoplay=1&title=0&byline=0&portrait=0`; if (vimeoHash) { videoUrl += `&h=${encodeURIComponent(vimeoHash)}`; } videoBox.innerHTML = ` `; }); Customer Reviews Based on 23 reviews Write a review How does the folding design of the Vive Folding Shower Chair work? The Vive Folding Shower Chair features a convenient folding mechanism that allows you to easily collapse it for storage or transport. This design helps save space in your home and makes it simple to take with you when traveling. What is the weight capacity of the Vive Folding Shower Chair? The shower chair is designed to support up to 300 pounds, providing robust and dependable support for users, and ensuring safety and stability during use. Is the Vive Folding Shower Chair resistant to rust? Yes, the shower chair is built with an oxidized aluminum frame that resists rusting, ensuring durability and long-term use, even in wet environments. How comfortable is the Vive Folding Shower Chair? The shower chair features foam padding on the seat, which provides supportive comfort by reducing pressure on your back and thighs. This padding enhances the overall showering experience by promoting relaxation and comfort. Do the rubber feet on the shower chair prevent slipping? Yes, the large rubber feet are designed to firmly grip the surface, preventing any unwanted movement or slipping while the chair is in use. This ensures greater safety, especially in wet conditions. Can the height of the Vive Folding Shower Chair be adjusted? Yes, the legs of the shower chair can be adjusted to change the height of the seat, allowing you to customize it to better meet your specific needs and preferences. Is the Vive Folding Shower Chair easy to transport? Absolutely. The compact and foldable design makes it easy to carry and transport, whether you are traveling or visiting new places. It is lightweight and portable for added convenience. How do I clean and maintain the Vive Folding Shower Chair? The shower chair can be cleaned with a mild soap and water solution. The materials are designed to resist water damage and mildew, making it easy to maintain hygiene and keep the chair in excellent condition. What is included with the purchase of the Vive Folding Shower Chair? The package includes one Vive Folding Shower Chair, ready for use with all the features designed for your comfort and safety during showers. What is the warranty or guarantee for the Vive Folding Shower Chair? The Vive Folding Shower Chair comes with a 60-day guarantee, allowing you to purchase with confidence and ensuring satisfaction with the product's quality and performance. Uses Folding shower chair designed to improve safety and comfort while bathing Ideal for individuals with limited mobility, balance concerns or recovery needs Foam padded seat provides added comfort during showers Supports safe and stable bathing with a 300 lb weight capacity Dimensions Seat Size: 15.5\" x 12.5\" Overall Height: 38\" Overall Width: 20.25\" Weight 7.5 lbs Color White / Grey Size One size Material Durable aluminum frame Rust-resistant construction for long-term bathroom use Safety Features Large non-slip rubber feet for improved stability Strong aluminum frame supports up to 300 lbs Foam padded seat helps reduce pressure during use Portability Foldable chair design for compact storage Lightweight construction for easy transport Travel-friendly folding mechanism Care Instructions Rinse off soap residue after use Wipe gently with a clean cloth What\u2019s Included 1 \u00d7 Vive Folding Shower Chair Product Details Product Number: LVA3036GRY UPC: 810113574226"
+   },
+   "url": "https://www.vivehealth.com/products/folding-shower-chair",
+   "handle": "folding-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 8999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51446461759851",
+     "sku": "LVA3036GRY",
+     "title": "Grey",
+     "description": {
+      "html": "60 Day Guarantee View Details > Product Description The Folding Shower Chair from Vive Health gives you a safer, more comfortable place to shower without taking up permanent space in your bathroom. It folds flat in seconds, making it easy to store behind a door, in a closet, or toss in a bag when traveling. For anyone recovering from surgery, managing limited mobility, or just wanting more stability in the shower, this collapsible shower chair is a practical solution that doesn't get in the way. The oxidized aluminum frame holds firm at up to 300 pounds and won't rust with regular wet use. Foam padding cushions your back and thighs during longer showers and the large non-slip rubber feet keep the chair planted on the floor even when things get slippery. If you're building out a safer bathroom setup, our Shower Chairs collection has a full range worth browsing. Height-adjustable legs let you set the seat at a level that works for you, making this a comfortable fit for most users. As one of the more dependable folding shower seats for elderly users and those with limited mobility, the combination of padded seating, stable footing and a quick fold makes it easy to use every day without any hassle. For added grip and security in the bathroom, pairing it with our Grab Bars is a smart move. Features COMPACT AND PORTABLE FOLDING DESIGN This shower chair boasts an innovative folding mechanism, making storage and transport effortless. Perfect for maximizing space in your home, it is easy to store when not in use and convenient to carry while traveling, providing a smart, space-saving solution STURDY ALUMINUM FRAME FOR MAXIMUM SAFETY Experience reliable support with the foldable shower chair\u2019s robust aluminum frame, capable of holding up to 300 pounds. This oxidized aluminum construction prevents rust, ensuring long-lasting safety and stability for a more secure shower experience PLUSH FOAM PADDING FOR ADDED COMFORT Enjoy a more comfortable shower with the shower chair\u2019s soft foam padding. Designed to relieve pressure on your back and thighs, the integrated foam support enhances your showering experience, promoting relaxation and comfort NON-SLIP RUBBER FEET FOR SUPERIOR STABILITY The folding shower chair features large, non-slip rubber feet that provide steadfast and reliable stability. These rubber feet grip the surface of your shower or bath, to prevent slipping even in wet conditions EASY TO CLEAN AND MAINTAIN Designed with hygiene in mind, this shower chair is easy to clean and maintain. The durable materials resist water and mildew damage, allowing you to keep your chair in prime condition with minimal effort. .vimeo-video-box { position: relative; width: 100%; max-width: 1150px; aspect-ratio: 16 / 9; margin: 30px 0 30px 0; overflow: hidden; background: #000;} .vimeo-video-thumbnail { position: relative; width: 100%; height: 100%; cursor: pointer; background-color: #000;} .vimeo-video-thumbnail img { width: 100%; height: 100%; display: block; object-fit: cover; opacity: 0.8;} /* Play Button */ .vimeo-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 72px; height: 72px; padding: 0; border: 0; border-radius: 50%; background: #fff; color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;transition: transform 0.25s ease;} .vimeo-play-btn:hover { transform: translate(-50%, -50%) scale(1.08);} /* Vimeo iframe */ .vimeo-video-box iframe { width: 100%; height: 100%; display: block; border: 0;} /* Mobile */ @media screen and (max-width: 749px) { .vimeo-video-box { margin: 20px 0;} .vimeo-play-btn { width: 58px; height: 58px; } } document.addEventListener('click', function(event) { const thumbnail = event.target.closest('.vimeo-video-thumbnail'); if (!thumbnail) return; const videoBox = thumbnail.closest('.vimeo-video-box'); if (!videoBox) return; const vimeoId = videoBox.dataset.vimeoId; const vimeoHash = videoBox.dataset.vimeoHash; if (!vimeoId) return; let videoUrl = `https://player.vimeo.com/video/${vimeoId}?autoplay=1&title=0&byline=0&portrait=0`; if (vimeoHash) { videoUrl += `&h=${encodeURIComponent(vimeoHash)}`; } videoBox.innerHTML = ` `; }); Customer Reviews Based on 23 reviews Write a review How does the folding design of the Vive Folding Shower Chair work? The Vive Folding Shower Chair features a convenient folding mechanism that allows you to easily collapse it for storage or transport. This design helps save space in your home and makes it simple to take with you when traveling. What is the weight capacity of the Vive Folding Shower Chair? The shower chair is designed to support up to 300 pounds, providing robust and dependable support for users, and ensuring safety and stability during use. Is the Vive Folding Shower Chair resistant to rust? Yes, the shower chair is built with an oxidized aluminum frame that resists rusting, ensuring durability and long-term use, even in wet environments. How comfortable is the Vive Folding Shower Chair? The shower chair features foam padding on the seat, which provides supportive comfort by reducing pressure on your back and thighs. This padding enhances the overall showering experience by promoting relaxation and comfort. Do the rubber feet on the shower chair prevent slipping? Yes, the large rubber feet are designed to firmly grip the surface, preventing any unwanted movement or slipping while the chair is in use. This ensures greater safety, especially in wet conditions. Can the height of the Vive Folding Shower Chair be adjusted? Yes, the legs of the shower chair can be adjusted to change the height of the seat, allowing you to customize it to better meet your specific needs and preferences. Is the Vive Folding Shower Chair easy to transport? Absolutely. The compact and foldable design makes it easy to carry and transport, whether you are traveling or visiting new places. It is lightweight and portable for added convenience. How do I clean and maintain the Vive Folding Shower Chair? The shower chair can be cleaned with a mild soap and water solution. The materials are designed to resist water damage and mildew, making it easy to maintain hygiene and keep the chair in excellent condition. What is included with the purchase of the Vive Folding Shower Chair? The package includes one Vive Folding Shower Chair, ready for use with all the features designed for your comfort and safety during showers. What is the warranty or guarantee for the Vive Folding Shower Chair? The Vive Folding Shower Chair comes with a 60-day guarantee, allowing you to purchase with confidence and ensuring satisfaction with the product's quality and performance. Uses Folding shower chair designed to improve safety and comfort while bathing Ideal for individuals with limited mobility, balance concerns or recovery needs Foam padded seat provides added comfort during showers Supports safe and stable bathing with a 300 lb weight capacity Dimensions Seat Size: 15.5\" x 12.5\" Overall Height: 38\" Overall Width: 20.25\" Weight 7.5 lbs Color White / Grey Size One size Material Durable aluminum frame Rust-resistant construction for long-term bathroom use Safety Features Large non-slip rubber feet for improved stability Strong aluminum frame supports up to 300 lbs Foam padded seat helps reduce pressure during use Portability Foldable chair design for compact storage Lightweight construction for easy transport Travel-friendly folding mechanism Care Instructions Rinse off soap residue after use Wipe gently with a clean cloth What\u2019s Included 1 \u00d7 Vive Folding Shower Chair Product Details Product Number: LVA3036GRY UPC: 810113574226"
+     },
+     "price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Grey"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage_1_4f6143dc-6ace-4909-8240-c13e1d8d54b9.jpg?v=1708620870"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/51446461759851:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Grey"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage_1_4f6143dc-6ace-4909-8240-c13e1d8d54b9.jpg?v=1708620870",
+     "alt_text": "A folding shower chair with a white and grey color scheme, featuring a plush foam padded seat & oxidized aluminum frame."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BSC",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7365361434724",
+   "title": "Bariatric Shower Chair",
+   "description": {
+    "html": "Lifetime Guarantee View Details > Features ELEVATE YOUR SHOWER EXPERIENCE WITH THE VIVE BARIATRIC SHOWER CHAIR Enjoy an enhanced shower experience with the Vive Bariatric Shower Chair, meticulously designed to offer specialized bath and shower support. Perfect for those who are looking for added stability following surgery or an injury, this chair ensures safe and worry-free hygiene EXCEPTIONAL DURABILITY AND SLIP-RESISTANT DESIGN Crafted from extra-thick aluminum, this chair exhibits outstanding durability, with a capacity to support up to 550 pounds for added security. The four anti-slip rubber tips anchor the chair even in wet conditions, to eliminate movement and provide reliable stability while showering CUSTOMIZE YOUR COMFORT WITH AN ADJUSTABLE HEIGHT Tailor the seat to your exact preferences using the adjustable base. Innovative locking push-pins enable 1-inch height adjustments, offering a height range from 16 to 21 inches. The generously sized seat ensures you shower in utmost comfort, adjusting effortlessly to your needs LONG-LASTING RELIABILITY IN A LIGHTWEIGHT BUILD Constructed from rust-free, anodized aluminum, this chair is engineered for enduring reliability. Despite its robust build, the lightweight frame, weighing just 7 pounds, allows for easy transport and storage when not in use SECURE AND HASSLE-FREE SHOWERING SUPPORT With the Vive Bariatric Shower Chair, your safety and peace of mind come first. Whether you\u2019re dealing with post-surgery healing or injury recovery, this chair provides the assistance you need for secure, hassle-free showering. The slip-resistant design, customizable height, and lightweight build make it a reliable support for enhanced shower safety and comfort Customer Reviews Based on 23 reviews Write a review What is the weight capacity of the Vive Bariatric Shower Chair? The Vive Bariatric Shower Chair is designed to support up to 550 pounds, providing secure and stable seating during your shower. Is this chair suitable for post-surgery or injury recovery? Yes, absolutely! The chair is meticulously designed to offer specialized bath and shower support, ensuring added stability during post-surgery healing or injury recovery. How does the chair stay in place during use? The chair features four anti-slip rubber tips that firmly anchor it, even in wet conditions, preventing any movement and enhancing your shower safety. Can I adjust the height of the shower chair? Yes, you can. The chair comes with an adjustable base that allows you to customize the height in 1-inch increments. The height can be adjusted between 16 and 21 inches to suit your needs. Is the seat comfortable? Absolutely! The generously sized seat ensures a comfortable showering experience while providing the security you need. What material is the chair made of? The Vive Bariatric Shower Chair is crafted from rust-free, anodized aluminum, ensuring durability and longevity. How much does the chair weigh? The chair weighs only 7 pounds, making it lightweight and easy to move. Is assembly required? Yes, this product assembles in just a few simple steps. A manual is included so you can have your bariatric chair ready to use in minutes. Can this chair be used in any shower? Yes, this chair is designed to be versatile and can be used in most showers. It offers a stable and secure seating solution for a wide range of shower types. What\u2019s included in the package? The package includes one Vive Bariatric Shower Chair to enhance your shower safety and convenience. Uses: A Chair (with no back) that can hold up to 550 lbs and be used in the shower Dimensions: Seat: 20\u201d x 12\u201d Height: 15\u201d-20\u201d Legs (floorspace used): 16\u201d x 16\u201d Product Materials Plastic Aluminum Care Instructions: Wipe down with a wet cloth and mild soap or disinfectant Air dry What\u2019s Included: 1x Bariatric Shower Chair Color(s): White Size(s): One size UPC: Product Number: LVA3020WHT Shipping Weight:"
+   },
+   "url": "https://www.vivehealth.com/products/bariatric-shower-chair",
+   "handle": "bariatric-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42681114296420",
+     "sku": "LVA3020WHT",
+     "title": "Default Title",
+     "description": {
+      "html": "Lifetime Guarantee View Details > Features ELEVATE YOUR SHOWER EXPERIENCE WITH THE VIVE BARIATRIC SHOWER CHAIR Enjoy an enhanced shower experience with the Vive Bariatric Shower Chair, meticulously designed to offer specialized bath and shower support. Perfect for those who are looking for added stability following surgery or an injury, this chair ensures safe and worry-free hygiene EXCEPTIONAL DURABILITY AND SLIP-RESISTANT DESIGN Crafted from extra-thick aluminum, this chair exhibits outstanding durability, with a capacity to support up to 550 pounds for added security. The four anti-slip rubber tips anchor the chair even in wet conditions, to eliminate movement and provide reliable stability while showering CUSTOMIZE YOUR COMFORT WITH AN ADJUSTABLE HEIGHT Tailor the seat to your exact preferences using the adjustable base. Innovative locking push-pins enable 1-inch height adjustments, offering a height range from 16 to 21 inches. The generously sized seat ensures you shower in utmost comfort, adjusting effortlessly to your needs LONG-LASTING RELIABILITY IN A LIGHTWEIGHT BUILD Constructed from rust-free, anodized aluminum, this chair is engineered for enduring reliability. Despite its robust build, the lightweight frame, weighing just 7 pounds, allows for easy transport and storage when not in use SECURE AND HASSLE-FREE SHOWERING SUPPORT With the Vive Bariatric Shower Chair, your safety and peace of mind come first. Whether you\u2019re dealing with post-surgery healing or injury recovery, this chair provides the assistance you need for secure, hassle-free showering. The slip-resistant design, customizable height, and lightweight build make it a reliable support for enhanced shower safety and comfort Customer Reviews Based on 23 reviews Write a review What is the weight capacity of the Vive Bariatric Shower Chair? The Vive Bariatric Shower Chair is designed to support up to 550 pounds, providing secure and stable seating during your shower. Is this chair suitable for post-surgery or injury recovery? Yes, absolutely! The chair is meticulously designed to offer specialized bath and shower support, ensuring added stability during post-surgery healing or injury recovery. How does the chair stay in place during use? The chair features four anti-slip rubber tips that firmly anchor it, even in wet conditions, preventing any movement and enhancing your shower safety. Can I adjust the height of the shower chair? Yes, you can. The chair comes with an adjustable base that allows you to customize the height in 1-inch increments. The height can be adjusted between 16 and 21 inches to suit your needs. Is the seat comfortable? Absolutely! The generously sized seat ensures a comfortable showering experience while providing the security you need. What material is the chair made of? The Vive Bariatric Shower Chair is crafted from rust-free, anodized aluminum, ensuring durability and longevity. How much does the chair weigh? The chair weighs only 7 pounds, making it lightweight and easy to move. Is assembly required? Yes, this product assembles in just a few simple steps. A manual is included so you can have your bariatric chair ready to use in minutes. Can this chair be used in any shower? Yes, this chair is designed to be versatile and can be used in most showers. It offers a stable and secure seating solution for a wide range of shower types. What\u2019s included in the package? The package includes one Vive Bariatric Shower Chair to enhance your shower safety and convenience. Uses: A Chair (with no back) that can hold up to 550 lbs and be used in the shower Dimensions: Seat: 20\u201d x 12\u201d Height: 15\u201d-20\u201d Legs (floorspace used): 16\u201d x 16\u201d Product Materials Plastic Aluminum Care Instructions: Wipe down with a wet cloth and mild soap or disinfectant Air dry What\u2019s Included: 1x Bariatric Shower Chair Color(s): White Size(s): One size UPC: Product Number: LVA3020WHT Shipping Weight:"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/Image_1b_8c4d0a2e-509f-4daa-91fe-3d6b01decbd8.jpg?v=1704747182"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/42681114296420:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/Image_1b_8c4d0a2e-509f-4daa-91fe-3d6b01decbd8.jpg?v=1704747182"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BSC",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7391859081316",
+   "title": "Sliding Shower Chair",
+   "description": {
+    "html": "One Year Guarantee View Details > Features DURABLE AND ADAPTABLE SHOWER ASSISTANCE The Vive Sliding Shower Chair is a robust and multipurpose mobility aid that supports up to 300 pounds. Ideal for aiding recovery after surgery, this device is ideal for rehabilitation from injuries, assisting those with chronic fatigue, improving balance, or offering support to the elderly. Its construction from a lightweight aluminum frame guarantees both strength and reliability for your safety and confidence RUST-RESISTANT ALUMINUM CONSTRUCTION Expertly crafted from anodized aluminum that resists corrosion, the shower chair ensures longevity and consistent performance. Enjoy your showers with peace of mind, free from concerns about rust or wear and tear, enhancing the durability of your bathing aid SMOOTH SLIDING WITH SECURE LOCKING FEATURE Experience ease of movement with the shower chair\u2019s seamless sliding functionality, coupled with a reliable locking system for safety. The chair\u2019s design includes a spacious seat, offering both comfort and convenience and making shower access smoother and safer TAILORABLE HEIGHT FOR INDIVIDUAL COMFORT The Vive Sliding Shower Chair offers customizable height adjustments, ranging from 21\u201d to 25,\u201d in half-inch increments. This feature allows users to find their ideal seating height, ensuring a comfortable and secure shower experience, and accommodating users of various statures ENHANCED SEATING FOR SHOWER SAFETY This chair\u2019s wide and comfortable seating area is designed to facilitate easier and safer entry and exit from the shower. Its thoughtful design not only prioritizes comfort but also enhances the overall safety and usability of the chair, catering to a wide range of mobility needs Customer Reviews Based on 23 reviews Write a review What is the weight capacity of the Vive Sliding Shower Chair? The chair is designed to support up to 300 pounds, providing sturdy and reliable support. Is the chair suitable for post-surgery recovery? Yes, it is perfect for post-surgery recovery, as well as for injury rehabilitation, managing chronic fatigue, and enhancing balance. Will the chair rust or corrode over time? No, it is constructed from corrosion-resistant anodized aluminum, which is designed to withstand frequent use without rusting or corroding. Can the chair\u2019s height be adjusted? Yes, the chair\u2019s height can be adjusted in half-inch increments, ranging from 21\u201d to 25\u201d, to accommodate different user heights. Is the Vive Sliding Shower Chair easy to use for elderly individuals? Yes. It is designed with senior users in mind, offering a dependable solution for shower mobility and assistance. How does the sliding mechanism work? The chair features a smooth sliding mechanism that allows effortless movement left and right along the sturdy frame, making it easy to position in the shower. Is the shower chair portable and easy to store? While the product description doesn\u2019t specify portability, its lightweight aluminum frame allows for simple handling and storage. What is included with the purchase of the Vive Sliding Shower Chair? The package includes 1 Vive Sliding Shower Chair. Does the Vive Sliding Chair come with any warranty? Yes, it comes with a 1-year guarantee, providing confidence in your purchase. Can the chair be used on different shower surfaces? The chair is designed to be versatile and should work well on various shower surfaces. However, always ensure stability before use. Uses: A shower bench/chair that sits on a slide so you can transfer in and out of the bath or shower while seated Dimensions: Seat: 18.5 inches in depth x 22.5 inches 30 x 8.3 x 19.1 inches 21-25 inches in height; overall length: 42 inches; maximum recommended weight: 300 lbs Weight: 16lbs Color: White Size(s): N/A Material(s): Plastic Aluminum Care Instructions: Spray down after use. Air dry or wipe dry What\u2019s Included: 1x Vive Sliding Shower Chair UPC:810113573700 Product Number: LVA3026WHT User Manual: Sliding Shower Chair"
+   },
+   "url": "https://www.vivehealth.com/products/sliding-shower-chair",
+   "handle": "sliding-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 15999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42835135070308",
+     "sku": "LVA3026WHT",
+     "title": "Default Title",
+     "description": {
+      "html": "One Year Guarantee View Details > Features DURABLE AND ADAPTABLE SHOWER ASSISTANCE The Vive Sliding Shower Chair is a robust and multipurpose mobility aid that supports up to 300 pounds. Ideal for aiding recovery after surgery, this device is ideal for rehabilitation from injuries, assisting those with chronic fatigue, improving balance, or offering support to the elderly. Its construction from a lightweight aluminum frame guarantees both strength and reliability for your safety and confidence RUST-RESISTANT ALUMINUM CONSTRUCTION Expertly crafted from anodized aluminum that resists corrosion, the shower chair ensures longevity and consistent performance. Enjoy your showers with peace of mind, free from concerns about rust or wear and tear, enhancing the durability of your bathing aid SMOOTH SLIDING WITH SECURE LOCKING FEATURE Experience ease of movement with the shower chair\u2019s seamless sliding functionality, coupled with a reliable locking system for safety. The chair\u2019s design includes a spacious seat, offering both comfort and convenience and making shower access smoother and safer TAILORABLE HEIGHT FOR INDIVIDUAL COMFORT The Vive Sliding Shower Chair offers customizable height adjustments, ranging from 21\u201d to 25,\u201d in half-inch increments. This feature allows users to find their ideal seating height, ensuring a comfortable and secure shower experience, and accommodating users of various statures ENHANCED SEATING FOR SHOWER SAFETY This chair\u2019s wide and comfortable seating area is designed to facilitate easier and safer entry and exit from the shower. Its thoughtful design not only prioritizes comfort but also enhances the overall safety and usability of the chair, catering to a wide range of mobility needs Customer Reviews Based on 23 reviews Write a review What is the weight capacity of the Vive Sliding Shower Chair? The chair is designed to support up to 300 pounds, providing sturdy and reliable support. Is the chair suitable for post-surgery recovery? Yes, it is perfect for post-surgery recovery, as well as for injury rehabilitation, managing chronic fatigue, and enhancing balance. Will the chair rust or corrode over time? No, it is constructed from corrosion-resistant anodized aluminum, which is designed to withstand frequent use without rusting or corroding. Can the chair\u2019s height be adjusted? Yes, the chair\u2019s height can be adjusted in half-inch increments, ranging from 21\u201d to 25\u201d, to accommodate different user heights. Is the Vive Sliding Shower Chair easy to use for elderly individuals? Yes. It is designed with senior users in mind, offering a dependable solution for shower mobility and assistance. How does the sliding mechanism work? The chair features a smooth sliding mechanism that allows effortless movement left and right along the sturdy frame, making it easy to position in the shower. Is the shower chair portable and easy to store? While the product description doesn\u2019t specify portability, its lightweight aluminum frame allows for simple handling and storage. What is included with the purchase of the Vive Sliding Shower Chair? The package includes 1 Vive Sliding Shower Chair. Does the Vive Sliding Chair come with any warranty? Yes, it comes with a 1-year guarantee, providing confidence in your purchase. Can the chair be used on different shower surfaces? The chair is designed to be versatile and should work well on various shower surfaces. However, always ensure stability before use. Uses: A shower bench/chair that sits on a slide so you can transfer in and out of the bath or shower while seated Dimensions: Seat: 18.5 inches in depth x 22.5 inches 30 x 8.3 x 19.1 inches 21-25 inches in height; overall length: 42 inches; maximum recommended weight: 300 lbs Weight: 16lbs Color: White Size(s): N/A Material(s): Plastic Aluminum Care Instructions: Spray down after use. Air dry or wipe dry What\u2019s Included: 1x Vive Sliding Shower Chair UPC:810113573700 Product Number: LVA3026WHT User Manual: Sliding Shower Chair"
+     },
+     "price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage_1b.jpg?v=1706642065"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/42835135070308:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage_1b.jpg?v=1706642065"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BSC",
+    "guarantee-one-year",
+    "TRA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7394104049764",
+   "title": "Shower Commode Transport Chair",
+   "description": {
+    "html": "A 1-year guarantee on the frame, a 6-month guarantee on the footrests, armrests, and wheels/wheel components, and a 90-day guarantee on the cushions. View Details > Features ALL-IN-ONE MULTIFUNCTIONAL SUPPORT CHAIR The Vive Shower Commode Transport Chair seamlessly integrates the functionalities of a shower chair, a commode, and a transport chair into a single efficient unit. This versatile chair simplifies mobility and care processes, significantly enhancing independence and comfort for users with mobility challenges ENHANCED SAFETY WITH LOCKABLE WHEELS Designed with user safety in mind, this chair features robust locking wheels that ensure smooth movement across different floor types and secure locking in place for safe transfers. These wheels provide reliable stability, reducing the risk of accidents and increasing confidence for both users and caregivers LIGHT AND DURABLE ALUMINUM CONSTRUCTION Crafted from premium lightweight aluminum, this transport chair is easy to handle and exceptionally durable. Its corrosion-resistant frame is perfectly suited for use in wet environments like the burden of heavy lifting ADJUSTABLE COMFORT FOR TAILORED SUPPORT With its generously cushioned seat and easily adjustable footrests, this chair can be customized to suit various body types and preferences. These features ensure that every user experiences tailored support and comfort, enhancing satisfaction during extended use EFFORTLESS CLEANING FOR OPTIMAL HYGIENE The Vive Shower Commode Transport Chair is designed for easy maintenance, featuring water-resistant materials that can be quickly wiped down. This helps to ensure a clean and safe environment with minimal effort, for both private and professional care setting Customer Reviews Based on 23 reviews Write a review What functions does the Vive Shower Commode Transport Chair serve? The Vive Shower Commode Transport Chair is a versatile 3-in-1 solution designed to serve as a shower chair, a commode, and a transport chair. This integration facilitates smooth transitions and enhances user independence in various caregiving environments. How secure is the chair during transfers? Equipped with sturdy locking wheels, the chair glides smoothly across different surfaces and locks firmly in place when needed. This feature enhances the chair\u2019s stability and safety, providing peace of mind for users and caregivers alike. Is the chair suitable for use in wet environments like showers? Absolutely. The chair is crafted from high-quality, lightweight, rust-resistant aluminum, making it ideal for use in moisture-rich environments such as showers or bathrooms. Can the seat and footrests be adjusted for different users? Yes, the chair features a wide, cushioned seat and adjustable footrests that can be tailored to accommodate various body sizes and preferences, ensuring personalized comfort and support for each user. What measures are in place to ensure easy maintenance and cleanliness? The Shower Commode Transport Chair is designed with non-porous surfaces that are quick to wipe down and resistant to water, ensuring easy cleaning and maintenance while maintaining high standards of hygiene. What is the weight capacity of the Vive Shower Commode Transport Chair? The chair can support up to 300 pounds, making it a robust and reliable choice for users. How does the chair enhance comfort for prolonged use? The chair\u2019s thick, wide cushioned seat reduces pressure points and provides substantial support, while the adjustable features like footrests enhance comfort, making prolonged use more enjoyable. Does the chair come with any accessories? Yes, the chair includes footrests for comfort and a commode bucket with a lid for functionality as a commode chair. Is the chair easy to assemble and disassemble for storage? Yes, the chair is designed for straightforward assembly with all the necessary tools provided. Its design also allows for easy disassembly, making it convenient to store when not in use. Uses: A commode and shower chair on wheels so it can transport the patient around as well. Similar to the reclining version except this one does not recline Dimensions: Seat Height: 20.5\u201d - 22.5\u201d Seat dims: 17 x 17\u201d Bucket: 12 x 9 x 5.5\u201dDeep Footrest Distance from seat: 14\u201d-17\u201d Wheels: 4\u201d Weight: 19 lbs Color: White Grey Size(s): N/A Material(s): Aluminum Care Instructions: Wipe down after use What\u2019s Included: 1x chair with footrests 1x commode bucket with lid UPC: 810113576152 Product Number: MOB1090SLV"
+   },
+   "url": "https://www.vivehealth.com/products/shower-commode-transport-chair",
+   "handle": "shower-commode-transport-chair",
+   "price_range": {
+    "min": {
+     "amount": 16899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 22999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 22999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42844982739044",
+     "sku": "MOB1090",
+     "title": "Default Title",
+     "description": {
+      "html": "A 1-year guarantee on the frame, a 6-month guarantee on the footrests, armrests, and wheels/wheel components, and a 90-day guarantee on the cushions. View Details > Features ALL-IN-ONE MULTIFUNCTIONAL SUPPORT CHAIR The Vive Shower Commode Transport Chair seamlessly integrates the functionalities of a shower chair, a commode, and a transport chair into a single efficient unit. This versatile chair simplifies mobility and care processes, significantly enhancing independence and comfort for users with mobility challenges ENHANCED SAFETY WITH LOCKABLE WHEELS Designed with user safety in mind, this chair features robust locking wheels that ensure smooth movement across different floor types and secure locking in place for safe transfers. These wheels provide reliable stability, reducing the risk of accidents and increasing confidence for both users and caregivers LIGHT AND DURABLE ALUMINUM CONSTRUCTION Crafted from premium lightweight aluminum, this transport chair is easy to handle and exceptionally durable. Its corrosion-resistant frame is perfectly suited for use in wet environments like the burden of heavy lifting ADJUSTABLE COMFORT FOR TAILORED SUPPORT With its generously cushioned seat and easily adjustable footrests, this chair can be customized to suit various body types and preferences. These features ensure that every user experiences tailored support and comfort, enhancing satisfaction during extended use EFFORTLESS CLEANING FOR OPTIMAL HYGIENE The Vive Shower Commode Transport Chair is designed for easy maintenance, featuring water-resistant materials that can be quickly wiped down. This helps to ensure a clean and safe environment with minimal effort, for both private and professional care setting Customer Reviews Based on 23 reviews Write a review What functions does the Vive Shower Commode Transport Chair serve? The Vive Shower Commode Transport Chair is a versatile 3-in-1 solution designed to serve as a shower chair, a commode, and a transport chair. This integration facilitates smooth transitions and enhances user independence in various caregiving environments. How secure is the chair during transfers? Equipped with sturdy locking wheels, the chair glides smoothly across different surfaces and locks firmly in place when needed. This feature enhances the chair\u2019s stability and safety, providing peace of mind for users and caregivers alike. Is the chair suitable for use in wet environments like showers? Absolutely. The chair is crafted from high-quality, lightweight, rust-resistant aluminum, making it ideal for use in moisture-rich environments such as showers or bathrooms. Can the seat and footrests be adjusted for different users? Yes, the chair features a wide, cushioned seat and adjustable footrests that can be tailored to accommodate various body sizes and preferences, ensuring personalized comfort and support for each user. What measures are in place to ensure easy maintenance and cleanliness? The Shower Commode Transport Chair is designed with non-porous surfaces that are quick to wipe down and resistant to water, ensuring easy cleaning and maintenance while maintaining high standards of hygiene. What is the weight capacity of the Vive Shower Commode Transport Chair? The chair can support up to 300 pounds, making it a robust and reliable choice for users. How does the chair enhance comfort for prolonged use? The chair\u2019s thick, wide cushioned seat reduces pressure points and provides substantial support, while the adjustable features like footrests enhance comfort, making prolonged use more enjoyable. Does the chair come with any accessories? Yes, the chair includes footrests for comfort and a commode bucket with a lid for functionality as a commode chair. Is the chair easy to assemble and disassemble for storage? Yes, the chair is designed for straightforward assembly with all the necessary tools provided. Its design also allows for easy disassembly, making it convenient to store when not in use. Uses: A commode and shower chair on wheels so it can transport the patient around as well. Similar to the reclining version except this one does not recline Dimensions: Seat Height: 20.5\u201d - 22.5\u201d Seat dims: 17 x 17\u201d Bucket: 12 x 9 x 5.5\u201dDeep Footrest Distance from seat: 14\u201d-17\u201d Wheels: 4\u201d Weight: 19 lbs Color: White Grey Size(s): N/A Material(s): Aluminum Care Instructions: Wipe down after use What\u2019s Included: 1x chair with footrests 1x commode bucket with lid UPC: 810113576152 Product Number: MOB1090SLV"
+     },
+     "price": {
+      "amount": 16899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/image1_3fe75875-3612-45d0-aede-ce9222c88fcf.jpg?v=1724184268"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/42844982739044:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/image1_3fe75875-3612-45d0-aede-ce9222c88fcf.jpg?v=1724184268",
+     "alt_text": "Shower Commode Transport Chair"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCO",
+    "BSC",
+    "guarantee-one-year",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15147729682795",
+   "title": "Shower Chair with Arms",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features STEADY AND RELIABLE SUPPORT A wide, thoughtfully shaped seat supports up to 300 lbs, giving you room to sit comfortably without feeling cramped. Padded armrests on either side offer something sturdy to hold onto while sitting down or standing up, and rubber anti-skid tips keep the chair grounded even when the floor gets slick. MADE TO WITHSTAND EXPOSURE TO WATER This chair's aluminum frame resists rust and corrosion, so it holds up beautifully to daily splashes and steam without breaking down. Lightweight yet sturdy, it's built for the long haul in even the most humid bathroom environments. ADJUSTS TO FIT YOUR SPACE With a seat height that ranges from 16\" to 21\", this chair adapts to your shower, your height, and your comfort preferences. COMFORTABLE AND NON-SLIP DESIGN A softly textured, contoured seat feels good to sit on, while drainage holes let water pass through instead of pooling beneath you, helping keep things safer and more comfortable with every use. NO TOOLS, NO HASSLE Assembly takes just minutes with zero tools required, and both the legs and armrests detach easily whenever you need to store the chair or take it along for travel. Customer Reviews Based on 23 reviews Write a review How much weight can this shower chair support? This shower chair has a weight capacity of 300 lbs, thanks to its extra-wide, ergonomically designed seat. Does this shower chair have a backrest? No, this model does not include a backrest. It features a wide seat with padded armrests for secure, comfortable support while sitting or standing. Is the seat height adjustable? Yes, the seat height adjusts from 16\" to 21\", allowing you to customize the fit for your shower space or personal comfort. What is the frame made of? The frame is made from corrosion-resistant aluminum, making it lightweight and built to withstand regular exposure to water without rusting. Does this chair have non-slip features? Yes, each leg is fitted with rubber non-slip, anti-skid tips for added stability, and the seat includes drainage holes to help reduce slipping from pooled water. What is the seat made of? The seat is made from a lightly textured composite material, contoured for comfort and designed to resist slipping even when wet. Is assembly required? Yes, but assembly is quick and completely tool-free; no tools are needed to set up the chair. Can the armrests and legs be removed? Yes, the armrests and legs can be removed without tools, making the chair easy to store or take with you when traveling. Is this shower chair easy to store or travel with? Yes, the tool-free removal of the legs and armrests makes this chair compact and convenient for storage or travel. Is this product covered by a guarantee? Yes, this product is covered by a 60-day guarantee so you can purchase confidently knowing this product is designed to meet your needs. Uses: An adjustable shower chair with a drainage seat, arm rests, and non-slip feet. Dimensions: 16 in x 13 in seat 16-21\u201d seat height (adjustable) 17.75 in x 17 in base legs Weight: 6 lbs Color White and silver Size(s) One size Material (s) Rust-resistant aluminum Plastic Foam What\u2019s Included: 1x Vive Shower Chair with Arms UPC: Product Number: LVA3127 Shipping Weight:"
+   },
+   "url": "https://www.vivehealth.com/products/shower-chair-with-arms",
+   "handle": "shower-chair-with-arms",
+   "price_range": {
+    "min": {
+     "amount": 5299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5299,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/53623249076587",
+     "sku": "LVA3127",
+     "title": "Default Title",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features STEADY AND RELIABLE SUPPORT A wide, thoughtfully shaped seat supports up to 300 lbs, giving you room to sit comfortably without feeling cramped. Padded armrests on either side offer something sturdy to hold onto while sitting down or standing up, and rubber anti-skid tips keep the chair grounded even when the floor gets slick. MADE TO WITHSTAND EXPOSURE TO WATER This chair's aluminum frame resists rust and corrosion, so it holds up beautifully to daily splashes and steam without breaking down. Lightweight yet sturdy, it's built for the long haul in even the most humid bathroom environments. ADJUSTS TO FIT YOUR SPACE With a seat height that ranges from 16\" to 21\", this chair adapts to your shower, your height, and your comfort preferences. COMFORTABLE AND NON-SLIP DESIGN A softly textured, contoured seat feels good to sit on, while drainage holes let water pass through instead of pooling beneath you, helping keep things safer and more comfortable with every use. NO TOOLS, NO HASSLE Assembly takes just minutes with zero tools required, and both the legs and armrests detach easily whenever you need to store the chair or take it along for travel. Customer Reviews Based on 23 reviews Write a review How much weight can this shower chair support? This shower chair has a weight capacity of 300 lbs, thanks to its extra-wide, ergonomically designed seat. Does this shower chair have a backrest? No, this model does not include a backrest. It features a wide seat with padded armrests for secure, comfortable support while sitting or standing. Is the seat height adjustable? Yes, the seat height adjusts from 16\" to 21\", allowing you to customize the fit for your shower space or personal comfort. What is the frame made of? The frame is made from corrosion-resistant aluminum, making it lightweight and built to withstand regular exposure to water without rusting. Does this chair have non-slip features? Yes, each leg is fitted with rubber non-slip, anti-skid tips for added stability, and the seat includes drainage holes to help reduce slipping from pooled water. What is the seat made of? The seat is made from a lightly textured composite material, contoured for comfort and designed to resist slipping even when wet. Is assembly required? Yes, but assembly is quick and completely tool-free; no tools are needed to set up the chair. Can the armrests and legs be removed? Yes, the armrests and legs can be removed without tools, making the chair easy to store or take with you when traveling. Is this shower chair easy to store or travel with? Yes, the tool-free removal of the legs and armrests makes this chair compact and convenient for storage or travel. Is this product covered by a guarantee? Yes, this product is covered by a 60-day guarantee so you can purchase confidently knowing this product is designed to meet your needs. Uses: An adjustable shower chair with a drainage seat, arm rests, and non-slip feet. Dimensions: 16 in x 13 in seat 16-21\u201d seat height (adjustable) 17.75 in x 17 in base legs Weight: 6 lbs Color White and silver Size(s) One size Material (s) Rust-resistant aluminum Plastic Foam What\u2019s Included: 1x Vive Shower Chair with Arms UPC: Product Number: LVA3127 Shipping Weight:"
+     },
+     "price": {
+      "amount": 5299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1cMainImage_cc58ceae-19e3-4a25-bb64-59160462372f.jpg?v=1788987704"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/53623249076587:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1cMainImage_cc58ceae-19e3-4a25-bb64-59160462372f.jpg?v=1788987704",
+     "alt_text": "Shower Chair with Arms"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BSC",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14771603505515",
+   "title": "EasyRinse Shower Chair",
+   "description": {
+    "html": "One Year Guarantee View Details > Features IMPROVED HYGIENE The split underseat design of this ergonomic shower chair allows users to comfortably reach for personal care and cleaning tasks. This feature improves independence, making it especially helpful for seniors, adults, and people with limited mobility. SECURE AND STABLE Large, non-slip rubber feet keep the shower chair firmly in place, even on wet or slippery bathroom floors. Its stable base greatly reduces the chance of accidents, giving both users and caregivers extra confidence during every shower. SPACE-SAVING DESIGN With a convenient folding frame, this shower chair collapses in seconds for quick storage or transport. Its compact shape is perfect for small bathrooms, apartments, or travel, offering reliable bath safety without taking up excess space. STRONG RUST-FREE FRAME Built from lightweight yet durable aluminum, this shower chair combines strength with easy handling. The rust-resistant frame ensures long-lasting performance, making it a dependable solution for everyday bathroom safety. ADJUSTABLE AND COMFORTABLE A cushioned, height-adjustable seat provides customized comfort for each user. This feature ensures a safer, more enjoyable shower experience, supporting seniors and individuals with mobility challenges over the long term. Customer Reviews Based on 23 reviews Write a review What makes the Vive Easy Rinse Shower Chair different from standard shower chairs? The Vive Easy Rinse Shower Chair features a unique split underseat design that allows easier reaching for personal care tasks, making hygiene management simpler and more effective. Unlike standard bath seats, this ergonomic design promotes independence for seniors, adults, and individuals with limited mobility. Is the shower chair safe to use on wet bathroom floors? Yes, the chair is designed with oversized non-slip feet that securely grip wet and slippery surfaces. This added stability reduces the risk of falls, providing peace of mind for both users and caregivers during every shower. Can this shower chair be folded for storage or travel? Absolutely. The Vive Easy Rinse Shower Chair has a compact front-folding frame that quickly collapses for easy storage in small bathrooms or closets. Its lightweight, portable design also makes it convenient to take along when traveling. What materials is the shower chair made from? This shower chair is built with a durable, lightweight aluminum frame that is completely rust-resistant. The anti-corrosion materials ensure the chair remains strong and reliable even with daily use in wet environments. Is the seat adjustable for different users? Yes, the cushioned seat is height-adjustable to fit a wide range of users. This customization ensures a safer, more comfortable fit, making showering easier and more enjoyable. Who is this shower chair best suited for? The chair is ideal for seniors, adults, and individuals with limited mobility who need extra support while bathing. It also works well for caregivers who want a safe, hygienic, and reliable bath safety solution for their loved ones. How much weight can the Vive Easy Rinse Shower Chair support? The chair is designed with a sturdy frame that supports everyday use. For exact weight capacity specifications, please refer to the product\u2019s technical details, but it is built to accommodate most users safely. Is the shower chair comfortable for long-term use? Yes, comfort is a key feature of this chair. The cushioned seat and ergonomic design provide reliable support, while the height-adjustable settings allow each user to find their ideal fit for daily use. How easy is it to clean and maintain the shower chair? The split underseat design makes personal hygiene tasks easier, while the aluminum frame resists rust and corrosion. A quick wipe-down after use is usually enough to keep the chair clean and sanitary. What kind of guarantee does this product come with? The Vive Easy Rinse Shower Chair comes with a customer satisfaction guarantee, giving you confidence in your purchase. If you are not completely satisfied, you can take advantage of the Vive Guarantee for a hassle-free resolution. Uses: A folding shower chair with a split in the middle of the seat to make it easier to wipe and maintain hygiene. Dimensions: Handle Height: 5\u201d from seat Base Dims (Unfolded): 23 L x 22 W Dims when folded: 10 L x 22 W Overall height: 27-31\u201d (32-36\u201d when folded) Seat Height: 15-19\u201d Seat Dims: 13.5 Deep x 16.5w Backrest Size: 20\u201dw Width between handles (Applies if there is a seat): 17.25\u201d Open area depth: 4\u201d Weight: 8lbs Color White/Grey Size(s) One size Material (s) Aluminum, Plastic Care Instructions: Wipe with a damp cloth as needed. Wipe dry. What\u2019s Included: 1x Vive Easy Rinse Shower Chair UPC: 810178882878 Product Number: LVA3095GRY Shipping Weight: 8 lbs User Manual: Easy Rinse Shower Chair"
+   },
+   "url": "https://www.vivehealth.com/products/easyrinse-shower-chair",
+   "handle": "easyrinse-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 8999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/52376203657579",
+     "sku": "LVA3095GRY",
+     "title": "Default Title",
+     "description": {
+      "html": "One Year Guarantee View Details > Features IMPROVED HYGIENE The split underseat design of this ergonomic shower chair allows users to comfortably reach for personal care and cleaning tasks. This feature improves independence, making it especially helpful for seniors, adults, and people with limited mobility. SECURE AND STABLE Large, non-slip rubber feet keep the shower chair firmly in place, even on wet or slippery bathroom floors. Its stable base greatly reduces the chance of accidents, giving both users and caregivers extra confidence during every shower. SPACE-SAVING DESIGN With a convenient folding frame, this shower chair collapses in seconds for quick storage or transport. Its compact shape is perfect for small bathrooms, apartments, or travel, offering reliable bath safety without taking up excess space. STRONG RUST-FREE FRAME Built from lightweight yet durable aluminum, this shower chair combines strength with easy handling. The rust-resistant frame ensures long-lasting performance, making it a dependable solution for everyday bathroom safety. ADJUSTABLE AND COMFORTABLE A cushioned, height-adjustable seat provides customized comfort for each user. This feature ensures a safer, more enjoyable shower experience, supporting seniors and individuals with mobility challenges over the long term. Customer Reviews Based on 23 reviews Write a review What makes the Vive Easy Rinse Shower Chair different from standard shower chairs? The Vive Easy Rinse Shower Chair features a unique split underseat design that allows easier reaching for personal care tasks, making hygiene management simpler and more effective. Unlike standard bath seats, this ergonomic design promotes independence for seniors, adults, and individuals with limited mobility. Is the shower chair safe to use on wet bathroom floors? Yes, the chair is designed with oversized non-slip feet that securely grip wet and slippery surfaces. This added stability reduces the risk of falls, providing peace of mind for both users and caregivers during every shower. Can this shower chair be folded for storage or travel? Absolutely. The Vive Easy Rinse Shower Chair has a compact front-folding frame that quickly collapses for easy storage in small bathrooms or closets. Its lightweight, portable design also makes it convenient to take along when traveling. What materials is the shower chair made from? This shower chair is built with a durable, lightweight aluminum frame that is completely rust-resistant. The anti-corrosion materials ensure the chair remains strong and reliable even with daily use in wet environments. Is the seat adjustable for different users? Yes, the cushioned seat is height-adjustable to fit a wide range of users. This customization ensures a safer, more comfortable fit, making showering easier and more enjoyable. Who is this shower chair best suited for? The chair is ideal for seniors, adults, and individuals with limited mobility who need extra support while bathing. It also works well for caregivers who want a safe, hygienic, and reliable bath safety solution for their loved ones. How much weight can the Vive Easy Rinse Shower Chair support? The chair is designed with a sturdy frame that supports everyday use. For exact weight capacity specifications, please refer to the product\u2019s technical details, but it is built to accommodate most users safely. Is the shower chair comfortable for long-term use? Yes, comfort is a key feature of this chair. The cushioned seat and ergonomic design provide reliable support, while the height-adjustable settings allow each user to find their ideal fit for daily use. How easy is it to clean and maintain the shower chair? The split underseat design makes personal hygiene tasks easier, while the aluminum frame resists rust and corrosion. A quick wipe-down after use is usually enough to keep the chair clean and sanitary. What kind of guarantee does this product come with? The Vive Easy Rinse Shower Chair comes with a customer satisfaction guarantee, giving you confidence in your purchase. If you are not completely satisfied, you can take advantage of the Vive Guarantee for a hassle-free resolution. Uses: A folding shower chair with a split in the middle of the seat to make it easier to wipe and maintain hygiene. Dimensions: Handle Height: 5\u201d from seat Base Dims (Unfolded): 23 L x 22 W Dims when folded: 10 L x 22 W Overall height: 27-31\u201d (32-36\u201d when folded) Seat Height: 15-19\u201d Seat Dims: 13.5 Deep x 16.5w Backrest Size: 20\u201dw Width between handles (Applies if there is a seat): 17.25\u201d Open area depth: 4\u201d Weight: 8lbs Color White/Grey Size(s) One size Material (s) Aluminum, Plastic Care Instructions: Wipe with a damp cloth as needed. Wipe dry. What\u2019s Included: 1x Vive Easy Rinse Shower Chair UPC: 810178882878 Product Number: LVA3095GRY Shipping Weight: 8 lbs User Manual: Easy Rinse Shower Chair"
+     },
+     "price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1bMainImage_43.jpg?v=1791543672"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52376203657579:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1bMainImage_43.jpg?v=1791543672",
+     "alt_text": "EasyRinse Shower Chair"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BSC",
+    "guarantee-one-year",
+    "Prop65"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7407124906084",
+   "title": "Reclining Shower Commode Transport Chair",
+   "description": {
+    "html": "One-Year Guarantee View Details > Product Description Simplify daily care routines with the Vive shower commode chair, a 3-in-1 design that combines a transport chair, shower chair and commode into one convenient unit. Built for post-operative, injured or immobile individuals, it weighs only 32 lbs while supporting up to 300 lbs, with smooth-rolling wheels and a reclining function that make everyday care far less demanding. The 35-degree reclining headrest makes hair washing more comfortable and the built-in commode opening with removable bucket means toileting is handled right in the chair. As a reclining shower wheelchair, the rust-proof aluminum frame holds up reliably in wet environments without losing stability. If you're looking at more bathroom care options, our bathroom safety collection has a range of products worth browsing. Seat height, headrest and footrest all adjust to fit different body types and the locking wheels keep this rolling commode shower chair firmly in place during transfers or bathing. Caregivers can roll it easily between rooms, making daily routines safer and more manageable for everyone involved. For broader transfer and patient care support, our Transfer Benches are also worth considering. Features Versatile 3-in-1 Design: Functions as transport chair, shower chair and commode\u2014one comprehensive solution for multiple daily care needs Adjustable 35-Degree Recline: Customizable tilt positioning enhances comfort during showers, hair washing and relaxation for optimal user experience Heavy-Duty 300 lb Capacity: Robust aluminum frame provides exceptional support for individuals recovering from surgery, injury, or requiring daily assistance Rust-Resistant Construction: Lightweight aluminum design withstands wet shower environments while remaining easy to maneuver at just 32 pounds Fully Adjustable Comfort: Customizable seat height, headrest position and footrest distance accommodate various body types and personal preferences Secure Locking Wheels: Smooth-rolling casters enable easy transport and lock firmly in place for safe, stable transfers and bathroom use Customer Reviews Based on 23 reviews Write a review What weight can the Vive Reclining Shower Commode Transport Chair support? The chair is built with a robust frame that can safely support up to 300 pounds, making it suitable for individuals recovering from surgery or those needing extra support during bathroom activities. Can the chair be adjusted for different reclining positions? Yes, the chair features a customizable recline up to 35 degrees, allowing you to adjust the tilt for various activities such as showering or relaxing, enhancing comfort and convenience for the user. What are the different functions of this chair? This versatile chair functions as a transport chair, a shower chair, and a commode, providing a three-in-one solution that adapts to your various daily needs. Is the chair comfortable for prolonged sitting? Absolutely. The chair is designed with adjustable features and a wide, cushioned seat, ensuring personalized comfort and support, making it ideal for prolonged use. How do I maintain the Vive Reclining Shower Commode Transport Chair? The chair is easy to maintain due to its high-quality, water-resistant materials. Simply wipe it down with standard cleaning agents to keep it hygienic and in top condition. What guarantees come with the Vive Reclining Shower Commode Transport Chair? The chair comes with a 1-year guarantee on the frame, a 6-month guarantee on the wheels, brakes, and accessories, and a 90-day guarantee on the upholstery, ensuring your purchase is protected. How does the reclining feature enhance the chair\u2019s usability? The reclining feature allows for easy adjustment of the user\u2019s position, which is particularly beneficial for tasks like hair washing or achieving a comfortable posture for relaxation and recovery. What makes the chair suitable for shower use? Constructed from lightweight, rust-resistant aluminum, the chair is ideal for use in wet environments like showers, providing durability and resistance against moisture. Can the chair be easily transported or stored? Yes, the lightweight design and locking wheels make it easy to maneuver and transport the chair across different surfaces, and it locks in place securely for safe transfers. What accessories are included with the chair? The chair includes a commode bucket, enhancing its functionality as a commode chair, and providing a comprehensive care solution in one package. Uses: 3-in-1 reclining shower chair, commode and transport chair Ideal for post-surgery or injury recovery Daily bathroom and shower assistance Room-to-room patient transport Perfect for individuals with limited mobility Dimensions: Seat Size: 17.25\" x 17\" Overall Height: 46\"-52\" Headrest Height from Seat: 23\"-27\" Seat Height: 22\"-24\" Footrest Distance from Seat: 15\"-17\" Commode Opening: 7.5\"-11\" Commode Bucket Size: 13\" x 8\" x 4.5\" Overall Size: 36\" x 18\" Weight: 32 lbs Maximum Weight Capacity: 300 pounds Color: White Materials: Lightweight aluminum frame Rust-resistant construction Water-resistant components High-quality, durable materials Features: Adjustable recline up to 35 degrees Multiple height adjustments Locking wheels for safety Smooth-rolling casters Built-in commode opening Removable commode bucket Adjustable headrest Adjustable footrests Padded armrests Wide, cushioned seat Care Instructions: Rinse any remaining soap after use Wipe down gently with standard cleaning agents Easy to maintain and keep hygienic Water-resistant materials simplify cleaning What's Included: 1x Reclining Shower Commode Transport Chair 1x Commode bucket User manual Guarantee Policy: Frame: 1 year Wheels: 6 months Brakes: 6 months Accessories: 6 months Upholstery: 90 days Product Information: UPC: 810113574219 Product Number: MOB1082WHT User Manual: Reclining Shower Commode"
+   },
+   "url": "https://www.vivehealth.com/products/reclining-shower-commode-transport-chair",
+   "handle": "reclining-shower-commode-transport-chair",
+   "price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51618401583467",
+     "sku": "MOB1082WHT",
+     "title": "White",
+     "description": {
+      "html": "One-Year Guarantee View Details > Product Description Simplify daily care routines with the Vive shower commode chair, a 3-in-1 design that combines a transport chair, shower chair and commode into one convenient unit. Built for post-operative, injured or immobile individuals, it weighs only 32 lbs while supporting up to 300 lbs, with smooth-rolling wheels and a reclining function that make everyday care far less demanding. The 35-degree reclining headrest makes hair washing more comfortable and the built-in commode opening with removable bucket means toileting is handled right in the chair. As a reclining shower wheelchair, the rust-proof aluminum frame holds up reliably in wet environments without losing stability. If you're looking at more bathroom care options, our bathroom safety collection has a range of products worth browsing. Seat height, headrest and footrest all adjust to fit different body types and the locking wheels keep this rolling commode shower chair firmly in place during transfers or bathing. Caregivers can roll it easily between rooms, making daily routines safer and more manageable for everyone involved. For broader transfer and patient care support, our Transfer Benches are also worth considering. Features Versatile 3-in-1 Design: Functions as transport chair, shower chair and commode\u2014one comprehensive solution for multiple daily care needs Adjustable 35-Degree Recline: Customizable tilt positioning enhances comfort during showers, hair washing and relaxation for optimal user experience Heavy-Duty 300 lb Capacity: Robust aluminum frame provides exceptional support for individuals recovering from surgery, injury, or requiring daily assistance Rust-Resistant Construction: Lightweight aluminum design withstands wet shower environments while remaining easy to maneuver at just 32 pounds Fully Adjustable Comfort: Customizable seat height, headrest position and footrest distance accommodate various body types and personal preferences Secure Locking Wheels: Smooth-rolling casters enable easy transport and lock firmly in place for safe, stable transfers and bathroom use Customer Reviews Based on 23 reviews Write a review What weight can the Vive Reclining Shower Commode Transport Chair support? The chair is built with a robust frame that can safely support up to 300 pounds, making it suitable for individuals recovering from surgery or those needing extra support during bathroom activities. Can the chair be adjusted for different reclining positions? Yes, the chair features a customizable recline up to 35 degrees, allowing you to adjust the tilt for various activities such as showering or relaxing, enhancing comfort and convenience for the user. What are the different functions of this chair? This versatile chair functions as a transport chair, a shower chair, and a commode, providing a three-in-one solution that adapts to your various daily needs. Is the chair comfortable for prolonged sitting? Absolutely. The chair is designed with adjustable features and a wide, cushioned seat, ensuring personalized comfort and support, making it ideal for prolonged use. How do I maintain the Vive Reclining Shower Commode Transport Chair? The chair is easy to maintain due to its high-quality, water-resistant materials. Simply wipe it down with standard cleaning agents to keep it hygienic and in top condition. What guarantees come with the Vive Reclining Shower Commode Transport Chair? The chair comes with a 1-year guarantee on the frame, a 6-month guarantee on the wheels, brakes, and accessories, and a 90-day guarantee on the upholstery, ensuring your purchase is protected. How does the reclining feature enhance the chair\u2019s usability? The reclining feature allows for easy adjustment of the user\u2019s position, which is particularly beneficial for tasks like hair washing or achieving a comfortable posture for relaxation and recovery. What makes the chair suitable for shower use? Constructed from lightweight, rust-resistant aluminum, the chair is ideal for use in wet environments like showers, providing durability and resistance against moisture. Can the chair be easily transported or stored? Yes, the lightweight design and locking wheels make it easy to maneuver and transport the chair across different surfaces, and it locks in place securely for safe transfers. What accessories are included with the chair? The chair includes a commode bucket, enhancing its functionality as a commode chair, and providing a comprehensive care solution in one package. Uses: 3-in-1 reclining shower chair, commode and transport chair Ideal for post-surgery or injury recovery Daily bathroom and shower assistance Room-to-room patient transport Perfect for individuals with limited mobility Dimensions: Seat Size: 17.25\" x 17\" Overall Height: 46\"-52\" Headrest Height from Seat: 23\"-27\" Seat Height: 22\"-24\" Footrest Distance from Seat: 15\"-17\" Commode Opening: 7.5\"-11\" Commode Bucket Size: 13\" x 8\" x 4.5\" Overall Size: 36\" x 18\" Weight: 32 lbs Maximum Weight Capacity: 300 pounds Color: White Materials: Lightweight aluminum frame Rust-resistant construction Water-resistant components High-quality, durable materials Features: Adjustable recline up to 35 degrees Multiple height adjustments Locking wheels for safety Smooth-rolling casters Built-in commode opening Removable commode bucket Adjustable headrest Adjustable footrests Padded armrests Wide, cushioned seat Care Instructions: Rinse any remaining soap after use Wipe down gently with standard cleaning agents Easy to maintain and keep hygienic Water-resistant materials simplify cleaning What's Included: 1x Reclining Shower Commode Transport Chair 1x Commode bucket User manual Guarantee Policy: Frame: 1 year Wheels: 6 months Brakes: 6 months Accessories: 6 months Upholstery: 90 days Product Information: UPC: 810113574219 Product Number: MOB1082WHT User Manual: Reclining Shower Commode"
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage1.jpg?v=1707767186"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/51618401583467:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/CopyofImage1.jpg?v=1707767186"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCO",
+    "BSC",
+    "guarantee-one-year",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14742200254827",
+   "title": "4-in-1 Bariatric Commode Shower Chair",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features CONVENIENT SPACE-SAVING SOLUTION Works as a bedside commode, shower seat, toilet riser, and safety frame to support various hygiene needs. A convenient, space-saving option for seniors, caregivers, and limited-mobility users. REINFORCED BARIATRIC SUPPORT Sturdy aluminum construction safely holds up to 550 pounds without wobbling or bending. Ideal for bariatric patients and heavy-duty daily use in home or medical settings. EXTRA-WIDE ERGONOMIC SEAT Spacious seat design provides added comfort and stability for larger users. The contoured shape supports extended sitting without pressure or discomfort. REMOVABLE SANITARY BUCKET Features a detachable and collapsible commode bucket that slides in securely and lifts out easily. Simple to clean and maintain for caregivers and at-home users. SLIP-RESISTANT AND TRAVEL-FRIENDLY FRAME Rubber-tipped feet help prevent shifting on wet or slick surfaces to reduce fall risks. Lightweight at just 12.8 pounds, making it easy to carry or reposition. Customer Reviews Based on 23 reviews Write a review What are the 4 functions of this chair? This versatile chair functions as a bedside commode, shower chair, raised toilet seat, and toilet safety frame. It\u2019s ideal for anyone needing multi-use support in the bathroom. How much weight can the chair support? The reinforced aluminum frame is designed to safely support up to 550 pounds, making it suitable for bariatric and heavy-duty use. Is the commode bucket removable for cleaning? Yes, the collapsible bucket is easy to slide in and out when aligned properly. It\u2019s designed for quick and hygienic cleanup. Can the chair be used in the shower? Absolutely. The chair\u2019s water-resistant design and slip-resistant rubber feet make it safe for use in wet environments like the shower. How comfortable is the seat for extended use? The seat is extra wide and ergonomically shaped to provide comfort and support during longer periods of sitting, especially for larger individuals. Is the chair easy to move from room to room? Yes, the lightweight frame weighs just 12.8 pounds, making it easy to lift, carry, or reposition as needed. Does this chair require tools to assemble? The chair includes all necessary components and screws for easy assembly. A simple screwdriver is typically all that\u2019s needed. Will the chair scratch tile or bathroom floors? No, the non-marking rubber feet are designed to prevent slipping and protect floors from scratches or damage. Can I remove the backrest and armrests if needed? Yes, the backrest and armrests are detachable, allowing you to customize the chair setup based on your needs and preferences. Is there a warranty included with the purchase? Yes, your purchase is backed by the Vive 60-day guarantee, so you can buy with confidence and peace of mind. Uses: A chair that can be used as a bedside commode, a shower chair, a raised toilet seat, or a toilet safety frame for versatile bathroom support. Dimensions: Backrest Bar = 65.5cm Backrest W X H = 39.5 x 15cm Armrests Length = 35.5 Seat W x L = 58.5 x 46.5 Minimum Seat Height (From floor to top of seat) = 46cm Maximum Seat Height = 56cm 1 Inch Adjustments / 5 Adjustments total Bucket Diameter = 30.5cm Open Bucket Height = 17cm Closed Bucket Height = 6.5cm Weight: 12.8lbs Color: Grey (No other colors at this time) Size(s) One size Material (s) Aluminium, Polypropylene, HDPE, PE, PA6, Rubber, Stainless Steel, Zn Steel, Copper, EVA Care Instructions: Rinse and dry thoroughly after use in wet environments. Do not use harsh chemicals or bleach on any components. What\u2019s Included: 1x Seat 1x Backrest Assembly 2x Armrests 4x feet 12x screws 6x brackets UPC: 0810178883806 Product Number: LVA3105 Shipping Weight: 28 lbs. User Manual: 4-in-1 Bariatric Commode Shower Chair"
+   },
+   "url": "https://www.vivehealth.com/products/4-in-1-bariatric-commode-shower-chair",
+   "handle": "4-in-1-bariatric-commode-shower-chair",
+   "price_range": {
+    "min": {
+     "amount": 11999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/52220866265451",
+     "sku": "LVA3105",
+     "title": "Default Title",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features CONVENIENT SPACE-SAVING SOLUTION Works as a bedside commode, shower seat, toilet riser, and safety frame to support various hygiene needs. A convenient, space-saving option for seniors, caregivers, and limited-mobility users. REINFORCED BARIATRIC SUPPORT Sturdy aluminum construction safely holds up to 550 pounds without wobbling or bending. Ideal for bariatric patients and heavy-duty daily use in home or medical settings. EXTRA-WIDE ERGONOMIC SEAT Spacious seat design provides added comfort and stability for larger users. The contoured shape supports extended sitting without pressure or discomfort. REMOVABLE SANITARY BUCKET Features a detachable and collapsible commode bucket that slides in securely and lifts out easily. Simple to clean and maintain for caregivers and at-home users. SLIP-RESISTANT AND TRAVEL-FRIENDLY FRAME Rubber-tipped feet help prevent shifting on wet or slick surfaces to reduce fall risks. Lightweight at just 12.8 pounds, making it easy to carry or reposition. Customer Reviews Based on 23 reviews Write a review What are the 4 functions of this chair? This versatile chair functions as a bedside commode, shower chair, raised toilet seat, and toilet safety frame. It\u2019s ideal for anyone needing multi-use support in the bathroom. How much weight can the chair support? The reinforced aluminum frame is designed to safely support up to 550 pounds, making it suitable for bariatric and heavy-duty use. Is the commode bucket removable for cleaning? Yes, the collapsible bucket is easy to slide in and out when aligned properly. It\u2019s designed for quick and hygienic cleanup. Can the chair be used in the shower? Absolutely. The chair\u2019s water-resistant design and slip-resistant rubber feet make it safe for use in wet environments like the shower. How comfortable is the seat for extended use? The seat is extra wide and ergonomically shaped to provide comfort and support during longer periods of sitting, especially for larger individuals. Is the chair easy to move from room to room? Yes, the lightweight frame weighs just 12.8 pounds, making it easy to lift, carry, or reposition as needed. Does this chair require tools to assemble? The chair includes all necessary components and screws for easy assembly. A simple screwdriver is typically all that\u2019s needed. Will the chair scratch tile or bathroom floors? No, the non-marking rubber feet are designed to prevent slipping and protect floors from scratches or damage. Can I remove the backrest and armrests if needed? Yes, the backrest and armrests are detachable, allowing you to customize the chair setup based on your needs and preferences. Is there a warranty included with the purchase? Yes, your purchase is backed by the Vive 60-day guarantee, so you can buy with confidence and peace of mind. Uses: A chair that can be used as a bedside commode, a shower chair, a raised toilet seat, or a toilet safety frame for versatile bathroom support. Dimensions: Backrest Bar = 65.5cm Backrest W X H = 39.5 x 15cm Armrests Length = 35.5 Seat W x L = 58.5 x 46.5 Minimum Seat Height (From floor to top of seat) = 46cm Maximum Seat Height = 56cm 1 Inch Adjustments / 5 Adjustments total Bucket Diameter = 30.5cm Open Bucket Height = 17cm Closed Bucket Height = 6.5cm Weight: 12.8lbs Color: Grey (No other colors at this time) Size(s) One size Material (s) Aluminium, Polypropylene, HDPE, PE, PA6, Rubber, Stainless Steel, Zn Steel, Copper, EVA Care Instructions: Rinse and dry thoroughly after use in wet environments. Do not use harsh chemicals or bleach on any components. What\u2019s Included: 1x Seat 1x Backrest Assembly 2x Armrests 4x feet 12x screws 6x brackets UPC: 0810178883806 Product Number: LVA3105 Shipping Weight: 28 lbs. User Manual: 4-in-1 Bariatric Commode Shower Chair"
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1cMainImage_42.jpg?v=1794920530"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52220866265451:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1cMainImage_42.jpg?v=1794920530",
+     "alt_text": "4-in-1 Bariatric Commode Shower Chair"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCO",
+    "BSC",
+    "guarantee-60-day",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqb3hORGMwTWpJd01ESTFORGd5Tnl3aWNtVjJaWEp6WlNJNmRISjFaU3dpYjJabWMyVjBJam81ZlE9PSIsInBhZ2UiOjJ9"
+ },
+ "messages": []
+}

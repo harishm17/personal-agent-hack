@@ -1,0 +1,1819 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.vivehealth.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Vive Health",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.vivehealth.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "7634541"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "7634541"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/565327748",
+   "title": "Raised Toilet Seat",
+   "description": {
+    "html": "Lifetime Guarantee View Details > Features 5\u201d OF EXTRA HEIGHT Making it easy to safely sit down and stand up from any toilet SIMPLE TO USE Easy to install, remove, store and great for travel CONTOURED TO YOUR BODY Ergonomically designed for comfort STABILIZING HANDLES Lock tight latch securely installs handles for added support and confidence TOOL-FREE ASSEMBLY The adjustable knob latches securely without requiring tools for an easy setup EASY TO CLEAN Simply wipe down with a standard bathroom cleaner Customer Reviews Based on 23 reviews Write a review Will the raised toilet seat fit an elongated toilet? Yes, the raised toilet seat fits both standard toilets (16.5\") and elongated toilets (18.5\u201d). What are the dimensions of the raised toilet seat? The raised toilet seat is 18\u201dx16.5\u201dx5\u201d. How high is the raised toilet seat? The seat is 4.5\u201d high. How wide is it inside the handrails? There is 17\u201d of space between the handrails. What are the dimensions of the opening in the raised toilet seat? It is 9.5\u201dx8.5\u201d. How do I assemble and install the raised toilet seat? The toilet seat comes with two padded handrails. To assemble, slide the handrails into the slots on the side and lock in place. To install, lift the toilet lid and seat. Place the assembled raised toilet seat on the toilet with the lock in the front and the lip in the back under the bowl. Turn the knob counter-clockwise to tighten and secure in place. Hand tighten only. Are tools or hardware needed to install the raised toilet seat? No, tools and hardware are not needed. How do I secure the raised seat to the toilet? Make sure the lip in the back is under the bowl and the clamp attached to the front knob is against the bowl. Hand tighten the knob until the seat is secure. Which way should I turn the knob to lock the raised toilet seat? To lock the seat, turn the knob counter-clockwise. To loosen, turn clockwise. Are the handrails removable? Yes, the handrails are secured by a push pin. Just pin the pins in and slide the handrails out. How high are the handles? The handles are about 6\u201d high. Is the raised toilet seat padded? No, the seat is not padded. What is the raised toilet seat made of? The seat is made of durable and firm plastic. Do I need to remove the existing toilet seat or lid to install the raised toilet seat? In most toilets, you will not have to remove the existing toilet seat or lid to install the raised toilet seat. Will the existing toilet seat close down over the raised toilet seat? No, a lid will not fit over the raised toilet seat once installed. Will the raised toilet seat work on a one or two piece toilet? Yes, as long as the seat is no more than 18.5\u201d in diameter, the raised toilet seat should fit. Will the raised toilet seat wobble or feel loose? No, when properly installed, the raised toilet seat should be completely stable. If it feels loose, make sure the seat is perfectly centered over the bowl and retighten the lock. What is the weight limit? The raised toilet seat accommodates up to 250 pounds. Can I travel with the raised toilet seat? Yes, the raised toilet seat in lightweight and easy to transport. The seat should fit on any ADA standard hotel toilet under 18.5\u201d in diameter. Is the raised toilet easy to remove? Yes, just loosen the lock and lift up. How heavy is the raised toilet seat? The seat is about 5 pounds. Uses: Designed to aid in getting up from or sitting down on a toilet Fits both standard and elongated ADA compliant toilets Cleaning Instructions: Wipe down with wet cloth and mild soap or disinfectant. Air dry What\u2019s included: Single toilet seat Lifetime Warranty UPC: 683405234029 Product Number: LVA1011 Shipping Weight:5 lbs User Manual: Vive Raised Toilet Seat Manual"
+   },
+   "url": "https://www.vivehealth.com/products/raised-toilet-seat",
+   "handle": "raised-toilet-seat",
+   "price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/1818355268",
+     "sku": "LVA1011",
+     "title": "Default Title",
+     "description": {
+      "html": "Lifetime Guarantee View Details > Features 5\u201d OF EXTRA HEIGHT Making it easy to safely sit down and stand up from any toilet SIMPLE TO USE Easy to install, remove, store and great for travel CONTOURED TO YOUR BODY Ergonomically designed for comfort STABILIZING HANDLES Lock tight latch securely installs handles for added support and confidence TOOL-FREE ASSEMBLY The adjustable knob latches securely without requiring tools for an easy setup EASY TO CLEAN Simply wipe down with a standard bathroom cleaner Customer Reviews Based on 23 reviews Write a review Will the raised toilet seat fit an elongated toilet? Yes, the raised toilet seat fits both standard toilets (16.5\") and elongated toilets (18.5\u201d). What are the dimensions of the raised toilet seat? The raised toilet seat is 18\u201dx16.5\u201dx5\u201d. How high is the raised toilet seat? The seat is 4.5\u201d high. How wide is it inside the handrails? There is 17\u201d of space between the handrails. What are the dimensions of the opening in the raised toilet seat? It is 9.5\u201dx8.5\u201d. How do I assemble and install the raised toilet seat? The toilet seat comes with two padded handrails. To assemble, slide the handrails into the slots on the side and lock in place. To install, lift the toilet lid and seat. Place the assembled raised toilet seat on the toilet with the lock in the front and the lip in the back under the bowl. Turn the knob counter-clockwise to tighten and secure in place. Hand tighten only. Are tools or hardware needed to install the raised toilet seat? No, tools and hardware are not needed. How do I secure the raised seat to the toilet? Make sure the lip in the back is under the bowl and the clamp attached to the front knob is against the bowl. Hand tighten the knob until the seat is secure. Which way should I turn the knob to lock the raised toilet seat? To lock the seat, turn the knob counter-clockwise. To loosen, turn clockwise. Are the handrails removable? Yes, the handrails are secured by a push pin. Just pin the pins in and slide the handrails out. How high are the handles? The handles are about 6\u201d high. Is the raised toilet seat padded? No, the seat is not padded. What is the raised toilet seat made of? The seat is made of durable and firm plastic. Do I need to remove the existing toilet seat or lid to install the raised toilet seat? In most toilets, you will not have to remove the existing toilet seat or lid to install the raised toilet seat. Will the existing toilet seat close down over the raised toilet seat? No, a lid will not fit over the raised toilet seat once installed. Will the raised toilet seat work on a one or two piece toilet? Yes, as long as the seat is no more than 18.5\u201d in diameter, the raised toilet seat should fit. Will the raised toilet seat wobble or feel loose? No, when properly installed, the raised toilet seat should be completely stable. If it feels loose, make sure the seat is perfectly centered over the bowl and retighten the lock. What is the weight limit? The raised toilet seat accommodates up to 250 pounds. Can I travel with the raised toilet seat? Yes, the raised toilet seat in lightweight and easy to transport. The seat should fit on any ADA standard hotel toilet under 18.5\u201d in diameter. Is the raised toilet easy to remove? Yes, just loosen the lock and lift up. How heavy is the raised toilet seat? The seat is about 5 pounds. Uses: Designed to aid in getting up from or sitting down on a toilet Fits both standard and elongated ADA compliant toilets Cleaning Instructions: Wipe down with wet cloth and mild soap or disinfectant. Air dry What\u2019s included: Single toilet seat Lifetime Warranty UPC: 683405234029 Product Number: LVA1011 Shipping Weight:5 lbs User Manual: Vive Raised Toilet Seat Manual"
+     },
+     "price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1bMainImage_18.jpg?v=1785848546"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/1818355268:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1bMainImage_18.jpg?v=1785848546",
+     "alt_text": "Raised Toilet Seat"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ABRA",
+    "APSA",
+    "BTS",
+    "fsa-hsa",
+    "guarantee-lifetime",
+    "HLHA",
+    "HLHB",
+    "HLHF",
+    "HLHL",
+    "HLSH",
+    "HLTI",
+    "KACT",
+    "KMCT",
+    "KMTE",
+    "Prop65"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/552597749795",
+   "title": "Toilet Seat Riser",
+   "description": {
+    "html": "60 Day Guarantee View Details > Product Description The Vive toilet seat riser adds 3.5 inches of height to your existing toilet, making it easier to sit down and stand up without straining your knees, hips or back. Available in standard and elongated toilet riser sizes, it installs under your existing seat and lid using the included hardware with no tools needed. The split-resistant composite frame holds up to 350 lbs without shifting. This riser for the toilet is a practical pick for seniors, anyone recovering from hip or knee surgery, or people dealing with limited mobility day to day. The hinged design lifts up and out of the way for a full clean around the bowl, which most fixed risers don't offer. For extra support when standing, our Toilet Safety Rails pair well with this. The elongated toilet seat riser measures 19.25\" x 14\" while the standard fits a circular bowl at 17.25\" x 13.75\". Both sit 3.5\" tall and use butterfly nut hardware for a firm, stable fit on any toilet. For more styles and configurations, our Raised Toilet Seats collection is worth a look. Orders ship the same day if placed before 5pm and arrive within 1-2 days from our nearest warehouse. Features BATHROOM SAFETY SOLUTION Great solution for the elderly, those with limited mobility, and those recovering from hip, knee, or back surgery 3.5\u201d SEAT RISER Adds 3.5 inches of height to the toilet seat to reduce painful bending, twists, slips, and falls USE WITH EXISTING SEAT Safely fits under your existing seat and lid on any standard or elongated toilet without replacing anything HASSLE-FREE INSTALLATION Installs easily under an existing toilet seat using the included hardware in just a few minutes HINGED FOR EASY CLEANING Lift the lid, seat, and riser up and out of the way for convenient, thorough cleaning every time DURABLE COMPOSITE MATERIAL Durable, split-resistant composite material safely supports up to 350 pounds Customer Reviews Based on 23 reviews Write a review How wide is the hinged toilet seat riser? The raised toilet seat is 13.75\u201d wide. Does this riser sit under a regular toilet seat and lid? Yes! This riser is designed to be installed under a regular toilet seat and lid. Does this only fit on standard toilets? The raised toilet seat is available for both standard and elongated toilets. How do I know if my toilet is standard or elongated? Standard toilets are more circular and length and width measurements will be very close. Elongated toilets are more oval in appearance. The length of an elongated toilet will be several inches longer than the width. Does the seat riser come with toilet seat and lid? No, purchase only includes riser. You should attach your existing seat & lid to top of riser Why are there slots on the outside of the riser? The slots provide a handhold for raising the riser to an upright position. Will this fit my kohler toilet? Yes, the seat riser can be used with any standard size toilet. Is there a weight limit? Yes, the seat riser safely supports up to 350 pounds. Can this be used alone, without a regular toilet seat? Yes! The hinged toilet seat can be installed without a regular toilet seat and lid. It also comes with extra long hardware to fit a wider range of toilet sizes. How do I clean the seat riser? Hinged for easy cleaning, the seat riser should be wiped down with a traditional disinfectant solution. How do I attach this riser to my toilet? Remove the existing toilet seat and lid from the toilet and place the toilet seat riser on the rim of toilet. Attach the original toilet seat and lid on top of the toilet seat riser using the included hardware. Thread the screws through the holes in the back of the seat with the plastic washers on the top of each screw and the metal washers on the bottom. Tighten each screw with the butterfly nuts for a secure fit. Uses: Adds height to the toilet seat for stability and to reduce bending and twisting Dimensions Of Standard Seat: Length of seat from front to back: 17.25\" Length of seat inside from front to back: 11.25\" Width of seat from left to right: 13.75\" Width of seat inside from left to right: 9.75\"\u201d Height of seat: 3.5\u201d Thickness of seat: 2\u201d Dimensions Of Elongated Seat: Length of seat from front to back: 19.25\" Length of seat inside from front to back: 13.25\" Width of seat from left to right: 14\" Width of seat inside from left to right: 10.5\" Height of seat: 3.5\u201d Thickness of seat: 2\u201d Materials: Composite material How To Install: Remove the existing toilet seat and lid from the toilet Place the toilet seat riser on the rim of the toilet and center as necessary Attach the original toilet seat and lid on top of the toilet seat riser using the included hardware. Thread the screws through the holes in the back of the seat. The plastic washers are placed on the top of the screw and the metal washers are placed on the bottom. Tighten each screw with the butterfly nuts Care Instructions: Wipe down seat riser with a traditional disinfectant solution What\u2019s Included: Hinged toilet seat riser 2pc - 3/8\" bolts (6.125\u201d in length) 2pc round plastic washers 2pc round metal washers 2pc butterfly nuts 60 day guarantee UPC: 818323021288 (Standard); 818323021271 (Elongated) Product Number: LVA1070S (Standard); LVA1070E (Elongated) Shipping Weight: 4.1- 4.7 pounds User Manual: Toilet Seat Riser"
+   },
+   "url": "https://www.vivehealth.com/products/toilet-seat-riser",
+   "handle": "toilet-seat-riser",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/7073828241443",
+     "sku": "LVA1070S",
+     "title": "Standard",
+     "description": {
+      "html": "60 Day Guarantee View Details > Product Description The Vive toilet seat riser adds 3.5 inches of height to your existing toilet, making it easier to sit down and stand up without straining your knees, hips or back. Available in standard and elongated toilet riser sizes, it installs under your existing seat and lid using the included hardware with no tools needed. The split-resistant composite frame holds up to 350 lbs without shifting. This riser for the toilet is a practical pick for seniors, anyone recovering from hip or knee surgery, or people dealing with limited mobility day to day. The hinged design lifts up and out of the way for a full clean around the bowl, which most fixed risers don't offer. For extra support when standing, our Toilet Safety Rails pair well with this. The elongated toilet seat riser measures 19.25\" x 14\" while the standard fits a circular bowl at 17.25\" x 13.75\". Both sit 3.5\" tall and use butterfly nut hardware for a firm, stable fit on any toilet. For more styles and configurations, our Raised Toilet Seats collection is worth a look. Orders ship the same day if placed before 5pm and arrive within 1-2 days from our nearest warehouse. Features BATHROOM SAFETY SOLUTION Great solution for the elderly, those with limited mobility, and those recovering from hip, knee, or back surgery 3.5\u201d SEAT RISER Adds 3.5 inches of height to the toilet seat to reduce painful bending, twists, slips, and falls USE WITH EXISTING SEAT Safely fits under your existing seat and lid on any standard or elongated toilet without replacing anything HASSLE-FREE INSTALLATION Installs easily under an existing toilet seat using the included hardware in just a few minutes HINGED FOR EASY CLEANING Lift the lid, seat, and riser up and out of the way for convenient, thorough cleaning every time DURABLE COMPOSITE MATERIAL Durable, split-resistant composite material safely supports up to 350 pounds Customer Reviews Based on 23 reviews Write a review How wide is the hinged toilet seat riser? The raised toilet seat is 13.75\u201d wide. Does this riser sit under a regular toilet seat and lid? Yes! This riser is designed to be installed under a regular toilet seat and lid. Does this only fit on standard toilets? The raised toilet seat is available for both standard and elongated toilets. How do I know if my toilet is standard or elongated? Standard toilets are more circular and length and width measurements will be very close. Elongated toilets are more oval in appearance. The length of an elongated toilet will be several inches longer than the width. Does the seat riser come with toilet seat and lid? No, purchase only includes riser. You should attach your existing seat & lid to top of riser Why are there slots on the outside of the riser? The slots provide a handhold for raising the riser to an upright position. Will this fit my kohler toilet? Yes, the seat riser can be used with any standard size toilet. Is there a weight limit? Yes, the seat riser safely supports up to 350 pounds. Can this be used alone, without a regular toilet seat? Yes! The hinged toilet seat can be installed without a regular toilet seat and lid. It also comes with extra long hardware to fit a wider range of toilet sizes. How do I clean the seat riser? Hinged for easy cleaning, the seat riser should be wiped down with a traditional disinfectant solution. How do I attach this riser to my toilet? Remove the existing toilet seat and lid from the toilet and place the toilet seat riser on the rim of toilet. Attach the original toilet seat and lid on top of the toilet seat riser using the included hardware. Thread the screws through the holes in the back of the seat with the plastic washers on the top of each screw and the metal washers on the bottom. Tighten each screw with the butterfly nuts for a secure fit. Uses: Adds height to the toilet seat for stability and to reduce bending and twisting Dimensions Of Standard Seat: Length of seat from front to back: 17.25\" Length of seat inside from front to back: 11.25\" Width of seat from left to right: 13.75\" Width of seat inside from left to right: 9.75\"\u201d Height of seat: 3.5\u201d Thickness of seat: 2\u201d Dimensions Of Elongated Seat: Length of seat from front to back: 19.25\" Length of seat inside from front to back: 13.25\" Width of seat from left to right: 14\" Width of seat inside from left to right: 10.5\" Height of seat: 3.5\u201d Thickness of seat: 2\u201d Materials: Composite material How To Install: Remove the existing toilet seat and lid from the toilet Place the toilet seat riser on the rim of the toilet and center as necessary Attach the original toilet seat and lid on top of the toilet seat riser using the included hardware. Thread the screws through the holes in the back of the seat. The plastic washers are placed on the top of the screw and the metal washers are placed on the bottom. Tighten each screw with the butterfly nuts Care Instructions: Wipe down seat riser with a traditional disinfectant solution What\u2019s Included: Hinged toilet seat riser 2pc - 3/8\" bolts (6.125\u201d in length) 2pc round plastic washers 2pc round metal washers 2pc butterfly nuts 60 day guarantee UPC: 818323021288 (Standard); 818323021271 (Elongated) Product Number: LVA1070S (Standard); LVA1070E (Elongated) Shipping Weight: 4.1- 4.7 pounds User Manual: Toilet Seat Riser"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Shape",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_28_59ddc903-283e-4e71-8dda-1e5cb7b44259.jpg?v=1785848478"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/7073828241443:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/7077768331299",
+     "sku": "LVA1070E",
+     "title": "Elongated",
+     "description": {
+      "html": "60 Day Guarantee View Details > Product Description The Vive toilet seat riser adds 3.5 inches of height to your existing toilet, making it easier to sit down and stand up without straining your knees, hips or back. Available in standard and elongated toilet riser sizes, it installs under your existing seat and lid using the included hardware with no tools needed. The split-resistant composite frame holds up to 350 lbs without shifting. This riser for the toilet is a practical pick for seniors, anyone recovering from hip or knee surgery, or people dealing with limited mobility day to day. The hinged design lifts up and out of the way for a full clean around the bowl, which most fixed risers don't offer. For extra support when standing, our Toilet Safety Rails pair well with this. The elongated toilet seat riser measures 19.25\" x 14\" while the standard fits a circular bowl at 17.25\" x 13.75\". Both sit 3.5\" tall and use butterfly nut hardware for a firm, stable fit on any toilet. For more styles and configurations, our Raised Toilet Seats collection is worth a look. Orders ship the same day if placed before 5pm and arrive within 1-2 days from our nearest warehouse. Features BATHROOM SAFETY SOLUTION Great solution for the elderly, those with limited mobility, and those recovering from hip, knee, or back surgery 3.5\u201d SEAT RISER Adds 3.5 inches of height to the toilet seat to reduce painful bending, twists, slips, and falls USE WITH EXISTING SEAT Safely fits under your existing seat and lid on any standard or elongated toilet without replacing anything HASSLE-FREE INSTALLATION Installs easily under an existing toilet seat using the included hardware in just a few minutes HINGED FOR EASY CLEANING Lift the lid, seat, and riser up and out of the way for convenient, thorough cleaning every time DURABLE COMPOSITE MATERIAL Durable, split-resistant composite material safely supports up to 350 pounds Customer Reviews Based on 23 reviews Write a review How wide is the hinged toilet seat riser? The raised toilet seat is 13.75\u201d wide. Does this riser sit under a regular toilet seat and lid? Yes! This riser is designed to be installed under a regular toilet seat and lid. Does this only fit on standard toilets? The raised toilet seat is available for both standard and elongated toilets. How do I know if my toilet is standard or elongated? Standard toilets are more circular and length and width measurements will be very close. Elongated toilets are more oval in appearance. The length of an elongated toilet will be several inches longer than the width. Does the seat riser come with toilet seat and lid? No, purchase only includes riser. You should attach your existing seat & lid to top of riser Why are there slots on the outside of the riser? The slots provide a handhold for raising the riser to an upright position. Will this fit my kohler toilet? Yes, the seat riser can be used with any standard size toilet. Is there a weight limit? Yes, the seat riser safely supports up to 350 pounds. Can this be used alone, without a regular toilet seat? Yes! The hinged toilet seat can be installed without a regular toilet seat and lid. It also comes with extra long hardware to fit a wider range of toilet sizes. How do I clean the seat riser? Hinged for easy cleaning, the seat riser should be wiped down with a traditional disinfectant solution. How do I attach this riser to my toilet? Remove the existing toilet seat and lid from the toilet and place the toilet seat riser on the rim of toilet. Attach the original toilet seat and lid on top of the toilet seat riser using the included hardware. Thread the screws through the holes in the back of the seat with the plastic washers on the top of each screw and the metal washers on the bottom. Tighten each screw with the butterfly nuts for a secure fit. Uses: Adds height to the toilet seat for stability and to reduce bending and twisting Dimensions Of Standard Seat: Length of seat from front to back: 17.25\" Length of seat inside from front to back: 11.25\" Width of seat from left to right: 13.75\" Width of seat inside from left to right: 9.75\"\u201d Height of seat: 3.5\u201d Thickness of seat: 2\u201d Dimensions Of Elongated Seat: Length of seat from front to back: 19.25\" Length of seat inside from front to back: 13.25\" Width of seat from left to right: 14\" Width of seat inside from left to right: 10.5\" Height of seat: 3.5\u201d Thickness of seat: 2\u201d Materials: Composite material How To Install: Remove the existing toilet seat and lid from the toilet Place the toilet seat riser on the rim of the toilet and center as necessary Attach the original toilet seat and lid on top of the toilet seat riser using the included hardware. Thread the screws through the holes in the back of the seat. The plastic washers are placed on the top of the screw and the metal washers are placed on the bottom. Tighten each screw with the butterfly nuts Care Instructions: Wipe down seat riser with a traditional disinfectant solution What\u2019s Included: Hinged toilet seat riser 2pc - 3/8\" bolts (6.125\u201d in length) 2pc round plastic washers 2pc round metal washers 2pc butterfly nuts 60 day guarantee UPC: 818323021288 (Standard); 818323021271 (Elongated) Product Number: LVA1070S (Standard); LVA1070E (Elongated) Shipping Weight: 4.1- 4.7 pounds User Manual: Toilet Seat Riser"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Shape",
+       "label": "Elongated"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_29.jpg?v=1785848471"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/7077768331299:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Shape",
+     "values": [
+      {
+       "label": "Standard"
+      },
+      {
+       "label": "Elongated"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_29.jpg?v=1785848471",
+     "alt_text": "Toilet Seat Riser"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ABRA",
+    "APSA",
+    "bestseller",
+    "BTS",
+    "fsa-hsa",
+    "guarantee-60-day",
+    "HLHA",
+    "HLHB",
+    "HLHF",
+    "HLHL",
+    "HLSH",
+    "HLTI",
+    "KACT",
+    "KMCT",
+    "KMTE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/551050903587",
+   "title": "Toilet Seat Riser with Arms",
+   "description": {
+    "html": "Lifetime Guarantee View Details > Product Description Regain bathroom independence with the Raised Toilet Seat with Handles from Vive Health. Our toilet seat riser with handles lifts you 3.5 inches higher to eliminate painful squatting and twisting. Where regular bowls sit too low, this high toilet seat for elderly brings comfort within reach for post-surgery recovery and daily mobility needs. Built from crack-resistant composite, our riser for toilet seat holds 300 pounds while fitting under your current seat. Padded aluminum handles on this toilet seat with arms give you solid grip points when lowering down or pushing up. Choose standard or elongated sizing for this adaptive toilet seat that installs in minutes without tools. Foam-covered arms on these handicapped toilet seats detach quickly for cleaning or when extra space is needed. The toilet riser with handles works with any toilet that has an interior bowl lip. From hip replacements to arthritis management, our toilet seat for handicapped individuals restores confidence where it matters most. Explore our collection of Bathroom Safety Accessories, including commodes and other mobility aids, to support independence and comfort. Features Adds 3.5\" of Height: Reduces painful bending and twisting, making it significantly easier to sit down and stand up from the toilet Universal Compatibility: Fits any standard or elongated toilet with interior lip, installing under existing seat for added stability Tool-Free Installation: Quick setup under existing toilet seat using included hardware\u2014no tools required for easy installation Padded Comfort Handles: Removable aluminum handles with soft closed-cell foam padding provide secure, comfortable grip during transfers Heavy-Duty Construction: Durable split-resistant composite material safely supports up to 300 pounds for reliable long-term use Easy Maintenance: Seat riser and handles clean effortlessly with standard disinfectant solutions for optimal hygiene Customer Reviews Based on 23 reviews Write a review How To Assemble And Install A Toilet Seat Riser? How wide is the toilet elevator? The raised toilet seat is 13.89\u201d wide and the distance between the removable handles is 19\u201d wide. Does this riser sit under a regular toilet seat? Yes! This riser can be installed under a regular toilet seat. Does this only fit on standard toilets? The raised toilet seat is available for both standard and elongated toilets. How do I know if my toilet is standard or elongated? Standard toilets are more circular and length and width measurements will be very close. Elongated toilets are more oval in appearance. The length of an elongated toilet will be several inches longer than the width. Will this work with my kohler toilet? Yes, the riser can be used with any standard size toilet. How high are the handles from the seat base? The removable handles are 9.5\u201d high from the toilet rim. Can I use it without the handles? Yes! The handles are optional and can be removed by pushing the locking pins and pulling the arms out of the base. What is the maximum weight limit? The riser safely supports up to 300 pounds. Does the seat riser come with toilet seat and lid? No, purchase only includes riser. You should attach your existing seat & lid to top of riser Can this be used alone, without a regular toilet seat? Yes! The raised toilet seat can be used alone. How do I clean it? The riser and handles can be wiped down with a traditional disinfectant solution. How do I install the toilet seat riser? Remove the existing toilet seat and lid from the toilet and place the toilet seat riser on the rim of toilet, ensuring the lip underneath the riser is inside the bowl. Attach the original toilet seat and lid on top of the toilet seat riser using the included hardware. Thread the screws through the holes in the back of the seat with the plastic washers on the top of each screw and the metal washers on the bottom. Tighten each screw with the butterfly nuts for a secure fit. Uses: Adds height to toilet seat for stability Reduces bending and twisting during transfers Ideal for elderly, post-surgery recovery, limited mobility Perfect for arthritis, hip replacement, knee surgery recovery Standard Seat Dimensions: Length (Front to Back): 17.25\" Length Inside (Front to Back): 11.25\" Width (Left to Right): 13.89\" Width Inside (Left to Right): 10.25\" Height: 3.5\" Thickness: 2\" Handle Width: 22\" Handle Length: 12.5\" Distance Between Handles: 19\" Elongated Seat Dimensions: Length (Front to Back): 19.25\" Length Inside (Front to Back): 13.25\" Width (Left to Right): 13.75\" Width Inside (Left to Right): 10\" Height: 3.5\" Thickness: 2\" Handle Width: 21.25\" Handle Length: 14.5\" Distance Between Handles: 19\" Weight Capacity: Maximum: 300 pounds Materials: Durable composite construction Corrosion-resistant aluminum handles Soft closed-cell EVA foam padding Split-resistant design Installation Instructions: Remove existing toilet seat and lid from toilet Place toilet seat riser on toilet rim and center as needed (ensure lip underneath is inside bowl) Attach original toilet seat and lid on top of riser using included hardware Thread screws through holes in back of seat Place plastic washers on top of screws and metal washers on bottom Tighten each screw with butterfly nuts Handle Attachment Instructions: Locate right side handle marked with \"R\" and blue arrow Locate left side handle marked with \"L\" and red arrow Press brass pin on each arm and slide into seat position (pin facing out) Listen for click and check pin emerges through positioning hole when properly installed Features: Removable handles for flexibility Fits under existing toilet seat No tools required for installation Color-coded handle identification Click-lock handle system Easy-clean surface Available in standard and elongated sizes Care Instructions: Wipe down seat riser and handles with traditional disinfectant solution Clean regularly to maintain hygiene Dry thoroughly after cleaning What's Included: Raised toilet seat with removable handles 2x 6.125\" long flathead screws 2x round plastic washers (1.18\" outer diameter) 2x round metal washers (0.95\" outer diameter) 2x butterfly nuts User manual Lifetime guarantee Guarantee Policy: Lifetime guarantee on product Product Information: UPC: 818323021301 (Standard); 818323021295 (Elongated) Product Number: LVA1071S (Standard); LVA1071E (Elongated) Shipping Weight: 5.5 - 5.8 pounds User Manuals: Standard Toilet Seat Riser with Arms"
+   },
+   "url": "https://www.vivehealth.com/products/toilet-seat-riser-arms",
+   "handle": "toilet-seat-riser-arms",
+   "price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 5999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/7068130017315",
+     "sku": "LVA1071S",
+     "title": "Standard",
+     "description": {
+      "html": "Lifetime Guarantee View Details > Product Description Regain bathroom independence with the Raised Toilet Seat with Handles from Vive Health. Our toilet seat riser with handles lifts you 3.5 inches higher to eliminate painful squatting and twisting. Where regular bowls sit too low, this high toilet seat for elderly brings comfort within reach for post-surgery recovery and daily mobility needs. Built from crack-resistant composite, our riser for toilet seat holds 300 pounds while fitting under your current seat. Padded aluminum handles on this toilet seat with arms give you solid grip points when lowering down or pushing up. Choose standard or elongated sizing for this adaptive toilet seat that installs in minutes without tools. Foam-covered arms on these handicapped toilet seats detach quickly for cleaning or when extra space is needed. The toilet riser with handles works with any toilet that has an interior bowl lip. From hip replacements to arthritis management, our toilet seat for handicapped individuals restores confidence where it matters most. Explore our collection of Bathroom Safety Accessories, including commodes and other mobility aids, to support independence and comfort. Features Adds 3.5\" of Height: Reduces painful bending and twisting, making it significantly easier to sit down and stand up from the toilet Universal Compatibility: Fits any standard or elongated toilet with interior lip, installing under existing seat for added stability Tool-Free Installation: Quick setup under existing toilet seat using included hardware\u2014no tools required for easy installation Padded Comfort Handles: Removable aluminum handles with soft closed-cell foam padding provide secure, comfortable grip during transfers Heavy-Duty Construction: Durable split-resistant composite material safely supports up to 300 pounds for reliable long-term use Easy Maintenance: Seat riser and handles clean effortlessly with standard disinfectant solutions for optimal hygiene Customer Reviews Based on 23 reviews Write a review How To Assemble And Install A Toilet Seat Riser? How wide is the toilet elevator? The raised toilet seat is 13.89\u201d wide and the distance between the removable handles is 19\u201d wide. Does this riser sit under a regular toilet seat? Yes! This riser can be installed under a regular toilet seat. Does this only fit on standard toilets? The raised toilet seat is available for both standard and elongated toilets. How do I know if my toilet is standard or elongated? Standard toilets are more circular and length and width measurements will be very close. Elongated toilets are more oval in appearance. The length of an elongated toilet will be several inches longer than the width. Will this work with my kohler toilet? Yes, the riser can be used with any standard size toilet. How high are the handles from the seat base? The removable handles are 9.5\u201d high from the toilet rim. Can I use it without the handles? Yes! The handles are optional and can be removed by pushing the locking pins and pulling the arms out of the base. What is the maximum weight limit? The riser safely supports up to 300 pounds. Does the seat riser come with toilet seat and lid? No, purchase only includes riser. You should attach your existing seat & lid to top of riser Can this be used alone, without a regular toilet seat? Yes! The raised toilet seat can be used alone. How do I clean it? The riser and handles can be wiped down with a traditional disinfectant solution. How do I install the toilet seat riser? Remove the existing toilet seat and lid from the toilet and place the toilet seat riser on the rim of toilet, ensuring the lip underneath the riser is inside the bowl. Attach the original toilet seat and lid on top of the toilet seat riser using the included hardware. Thread the screws through the holes in the back of the seat with the plastic washers on the top of each screw and the metal washers on the bottom. Tighten each screw with the butterfly nuts for a secure fit. Uses: Adds height to toilet seat for stability Reduces bending and twisting during transfers Ideal for elderly, post-surgery recovery, limited mobility Perfect for arthritis, hip replacement, knee surgery recovery Standard Seat Dimensions: Length (Front to Back): 17.25\" Length Inside (Front to Back): 11.25\" Width (Left to Right): 13.89\" Width Inside (Left to Right): 10.25\" Height: 3.5\" Thickness: 2\" Handle Width: 22\" Handle Length: 12.5\" Distance Between Handles: 19\" Elongated Seat Dimensions: Length (Front to Back): 19.25\" Length Inside (Front to Back): 13.25\" Width (Left to Right): 13.75\" Width Inside (Left to Right): 10\" Height: 3.5\" Thickness: 2\" Handle Width: 21.25\" Handle Length: 14.5\" Distance Between Handles: 19\" Weight Capacity: Maximum: 300 pounds Materials: Durable composite construction Corrosion-resistant aluminum handles Soft closed-cell EVA foam padding Split-resistant design Installation Instructions: Remove existing toilet seat and lid from toilet Place toilet seat riser on toilet rim and center as needed (ensure lip underneath is inside bowl) Attach original toilet seat and lid on top of riser using included hardware Thread screws through holes in back of seat Place plastic washers on top of screws and metal washers on bottom Tighten each screw with butterfly nuts Handle Attachment Instructions: Locate right side handle marked with \"R\" and blue arrow Locate left side handle marked with \"L\" and red arrow Press brass pin on each arm and slide into seat position (pin facing out) Listen for click and check pin emerges through positioning hole when properly installed Features: Removable handles for flexibility Fits under existing toilet seat No tools required for installation Color-coded handle identification Click-lock handle system Easy-clean surface Available in standard and elongated sizes Care Instructions: Wipe down seat riser and handles with traditional disinfectant solution Clean regularly to maintain hygiene Dry thoroughly after cleaning What's Included: Raised toilet seat with removable handles 2x 6.125\" long flathead screws 2x round plastic washers (1.18\" outer diameter) 2x round metal washers (0.95\" outer diameter) 2x butterfly nuts User manual Lifetime guarantee Guarantee Policy: Lifetime guarantee on product Product Information: UPC: 818323021301 (Standard); 818323021295 (Elongated) Product Number: LVA1071S (Standard); LVA1071E (Elongated) Shipping Weight: 5.5 - 5.8 pounds User Manuals: Standard Toilet Seat Riser with Arms"
+     },
+     "price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Shape",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/Toiletseatriserwitharms.jpg?v=1678387194"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/7068130017315:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/7070198071331",
+     "sku": "LVA1071E",
+     "title": "Elongated",
+     "description": {
+      "html": "Lifetime Guarantee View Details > Product Description Regain bathroom independence with the Raised Toilet Seat with Handles from Vive Health. Our toilet seat riser with handles lifts you 3.5 inches higher to eliminate painful squatting and twisting. Where regular bowls sit too low, this high toilet seat for elderly brings comfort within reach for post-surgery recovery and daily mobility needs. Built from crack-resistant composite, our riser for toilet seat holds 300 pounds while fitting under your current seat. Padded aluminum handles on this toilet seat with arms give you solid grip points when lowering down or pushing up. Choose standard or elongated sizing for this adaptive toilet seat that installs in minutes without tools. Foam-covered arms on these handicapped toilet seats detach quickly for cleaning or when extra space is needed. The toilet riser with handles works with any toilet that has an interior bowl lip. From hip replacements to arthritis management, our toilet seat for handicapped individuals restores confidence where it matters most. Explore our collection of Bathroom Safety Accessories, including commodes and other mobility aids, to support independence and comfort. Features Adds 3.5\" of Height: Reduces painful bending and twisting, making it significantly easier to sit down and stand up from the toilet Universal Compatibility: Fits any standard or elongated toilet with interior lip, installing under existing seat for added stability Tool-Free Installation: Quick setup under existing toilet seat using included hardware\u2014no tools required for easy installation Padded Comfort Handles: Removable aluminum handles with soft closed-cell foam padding provide secure, comfortable grip during transfers Heavy-Duty Construction: Durable split-resistant composite material safely supports up to 300 pounds for reliable long-term use Easy Maintenance: Seat riser and handles clean effortlessly with standard disinfectant solutions for optimal hygiene Customer Reviews Based on 23 reviews Write a review How To Assemble And Install A Toilet Seat Riser? How wide is the toilet elevator? The raised toilet seat is 13.89\u201d wide and the distance between the removable handles is 19\u201d wide. Does this riser sit under a regular toilet seat? Yes! This riser can be installed under a regular toilet seat. Does this only fit on standard toilets? The raised toilet seat is available for both standard and elongated toilets. How do I know if my toilet is standard or elongated? Standard toilets are more circular and length and width measurements will be very close. Elongated toilets are more oval in appearance. The length of an elongated toilet will be several inches longer than the width. Will this work with my kohler toilet? Yes, the riser can be used with any standard size toilet. How high are the handles from the seat base? The removable handles are 9.5\u201d high from the toilet rim. Can I use it without the handles? Yes! The handles are optional and can be removed by pushing the locking pins and pulling the arms out of the base. What is the maximum weight limit? The riser safely supports up to 300 pounds. Does the seat riser come with toilet seat and lid? No, purchase only includes riser. You should attach your existing seat & lid to top of riser Can this be used alone, without a regular toilet seat? Yes! The raised toilet seat can be used alone. How do I clean it? The riser and handles can be wiped down with a traditional disinfectant solution. How do I install the toilet seat riser? Remove the existing toilet seat and lid from the toilet and place the toilet seat riser on the rim of toilet, ensuring the lip underneath the riser is inside the bowl. Attach the original toilet seat and lid on top of the toilet seat riser using the included hardware. Thread the screws through the holes in the back of the seat with the plastic washers on the top of each screw and the metal washers on the bottom. Tighten each screw with the butterfly nuts for a secure fit. Uses: Adds height to toilet seat for stability Reduces bending and twisting during transfers Ideal for elderly, post-surgery recovery, limited mobility Perfect for arthritis, hip replacement, knee surgery recovery Standard Seat Dimensions: Length (Front to Back): 17.25\" Length Inside (Front to Back): 11.25\" Width (Left to Right): 13.89\" Width Inside (Left to Right): 10.25\" Height: 3.5\" Thickness: 2\" Handle Width: 22\" Handle Length: 12.5\" Distance Between Handles: 19\" Elongated Seat Dimensions: Length (Front to Back): 19.25\" Length Inside (Front to Back): 13.25\" Width (Left to Right): 13.75\" Width Inside (Left to Right): 10\" Height: 3.5\" Thickness: 2\" Handle Width: 21.25\" Handle Length: 14.5\" Distance Between Handles: 19\" Weight Capacity: Maximum: 300 pounds Materials: Durable composite construction Corrosion-resistant aluminum handles Soft closed-cell EVA foam padding Split-resistant design Installation Instructions: Remove existing toilet seat and lid from toilet Place toilet seat riser on toilet rim and center as needed (ensure lip underneath is inside bowl) Attach original toilet seat and lid on top of riser using included hardware Thread screws through holes in back of seat Place plastic washers on top of screws and metal washers on bottom Tighten each screw with butterfly nuts Handle Attachment Instructions: Locate right side handle marked with \"R\" and blue arrow Locate left side handle marked with \"L\" and red arrow Press brass pin on each arm and slide into seat position (pin facing out) Listen for click and check pin emerges through positioning hole when properly installed Features: Removable handles for flexibility Fits under existing toilet seat No tools required for installation Color-coded handle identification Click-lock handle system Easy-clean surface Available in standard and elongated sizes Care Instructions: Wipe down seat riser and handles with traditional disinfectant solution Clean regularly to maintain hygiene Dry thoroughly after cleaning What's Included: Raised toilet seat with removable handles 2x 6.125\" long flathead screws 2x round plastic washers (1.18\" outer diameter) 2x round metal washers (0.95\" outer diameter) 2x butterfly nuts User manual Lifetime guarantee Guarantee Policy: Lifetime guarantee on product Product Information: UPC: 818323021301 (Standard); 818323021295 (Elongated) Product Number: LVA1071S (Standard); LVA1071E (Elongated) Shipping Weight: 5.5 - 5.8 pounds User Manuals: Standard Toilet Seat Riser with Arms"
+     },
+     "price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Shape",
+       "label": "Elongated"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/Toiletseatriserwitharms.jpg?v=1678387194"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/7070198071331:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Shape",
+     "values": [
+      {
+       "label": "Standard"
+      },
+      {
+       "label": "Elongated"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/Toiletseatriserwitharms.jpg?v=1678387194",
+     "alt_text": "Toilet seat riser with arms"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ABRA",
+    "APSA",
+    "bestseller",
+    "BTR",
+    "fsa-hsa",
+    "guarantee-lifetime",
+    "HLHA",
+    "HLHB",
+    "HLHF",
+    "HLHL",
+    "HLSH",
+    "HLTI",
+    "KACT",
+    "KMCT",
+    "KMTE",
+    "Prop65"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4588018729060",
+   "title": "Soft Toilet Seat Cushion",
+   "description": {
+    "html": "60 day guarantee Features ACCESSIBLE COMFORT FOR THOSE WITH LIMITED MOBILITY Soft, supportive toilet riser cushioning reduces pressure and discomfort\u2014ideal for individuals with disabilities, injuries, or limited mobility who need safer, more comfortable bathroom seating. CUSHIONING RISER SUPPORT Constructed with comfortable, rebound-tested foam that is resilient for comfortable, long-term use, our toilet seat cushion comes in two sizes--4\" and 2\". FITS ALL TOILETS Designed with a flat back to rest flush against the toilet tank, the seat cushion works with most standard and elongated toilets STRONG SUCTION CUP BASE The seat cushion base includes four strong suction cups for easy and secure installation on the existing toilet seat REMOVABLE COVER Zippered cover is easy to clean with household disinfectant wipes or solution EASY TO REMOVE FOR CLEANING A putty knife is included to allow for simple, touch-free removal for easier cleaning Customer Reviews Is the Vive Seat Cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushion provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: Total Product: 15\u201d (L) by 14.8\u201d (W) by 2\u201d (H) Inside Opening: 13.5\" (L) by 7.5\" (W) Materials: Dense foam Pleather cover with zipper Strong suction cups Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: 810041982018 Product Number: CSH1061WHT Shipping Weight: 0.7 pounds User Manual: Toilet Seat Cushion"
+   },
+   "url": "https://www.vivehealth.com/products/toilet-seat-cushion",
+   "handle": "toilet-seat-cushion",
+   "price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/39788843892836",
+     "sku": "CSH1061WHT",
+     "title": "2\" Cushioning Foam",
+     "description": {
+      "html": "60 day guarantee Features ACCESSIBLE COMFORT FOR THOSE WITH LIMITED MOBILITY Soft, supportive toilet riser cushioning reduces pressure and discomfort\u2014ideal for individuals with disabilities, injuries, or limited mobility who need safer, more comfortable bathroom seating. CUSHIONING RISER SUPPORT Constructed with comfortable, rebound-tested foam that is resilient for comfortable, long-term use, our toilet seat cushion comes in two sizes--4\" and 2\". FITS ALL TOILETS Designed with a flat back to rest flush against the toilet tank, the seat cushion works with most standard and elongated toilets STRONG SUCTION CUP BASE The seat cushion base includes four strong suction cups for easy and secure installation on the existing toilet seat REMOVABLE COVER Zippered cover is easy to clean with household disinfectant wipes or solution EASY TO REMOVE FOR CLEANING A putty knife is included to allow for simple, touch-free removal for easier cleaning Customer Reviews Is the Vive Seat Cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushion provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: Total Product: 15\u201d (L) by 14.8\u201d (W) by 2\u201d (H) Inside Opening: 13.5\" (L) by 7.5\" (W) Materials: Dense foam Pleather cover with zipper Strong suction cups Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: 810041982018 Product Number: CSH1061WHT Shipping Weight: 0.7 pounds User Manual: Toilet Seat Cushion"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2\" Cushioning Foam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_6f30887e-94c2-41ab-9b90-70847d7dbffe.jpg?v=1776805271"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39788843892836:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39788843925604",
+     "sku": "CSH1079WHT",
+     "title": "4\" Cushioning Foam",
+     "description": {
+      "html": "60 day guarantee Features ACCESSIBLE COMFORT FOR THOSE WITH LIMITED MOBILITY Soft, supportive toilet riser cushioning reduces pressure and discomfort\u2014ideal for individuals with disabilities, injuries, or limited mobility who need safer, more comfortable bathroom seating. CUSHIONING RISER SUPPORT Constructed with comfortable, rebound-tested foam that is resilient for comfortable, long-term use, our toilet seat cushion comes in two sizes--4\" and 2\". FITS ALL TOILETS Designed with a flat back to rest flush against the toilet tank, the seat cushion works with most standard and elongated toilets STRONG SUCTION CUP BASE The seat cushion base includes four strong suction cups for easy and secure installation on the existing toilet seat REMOVABLE COVER Zippered cover is easy to clean with household disinfectant wipes or solution EASY TO REMOVE FOR CLEANING A putty knife is included to allow for simple, touch-free removal for easier cleaning Customer Reviews Is the Vive Seat Cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushion provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: Total Product: 15\u201d (L) by 14.8\u201d (W) by 2\u201d (H) Inside Opening: 13.5\" (L) by 7.5\" (W) Materials: Dense foam Pleather cover with zipper Strong suction cups Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: 810041982018 Product Number: CSH1061WHT Shipping Weight: 0.7 pounds User Manual: Toilet Seat Cushion"
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "4\" Cushioning Foam"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/51hdENKb8QL._AC_SL1500_f9878759-3d70-4fa7-8779-bfa5da95dfcf.jpg?v=1776805360"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39788843925604:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/39835103133796",
+     "sku": "CSH1061BLK",
+     "title": "2\" Black",
+     "description": {
+      "html": "60 day guarantee Features ACCESSIBLE COMFORT FOR THOSE WITH LIMITED MOBILITY Soft, supportive toilet riser cushioning reduces pressure and discomfort\u2014ideal for individuals with disabilities, injuries, or limited mobility who need safer, more comfortable bathroom seating. CUSHIONING RISER SUPPORT Constructed with comfortable, rebound-tested foam that is resilient for comfortable, long-term use, our toilet seat cushion comes in two sizes--4\" and 2\". FITS ALL TOILETS Designed with a flat back to rest flush against the toilet tank, the seat cushion works with most standard and elongated toilets STRONG SUCTION CUP BASE The seat cushion base includes four strong suction cups for easy and secure installation on the existing toilet seat REMOVABLE COVER Zippered cover is easy to clean with household disinfectant wipes or solution EASY TO REMOVE FOR CLEANING A putty knife is included to allow for simple, touch-free removal for easier cleaning Customer Reviews Is the Vive Seat Cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushion provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: Total Product: 15\u201d (L) by 14.8\u201d (W) by 2\u201d (H) Inside Opening: 13.5\" (L) by 7.5\" (W) Materials: Dense foam Pleather cover with zipper Strong suction cups Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: 810041982018 Product Number: CSH1061WHT Shipping Weight: 0.7 pounds User Manual: Toilet Seat Cushion"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "2\" Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_6f30887e-94c2-41ab-9b90-70847d7dbffe.jpg?v=1776805271"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/39835103133796:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "2\" Cushioning Foam"
+      },
+      {
+       "label": "4\" Cushioning Foam"
+      },
+      {
+       "label": "2\" Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_6f30887e-94c2-41ab-9b90-70847d7dbffe.jpg?v=1776805271"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BTA",
+    "BTC",
+    "guarantee-60-day",
+    "Prop65",
+    "SBA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6994330255460",
+   "title": "Gel Toilet Seat Cushion",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features SOFTER BATHROOM SEATING Alleviating discomfort and painful pressure points, the Vive Gel Toilet Seat Cushion provides soft cushioning when seated in the bathroom CUSHIONING GEL Our toilet seat pad is constructed of soft silicone that will not flatten out for long-term use FITS ANY TOILET Trim our gel seat cushion to perfectly fit standard and elongated toilets SELF-ADHESIVE BASE Backed with a peel-away protective sheet, our gel toilet seat liner is self-sticking to provide a secure, non-slip seat SIMPLE TO INSTALL Our two-piece toilet seat pad is easy to install by peeling away the backing, positioning it and then pressing each side in place EASY CLEANING Wipe the soft gel toilet seat cushion down with a household disinfectant Customer Reviews Based on 23 reviews Write a review Is the Vive Gel Toilet Seat Cushion sealed? Yes, the Vive Gel Toilet Seat Cushion is made with solid silicone gel. Will I be able to close the toilet lid with the seat cushion on? Yes, the gel seat cushion adds minimal height to the seat, allowing the lid to close as usual. Can I use the toilet seat cushion on our mother\u2019s bedside commode? Yes, the gel toilet seat cushion may be used on a bedside commode. Please check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! The Vive Gel Toilet Seat Cushion is suitable for both standard and elongated toilet seats. How thick is the gel toilet seat cushion? The gel toilet seat cushion measures 0.59\u201d thick. Is the Vive Gel Toilet Seat Cushion latex-free? Yes! It is made with 100% silicone. How does the gel toilet seat pad attach to the toilet? The gel toilet seat pad is self-sticking, adhering to the existing seat for a secure, non-slip fit. Is the gel seat cushion waterproof? Yes, the gel seat cushion is waterproof and easy to clean. Will this gel seat stick to a cushioned seat? Yes, the gel seat will stick to a cushioned seat. Uses: For providing greater comfort and support while seated on the toilet Dimensions: 14.25\u201d by 6.89\u201d by 0.59\u201d Weight: 0.61 pounds Materials: 100% Silicone Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: Product Number: CSH1087BLU Shipping Weight: 1.51 pounds"
+   },
+   "url": "https://www.vivehealth.com/products/gel-toilet-seat-cushion",
+   "handle": "gel-toilet-seat-cushion",
+   "price_range": {
+    "min": {
+     "amount": 3299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3299,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44387925360740",
+     "sku": "CSH1087BLU",
+     "title": "Blue",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features SOFTER BATHROOM SEATING Alleviating discomfort and painful pressure points, the Vive Gel Toilet Seat Cushion provides soft cushioning when seated in the bathroom CUSHIONING GEL Our toilet seat pad is constructed of soft silicone that will not flatten out for long-term use FITS ANY TOILET Trim our gel seat cushion to perfectly fit standard and elongated toilets SELF-ADHESIVE BASE Backed with a peel-away protective sheet, our gel toilet seat liner is self-sticking to provide a secure, non-slip seat SIMPLE TO INSTALL Our two-piece toilet seat pad is easy to install by peeling away the backing, positioning it and then pressing each side in place EASY CLEANING Wipe the soft gel toilet seat cushion down with a household disinfectant Customer Reviews Based on 23 reviews Write a review Is the Vive Gel Toilet Seat Cushion sealed? Yes, the Vive Gel Toilet Seat Cushion is made with solid silicone gel. Will I be able to close the toilet lid with the seat cushion on? Yes, the gel seat cushion adds minimal height to the seat, allowing the lid to close as usual. Can I use the toilet seat cushion on our mother\u2019s bedside commode? Yes, the gel toilet seat cushion may be used on a bedside commode. Please check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! The Vive Gel Toilet Seat Cushion is suitable for both standard and elongated toilet seats. How thick is the gel toilet seat cushion? The gel toilet seat cushion measures 0.59\u201d thick. Is the Vive Gel Toilet Seat Cushion latex-free? Yes! It is made with 100% silicone. How does the gel toilet seat pad attach to the toilet? The gel toilet seat pad is self-sticking, adhering to the existing seat for a secure, non-slip fit. Is the gel seat cushion waterproof? Yes, the gel seat cushion is waterproof and easy to clean. Will this gel seat stick to a cushioned seat? Yes, the gel seat will stick to a cushioned seat. Uses: For providing greater comfort and support while seated on the toilet Dimensions: 14.25\u201d by 6.89\u201d by 0.59\u201d Weight: 0.61 pounds Materials: 100% Silicone Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: Product Number: CSH1087BLU Shipping Weight: 1.51 pounds"
+     },
+     "price": {
+      "amount": 3299,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/Image_1b_10.jpg?v=1665672265"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/44387925360740:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44387925393508",
+     "sku": "CSH1087CLR",
+     "title": "Clear",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features SOFTER BATHROOM SEATING Alleviating discomfort and painful pressure points, the Vive Gel Toilet Seat Cushion provides soft cushioning when seated in the bathroom CUSHIONING GEL Our toilet seat pad is constructed of soft silicone that will not flatten out for long-term use FITS ANY TOILET Trim our gel seat cushion to perfectly fit standard and elongated toilets SELF-ADHESIVE BASE Backed with a peel-away protective sheet, our gel toilet seat liner is self-sticking to provide a secure, non-slip seat SIMPLE TO INSTALL Our two-piece toilet seat pad is easy to install by peeling away the backing, positioning it and then pressing each side in place EASY CLEANING Wipe the soft gel toilet seat cushion down with a household disinfectant Customer Reviews Based on 23 reviews Write a review Is the Vive Gel Toilet Seat Cushion sealed? Yes, the Vive Gel Toilet Seat Cushion is made with solid silicone gel. Will I be able to close the toilet lid with the seat cushion on? Yes, the gel seat cushion adds minimal height to the seat, allowing the lid to close as usual. Can I use the toilet seat cushion on our mother\u2019s bedside commode? Yes, the gel toilet seat cushion may be used on a bedside commode. Please check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! The Vive Gel Toilet Seat Cushion is suitable for both standard and elongated toilet seats. How thick is the gel toilet seat cushion? The gel toilet seat cushion measures 0.59\u201d thick. Is the Vive Gel Toilet Seat Cushion latex-free? Yes! It is made with 100% silicone. How does the gel toilet seat pad attach to the toilet? The gel toilet seat pad is self-sticking, adhering to the existing seat for a secure, non-slip fit. Is the gel seat cushion waterproof? Yes, the gel seat cushion is waterproof and easy to clean. Will this gel seat stick to a cushioned seat? Yes, the gel seat will stick to a cushioned seat. Uses: For providing greater comfort and support while seated on the toilet Dimensions: 14.25\u201d by 6.89\u201d by 0.59\u201d Weight: 0.61 pounds Materials: 100% Silicone Care Instructions: Wipe the toilet seat cushion down with a disinfectant wipe or a cloth dampened with a similar solution UPC: Product Number: CSH1087BLU Shipping Weight: 1.51 pounds"
+     },
+     "price": {
+      "amount": 3299,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Clear"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/image_-2.png?v=1725480147"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/44387925393508:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Clear"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/products/Image_1b_10.jpg?v=1665672265",
+     "alt_text": "Gel toilet seat cushion"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BTA",
+    "BTC",
+    "guarantee-60-day",
+    "SBA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14785944682859",
+   "title": "Padded 3-in-1 Commode",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features VERSATILE 3-IN-1 USE Functions as a bedside commode, raised toilet seat, or bathroom safety frame to meet a wide range of needs. Perfect for seniors, post-surgery patients, or individuals seeking extra bathroom safety and support. CUSHIONED SEAT COMFORT The padded seat and armrests provide a soft, supportive surface that reduces pressure while sitting. Designed for longer use and recovery, it makes bathroom routines more comfortable and stress-free. HEAVY-DUTY STEEL FRAME Built with a strong steel construction, this commode chair ensures stability and long-lasting durability. The sturdy frame safely supports users during transfers, making it ideal for home or care facilities. SAFETY-ENHANCING ARMRESTS Supportive armrests give users balance and security while sitting or standing. This added stability reduces fall risks and promotes confidence in everyday bathroom use. HYGIENIC REMOVABLE BUCKET Includes an easy-to-remove bucket that simplifies emptying and cleaning. Designed for convenience, it helps maintain proper hygiene for both users and caregivers. Customer Reviews Based on 23 reviews Write a review How can this commode be used? The Vive 3-in-1 Commode works as a standalone bedside commode, a raised toilet seat, or a toilet safety frame. Its versatile design adapts to a variety of bathroom needs for seniors, post-surgery recovery, or those with limited mobility. Is the seat comfortable for extended use? Yes, the commode features a padded seat and cushioned armrests to provide extra comfort. This reduces pressure, making it easier to sit for longer periods during recovery or daily use. How stable is the commode? Built with a heavy-duty steel frame, this commode offers reliable stability and long-lasting durability. It provides dependable support during transfers, ensuring safety in home or caregiving environments. Does the commode include armrests? Yes, the integrated armrests add balance and support while sitting or standing. They help reduce the risk of slips or falls, giving users more confidence during use. Is the bucket easy to clean? Absolutely. The removable bucket is designed for simple emptying and cleaning, making it quick and hygienic for both users and caregivers. Can it be used over a standard toilet? Yes, the commode can be placed over most standard toilets to function as a raised toilet seat or safety frame, providing extra height and support. Is this commode lightweight and portable? Yes, despite its sturdy steel frame, the commode is lightweight enough to move easily from one room to another for convenience. Who is this product best for? This commode is ideal for seniors, individuals with limited mobility, post-surgery patients, or anyone who needs additional bathroom support at home, in rehab, or in a caregiving facility. Is there a warranty or guarantee? Yes, every Vive 3-in-1 Commode comes with a 60-day guarantee, so you can purchase with confidence and peace of mind. Uses: A padded commode that can be used as a standalone commode, a raised toilet seat, or a toilet safety frame. Dimensions: Arm Rest 33.5cm Length (13.18\u201d) Backrest Bar 56cm Length (22.04\u201d) Seat Depth 41cm (16.14\u201d) Seat Height 4.3cm (1.69\u201d) Seat Width 42cm (16.53\u201d) Commode Depth 48.5cm (19.09\u201d) Commode Width 67cm (26.37\u201d) 8 one-inch height adjustments Minimum Height - 68cm from ground to top of backrest bar (26.77\u201d) Maximum Height - 85.5cm from ground to top of backrest bar (33.66\u201d) Minimum Height from floor to top of seat 42cm Maximum height from floor to top of seat 58cm Weight: 9.3 lbs Color Grey Size(s) One size Material (s) Steel Care Instructions: Wipe clean with a damp cloth and mild detergent. Do not use harsh chemicals or bleach on any components. What\u2019s Included: 1x Vive 3-in-1 Padded Commode UPC: Product Number: LVA3113 Shipping Weight:"
+   },
+   "url": "https://www.vivehealth.com/products/padded-3-in-1-commode",
+   "handle": "padded-3-in-1-commode",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/52434381242731",
+     "sku": "LVA3113",
+     "title": "Default Title",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features VERSATILE 3-IN-1 USE Functions as a bedside commode, raised toilet seat, or bathroom safety frame to meet a wide range of needs. Perfect for seniors, post-surgery patients, or individuals seeking extra bathroom safety and support. CUSHIONED SEAT COMFORT The padded seat and armrests provide a soft, supportive surface that reduces pressure while sitting. Designed for longer use and recovery, it makes bathroom routines more comfortable and stress-free. HEAVY-DUTY STEEL FRAME Built with a strong steel construction, this commode chair ensures stability and long-lasting durability. The sturdy frame safely supports users during transfers, making it ideal for home or care facilities. SAFETY-ENHANCING ARMRESTS Supportive armrests give users balance and security while sitting or standing. This added stability reduces fall risks and promotes confidence in everyday bathroom use. HYGIENIC REMOVABLE BUCKET Includes an easy-to-remove bucket that simplifies emptying and cleaning. Designed for convenience, it helps maintain proper hygiene for both users and caregivers. Customer Reviews Based on 23 reviews Write a review How can this commode be used? The Vive 3-in-1 Commode works as a standalone bedside commode, a raised toilet seat, or a toilet safety frame. Its versatile design adapts to a variety of bathroom needs for seniors, post-surgery recovery, or those with limited mobility. Is the seat comfortable for extended use? Yes, the commode features a padded seat and cushioned armrests to provide extra comfort. This reduces pressure, making it easier to sit for longer periods during recovery or daily use. How stable is the commode? Built with a heavy-duty steel frame, this commode offers reliable stability and long-lasting durability. It provides dependable support during transfers, ensuring safety in home or caregiving environments. Does the commode include armrests? Yes, the integrated armrests add balance and support while sitting or standing. They help reduce the risk of slips or falls, giving users more confidence during use. Is the bucket easy to clean? Absolutely. The removable bucket is designed for simple emptying and cleaning, making it quick and hygienic for both users and caregivers. Can it be used over a standard toilet? Yes, the commode can be placed over most standard toilets to function as a raised toilet seat or safety frame, providing extra height and support. Is this commode lightweight and portable? Yes, despite its sturdy steel frame, the commode is lightweight enough to move easily from one room to another for convenience. Who is this product best for? This commode is ideal for seniors, individuals with limited mobility, post-surgery patients, or anyone who needs additional bathroom support at home, in rehab, or in a caregiving facility. Is there a warranty or guarantee? Yes, every Vive 3-in-1 Commode comes with a 60-day guarantee, so you can purchase with confidence and peace of mind. Uses: A padded commode that can be used as a standalone commode, a raised toilet seat, or a toilet safety frame. Dimensions: Arm Rest 33.5cm Length (13.18\u201d) Backrest Bar 56cm Length (22.04\u201d) Seat Depth 41cm (16.14\u201d) Seat Height 4.3cm (1.69\u201d) Seat Width 42cm (16.53\u201d) Commode Depth 48.5cm (19.09\u201d) Commode Width 67cm (26.37\u201d) 8 one-inch height adjustments Minimum Height - 68cm from ground to top of backrest bar (26.77\u201d) Maximum Height - 85.5cm from ground to top of backrest bar (33.66\u201d) Minimum Height from floor to top of seat 42cm Maximum height from floor to top of seat 58cm Weight: 9.3 lbs Color Grey Size(s) One size Material (s) Steel Care Instructions: Wipe clean with a damp cloth and mild detergent. Do not use harsh chemicals or bleach on any components. What\u2019s Included: 1x Vive 3-in-1 Padded Commode UPC: Product Number: LVA3113 Shipping Weight:"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1f_3.jpg?v=1793307671"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52434381242731:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1f_3.jpg?v=1793307671",
+     "alt_text": "Padded 3-in-1 Commode"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BCO",
+    "BSC",
+    "guarantee-one-year",
+    "MTA"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748483107",
+     "handle": "commodes",
+     "title": "Commode Toilet Chairs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14762945151339",
+   "title": "Shower Chair Toilet Riser",
+   "description": {
+    "html": "One-year guarantee (frame) 60-day guarantee (cushion, materials, and wheels) View Details > Features RUST-RESISTANT FRAME Made from anodized aluminum and reinforced with galvanized steel, this shower chair is built to resist rust and corrosion, even with constant water exposure. Its durable construction ensures long-lasting strength and dependable use for years. EXTRA-WIDE CUSHIONED SEAT The spacious 16\u201d x 15.5\u201d padded seat provides superior comfort, giving users more room to sit without feeling restricted. The soft cushioning reduces pressure, making it comfortable for both quick bathroom trips and longer showers. SUPPORTIVE AND COMFORTABLE BACKREST The ergonomically designed backrest provides extra stability and upright support, helping users maintain balance while reducing strain. This feature promotes a safer and more comfortable bathing or bathroom experience. EASY-GLIDE LOCKING WHEELS Smooth-rolling wheels allow the chair to move effortlessly across tile, hardwood, and other floor surfaces. Once positioned, the locking wheels secure the chair in place to prevent unwanted movement and ensure stability during transfers. DUAL-PURPOSE BATHROOM CHAIR Combining the functions of a raised toilet seat and a rolling shower chair, this 2-in-1 design eliminates the need for multiple products. Its versatile use saves space, simplifies caregiving, and enhances safety and convenience. Customer Reviews Based on 23 reviews Write a review What materials is the chair made from? The Vive Shower Chair Toilet Riser is crafted from anodized aluminum with galvanized steel casters. These rust-resistant materials provide long-lasting durability and protection against corrosion, even with daily exposure to water. What is the weight capacity of this chair? This multi-functional chair safely supports users up to 300 pounds, making it suitable for most adults. Its sturdy construction ensures reliable performance for both showering and toilet use. How big is the seat? The chair features a spacious 16\u201d x 15.5\u201d padded seat. The generous cushioning provides comfort for shorter bathroom trips and extended shower sessions, giving users plenty of room to sit securely. Does it have a backrest? Yes, the chair includes a supportive backrest that helps users sit upright safely. The backrest reduces fatigue and provides added stability for a more comfortable showering or toileting experience. Can the chair be moved easily? Equipped with smooth-rolling casters, the chair glides effortlessly across floors and through narrow bathroom doorways. This makes transfers easier for both users and caregivers. Do the wheels lock in place? Yes, the locking wheel function provides complete stability once the chair is positioned. This prevents unwanted movement during use, enhancing safety during showering or toilet transfers. Is it suitable for small bathrooms? Absolutely. The compact 2-in-1 design functions as both a shower chair and a raised toilet seat, saving space while providing versatile use in tighter bathroom environments. How does it reduce caregiver strain? The chair\u2019s smooth mobility, lightweight rust-proof frame, and dual-purpose design make it easier to transfer users safely. Caregivers spend less effort moving and positioning the chair, reducing strain during daily routines. How do I clean the chair? The anodized aluminum frame and padded seat are easy to clean. Simply wipe down the surfaces with a damp cloth or mild cleaner to maintain hygiene and longevity. Does it come with a warranty? Yes, the Vive Shower Chair Toilet Riser comes with a one-year guarantee on the frame and a 60-day warranty on the cushion, cloth, and wheels. This ensures peace of mind with your purchase. Uses: A two-in-one chair that can be used as a toilet riser or a shower chair. Dimensions: 16\u201d x 15.5\u201d padded seat 19\u201d between arm rests 4\u201d wheels 22\u201d seat height 34\u201d Tall x 23\u201d Long x 22\u201d Wide Hole: 10\u201d x 8\u201d 18.5\u201d toilet clearance Weight: 13 lbs Color Grey Size(s) One size Material (s) Aluminum and Plastic / Foam UPC: 0810178882403 Product Number: LVA3093 User Manual: Shower Chair Toilet Riser"
+   },
+   "url": "https://www.vivehealth.com/products/shower-chair-toilet-riser",
+   "handle": "shower-chair-toilet-riser",
+   "price_range": {
+    "min": {
+     "amount": 11999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/52332993773931",
+     "sku": "LVA3093",
+     "title": "Default Title",
+     "description": {
+      "html": "One-year guarantee (frame) 60-day guarantee (cushion, materials, and wheels) View Details > Features RUST-RESISTANT FRAME Made from anodized aluminum and reinforced with galvanized steel, this shower chair is built to resist rust and corrosion, even with constant water exposure. Its durable construction ensures long-lasting strength and dependable use for years. EXTRA-WIDE CUSHIONED SEAT The spacious 16\u201d x 15.5\u201d padded seat provides superior comfort, giving users more room to sit without feeling restricted. The soft cushioning reduces pressure, making it comfortable for both quick bathroom trips and longer showers. SUPPORTIVE AND COMFORTABLE BACKREST The ergonomically designed backrest provides extra stability and upright support, helping users maintain balance while reducing strain. This feature promotes a safer and more comfortable bathing or bathroom experience. EASY-GLIDE LOCKING WHEELS Smooth-rolling wheels allow the chair to move effortlessly across tile, hardwood, and other floor surfaces. Once positioned, the locking wheels secure the chair in place to prevent unwanted movement and ensure stability during transfers. DUAL-PURPOSE BATHROOM CHAIR Combining the functions of a raised toilet seat and a rolling shower chair, this 2-in-1 design eliminates the need for multiple products. Its versatile use saves space, simplifies caregiving, and enhances safety and convenience. Customer Reviews Based on 23 reviews Write a review What materials is the chair made from? The Vive Shower Chair Toilet Riser is crafted from anodized aluminum with galvanized steel casters. These rust-resistant materials provide long-lasting durability and protection against corrosion, even with daily exposure to water. What is the weight capacity of this chair? This multi-functional chair safely supports users up to 300 pounds, making it suitable for most adults. Its sturdy construction ensures reliable performance for both showering and toilet use. How big is the seat? The chair features a spacious 16\u201d x 15.5\u201d padded seat. The generous cushioning provides comfort for shorter bathroom trips and extended shower sessions, giving users plenty of room to sit securely. Does it have a backrest? Yes, the chair includes a supportive backrest that helps users sit upright safely. The backrest reduces fatigue and provides added stability for a more comfortable showering or toileting experience. Can the chair be moved easily? Equipped with smooth-rolling casters, the chair glides effortlessly across floors and through narrow bathroom doorways. This makes transfers easier for both users and caregivers. Do the wheels lock in place? Yes, the locking wheel function provides complete stability once the chair is positioned. This prevents unwanted movement during use, enhancing safety during showering or toilet transfers. Is it suitable for small bathrooms? Absolutely. The compact 2-in-1 design functions as both a shower chair and a raised toilet seat, saving space while providing versatile use in tighter bathroom environments. How does it reduce caregiver strain? The chair\u2019s smooth mobility, lightweight rust-proof frame, and dual-purpose design make it easier to transfer users safely. Caregivers spend less effort moving and positioning the chair, reducing strain during daily routines. How do I clean the chair? The anodized aluminum frame and padded seat are easy to clean. Simply wipe down the surfaces with a damp cloth or mild cleaner to maintain hygiene and longevity. Does it come with a warranty? Yes, the Vive Shower Chair Toilet Riser comes with a one-year guarantee on the frame and a 60-day warranty on the cushion, cloth, and wheels. This ensures peace of mind with your purchase. Uses: A two-in-one chair that can be used as a toilet riser or a shower chair. Dimensions: 16\u201d x 15.5\u201d padded seat 19\u201d between arm rests 4\u201d wheels 22\u201d seat height 34\u201d Tall x 23\u201d Long x 22\u201d Wide Hole: 10\u201d x 8\u201d 18.5\u201d toilet clearance Weight: 13 lbs Color Grey Size(s) One size Material (s) Aluminum and Plastic / Foam UPC: 0810178882403 Product Number: LVA3093 User Manual: Shower Chair Toilet Riser"
+     },
+     "price": {
+      "amount": 11999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1d_3.jpg?v=1760439863"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/52332993773931:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1d_3.jpg?v=1760439863",
+     "alt_text": "Vive Shower Chair Toilet Riser"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BSC",
+    "BTR",
+    "guarantee-lifetime"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59576713251",
+     "handle": "shower-chairs",
+     "title": "Shower Chairs",
+     "description": {
+      "html": "Need Help Deciding? Learn About Our Shower Chairs & Recommendations Here: Choosing a Shower Chair For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4288414916",
+   "title": "Toilet Safety Rail",
+   "description": {
+    "html": "Lifetime Guarantee View Details > Features ADDED BATHROOM STABILITY Reduces the risk of slips and falls when sitting or standing USE WITH ANY TOILET Adjustable safety rail fits all standard, elongated and irregular toilets EASY INSTALLATION Uses existing seat bolts, no drilling or cementing required COMFORTABLY PADDED HANDLES Closed cell foam handles provide a comfortable and secure grip and are easily cleaned with a standard disinfectant wipe or solution ADJUSTABLE SAFETY RAIL Rails can be adjusted between 21.5\u201d to 26.5\u201d wide and 26\u201d to 31.5\u201d in height for a customized fit DURABLE CORROSION-RESISTANT FRAME Lightweight, durable aluminum frame supports up to 300 pounds Customer Reviews Based on 23 reviews Write a review Is this toilet rail good for travel? The lightweight toilet rail can be easily disassembled for convenient travel. Is the width of the handles adjustable? Yes! The rail handles can be adjusted from 21.5 to 26.5\u201d. Is it safe to use on a tile floor? Yes! Each leg is capped with a rubber, non-slip cap for added stability on any surface. How do I assemble the toilet safety rail? Detach the existing toilet seat. Position the rail bracket screw holes in alignment with seat holes ensuring the bracket is flush against the toilet. Replace toilet seat lid with original screws and covers. Next, insert rail arms into the rear bracket at the desired width, ensuring the brass locking pins are clearly visible. Insert assist rails into the rail arms and secure with the included snap clips. Adjust the leg height to accommodate the height of the toilet using the brass locking pins. How high are the armrests? The toilet safety rail handles are adjustable from 26\u201d to 31.5\u201d. Will this work with a seat riser? Yes, the safety rail can be used in addition to a seat riser by adjusting the rail height to a comfortable level. What is the weight limit for the safety rail? The rails can safely support up to 300 pounds. How far apart are the mounting holes on the bracket? The holes are 5.5\u201d apart. Does the toilet safety rail fold so I can carry it in a suitcase? The toilet rail does not fold but can be taken apart for storage or travel. How do I clean the handles? The handles can be wiped down with disinfectant solution. Uses: Added stability when sitting or standing Dimensions: Length: 21.5\" - 26.5\" Width: 19.5\" Height: 26\" - 31.5\" Bracket size: 11.5\" x 3\" x 1.5\" Materials: Aluminum frame Closed-cell foam handles Care Instructions: Wipe down using a mild soap or disinfectant What\u2019s Included: Toilet safety rail Lifetime Guarantee Note: Not suitable for low profile toilets UPC: 683405233831 Product Number: LVA1010 Shipping Weight: 5.2 pounds User Manual: Toilet Safety Rail Manual"
+   },
+   "url": "https://www.vivehealth.com/products/toilet-safety-frame",
+   "handle": "toilet-safety-frame",
+   "price_range": {
+    "min": {
+     "amount": 6999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 7999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/14137366468",
+     "sku": "LVA1010",
+     "title": "Default Title",
+     "description": {
+      "html": "Lifetime Guarantee View Details > Features ADDED BATHROOM STABILITY Reduces the risk of slips and falls when sitting or standing USE WITH ANY TOILET Adjustable safety rail fits all standard, elongated and irregular toilets EASY INSTALLATION Uses existing seat bolts, no drilling or cementing required COMFORTABLY PADDED HANDLES Closed cell foam handles provide a comfortable and secure grip and are easily cleaned with a standard disinfectant wipe or solution ADJUSTABLE SAFETY RAIL Rails can be adjusted between 21.5\u201d to 26.5\u201d wide and 26\u201d to 31.5\u201d in height for a customized fit DURABLE CORROSION-RESISTANT FRAME Lightweight, durable aluminum frame supports up to 300 pounds Customer Reviews Based on 23 reviews Write a review Is this toilet rail good for travel? The lightweight toilet rail can be easily disassembled for convenient travel. Is the width of the handles adjustable? Yes! The rail handles can be adjusted from 21.5 to 26.5\u201d. Is it safe to use on a tile floor? Yes! Each leg is capped with a rubber, non-slip cap for added stability on any surface. How do I assemble the toilet safety rail? Detach the existing toilet seat. Position the rail bracket screw holes in alignment with seat holes ensuring the bracket is flush against the toilet. Replace toilet seat lid with original screws and covers. Next, insert rail arms into the rear bracket at the desired width, ensuring the brass locking pins are clearly visible. Insert assist rails into the rail arms and secure with the included snap clips. Adjust the leg height to accommodate the height of the toilet using the brass locking pins. How high are the armrests? The toilet safety rail handles are adjustable from 26\u201d to 31.5\u201d. Will this work with a seat riser? Yes, the safety rail can be used in addition to a seat riser by adjusting the rail height to a comfortable level. What is the weight limit for the safety rail? The rails can safely support up to 300 pounds. How far apart are the mounting holes on the bracket? The holes are 5.5\u201d apart. Does the toilet safety rail fold so I can carry it in a suitcase? The toilet rail does not fold but can be taken apart for storage or travel. How do I clean the handles? The handles can be wiped down with disinfectant solution. Uses: Added stability when sitting or standing Dimensions: Length: 21.5\" - 26.5\" Width: 19.5\" Height: 26\" - 31.5\" Bracket size: 11.5\" x 3\" x 1.5\" Materials: Aluminum frame Closed-cell foam handles Care Instructions: Wipe down using a mild soap or disinfectant What\u2019s Included: Toilet safety rail Lifetime Guarantee Note: Not suitable for low profile toilets UPC: 683405233831 Product Number: LVA1010 Shipping Weight: 5.2 pounds User Manual: Toilet Safety Rail Manual"
+     },
+     "price": {
+      "amount": 6999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 7999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/111111.jpg?v=1786366872"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/14137366468:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/111111.jpg?v=1786366872",
+     "alt_text": "Toilet Safety Rail"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hg-1-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "ABRA",
+    "APSA",
+    "BTR",
+    "guarantee-lifetime",
+    "HLHA",
+    "HLHB",
+    "HLHF",
+    "HLHL",
+    "HLSH",
+    "HLTI",
+    "KACT",
+    "KMCT",
+    "KMTE",
+    "Prop65"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453297156",
+     "handle": "bathroom-safety",
+     "title": "Bathroom Safety",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/59748089891",
+     "handle": "raised-toilet-seats-safety-rails",
+     "title": "Raised Toilet Seats & Safety Rails",
+     "description": {
+      "html": "SHOP RAISED TOILET SEATS & SAFETY RAILS Need Help Deciding? Learn About Raised Toilet Seats, Safety Rails & Recommendations Here: Choosing a Raised Toilet Seat or Safety Rails For additional questions or comments, contact our product specialist today. Call 1-800-487-3808 from 9:00am-6pm EST daily or email us at service@vivehealth.com For more help or advice on which raised toilet seat or safety rail is right for you, check out our buying guide or call our dedicated customer care team at 1-800-487-3808 between 9:00am and 6pm (EST) daily. Alternatively, click here to send us an email or live chat with a customer service agent. We\u2019re always happy to help! Who Needs a Raised Toilet Seat? Raised toilet seats and safety rails are designed specifically for those who have a difficult time maneuvering from the sit to stand position on a standard toilet. This may be due to lack of balance, recovering from surgery, or conditions such as; arthritis, back, knee or hip pain - making it difficult and painful to lower oneself without assistance. Benefits of a Raised Toilet Seat or Safety Rails Arm rails provide additional support for those with limited mobility Adds 3 to 6 inches of additional height to toilet seat Raised height eliminates the need to bend so low to sit down Ease strain on legs, back and knees Reduce the risks of falls Promote independence while toileting Types of Toilet Safety Aids For a more indepth comparison on raised toilet seats and safety rails, check out our complete guide here. Raised Seats with Arms Provide 3 to 6 inches of additional height and attached safety rails. Both elongated and standard sizes available Attach securely to the toilet itself. Designed to be portable and easily installed/uninstalled. Risers Provide 3 to 6 inches of additional height Attach directly to toilet seats Do not include side safety rails Stand Alone Rails Safety frame and handrails that stand on the ground around the base of the toilet Can be easily moved from one location to another Do not provide additional toilet seat height Do not attach directly to toilet Mounted Rails Handrails that are secured directly to the toilet Do not provide additional seat height"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14685944021355",
+   "title": "Dense Cushioned Toilet Seat Riser",
+   "description": {
+    "html": "60 Day Guarantee View Details > Features HIGH DENSITY CUSHIONING FOR INDIVIDUALS WITH DISABILITIES Designed to relieve pressure and discomfort, this toilet seat cushion features a 4-inch thick foam core that provides long-lasting comfort on hard toilet seats. FITS ALL TOILETS Measuring 14\" wide x 15\" length, the cushion fits most standard and elongated toilet seats and has a flat back to align flush with the lid for a secure, tailored fit. EASY AND SECURE INSTALLATION Four built-in suction cups on the base firmly attach the cushion to your existing toilet seat, keeping it in place during use. A putty knife is included for safe, hands-free removal. REMOVABLE AND WIPEABLE COVER The cushion\u2019s zippered cover allows for quick removal and cleaning\u2014simply wipe down the surface or spot clean the foam as needed. The wide opening also makes it easier to keep clean than similar products. Customer Reviews Based on 23 reviews Write a review Is the Vive seat cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushioned riser provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: 2\u201d Soft: 14\u201d (W) x 15\u201d (L) x 2\u201d (H) - both colors 2\u201d Dense: 14\u201d (W) x 15\u201d (L) x 2\u201d (H) 4\u201d Soft: 14\u201d (W) x 15\u201d (L) x 4\u201d (H) Weight: 2\u201d soft: 0.59 lbs w/ cover (both colors) 2\u201d dense: 0.55 lbs w/ cover No cover: 117.94g 4\u201d soft: 0.92lbs w/ cover No cover: 259.26g Color white (Eggshell) + black foam Size(s) 2\u201d height Soft (40kg/m3 density) 2\u201d height Dense (60kg/m3 density) 4\u201d height Soft (40kg/m3 density) Material (s) Polyurethane foam + Pleather Care Instructions: Pleather is made easy to clean with wipes or disinfectant, just spray and wipe down. What\u2019s Included: 1x toilet seat cushion 1x putty knife (orange) UPC: 810041989437 Product Number: CSH1061 Shipping Weight: 1 lb. Quick Start: Toilet Seat Cushion with Straps"
+   },
+   "url": "https://www.vivehealth.com/products/dense-toilet-seat-riser-with-straps",
+   "handle": "dense-toilet-seat-riser-with-straps",
+   "price_range": {
+    "min": {
+     "amount": 3999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51962486718827",
+     "sku": "CSH1061WHTD2",
+     "title": "2 Inches",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features HIGH DENSITY CUSHIONING FOR INDIVIDUALS WITH DISABILITIES Designed to relieve pressure and discomfort, this toilet seat cushion features a 4-inch thick foam core that provides long-lasting comfort on hard toilet seats. FITS ALL TOILETS Measuring 14\" wide x 15\" length, the cushion fits most standard and elongated toilet seats and has a flat back to align flush with the lid for a secure, tailored fit. EASY AND SECURE INSTALLATION Four built-in suction cups on the base firmly attach the cushion to your existing toilet seat, keeping it in place during use. A putty knife is included for safe, hands-free removal. REMOVABLE AND WIPEABLE COVER The cushion\u2019s zippered cover allows for quick removal and cleaning\u2014simply wipe down the surface or spot clean the foam as needed. The wide opening also makes it easier to keep clean than similar products. Customer Reviews Based on 23 reviews Write a review Is the Vive seat cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushioned riser provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: 2\u201d Soft: 14\u201d (W) x 15\u201d (L) x 2\u201d (H) - both colors 2\u201d Dense: 14\u201d (W) x 15\u201d (L) x 2\u201d (H) 4\u201d Soft: 14\u201d (W) x 15\u201d (L) x 4\u201d (H) Weight: 2\u201d soft: 0.59 lbs w/ cover (both colors) 2\u201d dense: 0.55 lbs w/ cover No cover: 117.94g 4\u201d soft: 0.92lbs w/ cover No cover: 259.26g Color white (Eggshell) + black foam Size(s) 2\u201d height Soft (40kg/m3 density) 2\u201d height Dense (60kg/m3 density) 4\u201d height Soft (40kg/m3 density) Material (s) Polyurethane foam + Pleather Care Instructions: Pleather is made easy to clean with wipes or disinfectant, just spray and wipe down. What\u2019s Included: 1x toilet seat cushion 1x putty knife (orange) UPC: 810041989437 Product Number: CSH1061 Shipping Weight: 1 lb. Quick Start: Toilet Seat Cushion with Straps"
+     },
+     "price": {
+      "amount": 3999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Height",
+       "label": "2 Inches"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_ec612cbe-8305-4606-a2d4-38a393afdce8.jpg?v=1776805330"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/51962486718827:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/51962486751595",
+     "sku": "CSH1061WHTD4",
+     "title": "4 Inches",
+     "description": {
+      "html": "60 Day Guarantee View Details > Features HIGH DENSITY CUSHIONING FOR INDIVIDUALS WITH DISABILITIES Designed to relieve pressure and discomfort, this toilet seat cushion features a 4-inch thick foam core that provides long-lasting comfort on hard toilet seats. FITS ALL TOILETS Measuring 14\" wide x 15\" length, the cushion fits most standard and elongated toilet seats and has a flat back to align flush with the lid for a secure, tailored fit. EASY AND SECURE INSTALLATION Four built-in suction cups on the base firmly attach the cushion to your existing toilet seat, keeping it in place during use. A putty knife is included for safe, hands-free removal. REMOVABLE AND WIPEABLE COVER The cushion\u2019s zippered cover allows for quick removal and cleaning\u2014simply wipe down the surface or spot clean the foam as needed. The wide opening also makes it easier to keep clean than similar products. Customer Reviews Based on 23 reviews Write a review Is the Vive seat cushion sealed? The Vive toilet seat cushion features a zippered cover for added protection. Is the toilet seat cushion waterproof? The seat cushion cover is water-resistant, however, the cushion itself is not waterproof and should not be immersed in water. Will I be able to close the toilet lid with this seat cushion on? Because the toilet seat cushion adds 2\u201d of height to your seat, you will not be able to fully close your toilet lid once this cushion is installed. Can I use the toilet seat cushion on a bedside commode? This cushion could be used on a bedside commode, but be sure to check the dimensions of the cushion compared to the dimensions of your commode. Will this work on an elongated toilet seat? Yes! This toilet seat cushion is sized to fit both standard and elongated toilet seats. How thick is the toilet seat cushion? The Vive toilet seat cushion is made with 2\u201d thick foam. Is this toilet seat cushion latex-free? Yes, this seat cushion is latex-free for use on sensitive skin. How does the toilet seat cushion attach to the toilet? The cushion securely attaches to your existing toilet seat with four strong suction cups. Why does my seat cushion come with a putty knife? The putty knife is perfect for safely loosening the suction cups when the cushion needs to be removed for cleaning. How do I clean the seat cushion cover? A zipper allows you to easily remove the interior foam and clean the outside cover. How big is the toilet seat cushion opening? The seat cushion opening measures 7.5\u201d wide and 13.5\u201d from the back to the outer tip. Uses: Ideal for individuals with disabilities or limited mobility, this cushioned riser provides added support and comfort while seated on the toilet and adds inches to your seat to make standing up a much easier task Dimensions: 2\u201d Soft: 14\u201d (W) x 15\u201d (L) x 2\u201d (H) - both colors 2\u201d Dense: 14\u201d (W) x 15\u201d (L) x 2\u201d (H) 4\u201d Soft: 14\u201d (W) x 15\u201d (L) x 4\u201d (H) Weight: 2\u201d soft: 0.59 lbs w/ cover (both colors) 2\u201d dense: 0.55 lbs w/ cover No cover: 117.94g 4\u201d soft: 0.92lbs w/ cover No cover: 259.26g Color white (Eggshell) + black foam Size(s) 2\u201d height Soft (40kg/m3 density) 2\u201d height Dense (60kg/m3 density) 4\u201d height Soft (40kg/m3 density) Material (s) Polyurethane foam + Pleather Care Instructions: Pleather is made easy to clean with wipes or disinfectant, just spray and wipe down. What\u2019s Included: 1x toilet seat cushion 1x putty knife (orange) UPC: 810041989437 Product Number: CSH1061 Shipping Weight: 1 lb. Quick Start: Toilet Seat Cushion with Straps"
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Height",
+       "label": "4 Inches"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/51hdENKb8QL._AC_SL1500_f9878759-3d70-4fa7-8779-bfa5da95dfcf.jpg?v=1776805360"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/51962486751595:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Height",
+     "values": [
+      {
+       "label": "2 Inches"
+      },
+      {
+       "label": "4 Inches"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1_ec612cbe-8305-4606-a2d4-38a393afdce8.jpg?v=1776805330"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-8-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BTC",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/160661733476",
+     "handle": "vive",
+     "title": "Vive",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/14679902159211",
+   "title": "Rise-Up Toilet Rail",
+   "description": {
+    "html": "One Year Guarantee View Details > Features STRONG AND RELIABLE SUPPORT Constructed from durable, high-quality materials, this toilet safety frame provides steady and wobble-free assistance, supporting up to 450 pounds for enhanced safety and stability. COMPACT SPACE-SAVING FRAME Designed to fit most standard toilets, this low-profile safety rail offers secure support while maintaining a sleek, space-saving design that blends with any bathroom decor. FOLDABLE ARMRESTS The swing-away armrests provide easy access, allowing users to enter and exit with ease. The fold-away design makes it ideal for shared or small bathrooms. FAST TOOL-FREE SETUP Designed for quick and effortless assembly, this frame installs in minutes with no tools required. Its adjustable fit accommodates various toilet sizes for a customized experience. COMFORTABLE AND SECURE GRIP Equipped with non-slip armrests, this frame ensures a firm and comfortable grip, reducing strain and improving bathroom safety for daily use. Customer Reviews Based on 23 reviews Write a review What is the weight capacity of this safety frame? This heavy-duty toilet safety frame supports up to 450 pounds, providing exceptional stability for individuals needing assistance while sitting or standing. Does this frame fit all toilets? Yes! The adjustable design allows it to fit most standard toilets, ensuring a secure and comfortable fit in different bathroom setups. Can the armrests be moved out of the way? Absolutely! The swing-back armrests fold away for easy entry and exit, making it ideal for shared bathrooms or users who need extra space when not in use. Is installation difficult? No, the tool-free assembly allows you to set up the frame in minutes using the included support screws, making it quick and hassle-free. Does this frame take up a lot of space? Not at all! The slim, space-saving design fits discreetly around most toilets, offering strong support without taking up excess room. Is this toilet rail stable, or does it wobble? The sturdy, reinforced frame is designed to prevent wobbling, ensuring reliable support every time you use it. What materials is the frame made from? The safety rail is built from high-quality, durable materials, ensuring long-lasting performance and reliable strength for daily use. Is this frame easy to clean? Yes! The smooth, non-porous surfaces allow for quick and easy cleaning, preventing buildup in hard-to-reach areas. Can I remove the frame when not in use? Yes, the lightweight and compact design allows you to easily detach and store the frame if needed. Uses: A toilet safety rail for safer rising and sitting. Dimensions: Outer Dims Arms: 22\u201d Inner Dimensions of Arm: 17\u201d Arm Rest Size: 10\u201d x 2.5\u201d Toilet bolt fittings: Can fit sizes 5.5\u201d apart (standard) to 8\u201d apart (not typical in the US) Plate Size: 22\u201d x 5\u201d Arm Height: 9\u201d from base Weight: 15 pounds Color White Size(s) One size Material (s) Steel Care Instructions: Wipe down in between uses. What\u2019s Included: 1x toilet safety rail with swing-back arms 2x supporting screw sets UPC: 0810178880515 Product Number: LVA3082 Shipping Weight: 16 lbs User Manual: Rise-Up Toilet Rail"
+   },
+   "url": "https://www.vivehealth.com/products/rise-up-toilet-rail",
+   "handle": "rise-up-toilet-rail",
+   "price_range": {
+    "min": {
+     "amount": 10999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51938828026219",
+     "sku": "LVA3082WHT",
+     "title": "Default Title",
+     "description": {
+      "html": "One Year Guarantee View Details > Features STRONG AND RELIABLE SUPPORT Constructed from durable, high-quality materials, this toilet safety frame provides steady and wobble-free assistance, supporting up to 450 pounds for enhanced safety and stability. COMPACT SPACE-SAVING FRAME Designed to fit most standard toilets, this low-profile safety rail offers secure support while maintaining a sleek, space-saving design that blends with any bathroom decor. FOLDABLE ARMRESTS The swing-away armrests provide easy access, allowing users to enter and exit with ease. The fold-away design makes it ideal for shared or small bathrooms. FAST TOOL-FREE SETUP Designed for quick and effortless assembly, this frame installs in minutes with no tools required. Its adjustable fit accommodates various toilet sizes for a customized experience. COMFORTABLE AND SECURE GRIP Equipped with non-slip armrests, this frame ensures a firm and comfortable grip, reducing strain and improving bathroom safety for daily use. Customer Reviews Based on 23 reviews Write a review What is the weight capacity of this safety frame? This heavy-duty toilet safety frame supports up to 450 pounds, providing exceptional stability for individuals needing assistance while sitting or standing. Does this frame fit all toilets? Yes! The adjustable design allows it to fit most standard toilets, ensuring a secure and comfortable fit in different bathroom setups. Can the armrests be moved out of the way? Absolutely! The swing-back armrests fold away for easy entry and exit, making it ideal for shared bathrooms or users who need extra space when not in use. Is installation difficult? No, the tool-free assembly allows you to set up the frame in minutes using the included support screws, making it quick and hassle-free. Does this frame take up a lot of space? Not at all! The slim, space-saving design fits discreetly around most toilets, offering strong support without taking up excess room. Is this toilet rail stable, or does it wobble? The sturdy, reinforced frame is designed to prevent wobbling, ensuring reliable support every time you use it. What materials is the frame made from? The safety rail is built from high-quality, durable materials, ensuring long-lasting performance and reliable strength for daily use. Is this frame easy to clean? Yes! The smooth, non-porous surfaces allow for quick and easy cleaning, preventing buildup in hard-to-reach areas. Can I remove the frame when not in use? Yes, the lightweight and compact design allows you to easily detach and store the frame if needed. Uses: A toilet safety rail for safer rising and sitting. Dimensions: Outer Dims Arms: 22\u201d Inner Dimensions of Arm: 17\u201d Arm Rest Size: 10\u201d x 2.5\u201d Toilet bolt fittings: Can fit sizes 5.5\u201d apart (standard) to 8\u201d apart (not typical in the US) Plate Size: 22\u201d x 5\u201d Arm Height: 9\u201d from base Weight: 15 pounds Color White Size(s) One size Material (s) Steel Care Instructions: Wipe down in between uses. What\u2019s Included: 1x toilet safety rail with swing-back arms 2x supporting screw sets UPC: 0810178880515 Product Number: LVA3082 Shipping Weight: 16 lbs User Manual: Rise-Up Toilet Rail"
+     },
+     "price": {
+      "amount": 10999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1.2MainImage.jpg?v=1742572943"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://vive-health.myshopify.com/cart/51938828026219:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0763/4541/files/1.2MainImage.jpg?v=1742572943",
+     "alt_text": "Vive Rise Up Toilet Rail"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "BTR",
+    "guarantee-60-day"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/453537028",
+     "handle": "best-selling-products",
+     "title": "Best Sellers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/453537092",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58236502051",
+     "handle": "all",
+     "title": "Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80357785635",
+     "handle": "xml-google-shopping-feed-all",
+     "title": "XML Google Shopping Feed \u2013 All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/160661733476",
+     "handle": "vive",
+     "title": "Vive",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqb3hORFkzT1Rrd01qRTFPVEl4TVN3aWNtVjJaWEp6WlNJNmRISjFaU3dpYjJabWMyVjBJam81ZlE9PSIsInBhZ2UiOjJ9"
+ },
+ "messages": []
+}
