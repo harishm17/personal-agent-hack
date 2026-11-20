@@ -40,7 +40,7 @@ def entities(text, names):
     labels = [LABELS.get(n, n.replace("_", " ")) for n in names]
     if not labels or not text:
         return []
-    obs.egress("Superlinked SIE (%s)" % MODEL, "mark figure spans in one store page",
+    obs.egress(EXTRACTOR, "mark figure spans in one store page",
                {"text": text, "labels": labels}, ("store_text", "product"))
     return client().extract(MODEL, {"text": text}, labels=labels).get("entities") or []
 

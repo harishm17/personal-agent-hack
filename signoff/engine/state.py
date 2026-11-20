@@ -169,10 +169,19 @@ def _with_order(sheet):
 def _load_extras(pool, from_data):
     """Display-only material beside the figures: instruction-like passages found on pages (each a span of the
     page's text, checked again here) and the planted test page's own reading. None of it reaches the pick rule."""
-    out = {"instructions": {}, "planted": None}
+    out = {"instructions": {}, "planted": None, "asked": {}}
     folder = _dirs()[2]
     if not from_data:
         return out
+    if (folder / "_asked").is_dir():  # what the store's own agent replied; each quote looked up again in the reply
+        keep = ("figure", "question", "reply", "quote", "start", "end", "value", "low", "high", "kind", "unit",
+                "answered", "asked_at", "role", "extractor", "unsure_reason")
+        for row in _read_dir(folder / "_asked"):
+            found = rules.span_found(row, row.get("reply"))
+            shown = {k: row.get(k) for k in keep if row.get(k) is not None or k in ("quote", "start", "end", "value", "unit", "answered")}
+            if row.get("answered") and not found:
+                shown["answered"] = False
+            out["asked"].setdefault((row["store"], row["product_id"]), []).append(shown)
     text = {(p["store"], p["product_id"]): p.get("text") for p in pool}
     if (folder / "_instructions").is_dir():
         for row in _read_dir(folder / "_instructions"):
@@ -272,9 +281,16 @@ def _attach(state):
         for key in (check.get("candidate_id"), (check.get("store"), check.get("product_id"))):
             if key and key != (None, None):
                 by_candidate.setdefault(key, []).append(check)
-    extras = _s.get("extras") or {"instructions": {}, "planted": None}
+    extras = _s.get("extras") or {"instructions": {}, "planted": None, "asked": {}}
+    beyond = set()
     for line in state["lines"]:
         for c in line["candidates"]:
+            asked = extras.get("asked", {}).get((c["product"]["store"], c["product"]["product_id"]))
+            if asked:  # display only: nothing below reads it, and the pick was made before this point
+                c["asked"] = asked
+                on_page = {f["figure"] for f in c["figures"] if f.get("span_found_in_text") and not f.get("unsure")}
+                if any(a.get("answered") and a["figure"] not in on_page for a in asked):
+                    beyond.add((c["product"]["store"], c["product"]["product_id"]))
             passages = extras["instructions"].get((c["product"]["store"], c["product"]["product_id"]))
             if passages:
                 c["embedded_instructions"] = passages
@@ -293,6 +309,9 @@ def _attach(state):
             made["cheaper_than_the_pick"] = bool(line["why"]["pick_price_cents"]) and \
                 made["candidate"]["product"]["price_cents"] < line["why"]["pick_price_cents"]
             state["planted"] = made
+    if extras.get("asked"):
+        state["counts"]["store_agent_asked"] = len(extras["asked"])
+        state["counts"]["store_agent_stated_beyond_page"] = len(beyond)
     state["sheet"], order = _with_order(state["sheet"])
     if order:
         state["order"] = order

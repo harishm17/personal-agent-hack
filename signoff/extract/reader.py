@@ -197,8 +197,8 @@ def ask_anthropic(model, system, user, live=False):
 
 def recipient_of(model):
     if model.startswith("claude"):
-        return "Anthropic (%s)" % model
-    return "Superlinked SIE (%s)" % model[4:] if model.startswith("sie:") else "Arcee (%s)" % model
+        return "anthropic:%s" % model
+    return model if model.startswith("sie:") else "arcee:%s" % model.replace("arcee:", "")
 
 
 def ask(model, system, user, live=False, purpose="read figures from one store page",

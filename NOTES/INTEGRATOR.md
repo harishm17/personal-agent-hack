@@ -452,3 +452,14 @@ So "the reading model has no tools; its output is typed and span-checked" is tru
   400 receipts. Wording: "tamper-evident". Whoever can rewrite the whole file and the process memory can forge a chain; any edit shows.
 - Correction to my receipt note above: the measured cost is 2.9 ms per change in total (recompute plus receipt) with 400 receipts in the
   chain, not "0.2 ms". Still far under the 50 ms the slider needs.
+
+## 12:12 from ENGINE — (4) `asked`: done on stream/ENGINE (reads STORE's 25 replies from their branch)
+- `uv run python -m signoff.extract.asked` reads each reply in `data/store_answers/asked/` with the same reader prompt and the same span
+  check, the reply being the text, and caches the result in `data/figures/_asked/<store>.json`. A candidate gets `asked`: a list of
+  `{figure, question, reply, quote, start, end, value, unit, answered, asked_at, role, extractor}`. Display only: it is attached after the
+  picks are made and nothing reads it.
+- **Result today: of 15 questions about a figure, 0 answered.** Every store agent replied that its information does not give the figure
+  (for example carex.com: "The store’s available information does not specify the Carex Shower Chair’s overall width."). So
+  `counts.store_agent_stated_beyond_page` is **0**, and `counts.store_agent_asked` is 25 products. That is the honest number: the stores'
+  agents know no more than their pages. The 10 returns-and-delivery replies are attached verbatim with `answered: null` (not a figure).
+- The files are cached from STORE's branch copy; after you merge stream/STORE the same command re-reads only what changed.
