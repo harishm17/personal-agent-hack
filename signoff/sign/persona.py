@@ -42,6 +42,7 @@ def record() -> dict:
 
 
 def _apply(inquiry_id: str, status: str, detail: str | None = None) -> dict:
+    link = _record.get("link") if _record.get("inquiry_id") == inquiry_id else None
     verified = status in ("completed", "approved")
     label = {"approved": "identity checked (sandbox)", "completed": "identity checked (sandbox)",
              "pending": "identity check started (sandbox), not finished", "created": "identity check started (sandbox), not finished",
@@ -50,6 +51,8 @@ def _apply(inquiry_id: str, status: str, detail: str | None = None) -> dict:
         status, "identity check %s (sandbox)" % status)
     out = {"inquiry_id": inquiry_id, "status": status, "verified": verified, "sandbox": True, "label": label,
            "configured": True}
+    if link:
+        out["link"] = link
     if detail:
         out["detail"] = detail
     with _lock:
@@ -73,6 +76,8 @@ def start(reference_id: str | None = None) -> dict:
         inquiry_id = data["id"]
         out = _apply(inquiry_id, data["attributes"].get("status", "created"))
         out["link"] = "https://inquiry.withpersona.com/verify?inquiry-id=%s" % inquiry_id
+        with _lock:
+            _record["link"] = out["link"]
         return out
     except (httpx.HTTPError, KeyError, ValueError) as error:
         return {**record(), "status": "error", "link": None, "label": "identity not checked (Persona not reachable)",

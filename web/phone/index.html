@@ -1,5 +1,392 @@
 <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
 <title>Sign-Off: issuer</title>
-<p>Phone placeholder. The SIGN stream replaces this file.</p>
+<style>
+  :root { --bg:#f6f5f1; --ink:#1d1d1b; --mute:#66655e; --line:#d9d6cc; --card:#fff; --accent:#1a5fb4; --accent-ink:#fff; --ok:#2a7a3b; --bad:#b3261e; --warn:#8a5200; }
+  :root[data-theme="dark"] { --bg:#161614; --ink:#eeede8; --mute:#a09f97; --line:#3a3935; --card:#1f1f1c; --accent:#78aeed; --accent-ink:#10253f; --ok:#6cc47d; --bad:#f2918b; --warn:#e8a64a; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#161614; --ink:#eeede8; --mute:#a09f97; --line:#3a3935; --card:#1f1f1c; --accent:#78aeed; --accent-ink:#10253f; --ok:#6cc47d; --bad:#f2918b; --warn:#e8a64a; } }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { background: var(--bg); }
+  body { margin:0; color:var(--ink); background:var(--bg); font:17px/1.4 system-ui, -apple-system, sans-serif; padding-bottom:calc(76px + env(safe-area-inset-bottom)); }
+  header { padding:14px 16px 8px; }
+  header h1 { margin:0; font-size:20px; }
+  header .who { color:var(--mute); font-size:14px; margin-top:2px; }
+  nav { position:fixed; left:0; right:0; bottom:0; display:flex; background:var(--card); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom); z-index:5; }
+  nav button { flex:1; min-height:60px; border:0; background:none; color:var(--mute); font:inherit; font-size:15px; font-weight:600; }
+  nav button[aria-selected="true"] { color:var(--accent); box-shadow:inset 0 3px 0 var(--accent); }
+  main { padding:0 16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin:10px 0; }
+  .card h2 { font-size:17px; margin:0 0 2px; }
+  .mute { color:var(--mute); font-size:14px; }
+  .tag { display:inline-block; font-size:12px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:2px 8px; border-radius:99px; border:1px solid var(--line); color:var(--mute); }
+  .tag.ok { color:var(--ok); border-color:var(--ok); } .tag.bad { color:var(--bad); border-color:var(--bad); } .tag.warn { color:var(--warn); border-color:var(--warn); }
+  .limit { margin-top:12px; }
+  .limit .row { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .limit .val { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; }
+  input[type=range] { width:100%; height:44px; margin:2px 0; accent-color:var(--accent); }
+  .pickline { margin-top:6px; font-size:15px; }
+  .pickline b { font-weight:700; }
+  button.act { min-height:48px; padding:0 18px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--ink); font:inherit; font-weight:600; }
+  button.act.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  button.act.danger { color:var(--bad); border-color:var(--bad); }
+  button.act:disabled { opacity:.45; }
+  button.act.big { width:100%; min-height:60px; font-size:19px; }
+  .btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  input[type=text] { width:100%; min-height:48px; font:inherit; padding:0 12px; border:1px solid var(--line); border-radius:12px; background:var(--bg); color:var(--ink); }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin:8px 0; }
+  .chips button { min-height:40px; padding:0 12px; border-radius:99px; border:1px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; font-size:15px; }
+  .hash { font:13px/1.35 ui-monospace, Menlo, monospace; word-break:break-all; color:var(--mute); }
+  .total { font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; }
+  ul.sheet { list-style:none; padding:0; margin:8px 0 0; }
+  ul.sheet li { padding:9px 0; border-top:1px solid var(--line); }
+  ul.sheet li:first-child { border-top:0; }
+  #toast { position:fixed; left:12px; right:12px; bottom:calc(72px + env(safe-area-inset-bottom)); background:var(--ink); color:var(--bg); padding:12px 14px; border-radius:12px; z-index:9; display:none; font-size:15px; }
+  a { color:var(--accent); }
+  details { margin:18px 0; color:var(--mute); font-size:14px; }
+  .seal { border:2px solid var(--ok); }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="h1">Sign-Off</h1>
+  <div class="who" id="who">starting…</div>
+</header>
+<main id="main" aria-live="polite"></main>
+<nav id="nav" role="tablist" hidden>
+  <button role="tab" data-tab="limits" aria-selected="true">Limits</button>
+  <button role="tab" data-tab="lines" aria-selected="false">Lines</button>
+  <button role="tab" data-tab="sign" aria-selected="false">Sign</button>
+</nav>
+<div id="toast" role="status"></div>
+
+<script>
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const money = (c) => (c == null ? "" : "$" + (c / 100).toFixed(2));
+const fmt = (v) => (Number.isInteger(v) ? String(v) : String(Math.round(v * 100) / 100));
+
+/* ---------- key storage: private key is non-extractable and lives in IndexedDB ---------- */
+const DB = { name: "signoff-phone", store: "kv" };
+function idb() {
+  return new Promise((resolve, reject) => {
+    const open = indexedDB.open(DB.name, 1);
+    open.onupgradeneeded = () => open.result.createObjectStore(DB.store);
+    open.onsuccess = () => resolve(open.result);
+    open.onerror = () => reject(open.error);
+  });
+}
+async function kvGet(key) {
+  const db = await idb();
+  return new Promise((res, rej) => { const r = db.transaction(DB.store).objectStore(DB.store).get(key); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+}
+async function kvSet(key, value) {
+  const db = await idb();
+  return new Promise((res, rej) => { const tx = db.transaction(DB.store, "readwrite"); tx.objectStore(DB.store).put(value, key); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+}
+async function kvDel(key) {
+  const db = await idb();
+  return new Promise((res, rej) => { const tx = db.transaction(DB.store, "readwrite"); tx.objectStore(DB.store).delete(key); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+}
+
+const b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+
+let keyRec = null;      // { privateKey, jwk, key_id|null, seq }
+let issuer = null;      // server's view: { enrolled, key_id, name, persona, senso }
+let state = null, canon = null, persona = null;
+let tab = "limits", signed = false, busy = false;
+const dragging = new Set();
+
+async function ensureKey() {
+  keyRec = await kvGet("key");
+  if (!keyRec) {
+    const pair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]);
+    const jwk = await crypto.subtle.exportKey("jwk", pair.publicKey);
+    keyRec = { privateKey: pair.privateKey, jwk: { kty: jwk.kty, crv: jwk.crv, x: jwk.x, y: jwk.y }, key_id: null, seq: 0 };
+    await kvSet("key", keyRec);
+  }
+}
+
+async function signedRequest(type, fields) {
+  keyRec.seq = Math.max(keyRec.seq + 1, Date.now());
+  await kvSet("key", keyRec);
+  const payload = JSON.stringify({ type, sheet_id: state.sheet.id, seq: keyRec.seq, at: new Date().toISOString(), ...fields });
+  const sig = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, keyRec.privateKey, new TextEncoder().encode(payload));
+  const res = await fetch("/api/issuer/request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ payload, sig: b64u(sig), key_id: keyRec.key_id }) });
+  let body = {};
+  try { body = await res.json(); } catch (e) { /* not JSON */ }
+  if (!res.ok || body.ok === false) { const err = new Error(body.detail || ("HTTP " + res.status)); err.code = body.error; throw err; }
+  return body;
+}
+
+/* ---------- small helpers ---------- */
+let toastTimer;
+function toast(text, ms = 4500) {
+  const t = $("#toast"); t.textContent = text; t.style.display = "block";
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.style.display = "none"), ms);
+}
+async function getJSON(url, opts) { const r = await fetch(url, opts); if (!r.ok) throw new Error(url + " " + r.status); return r.json(); }
+const lineOf = (id) => state.lines.find((l) => l.line_id === id);
+const pickOf = (line) => (line && line.pick ? line.candidates.find((c) => c.id === line.pick) : null);
+
+/* ---------- boot ---------- */
+async function boot() {
+  if (!window.crypto || !crypto.subtle || !window.indexedDB) {
+    $("#who").textContent = "";
+    $("#main").innerHTML = '<div class="card"><h2>This page needs a secure address</h2><p class="mute">Signing keys only work on https or localhost. Open the address of the tunnel (https), not a plain http address.</p></div>';
+    return;
+  }
+  try { await ensureKey(); } catch (e) { $("#main").innerHTML = '<div class="card"><h2>No key storage</h2><p class="mute">This browser would not keep a key (private window?). Open the page in a normal tab.</p></div>'; return; }
+  await refreshIssuer();
+  if (issuer.enrolled && keyRec.key_id !== issuer.key_id) keyRec.key_id = null;   // a reset happened or another phone is the issuer
+  if (issuer.enrolled && keyRec.key_id === null) {
+    // is the enrolled key ours? the server only tells us its id, ours is derived the same way
+    const mine = await keyIdOf(keyRec.jwk);
+    if (mine === issuer.key_id) { keyRec.key_id = mine; await kvSet("key", keyRec); }
+  }
+  await loadState();
+  startEvents();
+  render();
+}
+async function keyIdOf(jwk) {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(jwk.x + "." + jwk.y));
+  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+}
+async function refreshIssuer() { issuer = await getJSON("/api/issuer/status"); }
+async function loadState() {
+  state = await getJSON("/api/state");
+  signed = !!(state.seal && state.seal.signed);
+  try { canon = await getJSON("/api/sheet/canonical"); } catch (e) { canon = null; }
+}
+let evt;
+function startEvents() {
+  let pending = false, again = false;
+  const refetch = async () => {
+    if (pending) { again = true; return; }
+    pending = true;
+    try { await loadState(); renderLive(); } catch (e) { /* offline blip */ }
+    pending = false; if (again) { again = false; refetch(); }
+  };
+  try { evt = new EventSource("/api/events"); evt.onmessage = refetch; } catch (e) { /* fall back to polling */ }
+  setInterval(refetch, 3000);
+}
+
+/* ---------- rendering ---------- */
+function isMine() { return issuer && issuer.enrolled && keyRec && keyRec.key_id === issuer.key_id; }
+function render() {
+  const issuerName = state && state.sheet && state.sheet.issuer ? state.sheet.issuer.name : "Issuer";
+  $("#h1").textContent = state ? state.sheet.title : "Sign-Off";
+  if (!issuer.enrolled) return renderEnrol(issuerName);
+  if (!isMine()) return renderNotMine();
+  $("#nav").hidden = false;
+  $("#who").textContent = issuer.name + " · key " + issuer.key_id.slice(0, 6) + " · " + (state.mode || "") + (signed ? " · signed" : "");
+  $("#main").innerHTML = "";
+  if (tab === "limits") renderLimits();
+  else if (tab === "lines") renderLines();
+  else renderSign();
+}
+function renderLive() {
+  // keep what the finger is on; redraw the rest
+  if (!isMine()) return;
+  if (tab === "limits") updateLimits();
+  else if (tab === "lines") { if (!document.activeElement || document.activeElement.tagName !== "INPUT") renderLines(); }
+  else if (!busy) renderSign();
+  $("#who").textContent = issuer.name + " · key " + issuer.key_id.slice(0, 6) + " · " + (state.mode || "") + (signed ? " · signed" : "");
+}
+
+function renderEnrol(name) {
+  $("#nav").hidden = true;
+  $("#who").textContent = "this phone is not enrolled";
+  $("#main").innerHTML = `<div class="card"><h2>Use this phone as the signing key</h2>
+    <p class="mute">A key pair was made in this browser. The private half cannot be exported. Only requests signed by it can change a limit, strike a line or create the carts.</p>
+    <label class="mute" for="nm">Name shown on the seal</label>
+    <input type="text" id="nm" value="${esc(name)}" autocomplete="name">
+    <div class="btns"><button class="act primary big" id="enrol">Enrol this phone</button></div></div>`;
+  $("#enrol").onclick = async () => {
+    $("#enrol").disabled = true;
+    try {
+      const r = await fetch("/api/issuer/enroll", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ public_key_jwk: keyRec.jwk, name: $("#nm").value }) });
+      const body = await r.json();
+      if (!r.ok) throw new Error(body.detail || r.status);
+      keyRec.key_id = body.key_id; keyRec.seq = 0; await kvSet("key", keyRec);
+      await refreshIssuer(); await loadState(); render();
+    } catch (e) { toast("Not enrolled: " + e.message); $("#enrol").disabled = false; }
+  };
+}
+function renderNotMine() {
+  $("#nav").hidden = true;
+  $("#who").textContent = "another phone is the signing key";
+  $("#main").innerHTML = `<div class="card"><h2>${esc(issuer.name)}'s phone is enrolled</h2>
+    <p class="mute">This phone can look but not sign. After a rehearsal reset, reload this page to enrol it instead.</p></div>
+    <details><summary>Rehearsal</summary><div class="btns"><button class="act danger" id="reset">Reset: unsigned, no key</button></div></details>`;
+  $("#reset").onclick = resetAll;
+}
+async function resetAll() {
+  if (!confirm("Reset to unsigned, with no enrolled key? Use only between rehearsals.")) return;
+  await fetch("/api/admin/reset", { method: "POST" });
+  keyRec.key_id = null; keyRec.seq = 0; await kvSet("key", keyRec);
+  await refreshIssuer(); await loadState(); render();
+}
+
+/* limits: one slider per issuer-set limit, a signed set_limit while it moves, at most ten a second */
+const sendQ = { latest: new Map(), running: false, last: 0 };
+function queueLimit(id, value) { sendQ.latest.set(id, value); pump(); }
+async function pump() {
+  if (sendQ.running) return;
+  sendQ.running = true;
+  try {
+    while (sendQ.latest.size) {
+      const wait = 100 - (Date.now() - sendQ.last);
+      if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+      const [id, value] = sendQ.latest.entries().next().value;
+      sendQ.latest.delete(id);
+      sendQ.last = Date.now();
+      try { await signedRequest("set_limit", { limit_id: id, value }); }
+      catch (e) { handleError(e); }
+    }
+  } finally { sendQ.running = false; }
+}
+function handleError(e) {
+  if (e.code === "stale_hash") { toast("The sheet changed after you looked. Check it and sign again."); loadState().then(() => { if (tab === "sign") renderSign(); }); }
+  else if (e.code === "replayed_seq") { /* an older move arrived late; the newest one wins */ }
+  else if (e.code === "not_enrolled" || e.code === "unknown_key") { toast(e.message); refreshIssuer().then(render); }
+  else toast(e.message);
+}
+function issuerLimits() {
+  const out = [];
+  for (const line of state.sheet.lines) for (const l of line.limits) if (l.bound.source === "issuer") out.push({ line, limit: l });
+  return out;
+}
+function renderLimits() {
+  const main = $("#main");
+  main.innerHTML = `<p class="mute">${esc(state.sheet.issuer.name)}'s limits. The shopper cannot change these. Moving a slider re-picks at once.</p>` +
+    issuerLimits().map(({ line, limit }) => `<div class="card limit" data-limit="${esc(limit.id)}">
+      <h2>${esc(line.need)}</h2>
+      <div class="row"><span>${esc(limit.label)}</span><span class="val"><span class="v"></span> ${esc(limit.unit)}</span></div>
+      <input type="range" min="${limit.bound.min}" max="${limit.bound.max}" step="${limit.bound.step}" aria-label="${esc(line.need)}: ${esc(limit.label)}" ${signed ? "disabled" : ""}>
+      <div class="pickline mute"></div></div>`).join("");
+  main.querySelectorAll("[data-limit]").forEach((card) => {
+    const id = card.dataset.limit, input = $("input", card);
+    const move = () => { $(".v", card).textContent = fmt(+input.value); queueLimit(id, +input.value); };
+    input.addEventListener("input", move);
+    input.addEventListener("pointerdown", () => dragging.add(id));
+    const up = () => dragging.delete(id);
+    input.addEventListener("pointerup", up); input.addEventListener("pointercancel", up); input.addEventListener("blur", up); input.addEventListener("change", up);
+  });
+  updateLimits();
+}
+function updateLimits() {
+  for (const { line, limit } of issuerLimits()) {
+    const card = $('[data-limit="' + limit.id + '"]'); if (!card) continue;
+    const input = $("input", card);
+    if (!dragging.has(limit.id) && !sendQ.latest.has(limit.id)) { input.value = limit.bound.value; $(".v", card).textContent = fmt(limit.bound.value); }
+    input.disabled = signed;
+    const L = lineOf(line.id), p = pickOf(L);
+    $(".pickline", card).innerHTML = p ? 'Pick: <b>' + esc(p.product.title) + "</b> · " + esc(p.product.store) + " · " + money(p.product.price_cents)
+      : '<span class="tag warn">' + esc(L ? L.status : "") + "</span> " + esc(L && L.reason || "no pick");
+  }
+}
+
+/* lines: accept, or strike the picked product with a reason */
+const accepted = new Set();
+const REASONS = ["He cannot use it", "Wrong for the room", "Not what I asked for"];
+function renderLines() {
+  const main = $("#main");
+  main.innerHTML = `<p class="mute">Accept a pick, or strike it. A strike holds at every store and the shopper cannot undo it.</p>` + state.lines.map((L) => {
+    const p = pickOf(L), struck = L.struck || [];
+    const statusTag = { ready: ["ok", "ready"], next_candidate: ["ok", "next in line"], pick_up: ["warn", "pick up locally"], open: ["bad", "open"] }[L.status] || ["", L.status];
+    return `<div class="card" data-line="${esc(L.line_id)}">
+      <h2>${esc(L.need)} <span class="tag ${statusTag[0]}">${esc(statusTag[1])}</span></h2>
+      ${p ? `<div class="pickline"><b>${esc(p.product.title)}</b><br><span class="mute">${esc(p.product.store)} · ${money(p.product.price_cents)}${L.tightest ? " · " + esc(L.tightest.text) : ""}</span></div>` : `<div class="mute">${esc(L.reason || "nothing to pick")}</div>`}
+      ${p && !signed ? `<div class="btns"><button class="act ${accepted.has(L.line_id) ? "primary" : ""}" data-accept="${esc(L.line_id)}">${accepted.has(L.line_id) ? "Accepted" : "Accept"}</button><button class="act danger" data-strike="${esc(L.line_id)}">Strike…</button></div>
+        <div class="strikebox" hidden><div class="chips">${REASONS.map((r) => `<button type="button" data-chip="${esc(r)}">${esc(r)}</button>`).join("")}</div>
+        <input type="text" placeholder="Reason" maxlength="160" aria-label="Reason for the strike"><div class="btns"><button class="act danger" data-confirm="${esc(L.line_id)}">Strike this product</button></div></div>` : ""}
+      ${struck.map((s) => `<div class="pickline mute">Struck: ${esc(s.product_key)} — ${esc(s.reason)}${signed ? "" : ` <button class="act" data-unstrike="${esc(L.line_id)}" data-key="${esc(s.product_key)}">Put back</button>`}</div>`).join("")}
+    </div>`;
+  }).join("");
+}
+document.addEventListener("click", async (e) => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.tab) { tab = t.dataset.tab; document.querySelectorAll("nav button").forEach((b) => b.setAttribute("aria-selected", b === t)); render(); return; }
+  if (t.dataset.accept) { accepted.has(t.dataset.accept) ? accepted.delete(t.dataset.accept) : accepted.add(t.dataset.accept); renderLines(); return; }
+  if (t.dataset.strike) { const box = t.closest(".card").querySelector(".strikebox"); box.hidden = !box.hidden; if (!box.hidden) $("input", box).focus(); return; }
+  if (t.dataset.chip) { $("input", t.closest(".strikebox")).value = t.dataset.chip; return; }
+  if (t.dataset.confirm) {
+    const L = lineOf(t.dataset.confirm), p = pickOf(L), reason = $("input", t.closest(".strikebox")).value.trim();
+    if (!reason) return toast("Give a reason for the strike");
+    t.disabled = true;
+    try { await signedRequest("strike", { line_id: L.line_id, product_key: p.product.product_key, reason }); accepted.delete(L.line_id); await loadState(); renderLines(); }
+    catch (err) { handleError(err); t.disabled = false; }
+    return;
+  }
+  if (t.dataset.unstrike) {
+    t.disabled = true;
+    try { await signedRequest("unstrike", { line_id: t.dataset.unstrike, product_key: t.dataset.key }); await loadState(); renderLines(); }
+    catch (err) { handleError(err); t.disabled = false; }
+  }
+});
+
+/* sign: the sheet in words, the hash, one button. The total comes from the server's own sum. */
+function limitWords(line, limit) {
+  const b = limit.bound;
+  const bound = b.source === "issuer" ? fmt(b.value) + " " + limit.unit + " (set by " + state.sheet.issuer.name + ")" : "the shopper's " + b.fact.replace(/_/g, " ");
+  const left = limit.terms.map((t) => (t.source === "store" ? "the store's " + t.figure.replace(/_/g, " ") : "the shopper's " + t.fact.replace(/_/g, " "))).join(" + ");
+  return left + " " + limit.op + " " + bound;
+}
+function renderSign() {
+  const main = $("#main");
+  const buy = state.lines.filter((L) => (L.status === "ready" || L.status === "next_candidate") && pickOf(L));
+  const local = state.lines.filter((L) => L.status === "pick_up");
+  const open = state.lines.filter((L) => L.status === "open");
+  const per = persona || (issuer && issuer.persona) || { label: "identity not checked" };
+  const senso = (issuer && issuer.senso) || {};
+  const seal = state.seal || {};
+  if (signed) {
+    main.innerHTML = `<div class="card seal"><h2>Signed</h2>
+      <div>${esc((seal.signature && seal.signature.signer && seal.signature.signer.name) || "")} · ${esc((seal.signature && seal.signature.at) || "")}</div>
+      <div class="hash">${esc(seal.sheet_hash || "")}</div>
+      <ul class="sheet">${(seal.carts || []).map((c) => `<li>${esc(c.store)} · ${money(c.total_cents)}<br><a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> <span class="mute">${esc(c.mode || "")}</span></li>`).join("")}</ul>
+      <p class="mute">${esc(per.label || "")}</p>
+      <div class="btns"><button class="act danger" id="reset">Reset for rehearsal</button></div></div>`;
+    $("#reset").onclick = resetAll;
+    return;
+  }
+  main.innerHTML = `<div class="card"><h2>You are signing</h2>
+    <ul class="sheet">
+      ${buy.map((L) => { const c = pickOf(L); return `<li><b>${esc(L.need)}</b>: ${esc(c.product.title)}<br><span class="mute">${esc(c.product.store)} · ${money(c.product.price_cents)}</span>
+        <div class="mute">${state.sheet.lines.find((x) => x.id === L.line_id).limits.map((l) => esc(limitWords(L, l))).join("<br>")}</div></li>`; }).join("")}
+      ${local.map((L) => `<li><b>${esc(L.need)}</b>: pick up locally, not in a cart<br><span class="mute">${esc(L.reason || "")}</span></li>`).join("")}
+      ${open.map((L) => `<li><b>${esc(L.need)}</b>: nothing chosen, not in a cart<br><span class="mute">${esc(L.reason || "")}</span></li>`).join("")}
+    </ul>
+    <div class="mute" style="margin-top:10px">Total in carts (summed by code)</div>
+    <div class="total">${money(state.total_cents)}</div>
+    <div class="mute" style="margin-top:10px">Sheet hash</div>
+    <div class="hash">${esc(canon ? canon.sheet_hash : "not available")}</div></div>
+    <div class="card"><h2>Identity <span class="tag warn">sandbox</span></h2>
+      <p class="mute" id="plabel">${esc(per.label || "identity not checked")}</p>
+      ${per.link ? `<p><a href="${esc(per.link)}" target="_blank" rel="noopener">Open the identity check (sandbox)</a></p>` : ""}
+      <div class="btns"><button class="act" id="pstart">Check my identity</button><button class="act" id="pstatus">Refresh status</button></div></div>
+    <div class="card"><h2>Senso checks</h2><p class="mute">${esc(senso.configured === false ? (senso.label || "not connected") : ((senso.checks || []).length + " sentences checked, " + (senso.blocking || []).length + " blocking"))}</p></div>
+    <div class="btns"><button class="act primary big" id="sign" ${canon && buy.length ? "" : "disabled"}>Sign and create carts</button></div>`;
+  $("#pstart").onclick = async () => {
+    try { persona = await getJSON("/api/issuer/persona/start", { method: "POST" }); await refreshIssuer(); renderSign();
+      if (!persona.link) toast(persona.reason || persona.label); } catch (e) { toast(e.message); }
+  };
+  $("#pstatus").onclick = async () => { try { persona = await getJSON("/api/issuer/persona/status"); await refreshIssuer(); renderSign(); } catch (e) { toast(e.message); } };
+  $("#sign").onclick = async () => {
+    const shown = canon.sheet_hash;
+    if (!confirm("Sign this sheet and create the carts?")) return;
+    busy = true; $("#sign").disabled = true; $("#sign").textContent = "Signing…";
+    try { await signedRequest("sign_sheet", { sheet_hash: shown }); await loadState(); busy = false; renderSign(); }
+    catch (e) { busy = false; handleError(e); await loadState().catch(() => {}); renderSign(); }
+  };
+}
+boot().catch((e) => { $("#who").textContent = "could not start"; $("#main").innerHTML = '<div class="card"><h2>Could not start</h2><p class="mute">' + esc(e.message) + "</p></div>"; });
+</script>
+</body>
+</html>
