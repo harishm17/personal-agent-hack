@@ -33,10 +33,9 @@ export function termNote(term, op) {
   const label = term.label || (term.figure || "").replace(/_/g, " ");
   if (term.value === null || term.value === undefined) return label;
   if (term.kind === "spread") {
-    const end = op === ">=" ? "low" : "high";
-    return `${label}: ${end} end of ${num(term.low, term.unit)} to ${num(term.high, term.unit)}`;
+    return `${label}, ${op === ">=" ? "low" : "high"} end`;
   }
-  if (term.kind === "adjustable") return `${label}: adjusts ${num(term.low, term.unit)} to ${num(term.high, term.unit)}`;
+  if (term.kind === "adjustable") return `${label}, adjustable`;
   return label;
 }
 
