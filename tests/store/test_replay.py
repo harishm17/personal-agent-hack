@@ -44,3 +44,19 @@ def test_replay_serves_sheet2_search_ask_and_cart_without_network(monkeypatch):
     opt = next(p for p in pool if len(p["options"]) >= 1)["options"][0]
     out = cart.create_carts([{"store": "horow.com", "variant_id": opt["variant_id"], "quantity": 1}])
     assert out[0]["mode"] == "replay" and out[0]["total_cents"] is not None and out[0]["cart_url"].startswith("https://")
+
+
+def test_replay_serves_sheet3_search_ask_and_cart_without_network(monkeypatch):
+    _no_network(monkeypatch)
+    sheet = json.loads((ROOT / "sheets" / "sheet3.json").read_text())
+    first_query = {line["id"]: line["queries"][0] for line in sheet["lines"]}
+    for store in ("jlab.com", "bazicproducts.com", "pencils.com", "yoobi.com"):
+        for q in set(first_query.values()):
+            assert ucp.search_catalog(store, q)["mode"] == "replay"
+        a = ask.ask(store)
+        assert a["mode"] == "replay" and a["answer"]
+    assert ucp.search_catalog("bazicproducts.com", "crayons")["products"]
+    pool = json.loads((ROOT / "data" / "sheet3" / "pool" / "bazicproducts.com.json").read_text())
+    opt = pool[0]["options"][0]
+    out = cart.create_carts([{"store": "bazicproducts.com", "variant_id": opt["variant_id"], "quantity": 2}])[0]
+    assert out["mode"] == "replay" and out["total_cents"] == 2 * opt["price_cents"] and out["lines"][0]["quantity"] == 2
