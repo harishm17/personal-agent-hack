@@ -34,6 +34,7 @@ def memory():
     `{read_from, database, mirror, counts, shelf, owners: [{owner, owner_name, rows: [...]}], not_memories}`."""
     held = store.read()
     sheet = _active_sheet()
+    meaning_status = meaning.status()  # as it stood before this call starts a pass
     if held["database"]["state"] == "ok":
         meaning.index_in_background(sheet)  # new memories get their vectors; the reply does not wait for it
     recalled = recalling.recall(sheet)
@@ -51,7 +52,7 @@ def memory():
                        "not_proved": sum(1 for r in held["rows"] if not r["proved"]), "by_kind": kinds,
                        "on_shelf": len(on_shelf), "records_refused": len(held["not_memories"])},
             "sheet_id": sheet.get("id"), "shelf": _shelf(sheet, recalled), "recall_error": recalled.get("error"),
-            "meaning": meaning.status(), "owners": list(owners.values()), "not_memories": held["not_memories"],
+            "meaning": meaning_status, "owners": list(owners.values()), "not_memories": held["not_memories"],
             "rule": "A memory is made only from a receipt in a chain that recomputes or from a saved store answer. "
                     "A row no record proves is shown as not proved and is never recalled."}
 
