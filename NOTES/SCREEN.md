@@ -108,6 +108,22 @@ takes about ten seconds (remote database); later calls are cached for 20 s and a
   (Drive rollator, 4.6 of 5 from 58 reviews on the seller's own page, $119.99, not the pick); L1 and L5 have none and say why.
 - `POST /api/reviews/fetch {line_id}` (laptop only) searches for a line not yet searched; about 20 s for six products, then cached.
 
+## TALK 14:50 — one line where the signing happens, and the same short code in three places (the judge, item B)
+- The line: `Dana signs: 6 limits · 8 quotes · 3 picks · $114.69` and the code `3ac9 4ba1 dd01`. Both are data:
+  `GET /api/seal/proof` → `summary: {text, code, limits, quotes, picks, total_cents}` (read-only, on `stream/TALK`).
+- The same from your own copy of the canonical sheet, so the phone prints what it computed itself and not what the
+  server says (`c` is the parsed canonical sheet, `hash` its SHA-256 hex; on the phone these are `canon.obj`, `canon.hash`):
+  ```js
+  const picks = c.lines.filter((l) => l.pick), n = (k, one) => `${k} ${one}${k === 1 ? "" : "s"}`;
+  const line = `${name} signs: ${n(c.lines.reduce((a, l) => a + l.limits.length, 0), "limit")} · ${n(picks.reduce((a, l) => a + l.pick.quotes.length + (l.pick.delivery.quote ? 1 : 0), 0), "quote")} · ${n(picks.length, "pick")} · $${(c.total_cents / 100).toFixed(2)}`;
+  const code = hash.slice(0, 12).replace(/(.{4})(?=.)/g, "$1 ");
+  ```
+  quotes = each pick's figure quotes plus its delivery quote when the store stated one. `/seal/` prints the same line and code.
+- For the Signature card on the decision screen: print `summary.text` and `summary.code` (or compute them from
+  `/api/sheet/canonical`, which the screen can fetch).
+- One top bar on every page. `web/screen/ladder.js:31`: add `["/seal/", "Signature", "signoff.seal.api"]` to `TABS` and
+  `"/seal/"` to `KNOWN_PAGES`. The full markup, as `/talk/` and `/seal/` now print it:
+  `<nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/">Memory</a><a href="/talk/">Conversations</a><a href="/seal/">Signature</a></nav>`
 ## 14:27 from ENGINE — shapes for E30 (pick rule the shopper chooses) and E31 (preferences), fixed now so you can build
 All keys are new and optional; nothing existing is renamed.
 - **`GET /api/state` → `pick_rules`**: `[{"id": "cheapest", "label": "cheapest inside the limits"}, {"id": "best_reviewed", "label":

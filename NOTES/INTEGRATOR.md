@@ -2205,6 +2205,45 @@ one message; STORE/SIGN: the database writes and two Senso payloads carry names 
 - Will not make it: drawn flow lines from each row into the fingerprint (the rows sit beside it instead); a replay
   control for the lanes (they are drawn in order with their times). Parts 2 and 3 share one card: the rows on the left
   are the editable copy, the fingerprint and the check are on the right, so a change and its result are seen together.
+
+## TALK 14:50 — K5 done on `stream/TALK`; the judge's items A and B done
+- DONE K5: `/seal/` (`web/seal/index.html`, `seal.js`, `seal.css`, `verify.js`) and `GET /api/seal/proof`
+  (`signoff/seal/api.py`, read-only). Proof: `uv run pytest tests/seal -q` → `6 passed`. The test verifies a real saved
+  signature (`tests/seal/proof-signed.json`, saved from my port at 14:45), fails on a one-character change, and runs
+  `web/seal/verify.js` itself under node on the same proof: `valid: true`, then `valid: false` after one character.
+  Chrome did the same check on the page: see the shots. `./hk check` → `PASS (default) uv run -q pytest -q -x`.
+- What the page is, in the order it reads (the judge: "Change one thing" first):
+  1. Change one thing, with what the signature covers. 23 rows from the canonical sheet with owner dots (her rules, the
+     home's measurements, the store's words, picks, prices, delivery quotes, the ordering, the total), one column per
+     item. Every value is a button: an edit changes a copy in the page, the browser recomputes the SHA-256, the pattern
+     and the short code change, and the ECDSA check fails: "Not what Dana signed", the row marked, "Restore".
+     Unedited: "Verified in this browser with Dana's public key". Beside it: "A signature over the cart covers 7 of 23
+     rows" against "This signature covers 23 of 23 rows"; pressing the first dims the rows a cart does not hold.
+  2. Who holds what: three lanes, the private key drawn in the phone's lane, the public key in the agent's, the carts in
+     the stores'; the run's real events from the receipt chain in order with their times.
+- Exactly what the browser checks (and the test): SHA-256 of the canonical string's bytes equals the `sheet_hash` named
+  in the signed message; ECDSA P-256 over the message's bytes verifies with the enrolled key. For an edited copy it also
+  tries the signature against the message that would name the new fingerprint: that fails too. An edit splices the one
+  value into the original text, because a re-serialised copy is not the signed bytes (`16.0`, `–`): the test shows it.
+- Shots, each looked at, 1440 x 810, in `web/seal/shots/`: `seal-unsigned.png` (no key, "Nothing is signed yet: no cart can
+  exist", cart gate closed), `seal-unsigned-changed.png`, `seal-enrolled-unsigned.png`, `seal-signed.png` (verified),
+  `seal-changed.png` (300 → 250 fails), `seal-changed-quote.png` (a store quote edited), `seal-cart-coverage.png`,
+  `seal-lanes.png`, and at 150% zoom `seal-signed-150.png`, `seal-changed-150.png` (the check moves above the rows).
+- Honest limits: the signed state in the shots and the test is from my port in replay mode, signed with the kit's
+  `demo/signer.py` (the same message layout and algorithm as the phone, a key made in Python, not on a phone), identity by
+  Persona's sandbox through SIGN's simulate route, carts are replay carts. On main the page shows whatever main holds:
+  right now "nothing is signed yet". A signature is kept in memory only: restart main and it is gone, with its events.
+  Not built: drawn flow lines from the rows into the fingerprint, and a replay button for the lanes (they arrive in
+  order once, on load, unless the OS asks for reduced motion; the pattern's change on an edit always animates).
+- On main: merge, then restart main (the `/seal` mount is made at start, when `web/seal/` exists).
+  `curl -s localhost:8800/api/seal/proof | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['signed'], d['summary'])"`
+  `?still` draws the lanes without the arrival motion (for a screenshot); `?edit=300~250` opens with that change made.
+- Judge A, `/talk/`: the rule chips are the first thing read (16 px, "may receive" in ink, "never" struck and quieter);
+  one conversation per store with "+N more"; "Not sent · the guard stopped it" in quiet ink, no red; no timestamps.
+  `web/talk/shots/talk-thread.png`, `talk-refused.png` retaken.
+- Judge B: the one line and the short code are in the proof (`summary`), with the rule to compute them, in NOTES/SCREEN.md
+  and NOTES/SIGN.md. One top bar: `/talk/` and `/seal/` print the five tabs; the markup is in NOTES/SCREEN.md,
+  NOTES/TRAIL.md and NOTES/GRAPH.md.
 ## GRAPH 14:45 — H5: what will and will not make it
 - On `stream/GRAPH` now (commit "H5 first version"): `GET /api/graph/explore?line_id=` (nodes, edges, `stages`) and /graph/ opening on the run growing as a graph: the order, the search (every option a node: 73 for the walker), the reading (a dot per quoted figure; dashed when the page does not state one), the rules one at a time (rays from the rule; set aside into a counted band by rule and reason), the web (6 searched, rating pills, "only the title is sent"), the ranking (line toward the gate, pick ringed), the signature (gate, `/seal/`; a cart only when the state has one). Play, step, scrub, arrow keys. The five-column drawing is the second view ("The decision").
 - Will make it by 15:20: A (what it already knows: `GET /api/memory/recall?line_id=` as memory nodes with owner and age, attached to the store, product or measurement they are about; a remembered strike set aside as "struck before") and C (asking the store's agent, from `GET /api/talk/threads`: each message, the parts the guard withheld as struck chips, a stopped message ending at the guard, the reply, and "remembered" where MEMORY holds that reply).
@@ -2284,3 +2323,32 @@ one message; STORE/SIGN: the database writes and two Senso payloads carry names 
   names in `signoff/trail/left.py`). Screenshots `web/trail/shots/left-context-0.png` and `left-context-1.png`. Totals
   at this moment with a copy of main's ledger: 107 payloads to 5 recipients · 49 carried a limit, a measurement or a
   name, none to a store · 22 held one the sender did not declare · 31 stopped at the guard. `uv run -q pytest -q` → 427 passed.
+## TALK 15:04 — K6 done on `stream/TALK`: "Try to get a cart without her"
+- DONE K6: a card on `/seal/` with four buttons. Each sends a real request to `POST /api/issuer/request` (the one route
+  that can change a limit or make a cart; SIGN's code has no other, and I added none) and prints the server's own answer:
+  | attempt | what is sent | the server's answer, signed run | unsigned run, no key |
+  |---|---|---|---|
+  | Ask for carts with no signature | `sign_sheet`, no `sig` | 401 `unsigned` "not signed by the approver's key" | the same |
+  | Sign with a key made in this browser | `sign_sheet` signed by a new WebCrypto P-256 key, claiming her key id | 401 `unsigned` | 401 `no_key` "no approver key is enrolled on this server; enrol this phone again" |
+  | Replay her signed request | the exact `payload` and `sig` of her signature | 409 `replayed_seq` "seq 4 is not greater than the last one (4)" | disabled: "no signed request in this run yet" |
+  | Change her limit from the laptop | `set_limit L1.capacity 300 → 250`, no `sig` | 401 `unsigned` | the same |
+- No finding: every attempt was refused. Nothing in the page decides the text shown: it is `status`, `error` and `detail`
+  from the response. If one ever came back 2xx the row says "NOT refused: tell the integrator" in red.
+- They do not disturb a real run. Checked on my port against a signed state, before and after the four attempts:
+  `{'version': 7, 'hash': '3ac94ba1…', 'signed': True, 'current': True, 'carts': 3, 'key': '06c1fbf5b174582c', 'last_seq': 3, 'limit': 300}`
+  both times → `UNCHANGED`. Why, from `signoff/sign/verify.py`: `last_seq` is advanced only after the signature verifies
+  and `seq` is greater; a refusal of these kinds is raised before that, and before the engine is touched. Also a unit
+  test on SIGN's own check: `test_each_attempt_without_her_key_is_refused_and_changes_nothing`. No attempt touches
+  enrolment (five wrong codes would lock the phone out for a minute), so there is no button for it.
+- In the records: each refusal is a `request_refused` receipt in the run's chain. The card's count ("5 attempts refused in
+  this run") is the number of those receipts; the lanes show them ("4 requests refused: unsigned, replayed seq").
+  `GET /api/seal/proof` → `refused: [{n, at, request, why}]`.
+- The limit attempt goes to the signing route, not to `/api/shopper/fact`: that route changes only Elena's own
+  measurements, answers 404 for a limit id and writes no receipt for it, so it would not be in the records.
+- Order on the page: (1) Change one thing, with what the signature covers, in one card, since the covered rows are the
+  values you change; (2) Try to get a cart without her; (3) the lanes. All four parts made it; the lanes are last.
+- Proof: `uv run pytest tests/seal -q` → `8 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`. Shots, looked
+  at: `web/seal/shots/seal-attempts-signed.png`, `seal-attempts-unsigned.png`, `seal-attempts-150.png`; all earlier
+  states retaken with the final page. Chrome made the attempts in the shots itself (`?try=nosig,newkey,replay,limit`).
+- On main: merge, restart main once (new route fields, the mount). Pressing the buttons on main is safe by the above; each
+  press adds a refused receipt to main's chain, which is the point. `?still&try=…` is for a screenshot only.

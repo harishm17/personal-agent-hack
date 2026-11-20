@@ -45,8 +45,14 @@ def events(receipts: list, seal: dict) -> list:
                 out.append({"at": r["at"], "from": "phone", "to": "agent", "text": what, "what": what, "count": 1})
         elif kind == "request_refused":
             why = str(d.get("refused_because") or "").split(":")[0].replace("_", " ")
-            out.append({"at": r["at"], "from": "agent", "to": "agent", "bad": True,
-                        "text": "%s refused: %s" % ((d.get("request") or "request").replace("_", " "), why)})
+            text = "%s refused: %s" % ((d.get("request") or "request").replace("_", " "), why)
+            if out and out[-1].get("whys"):  # refusals that follow each other are one line with a count and the reasons
+                last = out[-1]
+                last["count"] += 1
+                last["whys"] += [why] if why not in last["whys"] else []
+                last.update(at=r["at"], text="%d requests refused: %s" % (last["count"], ", ".join(last["whys"])))
+            else:
+                out.append({"at": r["at"], "from": "agent", "to": "agent", "bad": True, "text": text, "whys": [why], "count": 1})
         elif kind == "request_accepted" and d.get("request") == "sign_sheet":
             sent = None
             try:
@@ -68,6 +74,7 @@ def events(receipts: list, seal: dict) -> list:
                                 "text": "cart lines match the signed picks · %d of %d" % (ok, len(checked))})
     for e in out:
         e.pop("what", None)
+        e.pop("whys", None)
         e.pop("count", None)
     return out
 
@@ -85,6 +92,13 @@ def summary(canonical: str, sheet_hash: str | None, name: str | None) -> dict:
     return {**n, "code": _short(sheet_hash),
             "text": "%s signs: %s · %s · %s · $%.2f" % (name or "The approver", word("limits", "limit"), word("quotes", "quote"),
                                                         word("picks", "pick"), n["total_cents"] / 100)}
+
+
+def refused(receipts: list) -> list:
+    """Every request the server refused in this run, from the receipt chain: [{n, at, request, why}]."""
+    return [{"n": r.get("n"), "at": r["at"], "request": (r.get("detail") or {}).get("request"),
+             "why": (r.get("detail") or {}).get("refused_because")}
+            for r in receipts if r.get("type") in ("request_refused", "enrolment_refused")]
 
 
 def compose(state: dict, canonical: str, key, receipts: list, identity_required: bool) -> dict:
@@ -106,7 +120,7 @@ def compose(state: dict, canonical: str, key, receipts: list, identity_required:
         "public_key": key and {"jwk": key.jwk, "key_id": key.key_id, "name": key.name, "enrolled_at": key.enrolled_at},
         "algorithm": ALGORITHM,
         "identity": {"required": identity_required, **{k: (key.persona if key else {}).get(k) for k in ("status", "verified", "sandbox")}},
-        "events": events(receipts, seal),
+        "events": events(receipts, seal), "refused": refused(receipts),
         "carts": [{"store": c.get("store"), "total_cents": c.get("total_cents"), "signed_total_cents": c.get("signed_total_cents"),
                    "lines": len(c.get("lines") or []), "lines_checked": c.get("lines_checked"), "mode": c.get("mode")}
                   for c in seal.get("carts", [])],
