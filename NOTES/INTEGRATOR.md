@@ -62,3 +62,16 @@ Also: `kb_accuracy` judge model is `gpt-5.6-luna`; a run with wait:true took abo
 - To mount: add `signoff.airbyte.api` is already in `OPTIONAL_ROUTERS`. To read from Airbyte rows, use
   `signoff.airbyte.pool.load()["pool"]`: same shape as `data/pool/*.json`.
 - Step 4 done: the order is a third Airbyte source (job 11, 12 rows, table `airbyte_order_limits`); `signoff.airbyte.order.load()` returns it as "proposed, from the order". Whole run with three jobs: 109 s.
+
+## AIRBYTE 12:05 — one command, short-lived tunnel, status wording
+- `uv run python -m signoff.airbyte.sync` now does everything (about 2 to 3 minutes): starts the staging container if it
+  is down, the export server and a tunnel, runs the three jobs, copies to SingleStore, records the run (with the tunnel's
+  address, which is closed again at the end) and stops the server and tunnel. No tunnel or file server of mine is left
+  running; `data/order/export_url.txt` is gone. `GET /api/airbyte/status` gives `source` "File (HTTPS)", `destination`
+  "MySQL (local staging)", `copy` "copied to SingleStore by signoff.airbyte.sync", per job `job_id`, `rows_synced`,
+  `duration`, `rows_copied_to_singlestore`, and one plain sentence per job in `last.lines`.
+- Demo it: run `POST /api/airbyte/sync` (or the command) a few minutes before, then show `/api/airbyte/status` and the row counts in SingleStore.
+- Say: "the stores' product pages and the therapist's order are exported files; Airbyte moves them into a staging database;
+  a small step of ours copies them into SingleStore, and the passing-box query runs on those rows."
+- Do not say Airbyte wrote to SingleStore directly (it cannot: its MySQL destination fails against SingleStore), and do not
+  say the sync is live at demo time: it is run beforehand, and the status shows its job ids and times.
