@@ -62,7 +62,7 @@ def select(sheet: dict, memories: list, now=None) -> dict:
                 facts_used.setdefault(bound["fact"], []).append(limit["id"])
     on_sheet = {f["id"]: f for f in sheet.get("shopper_facts") or []}
     lines = {l["id"] for l in sheet.get("lines") or []}
-    data_id = sheet.get("data_from") or sheet.get("id")
+    data_ids = {sheet.get("id"), sheet.get("data_from") or sheet.get("id")}
 
     facts = []
     for m in _newest([m for m in memories if m["kind"] == "home_measurement"], lambda m: (m["owner_id"], m["key"])):
@@ -86,7 +86,7 @@ def select(sheet: dict, memories: list, now=None) -> dict:
         strikes.append(entry)
 
     answers = []
-    for m in _newest([m for m in memories if m["kind"] == "store_answer" and m["sheet_id"] == data_id],
+    for m in _newest([m for m in memories if m["kind"] == "store_answer" and m["sheet_id"] in data_ids],
                      lambda m: (m["owner"], m["key"])):
         line_id = m["value"].get("line_id")
         if m["owner"] in (sheet.get("stores") or []) and (line_id is None or line_id in lines):

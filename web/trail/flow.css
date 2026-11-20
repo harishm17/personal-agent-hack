@@ -1,0 +1,81 @@
+/* The run of one item as a picture (flow.js). Tokens come from /screen/style.css. The stage is laid out at
+   1392 px and scaled as a whole to its place, so the lines stay on their things at any width or zoom; inside
+   it sizes are in the stage's own px. Monochrome; the three source hues appear only as 6 px dots. */
+.fl { grid-column: 1 / -1; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 0.75rem 1rem 1rem; min-width: 0; }
+.fl[hidden] { display: none; }
+.fl-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; white-space: nowrap; }
+.fl-title { font-weight: 600; }
+.fb { height: 1.75rem; min-width: 1.75rem; padding: 0 0.5rem; border: 1px solid var(--line); border-radius: 0.375rem; background: var(--surface); font-size: 0.75rem; text-align: center; }
+.fb:hover { border-color: var(--t3); }
+.fl-scale { position: relative; overflow: hidden; }
+.fl-stage { position: relative; width: 1392px; transform-origin: 0 0; font: 400 14px/20px var(--f); }
+.fl-stage .cap { font-size: 12px; line-height: 16px; }
+.fl-stage .cap.up { text-transform: uppercase; letter-spacing: .02em; margin: 16px 0 8px; }
+.fl-stage .od { width: 6px; height: 6px; margin-right: 6px; vertical-align: 2px; }
+.fl-stage mark { font-weight: 400; padding: 1px 2px; border-radius: 3px; background: linear-gradient(var(--mark), var(--mark)) no-repeat left / 100% 100%; }
+.fl-stage p { margin: 6px 0 0; }
+.later { visibility: hidden; }
+
+/* the rail is the scrubber */
+.fl-rail { display: flex; }
+.st { flex: 1; display: flex; align-items: baseline; gap: 8px; color: var(--t3); font-size: 13px; border-top: 2px solid var(--line); padding: 8px 0 0; text-align: left; white-space: nowrap; }
+.st i { font-style: normal; font-size: 12px; color: var(--t3); font-weight: 400; }
+.st.done { color: var(--t2); border-color: var(--t2); }
+.st.now { color: var(--t1); font-weight: 600; border-color: var(--t1); }
+.st.unmet span { font-weight: 400; color: var(--t3); }
+.st:hover span { color: var(--t1); }
+
+.fl-cols { display: grid; grid-template-columns: 320px 468px 516px; column-gap: 44px; align-items: start; }
+.fl-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.fl-col > .cap.up { margin-bottom: -4px; }
+.fl-col:nth-child(2) { padding-top: 32px; }
+.fc { position: relative; z-index: 1; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; min-width: 0; }
+.fc.quiet { opacity: .55; }
+.fc.absent { color: var(--t3); font-size: 13px; }
+.pr { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.pr b { display: block; font-weight: 600; }
+.pr span { color: var(--t2); }
+.thumb { width: 44px; height: 44px; border-radius: 6px; border: 1px solid var(--line); object-fit: contain; background: var(--surface); flex: none; }
+.pg { font-size: 12px; line-height: 18px; color: var(--t2); margin-top: 8px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
+
+/* what the model sees: a frame with a dark edge; only what is inside it reached a model */
+.fl-frame { position: relative; z-index: 1; border: 1.5px solid var(--t1); border-radius: 10px; background: var(--surface); }
+.fl-frame .hd { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.fl-frame .hd b { font-weight: 600; }
+.fl-frame .bd { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+.fc.in { padding: 10px 12px; }
+.fc.in .pg { margin-top: 4px; -webkit-line-clamp: 3; }
+.qr { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 4px; }
+.tok { position: relative; z-index: 3; display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border: 1px solid var(--t1); border-radius: 14px; background: var(--surface); font-weight: 600; white-space: nowrap; }
+.tok.q { border-color: var(--line); font-weight: 400; background: var(--mark); max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+
+/* what never enters a model call rides round the frame */
+.fl-by { position: relative; height: 112px; }
+.fl-by > .cap { position: absolute; left: 12px; top: 0; }
+.tok.by { position: absolute; height: 26px; font-size: 13px; }
+.fl-by .chips { position: absolute; left: 12px; top: 80px; display: flex; gap: 6px; }
+.chip { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border: 1px dashed #c9ced6; border-radius: 12px; color: var(--t3); font-size: 12px; background: var(--bg); white-space: nowrap; }
+
+/* checked in code */
+.cmp { display: grid; grid-template-columns: max-content 28px max-content 1fr; align-items: center; gap: 12px 10px; margin-top: 10px; padding-bottom: 6px; }
+.cmp .tok { justify-self: start; min-width: 88px; }
+.cmp .op { text-align: center; color: var(--t2); }
+.cmp .mg { color: var(--t2); white-space: nowrap; }
+.no { color: var(--bad); }
+.rowc { display: flex; align-items: center; gap: 12px; min-height: 60px; }
+.rowc .pc { flex: none; width: 56px; color: var(--t2); }
+.rowc b.pc { color: var(--t1); font-weight: 600; }
+.rowc .tt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rowc .no, .rowc .muted, .rowc .faint { flex: none; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fc.pick { border-color: var(--t1); min-height: 68px; }
+
+/* to the store's own agent: the draft, the guard as a line, the reply */
+.fl-guard { display: grid; grid-template-columns: 440px 440px 1fr; column-gap: 20px; align-items: start; }
+.gate { position: relative; z-index: 1; border-left: 2px solid var(--t1); padding: 4px 0 4px 16px; min-height: 84px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.gate b.cap { color: var(--t1); font-weight: 600; }
+.fl-mem { display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 16px; }
+
+/* the lines: the store's page into the frame in ink; what goes round it in grey */
+.fl-lines { position: absolute; left: 0; top: 0; width: 1392px; z-index: 2; pointer-events: none; overflow: visible; }
+.fl-lines path { fill: none; stroke: #c3c8d0; stroke-width: 1.25; }
+.fl-lines path.hot { stroke: var(--t1); }

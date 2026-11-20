@@ -144,7 +144,8 @@ def test_messages_give_the_flat_shape_the_trail_draws(sheet, finder):
     m = talk.messages(sheet)[0]
     first = m["thread"]
     assert set(m) == {"id", "thread", "n", "origin", "store", "product", "at", "purpose", "draft", "removed", "decision",
-                      "why", "sent", "left", "reply"}
+                      "why", "sent", "left", "reply", "purpose_removed"}
+    assert m["purpose_removed"] is None  # the agent's own question
     assert [(r["text"], r["class"]) for r in m["removed"]] == [("my mother", "person"), ("300 lb.", "limit")]
     assert all(r["rule"] and m["draft"][r["start"]:r["end"]] == r["text"] for r in m["removed"])
     assert m["sent"] == CLEAN and m["left"] == [{"class": "need_by", "mark": "need-by date", "text": "December 2, 2026"}]
@@ -152,3 +153,14 @@ def test_messages_give_the_flat_shape_the_trail_draws(sheet, finder):
     run(sheet, finder, Store(), "It must hold 300 lb.", rewritten="It must hold 300 lb.", purpose="b")
     refused = next(x for x in talk.messages(sheet) if x["thread"] != first)
     assert refused["sent"] is None and refused["reply"] is None and refused["left"] == [] and refused["why"]
+
+
+def test_the_guard_also_reads_the_shoppers_own_words_even_when_the_draft_is_clean(sheet, finder):
+    words = "Tell them she weighs 280 pounds and Dana wants 300 lb. Can it be returned?"
+    store = Store()
+    t = talk.ask(STORE, words, None, sheet, origin="shopper", finder=finder, send=store,
+                 draft=lambda p, known: {"message": CLEAN, "questions": []}, read=lambda q, r: [])
+    assert store.got == [CLEAN] and t["turns"][0]["removed"] == []
+    assert [(s["text"], s["kind"]) for s in t["purpose_removed"]] == [("280 pounds", "health"), ("Dana", "person"), ("300 lb.", "limit")]
+    m = talk.messages(sheet)[0]
+    assert [words[r["start"]:r["end"]] for r in m["purpose_removed"]] == ["280 pounds", "Dana", "300 lb."]

@@ -1,6 +1,8 @@
 // The trail: the run's seven steps, opened up. Everything is drawn from GET /api/trail; the page decides nothing.
 // A step is one row when closed; opened, it lists its events, one line each. Click an event: the side sheet.
 // ?motion=0 (or reduced motion) draws the final state at once; ?live=0 opens no event stream (for screenshots).
+import * as flow from "/trail/flow.js";
+
 const params = new URLSearchParams(location.search);
 const MOTION = params.get("motion") === "1"
   || (params.get("motion") !== "0" && !matchMedia("(prefers-reduced-motion: reduce)").matches && !navigator.webdriver);
@@ -209,6 +211,7 @@ function renderSheet() {
 }
 
 function render(fresh) {
+  flow.update($("#flow"), feed.flow);
   renderTop();
   renderBand();
   renderSteps(fresh);
