@@ -727,3 +727,50 @@ throughout. The risk is not the engine; it is the three other streams changing t
   writes a `carts_updated` receipt instead of a second `signed`.
 - **No silent fallbacks:** `/api/state` → `degraded`, a list of `{what, note}`; empty now. So far it is fed by the product-reply
   parser failing; I am adding the reader's API-to-command-line fallback, the pool loader's fallback and receipts kept in memory only.
+## STORE 13:00 — bathroom-fixture pool (candidate sheet 2) is committed; counts by reading the texts
+**Where (corrected 13:10).** `data/sheet2/bathroom/pool/<store>.json` (swissmadison.com 60, horow.com 18, deervalleybath.com 23, kingstonbrass.com 44 = 145 products),
+raw replies in `data/sheet2/bathroom/pool/raw/` (32 searches, one store thread each, about one call a second), each store agent's delivery and
+returns answer in `data/sheet2/bathroom/store_answers/<store>.json` (same parse as sheet 1; replies verbatim). Pool shape as `data/pool`, plus
+`variants` (how many are available) and `variant_title`; the row carries the cheapest available variant (id, price); text is
+title, plain description, "Selected option: ...". Line ids T1 to T4. Dropped by title rule: seats, bidets, parts, valves, arms, hoses,
+sinks that merely mention "faucet hole", enclosures, bases, doors, mirrors, stools. No cart or checkout call was made.
+I first put it in `data/sheet2/pool/` and moved the cookware pool away, which broke `tests/engine/test_sheet2.py` (the engine's sheet2 is the cookware sheet and reads `data/sheet2/pool/`). The cookware pool is back in `data/sheet2/pool/`; the bathroom pool sits beside it in `data/sheet2/bathroom/`. If the builder says yes, a new sheet needs its own folder (`data/sheet3/` is outside my paths: add it with `./hk own STORE --add 'data/sheet3/**'` or `git mv data/sheet2/bathroom data/sheet3`) and ENGINE's `use_sheet` reads it from there.
+**Store answers (delivery / returns of an opened toilet, verbatim in the files).** swissmadison.com: "parcel shipments typically arrive
+in 1-6 business days"; deervalleybath.com: "standard shipping estimate is 1-3 business days"; kingstonbrass.com: "standard delivery is
+estimated at 7-10 business days"; horow.com states **no delivery time**, so no Horow product could be picked under the pick rule.
+Returns: all four say an opened toilet may not qualify (unused, original packaging, 30 days); none says "cannot be returned".
+**Counts: this is a pattern count (regular expressions over the plain text), not a read by a model; a model read may find more or fewer.**
+| store | line | products | stated |
+|---|---|---|---|
+| deervalleybath | T1 toilet | 13 | rough-in 8 (10 in: 1); flush gpf 10 (two numbers: 8) |
+| horow | T1 | 16 | rough-in 15 (10 in: 6); flush gpf 8 (two numbers: 6) |
+| kingstonbrass | T1 | 3 | rough-in 3 (10 in: 0); flush gpf 3 (two numbers: 3) |
+| swissmadison | T1 | 20 | rough-in 19 (10 in: 10); flush gpf 20 (two numbers: 16) |
+| all | T1 | 52 | rough-in 45 (87%; 10 in: 17); flush gpf 41 (79%; two numbers 33) |
+| kingstonbrass | T2 faucet | 14 | flow gpm 14 (all say 1.2 GPM) |
+| swissmadison | T2 | 13 | flow gpm 13 (all 1.2 GPM) |
+| deervalley, horow | T2 | 0 | they sell sinks and no bathroom faucets |
+| kingstonbrass | T3 shower head | 10 | flow gpm 10 (1.8 GPM) |
+| swissmadison | T3 | 8 | flow gpm 8 (1.8 or 2.5 GPM) |
+| deervalley, horow | T3 | 0 | no shower heads (horow only a tub set, dropped) |
+| deervalleybath | T4 vanity | 10 | "width" with inches in text 10; a size in inches in the title 6 |
+| horow | T4 | 2 | width in text 0; size in title 2 |
+| kingstonbrass | T4 | 17 | width in text 11; size in title 17 |
+| swissmadison | T4 | 19 | width in text 4; size in title 19 (a nominal size, e.g. 30") |
+| all | T4 | 48 | width word with inches 25 (52%); nominal size in title 44 (92%) |
+Reading: rough-in (87%), flush gpf (79%), faucet flow and shower-head flow (every product that is one) are stated on most pages. Vanity
+overall width is stated explicitly on about half; the title size is nominal, not the measured overall width. Faucets exist only at
+two stores (27 products, 1.2 GPM on all, so a flow limit would not separate them); shower heads only at two (1.8 GPM on 15, 2.5 on 6).
+Dual flush: 33 toilet pages state two numbers (for example "1.1/1.6 GPF"); a limit on "flush volume" would need a rule for which
+number counts (the full flush, 1.6, is the one that uses the most water). Horow's two flagship pages (T0338W, T0338W-10) state no gpf at all
+(they say "Dual Flush" only), and 8733S/8733N/T0350W/T0338B-10/T38P/X70 either.
+**The two findings from the ideation pass, checked in the data:**
+1. Horow T0338W: "HOROW T0338W 12-Inch Rough-In One-Piece ADA Toilet with Dual Flush", 29900 cents, text states rough-in 12 in;
+   "HOROW T0338W-10 10-Inch Rough-In One-Piece ADA Toilet with Dual Flush", 34900 cents, text states 10 in. Confirmed: $299 against $349,
+   so a 10 in rough-in limit moves the pick to the dearer sibling. (Both have one available variant. Horow states no delivery time.)
+2. A title that says 1.1/1.6 GPF: confirmed, but the picture is different from "text says only 1.6". 14 Swiss Madison and DeerValley
+   toilets carry "1.1/1.6 GPF" in the title; in the text, Swiss Madison writes "a 1.1 gpf light flush or a high 1.6 gpf full flush" (the
+   decimal point splits my crude sentence cut, which is why it looked like "1.6 only"), so both numbers are stated. Two pages state the
+   figure in the title only: "St. Tropez Two-Piece 12" Rough-in 1.1/1.6 GPF Dual Top Flush Elongated Toilet" and "Sublime One Piece
+   Elongated Toilet with Touchless Retrofit Dual Flush 1.1/1.6 gpf" (no "1.1" in the body text). Whether a title counts as "the store's
+   text" is the same question as for sheet 1: the pool's `text` begins with the title, so spans in the title are found.

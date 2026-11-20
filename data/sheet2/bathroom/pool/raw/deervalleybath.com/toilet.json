@@ -1,0 +1,2417 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.deervalleybath.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "DeerValley Bath",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.deervalleybath.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "52635369660"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "52635369660"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/6673774280892",
+   "title": "DeerValley DV-1F52812 Compact One-Piece Toilet Efficient Dual Flush & Quiet Seat",
+   "description": {
+    "html": "Small toilets save more space, a modern and compact design. This small toilet is designed for very small spaces, but the compact toilet looks perfect in every modern bathroom. This one-piece skirted toilet not only hides the curved sewage pipe but also enhances the elegant appearance of the toilet; by eliminating the gap between the tank and bowl, it eliminates the hiding places for dirt and debris, making it easy to clean. The seat cover of this dual-flush round one-piece universal height skirt toilet closes quietly without making any noise. The dual-flush toilet flushes a powerful 1.1/1.6 GPF, which is very reliable and also saves water. This version of the toilet comes with a very smooth glaze that prevents particles from sticking to the ceramic. This feature, combined with the high efficiency flush, helps reduce the frequency of toilet cleaning, minimizing the use of water, harsh chemicals, and the time required for cleaning. DeerValley has two size options for this modern toilet, we have a 12\" rough-in toilet and a 10\" rough-in toilet for you to choose from.Please Note: This toilet is designed for small bathrooms, and the size is smaller than a standard size toilet, please confirm the size of the toilet is what you need before purchase, if the size is not suitable we also support no reason to return it, please feel free to buy. Features: Small Size: This small round toilet is specially designed for small bathrooms and seamlessly fits into any compact bathroom, effectively saving space. It's the perfect size for most users unless you're exceptionally tall. Complete Accessories: The toilet comes with all the necessary accessories for installation, including the toilet tank lid, water fittings, installation hardware, and hoses for the two water supply inlets. Dual-Flush Toilet: It features a dual-flush system with options of 1.6 GPF for a full flush (adjustable with the floater) and 1.1 GPF for a half flush, providing powerful flushing performance while conserving water. Easy to Clean: This skirted toilet design leaves no place for dirt to hide, offering a smooth and easy-to-clean surface. Two Size Options: You can choose from two size options for this modern toilet - a 12\" rough-in toilet and a 10\" rough-in toilet - ensuring a perfect fit for your space. Easy Installation: The self-cleaning glazed surface not only looks appealing but is also easy to maintain. It comes with an improved UF durable plastic seat and a wax ring for your convenience. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. MaP\uff1aPowerfully blend flushing performance, reliability, waste clearance, and durability.? DOE\uff1aStrictly blend energy efficiency, regulatory compliance, conservation, and performance. Weights & Dimensions SKU DV-1F52812/DV-1F52812B DV-1F52812R Overall 24.61\" L X 12.99\" W X 27.76\" H 24.61\" L X 12.99\" W X 27.76\" H Rough In Size 12.00\" 10.00\" Toilet Seat Height - Top to Bottom 16.54\" 16.54\" Bowl Height - Top to Bottom 15.75\" 15.75\" Tank 12.99\" L X 5.71\" W X 11.02\" H 12.99\" L X 5.71\" W X 11.02\" H Tank Lid 12.99\" L X 5.71\" W X 1.38\" H 12.99\" L X 5.71\" W X 1.38\" H Bolts Spread Distance 5.51\" 5.51\" Distance from the Seat Installation Hole to the Tank 1.77\" 1.77\" Distance from the Back of the Toilet to the Wall 3.74\" 3.74\" Toilet Installation Hole Distance 5.51\" 5.51\" Height from the Bottom of the Water Tank to the Ground 15.16\" 15.16\" Distance Between the Center of Adapter and the Center of Trapway 3.35\" 3.35\" Trapway Diameter( Inside ) 2.17\" 2.17\" Toilet Seat 1.57 Back/1.57 Front \" H X 13.19\" W X 17.72\" L 1.57 Back/1.57 Front \" H X 13.19\" W X 17.72\" L Toilet Seat Inside Ring 7.87\" W X 11.02\" L 7.87\" W X 11.02\" L Bowl 12.60\" L X 8.86\" W X 15.75\"H 12.60\" L X 8.86\" W X 15.75\"H Toilet Base Dimension 17.32\" L X 12.60\" W 17.32\" L X 12.60\" W Color White/Black White Overall Product Weight 84 lb 88 lb Flush Volume 1.1/1.6 GPF 1.6/1.1GPF (DV-1F52812/DV-1F52812B) What is included in the package? Toilet seat, Fitting, Side bolt cover parts, Waxring screw, Installation instruction Compatible Accessories Toilet Seat: DV-F812S11 Toilet Flush Button Chopsticks: DV-F812V32 Flush Button: DV-F812V31 Tank Lid: DV-F812T11 Side Bolt Cover: DV-F026P21 Waxring and Toilet Bolts: DV-F008P11 Toilet Seat Quick Release Bracket:?DV-F812S01 Fill Valve: DV-F812V01 Rubber Cushion: DV-F812S91 Toilet Adapter: DV-FMYV51 Installation Video (DV-1F52812/DV-1F52812R) : Installation Manual: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+   },
+   "url": "https://www.deervalleybath.com/products/compact-dual-flush-round-one-piece-toilet-with-soft-closing-seat",
+   "handle": "compact-dual-flush-round-one-piece-toilet-with-soft-closing-seat",
+   "price_range": {
+    "min": {
+     "amount": 20900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 25870,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 38870,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42706079088828",
+     "sku": "DV-1F52812",
+     "title": "12\" / White",
+     "description": {
+      "html": "Small toilets save more space, a modern and compact design. This small toilet is designed for very small spaces, but the compact toilet looks perfect in every modern bathroom. This one-piece skirted toilet not only hides the curved sewage pipe but also enhances the elegant appearance of the toilet; by eliminating the gap between the tank and bowl, it eliminates the hiding places for dirt and debris, making it easy to clean. The seat cover of this dual-flush round one-piece universal height skirt toilet closes quietly without making any noise. The dual-flush toilet flushes a powerful 1.1/1.6 GPF, which is very reliable and also saves water. This version of the toilet comes with a very smooth glaze that prevents particles from sticking to the ceramic. This feature, combined with the high efficiency flush, helps reduce the frequency of toilet cleaning, minimizing the use of water, harsh chemicals, and the time required for cleaning. DeerValley has two size options for this modern toilet, we have a 12\" rough-in toilet and a 10\" rough-in toilet for you to choose from.Please Note: This toilet is designed for small bathrooms, and the size is smaller than a standard size toilet, please confirm the size of the toilet is what you need before purchase, if the size is not suitable we also support no reason to return it, please feel free to buy. Features: Small Size: This small round toilet is specially designed for small bathrooms and seamlessly fits into any compact bathroom, effectively saving space. It's the perfect size for most users unless you're exceptionally tall. Complete Accessories: The toilet comes with all the necessary accessories for installation, including the toilet tank lid, water fittings, installation hardware, and hoses for the two water supply inlets. Dual-Flush Toilet: It features a dual-flush system with options of 1.6 GPF for a full flush (adjustable with the floater) and 1.1 GPF for a half flush, providing powerful flushing performance while conserving water. Easy to Clean: This skirted toilet design leaves no place for dirt to hide, offering a smooth and easy-to-clean surface. Two Size Options: You can choose from two size options for this modern toilet - a 12\" rough-in toilet and a 10\" rough-in toilet - ensuring a perfect fit for your space. Easy Installation: The self-cleaning glazed surface not only looks appealing but is also easy to maintain. It comes with an improved UF durable plastic seat and a wax ring for your convenience. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. MaP\uff1aPowerfully blend flushing performance, reliability, waste clearance, and durability.? DOE\uff1aStrictly blend energy efficiency, regulatory compliance, conservation, and performance. Weights & Dimensions SKU DV-1F52812/DV-1F52812B DV-1F52812R Overall 24.61\" L X 12.99\" W X 27.76\" H 24.61\" L X 12.99\" W X 27.76\" H Rough In Size 12.00\" 10.00\" Toilet Seat Height - Top to Bottom 16.54\" 16.54\" Bowl Height - Top to Bottom 15.75\" 15.75\" Tank 12.99\" L X 5.71\" W X 11.02\" H 12.99\" L X 5.71\" W X 11.02\" H Tank Lid 12.99\" L X 5.71\" W X 1.38\" H 12.99\" L X 5.71\" W X 1.38\" H Bolts Spread Distance 5.51\" 5.51\" Distance from the Seat Installation Hole to the Tank 1.77\" 1.77\" Distance from the Back of the Toilet to the Wall 3.74\" 3.74\" Toilet Installation Hole Distance 5.51\" 5.51\" Height from the Bottom of the Water Tank to the Ground 15.16\" 15.16\" Distance Between the Center of Adapter and the Center of Trapway 3.35\" 3.35\" Trapway Diameter( Inside ) 2.17\" 2.17\" Toilet Seat 1.57 Back/1.57 Front \" H X 13.19\" W X 17.72\" L 1.57 Back/1.57 Front \" H X 13.19\" W X 17.72\" L Toilet Seat Inside Ring 7.87\" W X 11.02\" L 7.87\" W X 11.02\" L Bowl 12.60\" L X 8.86\" W X 15.75\"H 12.60\" L X 8.86\" W X 15.75\"H Toilet Base Dimension 17.32\" L X 12.60\" W 17.32\" L X 12.60\" W Color White/Black White Overall Product Weight 84 lb 88 lb Flush Volume 1.1/1.6 GPF 1.6/1.1GPF (DV-1F52812/DV-1F52812B) What is included in the package? Toilet seat, Fitting, Side bolt cover parts, Waxring screw, Installation instruction Compatible Accessories Toilet Seat: DV-F812S11 Toilet Flush Button Chopsticks: DV-F812V32 Flush Button: DV-F812V31 Tank Lid: DV-F812T11 Side Bolt Cover: DV-F026P21 Waxring and Toilet Bolts: DV-F008P11 Toilet Seat Quick Release Bracket:?DV-F812S01 Fill Valve: DV-F812V01 Rubber Cushion: DV-F812S91 Toilet Adapter: DV-FMYV51 Installation Video (DV-1F52812/DV-1F52812R) : Installation Manual: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 20900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 25870,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Rough-In Size",
+       "label": "12\""
+      },
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52812_1_13734187-f79f-40f4-afca-a689ee1d028b.jpg?v=1757057906"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42706079088828:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43061158510780",
+     "sku": "DV-1F52812B",
+     "title": "12\" / Black",
+     "description": {
+      "html": "Small toilets save more space, a modern and compact design. This small toilet is designed for very small spaces, but the compact toilet looks perfect in every modern bathroom. This one-piece skirted toilet not only hides the curved sewage pipe but also enhances the elegant appearance of the toilet; by eliminating the gap between the tank and bowl, it eliminates the hiding places for dirt and debris, making it easy to clean. The seat cover of this dual-flush round one-piece universal height skirt toilet closes quietly without making any noise. The dual-flush toilet flushes a powerful 1.1/1.6 GPF, which is very reliable and also saves water. This version of the toilet comes with a very smooth glaze that prevents particles from sticking to the ceramic. This feature, combined with the high efficiency flush, helps reduce the frequency of toilet cleaning, minimizing the use of water, harsh chemicals, and the time required for cleaning. DeerValley has two size options for this modern toilet, we have a 12\" rough-in toilet and a 10\" rough-in toilet for you to choose from.Please Note: This toilet is designed for small bathrooms, and the size is smaller than a standard size toilet, please confirm the size of the toilet is what you need before purchase, if the size is not suitable we also support no reason to return it, please feel free to buy. Features: Small Size: This small round toilet is specially designed for small bathrooms and seamlessly fits into any compact bathroom, effectively saving space. It's the perfect size for most users unless you're exceptionally tall. Complete Accessories: The toilet comes with all the necessary accessories for installation, including the toilet tank lid, water fittings, installation hardware, and hoses for the two water supply inlets. Dual-Flush Toilet: It features a dual-flush system with options of 1.6 GPF for a full flush (adjustable with the floater) and 1.1 GPF for a half flush, providing powerful flushing performance while conserving water. Easy to Clean: This skirted toilet design leaves no place for dirt to hide, offering a smooth and easy-to-clean surface. Two Size Options: You can choose from two size options for this modern toilet - a 12\" rough-in toilet and a 10\" rough-in toilet - ensuring a perfect fit for your space. Easy Installation: The self-cleaning glazed surface not only looks appealing but is also easy to maintain. It comes with an improved UF durable plastic seat and a wax ring for your convenience. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. MaP\uff1aPowerfully blend flushing performance, reliability, waste clearance, and durability.? DOE\uff1aStrictly blend energy efficiency, regulatory compliance, conservation, and performance. Weights & Dimensions SKU DV-1F52812/DV-1F52812B DV-1F52812R Overall 24.61\" L X 12.99\" W X 27.76\" H 24.61\" L X 12.99\" W X 27.76\" H Rough In Size 12.00\" 10.00\" Toilet Seat Height - Top to Bottom 16.54\" 16.54\" Bowl Height - Top to Bottom 15.75\" 15.75\" Tank 12.99\" L X 5.71\" W X 11.02\" H 12.99\" L X 5.71\" W X 11.02\" H Tank Lid 12.99\" L X 5.71\" W X 1.38\" H 12.99\" L X 5.71\" W X 1.38\" H Bolts Spread Distance 5.51\" 5.51\" Distance from the Seat Installation Hole to the Tank 1.77\" 1.77\" Distance from the Back of the Toilet to the Wall 3.74\" 3.74\" Toilet Installation Hole Distance 5.51\" 5.51\" Height from the Bottom of the Water Tank to the Ground 15.16\" 15.16\" Distance Between the Center of Adapter and the Center of Trapway 3.35\" 3.35\" Trapway Diameter( Inside ) 2.17\" 2.17\" Toilet Seat 1.57 Back/1.57 Front \" H X 13.19\" W X 17.72\" L 1.57 Back/1.57 Front \" H X 13.19\" W X 17.72\" L Toilet Seat Inside Ring 7.87\" W X 11.02\" L 7.87\" W X 11.02\" L Bowl 12.60\" L X 8.86\" W X 15.75\"H 12.60\" L X 8.86\" W X 15.75\"H Toilet Base Dimension 17.32\" L X 12.60\" W 17.32\" L X 12.60\" W Color White/Black White Overall Product Weight 84 lb 88 lb Flush Volume 1.1/1.6 GPF 1.6/1.1GPF (DV-1F52812/DV-1F52812B) What is included in the package? Toilet seat, Fitting, Side bolt cover parts, Waxring screw, Installation instruction Compatible Accessories Toilet Seat: DV-F812S11 Toilet Flush Button Chopsticks: DV-F812V32 Flush Button: DV-F812V31 Tank Lid: DV-F812T11 Side Bolt Cover: DV-F026P21 Waxring and Toilet Bolts: DV-F008P11 Toilet Seat Quick Release Bracket:?DV-F812S01 Fill Valve: DV-F812V01 Rubber Cushion: DV-F812S91 Toilet Adapter: DV-FMYV51 Installation Video (DV-1F52812/DV-1F52812R) : Installation Manual: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 38870,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Rough-In Size",
+       "label": "12\""
+      },
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52812B-1130_4.jpg?v=1769495095"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43061158510780:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44176752181436",
+     "sku": "DV-1F52812LHB",
+     "title": "12\" / Light Black",
+     "description": {
+      "html": "Small toilets save more space, a modern and compact design. This small toilet is designed for very small spaces, but the compact toilet looks perfect in every modern bathroom. This one-piece skirted toilet not only hides the curved sewage pipe but also enhances the elegant appearance of the toilet; by eliminating the gap between the tank and bowl, it eliminates the hiding places for dirt and debris, making it easy to clean. The seat cover of this dual-flush round one-piece universal height skirt toilet closes quietly without making any noise. The dual-flush toilet flushes a powerful 1.1/1.6 GPF, which is very reliable and also saves water. This version of the toilet comes with a very smooth glaze that prevents particles from sticking to the ceramic. This feature, combined with the high efficiency flush, helps reduce the frequency of toilet cleaning, minimizing the use of water, harsh chemicals, and the time required for cleaning. DeerValley has two size options for this modern toilet, we have a 12\" rough-in toilet and a 10\" rough-in toilet for you to choose from.Please Note: This toilet is designed for small bathrooms, and the size is smaller than a standard size toilet, please confirm the size of the toilet is what you need before purchase, if the size is not suitable we also support no reason to return it, please feel free to buy. Features: Small Size: This small round toilet is specially designed for small bathrooms and seamlessly fits into any compact bathroom, effectively saving space. It's the perfect size for most users unless you're exceptionally tall. Complete Accessories: The toilet comes with all the necessary accessories for installation, including the toilet tank lid, water fittings, installation hardware, and hoses for the two water supply inlets. Dual-Flush Toilet: It features a dual-flush system with options of 1.6 GPF for a full flush (adjustable with the floater) and 1.1 GPF for a half flush, providing powerful flushing performance while conserving water. Easy to Clean: This skirted toilet design leaves no place for dirt to hide, offering a smooth and easy-to-clean surface. Two Size Options: You can choose from two size options for this modern toilet - a 12\" rough-in toilet and a 10\" rough-in toilet - ensuring a perfect fit for your space. Easy Installation: The self-cleaning glazed surface not only looks appealing but is also easy to maintain. It comes with an improved UF durable plastic seat and a wax ring for your convenience. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. MaP\uff1aPowerfully blend flushing performance, reliability, waste clearance, and durability.? DOE\uff1aStrictly blend energy efficiency, regulatory compliance, conservation, and performance. Weights & Dimensions SKU DV-1F52812/DV-1F52812B DV-1F52812R Overall 24.61\" L X 12.99\" W X 27.76\" H 24.61\" L X 12.99\" W X 27.76\" H Rough In Size 12.00\" 10.00\" Toilet Seat Height - Top to Bottom 16.54\" 16.54\" Bowl Height - Top to Bottom 15.75\" 15.75\" Tank 12.99\" L X 5.71\" W X 11.02\" H 12.99\" L X 5.71\" W X 11.02\" H Tank Lid 12.99\" L X 5.71\" W X 1.38\" H 12.99\" L X 5.71\" W X 1.38\" H Bolts Spread Distance 5.51\" 5.51\" Distance from the Seat Installation Hole to the Tank 1.77\" 1.77\" Distance from the Back of the Toilet to the Wall 3.74\" 3.74\" Toilet Installation Hole Distance 5.51\" 5.51\" Height from the Bottom of the Water Tank to the Ground 15.16\" 15.16\" Distance Between the Center of Adapter and the Center of Trapway 3.35\" 3.35\" Trapway Diameter( Inside ) 2.17\" 2.17\" Toilet Seat 1.57 Back/1.57 Front \" H X 13.19\" W X 17.72\" L 1.57 Back/1.57 Front \" H X 13.19\" W X 17.72\" L Toilet Seat Inside Ring 7.87\" W X 11.02\" L 7.87\" W X 11.02\" L Bowl 12.60\" L X 8.86\" W X 15.75\"H 12.60\" L X 8.86\" W X 15.75\"H Toilet Base Dimension 17.32\" L X 12.60\" W 17.32\" L X 12.60\" W Color White/Black White Overall Product Weight 84 lb 88 lb Flush Volume 1.1/1.6 GPF 1.6/1.1GPF (DV-1F52812/DV-1F52812B) What is included in the package? Toilet seat, Fitting, Side bolt cover parts, Waxring screw, Installation instruction Compatible Accessories Toilet Seat: DV-F812S11 Toilet Flush Button Chopsticks: DV-F812V32 Flush Button: DV-F812V31 Tank Lid: DV-F812T11 Side Bolt Cover: DV-F026P21 Waxring and Toilet Bolts: DV-F008P11 Toilet Seat Quick Release Bracket:?DV-F812S01 Fill Valve: DV-F812V01 Rubber Cushion: DV-F812S91 Toilet Adapter: DV-FMYV51 Installation Video (DV-1F52812/DV-1F52812R) : Installation Manual: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 29500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 38350,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Rough-In Size",
+       "label": "12\""
+      },
+      {
+       "name": "Color",
+       "label": "Light Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1f52812lhb12-3216818.jpg?v=1769495095"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44176752181436:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42706079875260",
+     "sku": "DV-1F52812R",
+     "title": "10\" / White",
+     "description": {
+      "html": "Small toilets save more space, a modern and compact design. This small toilet is designed for very small spaces, but the compact toilet looks perfect in every modern bathroom. This one-piece skirted toilet not only hides the curved sewage pipe but also enhances the elegant appearance of the toilet; by eliminating the gap between the tank and bowl, it eliminates the hiding places for dirt and debris, making it easy to clean. The seat cover of this dual-flush round one-piece universal height skirt toilet closes quietly without making any noise. The dual-flush toilet flushes a powerful 1.1/1.6 GPF, which is very reliable and also saves water. This version of the toilet comes with a very smooth glaze that prevents particles from sticking to the ceramic. This feature, combined with the high efficiency flush, helps reduce the frequency of toilet cleaning, minimizing the use of water, harsh chemicals, and the time required for cleaning. DeerValley has two size options for this modern toilet, we have a 12\" rough-in toilet and a 10\" rough-in toilet for you to choose from.Please Note: This toilet is designed for small bathrooms, and the size is smaller than a standard size toilet, please confirm the size of the toilet is what you need before purchase, if the size is not suitable we also support no reason to return it, please feel free to buy. Features: Small Size: This small round toilet is specially designed for small bathrooms and seamlessly fits into any compact bathroom, effectively saving space. It's the perfect size for most users unless you're exceptionally tall. Complete Accessories: The toilet comes with all the necessary accessories for installation, including the toilet tank lid, water fittings, installation hardware, and hoses for the two water supply inlets. Dual-Flush Toilet: It features a dual-flush system with options of 1.6 GPF for a full flush (adjustable with the floater) and 1.1 GPF for a half flush, providing powerful flushing performance while conserving water. Easy to Clean: This skirted toilet design leaves no place for dirt to hide, offering a smooth and easy-to-clean surface. Two Size Options: You can choose from two size options for this modern toilet - a 12\" rough-in toilet and a 10\" rough-in toilet - ensuring a perfect fit for your space. Easy Installation: The self-cleaning glazed surface not only looks appealing but is also easy to maintain. It comes with an improved UF durable plastic seat and a wax ring for your convenience. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. MaP\uff1aPowerfully blend flushing performance, reliability, waste clearance, and durability.? DOE\uff1aStrictly blend energy efficiency, regulatory compliance, conservation, and performance. Weights & Dimensions SKU DV-1F52812/DV-1F52812B DV-1F52812R Overall 24.61\" L X 12.99\" W X 27.76\" H 24.61\" L X 12.99\" W X 27.76\" H Rough In Size 12.00\" 10.00\" Toilet Seat Height - Top to Bottom 16.54\" 16.54\" Bowl Height - Top to Bottom 15.75\" 15.75\" Tank 12.99\" L X 5.71\" W X 11.02\" H 12.99\" L X 5.71\" W X 11.02\" H Tank Lid 12.99\" L X 5.71\" W X 1.38\" H 12.99\" L X 5.71\" W X 1.38\" H Bolts Spread Distance 5.51\" 5.51\" Distance from the Seat Installation Hole to the Tank 1.77\" 1.77\" Distance from the Back of the Toilet to the Wall 3.74\" 3.74\" Toilet Installation Hole Distance 5.51\" 5.51\" Height from the Bottom of the Water Tank to the Ground 15.16\" 15.16\" Distance Between the Center of Adapter and the Center of Trapway 3.35\" 3.35\" Trapway Diameter( Inside ) 2.17\" 2.17\" Toilet Seat 1.57 Back/1.57 Front \" H X 13.19\" W X 17.72\" L 1.57 Back/1.57 Front \" H X 13.19\" W X 17.72\" L Toilet Seat Inside Ring 7.87\" W X 11.02\" L 7.87\" W X 11.02\" L Bowl 12.60\" L X 8.86\" W X 15.75\"H 12.60\" L X 8.86\" W X 15.75\"H Toilet Base Dimension 17.32\" L X 12.60\" W 17.32\" L X 12.60\" W Color White/Black White Overall Product Weight 84 lb 88 lb Flush Volume 1.1/1.6 GPF 1.6/1.1GPF (DV-1F52812/DV-1F52812B) What is included in the package? Toilet seat, Fitting, Side bolt cover parts, Waxring screw, Installation instruction Compatible Accessories Toilet Seat: DV-F812S11 Toilet Flush Button Chopsticks: DV-F812V32 Flush Button: DV-F812V31 Tank Lid: DV-F812T11 Side Bolt Cover: DV-F026P21 Waxring and Toilet Bolts: DV-F008P11 Toilet Seat Quick Release Bracket:?DV-F812S01 Fill Valve: DV-F812V01 Rubber Cushion: DV-F812S91 Toilet Adapter: DV-FMYV51 Installation Video (DV-1F52812/DV-1F52812R) : Installation Manual: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 21500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 31070,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Rough-In Size",
+       "label": "10\""
+      },
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52812_1_13734187-f79f-40f4-afca-a689ee1d028b.jpg?v=1757057906"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42706079875260:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Rough-In Size",
+     "values": [
+      {
+       "label": "12\""
+      },
+      {
+       "label": "10\""
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Light Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52812_1_13734187-f79f-40f4-afca-a689ee1d028b.jpg?v=1757057906",
+     "alt_text": "One-piece Toilets Best Toilet Top Rated Toilets"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Sellers",
+    "Campaigns-Toilets",
+    "Canada Warehouse",
+    "One-piece Toilets",
+    "Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263335805116",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "DeerValley one-piece toilets feature a sleek, skirted design for easy cleaning, dual flush options (1.1/1.6 GPF), and a comfortable seat height, combining style and functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263336919228",
+     "handle": "single-flush-toilets",
+     "title": "[Single-Flush Toilets]",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263337083068",
+     "handle": "compact-toilets-1",
+     "title": "[Compact Toilets]",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263338229948",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "DeerValley toilets blend sleek design with efficient flushing, easy cleaning, and comfort-height seating\u2014offering modern performance and style for any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972010172",
+     "handle": "new-hot-sale",
+     "title": "New Arrival",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8709629903036",
+   "title": "DeerValley DV-1S0371-V3 ADA Smart Toilet with Foam Shield & Powerful 1000 MAP Flush",
+   "description": {
+    "html": "Hands-Free Sensor Lid & Foot Control Powerful 1000g Flushing Performance UV Sterilization Technology Hot & Cold Massage Cleaning Foam Shield Anti-Splash Design Safety Mode \u2014 Gentle & Safe Stable Flushing Under Any Pressure"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1s0371-dv-1s0371-v3",
+   "handle": "dv-1s0371-dv-1s0371-v3",
+   "price_range": {
+    "min": {
+     "amount": 63500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 63500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 119995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 119995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44526585217212",
+     "sku": "DV-1S0371-V3",
+     "title": "Default Title",
+     "description": {
+      "html": "Hands-Free Sensor Lid & Foot Control Powerful 1000g Flushing Performance UV Sterilization Technology Hot & Cold Massage Cleaning Foam Shield Anti-Splash Design Safety Mode \u2014 Gentle & Safe Stable Flushing Under Any Pressure"
+     },
+     "price": {
+      "amount": 63500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 119995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0371-V3-Image1.jpg?v=1770000867"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44526585217212:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0371-V3-Image1.jpg?v=1770000867",
+     "alt_text": "Best Smart Toilet High Tech Toilet"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Sellers",
+    "Campaigns-Smart Toilets",
+    "New arrivals",
+    "Smart Home",
+    "Smart Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293523783868",
+     "handle": "new-arrivals",
+     "title": "New arrivals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294561710268",
+     "handle": "smart-toilet",
+     "title": "Smart Toilets",
+     "description": {
+      "html": "DeerValley smart toilets combine advanced features like auto flush, heated seat, foot sensor operation, and night light, offering a modern and convenient bathroom experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300163170492",
+     "handle": "smart-home",
+     "title": "Smart Home",
+     "description": {
+      "html": "DeerValley smart toilets offer auto flush, heated seat, warm wash, and air dry\u2014blending comfort, hygiene, and modern convenience in your daily routine."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/302898249916",
+     "handle": "explore-new-bathroom",
+     "title": "Explore New Bathroom",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6676846346428",
+   "title": "DeerValley DV-1F52636 One Piece Toilet Powerful 800g Flush EverClean Surface",
+   "description": {
+    "html": "This toilet will complete your modern bathroom with a contemporary back-to-the-wall. Features a concealed with a sleek skirted design that is visually appealing. The strong dual flush function is very dependable offering a never-failing performance. The toilet is easy to install and easy to use, and with its flush actuator at the top of the tank, offers everything you need for comfort and security in the bathroom. Features Contemporary one-piece design includes our revolutionary EverClean surface that\u2019s easier to clean and stays cleaner, and longer. Siphon-Flushing: Fully Glazed Flush. Super-quiet and powerful flush with no clogs. Leak-proof. Highly efficient Dual-Flush 1.1 GPF / 1.6 GPF. The quick-release seat can be unlatched from the toilet A compact elongated bowl offers added comfort while occupying the same space as a round-front bowl. Side holes offer easy access to the floor bolts for the installation of seat height. Unique structure Bowl Design provides a different style for the bathroom. All-In-One package: Package Includes toilet, pre-installed soft closing toilet seat, pre-installed flush valve, high-quality wax ring, floor bolts, and also installation instructions. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. Weights & Dimensions Overall:?28.62\"?L?X?15.47\"?W X?26.46\" HRough In Size: 12\"/10\"Toilet Seat Height - Top to Bottom:?16.73\"Bowl Height - Top to Bottom:?15.75\"Tank:?9.06\"?H X?15.35\"?L?X?6.85\" WTank Lid: 1.97\"?H X?15.35\"?L?X?6.85\" WBolts Spread Distance: 5.51\"Distance from the Seat Installation Hole to the Tank: 2.17\"Distance from the Back of the Toilet to the Wall: 3.94\"Toilet Installation Hole Distance: 5.98\"Height from the Bottom of the Water Tank to the Ground: 15.16\"Distance Between the Center of Adapter and the Center of Trapway: 3.94\" Trap-way Diameter: 2.17\"Toilet Seat: 1.57?Back/?1.38?Front \" H X 14.80\" W X 17.72\" LToilet Seat Inside Ring: 8.46\" W X 11.89\" LBowl: 13.58\" L?X?11.02\" WToilet Base Dimension\uffe1\u00a8Length & Width): 21.26?* 12.99\"Overall Product Weight: 128 lb.Color: White/BlackButton Color: Silver/White/Gold/BlackFlush Volume:?1.1/1.6 GPF (DV-1F52636) (DV-1F52636R) What is included in the package? Toilet Seat, Fitting, Anchor Screw, Toilet Flange, Toilet tank side lid. Compatible Accessories Toilet Seat for DV-1F52636: DV-F636S11 Toilet Seat for DV-1F52636B: DV-F636BS11 Fill Valve: DV-F636V01 Toilet Seat Installation Kit for DV-1F52636: DV-F816S01 Toilet Seat Installation Kit for DV-1F52636B: DV-F026BS01 Side Bolt Cover for DV-1F52636: DV-F026P21 Side Bolt Cover for DV-1F52636B: DB-F026BP21 Flush Button for DV-1F52636: DV-F636V31 Flush Button for DV-1F52636B: DV-F636BV31 Tank Lid for DV-1F52636: DV-F636T11 Tank Lid for DV-1F52636B: DV-F636BT11 Rubber Cushion: DV-F636S91 Anchor Screw: DV-F026P41 Toilet Adapter: DV-FMJV52 Waxring: DV-F026P31 Toilet Seat Bidet DeerValley's Toilet Seat Bidet offers convenience, eco-friendliness, and hygiene with its dedicated feminine wash, self-cleaning, electricity-free operation, and universal toilet compatibility. DV-1B0093&DV-1B0095 Installation Manual: Spec Sheet: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system and we are committed to providing excellent fashionable designs. We've been growing..."
+   },
+   "url": "https://www.deervalleybath.com/products/deervalley-dv-1f52636-dual-flush-elongated-ceramic-sleek-skirted-design-one-piece-toilet-seat-included",
+   "handle": "deervalley-dv-1f52636-dual-flush-elongated-ceramic-sleek-skirted-design-one-piece-toilet-seat-included",
+   "price_range": {
+    "min": {
+     "amount": 34900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 41900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 45370,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 54470,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43061169586364",
+     "sku": "DV-1F52636",
+     "title": "White / Silver",
+     "description": {
+      "html": "This toilet will complete your modern bathroom with a contemporary back-to-the-wall. Features a concealed with a sleek skirted design that is visually appealing. The strong dual flush function is very dependable offering a never-failing performance. The toilet is easy to install and easy to use, and with its flush actuator at the top of the tank, offers everything you need for comfort and security in the bathroom. Features Contemporary one-piece design includes our revolutionary EverClean surface that\u2019s easier to clean and stays cleaner, and longer. Siphon-Flushing: Fully Glazed Flush. Super-quiet and powerful flush with no clogs. Leak-proof. Highly efficient Dual-Flush 1.1 GPF / 1.6 GPF. The quick-release seat can be unlatched from the toilet A compact elongated bowl offers added comfort while occupying the same space as a round-front bowl. Side holes offer easy access to the floor bolts for the installation of seat height. Unique structure Bowl Design provides a different style for the bathroom. All-In-One package: Package Includes toilet, pre-installed soft closing toilet seat, pre-installed flush valve, high-quality wax ring, floor bolts, and also installation instructions. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. Weights & Dimensions Overall:?28.62\"?L?X?15.47\"?W X?26.46\" HRough In Size: 12\"/10\"Toilet Seat Height - Top to Bottom:?16.73\"Bowl Height - Top to Bottom:?15.75\"Tank:?9.06\"?H X?15.35\"?L?X?6.85\" WTank Lid: 1.97\"?H X?15.35\"?L?X?6.85\" WBolts Spread Distance: 5.51\"Distance from the Seat Installation Hole to the Tank: 2.17\"Distance from the Back of the Toilet to the Wall: 3.94\"Toilet Installation Hole Distance: 5.98\"Height from the Bottom of the Water Tank to the Ground: 15.16\"Distance Between the Center of Adapter and the Center of Trapway: 3.94\" Trap-way Diameter: 2.17\"Toilet Seat: 1.57?Back/?1.38?Front \" H X 14.80\" W X 17.72\" LToilet Seat Inside Ring: 8.46\" W X 11.89\" LBowl: 13.58\" L?X?11.02\" WToilet Base Dimension\uffe1\u00a8Length & Width): 21.26?* 12.99\"Overall Product Weight: 128 lb.Color: White/BlackButton Color: Silver/White/Gold/BlackFlush Volume:?1.1/1.6 GPF (DV-1F52636) (DV-1F52636R) What is included in the package? Toilet Seat, Fitting, Anchor Screw, Toilet Flange, Toilet tank side lid. Compatible Accessories Toilet Seat for DV-1F52636: DV-F636S11 Toilet Seat for DV-1F52636B: DV-F636BS11 Fill Valve: DV-F636V01 Toilet Seat Installation Kit for DV-1F52636: DV-F816S01 Toilet Seat Installation Kit for DV-1F52636B: DV-F026BS01 Side Bolt Cover for DV-1F52636: DV-F026P21 Side Bolt Cover for DV-1F52636B: DB-F026BP21 Flush Button for DV-1F52636: DV-F636V31 Flush Button for DV-1F52636B: DV-F636BV31 Tank Lid for DV-1F52636: DV-F636T11 Tank Lid for DV-1F52636B: DV-F636BT11 Rubber Cushion: DV-F636S91 Anchor Screw: DV-F026P41 Toilet Adapter: DV-FMJV52 Waxring: DV-F026P31 Toilet Seat Bidet DeerValley's Toilet Seat Bidet offers convenience, eco-friendliness, and hygiene with its dedicated feminine wash, self-cleaning, electricity-free operation, and universal toilet compatibility. DV-1B0093&DV-1B0095 Installation Manual: Spec Sheet: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system and we are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 35900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46670,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      },
+      {
+       "name": "Flush Button Color",
+       "label": "Silver"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52636-1101_9.jpg?v=1757057805"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43061169586364:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43242036723900",
+     "sku": "DV-1F52636-Black",
+     "title": "White / Black",
+     "description": {
+      "html": "This toilet will complete your modern bathroom with a contemporary back-to-the-wall. Features a concealed with a sleek skirted design that is visually appealing. The strong dual flush function is very dependable offering a never-failing performance. The toilet is easy to install and easy to use, and with its flush actuator at the top of the tank, offers everything you need for comfort and security in the bathroom. Features Contemporary one-piece design includes our revolutionary EverClean surface that\u2019s easier to clean and stays cleaner, and longer. Siphon-Flushing: Fully Glazed Flush. Super-quiet and powerful flush with no clogs. Leak-proof. Highly efficient Dual-Flush 1.1 GPF / 1.6 GPF. The quick-release seat can be unlatched from the toilet A compact elongated bowl offers added comfort while occupying the same space as a round-front bowl. Side holes offer easy access to the floor bolts for the installation of seat height. Unique structure Bowl Design provides a different style for the bathroom. All-In-One package: Package Includes toilet, pre-installed soft closing toilet seat, pre-installed flush valve, high-quality wax ring, floor bolts, and also installation instructions. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. Weights & Dimensions Overall:?28.62\"?L?X?15.47\"?W X?26.46\" HRough In Size: 12\"/10\"Toilet Seat Height - Top to Bottom:?16.73\"Bowl Height - Top to Bottom:?15.75\"Tank:?9.06\"?H X?15.35\"?L?X?6.85\" WTank Lid: 1.97\"?H X?15.35\"?L?X?6.85\" WBolts Spread Distance: 5.51\"Distance from the Seat Installation Hole to the Tank: 2.17\"Distance from the Back of the Toilet to the Wall: 3.94\"Toilet Installation Hole Distance: 5.98\"Height from the Bottom of the Water Tank to the Ground: 15.16\"Distance Between the Center of Adapter and the Center of Trapway: 3.94\" Trap-way Diameter: 2.17\"Toilet Seat: 1.57?Back/?1.38?Front \" H X 14.80\" W X 17.72\" LToilet Seat Inside Ring: 8.46\" W X 11.89\" LBowl: 13.58\" L?X?11.02\" WToilet Base Dimension\uffe1\u00a8Length & Width): 21.26?* 12.99\"Overall Product Weight: 128 lb.Color: White/BlackButton Color: Silver/White/Gold/BlackFlush Volume:?1.1/1.6 GPF (DV-1F52636) (DV-1F52636R) What is included in the package? Toilet Seat, Fitting, Anchor Screw, Toilet Flange, Toilet tank side lid. Compatible Accessories Toilet Seat for DV-1F52636: DV-F636S11 Toilet Seat for DV-1F52636B: DV-F636BS11 Fill Valve: DV-F636V01 Toilet Seat Installation Kit for DV-1F52636: DV-F816S01 Toilet Seat Installation Kit for DV-1F52636B: DV-F026BS01 Side Bolt Cover for DV-1F52636: DV-F026P21 Side Bolt Cover for DV-1F52636B: DB-F026BP21 Flush Button for DV-1F52636: DV-F636V31 Flush Button for DV-1F52636B: DV-F636BV31 Tank Lid for DV-1F52636: DV-F636T11 Tank Lid for DV-1F52636B: DV-F636BT11 Rubber Cushion: DV-F636S91 Anchor Screw: DV-F026P41 Toilet Adapter: DV-FMJV52 Waxring: DV-F026P31 Toilet Seat Bidet DeerValley's Toilet Seat Bidet offers convenience, eco-friendliness, and hygiene with its dedicated feminine wash, self-cleaning, electricity-free operation, and universal toilet compatibility. DV-1B0093&DV-1B0095 Installation Manual: Spec Sheet: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system and we are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 35900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46670,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      },
+      {
+       "name": "Flush Button Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52636-B-0115_7.jpg?v=1757057807"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43242036723900:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43242036756668",
+     "sku": "DV-1F52636-White",
+     "title": "White / White",
+     "description": {
+      "html": "This toilet will complete your modern bathroom with a contemporary back-to-the-wall. Features a concealed with a sleek skirted design that is visually appealing. The strong dual flush function is very dependable offering a never-failing performance. The toilet is easy to install and easy to use, and with its flush actuator at the top of the tank, offers everything you need for comfort and security in the bathroom. Features Contemporary one-piece design includes our revolutionary EverClean surface that\u2019s easier to clean and stays cleaner, and longer. Siphon-Flushing: Fully Glazed Flush. Super-quiet and powerful flush with no clogs. Leak-proof. Highly efficient Dual-Flush 1.1 GPF / 1.6 GPF. The quick-release seat can be unlatched from the toilet A compact elongated bowl offers added comfort while occupying the same space as a round-front bowl. Side holes offer easy access to the floor bolts for the installation of seat height. Unique structure Bowl Design provides a different style for the bathroom. All-In-One package: Package Includes toilet, pre-installed soft closing toilet seat, pre-installed flush valve, high-quality wax ring, floor bolts, and also installation instructions. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. Weights & Dimensions Overall:?28.62\"?L?X?15.47\"?W X?26.46\" HRough In Size: 12\"/10\"Toilet Seat Height - Top to Bottom:?16.73\"Bowl Height - Top to Bottom:?15.75\"Tank:?9.06\"?H X?15.35\"?L?X?6.85\" WTank Lid: 1.97\"?H X?15.35\"?L?X?6.85\" WBolts Spread Distance: 5.51\"Distance from the Seat Installation Hole to the Tank: 2.17\"Distance from the Back of the Toilet to the Wall: 3.94\"Toilet Installation Hole Distance: 5.98\"Height from the Bottom of the Water Tank to the Ground: 15.16\"Distance Between the Center of Adapter and the Center of Trapway: 3.94\" Trap-way Diameter: 2.17\"Toilet Seat: 1.57?Back/?1.38?Front \" H X 14.80\" W X 17.72\" LToilet Seat Inside Ring: 8.46\" W X 11.89\" LBowl: 13.58\" L?X?11.02\" WToilet Base Dimension\uffe1\u00a8Length & Width): 21.26?* 12.99\"Overall Product Weight: 128 lb.Color: White/BlackButton Color: Silver/White/Gold/BlackFlush Volume:?1.1/1.6 GPF (DV-1F52636) (DV-1F52636R) What is included in the package? Toilet Seat, Fitting, Anchor Screw, Toilet Flange, Toilet tank side lid. Compatible Accessories Toilet Seat for DV-1F52636: DV-F636S11 Toilet Seat for DV-1F52636B: DV-F636BS11 Fill Valve: DV-F636V01 Toilet Seat Installation Kit for DV-1F52636: DV-F816S01 Toilet Seat Installation Kit for DV-1F52636B: DV-F026BS01 Side Bolt Cover for DV-1F52636: DV-F026P21 Side Bolt Cover for DV-1F52636B: DB-F026BP21 Flush Button for DV-1F52636: DV-F636V31 Flush Button for DV-1F52636B: DV-F636BV31 Tank Lid for DV-1F52636: DV-F636T11 Tank Lid for DV-1F52636B: DV-F636BT11 Rubber Cushion: DV-F636S91 Anchor Screw: DV-F026P41 Toilet Adapter: DV-FMJV52 Waxring: DV-F026P31 Toilet Seat Bidet DeerValley's Toilet Seat Bidet offers convenience, eco-friendliness, and hygiene with its dedicated feminine wash, self-cleaning, electricity-free operation, and universal toilet compatibility. DV-1B0093&DV-1B0095 Installation Manual: Spec Sheet: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system and we are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 35900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46670,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      },
+      {
+       "name": "Flush Button Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52636-W-0115_7.jpg?v=1757057807"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43242036756668:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43242036822204",
+     "sku": "DV-1F52636-Gold",
+     "title": "White / Gold",
+     "description": {
+      "html": "This toilet will complete your modern bathroom with a contemporary back-to-the-wall. Features a concealed with a sleek skirted design that is visually appealing. The strong dual flush function is very dependable offering a never-failing performance. The toilet is easy to install and easy to use, and with its flush actuator at the top of the tank, offers everything you need for comfort and security in the bathroom. Features Contemporary one-piece design includes our revolutionary EverClean surface that\u2019s easier to clean and stays cleaner, and longer. Siphon-Flushing: Fully Glazed Flush. Super-quiet and powerful flush with no clogs. Leak-proof. Highly efficient Dual-Flush 1.1 GPF / 1.6 GPF. The quick-release seat can be unlatched from the toilet A compact elongated bowl offers added comfort while occupying the same space as a round-front bowl. Side holes offer easy access to the floor bolts for the installation of seat height. Unique structure Bowl Design provides a different style for the bathroom. All-In-One package: Package Includes toilet, pre-installed soft closing toilet seat, pre-installed flush valve, high-quality wax ring, floor bolts, and also installation instructions. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. Weights & Dimensions Overall:?28.62\"?L?X?15.47\"?W X?26.46\" HRough In Size: 12\"/10\"Toilet Seat Height - Top to Bottom:?16.73\"Bowl Height - Top to Bottom:?15.75\"Tank:?9.06\"?H X?15.35\"?L?X?6.85\" WTank Lid: 1.97\"?H X?15.35\"?L?X?6.85\" WBolts Spread Distance: 5.51\"Distance from the Seat Installation Hole to the Tank: 2.17\"Distance from the Back of the Toilet to the Wall: 3.94\"Toilet Installation Hole Distance: 5.98\"Height from the Bottom of the Water Tank to the Ground: 15.16\"Distance Between the Center of Adapter and the Center of Trapway: 3.94\" Trap-way Diameter: 2.17\"Toilet Seat: 1.57?Back/?1.38?Front \" H X 14.80\" W X 17.72\" LToilet Seat Inside Ring: 8.46\" W X 11.89\" LBowl: 13.58\" L?X?11.02\" WToilet Base Dimension\uffe1\u00a8Length & Width): 21.26?* 12.99\"Overall Product Weight: 128 lb.Color: White/BlackButton Color: Silver/White/Gold/BlackFlush Volume:?1.1/1.6 GPF (DV-1F52636) (DV-1F52636R) What is included in the package? Toilet Seat, Fitting, Anchor Screw, Toilet Flange, Toilet tank side lid. Compatible Accessories Toilet Seat for DV-1F52636: DV-F636S11 Toilet Seat for DV-1F52636B: DV-F636BS11 Fill Valve: DV-F636V01 Toilet Seat Installation Kit for DV-1F52636: DV-F816S01 Toilet Seat Installation Kit for DV-1F52636B: DV-F026BS01 Side Bolt Cover for DV-1F52636: DV-F026P21 Side Bolt Cover for DV-1F52636B: DB-F026BP21 Flush Button for DV-1F52636: DV-F636V31 Flush Button for DV-1F52636B: DV-F636BV31 Tank Lid for DV-1F52636: DV-F636T11 Tank Lid for DV-1F52636B: DV-F636BT11 Rubber Cushion: DV-F636S91 Anchor Screw: DV-F026P41 Toilet Adapter: DV-FMJV52 Waxring: DV-F026P31 Toilet Seat Bidet DeerValley's Toilet Seat Bidet offers convenience, eco-friendliness, and hygiene with its dedicated feminine wash, self-cleaning, electricity-free operation, and universal toilet compatibility. DV-1B0093&DV-1B0095 Installation Manual: Spec Sheet: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system and we are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 35900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46670,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      },
+      {
+       "name": "Flush Button Color",
+       "label": "Gold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52636-G-0115_7.jpg?v=1757057807"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43242036822204:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45786844004540",
+     "sku": "DV-1F52636R",
+     "title": "White / Silver 10\"",
+     "description": {
+      "html": "This toilet will complete your modern bathroom with a contemporary back-to-the-wall. Features a concealed with a sleek skirted design that is visually appealing. The strong dual flush function is very dependable offering a never-failing performance. The toilet is easy to install and easy to use, and with its flush actuator at the top of the tank, offers everything you need for comfort and security in the bathroom. Features Contemporary one-piece design includes our revolutionary EverClean surface that\u2019s easier to clean and stays cleaner, and longer. Siphon-Flushing: Fully Glazed Flush. Super-quiet and powerful flush with no clogs. Leak-proof. Highly efficient Dual-Flush 1.1 GPF / 1.6 GPF. The quick-release seat can be unlatched from the toilet A compact elongated bowl offers added comfort while occupying the same space as a round-front bowl. Side holes offer easy access to the floor bolts for the installation of seat height. Unique structure Bowl Design provides a different style for the bathroom. All-In-One package: Package Includes toilet, pre-installed soft closing toilet seat, pre-installed flush valve, high-quality wax ring, floor bolts, and also installation instructions. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. Weights & Dimensions Overall:?28.62\"?L?X?15.47\"?W X?26.46\" HRough In Size: 12\"/10\"Toilet Seat Height - Top to Bottom:?16.73\"Bowl Height - Top to Bottom:?15.75\"Tank:?9.06\"?H X?15.35\"?L?X?6.85\" WTank Lid: 1.97\"?H X?15.35\"?L?X?6.85\" WBolts Spread Distance: 5.51\"Distance from the Seat Installation Hole to the Tank: 2.17\"Distance from the Back of the Toilet to the Wall: 3.94\"Toilet Installation Hole Distance: 5.98\"Height from the Bottom of the Water Tank to the Ground: 15.16\"Distance Between the Center of Adapter and the Center of Trapway: 3.94\" Trap-way Diameter: 2.17\"Toilet Seat: 1.57?Back/?1.38?Front \" H X 14.80\" W X 17.72\" LToilet Seat Inside Ring: 8.46\" W X 11.89\" LBowl: 13.58\" L?X?11.02\" WToilet Base Dimension\uffe1\u00a8Length & Width): 21.26?* 12.99\"Overall Product Weight: 128 lb.Color: White/BlackButton Color: Silver/White/Gold/BlackFlush Volume:?1.1/1.6 GPF (DV-1F52636) (DV-1F52636R) What is included in the package? Toilet Seat, Fitting, Anchor Screw, Toilet Flange, Toilet tank side lid. Compatible Accessories Toilet Seat for DV-1F52636: DV-F636S11 Toilet Seat for DV-1F52636B: DV-F636BS11 Fill Valve: DV-F636V01 Toilet Seat Installation Kit for DV-1F52636: DV-F816S01 Toilet Seat Installation Kit for DV-1F52636B: DV-F026BS01 Side Bolt Cover for DV-1F52636: DV-F026P21 Side Bolt Cover for DV-1F52636B: DB-F026BP21 Flush Button for DV-1F52636: DV-F636V31 Flush Button for DV-1F52636B: DV-F636BV31 Tank Lid for DV-1F52636: DV-F636T11 Tank Lid for DV-1F52636B: DV-F636BT11 Rubber Cushion: DV-F636S91 Anchor Screw: DV-F026P41 Toilet Adapter: DV-FMJV52 Waxring: DV-F026P31 Toilet Seat Bidet DeerValley's Toilet Seat Bidet offers convenience, eco-friendliness, and hygiene with its dedicated feminine wash, self-cleaning, electricity-free operation, and universal toilet compatibility. DV-1B0093&DV-1B0095 Installation Manual: Spec Sheet: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system and we are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 34900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 45370,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "White"
+      },
+      {
+       "name": "Flush Button Color",
+       "label": "Silver 10\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52636-1101_4.jpg?v=1757057805"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45786844004540:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43242036887740",
+     "sku": "DV-1F52636B",
+     "title": "Black / Black",
+     "description": {
+      "html": "This toilet will complete your modern bathroom with a contemporary back-to-the-wall. Features a concealed with a sleek skirted design that is visually appealing. The strong dual flush function is very dependable offering a never-failing performance. The toilet is easy to install and easy to use, and with its flush actuator at the top of the tank, offers everything you need for comfort and security in the bathroom. Features Contemporary one-piece design includes our revolutionary EverClean surface that\u2019s easier to clean and stays cleaner, and longer. Siphon-Flushing: Fully Glazed Flush. Super-quiet and powerful flush with no clogs. Leak-proof. Highly efficient Dual-Flush 1.1 GPF / 1.6 GPF. The quick-release seat can be unlatched from the toilet A compact elongated bowl offers added comfort while occupying the same space as a round-front bowl. Side holes offer easy access to the floor bolts for the installation of seat height. Unique structure Bowl Design provides a different style for the bathroom. All-In-One package: Package Includes toilet, pre-installed soft closing toilet seat, pre-installed flush valve, high-quality wax ring, floor bolts, and also installation instructions. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. Weights & Dimensions Overall:?28.62\"?L?X?15.47\"?W X?26.46\" HRough In Size: 12\"/10\"Toilet Seat Height - Top to Bottom:?16.73\"Bowl Height - Top to Bottom:?15.75\"Tank:?9.06\"?H X?15.35\"?L?X?6.85\" WTank Lid: 1.97\"?H X?15.35\"?L?X?6.85\" WBolts Spread Distance: 5.51\"Distance from the Seat Installation Hole to the Tank: 2.17\"Distance from the Back of the Toilet to the Wall: 3.94\"Toilet Installation Hole Distance: 5.98\"Height from the Bottom of the Water Tank to the Ground: 15.16\"Distance Between the Center of Adapter and the Center of Trapway: 3.94\" Trap-way Diameter: 2.17\"Toilet Seat: 1.57?Back/?1.38?Front \" H X 14.80\" W X 17.72\" LToilet Seat Inside Ring: 8.46\" W X 11.89\" LBowl: 13.58\" L?X?11.02\" WToilet Base Dimension\uffe1\u00a8Length & Width): 21.26?* 12.99\"Overall Product Weight: 128 lb.Color: White/BlackButton Color: Silver/White/Gold/BlackFlush Volume:?1.1/1.6 GPF (DV-1F52636) (DV-1F52636R) What is included in the package? Toilet Seat, Fitting, Anchor Screw, Toilet Flange, Toilet tank side lid. Compatible Accessories Toilet Seat for DV-1F52636: DV-F636S11 Toilet Seat for DV-1F52636B: DV-F636BS11 Fill Valve: DV-F636V01 Toilet Seat Installation Kit for DV-1F52636: DV-F816S01 Toilet Seat Installation Kit for DV-1F52636B: DV-F026BS01 Side Bolt Cover for DV-1F52636: DV-F026P21 Side Bolt Cover for DV-1F52636B: DB-F026BP21 Flush Button for DV-1F52636: DV-F636V31 Flush Button for DV-1F52636B: DV-F636BV31 Tank Lid for DV-1F52636: DV-F636T11 Tank Lid for DV-1F52636B: DV-F636BT11 Rubber Cushion: DV-F636S91 Anchor Screw: DV-F026P41 Toilet Adapter: DV-FMJV52 Waxring: DV-F026P31 Toilet Seat Bidet DeerValley's Toilet Seat Bidet offers convenience, eco-friendliness, and hygiene with its dedicated feminine wash, self-cleaning, electricity-free operation, and universal toilet compatibility. DV-1B0093&DV-1B0095 Installation Manual: Spec Sheet: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system and we are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 41900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 54470,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      },
+      {
+       "name": "Flush Button Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52636B-1128_5.jpg?v=1761532128"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43242036887740:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    },
+    {
+     "name": "Flush Button Color",
+     "values": [
+      {
+       "label": "Silver"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "White"
+      },
+      {
+       "label": "Gold"
+      },
+      {
+       "label": "Silver 10\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52636-1101_9.jpg?v=1757057805",
+     "alt_text": "One-piece Toilets Best Toilet Top Rated Toilets"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Sellers",
+    "Campaigns-Toilets",
+    "Canada Warehouse",
+    "One-piece Toilets",
+    "Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263335805116",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "DeerValley one-piece toilets feature a sleek, skirted design for easy cleaning, dual flush options (1.1/1.6 GPF), and a comfortable seat height, combining style and functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263336919228",
+     "handle": "single-flush-toilets",
+     "title": "[Single-Flush Toilets]",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263337574588",
+     "handle": "luxury-size-toilets",
+     "title": "[Luxury-Size Toilets]",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263338229948",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "DeerValley toilets blend sleek design with efficient flushing, easy cleaning, and comfort-height seating\u2014offering modern performance and style for any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972010172",
+     "handle": "new-hot-sale",
+     "title": "New Arrival",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7909949014204",
+   "title": "DeerValley DV-1S0029/V1/V3 Tankless Elongated Smart Toilet, One-Piece Elongated Smart Toilet with Foot Kick Flush (Seat Included)",
+   "description": {
+    "html": "The Tankless Smart Toilet is featured with heated seats, warm water wash, and massage that add to their comfortable cleaning experience. The bidet's double nozzle design enables front wash and rear wash so that the users can enjoy a spa-like massage via its pulse-flushing mode. Smart toilets also provide great health benefits and different wash features that can be used to improve the circulation of blood. And self-cleaning wand automatically cleans inside before and after each use. The side knob provides great convenience for flushing during power outages. Provides luxury and cleanliness with one click and saves the setting steps next time. DeerValley smart bidet toilet series is always the wise choice for customers!"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1s0029-smart-toilet",
+   "handle": "dv-1s0029-smart-toilet",
+   "price_range": {
+    "min": {
+     "amount": 25102,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 60200,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 73900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 109995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43183308374204",
+     "sku": "DV-1S0029-V3",
+     "title": "Premium / 12\"",
+     "description": {
+      "html": "The Tankless Smart Toilet is featured with heated seats, warm water wash, and massage that add to their comfortable cleaning experience. The bidet's double nozzle design enables front wash and rear wash so that the users can enjoy a spa-like massage via its pulse-flushing mode. Smart toilets also provide great health benefits and different wash features that can be used to improve the circulation of blood. And self-cleaning wand automatically cleans inside before and after each use. The side knob provides great convenience for flushing during power outages. Provides luxury and cleanliness with one click and saves the setting steps next time. DeerValley smart bidet toilet series is always the wise choice for customers!"
+     },
+     "price": {
+      "amount": 60200,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 109995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Premium"
+      },
+      {
+       "name": "Rough In Size",
+       "label": "12\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0029V3-0624_19.jpg?v=1762168409"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43183308374204:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43183308308668",
+     "sku": "DV-1S0029",
+     "title": "Advanced / 12\"",
+     "description": {
+      "html": "The Tankless Smart Toilet is featured with heated seats, warm water wash, and massage that add to their comfortable cleaning experience. The bidet's double nozzle design enables front wash and rear wash so that the users can enjoy a spa-like massage via its pulse-flushing mode. Smart toilets also provide great health benefits and different wash features that can be used to improve the circulation of blood. And self-cleaning wand automatically cleans inside before and after each use. The side knob provides great convenience for flushing during power outages. Provides luxury and cleanliness with one click and saves the setting steps next time. DeerValley smart bidet toilet series is always the wise choice for customers!"
+     },
+     "price": {
+      "amount": 52900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 97995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Advanced"
+      },
+      {
+       "name": "Rough In Size",
+       "label": "12\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0029V3-0624_10.jpg?v=1762744921"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43183308308668:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44658865832124",
+     "sku": "DV-1S0029R",
+     "title": "Advanced / 10\"",
+     "description": {
+      "html": "The Tankless Smart Toilet is featured with heated seats, warm water wash, and massage that add to their comfortable cleaning experience. The bidet's double nozzle design enables front wash and rear wash so that the users can enjoy a spa-like massage via its pulse-flushing mode. Smart toilets also provide great health benefits and different wash features that can be used to improve the circulation of blood. And self-cleaning wand automatically cleans inside before and after each use. The side knob provides great convenience for flushing during power outages. Provides luxury and cleanliness with one click and saves the setting steps next time. DeerValley smart bidet toilet series is always the wise choice for customers!"
+     },
+     "price": {
+      "amount": 54900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 99995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Advanced"
+      },
+      {
+       "name": "Rough In Size",
+       "label": "10\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0029V3-0624_10.jpg?v=1762744921"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44658865832124:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45739520655548",
+     "sku": "DV-1S0458",
+     "title": "Advanced / 12\" Light Grey",
+     "description": {
+      "html": "The Tankless Smart Toilet is featured with heated seats, warm water wash, and massage that add to their comfortable cleaning experience. The bidet's double nozzle design enables front wash and rear wash so that the users can enjoy a spa-like massage via its pulse-flushing mode. Smart toilets also provide great health benefits and different wash features that can be used to improve the circulation of blood. And self-cleaning wand automatically cleans inside before and after each use. The side knob provides great convenience for flushing during power outages. Provides luxury and cleanliness with one click and saves the setting steps next time. DeerValley smart bidet toilet series is always the wise choice for customers!"
+     },
+     "price": {
+      "amount": 53900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 73900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Advanced"
+      },
+      {
+       "name": "Rough In Size",
+       "label": "12\" Light Grey"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0458-AZ-US-listing-2512-23_11.jpg?v=1767764550"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45739520655548:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45739520688316",
+     "sku": "DV-1S0459",
+     "title": "Advanced / 12\" Dark Grey",
+     "description": {
+      "html": "The Tankless Smart Toilet is featured with heated seats, warm water wash, and massage that add to their comfortable cleaning experience. The bidet's double nozzle design enables front wash and rear wash so that the users can enjoy a spa-like massage via its pulse-flushing mode. Smart toilets also provide great health benefits and different wash features that can be used to improve the circulation of blood. And self-cleaning wand automatically cleans inside before and after each use. The side knob provides great convenience for flushing during power outages. Provides luxury and cleanliness with one click and saves the setting steps next time. DeerValley smart bidet toilet series is always the wise choice for customers!"
+     },
+     "price": {
+      "amount": 54900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 76900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Advanced"
+      },
+      {
+       "name": "Rough In Size",
+       "label": "12\" Dark Grey"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0459-US-listing-2512-23_11.jpg?v=1767764563"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45739520688316:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43183308341436",
+     "sku": "DV-1S0029-V1",
+     "title": "Standard / 12\"",
+     "description": {
+      "html": "The Tankless Smart Toilet is featured with heated seats, warm water wash, and massage that add to their comfortable cleaning experience. The bidet's double nozzle design enables front wash and rear wash so that the users can enjoy a spa-like massage via its pulse-flushing mode. Smart toilets also provide great health benefits and different wash features that can be used to improve the circulation of blood. And self-cleaning wand automatically cleans inside before and after each use. The side knob provides great convenience for flushing during power outages. Provides luxury and cleanliness with one click and saves the setting steps next time. DeerValley smart bidet toilet series is always the wise choice for customers!"
+     },
+     "price": {
+      "amount": 25102,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 89995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Standard"
+      },
+      {
+       "name": "Rough In Size",
+       "label": "12\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0029-0619_7.jpg?v=1762168409"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43183308341436:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Premium"
+      },
+      {
+       "label": "Advanced"
+      },
+      {
+       "label": "Standard"
+      }
+     ]
+    },
+    {
+     "name": "Rough In Size",
+     "values": [
+      {
+       "label": "12\""
+      },
+      {
+       "label": "10\""
+      },
+      {
+       "label": "12\" Light Grey"
+      },
+      {
+       "label": "12\" Dark Grey"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0029V3-0624_19.jpg?v=1762168409",
+     "alt_text": "Smart Toilet High Tech Toilet"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Sellers",
+    "Campaigns-Smart Toilets",
+    "Canada Warehouse",
+    "Clearance Sale",
+    "Smart Home",
+    "Smart Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290730770620",
+     "handle": "apex",
+     "title": "Apex",
+     "description": {
+      "html": "Our Apex Collection will help you design the best bathroom possible."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294561710268",
+     "handle": "smart-toilet",
+     "title": "Smart Toilets",
+     "description": {
+      "html": "DeerValley smart toilets combine advanced features like auto flush, heated seat, foot sensor operation, and night light, offering a modern and convenient bathroom experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300163170492",
+     "handle": "smart-home",
+     "title": "Smart Home",
+     "description": {
+      "html": "DeerValley smart toilets offer auto flush, heated seat, warm wash, and air dry\u2014blending comfort, hygiene, and modern convenience in your daily routine."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/302898249916",
+     "handle": "explore-new-bathroom",
+     "title": "Explore New Bathroom",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8162521350332",
+   "title": "DeerValley DV-1S0159/0159-V1/0159-V3 Tankless Smart Toilet,Auto Flush, Heated Seat, Tankless One-Piece Toilets for Bathrooms",
+   "description": {
+    "html": "Introducing our innovative toilet, boasting a heated seat with adjustable temperature settings for personalized comfort. With off-seat and foot kick flushing options, flushing is made effortless and convenient. Additionally, enjoy the convenience of an auto night light, illuminating your path during nighttime visits, and an auto pre-wetting feature that maintains the cleanliness of the inner toilet wall. Complete with a powerful siphonic jet flushing system and a soft close seat, this toilet blends comfort and functionality seamlessly."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1s0159",
+   "handle": "dv-1s0159",
+   "price_range": {
+    "min": {
+     "amount": 39900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 59900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 59995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 99995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44172100010172",
+     "sku": "DV-1S0159-V3",
+     "title": "Premium",
+     "description": {
+      "html": "Introducing our innovative toilet, boasting a heated seat with adjustable temperature settings for personalized comfort. With off-seat and foot kick flushing options, flushing is made effortless and convenient. Additionally, enjoy the convenience of an auto night light, illuminating your path during nighttime visits, and an auto pre-wetting feature that maintains the cleanliness of the inner toilet wall. Complete with a powerful siphonic jet flushing system and a soft close seat, this toilet blends comfort and functionality seamlessly."
+     },
+     "price": {
+      "amount": 59900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 99995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Premium"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0159-V3-Image1.jpg?v=1770101787"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44172100010172:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43198998905020",
+     "sku": "DV-1S0159",
+     "title": "Advanced",
+     "description": {
+      "html": "Introducing our innovative toilet, boasting a heated seat with adjustable temperature settings for personalized comfort. With off-seat and foot kick flushing options, flushing is made effortless and convenient. Additionally, enjoy the convenience of an auto night light, illuminating your path during nighttime visits, and an auto pre-wetting feature that maintains the cleanliness of the inner toilet wall. Complete with a powerful siphonic jet flushing system and a soft close seat, this toilet blends comfort and functionality seamlessly."
+     },
+     "price": {
+      "amount": 49400,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 85995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Advanced"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0159-Image10.jpg?v=1770106490"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43198998905020:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43198998937788",
+     "sku": "DV-1S0159-V1",
+     "title": "Standard",
+     "description": {
+      "html": "Introducing our innovative toilet, boasting a heated seat with adjustable temperature settings for personalized comfort. With off-seat and foot kick flushing options, flushing is made effortless and convenient. Additionally, enjoy the convenience of an auto night light, illuminating your path during nighttime visits, and an auto pre-wetting feature that maintains the cleanliness of the inner toilet wall. Complete with a powerful siphonic jet flushing system and a soft close seat, this toilet blends comfort and functionality seamlessly."
+     },
+     "price": {
+      "amount": 39900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 59995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Standard"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0159-Image15.jpg?v=1770106552"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43198998937788:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Premium"
+      },
+      {
+       "label": "Advanced"
+      },
+      {
+       "label": "Standard"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0159-V3-Image1.jpg?v=1770101787",
+     "alt_text": "Smart Toilet High Tech Toilet"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Sellers",
+    "Campaigns-Smart Toilets",
+    "Canada Warehouse",
+    "Smart Home",
+    "Smart Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294561710268",
+     "handle": "smart-toilet",
+     "title": "Smart Toilets",
+     "description": {
+      "html": "DeerValley smart toilets combine advanced features like auto flush, heated seat, foot sensor operation, and night light, offering a modern and convenient bathroom experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/302898249916",
+     "handle": "explore-new-bathroom",
+     "title": "Explore New Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/303576449212",
+     "handle": "best-seller",
+     "title": "Best Seller",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311064658108",
+     "handle": "american-standard-commode",
+     "title": "American Standard Commode",
+     "description": {
+      "html": "Discover DeerValley\u2019s American Standard Commodes\u2014sleek, powerful, and water-saving toilets built for lasting comfort and style. Perfect fit for any modern bathroom."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8564305166524",
+   "title": "DeerValley DV-1S0160-V3 Smart Toilet with Balanced Comfort & Design, Upgraded Features",
+   "description": {
+    "html": "DeerValley DV-1S0160-V3 Smart Toilet \u2013 a seamless fusion of bidet cleansing functionality and contemporary auto-flush design. With a heated seat and a self-cleaning nozzle that delivers a soothing spray of warm water, both front and back areas are refreshed and revitalized. Say goodbye to paper waste as the integrated warm air dryer completes the pampering routine. Enjoy the convenience of customizable cleansing settings, a soft nightlight, and hands-free flushing powered by a robust flushing system that ensures a consistently clean toilet."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1s0160-v3-smart-toilet",
+   "handle": "dv-1s0160-v3-smart-toilet",
+   "price_range": {
+    "min": {
+     "amount": 64900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 64900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 109995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 109995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44119062216892",
+     "sku": "DV-1S0160-V3",
+     "title": "Premium",
+     "description": {
+      "html": "DeerValley DV-1S0160-V3 Smart Toilet \u2013 a seamless fusion of bidet cleansing functionality and contemporary auto-flush design. With a heated seat and a self-cleaning nozzle that delivers a soothing spray of warm water, both front and back areas are refreshed and revitalized. Say goodbye to paper waste as the integrated warm air dryer completes the pampering routine. Enjoy the convenience of customizable cleansing settings, a soft nightlight, and hands-free flushing powered by a robust flushing system that ensures a consistently clean toilet."
+     },
+     "price": {
+      "amount": 64900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 109995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Premium"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0160-V3-US-listing-2607-2.jpg?v=1785287770"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44119062216892:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Premium"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0160-V3-US-listing-2607-2.jpg?v=1785287770"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Sellers",
+    "Campaigns-Smart Toilets",
+    "Canada Warehouse",
+    "New arrivals",
+    "Smart Home",
+    "Smart Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293523783868",
+     "handle": "new-arrivals",
+     "title": "New arrivals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294561710268",
+     "handle": "smart-toilet",
+     "title": "Smart Toilets",
+     "description": {
+      "html": "DeerValley smart toilets combine advanced features like auto flush, heated seat, foot sensor operation, and night light, offering a modern and convenient bathroom experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300163170492",
+     "handle": "smart-home",
+     "title": "Smart Home",
+     "description": {
+      "html": "DeerValley smart toilets offer auto flush, heated seat, warm wash, and air dry\u2014blending comfort, hygiene, and modern convenience in your daily routine."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/302898249916",
+     "handle": "explore-new-bathroom",
+     "title": "Explore New Bathroom",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8164598251708",
+   "title": "DeerValley DV-1S0160/V1/V3 Tankless Elongated Smart Toilet with Off-Seat Flush/Foot Sensor Flush, Automatic Tankless Toilet with Heated Seat, Warm Water Cleaning, Warm Air dryer",
+   "description": {
+    "html": "DeerValley DV-1S0160 smart toilet \u2013 a seamless fusion of bidet cleansing functionality and contemporary auto-flush design. With a heated seat and a self-cleaning nozzle that delivers a soothing spray of warm water, both front and back areas are refreshed and revitalized. Say goodbye to paper waste as the integrated warm air dryer completes the pampering routine. Enjoy the convenience of customizable cleansing settings, a soft nightlight, and hands-free flushing powered by a robust flushing system that ensures a consistently clean toilet."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1s0160",
+   "handle": "dv-1s0160",
+   "price_range": {
+    "min": {
+     "amount": 40600,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 79900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 59995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 119995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43205819662524",
+     "sku": "DV-1S0160",
+     "title": "Advanced / White",
+     "description": {
+      "html": "DeerValley DV-1S0160 smart toilet \u2013 a seamless fusion of bidet cleansing functionality and contemporary auto-flush design. With a heated seat and a self-cleaning nozzle that delivers a soothing spray of warm water, both front and back areas are refreshed and revitalized. Say goodbye to paper waste as the integrated warm air dryer completes the pampering routine. Enjoy the convenience of customizable cleansing settings, a soft nightlight, and hands-free flushing powered by a robust flushing system that ensures a consistently clean toilet."
+     },
+     "price": {
+      "amount": 52800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 89995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Advanced"
+      },
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0160-0407-_2_ed31cc64-e3c9-43e6-b1e9-1bf119c244b0.jpg?v=1757057282"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43205819662524:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43205819728060",
+     "sku": "DV-1S0160-V3",
+     "title": "Premium / White",
+     "description": {
+      "html": "DeerValley DV-1S0160 smart toilet \u2013 a seamless fusion of bidet cleansing functionality and contemporary auto-flush design. With a heated seat and a self-cleaning nozzle that delivers a soothing spray of warm water, both front and back areas are refreshed and revitalized. Say goodbye to paper waste as the integrated warm air dryer completes the pampering routine. Enjoy the convenience of customizable cleansing settings, a soft nightlight, and hands-free flushing powered by a robust flushing system that ensures a consistently clean toilet."
+     },
+     "price": {
+      "amount": 64900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 109995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Premium"
+      },
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1s0160-v3premium-2861605.jpg?v=1760060354"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43205819728060:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44141038764220",
+     "sku": "DV-1S0160B-V3",
+     "title": "Premium / Black",
+     "description": {
+      "html": "DeerValley DV-1S0160 smart toilet \u2013 a seamless fusion of bidet cleansing functionality and contemporary auto-flush design. With a heated seat and a self-cleaning nozzle that delivers a soothing spray of warm water, both front and back areas are refreshed and revitalized. Say goodbye to paper waste as the integrated warm air dryer completes the pampering routine. Enjoy the convenience of customizable cleansing settings, a soft nightlight, and hands-free flushing powered by a robust flushing system that ensures a consistently clean toilet."
+     },
+     "price": {
+      "amount": 79900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 119995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Premium"
+      },
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1s0160b-v3premium-8602400.jpg?v=1760060397"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44141038764220:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43205819695292",
+     "sku": "DV-1S0160-V1",
+     "title": "Standard / White",
+     "description": {
+      "html": "DeerValley DV-1S0160 smart toilet \u2013 a seamless fusion of bidet cleansing functionality and contemporary auto-flush design. With a heated seat and a self-cleaning nozzle that delivers a soothing spray of warm water, both front and back areas are refreshed and revitalized. Say goodbye to paper waste as the integrated warm air dryer completes the pampering routine. Enjoy the convenience of customizable cleansing settings, a soft nightlight, and hands-free flushing powered by a robust flushing system that ensures a consistently clean toilet."
+     },
+     "price": {
+      "amount": 40600,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 59995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Standard"
+      },
+      {
+       "name": "Color",
+       "label": "White"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1s0160-v1standard-8421749.jpg?v=1760060354"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43205819695292:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Advanced"
+      },
+      {
+       "label": "Premium"
+      },
+      {
+       "label": "Standard"
+      }
+     ]
+    },
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "White"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0160V1-04070_3.jpg?v=1757057281",
+     "alt_text": "Smart Toilet High Tech Toilet"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Sellers",
+    "Campaigns-Smart Toilets",
+    "Smart Home",
+    "Smart Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294561710268",
+     "handle": "smart-toilet",
+     "title": "Smart Toilets",
+     "description": {
+      "html": "DeerValley smart toilets combine advanced features like auto flush, heated seat, foot sensor operation, and night light, offering a modern and convenient bathroom experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300163170492",
+     "handle": "smart-home",
+     "title": "Smart Home",
+     "description": {
+      "html": "DeerValley smart toilets offer auto flush, heated seat, warm wash, and air dry\u2014blending comfort, hygiene, and modern convenience in your daily routine."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/302898249916",
+     "handle": "explore-new-bathroom",
+     "title": "Explore New Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/303576449212",
+     "handle": "best-seller",
+     "title": "Best Seller",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8943397961916",
+   "title": "DeerValley DV-1F0437 One Piece Elongated Toilet \u2013 Dual Flush & Rimless, ADA Height, Seat Included,MAP1000",
+   "description": {
+    "html": "If you are looking for some good ideas for your bathroom, DV-1F0437 might be your right choiece! Crafted from high-quality ceramic, this elongated one-piece toilet combines durabilitywith everyday comfort. The rimless bowl eliminates hidden edges where dirt can collect,and the smooth skirted design prevents grime buildup, making cleaning effortless. Itsenlarged, fully glazed trapway ensures strong, uninterrupted flushing with a 1000g MaP?score, while the soft-close, quick-release seat provides convenience and quiet operation-reliable performance for any bathroom. Features Premium Material: Crafted from high-quality ceramic, this one-piece elongated toiletoffers exceptional durability and long-lasting performance. Its smooth, glossy surfaceprevents yellowing and stains, staying cleaner for longer, so your bathroom maintains a?fresh, pristine look year after year. ADA-Height for Comfortable Use: Designed with an ergonomic ADA-compliant seatheight of 17 1/2\", this white toilet makes sitting and standing easier, offering enhancedaccessibility and everyday comfort. Easy to Clean: This one-piece toilet features a rimless bowl that eliminates hidden edges?where dirt can accumulate, and a smooth skirted design that prevents grime buildup-making cleaning effortless and keeping your bathroom fresh every day. Dual-Flush Water Efficiency: This elongated toilet features a dual-flush system, offering?1 or 1.28 GPF per flush. Dual nozzles deliver a powerful, consistent flush with a 1000g?MaP score, efficiently clearing waste while saving water and ensuring reliable?performance. Thickened & Elongated Seat: Premium PP material and a thickened, elongated, andwidened design offer maximum comfort and long-lasting durability. Built for 1-piecetoilets, the heavy-duty support ensures stable seating and reliable everyday use. Soft-Close & Quick-Release Seat: Upgrade your bathroom toilet with a soft-close, quick-release seat that closes gently and quietly, preventing slams. The quick-release allows?easy removal for simple cleaning, ensuring daily comfort and convenience. Say Goodbye to Clogs: The enlarged and widened trapway allows water and waste to?flow freely, minimizing clogs. Combined with the fully glazed interior, this ADA height?toilet delivers reliable, uninterrupted flushing every day. After-Sales Servic: We provide comprehensive support for your 12-inch rough-in toilet?with 1-year service, ensuring any questions or concerns during installation or after?delivery are handled promptly. Our team responds within 24 hours, offering apersonalized and satisfying experience with your purchase.Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. ? Weights & Dimensions SKU DV-1F0437 Overall 26.77\" L X 14.50\" W X 26.60\" H Rough In Size 11.42\" Toilet Seat Height - Top to Bottom 17.5\" Bowl Height - Top to Bottom 16.54\" Tank 14.57\" L X 6.50\" W X 9\" H Tank Lid 14.65\" L X 6.50\" W X 1.57\" H Bolts Spread Distance 5.91\" Distance from the Seat Installation Hole to the Tank 1.97\" Distance from the Back of the Toilet to the Wall 3.94\" Toilet Installation Hole Distance 5.91\" Height from the Bottom of the Water Tank to the Ground 15.95\" Distance Between the Center of Adapter and the Center of Trapway 3.74\" Trapway Diameter( Inside ) 2.12\" Toilet Seat 1.97 Back/1.57 Front \" H X 14.17\" W X 18.53\" L Toilet Seat Inside Ring 8.67\" W X 12.20\" L Bowl 14.76\" L X 10.24\" W X 10.63\"H Toilet Base Dimension 18.90\" L X 13.12\" W Overall Product Weight 94.8 lb Flush Volume 1.1/1.28 GPF What is included in the package? Flush Valve Assembly, Toilet Seat & Lid, Floor Bolts, Wax Ring & Flange, Bolt Caps, Molded Foam. DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1f0437",
+   "handle": "dv-1f0437",
+   "price_range": {
+    "min": {
+     "amount": 29900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 38870,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 38870,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45075850985660",
+     "sku": "DV-1F0437",
+     "title": "Default Title",
+     "description": {
+      "html": "If you are looking for some good ideas for your bathroom, DV-1F0437 might be your right choiece! Crafted from high-quality ceramic, this elongated one-piece toilet combines durabilitywith everyday comfort. The rimless bowl eliminates hidden edges where dirt can collect,and the smooth skirted design prevents grime buildup, making cleaning effortless. Itsenlarged, fully glazed trapway ensures strong, uninterrupted flushing with a 1000g MaP?score, while the soft-close, quick-release seat provides convenience and quiet operation-reliable performance for any bathroom. Features Premium Material: Crafted from high-quality ceramic, this one-piece elongated toiletoffers exceptional durability and long-lasting performance. Its smooth, glossy surfaceprevents yellowing and stains, staying cleaner for longer, so your bathroom maintains a?fresh, pristine look year after year. ADA-Height for Comfortable Use: Designed with an ergonomic ADA-compliant seatheight of 17 1/2\", this white toilet makes sitting and standing easier, offering enhancedaccessibility and everyday comfort. Easy to Clean: This one-piece toilet features a rimless bowl that eliminates hidden edges?where dirt can accumulate, and a smooth skirted design that prevents grime buildup-making cleaning effortless and keeping your bathroom fresh every day. Dual-Flush Water Efficiency: This elongated toilet features a dual-flush system, offering?1 or 1.28 GPF per flush. Dual nozzles deliver a powerful, consistent flush with a 1000g?MaP score, efficiently clearing waste while saving water and ensuring reliable?performance. Thickened & Elongated Seat: Premium PP material and a thickened, elongated, andwidened design offer maximum comfort and long-lasting durability. Built for 1-piecetoilets, the heavy-duty support ensures stable seating and reliable everyday use. Soft-Close & Quick-Release Seat: Upgrade your bathroom toilet with a soft-close, quick-release seat that closes gently and quietly, preventing slams. The quick-release allows?easy removal for simple cleaning, ensuring daily comfort and convenience. Say Goodbye to Clogs: The enlarged and widened trapway allows water and waste to?flow freely, minimizing clogs. Combined with the fully glazed interior, this ADA height?toilet delivers reliable, uninterrupted flushing every day. After-Sales Servic: We provide comprehensive support for your 12-inch rough-in toilet?with 1-year service, ensuring any questions or concerns during installation or after?delivery are handled promptly. Our team responds within 24 hours, offering apersonalized and satisfying experience with your purchase.Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. ? Weights & Dimensions SKU DV-1F0437 Overall 26.77\" L X 14.50\" W X 26.60\" H Rough In Size 11.42\" Toilet Seat Height - Top to Bottom 17.5\" Bowl Height - Top to Bottom 16.54\" Tank 14.57\" L X 6.50\" W X 9\" H Tank Lid 14.65\" L X 6.50\" W X 1.57\" H Bolts Spread Distance 5.91\" Distance from the Seat Installation Hole to the Tank 1.97\" Distance from the Back of the Toilet to the Wall 3.94\" Toilet Installation Hole Distance 5.91\" Height from the Bottom of the Water Tank to the Ground 15.95\" Distance Between the Center of Adapter and the Center of Trapway 3.74\" Trapway Diameter( Inside ) 2.12\" Toilet Seat 1.97 Back/1.57 Front \" H X 14.17\" W X 18.53\" L Toilet Seat Inside Ring 8.67\" W X 12.20\" L Bowl 14.76\" L X 10.24\" W X 10.63\"H Toilet Base Dimension 18.90\" L X 13.12\" W Overall Product Weight 94.8 lb Flush Volume 1.1/1.28 GPF What is included in the package? Flush Valve Assembly, Toilet Seat & Lid, Floor Bolts, Wax Ring & Flange, Bolt Caps, Molded Foam. DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 38870,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F0437-Listing_df29e4d7-7f67-4d8e-8005-2482b58446c6.jpg?v=1782112417"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45075850985660:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F0437-Listing_df29e4d7-7f67-4d8e-8005-2482b58446c6.jpg?v=1782112417"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "New arrivals",
+    "One-piece Toilets",
+    "Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263338229948",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "DeerValley toilets blend sleek design with efficient flushing, easy cleaning, and comfort-height seating\u2014offering modern performance and style for any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283798667452",
+     "handle": "deervalley-all-products",
+     "title": "[DeerValley All Products]",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293523783868",
+     "handle": "new-arrivals",
+     "title": "New arrivals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311786078396",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8932008132796",
+   "title": "DeerValley DV-1S0336-V3 Smart Toilet with Advanced Smart Controls, ADA Comfort Height",
+   "description": {
+    "html": "Voice-Activated Control: Flush, switch wash modes & adjust temperatures by voice Hands-Free Flushing: Foot-touch, auto-sensing, remote & sensor remote flush ADA Comfort Height: 17 3/8\" for easier sitting & standing Custom Comfort Levels: 6-level water/seat/air temps + 3-level water pressure Foam Shield Hygiene: Anti-splash foam layer helps trap odors & stay cleaner 4 Wash Modes: Rear, feminine, oscillating & standard wash Programmable Wash: Intelligent nozzle movement for a personalized cleanse UV Hygiene System: Self-cleaning nozzle + full UV sterilization Powerful Single Flush: Strong bowl cleaning with water-saving efficiency LED Control Display: Clear panel with soft ambient lighting for safer operation"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1s0336-v3",
+   "handle": "dv-1s0336-v3",
+   "price_range": {
+    "min": {
+     "amount": 83900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 83900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 119995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 119995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45075834405052",
+     "sku": "DV-1S0336-V3",
+     "title": "Premium",
+     "description": {
+      "html": "Voice-Activated Control: Flush, switch wash modes & adjust temperatures by voice Hands-Free Flushing: Foot-touch, auto-sensing, remote & sensor remote flush ADA Comfort Height: 17 3/8\" for easier sitting & standing Custom Comfort Levels: 6-level water/seat/air temps + 3-level water pressure Foam Shield Hygiene: Anti-splash foam layer helps trap odors & stay cleaner 4 Wash Modes: Rear, feminine, oscillating & standard wash Programmable Wash: Intelligent nozzle movement for a personalized cleanse UV Hygiene System: Self-cleaning nozzle + full UV sterilization Powerful Single Flush: Strong bowl cleaning with water-saving efficiency LED Control Display: Clear panel with soft ambient lighting for safer operation"
+     },
+     "price": {
+      "amount": 83900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 119995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Spcification",
+       "label": "Premium"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0336-V3-Image1.jpg?v=1770086189"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45075834405052:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Spcification",
+     "values": [
+      {
+       "label": "Premium"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0336-V3-Image1.jpg?v=1770086189",
+     "alt_text": "Smart Toilet High Tech Toilet"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Sellers",
+    "Campaigns-Smart Toilets",
+    "New arrivals",
+    "Smart Home",
+    "Smart Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263343079612",
+     "handle": "toilet-seats",
+     "title": "Toilet Seats",
+     "description": {
+      "html": "DeerValley toilet seats offer ergonomic designs with soft-close hinges, quick-release functionality, and durable materials like polypropylene and UF resin, ensuring comfort and easy maintenance."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283798667452",
+     "handle": "deervalley-all-products",
+     "title": "[DeerValley All Products]",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293523783868",
+     "handle": "new-arrivals",
+     "title": "New arrivals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294561710268",
+     "handle": "smart-toilet",
+     "title": "Smart Toilets",
+     "description": {
+      "html": "DeerValley smart toilets combine advanced features like auto flush, heated seat, foot sensor operation, and night light, offering a modern and convenient bathroom experience."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6673773428924",
+   "title": "DeerValley DV-1F52807 One-piece Toilets Wider Seat Space-Saving Quiet Easy-Clean 1.28 GPF",
+   "description": {
+    "html": "Stylish and functional, the design of this toilet is simple and modern and fits into any bathroom, especially for bathrooms where space is limited. Its lid closes softly and can be quickly installed or removed. The installation of this toilet is not challenging for you and the widened seat gives you a more comfortable use. Features Modern, compact one-piece design. Perfectly suitable for your bathroom; One-touch but water conservation design, also with UPC/cUPC certification, offering a super siphon flush; Both slim tank design and widened elongated seat create a superior space-saving toilet but still a comfortable experience; Seamless one-piece and skirted design make cleaning easier; Side holes offer easy access to the floor bolts for installation; Nice glazed surface inhibits the growth of stain and odor-causing bacteria, mold, and mildew on the surface; Quick-release matte chrome hinges allow the seat to be unlatched from the toilet for easy removal and convenient cleaning, no tools are required; One-year limited warranty. DeerValley is always confident in our products and takes care of every customer. Note: that this toilet is fitted for 1/2\" water supply line, not 7/8\". If the size of your water supply line is 7/8\", please contact us when placing an order or after receiving this toilet. We will ship an adapter for 7/8\" line to you as soon as possible. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. Weights & Dimensions Overall: 23.62\"L X 15.75\"W X 25.98\"HRough In Size: 12\"Toilet Seat Height - Top to Bottom: 15.75\"Bowl Height - Top to Bottom: 14.96\"Tank:?10.24\"H X 15.55\"L X 4.72\" WTank Lid:?0.79\"H X 15.75\"L X 4.92\" WBolts Spread Distance: 6.1\"Distance from the Seat Installation Hole to the Tank: 1.57\"Distance from the Back of the Toilet to the Wall: 3.74\"Toilet Installation Hole Distance: 5.91\"Height from the Bottom of the Water Tank to the Ground: 14.49\"Distance Between the Center of Adapter and the Center of Trapway: 5.31\"Trapway Diameter: 2.36\"Toilet Seat: 1.73/1.06 Back/Front\" H X 15.35\" W X 17.24\" LToilet Seat Inside Ring: 8.86\"W X 11.42\" LBowl: 13.19\"L X 10.83\" W X 14.96\" HToilet Base Dimension: 17.32\" L X 13.39\" WOverall Product Weight: 106 lb.Flush Volume: 1.28 GPF What is included in the package? Toilet Seat, Fitting, Toilet installation package, Toilet tank side lid, Installation instruction. Compatible?Accessories Fill Valve: DV-F807V01 Toilet Seat: DV-F807S11 Flush Button: DV-F807V31 Tank Lid: DV-F807T11 Side Bolt Cover: DV-F026P21 Rubber cushion: DV-F807S91 Waxring and Toilet Bolts: DV-F008P11 Toilet Seat Quick Release Bracket:?DV-F807S01 Toilet Adapter:?DV-FMJV52 Installation Manual: Spec Sheet: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+   },
+   "url": "https://www.deervalleybath.com/products/deervalley-dv-1f52807-yodar-1-28-gpf-water-efficient-ceramic-easy-to-clean-elongated-one-piece-toilet-seat-included",
+   "handle": "deervalley-dv-1f52807-yodar-1-28-gpf-water-efficient-ceramic-easy-to-clean-elongated-one-piece-toilet-seat-included",
+   "price_range": {
+    "min": {
+     "amount": 28900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 37570,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 38870,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44580279091388",
+     "sku": "DV-1F52807",
+     "title": "12\"",
+     "description": {
+      "html": "Stylish and functional, the design of this toilet is simple and modern and fits into any bathroom, especially for bathrooms where space is limited. Its lid closes softly and can be quickly installed or removed. The installation of this toilet is not challenging for you and the widened seat gives you a more comfortable use. Features Modern, compact one-piece design. Perfectly suitable for your bathroom; One-touch but water conservation design, also with UPC/cUPC certification, offering a super siphon flush; Both slim tank design and widened elongated seat create a superior space-saving toilet but still a comfortable experience; Seamless one-piece and skirted design make cleaning easier; Side holes offer easy access to the floor bolts for installation; Nice glazed surface inhibits the growth of stain and odor-causing bacteria, mold, and mildew on the surface; Quick-release matte chrome hinges allow the seat to be unlatched from the toilet for easy removal and convenient cleaning, no tools are required; One-year limited warranty. DeerValley is always confident in our products and takes care of every customer. Note: that this toilet is fitted for 1/2\" water supply line, not 7/8\". If the size of your water supply line is 7/8\", please contact us when placing an order or after receiving this toilet. We will ship an adapter for 7/8\" line to you as soon as possible. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. Weights & Dimensions Overall: 23.62\"L X 15.75\"W X 25.98\"HRough In Size: 12\"Toilet Seat Height - Top to Bottom: 15.75\"Bowl Height - Top to Bottom: 14.96\"Tank:?10.24\"H X 15.55\"L X 4.72\" WTank Lid:?0.79\"H X 15.75\"L X 4.92\" WBolts Spread Distance: 6.1\"Distance from the Seat Installation Hole to the Tank: 1.57\"Distance from the Back of the Toilet to the Wall: 3.74\"Toilet Installation Hole Distance: 5.91\"Height from the Bottom of the Water Tank to the Ground: 14.49\"Distance Between the Center of Adapter and the Center of Trapway: 5.31\"Trapway Diameter: 2.36\"Toilet Seat: 1.73/1.06 Back/Front\" H X 15.35\" W X 17.24\" LToilet Seat Inside Ring: 8.86\"W X 11.42\" LBowl: 13.19\"L X 10.83\" W X 14.96\" HToilet Base Dimension: 17.32\" L X 13.39\" WOverall Product Weight: 106 lb.Flush Volume: 1.28 GPF What is included in the package? Toilet Seat, Fitting, Toilet installation package, Toilet tank side lid, Installation instruction. Compatible?Accessories Fill Valve: DV-F807V01 Toilet Seat: DV-F807S11 Flush Button: DV-F807V31 Tank Lid: DV-F807T11 Side Bolt Cover: DV-F026P21 Rubber cushion: DV-F807S91 Waxring and Toilet Bolts: DV-F008P11 Toilet Seat Quick Release Bracket:?DV-F807S01 Toilet Adapter:?DV-FMJV52 Installation Manual: Spec Sheet: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 28900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 37570,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Rough In",
+       "label": "12\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52807-0602_8.jpg?v=1757057910"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44580279091388:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44580279124156",
+     "sku": "DV-1F52807R",
+     "title": "10\"",
+     "description": {
+      "html": "Stylish and functional, the design of this toilet is simple and modern and fits into any bathroom, especially for bathrooms where space is limited. Its lid closes softly and can be quickly installed or removed. The installation of this toilet is not challenging for you and the widened seat gives you a more comfortable use. Features Modern, compact one-piece design. Perfectly suitable for your bathroom; One-touch but water conservation design, also with UPC/cUPC certification, offering a super siphon flush; Both slim tank design and widened elongated seat create a superior space-saving toilet but still a comfortable experience; Seamless one-piece and skirted design make cleaning easier; Side holes offer easy access to the floor bolts for installation; Nice glazed surface inhibits the growth of stain and odor-causing bacteria, mold, and mildew on the surface; Quick-release matte chrome hinges allow the seat to be unlatched from the toilet for easy removal and convenient cleaning, no tools are required; One-year limited warranty. DeerValley is always confident in our products and takes care of every customer. Note: that this toilet is fitted for 1/2\" water supply line, not 7/8\". If the size of your water supply line is 7/8\", please contact us when placing an order or after receiving this toilet. We will ship an adapter for 7/8\" line to you as soon as possible. Certifications cUPC: Uniquely blend safety, hygiene, quality, and performance. EPA: Seamlessly blend comfort with environmental responsibility, excelling in performance. CEC: Certified user experience, energy efficiency, and environmental preservation. Weights & Dimensions Overall: 23.62\"L X 15.75\"W X 25.98\"HRough In Size: 12\"Toilet Seat Height - Top to Bottom: 15.75\"Bowl Height - Top to Bottom: 14.96\"Tank:?10.24\"H X 15.55\"L X 4.72\" WTank Lid:?0.79\"H X 15.75\"L X 4.92\" WBolts Spread Distance: 6.1\"Distance from the Seat Installation Hole to the Tank: 1.57\"Distance from the Back of the Toilet to the Wall: 3.74\"Toilet Installation Hole Distance: 5.91\"Height from the Bottom of the Water Tank to the Ground: 14.49\"Distance Between the Center of Adapter and the Center of Trapway: 5.31\"Trapway Diameter: 2.36\"Toilet Seat: 1.73/1.06 Back/Front\" H X 15.35\" W X 17.24\" LToilet Seat Inside Ring: 8.86\"W X 11.42\" LBowl: 13.19\"L X 10.83\" W X 14.96\" HToilet Base Dimension: 17.32\" L X 13.39\" WOverall Product Weight: 106 lb.Flush Volume: 1.28 GPF What is included in the package? Toilet Seat, Fitting, Toilet installation package, Toilet tank side lid, Installation instruction. Compatible?Accessories Fill Valve: DV-F807V01 Toilet Seat: DV-F807S11 Flush Button: DV-F807V31 Tank Lid: DV-F807T11 Side Bolt Cover: DV-F026P21 Rubber cushion: DV-F807S91 Waxring and Toilet Bolts: DV-F008P11 Toilet Seat Quick Release Bracket:?DV-F807S01 Toilet Adapter:?DV-FMJV52 Installation Manual: Spec Sheet: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 38870,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Rough In",
+       "label": "10\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52807-0602_8.jpg?v=1757057910"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44580279124156:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Rough In",
+     "values": [
+      {
+       "label": "12\""
+      },
+      {
+       "label": "10\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1F52807-0602_8.jpg?v=1757057910",
+     "alt_text": "One-piece Toilets Best Toilet Top Rated Toilets"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "One-piece Toilets",
+    "Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/263335805116",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "DeerValley one-piece toilets feature a sleek, skirted design for easy cleaning, dual flush options (1.1/1.6 GPF), and a comfortable seat height, combining style and functionality."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263336919228",
+     "handle": "single-flush-toilets",
+     "title": "[Single-Flush Toilets]",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263337181372",
+     "handle": "mid-size-toilets",
+     "title": "[Mid-Size Toilets]",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263338229948",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "DeerValley toilets blend sleek design with efficient flushing, easy cleaning, and comfort-height seating\u2014offering modern performance and style for any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972010172",
+     "handle": "new-hot-sale",
+     "title": "New Arrival",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzJOamN6Tnpjek5ESTRPVEkwTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

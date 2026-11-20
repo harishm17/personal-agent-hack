@@ -1,0 +1,2088 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.deervalleybath.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "DeerValley Bath",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.deervalleybath.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "52635369660"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "52635369660"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8709629903036",
+   "title": "DeerValley DV-1S0371-V3 ADA Smart Toilet with Foam Shield & Powerful 1000 MAP Flush",
+   "description": {
+    "html": "Hands-Free Sensor Lid & Foot Control Powerful 1000g Flushing Performance UV Sterilization Technology Hot & Cold Massage Cleaning Foam Shield Anti-Splash Design Safety Mode \u2014 Gentle & Safe Stable Flushing Under Any Pressure"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1s0371-dv-1s0371-v3",
+   "handle": "dv-1s0371-dv-1s0371-v3",
+   "price_range": {
+    "min": {
+     "amount": 63500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 63500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 119995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 119995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44526585217212",
+     "sku": "DV-1S0371-V3",
+     "title": "Default Title",
+     "description": {
+      "html": "Hands-Free Sensor Lid & Foot Control Powerful 1000g Flushing Performance UV Sterilization Technology Hot & Cold Massage Cleaning Foam Shield Anti-Splash Design Safety Mode \u2014 Gentle & Safe Stable Flushing Under Any Pressure"
+     },
+     "price": {
+      "amount": 63500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 119995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0371-V3-Image1.jpg?v=1770000867"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44526585217212:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1S0371-V3-Image1.jpg?v=1770000867",
+     "alt_text": "Best Smart Toilet High Tech Toilet"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-6-2-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Best Sellers",
+    "Campaigns-Smart Toilets",
+    "New arrivals",
+    "Smart Home",
+    "Smart Toilets",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293523783868",
+     "handle": "new-arrivals",
+     "title": "New arrivals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294561710268",
+     "handle": "smart-toilet",
+     "title": "Smart Toilets",
+     "description": {
+      "html": "DeerValley smart toilets combine advanced features like auto flush, heated seat, foot sensor operation, and night light, offering a modern and convenient bathroom experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300163170492",
+     "handle": "smart-home",
+     "title": "Smart Home",
+     "description": {
+      "html": "DeerValley smart toilets offer auto flush, heated seat, warm wash, and air dry\u2014blending comfort, hygiene, and modern convenience in your daily routine."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/302898249916",
+     "handle": "explore-new-bathroom",
+     "title": "Explore New Bathroom",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8368082157756",
+   "title": "DeerValley DV-1SD057 60\"x 76\" Shower Enclosure Single Sliding Frameless",
+   "description": {
+    "html": "The DeerValley Frameless Shower Enclosure features a modern, seamless design that enhances the spacious feel of your bathroom. Crafted from sturdy 0.39\" thick tempered glass, it offers both impact resistance and a sleek, contemporary look. Its advanced construction guarantees excellent water containment, preventing shower water from escaping and keeping your bathroom dry. Built with durable stainless steel components, including rollers and tracks, it ensures smooth sliding and long-lasting performance. The door is reversible, allowing for flexible installation that accommodates various preferences and ensures lasting functionality. Features Stylish Frameless Design :DeerValley frameless shower doors give your bathroom space a spacious and unobstructed look, and their simple lines blend seamlessly with other decorative elements in your home. 3 hardware colors available. Safety Tempered Glass: The frameless shower door is made of high-quality 0.39-inch thick tempered glass, celebrated for its durability and high tensile strength, presenting a simple yet modern aesthetic with its clear tempered glass. Multifunctional Installation: This shower enclosure provides flexibility during installation, making it suitable for any straight bathtub wall. It can be mounted on the left or right wall, providing options for different bathroom layouts. Strong and Durable Construction: The shower door features a high-quality stainless steel square frame, ensuring long-lasting durability and retaining its modern and stylish look over time. Its high-grade stainless steel rollers and tracks work together seamlessly to deliver an exceptionally smooth sliding operation. Excellent Waterproof Performance: The door's premium materials and advanced structure ensure a watertight seal, preventing any water from escaping onto your shower or bathroom floor. Specialized waterproof seals snugly fit to prevent water vapor diffusion, keeping your bathroom consistently dry and allowing you to shower without worrying about splashing. Weights & Dimensions Overall: 76'' H X 60'' W Minimum Width - Side to Side: 56'' W Glass Thickness - Front to Back: 0.375'' Overall Width from Side to Side: 58'' W Overall Product Weight: 182 lb. Installation Video: What is included in the package? Mounting Hardware Included Hinges Included Handles Included DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1sd057-dv-1sd059-dv-1sd060",
+   "handle": "dv-1sd057-dv-1sd059-dv-1sd060",
+   "price_range": {
+    "min": {
+     "amount": 79995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 99900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 103994,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 129870,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43735564681404",
+     "sku": "DV-1SD057",
+     "title": "Matt Black",
+     "description": {
+      "html": "The DeerValley Frameless Shower Enclosure features a modern, seamless design that enhances the spacious feel of your bathroom. Crafted from sturdy 0.39\" thick tempered glass, it offers both impact resistance and a sleek, contemporary look. Its advanced construction guarantees excellent water containment, preventing shower water from escaping and keeping your bathroom dry. Built with durable stainless steel components, including rollers and tracks, it ensures smooth sliding and long-lasting performance. The door is reversible, allowing for flexible installation that accommodates various preferences and ensures lasting functionality. Features Stylish Frameless Design :DeerValley frameless shower doors give your bathroom space a spacious and unobstructed look, and their simple lines blend seamlessly with other decorative elements in your home. 3 hardware colors available. Safety Tempered Glass: The frameless shower door is made of high-quality 0.39-inch thick tempered glass, celebrated for its durability and high tensile strength, presenting a simple yet modern aesthetic with its clear tempered glass. Multifunctional Installation: This shower enclosure provides flexibility during installation, making it suitable for any straight bathtub wall. It can be mounted on the left or right wall, providing options for different bathroom layouts. Strong and Durable Construction: The shower door features a high-quality stainless steel square frame, ensuring long-lasting durability and retaining its modern and stylish look over time. Its high-grade stainless steel rollers and tracks work together seamlessly to deliver an exceptionally smooth sliding operation. Excellent Waterproof Performance: The door's premium materials and advanced structure ensure a watertight seal, preventing any water from escaping onto your shower or bathroom floor. Specialized waterproof seals snugly fit to prevent water vapor diffusion, keeping your bathroom consistently dry and allowing you to shower without worrying about splashing. Weights & Dimensions Overall: 76'' H X 60'' W Minimum Width - Side to Side: 56'' W Glass Thickness - Front to Back: 0.375'' Overall Width from Side to Side: 58'' W Overall Product Weight: 182 lb. Installation Video: What is included in the package? Mounting Hardware Included Hinges Included Handles Included DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 99900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 129870,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Matt Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SD057-0708_3.jpg?v=1757057086"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43735564681404:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44042181083324",
+     "sku": "DV-1SD058",
+     "title": "Brushed Nickel",
+     "description": {
+      "html": "The DeerValley Frameless Shower Enclosure features a modern, seamless design that enhances the spacious feel of your bathroom. Crafted from sturdy 0.39\" thick tempered glass, it offers both impact resistance and a sleek, contemporary look. Its advanced construction guarantees excellent water containment, preventing shower water from escaping and keeping your bathroom dry. Built with durable stainless steel components, including rollers and tracks, it ensures smooth sliding and long-lasting performance. The door is reversible, allowing for flexible installation that accommodates various preferences and ensures lasting functionality. Features Stylish Frameless Design :DeerValley frameless shower doors give your bathroom space a spacious and unobstructed look, and their simple lines blend seamlessly with other decorative elements in your home. 3 hardware colors available. Safety Tempered Glass: The frameless shower door is made of high-quality 0.39-inch thick tempered glass, celebrated for its durability and high tensile strength, presenting a simple yet modern aesthetic with its clear tempered glass. Multifunctional Installation: This shower enclosure provides flexibility during installation, making it suitable for any straight bathtub wall. It can be mounted on the left or right wall, providing options for different bathroom layouts. Strong and Durable Construction: The shower door features a high-quality stainless steel square frame, ensuring long-lasting durability and retaining its modern and stylish look over time. Its high-grade stainless steel rollers and tracks work together seamlessly to deliver an exceptionally smooth sliding operation. Excellent Waterproof Performance: The door's premium materials and advanced structure ensure a watertight seal, preventing any water from escaping onto your shower or bathroom floor. Specialized waterproof seals snugly fit to prevent water vapor diffusion, keeping your bathroom consistently dry and allowing you to shower without worrying about splashing. Weights & Dimensions Overall: 76'' H X 60'' W Minimum Width - Side to Side: 56'' W Glass Thickness - Front to Back: 0.375'' Overall Width from Side to Side: 58'' W Overall Product Weight: 182 lb. Installation Video: What is included in the package? Mounting Hardware Included Hinges Included Handles Included DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 79995,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 103994,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Brushed Nickel"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SD057-0708_4.jpg?v=1757057086"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44042181083324:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43735564648636",
+     "sku": "DV-1SD059",
+     "title": "Chrome",
+     "description": {
+      "html": "The DeerValley Frameless Shower Enclosure features a modern, seamless design that enhances the spacious feel of your bathroom. Crafted from sturdy 0.39\" thick tempered glass, it offers both impact resistance and a sleek, contemporary look. Its advanced construction guarantees excellent water containment, preventing shower water from escaping and keeping your bathroom dry. Built with durable stainless steel components, including rollers and tracks, it ensures smooth sliding and long-lasting performance. The door is reversible, allowing for flexible installation that accommodates various preferences and ensures lasting functionality. Features Stylish Frameless Design :DeerValley frameless shower doors give your bathroom space a spacious and unobstructed look, and their simple lines blend seamlessly with other decorative elements in your home. 3 hardware colors available. Safety Tempered Glass: The frameless shower door is made of high-quality 0.39-inch thick tempered glass, celebrated for its durability and high tensile strength, presenting a simple yet modern aesthetic with its clear tempered glass. Multifunctional Installation: This shower enclosure provides flexibility during installation, making it suitable for any straight bathtub wall. It can be mounted on the left or right wall, providing options for different bathroom layouts. Strong and Durable Construction: The shower door features a high-quality stainless steel square frame, ensuring long-lasting durability and retaining its modern and stylish look over time. Its high-grade stainless steel rollers and tracks work together seamlessly to deliver an exceptionally smooth sliding operation. Excellent Waterproof Performance: The door's premium materials and advanced structure ensure a watertight seal, preventing any water from escaping onto your shower or bathroom floor. Specialized waterproof seals snugly fit to prevent water vapor diffusion, keeping your bathroom consistently dry and allowing you to shower without worrying about splashing. Weights & Dimensions Overall: 76'' H X 60'' W Minimum Width - Side to Side: 56'' W Glass Thickness - Front to Back: 0.375'' Overall Width from Side to Side: 58'' W Overall Product Weight: 182 lb. Installation Video: What is included in the package? Mounting Hardware Included Hinges Included Handles Included DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 80995,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 105294,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Chrome"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SD059-0708_3.jpg?v=1757057087"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43735564648636:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43735564615868",
+     "sku": "DV-1SD060",
+     "title": "Brushed Gold",
+     "description": {
+      "html": "The DeerValley Frameless Shower Enclosure features a modern, seamless design that enhances the spacious feel of your bathroom. Crafted from sturdy 0.39\" thick tempered glass, it offers both impact resistance and a sleek, contemporary look. Its advanced construction guarantees excellent water containment, preventing shower water from escaping and keeping your bathroom dry. Built with durable stainless steel components, including rollers and tracks, it ensures smooth sliding and long-lasting performance. The door is reversible, allowing for flexible installation that accommodates various preferences and ensures lasting functionality. Features Stylish Frameless Design :DeerValley frameless shower doors give your bathroom space a spacious and unobstructed look, and their simple lines blend seamlessly with other decorative elements in your home. 3 hardware colors available. Safety Tempered Glass: The frameless shower door is made of high-quality 0.39-inch thick tempered glass, celebrated for its durability and high tensile strength, presenting a simple yet modern aesthetic with its clear tempered glass. Multifunctional Installation: This shower enclosure provides flexibility during installation, making it suitable for any straight bathtub wall. It can be mounted on the left or right wall, providing options for different bathroom layouts. Strong and Durable Construction: The shower door features a high-quality stainless steel square frame, ensuring long-lasting durability and retaining its modern and stylish look over time. Its high-grade stainless steel rollers and tracks work together seamlessly to deliver an exceptionally smooth sliding operation. Excellent Waterproof Performance: The door's premium materials and advanced structure ensure a watertight seal, preventing any water from escaping onto your shower or bathroom floor. Specialized waterproof seals snugly fit to prevent water vapor diffusion, keeping your bathroom consistently dry and allowing you to shower without worrying about splashing. Weights & Dimensions Overall: 76'' H X 60'' W Minimum Width - Side to Side: 56'' W Glass Thickness - Front to Back: 0.375'' Overall Width from Side to Side: 58'' W Overall Product Weight: 182 lb. Installation Video: What is included in the package? Mounting Hardware Included Hinges Included Handles Included DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 88995,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 115694,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Brushed Gold"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SD060-0708_3.jpg?v=1757057087"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43735564615868:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Matt Black"
+      },
+      {
+       "label": "Brushed Nickel"
+      },
+      {
+       "label": "Chrome"
+      },
+      {
+       "label": "Brushed Gold"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SD057-0708_4.jpg?v=1757057086"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Shower & Bathtub Doors",
+    "Shower Doors",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290730803388",
+     "handle": "concord",
+     "title": "Concord",
+     "description": {
+      "html": "Our Concord Collection features toilets that guarantee ease of use and go well with any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638335676",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": "DeerValley showers offer sleek design, efficient water flow, and customizable settings\u2014bringing comfort and modern style to your daily routine."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638433980",
+     "handle": "shower-door",
+     "title": "Shower Doors",
+     "description": {
+      "html": "DeerValley shower doors feature frameless tempered glass, smooth sliding, and waterproof seals, offering modern style and easy installation for any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/302898249916",
+     "handle": "explore-new-bathroom",
+     "title": "Explore New Bathroom",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8368056074428",
+   "title": "Sliding Frameless Shower Enclosure with 3/8\" Clear Glass, Stainless Steel Accessories",
+   "description": {
+    "html": "Transform your bathroom with our modern frameless sliding door shower enclosure. Crafted from stainless steel and featuring 0.39\" tempered glass, durability is assured for years to come. The sleek design includes a sliding door that can be effortlessly installed to open left or right, offering a personalized touch to suit your space. Elevate your bathroom with this contemporary enclosure, combining style with functionality for a truly luxurious shower experience. Features Tempered Glass Shower Enclosure: Constructed with tempered safety glass panels, 0.39 inches thick. Designed to provide effective protection and prevent hazardous situations in case of breakage. Separation of wet and dry: Waterproof technology prevents water leakage. Together with durable seals, this feature ensures that the surrounding area remains clean and dry, thus greatly enhancing the safety and dryness of the bathroom. Outstanding Frame Construction: Hand-polished for a flawless finish on the hardware. Durable sliding roller system and sturdy stainless steel tracks make every movement smooth and quiet. Complete Installation Kit: Each shower door comes with all the necessary mounting hardware in a complete installation kit to ensure easy, hassle-free installation. Dimensions: 48 inches long x 34 inches wide x 76 inches high. Reversible Installation: Depending on the customer's preference, the shower doors can be installed to open left or right, easily accommodating a variety of bathroom layouts and design preferences. Weights & Dimensions Overall: 48\" L x 34\" W x 76\" H? ?/? 43\" L x 34\" W x 74\" H Glass Thickness - Front to Back: 0.394'' Overall Product Weight: 232.6 lb. Installation Manual: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1sd0210-dv-1sd0211",
+   "handle": "dv-1sd0210-dv-1sd0211",
+   "price_range": {
+    "min": {
+     "amount": 88995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 108595,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 115694,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 141174,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43735529586876",
+     "sku": "DV-1SD0210",
+     "title": "48\" L x 34\" W x 76\" H",
+     "description": {
+      "html": "Transform your bathroom with our modern frameless sliding door shower enclosure. Crafted from stainless steel and featuring 0.39\" tempered glass, durability is assured for years to come. The sleek design includes a sliding door that can be effortlessly installed to open left or right, offering a personalized touch to suit your space. Elevate your bathroom with this contemporary enclosure, combining style with functionality for a truly luxurious shower experience. Features Tempered Glass Shower Enclosure: Constructed with tempered safety glass panels, 0.39 inches thick. Designed to provide effective protection and prevent hazardous situations in case of breakage. Separation of wet and dry: Waterproof technology prevents water leakage. Together with durable seals, this feature ensures that the surrounding area remains clean and dry, thus greatly enhancing the safety and dryness of the bathroom. Outstanding Frame Construction: Hand-polished for a flawless finish on the hardware. Durable sliding roller system and sturdy stainless steel tracks make every movement smooth and quiet. Complete Installation Kit: Each shower door comes with all the necessary mounting hardware in a complete installation kit to ensure easy, hassle-free installation. Dimensions: 48 inches long x 34 inches wide x 76 inches high. Reversible Installation: Depending on the customer's preference, the shower doors can be installed to open left or right, easily accommodating a variety of bathroom layouts and design preferences. Weights & Dimensions Overall: 48\" L x 34\" W x 76\" H? ?/? 43\" L x 34\" W x 74\" H Glass Thickness - Front to Back: 0.394'' Overall Product Weight: 232.6 lb. Installation Manual: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 108595,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 141174,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\" L x 34\" W x 76\" H"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1sd021048-l-x-34-w-x-76-h-4567066.jpg?v=1760060353"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43735529586876:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43735529619644",
+     "sku": "DV-1SD0211",
+     "title": "43\" L x 34\" W x 74\" H",
+     "description": {
+      "html": "Transform your bathroom with our modern frameless sliding door shower enclosure. Crafted from stainless steel and featuring 0.39\" tempered glass, durability is assured for years to come. The sleek design includes a sliding door that can be effortlessly installed to open left or right, offering a personalized touch to suit your space. Elevate your bathroom with this contemporary enclosure, combining style with functionality for a truly luxurious shower experience. Features Tempered Glass Shower Enclosure: Constructed with tempered safety glass panels, 0.39 inches thick. Designed to provide effective protection and prevent hazardous situations in case of breakage. Separation of wet and dry: Waterproof technology prevents water leakage. Together with durable seals, this feature ensures that the surrounding area remains clean and dry, thus greatly enhancing the safety and dryness of the bathroom. Outstanding Frame Construction: Hand-polished for a flawless finish on the hardware. Durable sliding roller system and sturdy stainless steel tracks make every movement smooth and quiet. Complete Installation Kit: Each shower door comes with all the necessary mounting hardware in a complete installation kit to ensure easy, hassle-free installation. Dimensions: 48 inches long x 34 inches wide x 76 inches high. Reversible Installation: Depending on the customer's preference, the shower doors can be installed to open left or right, easily accommodating a variety of bathroom layouts and design preferences. Weights & Dimensions Overall: 48\" L x 34\" W x 76\" H? ?/? 43\" L x 34\" W x 74\" H Glass Thickness - Front to Back: 0.394'' Overall Product Weight: 232.6 lb. Installation Manual: DeerValley Bath always focuses on the development and production of bathroom products. We have superior factories to develop our high-quality products, and a perfect after-sales service system, and are committed to providing excellent fashionable designs. We've been growing..."
+     },
+     "price": {
+      "amount": 88995,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 115694,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "43\" L x 34\" W x 74\" H"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1sd021143-l-x-34-w-x-74-h-4781431.jpg?v=1760060354"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43735529619644:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "48\" L x 34\" W x 76\" H"
+      },
+      {
+       "label": "43\" L x 34\" W x 74\" H"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/deervalleydv-1sd021048-l-x-34-w-x-76-h-4567066.jpg?v=1760060353"
+    }
+   ],
+   "tags": [
+    "Shower & Bathtub Doors",
+    "Shower Enclosure",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638335676",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": "DeerValley showers offer sleek design, efficient water flow, and customizable settings\u2014bringing comfort and modern style to your daily routine."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638433980",
+     "handle": "shower-door",
+     "title": "Shower Doors",
+     "description": {
+      "html": "DeerValley shower doors feature frameless tempered glass, smooth sliding, and waterproof seals, offering modern style and easy installation for any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/302898249916",
+     "handle": "explore-new-bathroom",
+     "title": "Explore New Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/307004604604",
+     "handle": "shower-door-15",
+     "title": "Shower Door - 15% OFF",
+     "description": {
+      "html": "Shower Door & Fixed Shower Screen 15% OFF Discount Code: Door15"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9100141232316",
+   "title": "DeerValley DV-1SB0483/DV-1SB0485 60\" x 36\"/48\" x 32\" Zero Threshold Shower Base Seamless Entry, Modern Living",
+   "description": {
+    "html": "? Features SMC Material :Durable, stable construction with long-lasting, reliable performance. Non-Slip Surface :Natural slate texture improves grip for safer daily shower use. Efficient Drainage :Tilted design ensures smooth water flow and quick drainage performance. Flexible Installation :Three removable aluminum flanges fit various bathroom layout needs. Curbless Access :Zero-threshold design allows easy, wheelchair-friendly entry and use. Reinforced Bottom Structure :Stronger base for better stability and dependable support. Weights & Dimensions (Comparison View ??) SKU DV-1SB0483 DV-1SB0485 Overall (L x W x H) 60\" x 35.90\" x 1.02\" 48.18\" x 31.96\" x 1.02\" Basin (L x W x D) 58.77\" x 35.29\" x 1.02\" 46.96\" x 31.35\" x 1.02\" Overall Weight 55.12 lb. 41.89lb. .kv-specs-block { width: 100%; max-width: 980px; margin: 10px 0 16px 0; font-family: sans-serif; } .kv-specs-section-title { margin: 12px 0 8px 0; font-size: 13px; font-weight: 700; color: rgba(0,0,0,.78); } .kv-specs-table { border: 1px solid rgba(0,0,0,.1); border-radius: 8px; overflow: hidden; background: #fff; } .kv-specs-row { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid rgba(0,0,0,.08); align-items: center; } .kv-specs-row:last-child { border-bottom: none; } .kv-specs-row:nth-child(odd) { background: #f3f3f3; } .kv-specs-row:nth-child(even) { background: #ffffff; } .kv-specs-label { padding: 10px 12px; font-size: 13px; color: rgba(0,0,0,.78); font-weight: 600; line-height: 1.3; } .kv-specs-value-col { padding: 10px 12px; font-size: 13px; text-align: center; color: rgba(0,0,0,.92); border-left: 1px solid rgba(0,0,0,.05); word-break: break-word; } @media (max-width: 768px) { .kv-specs-row { grid-template-columns: 1.2fr 1fr 1fr; } .kv-specs-label, .kv-specs-value-col { font-size: 11px; padding: 8px 4px; } } Installation Manual: DV-1SB0483/DV-1SB0485 ? ? ?"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1sb0483-dv-1sb0485",
+   "handle": "dv-1sb0483-dv-1sb0485",
+   "price_range": {
+    "min": {
+     "amount": 17800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 35900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 23140,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 46670,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45596719055036",
+     "sku": "DV-1SB0483",
+     "title": "60\" x 36\"",
+     "description": {
+      "html": "? Features SMC Material :Durable, stable construction with long-lasting, reliable performance. Non-Slip Surface :Natural slate texture improves grip for safer daily shower use. Efficient Drainage :Tilted design ensures smooth water flow and quick drainage performance. Flexible Installation :Three removable aluminum flanges fit various bathroom layout needs. Curbless Access :Zero-threshold design allows easy, wheelchair-friendly entry and use. Reinforced Bottom Structure :Stronger base for better stability and dependable support. Weights & Dimensions (Comparison View ??) SKU DV-1SB0483 DV-1SB0485 Overall (L x W x H) 60\" x 35.90\" x 1.02\" 48.18\" x 31.96\" x 1.02\" Basin (L x W x D) 58.77\" x 35.29\" x 1.02\" 46.96\" x 31.35\" x 1.02\" Overall Weight 55.12 lb. 41.89lb. .kv-specs-block { width: 100%; max-width: 980px; margin: 10px 0 16px 0; font-family: sans-serif; } .kv-specs-section-title { margin: 12px 0 8px 0; font-size: 13px; font-weight: 700; color: rgba(0,0,0,.78); } .kv-specs-table { border: 1px solid rgba(0,0,0,.1); border-radius: 8px; overflow: hidden; background: #fff; } .kv-specs-row { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid rgba(0,0,0,.08); align-items: center; } .kv-specs-row:last-child { border-bottom: none; } .kv-specs-row:nth-child(odd) { background: #f3f3f3; } .kv-specs-row:nth-child(even) { background: #ffffff; } .kv-specs-label { padding: 10px 12px; font-size: 13px; color: rgba(0,0,0,.78); font-weight: 600; line-height: 1.3; } .kv-specs-value-col { padding: 10px 12px; font-size: 13px; text-align: center; color: rgba(0,0,0,.92); border-left: 1px solid rgba(0,0,0,.05); word-break: break-word; } @media (max-width: 768px) { .kv-specs-row { grid-template-columns: 1.2fr 1fr 1fr; } .kv-specs-label, .kv-specs-value-col { font-size: 11px; padding: 8px 4px; } } Installation Manual: DV-1SB0483/DV-1SB0485 ? ? ?"
+     },
+     "price": {
+      "amount": 35900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 46670,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Specification",
+       "label": "60\" x 36\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0483-US-listing-2603-10_3.jpg?v=1773908998"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45596719055036:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45596719087804",
+     "sku": "DV-1SB0485",
+     "title": "48\" x 32\"",
+     "description": {
+      "html": "? Features SMC Material :Durable, stable construction with long-lasting, reliable performance. Non-Slip Surface :Natural slate texture improves grip for safer daily shower use. Efficient Drainage :Tilted design ensures smooth water flow and quick drainage performance. Flexible Installation :Three removable aluminum flanges fit various bathroom layout needs. Curbless Access :Zero-threshold design allows easy, wheelchair-friendly entry and use. Reinforced Bottom Structure :Stronger base for better stability and dependable support. Weights & Dimensions (Comparison View ??) SKU DV-1SB0483 DV-1SB0485 Overall (L x W x H) 60\" x 35.90\" x 1.02\" 48.18\" x 31.96\" x 1.02\" Basin (L x W x D) 58.77\" x 35.29\" x 1.02\" 46.96\" x 31.35\" x 1.02\" Overall Weight 55.12 lb. 41.89lb. .kv-specs-block { width: 100%; max-width: 980px; margin: 10px 0 16px 0; font-family: sans-serif; } .kv-specs-section-title { margin: 12px 0 8px 0; font-size: 13px; font-weight: 700; color: rgba(0,0,0,.78); } .kv-specs-table { border: 1px solid rgba(0,0,0,.1); border-radius: 8px; overflow: hidden; background: #fff; } .kv-specs-row { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid rgba(0,0,0,.08); align-items: center; } .kv-specs-row:last-child { border-bottom: none; } .kv-specs-row:nth-child(odd) { background: #f3f3f3; } .kv-specs-row:nth-child(even) { background: #ffffff; } .kv-specs-label { padding: 10px 12px; font-size: 13px; color: rgba(0,0,0,.78); font-weight: 600; line-height: 1.3; } .kv-specs-value-col { padding: 10px 12px; font-size: 13px; text-align: center; color: rgba(0,0,0,.92); border-left: 1px solid rgba(0,0,0,.05); word-break: break-word; } @media (max-width: 768px) { .kv-specs-row { grid-template-columns: 1.2fr 1fr 1fr; } .kv-specs-label, .kv-specs-value-col { font-size: 11px; padding: 8px 4px; } } Installation Manual: DV-1SB0483/DV-1SB0485 ? ? ?"
+     },
+     "price": {
+      "amount": 17800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 23140,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Specification",
+       "label": "48\" x 32\""
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0485-US-listing-2603-10_4.jpg?v=1773908998"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45596719087804:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Specification",
+     "values": [
+      {
+       "label": "60\" x 36\""
+      },
+      {
+       "label": "48\" x 32\""
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0483-US-listing-2603-10_3.jpg?v=1773908998"
+    }
+   ],
+   "tags": [
+    "Shower Bases",
+    "Shower Bases & Pans",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294839124156",
+     "handle": "shower-base",
+     "title": "Shower Bases",
+     "description": {
+      "html": "DeerValley shower bases feature durable acrylic construction reinforced with fiberglass, non-slip surfaces, and low thresholds for safe, easy access and efficient drainage."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311786078396",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/315403501756",
+     "handle": "deervalley-shower-bases",
+     "title": "DeerValley Shower Bases",
+     "description": {
+      "html": "DeerValley Shower Bases combine slip-resistant surfaces with durable construction, ensuring safety, easy cleaning, and a perfect fit for modern American bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319162810556",
+     "handle": "bfcm-early-sale-12-15-off",
+     "title": "BFCM Early Sale 12-15% Off",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045696680124",
+   "title": "DeerValley DV-1SB0107 Shower Bases,  2-4\u2030 Sloped Drainage & 3-Sided Flange,Non-slip Design With Multiple Sizes",
+   "description": {
+    "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1sb0107-108-109-110",
+   "handle": "dv-1sb0107-108-109-110",
+   "price_range": {
+    "min": {
+     "amount": 20900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 34600,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 24035,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 44980,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42949494374588",
+     "sku": "DV-1SB0107",
+     "title": "48\"L x 30\"W x 3.5\"H / Mid",
+     "description": {
+      "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+     },
+     "price": {
+      "amount": 32900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 42770,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\"L x 30\"W x 3.5\"H"
+      },
+      {
+       "name": "Side of Hole",
+       "label": "Mid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107-1214_1.jpg?v=1757057378"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42949494374588:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44375844585660",
+     "sku": "DV-1SB0107L",
+     "title": "48\"L x 30\"W x 3.5\"H / Left",
+     "description": {
+      "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+     },
+     "price": {
+      "amount": 31900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41470,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\"L x 30\"W x 3.5\"H"
+      },
+      {
+       "name": "Side of Hole",
+       "label": "Left"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107-10-27-_-_5.jpg?v=1757057378"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44375844585660:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44375844618428",
+     "sku": "DV-1SB0107R",
+     "title": "48\"L x 30\"W x 3.5\"H / Right",
+     "description": {
+      "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+     },
+     "price": {
+      "amount": 31900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41470,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\"L x 30\"W x 3.5\"H"
+      },
+      {
+       "name": "Side of Hole",
+       "label": "Right"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107-10-27-_-_5.jpg?v=1757057378"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44375844618428:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45444785635516",
+     "sku": "DV-1SB0107B",
+     "title": "48\"L x 30\"W x 3.5\"H / Black",
+     "description": {
+      "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+     },
+     "price": {
+      "amount": 32900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 42770,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\"L x 30\"W x 3.5\"H"
+      },
+      {
+       "name": "Side of Hole",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107B-_-2602-10.jpg?v=1770713593"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45444785635516:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42949494538428",
+     "sku": "DV-1SB0108",
+     "title": "48\"L x 32\"W x 3.5\"H / Mid",
+     "description": {
+      "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+     },
+     "price": {
+      "amount": 32900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 42770,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\"L x 32\"W x 3.5\"H"
+      },
+      {
+       "name": "Side of Hole",
+       "label": "Mid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107-10-27-_-_5.jpg?v=1757057378"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42949494538428:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45444785668284",
+     "title": "48\"L x 32\"W x 3.5\"H / Black",
+     "description": {
+      "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+     },
+     "price": {
+      "amount": 20900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 24035,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\"L x 32\"W x 3.5\"H"
+      },
+      {
+       "name": "Side of Hole",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107-10-27-_-_5.jpg?v=1757057378"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45444785668284:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42949494571196",
+     "sku": "DV-1SB0109",
+     "title": "48\"L x 34\"W x 3.5\"H / Mid",
+     "description": {
+      "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+     },
+     "price": {
+      "amount": 32599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 42379,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\"L x 34\"W x 3.5\"H"
+      },
+      {
+       "name": "Side of Hole",
+       "label": "Mid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107-10-27-_-_5.jpg?v=1757057378"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42949494571196:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45444785701052",
+     "title": "48\"L x 34\"W x 3.5\"H / Black",
+     "description": {
+      "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+     },
+     "price": {
+      "amount": 20900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 24035,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\"L x 34\"W x 3.5\"H"
+      },
+      {
+       "name": "Side of Hole",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107-10-27-_-_5.jpg?v=1757057378"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45444785701052:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42949494603964",
+     "sku": "DV-1SB0110",
+     "title": "48\"L x 36\"W x 3.5\"H / Mid",
+     "description": {
+      "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+     },
+     "price": {
+      "amount": 34600,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44980,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\"L x 36\"W x 3.5\"H"
+      },
+      {
+       "name": "Side of Hole",
+       "label": "Mid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107-10-27-_-_5.jpg?v=1757057378"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42949494603964:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45444785733820",
+     "title": "48\"L x 36\"W x 3.5\"H / Black",
+     "description": {
+      "html": "Enhance your bathroom effortlessly with the DeerValley shower base. Featuring a low step-over threshold for easy access, it offers durable acrylic construction reinforced with fiberglass for long-lasting performance and a sleek, low-profile design. With stain and fade resistance, cleaning, and maintenance are a breeze. The sloped floor ensures efficient drainage without puddles. Not Included: Drain Assembly Features Sloped Floor for Efficient Drainage: Our non-slip floor boasts a 2-4\u2030 slope, guiding water toward the drain for efficient, puddle-free drainage, saving you from extensive clean-up efforts. Robust and Stable Design: Crafted from top-quality acrylic and fortified with fiberglass, our shower base guarantees enduring durability and stability. To reinforce its foundation, PVC rings are thoughtfully integrated, ensuring a solid, reliable structure. Safe and Non-Slip: Our shower base offers easy entry with a low step-over threshold and a non-slip textured floor for secure, comfortable, and worry-free showers. Easy Maintenance: With its durable, stain-resistant acrylic surface, the shower base is a breeze to clean and resistant to yellowing or fading, ensuring enduring beauty. Simple Installation: Our shower base features a 3-sided flange for a waterproof and leakproof installation between the base and the wall. With our 1-year warranty, you can trust in the quality of our product. Weights & Dimensions SKU DV-1SB0107L DV-1SB0108 DV-1SB0109 DV-1SB0110 Diameter Size(L * W *H) 47.87\" X 30.00\" X 3.50\" 47.87\" X 31.89\" X 3.50\" 47.87\" X 33.86\" X 3.50\" 47.87\" X 35.91\" X 3.50\" Inner Diameter Size(L * W *H) 43.31\" X 24.88\" X 0.98\" 43.31\" X 26.85\" X 0.79\" 43.31\" X 28.82\" X 1.18\" 43.31\" X 30.79\" X 1.10\" Overall Product Weight 30.64 lb 31.75 lb 33.73 lb 36.38 lb (DV-1SB0107) Installation Manual: At DeerValley, we provide high-quality sanitary products for bathroom and kitchen use. We always bring innovative designs and products to your home."
+     },
+     "price": {
+      "amount": 20900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 24035,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "48\"L x 36\"W x 3.5\"H"
+      },
+      {
+       "name": "Side of Hole",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107-10-27-_-_5.jpg?v=1757057378"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45444785733820:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "48\"L x 30\"W x 3.5\"H"
+      },
+      {
+       "label": "48\"L x 32\"W x 3.5\"H"
+      },
+      {
+       "label": "48\"L x 34\"W x 3.5\"H"
+      },
+      {
+       "label": "48\"L x 36\"W x 3.5\"H"
+      }
+     ]
+    },
+    {
+     "name": "Side of Hole",
+     "values": [
+      {
+       "label": "Mid"
+      },
+      {
+       "label": "Left"
+      },
+      {
+       "label": "Right"
+      },
+      {
+       "label": "Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0107-10-27-_-_5.jpg?v=1757057378",
+     "alt_text": "Shower Bases"
+    }
+   ],
+   "tags": [
+    "Shower Bases",
+    "Shower Bases & Pans",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294839124156",
+     "handle": "shower-base",
+     "title": "Shower Bases",
+     "description": {
+      "html": "DeerValley shower bases feature durable acrylic construction reinforced with fiberglass, non-slip surfaces, and low thresholds for safe, easy access and efficient drainage."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638335676",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": "DeerValley showers offer sleek design, efficient water flow, and customizable settings\u2014bringing comfort and modern style to your daily routine."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311786078396",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/315403501756",
+     "handle": "deervalley-shower-bases",
+     "title": "DeerValley Shower Bases",
+     "description": {
+      "html": "DeerValley Shower Bases combine slip-resistant surfaces with durable construction, ensuring safety, easy cleaning, and a perfect fit for modern American bathrooms."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8890704593084",
+   "title": "DeerValley DV-1SD021208 34\" Frameless Neo-Angle Corner Shower Enclosure with Pivot Door, Chrome",
+   "description": {
+    "html": "Create a clean, open corner shower with the DeerValley DV-1SD021208 frameless neo-angle shower enclosure. Designed with 5/16\" clear tempered glass and a smooth pivot door, it combines comfortable entry with a modern, space-conscious look. Chrome-finish stainless steel hardware, magnetic water seals and two optional glass shelves bring everyday durability and convenience to your bathroom. Features 01\uff5cFrameless Neo-Angle Design Open Up Your Corner Shower The frameless neo-angle design creates a clean, open look while making efficient use of corner space, ideal for modern bathrooms where every inch matters. 02\uff5c23.46\" Walk-Through Opening Comfortable Entry, Every Day A 23.46\" walk-through opening provides comfortable access, while the pivot door keeps the enclosure practical for everyday use. 03\uff5cReturn-Action Pivot Hinges Smooth, Guided Door Closing Return-action pivot hinges help guide the glass door toward the closed position, delivering smoother everyday operation and more consistent alignment. 04\uff5cMagnetic Water-Seal System Designed to Keep Water Where It Belongs A full-length magnetic strip works with PVC water seals and a lower water guide to support secure door closure and help reduce splashing when properly installed. 05\uff5c5/16\" Tempered Glass Thick Glass, Open Feel 5/16\" (8 mm) clear tempered glass delivers a substantial everyday feel while maintaining the bright, open appearance of a frameless shower. 06\uff5c304 Stainless Steel Hardware Built for Humid Bathrooms Chrome-finish 304 stainless steel hinges, brackets and bar handle provide durable, corrosion-resistant support designed for everyday bathroom environments. 07\uff5cTwo Glass Shelves Storage Right Where You Need It Two included glass shelves keep shampoo, soap and shower essentials within easy reach\u2014and can be omitted for an even cleaner, minimalist look. Before You Buy 1.Precise Installation Required This enclosure does not provide out-of-plumb adjustment. Finished walls must be plumb and the threshold must be flat and level to support proper alignment, magnetic closure and sealing. 2.What's Included Includes the glass enclosure, two optional glass shelves and installation hardware. Shower base and wall panels are sold separately. 3.2-Year Limited Warranty Backed by DeerValley's 2-year limited warranty for added peace of mind. Weights & Dimensions Specification SKU DV-1SD021208 Overall Dimensions 34\" W \u00d7 34\" D \u00d7 73\" H Glass Thickness - Front to Back 0.315' Overall Product Weight 146.28 lb Door Width 23.46\" Installation Width 25.04\" Side Panel Width 15.31\" Glass Thickness 5/16\" (8 mm) Overall Product Weight 146.28 lb Installation Manual:DV-1SD021208"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1sd021208",
+   "handle": "dv-1sd021208",
+   "price_range": {
+    "min": {
+     "amount": 79900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 79900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 103900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 103900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44903654326460",
+     "sku": "DV-1SD021208",
+     "title": "Default Title",
+     "description": {
+      "html": "Create a clean, open corner shower with the DeerValley DV-1SD021208 frameless neo-angle shower enclosure. Designed with 5/16\" clear tempered glass and a smooth pivot door, it combines comfortable entry with a modern, space-conscious look. Chrome-finish stainless steel hardware, magnetic water seals and two optional glass shelves bring everyday durability and convenience to your bathroom. Features 01\uff5cFrameless Neo-Angle Design Open Up Your Corner Shower The frameless neo-angle design creates a clean, open look while making efficient use of corner space, ideal for modern bathrooms where every inch matters. 02\uff5c23.46\" Walk-Through Opening Comfortable Entry, Every Day A 23.46\" walk-through opening provides comfortable access, while the pivot door keeps the enclosure practical for everyday use. 03\uff5cReturn-Action Pivot Hinges Smooth, Guided Door Closing Return-action pivot hinges help guide the glass door toward the closed position, delivering smoother everyday operation and more consistent alignment. 04\uff5cMagnetic Water-Seal System Designed to Keep Water Where It Belongs A full-length magnetic strip works with PVC water seals and a lower water guide to support secure door closure and help reduce splashing when properly installed. 05\uff5c5/16\" Tempered Glass Thick Glass, Open Feel 5/16\" (8 mm) clear tempered glass delivers a substantial everyday feel while maintaining the bright, open appearance of a frameless shower. 06\uff5c304 Stainless Steel Hardware Built for Humid Bathrooms Chrome-finish 304 stainless steel hinges, brackets and bar handle provide durable, corrosion-resistant support designed for everyday bathroom environments. 07\uff5cTwo Glass Shelves Storage Right Where You Need It Two included glass shelves keep shampoo, soap and shower essentials within easy reach\u2014and can be omitted for an even cleaner, minimalist look. Before You Buy 1.Precise Installation Required This enclosure does not provide out-of-plumb adjustment. Finished walls must be plumb and the threshold must be flat and level to support proper alignment, magnetic closure and sealing. 2.What's Included Includes the glass enclosure, two optional glass shelves and installation hardware. Shower base and wall panels are sold separately. 3.2-Year Limited Warranty Backed by DeerValley's 2-year limited warranty for added peace of mind. Weights & Dimensions Specification SKU DV-1SD021208 Overall Dimensions 34\" W \u00d7 34\" D \u00d7 73\" H Glass Thickness - Front to Back 0.315' Overall Product Weight 146.28 lb Door Width 23.46\" Installation Width 25.04\" Side Panel Width 15.31\" Glass Thickness 5/16\" (8 mm) Overall Product Weight 146.28 lb Installation Manual:DV-1SD021208"
+     },
+     "price": {
+      "amount": 79900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 103900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SD0212-0903-_6.jpg?v=1788845992"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/44903654326460:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SD0212-0903-_6.jpg?v=1788845992"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Shower & Bathtub Doors",
+    "Shower Doors",
+    "Shower Enclosure",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/283798667452",
+     "handle": "deervalley-all-products",
+     "title": "[DeerValley All Products]",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/310457565372",
+     "handle": "frameless-shower-door",
+     "title": "Frameless Shower Door",
+     "description": {
+      "html": "DeerValley frameless shower doors offer a clean, modern look with thick tempered glass and seamless edges\u2014perfect for a sleek, spa-inspired bathroom design."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311786078396",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/315403567292",
+     "handle": "deervalley-shower-doors",
+     "title": "DeerValley Shower Doors",
+     "description": {
+      "html": "DeerValley Shower Doors feature sleek glass panels, smooth sliding or hinged options, and durable hardware\u2014bringing style and function to any American bathroom."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9085799628988",
+   "title": "DeerValley DV-1SB0488 72\"L x 36\"W Shower Base in White, SMC Rectangle Single-Threshold Shower Pan, Center Drain, Non-Slip Shower Tray, Drain Cover Included",
+   "description": {
+    "html": "Designed for safety and durability, this shower base features a textured anti-slip surface to prevent slips. Made from high-strength SMC composite, it offers excellent impact resistance and long-term stability. The integrated pre-sloped base with a 3.5 in. drain ensures fast drainage. Three-sided flanges reduce gaps and leaks. Includes a stainless steel drain cover, drain components, and reinforced back grid. Features Textured Anti-Slip Surface: Helps reduce slips and falls while providing a massage-like feel underfoot. The textured surface is also easy to clean, keeping your shower safe and hygienic. Upgraded SMC Material: Made from high-strength SMC composite, offering excellent load-bearing capacity, heat retention, scratch resistance, and long-lasting durability for reliable, long-term use. Fast Drainage: The pre-sloped base with guide lines ensures quick water flow and prevents standing water. Features a large 3.5 in. drain for efficient drainage. Integrated Three-Sided Flange: Prevents water overflow and effectively ensures dry-wet separation. Ideal for alcove installations, with a 1.6 in. inner threshold height to keep water contained within the shower area. Clog-Resistant Drain Components: Ensures smooth drainage while preventing small items from falling into the drain. Includes a stainless steel drain cover and drain components for easy installation. Reinforced Back Grid: Densely and evenly structured grid at the back enhances stability and provides uniform support for long-lasting durability. Professional After-Sales Support: Backed by a dedicated product design and customer support team, offering long-term assistance and ready to answer any questions or provide help whenever needed. Weights & Dimensions SKU ?DV-1SB0488 Diameter Size(L * W *H) 72\" X 36\" X 4.01\" Inner Diameter Size(L * W *H) 66.56\" X 31.64\" X 3.14\" Overall Product Weight 61.72 lb Installation Manual:"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1sb0488",
+   "handle": "dv-1sb0488",
+   "price_range": {
+    "min": {
+     "amount": 68800,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 68800,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 89440,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 89440,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45537850654908",
+     "sku": "DV-1SB0488",
+     "title": "Default Title",
+     "description": {
+      "html": "Designed for safety and durability, this shower base features a textured anti-slip surface to prevent slips. Made from high-strength SMC composite, it offers excellent impact resistance and long-term stability. The integrated pre-sloped base with a 3.5 in. drain ensures fast drainage. Three-sided flanges reduce gaps and leaks. Includes a stainless steel drain cover, drain components, and reinforced back grid. Features Textured Anti-Slip Surface: Helps reduce slips and falls while providing a massage-like feel underfoot. The textured surface is also easy to clean, keeping your shower safe and hygienic. Upgraded SMC Material: Made from high-strength SMC composite, offering excellent load-bearing capacity, heat retention, scratch resistance, and long-lasting durability for reliable, long-term use. Fast Drainage: The pre-sloped base with guide lines ensures quick water flow and prevents standing water. Features a large 3.5 in. drain for efficient drainage. Integrated Three-Sided Flange: Prevents water overflow and effectively ensures dry-wet separation. Ideal for alcove installations, with a 1.6 in. inner threshold height to keep water contained within the shower area. Clog-Resistant Drain Components: Ensures smooth drainage while preventing small items from falling into the drain. Includes a stainless steel drain cover and drain components for easy installation. Reinforced Back Grid: Densely and evenly structured grid at the back enhances stability and provides uniform support for long-lasting durability. Professional After-Sales Support: Backed by a dedicated product design and customer support team, offering long-term assistance and ready to answer any questions or provide help whenever needed. Weights & Dimensions SKU ?DV-1SB0488 Diameter Size(L * W *H) 72\" X 36\" X 4.01\" Inner Diameter Size(L * W *H) 66.56\" X 31.64\" X 3.14\" Overall Product Weight 61.72 lb Installation Manual:"
+     },
+     "price": {
+      "amount": 68800,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 89440,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0488-_-2603-10_2.jpg?v=1773297299"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45537850654908:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0488-_-2603-10_2.jpg?v=1773297299"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Shower Bases",
+    "Shower Bases & Pans",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294839124156",
+     "handle": "shower-base",
+     "title": "Shower Bases",
+     "description": {
+      "html": "DeerValley shower bases feature durable acrylic construction reinforced with fiberglass, non-slip surfaces, and low thresholds for safe, easy access and efficient drainage."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311786078396",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/315403501756",
+     "handle": "deervalley-shower-bases",
+     "title": "DeerValley Shower Bases",
+     "description": {
+      "html": "DeerValley Shower Bases combine slip-resistant surfaces with durable construction, ensuring safety, easy cleaning, and a perfect fit for modern American bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319162810556",
+     "handle": "bfcm-early-sale-12-15-off",
+     "title": "BFCM Early Sale 12-15% Off",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8045702906044",
+   "title": "DeerValley DV-1SB0111 Acrylic Shower Pan Easy Clean & Sloped Drain Non-Slip Surface",
+   "description": {
+    "html": "Revitalize your bathroom with our square shower base. Its waterproof acrylic construction, reinforced with fiberglass, ensures durability and a modern low-profile design. The slip-resistant textured floor provides safety and comfort. Enjoy easy cleaning and maintenance as the base is resistant to stains and fading. The sloped floor ensures complete drainage without puddles. Upgrade your bathroom effortlessly with our stylish and durable shower base. Not Included: Drain Assembly Features Enhanced Construction for Durability and Stability: Our shower base is constructed using high-quality acrylic and reinforced with fiberglass, ensuring long-lasting durability and rock-solid stability. PVC rings incorporated at the base ensure a sturdy foundation. Sloped Floor for Efficient Drainage: The non-slip floor is designed with a 2-4\u2030 slope that directs water towards the drain, ensuring efficient and complete water drainage. This prevents the formation of puddles and eliminates the need for extensive clean-up. Accessible and Slip-Resistant Design: With a low step-over threshold, getting in and out of the shower is effortless. No more bending or flexing. The non-slip textured floor ensures a secure footing, even when wet, making every shower experience enjoyable and worry-free. Effortless Maintenance: Our shower base boasts a durable acrylic surface that's resistant to stains and scratches, easy to clean, and won't yellow or fade. It won't trap dirt or grime, ensuring long-lasting beauty with effortless cleaning. Simple Installation: 3-sided flange ensures a waterproof and leakproof connection to the wall. Comes with a 1-year warranty for your peace of mind. Weights & Dimensions Diameter Size(L * W *H): 34.84\" X 34.84\" X 3.50\" Inner Diameter Size(L * W *H): 30.24\" X 29.29\" X 1.18\" Overall Product Weight: 26.46 lb Installation Manual: \"Stylish Living, Savvy Savings\", DeerValley devotes to make the dream of a comfortable home and better living a reality."
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1sb0111",
+   "handle": "dv-1sb0111",
+   "price_range": {
+    "min": {
+     "amount": 29900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 38870,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 38870,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42949502337212",
+     "sku": "DV-1SB0111",
+     "title": "Default Title",
+     "description": {
+      "html": "Revitalize your bathroom with our square shower base. Its waterproof acrylic construction, reinforced with fiberglass, ensures durability and a modern low-profile design. The slip-resistant textured floor provides safety and comfort. Enjoy easy cleaning and maintenance as the base is resistant to stains and fading. The sloped floor ensures complete drainage without puddles. Upgrade your bathroom effortlessly with our stylish and durable shower base. Not Included: Drain Assembly Features Enhanced Construction for Durability and Stability: Our shower base is constructed using high-quality acrylic and reinforced with fiberglass, ensuring long-lasting durability and rock-solid stability. PVC rings incorporated at the base ensure a sturdy foundation. Sloped Floor for Efficient Drainage: The non-slip floor is designed with a 2-4\u2030 slope that directs water towards the drain, ensuring efficient and complete water drainage. This prevents the formation of puddles and eliminates the need for extensive clean-up. Accessible and Slip-Resistant Design: With a low step-over threshold, getting in and out of the shower is effortless. No more bending or flexing. The non-slip textured floor ensures a secure footing, even when wet, making every shower experience enjoyable and worry-free. Effortless Maintenance: Our shower base boasts a durable acrylic surface that's resistant to stains and scratches, easy to clean, and won't yellow or fade. It won't trap dirt or grime, ensuring long-lasting beauty with effortless cleaning. Simple Installation: 3-sided flange ensures a waterproof and leakproof connection to the wall. Comes with a 1-year warranty for your peace of mind. Weights & Dimensions Diameter Size(L * W *H): 34.84\" X 34.84\" X 3.50\" Inner Diameter Size(L * W *H): 30.24\" X 29.29\" X 1.18\" Overall Product Weight: 26.46 lb Installation Manual: \"Stylish Living, Savvy Savings\", DeerValley devotes to make the dream of a comfortable home and better living a reality."
+     },
+     "price": {
+      "amount": 29900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 38870,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0111-0921_3.jpg?v=1757057376"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/42949502337212:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SB0111-0921_3.jpg?v=1757057376",
+     "alt_text": "Shower Bases"
+    }
+   ],
+   "tags": [
+    "Shower Bases",
+    "Shower Bases & Pans",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294839124156",
+     "handle": "shower-base",
+     "title": "Shower Bases",
+     "description": {
+      "html": "DeerValley shower bases feature durable acrylic construction reinforced with fiberglass, non-slip surfaces, and low thresholds for safe, easy access and efficient drainage."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638335676",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": "DeerValley showers offer sleek design, efficient water flow, and customizable settings\u2014bringing comfort and modern style to your daily routine."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311786078396",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/315403501756",
+     "handle": "deervalley-shower-bases",
+     "title": "DeerValley Shower Bases",
+     "description": {
+      "html": "DeerValley Shower Bases combine slip-resistant surfaces with durable construction, ensuring safety, easy cleaning, and a perfect fit for modern American bathrooms."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9170622185660",
+   "title": "DeerValley DV-1SB0481 Shower Base in White, Acrylic Single Threshold Shower Pan with Non-Slip Texture, Center Drain Hole",
+   "description": {
+    "html": "Deervalley's 54\"x32\" acrylic shower base features a single-threshold design, making it suitable for alcove (three-wall) installations. The textured anti-slip surface helps enhance safety during use. The integrated sloped base with center drain allows for efficient water drainage. Additionally, the three-sided tiling flange helps reduce the risk of water seepage. Features The non-slip floor features a 1.2\u00b0\u20134\u00b0 slope, directing water smoothly toward the drain for efficient, puddle-free drainage and less clean-up. Made from premium acrylic reinforced with fiberglass, and integrated PVC rings, the shower base ensures lasting durability and a solid, reliable structure. With a low step-over threshold and a textured non-slip surface, the shower base offers secure, comfortable, and worry?free showers. The non?porous acrylic surface resists stains and is easy to clean, requiring minimal upkeep. Its sleek, modern design adds an elegant touch to any bathroom. The durable, stain?resistant acrylic resists yellowing or fading, preserving the shower base\u2019s appearance for years to come. Weights & Dimensions ?SKU DV-1SB0481 Diameter Size(L * W *H) 53.90\" X 31.89\" X 3.50\" Inner Diameter Size(L * W *H) 49.33\" X 26.85\" X 2.48\" Overall Product Weight 23.4 lb ? Installation Manual: DV-1SB0481"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1sb0481",
+   "handle": "dv-1sb0481",
+   "price_range": {
+    "min": {
+     "amount": 36900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 36900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 47970,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 47970,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45837415284924",
+     "sku": "DV-1SB0481",
+     "title": "Default Title",
+     "description": {
+      "html": "Deervalley's 54\"x32\" acrylic shower base features a single-threshold design, making it suitable for alcove (three-wall) installations. The textured anti-slip surface helps enhance safety during use. The integrated sloped base with center drain allows for efficient water drainage. Additionally, the three-sided tiling flange helps reduce the risk of water seepage. Features The non-slip floor features a 1.2\u00b0\u20134\u00b0 slope, directing water smoothly toward the drain for efficient, puddle-free drainage and less clean-up. Made from premium acrylic reinforced with fiberglass, and integrated PVC rings, the shower base ensures lasting durability and a solid, reliable structure. With a low step-over threshold and a textured non-slip surface, the shower base offers secure, comfortable, and worry?free showers. The non?porous acrylic surface resists stains and is easy to clean, requiring minimal upkeep. Its sleek, modern design adds an elegant touch to any bathroom. The durable, stain?resistant acrylic resists yellowing or fading, preserving the shower base\u2019s appearance for years to come. Weights & Dimensions ?SKU DV-1SB0481 Diameter Size(L * W *H) 53.90\" X 31.89\" X 3.50\" Inner Diameter Size(L * W *H) 49.33\" X 26.85\" X 2.48\" Overall Product Weight 23.4 lb ? Installation Manual: DV-1SB0481"
+     },
+     "price": {
+      "amount": 36900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 47970,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/2_fde21a85-a5bd-48c2-977b-387bf5bf16b3.jpg?v=1780469485"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/45837415284924:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/2_fde21a85-a5bd-48c2-977b-387bf5bf16b3.jpg?v=1780469485"
+    }
+   ],
+   "tags": [
+    "Shower Bases",
+    "Shower Bases & Pans",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/294839124156",
+     "handle": "shower-base",
+     "title": "Shower Bases",
+     "description": {
+      "html": "DeerValley shower bases feature durable acrylic construction reinforced with fiberglass, non-slip surfaces, and low thresholds for safe, easy access and efficient drainage."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/311786078396",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/315403501756",
+     "handle": "deervalley-shower-bases",
+     "title": "DeerValley Shower Bases",
+     "description": {
+      "html": "DeerValley Shower Bases combine slip-resistant surfaces with durable construction, ensuring safety, easy cleaning, and a perfect fit for modern American bathrooms."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319162810556",
+     "handle": "bfcm-early-sale-12-15-off",
+     "title": "BFCM Early Sale 12-15% Off",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8368059154620",
+   "title": "DeerValley DV-1SD0213 Framed Square Reversible Shower Enclosure, Double Sliding Door Corner Shower Door with 0.24\" Clear Glass",
+   "description": {
+    "html": "Create a cleaner corner shower layout with the 34 in. W x 72 in. H square double sliding framed shower enclosure. The compact footprint helps save bathroom floor space, while two sliding panels provide convenient center entry without a swing-out door. Clear tempered glass, chrome hardware and water-resistant seals offer a bright, practical upgrade for small bath remodels. Features Safety and Assurance: The framed pivot shower enclosure is crafted from 0.24\" thick ANSI-certified transparent tempered glass, ensuring safety and reliability with superior quality. Excellent Frame Structure: Aluminum frame, stainless steel hardware with hand-polished flawless surfaces. Durable inner rollers and sturdy track rails ensure smooth and quiet operation. Corner Shower Enclosure: The double-opening sliding glass corner shower door provides a spacious entryway, featuring a modern minimalist design for easy installation. Reversible Installation: The shower door can be installed to open left or right according to customer preference. Waterproof Design: High-quality door seals prevent water leakage, maintaining cleanliness and dryness in the bathroom area. Weights & Dimensions SKU ?DV-1SD0213 Overall 34\" L X 34\" W X 72\" H Glass Thickness - Front to Back 0.236\" Overall Product Weight 105.6 lb ? Installation Manual: DV-1SD0213 ?"
+   },
+   "url": "https://www.deervalleybath.com/products/dv-1sd0213-dv-1sd0215",
+   "handle": "dv-1sd0213-dv-1sd0215",
+   "price_range": {
+    "min": {
+     "amount": 65995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 65995,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 85794,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 85794,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43735532765372",
+     "sku": "DV-1SD0213",
+     "title": "34\" L x 34\" W x 72\" H",
+     "description": {
+      "html": "Create a cleaner corner shower layout with the 34 in. W x 72 in. H square double sliding framed shower enclosure. The compact footprint helps save bathroom floor space, while two sliding panels provide convenient center entry without a swing-out door. Clear tempered glass, chrome hardware and water-resistant seals offer a bright, practical upgrade for small bath remodels. Features Safety and Assurance: The framed pivot shower enclosure is crafted from 0.24\" thick ANSI-certified transparent tempered glass, ensuring safety and reliability with superior quality. Excellent Frame Structure: Aluminum frame, stainless steel hardware with hand-polished flawless surfaces. Durable inner rollers and sturdy track rails ensure smooth and quiet operation. Corner Shower Enclosure: The double-opening sliding glass corner shower door provides a spacious entryway, featuring a modern minimalist design for easy installation. Reversible Installation: The shower door can be installed to open left or right according to customer preference. Waterproof Design: High-quality door seals prevent water leakage, maintaining cleanliness and dryness in the bathroom area. Weights & Dimensions SKU ?DV-1SD0213 Overall 34\" L X 34\" W X 72\" H Glass Thickness - Front to Back 0.236\" Overall Product Weight 105.6 lb ? Installation Manual: DV-1SD0213 ?"
+     },
+     "price": {
+      "amount": 65995,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 85794,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "34\" L x 34\" W x 72\" H"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SD0213-0724-_3.jpg?v=1784109459"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://deervalley-bath.myshopify.com/cart/43735532765372:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "34\" L x 34\" W x 72\" H"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0526/3536/9660/files/DV-1SD0213-0724-_3.jpg?v=1784109459"
+    }
+   ],
+   "tags": [
+    "Shower & Bathtub Doors",
+    "Shower Enclosure",
+    "United States Warehouse"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/289767620796",
+     "handle": "bathroom-products",
+     "title": "Bathroom Products",
+     "description": {
+      "html": "From upgrading your toilet to changing your bathroom sink, you can trust DeerValley to provide you with the style and elegance you need for your renovations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/290731196604",
+     "handle": "dynasty",
+     "title": "Dynasty",
+     "description": {
+      "html": "Our Dynasty Collection is sure to help you make a bold statement with your bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638335676",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": "DeerValley showers offer sleek design, efficient water flow, and customizable settings\u2014bringing comfort and modern style to your daily routine."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295638433980",
+     "handle": "shower-door",
+     "title": "Shower Doors",
+     "description": {
+      "html": "DeerValley shower doors feature frameless tempered glass, smooth sliding, and waterproof seals, offering modern style and easy installation for any bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/302898249916",
+     "handle": "explore-new-bathroom",
+     "title": "Explore New Bathroom",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNelk0TURVNU1UVTBOakl3TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

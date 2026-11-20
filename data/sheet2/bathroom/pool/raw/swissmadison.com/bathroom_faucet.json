@@ -1,0 +1,1597 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://swissmadison.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Swiss Madison - well made forever",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "swissmadison.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "15854485"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "15854485"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4718691352665",
+   "title": "Sublime Single Hole, Single-Handle, Bathroom Faucet in Brushed Gold",
+   "description": {
+    "html": "Single-Hole: Single hole center mounting installation. controls both on/off and temperature settings with one hand. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+   },
+   "url": "https://swissmadison.com/products/sublime-6-5-single-handle-bathroom-faucet-in-brushed-gold",
+   "handle": "sublime-6-5-single-handle-bathroom-faucet-in-brushed-gold",
+   "price_range": {
+    "min": {
+     "amount": 9682,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9682,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14895,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14895,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32164188651609",
+     "sku": "SM-BF10BG",
+     "title": "Default Title",
+     "description": {
+      "html": "Single-Hole: Single hole center mounting installation. controls both on/off and temperature settings with one hand. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+     },
+     "price": {
+      "amount": 9682,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14895,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/wtdf8uj7jhgp96xdtvfb.jpg?v=1776569076"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/32164188651609:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/wtdf8uj7jhgp96xdtvfb.jpg?v=1776569076",
+     "alt_text": "Single-handle bathroom faucet in brushed gold, sleek curved spout design."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Bathroom Faucets",
+    "Collection:Sublime",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Single-Handle",
+    "Taxonomy:Single-Handle Bathroom Faucet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/272438952109",
+     "handle": "bathroom-faucets",
+     "title": "Bathroom Faucets",
+     "description": {
+      "html": "A curated selection of bathroom faucets including single-handle, widespread, and wall-mount styles."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273162076333",
+     "handle": "single-hole",
+     "title": "Single-Hole",
+     "description": {
+      "html": "Single-handle faucets offer a streamlined design with one-hand control of temperature and flow."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775509204",
+     "handle": "c-sublime",
+     "title": "Sublime",
+     "description": {
+      "html": "The Sublime Collection blends calm simplicity with modern comfort. With versatile forms and effortless style, it creates a space that feels welcoming, adaptable, and beautifully livable."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/432059187412",
+     "handle": "ada-faucets",
+     "title": "Ada Faucets",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7491848011988",
+   "title": "Pierre Widespread, Double Handle, Bathroom Faucet in Matte Black",
+   "description": {
+    "html": "Three-Hole: Three-hole mount for installation offering separate control of hot and cold water. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Two Handle: Two lever handles offer separate control of hot and cold water."
+   },
+   "url": "https://swissmadison.com/products/pierre-widespread-double-handle-bathroom-faucet-in-matte-black",
+   "handle": "pierre-widespread-double-handle-bathroom-faucet-in-matte-black",
+   "price_range": {
+    "min": {
+     "amount": 26316,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 26316,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 32895,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 32895,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42244513136852",
+     "sku": "SM-BF97MB",
+     "title": "Default Title",
+     "description": {
+      "html": "Three-Hole: Three-hole mount for installation offering separate control of hot and cold water. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Two Handle: Two lever handles offer separate control of hot and cold water."
+     },
+     "price": {
+      "amount": 26316,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 32895,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/r6cpyikfjm2weivxiqyw.jpg?v=1776569307"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/42244513136852:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/r6cpyikfjm2weivxiqyw.jpg?v=1776569307",
+     "alt_text": "Widespread bathroom faucet in matte black with double square handles and modern angular spout."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Bathroom Faucets",
+    "Collection:Pierre",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Widespread",
+    "Taxonomy:Widespread Bathroom Faucet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/272438952109",
+     "handle": "bathroom-faucets",
+     "title": "Bathroom Faucets",
+     "description": {
+      "html": "A curated selection of bathroom faucets including single-handle, widespread, and wall-mount styles."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273162371245",
+     "handle": "widespread",
+     "title": "Widespread",
+     "description": {
+      "html": "Three-piece faucets designed for balanced style and precise temperature control."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775443668",
+     "handle": "c-pierre",
+     "title": "Pierre",
+     "description": {
+      "html": "The Swiss Madison Pierre Collection embraces simplicity with purpose. Its clean, refined design works beautifully in both small and large spaces, bringing everyday living to a higher standard."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/441653133524",
+     "handle": "faucet",
+     "title": "Faucet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8604661088468",
+   "title": "Ivy 8 in. Widespread Double Cross-Handle Wall Mount Bathroom Faucet in Brushed Gold",
+   "description": {
+    "html": "Wall-Mount: Elevate your bathroom design and free up sink space with a wall-mounted faucet. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Two Handle: Two lever handles offer separate control of hot and cold water."
+   },
+   "url": "https://swissmadison.com/products/ivy-8-in-widespread-double-cross-handle-wall-mount-bathroom-faucet-in-brushed-gold-sm-bf62bg",
+   "handle": "ivy-8-in-widespread-double-cross-handle-wall-mount-bathroom-faucet-in-brushed-gold-sm-bf62bg",
+   "price_range": {
+    "min": {
+     "amount": 15836,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15836,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 19795,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 19795,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45582907113684",
+     "sku": "SM-BF62BG",
+     "title": "Default Title",
+     "description": {
+      "html": "Wall-Mount: Elevate your bathroom design and free up sink space with a wall-mounted faucet. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Two Handle: Two lever handles offer separate control of hot and cold water."
+     },
+     "price": {
+      "amount": 15836,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 19795,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/wtp2zvu5vffjuhrkt4dv.jpg?v=1776569159"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/45582907113684:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/wtp2zvu5vffjuhrkt4dv.jpg?v=1776569159"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Bathroom Faucets",
+    "Collection:Ivy",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Wall-Mount Faucets",
+    "Taxonomy:Wall-Mount Bathroom Faucet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/270244249773",
+     "handle": "ivy-1",
+     "title": "Ivy",
+     "description": {
+      "html": "The Ivy Collection combines strength and style with bold modern lines. Designed for confidence and everyday living, it brings an elevated edge to contemporary spaces."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/272438952109",
+     "handle": "bathroom-faucets",
+     "title": "Bathroom Faucets",
+     "description": {
+      "html": "A curated selection of bathroom faucets including single-handle, widespread, and wall-mount styles."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273162633389",
+     "handle": "wall-mount",
+     "title": "Wall-Mount",
+     "description": {
+      "html": "Wall-mount faucets free up counter space while delivering a streamlined finish suited for vessel sinks."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775148756",
+     "handle": "c-ivy",
+     "title": "Ivy",
+     "description": {
+      "html": "The Ivy Collection combines strength and style with bold modern lines. Designed for confidence and everyday living, it brings an elevated edge to contemporary spaces."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4724578091097",
+   "title": "Monaco Single-Handle, Wall-Mount, Bathroom Faucet in Matte Black",
+   "description": {
+    "html": "Wall-Mount: Elevate your bathroom design and free up sink space with a wall-mounted faucet. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+   },
+   "url": "https://swissmadison.com/products/monaco-single-handle-wall-mount-bathroom-faucet-in-matte-black",
+   "handle": "monaco-single-handle-wall-mount-bathroom-faucet-in-matte-black",
+   "price_range": {
+    "min": {
+     "amount": 17116,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17116,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 21395,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 21395,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32181461385305",
+     "sku": "SM-BF23MB",
+     "title": "Default Title",
+     "description": {
+      "html": "Wall-Mount: Elevate your bathroom design and free up sink space with a wall-mounted faucet. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+     },
+     "price": {
+      "amount": 17116,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 21395,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/jt4ubxt2goskrqwzad61.jpg?v=1776569116"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/32181461385305:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/jt4ubxt2goskrqwzad61.jpg?v=1776569116",
+     "alt_text": "Wall-mount bathroom faucet in matte black, single-handle, modern angular spout design."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Bathroom Faucets",
+    "Collection:Monaco",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Wall-Mount Faucets",
+    "Taxonomy:Wall-Mount Bathroom Faucet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/272438952109",
+     "handle": "bathroom-faucets",
+     "title": "Bathroom Faucets",
+     "description": {
+      "html": "A curated selection of bathroom faucets including single-handle, widespread, and wall-mount styles."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273162633389",
+     "handle": "wall-mount",
+     "title": "Wall-Mount",
+     "description": {
+      "html": "Wall-mount faucets free up counter space while delivering a streamlined finish suited for vessel sinks."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775410900",
+     "handle": "c-monaco",
+     "title": "Monaco",
+     "description": {
+      "html": "Capturing the glamour and precision of its namesake city, Monaco blends architectural elegance with coastal allure. Refined, sculptural forms create a statement of modern European luxury."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/441653133524",
+     "handle": "faucet",
+     "title": "Faucet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8475730903252",
+   "title": "Ivy Single-Handle Wall Mount Bathroom Faucet in Brushed Gold",
+   "description": {
+    "html": "Wall-Mount: Elevate your bathroom design and free up sink space with a wall-mounted faucet. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+   },
+   "url": "https://swissmadison.com/products/ivy-single-handle-wall-mount-bathroom-faucet-in-brushed-gold",
+   "handle": "ivy-single-handle-wall-mount-bathroom-faucet-in-brushed-gold",
+   "price_range": {
+    "min": {
+     "amount": 18116,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18116,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 22645,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 22645,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45247939248340",
+     "sku": "SM-BF65BG",
+     "title": "Default Title",
+     "description": {
+      "html": "Wall-Mount: Elevate your bathroom design and free up sink space with a wall-mounted faucet. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+     },
+     "price": {
+      "amount": 18116,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 22645,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/mgxjyl2gu9wjdy7rsk0y.jpg?v=1776569082"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/45247939248340:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/mgxjyl2gu9wjdy7rsk0y.jpg?v=1776569082"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6-7-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Bathroom Faucets",
+    "Collection:Ivy",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Wall-Mount Faucets",
+    "Taxonomy:Wall-Mount Bathroom Faucet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/270244249773",
+     "handle": "ivy-1",
+     "title": "Ivy",
+     "description": {
+      "html": "The Ivy Collection combines strength and style with bold modern lines. Designed for confidence and everyday living, it brings an elevated edge to contemporary spaces."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/272438952109",
+     "handle": "bathroom-faucets",
+     "title": "Bathroom Faucets",
+     "description": {
+      "html": "A curated selection of bathroom faucets including single-handle, widespread, and wall-mount styles."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273162633389",
+     "handle": "wall-mount",
+     "title": "Wall-Mount",
+     "description": {
+      "html": "Wall-mount faucets free up counter space while delivering a streamlined finish suited for vessel sinks."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775148756",
+     "handle": "c-ivy",
+     "title": "Ivy",
+     "description": {
+      "html": "The Ivy Collection combines strength and style with bold modern lines. Designed for confidence and everyday living, it brings an elevated edge to contemporary spaces."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7458834579668",
+   "title": "Ivy Courte 8 in. Widespread, Cross Handle, Bathroom Faucet in Matte Black",
+   "description": {
+    "html": "Three-Hole: Three-hole mount for installation offering separate control of hot and cold water. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Two Handle: Two lever handles offer separate control of hot and cold water."
+   },
+   "url": "https://swissmadison.com/products/ivy-courte-8-in-widespread-cross-handle-bathroom-faucet-in-matte-black",
+   "handle": "ivy-courte-8-in-widespread-cross-handle-bathroom-faucet-in-matte-black",
+   "price_range": {
+    "min": {
+     "amount": 16436,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16436,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 20545,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20545,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42093033685204",
+     "sku": "SM-BF63MB",
+     "title": "Default Title",
+     "description": {
+      "html": "Three-Hole: Three-hole mount for installation offering separate control of hot and cold water. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Two Handle: Two lever handles offer separate control of hot and cold water."
+     },
+     "price": {
+      "amount": 16436,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20545,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/umnoltbndgcj617usppp.jpg?v=1776569074"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/42093033685204:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/umnoltbndgcj617usppp.jpg?v=1776569074",
+     "alt_text": "Widespread bathroom faucet in matte black with cross handles and arched spout over white sink."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Bathroom Faucets",
+    "Collection:Ivy",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Widespread",
+    "Taxonomy:Widespread Bathroom Faucet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/270244249773",
+     "handle": "ivy-1",
+     "title": "Ivy",
+     "description": {
+      "html": "The Ivy Collection combines strength and style with bold modern lines. Designed for confidence and everyday living, it brings an elevated edge to contemporary spaces."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/272438952109",
+     "handle": "bathroom-faucets",
+     "title": "Bathroom Faucets",
+     "description": {
+      "html": "A curated selection of bathroom faucets including single-handle, widespread, and wall-mount styles."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273162371245",
+     "handle": "widespread",
+     "title": "Widespread",
+     "description": {
+      "html": "Three-piece faucets designed for balanced style and precise temperature control."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775148756",
+     "handle": "c-ivy",
+     "title": "Ivy",
+     "description": {
+      "html": "The Ivy Collection combines strength and style with bold modern lines. Designed for confidence and everyday living, it brings an elevated edge to contemporary spaces."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4711398080601",
+   "title": "Avallon Single Hole, Single-Handle Wheel, Bathroom Faucet in Brushed Nickel",
+   "description": {
+    "html": "Single-Hole: Single hole center mounting installation. controls both on/off and temperature settings with one hand. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+   },
+   "url": "https://swissmadison.com/products/avallon-7-single-handle-bathroom-faucet-in-brushed-nickel",
+   "handle": "avallon-7-single-handle-bathroom-faucet-in-brushed-nickel",
+   "price_range": {
+    "min": {
+     "amount": 12036,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12036,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15045,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15045,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32143322972249",
+     "sku": "SM-BF80BN",
+     "title": "Default Title",
+     "description": {
+      "html": "Single-Hole: Single hole center mounting installation. controls both on/off and temperature settings with one hand. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+     },
+     "price": {
+      "amount": 12036,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15045,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/lsbsjyqjjyt0f9kap8nw.jpg?v=1776569094"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/32143322972249:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/lsbsjyqjjyt0f9kap8nw.jpg?v=1776569094",
+     "alt_text": "Single-handle bathroom faucet in brushed nickel with wheel handle and cylindrical base."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Bathroom Faucets",
+    "Collection:Avallon",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Single-Handle",
+    "Taxonomy:Single-Handle Bathroom Faucet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/272438952109",
+     "handle": "bathroom-faucets",
+     "title": "Bathroom Faucets",
+     "description": {
+      "html": "A curated selection of bathroom faucets including single-handle, widespread, and wall-mount styles."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273162076333",
+     "handle": "single-hole",
+     "title": "Single-Hole",
+     "description": {
+      "html": "Single-handle faucets offer a streamlined design with one-hand control of temperature and flow."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775345364",
+     "handle": "c-avallon",
+     "title": "Avallon",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/441653133524",
+     "handle": "faucet",
+     "title": "Faucet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6809751519405",
+   "title": "Avallon Single Hole, Single-Handle Wheel, Bathroom Faucet in Matte White",
+   "description": {
+    "html": "Single-Hole: Single hole center mounting installation. controls both on/off and temperature settings with one hand. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+   },
+   "url": "https://swissmadison.com/products/avallon-single-hole-single-handle-wheel-bathroom-faucet-in-matte-white",
+   "handle": "avallon-single-hole-single-handle-wheel-bathroom-faucet-in-matte-white",
+   "price_range": {
+    "min": {
+     "amount": 10676,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10676,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13345,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13345,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40264216903853",
+     "sku": "SM-BF80MW",
+     "title": "Default Title",
+     "description": {
+      "html": "Single-Hole: Single hole center mounting installation. controls both on/off and temperature settings with one hand. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+     },
+     "price": {
+      "amount": 10676,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13345,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/tkor557nhlhwlrgylqpq.jpg?v=1776569078"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/40264216903853:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/tkor557nhlhwlrgylqpq.jpg?v=1776569078",
+     "alt_text": "Single-handle bathroom faucet in matte white with wheel handle and cylindrical spout design."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Bathroom Faucets",
+    "Collection:Avallon",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Single-Handle",
+    "Taxonomy:Single-Handle Bathroom Faucet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/272438952109",
+     "handle": "bathroom-faucets",
+     "title": "Bathroom Faucets",
+     "description": {
+      "html": "A curated selection of bathroom faucets including single-handle, widespread, and wall-mount styles."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273162076333",
+     "handle": "single-hole",
+     "title": "Single-Hole",
+     "description": {
+      "html": "Single-handle faucets offer a streamlined design with one-hand control of temperature and flow."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775345364",
+     "handle": "c-avallon",
+     "title": "Avallon",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/441653133524",
+     "handle": "faucet",
+     "title": "Faucet",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4724554039385",
+   "title": "Monaco Single Hole, Single-Handle, Bathroom Faucet in Matte Black",
+   "description": {
+    "html": "Single-Hole: Single hole center mounting installation. controls both on/off and temperature settings with one hand. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+   },
+   "url": "https://swissmadison.com/products/monaco-single-hole-single-handle-bathroom-faucet-in-matte-black",
+   "handle": "monaco-single-hole-single-handle-bathroom-faucet-in-matte-black",
+   "price_range": {
+    "min": {
+     "amount": 11236,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11236,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14045,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14045,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32181365833817",
+     "sku": "SM-BF20MB",
+     "title": "Default Title",
+     "description": {
+      "html": "Single-Hole: Single hole center mounting installation. controls both on/off and temperature settings with one hand. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+     },
+     "price": {
+      "amount": 11236,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14045,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/qllyoatzexjappif7i48.jpg?v=1776569118"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/32181365833817:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/qllyoatzexjappif7i48.jpg?v=1776569118",
+     "alt_text": "Single-handle bathroom faucet in matte black with angular lever and water flowing from spout."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Bathroom Faucets",
+    "Collection:Monaco",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Single-Handle",
+    "Taxonomy:Single-Handle Bathroom Faucet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/272438952109",
+     "handle": "bathroom-faucets",
+     "title": "Bathroom Faucets",
+     "description": {
+      "html": "A curated selection of bathroom faucets including single-handle, widespread, and wall-mount styles."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273162076333",
+     "handle": "single-hole",
+     "title": "Single-Hole",
+     "description": {
+      "html": "Single-handle faucets offer a streamlined design with one-hand control of temperature and flow."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775410900",
+     "handle": "c-monaco",
+     "title": "Monaco",
+     "description": {
+      "html": "Capturing the glamour and precision of its namesake city, Monaco blends architectural elegance with coastal allure. Refined, sculptural forms create a statement of modern European luxury."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/432059187412",
+     "handle": "ada-faucets",
+     "title": "Ada Faucets",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4724021788761",
+   "title": "Chateau Single Hole, Single-Handle, Bathroom Faucet in Brushed Nickel",
+   "description": {
+    "html": "Single-Hole: Single hole center mounting installation. controls both on/off and temperature settings with one hand. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+   },
+   "url": "https://swissmadison.com/products/copy-of-chateau-single-hole-single-handle-bathroom-faucet-in-brushed-gold",
+   "handle": "copy-of-chateau-single-hole-single-handle-bathroom-faucet-in-brushed-gold",
+   "price_range": {
+    "min": {
+     "amount": 12836,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12836,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 16045,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16045,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32179197706329",
+     "sku": "SM-BF00BN",
+     "title": "Default Title",
+     "description": {
+      "html": "Single-Hole: Single hole center mounting installation. controls both on/off and temperature settings with one hand. Solid Brass: Crafted with solid brass ensuring durability and longevity. Faucet Flow Rate: 1.2 GPM Single Handle: A single handle controls both on and off functions and control of hot and cold water."
+     },
+     "price": {
+      "amount": 12836,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 16045,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/oa2jmwlz6ozmnfmlqlll.jpg?v=1776569069"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/32179197706329:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/oa2jmwlz6ozmnfmlqlll.jpg?v=1776569069",
+     "alt_text": "Single-handle bathroom faucet in brushed nickel, sleek curved spout, lever handle on right side."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-3-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Bathroom Faucets",
+    "Collection:Chateau",
+    "Group Parent",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Single-Handle",
+    "Taxonomy:Single-Handle Bathroom Faucet"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/270239432877",
+     "handle": "chateau",
+     "title": "Ch\u00e2teau",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/272438952109",
+     "handle": "bathroom-faucets",
+     "title": "Bathroom Faucets",
+     "description": {
+      "html": "A curated selection of bathroom faucets including single-handle, widespread, and wall-mount styles."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273162076333",
+     "handle": "single-hole",
+     "title": "Single-Hole",
+     "description": {
+      "html": "Single-handle faucets offer a streamlined design with one-hand control of temperature and flow."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775378132",
+     "handle": "c-chateau",
+     "title": "Chateau",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzBOekkwTURJeE56ZzROell4TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

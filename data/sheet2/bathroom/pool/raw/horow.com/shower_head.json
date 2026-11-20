@@ -1,0 +1,1410 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://horow.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "HOROW",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "horow.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "JCB",
+          "AMEX",
+          "DISCOVER"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "85207843129"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "jcb",
+         "american_express",
+         "discover",
+         "diners_club",
+         "maestro"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "85207843129"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/10008918294841",
+   "title": "59 Inch Acrylic Back to Wall Tub with Faucet and Shower Head Model SU59-MB",
+   "description": {
+    "html": "This 59-inch acrylic back-to-wall tub offers modern luxury with individually controlled faucets and shower heads. Its sleek design saves space while providing personalized comfort, durability, and a spa-like bathing experience for contemporary bathrooms."
+   },
+   "url": "https://horow.com/products/59-inch-acrylic-back-to-wall-tub-with-faucet-and-shower-head-model-su59-mb",
+   "handle": "59-inch-acrylic-back-to-wall-tub-with-faucet-and-shower-head-model-su59-mb",
+   "price_range": {
+    "min": {
+     "amount": 109900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 109900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51243679646009",
+     "sku": "SU59-MB",
+     "title": "Default Title",
+     "description": {
+      "html": "This 59-inch acrylic back-to-wall tub offers modern luxury with individually controlled faucets and shower heads. Its sleek design saves space while providing personalized comfort, durability, and a spa-like bathing experience for contemporary bathrooms."
+     },
+     "price": {
+      "amount": 109900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/su59-mb-10.webp?v=1760587107"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/51243679646009:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/su59-mb-10.webp?v=1760587107"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/470223159609",
+     "handle": "bathtubs",
+     "title": "Bathtubs",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/470325461305",
+     "handle": "bathtub",
+     "title": "Bathtub",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472604574009",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930137913",
+     "handle": "acrylic-bathtub",
+     "title": "Acrylic Bathtub",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9987679060281",
+   "title": "HOROW Shower Chair with Removable Backrest \u2013 Adjustable, Durable & Comfortable",
+   "description": {
+    "html": "The HOROW SL-Y01B shower chair features a supportive backrest, convenient showerhead holder, and durable seat plate. Designed for safety and comfort, it provides stability and ease of use, making bathing safer and more comfortable for seniors or those with limited mobility."
+   },
+   "url": "https://horow.com/products/horow-shower-chair-with-removable-backrest-adjustable-durable-comfortable",
+   "handle": "horow-shower-chair-with-removable-backrest-adjustable-durable-comfortable",
+   "price_range": {
+    "min": {
+     "amount": 7900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51174539657529",
+     "sku": "SL-Y01B",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW SL-Y01B shower chair features a supportive backrest, convenient showerhead holder, and durable seat plate. Designed for safety and comfort, it provides stability and ease of use, making bathing safer and more comfortable for seniors or those with limited mobility."
+     },
+     "price": {
+      "amount": 7900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/sl-y01b-02.webp?v=1758261137"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/51174539657529:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/sl-y01b-02.webp?v=1758261137"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/hb-1-17-3-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472604574009",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/512564396345",
+     "handle": "bathroom-safety-products",
+     "title": "Bathroom Safety Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9990644334905",
+   "title": "Frameless Sliding Shower Enclosure with Fixed Single Panel",
+   "description": {
+    "html": "Upgrade your bathroom with this 3-piece frameless sliding shower enclosure. Made of 8mm tempered glass with airtight, leak-free seals and stainless steel rollers, it glides smoothly and resists rust for 10 years. Dual handles, anti-aging bumpers, and easy installation make it safe and convenient. 5-year warranty included \u2014 durable, stylish, and hassle-free."
+   },
+   "url": "https://horow.com/products/frameless-sliding-shower-enclosure-with-fixed-single-panel",
+   "handle": "frameless-sliding-shower-enclosure-with-fixed-single-panel",
+   "price_range": {
+    "min": {
+     "amount": 80900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 80900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51183317877049",
+     "sku": "TE3476-MB&TE6076-MB",
+     "title": "Default Title",
+     "description": {
+      "html": "Upgrade your bathroom with this 3-piece frameless sliding shower enclosure. Made of 8mm tempered glass with airtight, leak-free seals and stainless steel rollers, it glides smoothly and resists rust for 10 years. Dual handles, anti-aging bumpers, and easy installation make it safe and convenient. 5-year warranty included \u2014 durable, stylish, and hassle-free."
+     },
+     "price": {
+      "amount": 80900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/te3476-mb-te6076-03.webp?v=1758769474"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/51183317877049:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/te3476-mb-te6076-03.webp?v=1758769474"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/470618177849",
+     "handle": "shower-door",
+     "title": "Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472604574009",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930760505",
+     "handle": "sliding-shower-door",
+     "title": "Sliding Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930793273",
+     "handle": "glass-shower-door",
+     "title": "Glass Shower Door",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10200519311673",
+   "title": "HOROW SS6032-CH-R 60\" Shower Pan with ADA Seat Height & Right Drain",
+   "description": {
+    "html": "The HOROW SS6032-CH-R shower pan features a 60\" x 32\" design with ADA seat height, slip-resistant surface, and right-side drain. Ideal for both seated bathing and standing showers, it offers safety, comfort, and reliable performance in modern bathrooms."
+   },
+   "url": "https://horow.com/products/horow-ss6032-ch-r-60-inch-shower-pan-ada-seat-right-drain",
+   "handle": "horow-ss6032-ch-r-60-inch-shower-pan-ada-seat-right-drain",
+   "price_range": {
+    "min": {
+     "amount": 79900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 79900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/53276558000441",
+     "sku": "SS6032-CH-R",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW SS6032-CH-R shower pan features a 60\" x 32\" design with ADA seat height, slip-resistant surface, and right-side drain. Ideal for both seated bathing and standing showers, it offers safety, comfort, and reliable performance in modern bathrooms."
+     },
+     "price": {
+      "amount": 79900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/ss6032-ch-r-shower-pan-16.webp?v=1778312100"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/53276558000441:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/ss6032-ch-r-shower-pan-16.webp?v=1778312100"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472604574009",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/488938766649",
+     "handle": "shower-pans",
+     "title": "Shower Pans",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9712390832441",
+   "title": "Brushed Gold Frameless Shower Door with 8mm Glass Sliding Model MI6076-SG",
+   "description": {
+    "html": "The HOROW MI6076-SG Brushed Gold Shower Door features a luxurious finish, wing-shaped waterproof strip, and premium 304 stainless steel hardware. Its elegant design and durable materials offer both style and superior leak protection for modern bathroom spaces."
+   },
+   "url": "https://horow.com/products/brushed-gold-frameless-shower-door-with-8mm-glass-sliding-model-mi6076-sg",
+   "handle": "brushed-gold-frameless-shower-door-with-8mm-glass-sliding-model-mi6076-sg",
+   "price_range": {
+    "min": {
+     "amount": 65700,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 65700,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50181794365753",
+     "sku": "MI6076-SG",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW MI6076-SG Brushed Gold Shower Door features a luxurious finish, wing-shaped waterproof strip, and premium 304 stainless steel hardware. Its elegant design and durable materials offer both style and superior leak protection for modern bathroom spaces."
+     },
+     "price": {
+      "amount": 65700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/MI6076-SG_1.webp?v=1732504597"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/50181794365753:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/MI6076-SG_1.webp?v=1732504597"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/470618177849",
+     "handle": "shower-door",
+     "title": "Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472604574009",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930760505",
+     "handle": "sliding-shower-door",
+     "title": "Sliding Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930793273",
+     "handle": "glass-shower-door",
+     "title": "Glass Shower Door",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9713721966905",
+   "title": "60 inch Shower Pan with Left Drain and 3-Sided Flange Model BS6032-MB-L",
+   "description": {
+    "html": "The HOROW BS6032-MB-L shower base pan combines durability and safety with its acrylic, slip-resistant design. Measuring 60\"x32\", it features solid construction and a sleek stainless steel drain cover, ensuring reliable performance and modern aesthetics for your bathroom."
+   },
+   "url": "https://horow.com/products/60-inch-shower-pan-with-left-drain-and-3-sided-flange-model-bs6032-mb-l",
+   "handle": "60-inch-shower-pan-with-left-drain-and-3-sided-flange-model-bs6032-mb-l",
+   "price_range": {
+    "min": {
+     "amount": 36999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 36999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50186632069433",
+     "sku": "BS6032-MB-L",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW BS6032-MB-L shower base pan combines durability and safety with its acrylic, slip-resistant design. Measuring 60\"x32\", it features solid construction and a sleek stainless steel drain cover, ensuring reliable performance and modern aesthetics for your bathroom."
+     },
+     "price": {
+      "amount": 36999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/BS6032-MB-L_1.jpg?v=1732602182"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/50186632069433:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/BS6032-MB-L_1.jpg?v=1732602182"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472604574009",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/488938766649",
+     "handle": "shower-pans",
+     "title": "Shower Pans",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9712296493369",
+   "title": "Brushed Gold Shower Door with Sliding Frameless and Glass Model TE6076-SG",
+   "description": {
+    "html": "The HOROW TE6076-SG 60-Inch Glass Shower Door features a smooth sliding mechanism, dual handle design, and double waterproof strips for effortless use and reliable leak protection. Its sleek, modern style adds elegance and functionality to any bathroom space."
+   },
+   "url": "https://horow.com/products/brushed-gold-shower-door-with-sliding-frameless-and-glass-model-te6076-sg",
+   "handle": "brushed-gold-shower-door-with-sliding-frameless-and-glass-model-te6076-sg",
+   "price_range": {
+    "min": {
+     "amount": 66400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 66400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50181499388217",
+     "sku": "TE6076-SG",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW TE6076-SG 60-Inch Glass Shower Door features a smooth sliding mechanism, dual handle design, and double waterproof strips for effortless use and reliable leak protection. Its sleek, modern style adds elegance and functionality to any bathroom space."
+     },
+     "price": {
+      "amount": 66400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/TE6076-SG-1.webp?v=1732329055"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/50181499388217:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/TE6076-SG-1.webp?v=1732329055"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/470618177849",
+     "handle": "shower-door",
+     "title": "Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472604574009",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930760505",
+     "handle": "sliding-shower-door",
+     "title": "Sliding Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930793273",
+     "handle": "glass-shower-door",
+     "title": "Glass Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/502154002745",
+     "handle": "60-inch-shower-door",
+     "title": "60 Inch Shower Door",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10115443163449",
+   "title": "HOROW MI6076-BN 60\" Frameless Glass Shower Door in Brushed Nickel",
+   "description": {
+    "html": "Upgrade your bathroom with the HOROW MI6076-BN frameless glass shower door. Featuring brushed nickel hardware, dual handle design, double water seals, and 5/16\" thick tempered glass, it delivers modern style, enhanced durability, and superior water containment."
+   },
+   "url": "https://horow.com/products/horow-mi6076-bn-60-frameless-glass-shower-door-in-brushed-nickel",
+   "handle": "horow-mi6076-bn-60-frameless-glass-shower-door-in-brushed-nickel",
+   "price_range": {
+    "min": {
+     "amount": 62000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 62000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/51930475430201",
+     "sku": "MI6076-BN",
+     "title": "Default Title",
+     "description": {
+      "html": "Upgrade your bathroom with the HOROW MI6076-BN frameless glass shower door. Featuring brushed nickel hardware, dual handle design, double water seals, and 5/16\" thick tempered glass, it delivers modern style, enhanced durability, and superior water containment."
+     },
+     "price": {
+      "amount": 62000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/mi6076-bn-01.webp?v=1770794621"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/51930475430201:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/mi6076-bn-01.webp?v=1770794621"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/470618177849",
+     "handle": "shower-door",
+     "title": "Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472604574009",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930760505",
+     "handle": "sliding-shower-door",
+     "title": "Sliding Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930793273",
+     "handle": "glass-shower-door",
+     "title": "Glass Shower Door",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9712314941753",
+   "title": "Black Sliding Shower Door with Frameless and 60 Inch Model TE6076-MB",
+   "description": {
+    "html": "The HOROW TE6076-MB Black Sliding Shower Door features a sleek dual-handle design, wing-shaped seal for watertight protection, durable stainless steel rollers, soft bumpers, and anti-jumping mechanisms for smooth, safe, and silent operation in any modern bathroom."
+   },
+   "url": "https://horow.com/products/black-sliding-shower-door-with-frameless-and-60-inch-model-te6076-mb",
+   "handle": "black-sliding-shower-door-with-frameless-and-60-inch-model-te6076-mb",
+   "price_range": {
+    "min": {
+     "amount": 61700,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 61700,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50181588451641",
+     "sku": "TE6076-MB",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW TE6076-MB Black Sliding Shower Door features a sleek dual-handle design, wing-shaped seal for watertight protection, durable stainless steel rollers, soft bumpers, and anti-jumping mechanisms for smooth, safe, and silent operation in any modern bathroom."
+     },
+     "price": {
+      "amount": 61700,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/TE6076-MB.webp?v=1732500598"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/50181588451641:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/TE6076-MB.webp?v=1732500598"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/470618177849",
+     "handle": "shower-door",
+     "title": "Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472604574009",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930760505",
+     "handle": "sliding-shower-door",
+     "title": "Sliding Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930793273",
+     "handle": "glass-shower-door",
+     "title": "Glass Shower Door",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9712390373689",
+   "title": "Black Sliding Shower Door 1200mm 8mm Glass Sliding Frameless Model MI6076-MB",
+   "description": {
+    "html": "The HOROW MI6076-MB Black Sliding Shower Door features a 60-inch frameless design with 8mm thick tempered glass, a wing-shaped waterproof strip, and extra waterproof stripes for a sleek, leak-resistant, and modern upgrade to any bathroom."
+   },
+   "url": "https://horow.com/products/black-sliding-shower-door-1200mm-8mm-glass-sliding-frameless-model-mi6076-mb",
+   "handle": "black-sliding-shower-door-1200mm-8mm-glass-sliding-frameless-model-mi6076-mb",
+   "price_range": {
+    "min": {
+     "amount": 62000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 62000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50181793841465",
+     "sku": "MI6076-MB",
+     "title": "Default Title",
+     "description": {
+      "html": "The HOROW MI6076-MB Black Sliding Shower Door features a 60-inch frameless design with 8mm thick tempered glass, a wing-shaped waterproof strip, and extra waterproof stripes for a sleek, leak-resistant, and modern upgrade to any bathroom."
+     },
+     "price": {
+      "amount": 62000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/MI6076-MB_1_849b5362-d6d1-4a01-ab3e-95417d8b2fa4.webp?v=1732504430"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://8cf9b5-2.myshopify.com/cart/50181793841465:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0852/0784/3129/files/MI6076-MB_1_849b5362-d6d1-4a01-ab3e-95417d8b2fa4.webp?v=1732504430"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-2-6-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/469058486585",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": "Upgrade your bathroom with the complete HOROW Bathroom Collection, featuring smart toilets, bathtubs, shower doors, shower pans, vanities, bathroom mirrors, and more. Designed for style, comfort, durability, and everyday convenience, HOROW products help create a modern, functional, and elegant bathroom."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/470618177849",
+     "handle": "shower-door",
+     "title": "Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/472604574009",
+     "handle": "shower",
+     "title": "Shower",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930760505",
+     "handle": "sliding-shower-door",
+     "title": "Sliding Shower Door",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/473930793273",
+     "handle": "glass-shower-door",
+     "title": "Glass Shower Door",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzVOekV5TXprd016Y3pOamc1TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

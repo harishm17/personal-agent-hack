@@ -1,0 +1,1599 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://swissmadison.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Swiss Madison - well made forever",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "swissmadison.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "15854485"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "15854485"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/4704635781209",
+   "title": "Pierre 24\" Open Shelf Chrome Frame Freestanding Bathroom Vanity with Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanity cabinets designed with open shelves provide a space saving storage solution Open Back Access: Easy plumbing installation with the open back design. Cabinet Material: Made with durable and long lasting stainless steel. Ceramic Console Sink: Developed from glazed ceramic with a high gloss finish that is scratch-resistant providing a durable and reliable option that can withstand routine use. Single Faucet hole: Pre-drilled 1.22\" Single Faucet hole Drain Size: 1.61\u201d Basin Depth:4.13 Inches."
+   },
+   "url": "https://swissmadison.com/products/pierre-24-single-freestanding-open-shelf-chrome-metal-frame-bathroom-vanity",
+   "handle": "pierre-24-single-freestanding-open-shelf-chrome-metal-frame-bathroom-vanity",
+   "price_range": {
+    "min": {
+     "amount": 33316,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 33316,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 41645,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 41645,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32121311101017",
+     "sku": "SM-BV71C",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Freestanding vanities offer flexible installtion to best suit your bathroom layout Assembly Required. Configuration: Vanity cabinets designed with open shelves provide a space saving storage solution Open Back Access: Easy plumbing installation with the open back design. Cabinet Material: Made with durable and long lasting stainless steel. Ceramic Console Sink: Developed from glazed ceramic with a high gloss finish that is scratch-resistant providing a durable and reliable option that can withstand routine use. Single Faucet hole: Pre-drilled 1.22\" Single Faucet hole Drain Size: 1.61\u201d Basin Depth:4.13 Inches."
+     },
+     "price": {
+      "amount": 33316,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41645,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/ffaa1btkrushhomspdtb.jpg?v=1776569249"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/32121311101017:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/ffaa1btkrushhomspdtb.jpg?v=1776569249",
+     "alt_text": "24-inch freestanding bathroom vanity with open chrome metal frame shelf, white rectangular basin, minimalist design."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Pierre",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7611456782548",
+   "title": "Cascade 36\" Bathroom Vanity in Black",
+   "description": {
+    "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 3 Doors: Vanities offering three soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+   },
+   "url": "https://swissmadison.com/products/cascade-36-bathroom-vanity-in-black",
+   "handle": "cascade-36-bathroom-vanity-in-black",
+   "price_range": {
+    "min": {
+     "amount": 45196,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 45196,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 56495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 56495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42729548349652",
+     "sku": "SM-BV471B",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 3 Doors: Vanities offering three soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+     },
+     "price": {
+      "amount": 45196,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 56495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/fk21g5i73dy2vwnklzyt.jpg?v=1776569281"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/42729548349652:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/fk21g5i73dy2vwnklzyt.jpg?v=1776569281",
+     "alt_text": "36-inch freestanding black bathroom vanity with single sink and soft-close doors."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Canada",
+    "Cascade",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444192686292",
+     "handle": "os40",
+     "title": "OS40",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444192915668",
+     "handle": "osvanities",
+     "title": "Summer Send Off - Vanities",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444193145044",
+     "handle": "summer-send-off",
+     "title": "Summer Send Off",
+     "description": {
+      "html": "Summer Send Off: Upgrade your bathroom with Swiss Madison style while the season lasts."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6850604007597",
+   "title": "Colmer 18\" Wall-Mounted Bathroom Vanity in Mint",
+   "description": {
+    "html": "Wall-Mounted Installation: Wall-mount vanities provide space-saving benefits, adaptability, and versatility, enhancing the overall functionality of any given space Assembly required 1 Door: Vanity cabinets offering one soft closing door enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Sold Separately: Vanity cabinets pair seamlessly with vanity tops that can be purchased separately Material: Made with solid Medium Density Fiberboard (MDF) Material"
+   },
+   "url": "https://swissmadison.com/products/colmer-18-wall-mounted-bathroom-vanity-in-mint",
+   "handle": "colmer-18-wall-mounted-bathroom-vanity-in-mint",
+   "price_range": {
+    "min": {
+     "amount": 18076,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 18076,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 22595,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 22595,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40418257436845",
+     "sku": "SM-BV615",
+     "title": "Default Title",
+     "description": {
+      "html": "Wall-Mounted Installation: Wall-mount vanities provide space-saving benefits, adaptability, and versatility, enhancing the overall functionality of any given space Assembly required 1 Door: Vanity cabinets offering one soft closing door enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Sold Separately: Vanity cabinets pair seamlessly with vanity tops that can be purchased separately Material: Made with solid Medium Density Fiberboard (MDF) Material"
+     },
+     "price": {
+      "amount": 18076,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 22595,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/bl8cdnep8kpokdmyypw7.jpg?v=1776569261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/40418257436845:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/bl8cdnep8kpokdmyypw7.jpg?v=1776569261",
+     "alt_text": "18-inch wall-mounted bathroom vanity in mint with soft-close door and integrated white sink."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Colmer",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities",
+    "Wall-Mount Bathroom Vanity"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444192686292",
+     "handle": "os40",
+     "title": "OS40",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444192915668",
+     "handle": "osvanities",
+     "title": "Summer Send Off - Vanities",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444193145044",
+     "handle": "summer-send-off",
+     "title": "Summer Send Off",
+     "description": {
+      "html": "Summer Send Off: Upgrade your bathroom with Swiss Madison style while the season lasts."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7553284145364",
+   "title": "Daxton 24\" Freestanding Bathroom Vanity in Brown Oak with Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Drawers: Vanities offering two drawers enhances your space with slam-free technology, additional storage space and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+   },
+   "url": "https://swissmadison.com/products/rennes-36-reclaimed-wood-vanity-in-walnut-with-slate-countertop-and-single-hole-vessel-sink",
+   "handle": "rennes-36-reclaimed-wood-vanity-in-walnut-with-slate-countertop-and-single-hole-vessel-sink",
+   "price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 49999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 49999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42502493634772",
+     "sku": "SM-BV372WN",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Drawers: Vanities offering two drawers enhances your space with slam-free technology, additional storage space and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 49999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/do56f4fcsgajupz3gzrt.jpg?v=1776569174"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/42502493634772:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/do56f4fcsgajupz3gzrt.jpg?v=1776569174",
+     "alt_text": "24-inch freestanding bathroom vanity in brown oak with single sink and three drawers."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Daxton",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444192686292",
+     "handle": "os40",
+     "title": "OS40",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444192915668",
+     "handle": "osvanities",
+     "title": "Summer Send Off - Vanities",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444193145044",
+     "handle": "summer-send-off",
+     "title": "Summer Send Off",
+     "description": {
+      "html": "Summer Send Off: Upgrade your bathroom with Swiss Madison style while the season lasts."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8614209945812",
+   "title": "Bosse 24\" Freestanding Bathroom Vanity in Brown Oak with 3-Hole Centerset Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Doors: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Cabinet Material: Made with solid Medium Density Fiberboard (MDF) Material Sink Material: Developed from glazed ceramic with a high gloss finish that is scratch-resistant providing a durable and reliable option that can withstand routine use. Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d Basin Depth: 4.53"
+   },
+   "url": "https://swissmadison.com/products/bosse-24-in-bathroom-vanity-in-brown-oak-with-white-3-hole-ceramic-sink-top",
+   "handle": "bosse-24-in-bathroom-vanity-in-brown-oak-with-white-3-hole-ceramic-sink-top",
+   "price_range": {
+    "min": {
+     "amount": 33316,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 33316,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 41645,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 41645,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45605264457940",
+     "sku": "SM-BV8801BO-3",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Doors: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Cabinet Material: Made with solid Medium Density Fiberboard (MDF) Material Sink Material: Developed from glazed ceramic with a high gloss finish that is scratch-resistant providing a durable and reliable option that can withstand routine use. Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d Basin Depth: 4.53"
+     },
+     "price": {
+      "amount": 33316,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41645,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/gvgmvaw0y1w9iebjgp4q.jpg?v=1776569277"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/45605264457940:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/gvgmvaw0y1w9iebjgp4q.jpg?v=1776569277"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Bosse",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449733656788",
+     "handle": "taskrabbit-enabled-collection",
+     "title": "TaskRabbit Installation Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7884731449556",
+   "title": "Classe 36\" Freestanding Bathroom Vanity in White Oak with Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Doors: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+   },
+   "url": "https://swissmadison.com/products/classe-36-bathroom-vanity-in-white-oak",
+   "handle": "classe-36-bathroom-vanity-in-white-oak",
+   "price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 49999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 49999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43688352481492",
+     "sku": "SM-BV663W",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Doors: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 49999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/jd0ilc48mi7kyvfeivtk.jpg?v=1776569028"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/43688352481492:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/jd0ilc48mi7kyvfeivtk.jpg?v=1776569028"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ha-10-3-5-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Classe",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446411866324",
+     "handle": "eblackfriday40",
+     "title": "EBLACKFRIDAY40",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/447947997396",
+     "handle": "bf30",
+     "title": "WH20",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8475725037780",
+   "title": "Bastille 24 in. White Bathroom Vanity With White, 3-Hole Ceramic Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Doors: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+   },
+   "url": "https://swissmadison.com/products/bastille-24-white-bath-vanity-with-white-3-hole-ceramic-sink-top",
+   "handle": "bastille-24-white-bath-vanity-with-white-3-hole-ceramic-sink-top",
+   "price_range": {
+    "min": {
+     "amount": 35636,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 35636,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 44545,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 44545,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45247932334292",
+     "sku": "SM-BV290-3",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Doors: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+     },
+     "price": {
+      "amount": 35636,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 44545,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/a460907f085b38a52cdf9d6a87221f7aaec9a850.jpg?v=1794843714"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/45247932334292:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/a460907f085b38a52cdf9d6a87221f7aaec9a850.jpg?v=1794843714"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1-8",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bastille",
+    "Bathroom Vanities",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/446411866324",
+     "handle": "eblackfriday40",
+     "title": "EBLACKFRIDAY40",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/447947997396",
+     "handle": "bf30",
+     "title": "WH20",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7611456356564",
+   "title": "Cascade 24\" Bathroom Vanity in Black",
+   "description": {
+    "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Doors: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+   },
+   "url": "https://swissmadison.com/products/cascade-24-bathroom-vanity-in-black",
+   "handle": "cascade-24-bathroom-vanity-in-black",
+   "price_range": {
+    "min": {
+     "amount": 33316,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 33316,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 41645,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 41645,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42729539141844",
+     "sku": "SM-BV470B",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Doors: Vanities offering two soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+     },
+     "price": {
+      "amount": 33316,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 41645,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/gpruqmixpvnam8fo5zry.jpg?v=1776569338"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/42729539141844:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/gpruqmixpvnam8fo5zry.jpg?v=1776569338",
+     "alt_text": "24-inch freestanding bathroom vanity in black with single sink and horizontal slatted door design."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Canada",
+    "Category:Vanities",
+    "Collection:Cascade",
+    "Group Parent",
+    "IsBundle",
+    "Show All",
+    "Small Parcel",
+    "Sub-Category:Bathroom Vanities",
+    "Taxonomy:Freestanding Bathroom Vanity"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/413930553556",
+     "handle": "vanities",
+     "title": "Bathroom Vanities",
+     "description": {
+      "html": "A curated selection of bathroom vanities designed to elevate your bathroom while providing functional storage."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414775247060",
+     "handle": "c-cascade",
+     "title": "Cascade",
+     "description": {
+      "html": "Drawing strength from flowing water, Cascade balances minimal restraint with natural vitality. Inspired by serene rivers and streams, its sculptural forms create an immersive, restorative, and timeless bathroom experience."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/414778786004",
+     "handle": "bathroom-vanities",
+     "title": "Bathroom Vanities",
+     "description": {
+      "html": "A curated selection of bathroom vanities designed to elevate your bathroom while providing functional storage."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7923053789396",
+   "title": "Cascade 48\" Bathroom Vanity in Black",
+   "description": {
+    "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 3 Doors: Vanities offering three soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+   },
+   "url": "https://swissmadison.com/products/cascade-48-bathroom-vanity-in-black",
+   "handle": "cascade-48-bathroom-vanity-in-black",
+   "price_range": {
+    "min": {
+     "amount": 58836,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 58836,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 73545,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 73545,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43802883424468",
+     "sku": "SM-BV557B",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 3 Doors: Vanities offering three soft closing doors enhances your space with slam-free technology and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+     },
+     "price": {
+      "amount": 58836,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 73545,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/jttrju2icfznh1wclfvc.jpg?v=1776569161"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/43802883424468:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/jttrju2icfznh1wclfvc.jpg?v=1776569161"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Canada",
+    "Cascade",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Show All",
+    "Small Parcel Oversize",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038597332",
+     "handle": "small-parcel-oversize",
+     "title": "Small Parcel Oversize",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7504952885460",
+   "title": "Hugo 24\" Freestanding Bathroom Vanity in Brown Oak with Sink Top",
+   "description": {
+    "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Drawers: Vanities offering two drawers enhances your space with slam-free technology, additional storage space and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+   },
+   "url": "https://swissmadison.com/products/hugo-24-bathroom-vanity-in",
+   "handle": "hugo-24-bathroom-vanity-in",
+   "price_range": {
+    "min": {
+     "amount": 39999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 39999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 49999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 49999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42301724524756",
+     "sku": "SM-BV390",
+     "title": "Default Title",
+     "description": {
+      "html": "Freestanding Installation: Transform your bathroom with this freestanding vanity Assembly required 2 Drawers: Vanities offering two drawers enhances your space with slam-free technology, additional storage space and creates an upscale appearance Open Back Access: Easy plumbing installation with the open back design Material: Made with solid Medium Density Fiberboard (MDF) Material Faucet hole: Pre-drilled standard 1 3/8\" Drain: Standard 1.75\u201d"
+     },
+     "price": {
+      "amount": 39999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 49999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/bslh0dkiskjtff8no8uw.jpg?v=1776569045"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://swissmadison.myshopify.com/cart/42301724524756:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1585/4485/files/bslh0dkiskjtff8no8uw.jpg?v=1776569045",
+     "alt_text": "24-inch freestanding bathroom vanity in brown oak with single sink and three drawers."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/fr-4-14",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Bathroom Vanities",
+    "Freestanding Bathroom Vanity",
+    "Grouped",
+    "Hugo",
+    "Show All",
+    "Small Parcel",
+    "Vanities"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/399813247188",
+     "handle": "ets-fs-best-selling-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/400175497428",
+     "handle": "globofilter-best-selling-products-index",
+     "title": "Smart Products Filter Index",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/443038630100",
+     "handle": "small-parcel",
+     "title": "Small Parcel",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/444594520276",
+     "handle": "above-300-items",
+     "title": "Above $300 items",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/449139867860",
+     "handle": "general-products",
+     "title": "General Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzNOVEEwT1RVeU9EZzFORFl3TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

@@ -24,7 +24,7 @@ def _pool_rows() -> list:
 def search_catalog(store: str, query: str) -> dict:
     p = raw_path(store, query)
     if not p.exists():
-        for d in (ROOT / "data").glob("*/pool/raw"):  # sheet 2 raw replies live under data/sheet2/pool/raw
+        for d in [*(ROOT / "data").glob("*/pool/raw"), *(ROOT / "data").glob("*/*/pool/raw")]:  # sheet 2 raw replies
             if raw_path(store, query, d).exists():
                 p = raw_path(store, query, d)
                 break

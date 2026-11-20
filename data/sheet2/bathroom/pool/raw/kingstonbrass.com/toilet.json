@@ -1,0 +1,1615 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.kingstonbrass.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Kingston Brass",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.kingstonbrass.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "56961040426"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "56961040426"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7715573858346",
+   "title": "Kingston Sona VSC39917 - Edison Smart Toilet, White/Brushed Brass",
+   "description": {
+    "html": "Kingston Sona VSC39917-Edison Smart Toilet, White/Brushed Brass Experience the ultimate in bathroom innovation with this premium smart toilet, expertly crafted from durable vitreous china with a glossy, easy?clean finish for long-lasting beauty. Engineered for comfort and hygiene, it features front and rear wash with oscillating spray, adjustable water temperature and pressure, and a hot/cold massage function\u0097plus warm air drying and a heated seat with customizable warmth. Advanced sanitation includes deodorization, UV sterilization, a self?cleaning nozzle, and concealed trap design for a sleek modern look. Convenience-driven features include automatic open/close lid options, remote flush and multi?function remote control, built?in night light, and standard 12\" rough?in for easy installation with existing angle valves. With dual?flush efficiency (0.92/1.25 GPF), this smart toilet delivers powerful performance while saving water\u0097an elegant, high?tech upgrade for any contemporary bathroom. Features Crafted from durable vitreous china with a glossy, easy-to-clean finish Advanced smart toilet with front and rear wash plus oscillating spray Deodorization, UV Sterilization, and Self-Cleaning Nozzle Adjustable water temperature, pressure, seat, and dryer settings Hot and cold massage function for personalized comfort Heated Seat with adjustable warmth keeps you comfortable in any season Warm air drying for ultimate convenience and hygiene Automatic Open/Close Lid options for hands-free ease Remote and sensor flush options for convenient operation Built-in night light and multi-function remote control Concealed trap for a sleek, modern appearance Night Light ADA compliant seat height for easy sitting and standing Standard 12\" rough-in fits most bathrooms and connects easily to the existing angle valve MaP 1000-Gram Rating: Powerful flush performance for dependable solid waste removal. Dual-Flush Efficiency: 0.92/1.25 GPF (Gallons Per Flush) Offers water-saving options while maintaining strong performance. Standard 3-prong plug requires a GFCI-protected 120V outlet"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-vsc39917-white-brushed-brass",
+   "handle": "kingston-brass-vsc39917-white-brushed-brass",
+   "price_range": {
+    "min": {
+     "amount": 172121,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 172121,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 229495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 229495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43695404220458",
+     "sku": "VSC39917",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Sona VSC39917-Edison Smart Toilet, White/Brushed Brass Experience the ultimate in bathroom innovation with this premium smart toilet, expertly crafted from durable vitreous china with a glossy, easy?clean finish for long-lasting beauty. Engineered for comfort and hygiene, it features front and rear wash with oscillating spray, adjustable water temperature and pressure, and a hot/cold massage function\u0097plus warm air drying and a heated seat with customizable warmth. Advanced sanitation includes deodorization, UV sterilization, a self?cleaning nozzle, and concealed trap design for a sleek modern look. Convenience-driven features include automatic open/close lid options, remote flush and multi?function remote control, built?in night light, and standard 12\" rough?in for easy installation with existing angle valves. With dual?flush efficiency (0.92/1.25 GPF), this smart toilet delivers powerful performance while saving water\u0097an elegant, high?tech upgrade for any contemporary bathroom. Features Crafted from durable vitreous china with a glossy, easy-to-clean finish Advanced smart toilet with front and rear wash plus oscillating spray Deodorization, UV Sterilization, and Self-Cleaning Nozzle Adjustable water temperature, pressure, seat, and dryer settings Hot and cold massage function for personalized comfort Heated Seat with adjustable warmth keeps you comfortable in any season Warm air drying for ultimate convenience and hygiene Automatic Open/Close Lid options for hands-free ease Remote and sensor flush options for convenient operation Built-in night light and multi-function remote control Concealed trap for a sleek, modern appearance Night Light ADA compliant seat height for easy sitting and standing Standard 12\" rough-in fits most bathrooms and connects easily to the existing angle valve MaP 1000-Gram Rating: Powerful flush performance for dependable solid waste removal. Dual-Flush Efficiency: 0.92/1.25 GPF (Gallons Per Flush) Offers water-saving options while maintaining strong performance. Standard 3-prong plug requires a GFCI-protected 120V outlet"
+     },
+     "price": {
+      "amount": 172121,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 229495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/VSC39917.jpg?v=1768326742"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/43695404220458:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/VSC39917.jpg?v=1768326742"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "Category:Toilets",
+    "Certified: ADA",
+    "Certified: CUPC Certified",
+    "Certified: IAMPO Certified",
+    "Certified: UPC Certified",
+    "Certified: WaterSense",
+    "home improvement",
+    "LTL",
+    "Room:Bathroom",
+    "smart toilet",
+    "social0",
+    "Specialoffers: 25% OFF",
+    "Specialoffers: New",
+    "Specialoffers: Sale",
+    "Sub Brand:SONA",
+    "Sub Category:Smart Toilet",
+    "toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041748522",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Explore Kingston\u2019s toilet collection, designed for reliable performance and timeless style. These toilets fit both classic and modern bathrooms and are built for everyday comfort. Need help choosing? Call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Toilets Overview A toilet is an essential part of any bathroom. The right model should offer everyday comfort, reliable performance, and a look that fits your space. Kingston toilets provide dependable flushing and styles that work well in a variety of bathroom designs. Kingston offers toilet styles ranging from classic designs to clean, modern looks. These models work well in traditional, transitional, and contemporary bathrooms. Whether you\u2019re replacing an old toilet or finishing a renovation, they provide dependable comfort and reliable daily performance. Designed for Comfort and Reliable Performance Kingston toilets are made for everyday use, offering reliable flushing and long-lasting performance. Each model is designed to work smoothly and fit naturally into your bathroom. Key advantages include: Reliable flushing performance for everyday household use Comfort-height options on select models Durable construction built for long-term use Designs that coordinate with matching bathroom fixtures A well-designed toilet should feel comfortable, operate smoothly, and fit naturally within your bathroom layout. Kingston toilets are created with these priorities in mind. Styles for Traditional and Modern Bathrooms Every bathroom has its own design style, and your toilet should match the space. Kingston offers toilet styles suited for a variety of interiors. Popular style options include: Classic Traditional Toilets Timeless proportions and subtle detailing make these models ideal for vintage-inspired and traditional bathrooms. Transitional Toilets Blending classic design elements with clean modern lines, transitional toilets work well in updated yet traditional spaces. Modern Toilets Modern Kingston toilets feature streamlined shapes and smooth surfaces that suit contemporary bathroom designs. These clean, minimalist styles work well in updated remodels and new bathroom installations. Kingston toilets match easily with bathroom faucets, tub fillers, shower systems, and hardware to create a clean, coordinated look. Efficient Bathroom Fixture Solutions Homeowners today often look for toilets that balance comfort with efficient water use. Kingston toilets are engineered to provide dependable flushing performance while supporting responsible water usage. These models work well in: Primary bathrooms Guest bathrooms Powder rooms Renovation projects New construction installations With consistent performance and thoughtful design, Kingston toilets offer a practical upgrade that enhances both comfort and appearance. Toilet Features That Support Everyday Use Choosing a toilet is easier when you focus on features that support comfort, proper fit, and daily use. Kingston toilets are designed with practical details for reliable everyday performance. Depending on the model, features may include: Efficient flushing systems for consistent water flow Elongated bowls for added seating comfort Round-front bowls for compact spaces Comfort-height options for easier sitting and standing Coordinated styling that matches traditional or modern bathroom d\u00e9cor Selecting the right bowl shape and height helps ensure the toilet fits comfortably within your space and daily routine. How to Choose the Right Toilet Selecting the right bathroom toilet depends on layout, plumbing setup, and design preference. Bathroom Space & Clearance Measure your available space to ensure the toilet fits properly, especially in smaller bathrooms. Rough-In Measurement Confirm your rough-in size before choosing a model to make sure it fits your existing plumbing. Bowl Shape Elongated toilets provide additional seating comfort. Round-front toilets are ideal for tighter spaces. Height Preference Comfort-height toilets may make sitting and standing easier. Design Coordination Choose a model that matches your existing bathroom fixtures and overall style. Considering these details makes it easier to choose a toilet that fits your space and daily needs. Installation Requirements Check your measurements and plumbing setup before choosing a toilet to make sure it fits properly. Complete Your Bathroom Setup A coordinated bathroom design includes more than just one fixture. Pair your Kingston toilet with matching products to create a finished look. Complete your setup with: Bathroom sink faucets Tub and shower systems Freestanding or wall-mount tub fillers Towel bars and robe hooks Matching trim and hardware Kingston offers full bathroom collections that make it easy to maintain a consistent design throughout your space. Why Choose Kingston Toilets? Kingston is known for making reliable bathroom fixtures. Kingston toilets provide steady flushing, lasting durability, and everyday comfort. Whether you\u2019re remodeling your bathroom or replacing an old toilet, Kingston offers dependable models designed for daily use. These toilets combine practical performance with a clean, finished look. Built for Long-Term Durability Toilets are used every day, so they need to be built to last. Kingston toilets are made with strong materials and dependable flushing systems for reliable performance over time. Made for everyday household use, these models provide: Reliable operation Durable construction Clean, coordinated design Long-lasting comfort Kingston toilets are a dependable option for homeowners seeking performance, style, and value in one fixture. Simple Toilet Maintenance Tips Even a properly installed toilet can develop small problems over time. One common issue is a toilet that feels loose or rocks slightly when you sit on it. This can happen if the floor bolts become loose, the wax ring wears out, or the floor around the base is uneven. Fixing the problem early can help prevent leaks, floor damage, and other plumbing issues. If your toilet moves when you sit on it, it\u2019s best to address the issue as soon as possible. To learn how to fix this problem safely, read our guide: How to Tighten a Loose or Rocking Toilet Need Help Choosing? Need help choosing the right Kingston toilet? Our Kitchen & Bath Experts are here to assist. Call 1-877-252-7277 for product guidance and recommendations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268991725610",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "Explore Kingston\u2019s collection of one-piece toilets, designed for reliable performance and modern style. The smooth tank-to-bowl design creates a clean look that works in both classic and contemporary bathrooms. Need help choosing? Call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Why Choose a One-Piece Toilet? A one-piece toilet is formed as one continuous unit, with the tank and bowl joined together. Fewer seams mean fewer places for dirt to collect, making cleaning and maintenance simpler than with two-piece models. Key advantages include: Sleek, modern appearance Easier cleaning with fewer crevices Durable, solid construction Simple installation for renovations and new builds By combining structural integrity with modern design appeal, Kingston one-piece toilets are well suited for thoughtfully updated interiors. Designed for Everyday Comfort Because toilets are used daily, comfort and reliability matter. Kingston one-piece toilets are built with dependable flushing systems and durable materials for consistent performance over time. Available features may include: Efficient, high-performance flushing Elongated bowl options for added comfort Round-front designs for smaller bathrooms Comfort-height models for easier sitting and standing These features help ensure the toilet fits your bathroom layout and supports everyday household use. Styles for Modern and Traditional Bathrooms Kingston offers one-piece toilet styles that suit a variety of bathroom designs. Modern one-piece toilets feature smooth surfaces and streamlined shapes for contemporary spaces. Transitional designs blend clean lines with subtle detailing. Classic styles work well in traditional or vintage-inspired bathrooms. Each model pairs effortlessly with Kingston bathroom faucets, tub fillers, shower systems, and hardware for a coordinated look. How to Choose the Right One-Piece Toilet When selecting a one-piece toilet, consider: Bathroom Space: Measure available clearance, especially in smaller bathrooms or powder rooms. Rough-In Size: Confirm your rough-in measurement to ensure proper fit with existing plumbing. Bowl Shape: Elongated toilets provide additional seating comfort. Round-front toilets save space in tighter layouts. Height Preference: Comfort-height models may make daily use easier. Reviewing these details helps you choose a toilet that fits both your space and comfort needs. Built for Long-Term Use Toilets are everyday essentials that need to work reliably. Kingston one-piece toilets are built with durable materials and dependable flushing systems for long-lasting performance. Whether in a primary bath, guest bath, or powder room, they offer consistent function in a clean, streamlined design. Simple Toilet Maintenance Tips Even a properly installed toilet can develop small problems over time. One common issue is a toilet that feels loose or rocks slightly when you sit on it. This can happen if the floor bolts become loose, the wax ring wears out, or the floor around the base is uneven. Fixing the problem early can help prevent leaks, floor damage, and other plumbing issues. If your toilet moves when you sit on it, it\u2019s best to address the issue as soon as possible. To learn how to fix this problem safely, read our guide: How to Tighten a Loose or Rocking Toilet Complete Your Bathroom Setup Match your Kingston one-piece toilet with coordinating faucets, tub and shower systems, towel bars, and hardware. Everything is designed to work together, making it easy to create a clean, cohesive bathroom look. Kingston offers complete bathroom collections designed to bring style, function, and reliability together."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7715573727274",
+   "title": "Kingston Sona VSC3992 - Upton Smart Toilet, White",
+   "description": {
+    "html": "Kingston Sona VSC3992-Upton Smart Toilet, White Experience the ultimate in bathroom innovation with this premium smart toilet, expertly crafted from durable vitreous china with a glossy, easy?clean finish for long-lasting beauty. Engineered for comfort and hygiene, it features front and rear wash with oscillating spray, adjustable water temperature and pressure, and a hot/cold massage function\u0097plus warm air drying and a heated seat with customizable warmth. Advanced sanitation includes deodorization, UV sterilization, a self?cleaning nozzle, and concealed trap design for a sleek modern look. Convenience-driven features include automatic open/close lid options, remote flush and multi?function remote control, built?in night light, and standard 12\" rough?in for easy installation with existing angle valves. With dual?flush efficiency (0.92/1.25 GPF), this smart toilet delivers powerful performance while saving water\u0097an elegant, high?tech upgrade for any contemporary bathroom. Features Crafted from durable vitreous china with a glossy, easy-to-clean finish Advanced smart toilet with front and rear wash plus oscillating spray Deodorization, UV Sterilization, and Self-Cleaning Nozzle Adjustable water temperature, pressure, seat, and dryer settings Hot and cold massage function for personalized comfort Heated Seat with adjustable warmth keeps you comfortable in any season Warm air drying for ultimate convenience and hygiene Automatic Open/Close Lid options for hands-free ease Remote flush functions for convenient operation Built-in night light and multi-function remote control Concealed trap for a sleek, modern appearance Night Light ADA compliant seat height for easy sitting and standing Standard 12\" rough-in fits most bathrooms and connects easily to the existing angle valve MaP 1000-Gram Rating: Powerful flush performance for dependable solid waste removal. Dual-Flush Efficiency: 0.92/1.25 GPF (Gallons Per Flush) Offers water-saving options while maintaining strong performance. Standard 3-prong plug requires a GFCI-protected 120V outlet"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-vsc3992-white",
+   "handle": "kingston-brass-vsc3992-white",
+   "price_range": {
+    "min": {
+     "amount": 124121,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 124121,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 165495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 165495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43695403991082",
+     "sku": "VSC3992",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Sona VSC3992-Upton Smart Toilet, White Experience the ultimate in bathroom innovation with this premium smart toilet, expertly crafted from durable vitreous china with a glossy, easy?clean finish for long-lasting beauty. Engineered for comfort and hygiene, it features front and rear wash with oscillating spray, adjustable water temperature and pressure, and a hot/cold massage function\u0097plus warm air drying and a heated seat with customizable warmth. Advanced sanitation includes deodorization, UV sterilization, a self?cleaning nozzle, and concealed trap design for a sleek modern look. Convenience-driven features include automatic open/close lid options, remote flush and multi?function remote control, built?in night light, and standard 12\" rough?in for easy installation with existing angle valves. With dual?flush efficiency (0.92/1.25 GPF), this smart toilet delivers powerful performance while saving water\u0097an elegant, high?tech upgrade for any contemporary bathroom. Features Crafted from durable vitreous china with a glossy, easy-to-clean finish Advanced smart toilet with front and rear wash plus oscillating spray Deodorization, UV Sterilization, and Self-Cleaning Nozzle Adjustable water temperature, pressure, seat, and dryer settings Hot and cold massage function for personalized comfort Heated Seat with adjustable warmth keeps you comfortable in any season Warm air drying for ultimate convenience and hygiene Automatic Open/Close Lid options for hands-free ease Remote flush functions for convenient operation Built-in night light and multi-function remote control Concealed trap for a sleek, modern appearance Night Light ADA compliant seat height for easy sitting and standing Standard 12\" rough-in fits most bathrooms and connects easily to the existing angle valve MaP 1000-Gram Rating: Powerful flush performance for dependable solid waste removal. Dual-Flush Efficiency: 0.92/1.25 GPF (Gallons Per Flush) Offers water-saving options while maintaining strong performance. Standard 3-prong plug requires a GFCI-protected 120V outlet"
+     },
+     "price": {
+      "amount": 124121,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 165495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/VSC3992.jpg?v=1768326308"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/43695403991082:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/VSC3992.jpg?v=1768326308"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "Category:Toilets",
+    "Certified: ADA",
+    "Certified: CUPC Certified",
+    "Certified: IAMPO Certified",
+    "Certified: UPC Certified",
+    "Certified: WaterSense",
+    "home improvement",
+    "LTL",
+    "Room:Bathroom",
+    "smart toilet",
+    "social0",
+    "Specialoffers: 25% OFF",
+    "Specialoffers: New",
+    "Specialoffers: Sale",
+    "Sub Brand:SONA",
+    "Sub Category:Smart Toilet",
+    "toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041748522",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Explore Kingston\u2019s toilet collection, designed for reliable performance and timeless style. These toilets fit both classic and modern bathrooms and are built for everyday comfort. Need help choosing? Call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Toilets Overview A toilet is an essential part of any bathroom. The right model should offer everyday comfort, reliable performance, and a look that fits your space. Kingston toilets provide dependable flushing and styles that work well in a variety of bathroom designs. Kingston offers toilet styles ranging from classic designs to clean, modern looks. These models work well in traditional, transitional, and contemporary bathrooms. Whether you\u2019re replacing an old toilet or finishing a renovation, they provide dependable comfort and reliable daily performance. Designed for Comfort and Reliable Performance Kingston toilets are made for everyday use, offering reliable flushing and long-lasting performance. Each model is designed to work smoothly and fit naturally into your bathroom. Key advantages include: Reliable flushing performance for everyday household use Comfort-height options on select models Durable construction built for long-term use Designs that coordinate with matching bathroom fixtures A well-designed toilet should feel comfortable, operate smoothly, and fit naturally within your bathroom layout. Kingston toilets are created with these priorities in mind. Styles for Traditional and Modern Bathrooms Every bathroom has its own design style, and your toilet should match the space. Kingston offers toilet styles suited for a variety of interiors. Popular style options include: Classic Traditional Toilets Timeless proportions and subtle detailing make these models ideal for vintage-inspired and traditional bathrooms. Transitional Toilets Blending classic design elements with clean modern lines, transitional toilets work well in updated yet traditional spaces. Modern Toilets Modern Kingston toilets feature streamlined shapes and smooth surfaces that suit contemporary bathroom designs. These clean, minimalist styles work well in updated remodels and new bathroom installations. Kingston toilets match easily with bathroom faucets, tub fillers, shower systems, and hardware to create a clean, coordinated look. Efficient Bathroom Fixture Solutions Homeowners today often look for toilets that balance comfort with efficient water use. Kingston toilets are engineered to provide dependable flushing performance while supporting responsible water usage. These models work well in: Primary bathrooms Guest bathrooms Powder rooms Renovation projects New construction installations With consistent performance and thoughtful design, Kingston toilets offer a practical upgrade that enhances both comfort and appearance. Toilet Features That Support Everyday Use Choosing a toilet is easier when you focus on features that support comfort, proper fit, and daily use. Kingston toilets are designed with practical details for reliable everyday performance. Depending on the model, features may include: Efficient flushing systems for consistent water flow Elongated bowls for added seating comfort Round-front bowls for compact spaces Comfort-height options for easier sitting and standing Coordinated styling that matches traditional or modern bathroom d\u00e9cor Selecting the right bowl shape and height helps ensure the toilet fits comfortably within your space and daily routine. How to Choose the Right Toilet Selecting the right bathroom toilet depends on layout, plumbing setup, and design preference. Bathroom Space & Clearance Measure your available space to ensure the toilet fits properly, especially in smaller bathrooms. Rough-In Measurement Confirm your rough-in size before choosing a model to make sure it fits your existing plumbing. Bowl Shape Elongated toilets provide additional seating comfort. Round-front toilets are ideal for tighter spaces. Height Preference Comfort-height toilets may make sitting and standing easier. Design Coordination Choose a model that matches your existing bathroom fixtures and overall style. Considering these details makes it easier to choose a toilet that fits your space and daily needs. Installation Requirements Check your measurements and plumbing setup before choosing a toilet to make sure it fits properly. Complete Your Bathroom Setup A coordinated bathroom design includes more than just one fixture. Pair your Kingston toilet with matching products to create a finished look. Complete your setup with: Bathroom sink faucets Tub and shower systems Freestanding or wall-mount tub fillers Towel bars and robe hooks Matching trim and hardware Kingston offers full bathroom collections that make it easy to maintain a consistent design throughout your space. Why Choose Kingston Toilets? Kingston is known for making reliable bathroom fixtures. Kingston toilets provide steady flushing, lasting durability, and everyday comfort. Whether you\u2019re remodeling your bathroom or replacing an old toilet, Kingston offers dependable models designed for daily use. These toilets combine practical performance with a clean, finished look. Built for Long-Term Durability Toilets are used every day, so they need to be built to last. Kingston toilets are made with strong materials and dependable flushing systems for reliable performance over time. Made for everyday household use, these models provide: Reliable operation Durable construction Clean, coordinated design Long-lasting comfort Kingston toilets are a dependable option for homeowners seeking performance, style, and value in one fixture. Simple Toilet Maintenance Tips Even a properly installed toilet can develop small problems over time. One common issue is a toilet that feels loose or rocks slightly when you sit on it. This can happen if the floor bolts become loose, the wax ring wears out, or the floor around the base is uneven. Fixing the problem early can help prevent leaks, floor damage, and other plumbing issues. If your toilet moves when you sit on it, it\u2019s best to address the issue as soon as possible. To learn how to fix this problem safely, read our guide: How to Tighten a Loose or Rocking Toilet Need Help Choosing? Need help choosing the right Kingston toilet? Our Kitchen & Bath Experts are here to assist. Call 1-877-252-7277 for product guidance and recommendations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268991725610",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "Explore Kingston\u2019s collection of one-piece toilets, designed for reliable performance and modern style. The smooth tank-to-bowl design creates a clean look that works in both classic and contemporary bathrooms. Need help choosing? Call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Why Choose a One-Piece Toilet? A one-piece toilet is formed as one continuous unit, with the tank and bowl joined together. Fewer seams mean fewer places for dirt to collect, making cleaning and maintenance simpler than with two-piece models. Key advantages include: Sleek, modern appearance Easier cleaning with fewer crevices Durable, solid construction Simple installation for renovations and new builds By combining structural integrity with modern design appeal, Kingston one-piece toilets are well suited for thoughtfully updated interiors. Designed for Everyday Comfort Because toilets are used daily, comfort and reliability matter. Kingston one-piece toilets are built with dependable flushing systems and durable materials for consistent performance over time. Available features may include: Efficient, high-performance flushing Elongated bowl options for added comfort Round-front designs for smaller bathrooms Comfort-height models for easier sitting and standing These features help ensure the toilet fits your bathroom layout and supports everyday household use. Styles for Modern and Traditional Bathrooms Kingston offers one-piece toilet styles that suit a variety of bathroom designs. Modern one-piece toilets feature smooth surfaces and streamlined shapes for contemporary spaces. Transitional designs blend clean lines with subtle detailing. Classic styles work well in traditional or vintage-inspired bathrooms. Each model pairs effortlessly with Kingston bathroom faucets, tub fillers, shower systems, and hardware for a coordinated look. How to Choose the Right One-Piece Toilet When selecting a one-piece toilet, consider: Bathroom Space: Measure available clearance, especially in smaller bathrooms or powder rooms. Rough-In Size: Confirm your rough-in measurement to ensure proper fit with existing plumbing. Bowl Shape: Elongated toilets provide additional seating comfort. Round-front toilets save space in tighter layouts. Height Preference: Comfort-height models may make daily use easier. Reviewing these details helps you choose a toilet that fits both your space and comfort needs. Built for Long-Term Use Toilets are everyday essentials that need to work reliably. Kingston one-piece toilets are built with durable materials and dependable flushing systems for long-lasting performance. Whether in a primary bath, guest bath, or powder room, they offer consistent function in a clean, streamlined design. Simple Toilet Maintenance Tips Even a properly installed toilet can develop small problems over time. One common issue is a toilet that feels loose or rocks slightly when you sit on it. This can happen if the floor bolts become loose, the wax ring wears out, or the floor around the base is uneven. Fixing the problem early can help prevent leaks, floor damage, and other plumbing issues. If your toilet moves when you sit on it, it\u2019s best to address the issue as soon as possible. To learn how to fix this problem safely, read our guide: How to Tighten a Loose or Rocking Toilet Complete Your Bathroom Setup Match your Kingston one-piece toilet with coordinating faucets, tub and shower systems, towel bars, and hardware. Everything is designed to work together, making it easy to create a clean, cohesive bathroom look. Kingston offers complete bathroom collections designed to bring style, function, and reliability together."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7715573792810",
+   "title": "Kingston Sona VSC39918 - Edison Smart Toilet, White/Brushed Nickel",
+   "description": {
+    "html": "Kingston Sona VSC39918-Edison Smart Toilet, White/Brushed Nickel Experience the ultimate in bathroom innovation with this premium smart toilet, expertly crafted from durable vitreous china with a glossy, easy?clean finish for long-lasting beauty. Engineered for comfort and hygiene, it features front and rear wash with oscillating spray, adjustable water temperature and pressure, and a hot/cold massage function\u0097plus warm air drying and a heated seat with customizable warmth. Advanced sanitation includes deodorization, UV sterilization, a self?cleaning nozzle, and concealed trap design for a sleek modern look. Convenience-driven features include automatic open/close lid options, remote flush and multi?function remote control, built?in night light, and standard 12\" rough?in for easy installation with existing angle valves. With dual?flush efficiency (0.92/1.25 GPF), this smart toilet delivers powerful performance while saving water\u0097an elegant, high?tech upgrade for any contemporary bathroom. Features Crafted from durable vitreous china with a glossy, easy-to-clean finish Advanced smart toilet with front and rear wash plus oscillating spray Deodorization, UV Sterilization, and Self-Cleaning Nozzle Adjustable water temperature, pressure, seat, and dryer settings Hot and cold massage function for personalized comfort Heated Seat with adjustable warmth keeps you comfortable in any season Warm air drying for ultimate convenience and hygiene Automatic Open/Close Lid options for hands-free ease Remote and sensor flush options for convenient operation Built-in night light and multi-function remote control Concealed trap for a sleek, modern appearance Night Light ADA compliant seat height for easy sitting and standing Standard 12\" rough-in fits most bathrooms and connects easily to the existing angle valve MaP 1000-Gram Rating: Powerful flush performance for dependable solid waste removal. Dual-Flush Efficiency: 0.92/1.25 GPF (Gallons Per Flush) Offers water-saving options while maintaining strong performance. Standard 3-prong plug requires a GFCI-protected 120V outlet"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-vsc39918-white-brushed-nickel",
+   "handle": "kingston-brass-vsc39918-white-brushed-nickel",
+   "price_range": {
+    "min": {
+     "amount": 172121,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 172121,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 229495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 229495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43695404056618",
+     "sku": "VSC39918",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Sona VSC39918-Edison Smart Toilet, White/Brushed Nickel Experience the ultimate in bathroom innovation with this premium smart toilet, expertly crafted from durable vitreous china with a glossy, easy?clean finish for long-lasting beauty. Engineered for comfort and hygiene, it features front and rear wash with oscillating spray, adjustable water temperature and pressure, and a hot/cold massage function\u0097plus warm air drying and a heated seat with customizable warmth. Advanced sanitation includes deodorization, UV sterilization, a self?cleaning nozzle, and concealed trap design for a sleek modern look. Convenience-driven features include automatic open/close lid options, remote flush and multi?function remote control, built?in night light, and standard 12\" rough?in for easy installation with existing angle valves. With dual?flush efficiency (0.92/1.25 GPF), this smart toilet delivers powerful performance while saving water\u0097an elegant, high?tech upgrade for any contemporary bathroom. Features Crafted from durable vitreous china with a glossy, easy-to-clean finish Advanced smart toilet with front and rear wash plus oscillating spray Deodorization, UV Sterilization, and Self-Cleaning Nozzle Adjustable water temperature, pressure, seat, and dryer settings Hot and cold massage function for personalized comfort Heated Seat with adjustable warmth keeps you comfortable in any season Warm air drying for ultimate convenience and hygiene Automatic Open/Close Lid options for hands-free ease Remote and sensor flush options for convenient operation Built-in night light and multi-function remote control Concealed trap for a sleek, modern appearance Night Light ADA compliant seat height for easy sitting and standing Standard 12\" rough-in fits most bathrooms and connects easily to the existing angle valve MaP 1000-Gram Rating: Powerful flush performance for dependable solid waste removal. Dual-Flush Efficiency: 0.92/1.25 GPF (Gallons Per Flush) Offers water-saving options while maintaining strong performance. Standard 3-prong plug requires a GFCI-protected 120V outlet"
+     },
+     "price": {
+      "amount": 172121,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 229495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/VSC39918.jpg?v=1768326733"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/43695404056618:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/VSC39918.jpg?v=1768326733"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "Category:Toilets",
+    "Certified: ADA",
+    "Certified: CUPC Certified",
+    "Certified: IAMPO Certified",
+    "Certified: UPC Certified",
+    "Certified: WaterSense",
+    "home improvement",
+    "LTL",
+    "Room:Bathroom",
+    "smart toilet",
+    "social0",
+    "Specialoffers: 25% OFF",
+    "Specialoffers: New",
+    "Specialoffers: Sale",
+    "Sub Brand:SONA",
+    "Sub Category:Smart Toilet",
+    "toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041748522",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Explore Kingston\u2019s toilet collection, designed for reliable performance and timeless style. These toilets fit both classic and modern bathrooms and are built for everyday comfort. Need help choosing? Call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Toilets Overview A toilet is an essential part of any bathroom. The right model should offer everyday comfort, reliable performance, and a look that fits your space. Kingston toilets provide dependable flushing and styles that work well in a variety of bathroom designs. Kingston offers toilet styles ranging from classic designs to clean, modern looks. These models work well in traditional, transitional, and contemporary bathrooms. Whether you\u2019re replacing an old toilet or finishing a renovation, they provide dependable comfort and reliable daily performance. Designed for Comfort and Reliable Performance Kingston toilets are made for everyday use, offering reliable flushing and long-lasting performance. Each model is designed to work smoothly and fit naturally into your bathroom. Key advantages include: Reliable flushing performance for everyday household use Comfort-height options on select models Durable construction built for long-term use Designs that coordinate with matching bathroom fixtures A well-designed toilet should feel comfortable, operate smoothly, and fit naturally within your bathroom layout. Kingston toilets are created with these priorities in mind. Styles for Traditional and Modern Bathrooms Every bathroom has its own design style, and your toilet should match the space. Kingston offers toilet styles suited for a variety of interiors. Popular style options include: Classic Traditional Toilets Timeless proportions and subtle detailing make these models ideal for vintage-inspired and traditional bathrooms. Transitional Toilets Blending classic design elements with clean modern lines, transitional toilets work well in updated yet traditional spaces. Modern Toilets Modern Kingston toilets feature streamlined shapes and smooth surfaces that suit contemporary bathroom designs. These clean, minimalist styles work well in updated remodels and new bathroom installations. Kingston toilets match easily with bathroom faucets, tub fillers, shower systems, and hardware to create a clean, coordinated look. Efficient Bathroom Fixture Solutions Homeowners today often look for toilets that balance comfort with efficient water use. Kingston toilets are engineered to provide dependable flushing performance while supporting responsible water usage. These models work well in: Primary bathrooms Guest bathrooms Powder rooms Renovation projects New construction installations With consistent performance and thoughtful design, Kingston toilets offer a practical upgrade that enhances both comfort and appearance. Toilet Features That Support Everyday Use Choosing a toilet is easier when you focus on features that support comfort, proper fit, and daily use. Kingston toilets are designed with practical details for reliable everyday performance. Depending on the model, features may include: Efficient flushing systems for consistent water flow Elongated bowls for added seating comfort Round-front bowls for compact spaces Comfort-height options for easier sitting and standing Coordinated styling that matches traditional or modern bathroom d\u00e9cor Selecting the right bowl shape and height helps ensure the toilet fits comfortably within your space and daily routine. How to Choose the Right Toilet Selecting the right bathroom toilet depends on layout, plumbing setup, and design preference. Bathroom Space & Clearance Measure your available space to ensure the toilet fits properly, especially in smaller bathrooms. Rough-In Measurement Confirm your rough-in size before choosing a model to make sure it fits your existing plumbing. Bowl Shape Elongated toilets provide additional seating comfort. Round-front toilets are ideal for tighter spaces. Height Preference Comfort-height toilets may make sitting and standing easier. Design Coordination Choose a model that matches your existing bathroom fixtures and overall style. Considering these details makes it easier to choose a toilet that fits your space and daily needs. Installation Requirements Check your measurements and plumbing setup before choosing a toilet to make sure it fits properly. Complete Your Bathroom Setup A coordinated bathroom design includes more than just one fixture. Pair your Kingston toilet with matching products to create a finished look. Complete your setup with: Bathroom sink faucets Tub and shower systems Freestanding or wall-mount tub fillers Towel bars and robe hooks Matching trim and hardware Kingston offers full bathroom collections that make it easy to maintain a consistent design throughout your space. Why Choose Kingston Toilets? Kingston is known for making reliable bathroom fixtures. Kingston toilets provide steady flushing, lasting durability, and everyday comfort. Whether you\u2019re remodeling your bathroom or replacing an old toilet, Kingston offers dependable models designed for daily use. These toilets combine practical performance with a clean, finished look. Built for Long-Term Durability Toilets are used every day, so they need to be built to last. Kingston toilets are made with strong materials and dependable flushing systems for reliable performance over time. Made for everyday household use, these models provide: Reliable operation Durable construction Clean, coordinated design Long-lasting comfort Kingston toilets are a dependable option for homeowners seeking performance, style, and value in one fixture. Simple Toilet Maintenance Tips Even a properly installed toilet can develop small problems over time. One common issue is a toilet that feels loose or rocks slightly when you sit on it. This can happen if the floor bolts become loose, the wax ring wears out, or the floor around the base is uneven. Fixing the problem early can help prevent leaks, floor damage, and other plumbing issues. If your toilet moves when you sit on it, it\u2019s best to address the issue as soon as possible. To learn how to fix this problem safely, read our guide: How to Tighten a Loose or Rocking Toilet Need Help Choosing? Need help choosing the right Kingston toilet? Our Kitchen & Bath Experts are here to assist. Call 1-877-252-7277 for product guidance and recommendations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268991725610",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "Explore Kingston\u2019s collection of one-piece toilets, designed for reliable performance and modern style. The smooth tank-to-bowl design creates a clean look that works in both classic and contemporary bathrooms. Need help choosing? Call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Why Choose a One-Piece Toilet? A one-piece toilet is formed as one continuous unit, with the tank and bowl joined together. Fewer seams mean fewer places for dirt to collect, making cleaning and maintenance simpler than with two-piece models. Key advantages include: Sleek, modern appearance Easier cleaning with fewer crevices Durable, solid construction Simple installation for renovations and new builds By combining structural integrity with modern design appeal, Kingston one-piece toilets are well suited for thoughtfully updated interiors. Designed for Everyday Comfort Because toilets are used daily, comfort and reliability matter. Kingston one-piece toilets are built with dependable flushing systems and durable materials for consistent performance over time. Available features may include: Efficient, high-performance flushing Elongated bowl options for added comfort Round-front designs for smaller bathrooms Comfort-height models for easier sitting and standing These features help ensure the toilet fits your bathroom layout and supports everyday household use. Styles for Modern and Traditional Bathrooms Kingston offers one-piece toilet styles that suit a variety of bathroom designs. Modern one-piece toilets feature smooth surfaces and streamlined shapes for contemporary spaces. Transitional designs blend clean lines with subtle detailing. Classic styles work well in traditional or vintage-inspired bathrooms. Each model pairs effortlessly with Kingston bathroom faucets, tub fillers, shower systems, and hardware for a coordinated look. How to Choose the Right One-Piece Toilet When selecting a one-piece toilet, consider: Bathroom Space: Measure available clearance, especially in smaller bathrooms or powder rooms. Rough-In Size: Confirm your rough-in measurement to ensure proper fit with existing plumbing. Bowl Shape: Elongated toilets provide additional seating comfort. Round-front toilets save space in tighter layouts. Height Preference: Comfort-height models may make daily use easier. Reviewing these details helps you choose a toilet that fits both your space and comfort needs. Built for Long-Term Use Toilets are everyday essentials that need to work reliably. Kingston one-piece toilets are built with durable materials and dependable flushing systems for long-lasting performance. Whether in a primary bath, guest bath, or powder room, they offer consistent function in a clean, streamlined design. Simple Toilet Maintenance Tips Even a properly installed toilet can develop small problems over time. One common issue is a toilet that feels loose or rocks slightly when you sit on it. This can happen if the floor bolts become loose, the wax ring wears out, or the floor around the base is uneven. Fixing the problem early can help prevent leaks, floor damage, and other plumbing issues. If your toilet moves when you sit on it, it\u2019s best to address the issue as soon as possible. To learn how to fix this problem safely, read our guide: How to Tighten a Loose or Rocking Toilet Complete Your Bathroom Setup Match your Kingston one-piece toilet with coordinating faucets, tub and shower systems, towel bars, and hardware. Everything is designed to work together, making it easy to create a clean, cohesive bathroom look. Kingston offers complete bathroom collections designed to bring style, function, and reliability together."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7715574022186",
+   "title": "Kingston Sona VSC39910 - Edison Smart Toilet, White/Matte Black",
+   "description": {
+    "html": "Kingston Sona VSC39910-Edison Smart Toilet, White/Matte Black Experience the ultimate in bathroom innovation with this premium smart toilet, expertly crafted from durable vitreous china with a glossy, easy?clean finish for long-lasting beauty. Engineered for comfort and hygiene, it features front and rear wash with oscillating spray, adjustable water temperature and pressure, and a hot/cold massage function\u0097plus warm air drying and a heated seat with customizable warmth. Advanced sanitation includes deodorization, UV sterilization, a self?cleaning nozzle, and concealed trap design for a sleek modern look. Convenience-driven features include automatic open/close lid options, remote flush and multi?function remote control, built?in night light, and standard 12\" rough?in for easy installation with existing angle valves. With dual?flush efficiency (0.92/1.25 GPF), this smart toilet delivers powerful performance while saving water\u0097an elegant, high?tech upgrade for any contemporary bathroom. Features Crafted from durable vitreous china with a glossy, easy-to-clean finish Advanced smart toilet with front and rear wash plus oscillating spray Deodorization, UV Sterilization, and Self-Cleaning Nozzle Adjustable water temperature, pressure, seat, and dryer settings Hot and cold massage function for personalized comfort Heated Seat with adjustable warmth keeps you comfortable in any season Warm air drying for ultimate convenience and hygiene Automatic Open/Close Lid options for hands-free ease Remote and sensor flush options for convenient operation Built-in night light and multi-function remote control Concealed trap for a sleek, modern appearance Night Light ADA compliant seat height for easy sitting and standing Standard 12\" rough-in fits most bathrooms and connects easily to the existing angle valve MaP 1000-Gram Rating: Powerful flush performance for dependable solid waste removal. Dual-Flush Efficiency: 0.92/1.25 GPF (Gallons Per Flush) Offers water-saving options while maintaining strong performance. Standard 3-prong plug requires a GFCI-protected 120V outlet"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-vsc39910-white-matte-black",
+   "handle": "kingston-brass-vsc39910-white-matte-black",
+   "price_range": {
+    "min": {
+     "amount": 172121,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 172121,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 229495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 229495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43695404941354",
+     "sku": "VSC39910",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Sona VSC39910-Edison Smart Toilet, White/Matte Black Experience the ultimate in bathroom innovation with this premium smart toilet, expertly crafted from durable vitreous china with a glossy, easy?clean finish for long-lasting beauty. Engineered for comfort and hygiene, it features front and rear wash with oscillating spray, adjustable water temperature and pressure, and a hot/cold massage function\u0097plus warm air drying and a heated seat with customizable warmth. Advanced sanitation includes deodorization, UV sterilization, a self?cleaning nozzle, and concealed trap design for a sleek modern look. Convenience-driven features include automatic open/close lid options, remote flush and multi?function remote control, built?in night light, and standard 12\" rough?in for easy installation with existing angle valves. With dual?flush efficiency (0.92/1.25 GPF), this smart toilet delivers powerful performance while saving water\u0097an elegant, high?tech upgrade for any contemporary bathroom. Features Crafted from durable vitreous china with a glossy, easy-to-clean finish Advanced smart toilet with front and rear wash plus oscillating spray Deodorization, UV Sterilization, and Self-Cleaning Nozzle Adjustable water temperature, pressure, seat, and dryer settings Hot and cold massage function for personalized comfort Heated Seat with adjustable warmth keeps you comfortable in any season Warm air drying for ultimate convenience and hygiene Automatic Open/Close Lid options for hands-free ease Remote and sensor flush options for convenient operation Built-in night light and multi-function remote control Concealed trap for a sleek, modern appearance Night Light ADA compliant seat height for easy sitting and standing Standard 12\" rough-in fits most bathrooms and connects easily to the existing angle valve MaP 1000-Gram Rating: Powerful flush performance for dependable solid waste removal. Dual-Flush Efficiency: 0.92/1.25 GPF (Gallons Per Flush) Offers water-saving options while maintaining strong performance. Standard 3-prong plug requires a GFCI-protected 120V outlet"
+     },
+     "price": {
+      "amount": 172121,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 229495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/VSC39910.jpg?v=1768326728"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/43695404941354:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/VSC39910.jpg?v=1768326728"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "Category:Toilets",
+    "Certified: ADA",
+    "Certified: CUPC Certified",
+    "Certified: IAMPO Certified",
+    "Certified: UPC Certified",
+    "Certified: WaterSense",
+    "home improvement",
+    "LTL",
+    "Room:Bathroom",
+    "smart toilet",
+    "social0",
+    "Specialoffers: 25% OFF",
+    "Specialoffers: New",
+    "Specialoffers: Sale",
+    "Sub Brand:SONA",
+    "Sub Category:Smart Toilet",
+    "toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041748522",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Explore Kingston\u2019s toilet collection, designed for reliable performance and timeless style. These toilets fit both classic and modern bathrooms and are built for everyday comfort. Need help choosing? Call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Toilets Overview A toilet is an essential part of any bathroom. The right model should offer everyday comfort, reliable performance, and a look that fits your space. Kingston toilets provide dependable flushing and styles that work well in a variety of bathroom designs. Kingston offers toilet styles ranging from classic designs to clean, modern looks. These models work well in traditional, transitional, and contemporary bathrooms. Whether you\u2019re replacing an old toilet or finishing a renovation, they provide dependable comfort and reliable daily performance. Designed for Comfort and Reliable Performance Kingston toilets are made for everyday use, offering reliable flushing and long-lasting performance. Each model is designed to work smoothly and fit naturally into your bathroom. Key advantages include: Reliable flushing performance for everyday household use Comfort-height options on select models Durable construction built for long-term use Designs that coordinate with matching bathroom fixtures A well-designed toilet should feel comfortable, operate smoothly, and fit naturally within your bathroom layout. Kingston toilets are created with these priorities in mind. Styles for Traditional and Modern Bathrooms Every bathroom has its own design style, and your toilet should match the space. Kingston offers toilet styles suited for a variety of interiors. Popular style options include: Classic Traditional Toilets Timeless proportions and subtle detailing make these models ideal for vintage-inspired and traditional bathrooms. Transitional Toilets Blending classic design elements with clean modern lines, transitional toilets work well in updated yet traditional spaces. Modern Toilets Modern Kingston toilets feature streamlined shapes and smooth surfaces that suit contemporary bathroom designs. These clean, minimalist styles work well in updated remodels and new bathroom installations. Kingston toilets match easily with bathroom faucets, tub fillers, shower systems, and hardware to create a clean, coordinated look. Efficient Bathroom Fixture Solutions Homeowners today often look for toilets that balance comfort with efficient water use. Kingston toilets are engineered to provide dependable flushing performance while supporting responsible water usage. These models work well in: Primary bathrooms Guest bathrooms Powder rooms Renovation projects New construction installations With consistent performance and thoughtful design, Kingston toilets offer a practical upgrade that enhances both comfort and appearance. Toilet Features That Support Everyday Use Choosing a toilet is easier when you focus on features that support comfort, proper fit, and daily use. Kingston toilets are designed with practical details for reliable everyday performance. Depending on the model, features may include: Efficient flushing systems for consistent water flow Elongated bowls for added seating comfort Round-front bowls for compact spaces Comfort-height options for easier sitting and standing Coordinated styling that matches traditional or modern bathroom d\u00e9cor Selecting the right bowl shape and height helps ensure the toilet fits comfortably within your space and daily routine. How to Choose the Right Toilet Selecting the right bathroom toilet depends on layout, plumbing setup, and design preference. Bathroom Space & Clearance Measure your available space to ensure the toilet fits properly, especially in smaller bathrooms. Rough-In Measurement Confirm your rough-in size before choosing a model to make sure it fits your existing plumbing. Bowl Shape Elongated toilets provide additional seating comfort. Round-front toilets are ideal for tighter spaces. Height Preference Comfort-height toilets may make sitting and standing easier. Design Coordination Choose a model that matches your existing bathroom fixtures and overall style. Considering these details makes it easier to choose a toilet that fits your space and daily needs. Installation Requirements Check your measurements and plumbing setup before choosing a toilet to make sure it fits properly. Complete Your Bathroom Setup A coordinated bathroom design includes more than just one fixture. Pair your Kingston toilet with matching products to create a finished look. Complete your setup with: Bathroom sink faucets Tub and shower systems Freestanding or wall-mount tub fillers Towel bars and robe hooks Matching trim and hardware Kingston offers full bathroom collections that make it easy to maintain a consistent design throughout your space. Why Choose Kingston Toilets? Kingston is known for making reliable bathroom fixtures. Kingston toilets provide steady flushing, lasting durability, and everyday comfort. Whether you\u2019re remodeling your bathroom or replacing an old toilet, Kingston offers dependable models designed for daily use. These toilets combine practical performance with a clean, finished look. Built for Long-Term Durability Toilets are used every day, so they need to be built to last. Kingston toilets are made with strong materials and dependable flushing systems for reliable performance over time. Made for everyday household use, these models provide: Reliable operation Durable construction Clean, coordinated design Long-lasting comfort Kingston toilets are a dependable option for homeowners seeking performance, style, and value in one fixture. Simple Toilet Maintenance Tips Even a properly installed toilet can develop small problems over time. One common issue is a toilet that feels loose or rocks slightly when you sit on it. This can happen if the floor bolts become loose, the wax ring wears out, or the floor around the base is uneven. Fixing the problem early can help prevent leaks, floor damage, and other plumbing issues. If your toilet moves when you sit on it, it\u2019s best to address the issue as soon as possible. To learn how to fix this problem safely, read our guide: How to Tighten a Loose or Rocking Toilet Need Help Choosing? Need help choosing the right Kingston toilet? Our Kitchen & Bath Experts are here to assist. Call 1-877-252-7277 for product guidance and recommendations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268991725610",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "Explore Kingston\u2019s collection of one-piece toilets, designed for reliable performance and modern style. The smooth tank-to-bowl design creates a clean look that works in both classic and contemporary bathrooms. Need help choosing? Call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Why Choose a One-Piece Toilet? A one-piece toilet is formed as one continuous unit, with the tank and bowl joined together. Fewer seams mean fewer places for dirt to collect, making cleaning and maintenance simpler than with two-piece models. Key advantages include: Sleek, modern appearance Easier cleaning with fewer crevices Durable, solid construction Simple installation for renovations and new builds By combining structural integrity with modern design appeal, Kingston one-piece toilets are well suited for thoughtfully updated interiors. Designed for Everyday Comfort Because toilets are used daily, comfort and reliability matter. Kingston one-piece toilets are built with dependable flushing systems and durable materials for consistent performance over time. Available features may include: Efficient, high-performance flushing Elongated bowl options for added comfort Round-front designs for smaller bathrooms Comfort-height models for easier sitting and standing These features help ensure the toilet fits your bathroom layout and supports everyday household use. Styles for Modern and Traditional Bathrooms Kingston offers one-piece toilet styles that suit a variety of bathroom designs. Modern one-piece toilets feature smooth surfaces and streamlined shapes for contemporary spaces. Transitional designs blend clean lines with subtle detailing. Classic styles work well in traditional or vintage-inspired bathrooms. Each model pairs effortlessly with Kingston bathroom faucets, tub fillers, shower systems, and hardware for a coordinated look. How to Choose the Right One-Piece Toilet When selecting a one-piece toilet, consider: Bathroom Space: Measure available clearance, especially in smaller bathrooms or powder rooms. Rough-In Size: Confirm your rough-in measurement to ensure proper fit with existing plumbing. Bowl Shape: Elongated toilets provide additional seating comfort. Round-front toilets save space in tighter layouts. Height Preference: Comfort-height models may make daily use easier. Reviewing these details helps you choose a toilet that fits both your space and comfort needs. Built for Long-Term Use Toilets are everyday essentials that need to work reliably. Kingston one-piece toilets are built with durable materials and dependable flushing systems for long-lasting performance. Whether in a primary bath, guest bath, or powder room, they offer consistent function in a clean, streamlined design. Simple Toilet Maintenance Tips Even a properly installed toilet can develop small problems over time. One common issue is a toilet that feels loose or rocks slightly when you sit on it. This can happen if the floor bolts become loose, the wax ring wears out, or the floor around the base is uneven. Fixing the problem early can help prevent leaks, floor damage, and other plumbing issues. If your toilet moves when you sit on it, it\u2019s best to address the issue as soon as possible. To learn how to fix this problem safely, read our guide: How to Tighten a Loose or Rocking Toilet Complete Your Bathroom Setup Match your Kingston one-piece toilet with coordinating faucets, tub and shower systems, towel bars, and hardware. Everything is designed to work together, making it easy to create a clean, cohesive bathroom look. Kingston offers complete bathroom collections designed to bring style, function, and reliability together."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7715573760042",
+   "title": "Kingston Sona VSC3991 - Edison Smart Toilet, White/Grey",
+   "description": {
+    "html": "Kingston Sona VSC3991-Edison Smart Toilet, White/Grey Experience the ultimate in bathroom innovation with this premium smart toilet, expertly crafted from durable vitreous china with a glossy, easy?clean finish for long-lasting beauty. Engineered for comfort and hygiene, it features front and rear wash with oscillating spray, adjustable water temperature and pressure, and a hot/cold massage function\u0097plus warm air drying and a heated seat with customizable warmth. Advanced sanitation includes deodorization, UV sterilization, a self?cleaning nozzle, and concealed trap design for a sleek modern look. Convenience-driven features include automatic open/close lid options, remote flush and multi?function remote control, built?in night light, and standard 12\" rough?in for easy installation with existing angle valves. With dual?flush efficiency (0.92/1.25 GPF), this smart toilet delivers powerful performance while saving water\u0097an elegant, high?tech upgrade for any contemporary bathroom. Features Crafted from durable vitreous china with a glossy, easy-to-clean finish Advanced smart toilet with front and rear wash plus oscillating spray Deodorization, UV Sterilization, and Self-Cleaning Nozzle Adjustable water temperature, pressure, seat, and dryer settings Hot and cold massage function for personalized comfort Heated Seat with adjustable warmth keeps you comfortable in any season Warm air drying for ultimate convenience and hygiene Automatic Open/Close Lid options for hands-free ease Remote and sensor flush options for convenient operation Built-in night light and multi-function remote control Concealed trap for a sleek, modern appearance Night Light ADA compliant seat height for easy sitting and standing Standard 12\" rough-in fits most bathrooms and connects easily to the existing angle valve MaP 1000-Gram Rating: Powerful flush performance for dependable solid waste removal. Dual-Flush Efficiency: 0.92/1.25 GPF (Gallons Per Flush) Offers water-saving options while maintaining strong performance. Standard 3-prong plug requires a GFCI-protected 120V outlet"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-vsc3991-white-grey",
+   "handle": "kingston-brass-vsc3991-white-grey",
+   "price_range": {
+    "min": {
+     "amount": 156371,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 156371,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 208495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 208495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43695404023850",
+     "sku": "VSC3991",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Sona VSC3991-Edison Smart Toilet, White/Grey Experience the ultimate in bathroom innovation with this premium smart toilet, expertly crafted from durable vitreous china with a glossy, easy?clean finish for long-lasting beauty. Engineered for comfort and hygiene, it features front and rear wash with oscillating spray, adjustable water temperature and pressure, and a hot/cold massage function\u0097plus warm air drying and a heated seat with customizable warmth. Advanced sanitation includes deodorization, UV sterilization, a self?cleaning nozzle, and concealed trap design for a sleek modern look. Convenience-driven features include automatic open/close lid options, remote flush and multi?function remote control, built?in night light, and standard 12\" rough?in for easy installation with existing angle valves. With dual?flush efficiency (0.92/1.25 GPF), this smart toilet delivers powerful performance while saving water\u0097an elegant, high?tech upgrade for any contemporary bathroom. Features Crafted from durable vitreous china with a glossy, easy-to-clean finish Advanced smart toilet with front and rear wash plus oscillating spray Deodorization, UV Sterilization, and Self-Cleaning Nozzle Adjustable water temperature, pressure, seat, and dryer settings Hot and cold massage function for personalized comfort Heated Seat with adjustable warmth keeps you comfortable in any season Warm air drying for ultimate convenience and hygiene Automatic Open/Close Lid options for hands-free ease Remote and sensor flush options for convenient operation Built-in night light and multi-function remote control Concealed trap for a sleek, modern appearance Night Light ADA compliant seat height for easy sitting and standing Standard 12\" rough-in fits most bathrooms and connects easily to the existing angle valve MaP 1000-Gram Rating: Powerful flush performance for dependable solid waste removal. Dual-Flush Efficiency: 0.92/1.25 GPF (Gallons Per Flush) Offers water-saving options while maintaining strong performance. Standard 3-prong plug requires a GFCI-protected 120V outlet"
+     },
+     "price": {
+      "amount": 156371,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 208495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/VSC3991.jpg?v=1768326733"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/43695404023850:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/VSC3991.jpg?v=1768326733"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "Category:Toilets",
+    "Certified: ADA",
+    "Certified: CUPC Certified",
+    "Certified: IAMPO Certified",
+    "Certified: UPC Certified",
+    "Certified: WaterSense",
+    "home improvement",
+    "LTL",
+    "Room:Bathroom",
+    "smart toilet",
+    "social0",
+    "Specialoffers: 25% OFF",
+    "Specialoffers: New",
+    "Specialoffers: Sale",
+    "Sub Brand:SONA",
+    "Sub Category:Smart Toilet",
+    "toilets"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041748522",
+     "handle": "toilets",
+     "title": "Toilets",
+     "description": {
+      "html": "Explore Kingston\u2019s toilet collection, designed for reliable performance and timeless style. These toilets fit both classic and modern bathrooms and are built for everyday comfort. Need help choosing? Call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Toilets Overview A toilet is an essential part of any bathroom. The right model should offer everyday comfort, reliable performance, and a look that fits your space. Kingston toilets provide dependable flushing and styles that work well in a variety of bathroom designs. Kingston offers toilet styles ranging from classic designs to clean, modern looks. These models work well in traditional, transitional, and contemporary bathrooms. Whether you\u2019re replacing an old toilet or finishing a renovation, they provide dependable comfort and reliable daily performance. Designed for Comfort and Reliable Performance Kingston toilets are made for everyday use, offering reliable flushing and long-lasting performance. Each model is designed to work smoothly and fit naturally into your bathroom. Key advantages include: Reliable flushing performance for everyday household use Comfort-height options on select models Durable construction built for long-term use Designs that coordinate with matching bathroom fixtures A well-designed toilet should feel comfortable, operate smoothly, and fit naturally within your bathroom layout. Kingston toilets are created with these priorities in mind. Styles for Traditional and Modern Bathrooms Every bathroom has its own design style, and your toilet should match the space. Kingston offers toilet styles suited for a variety of interiors. Popular style options include: Classic Traditional Toilets Timeless proportions and subtle detailing make these models ideal for vintage-inspired and traditional bathrooms. Transitional Toilets Blending classic design elements with clean modern lines, transitional toilets work well in updated yet traditional spaces. Modern Toilets Modern Kingston toilets feature streamlined shapes and smooth surfaces that suit contemporary bathroom designs. These clean, minimalist styles work well in updated remodels and new bathroom installations. Kingston toilets match easily with bathroom faucets, tub fillers, shower systems, and hardware to create a clean, coordinated look. Efficient Bathroom Fixture Solutions Homeowners today often look for toilets that balance comfort with efficient water use. Kingston toilets are engineered to provide dependable flushing performance while supporting responsible water usage. These models work well in: Primary bathrooms Guest bathrooms Powder rooms Renovation projects New construction installations With consistent performance and thoughtful design, Kingston toilets offer a practical upgrade that enhances both comfort and appearance. Toilet Features That Support Everyday Use Choosing a toilet is easier when you focus on features that support comfort, proper fit, and daily use. Kingston toilets are designed with practical details for reliable everyday performance. Depending on the model, features may include: Efficient flushing systems for consistent water flow Elongated bowls for added seating comfort Round-front bowls for compact spaces Comfort-height options for easier sitting and standing Coordinated styling that matches traditional or modern bathroom d\u00e9cor Selecting the right bowl shape and height helps ensure the toilet fits comfortably within your space and daily routine. How to Choose the Right Toilet Selecting the right bathroom toilet depends on layout, plumbing setup, and design preference. Bathroom Space & Clearance Measure your available space to ensure the toilet fits properly, especially in smaller bathrooms. Rough-In Measurement Confirm your rough-in size before choosing a model to make sure it fits your existing plumbing. Bowl Shape Elongated toilets provide additional seating comfort. Round-front toilets are ideal for tighter spaces. Height Preference Comfort-height toilets may make sitting and standing easier. Design Coordination Choose a model that matches your existing bathroom fixtures and overall style. Considering these details makes it easier to choose a toilet that fits your space and daily needs. Installation Requirements Check your measurements and plumbing setup before choosing a toilet to make sure it fits properly. Complete Your Bathroom Setup A coordinated bathroom design includes more than just one fixture. Pair your Kingston toilet with matching products to create a finished look. Complete your setup with: Bathroom sink faucets Tub and shower systems Freestanding or wall-mount tub fillers Towel bars and robe hooks Matching trim and hardware Kingston offers full bathroom collections that make it easy to maintain a consistent design throughout your space. Why Choose Kingston Toilets? Kingston is known for making reliable bathroom fixtures. Kingston toilets provide steady flushing, lasting durability, and everyday comfort. Whether you\u2019re remodeling your bathroom or replacing an old toilet, Kingston offers dependable models designed for daily use. These toilets combine practical performance with a clean, finished look. Built for Long-Term Durability Toilets are used every day, so they need to be built to last. Kingston toilets are made with strong materials and dependable flushing systems for reliable performance over time. Made for everyday household use, these models provide: Reliable operation Durable construction Clean, coordinated design Long-lasting comfort Kingston toilets are a dependable option for homeowners seeking performance, style, and value in one fixture. Simple Toilet Maintenance Tips Even a properly installed toilet can develop small problems over time. One common issue is a toilet that feels loose or rocks slightly when you sit on it. This can happen if the floor bolts become loose, the wax ring wears out, or the floor around the base is uneven. Fixing the problem early can help prevent leaks, floor damage, and other plumbing issues. If your toilet moves when you sit on it, it\u2019s best to address the issue as soon as possible. To learn how to fix this problem safely, read our guide: How to Tighten a Loose or Rocking Toilet Need Help Choosing? Need help choosing the right Kingston toilet? Our Kitchen & Bath Experts are here to assist. Call 1-877-252-7277 for product guidance and recommendations."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268991725610",
+     "handle": "one-piece-toilets",
+     "title": "One-Piece Toilets",
+     "description": {
+      "html": "Explore Kingston\u2019s collection of one-piece toilets, designed for reliable performance and modern style. The smooth tank-to-bowl design creates a clean look that works in both classic and contemporary bathrooms. Need help choosing? Call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Why Choose a One-Piece Toilet? A one-piece toilet is formed as one continuous unit, with the tank and bowl joined together. Fewer seams mean fewer places for dirt to collect, making cleaning and maintenance simpler than with two-piece models. Key advantages include: Sleek, modern appearance Easier cleaning with fewer crevices Durable, solid construction Simple installation for renovations and new builds By combining structural integrity with modern design appeal, Kingston one-piece toilets are well suited for thoughtfully updated interiors. Designed for Everyday Comfort Because toilets are used daily, comfort and reliability matter. Kingston one-piece toilets are built with dependable flushing systems and durable materials for consistent performance over time. Available features may include: Efficient, high-performance flushing Elongated bowl options for added comfort Round-front designs for smaller bathrooms Comfort-height models for easier sitting and standing These features help ensure the toilet fits your bathroom layout and supports everyday household use. Styles for Modern and Traditional Bathrooms Kingston offers one-piece toilet styles that suit a variety of bathroom designs. Modern one-piece toilets feature smooth surfaces and streamlined shapes for contemporary spaces. Transitional designs blend clean lines with subtle detailing. Classic styles work well in traditional or vintage-inspired bathrooms. Each model pairs effortlessly with Kingston bathroom faucets, tub fillers, shower systems, and hardware for a coordinated look. How to Choose the Right One-Piece Toilet When selecting a one-piece toilet, consider: Bathroom Space: Measure available clearance, especially in smaller bathrooms or powder rooms. Rough-In Size: Confirm your rough-in measurement to ensure proper fit with existing plumbing. Bowl Shape: Elongated toilets provide additional seating comfort. Round-front toilets save space in tighter layouts. Height Preference: Comfort-height models may make daily use easier. Reviewing these details helps you choose a toilet that fits both your space and comfort needs. Built for Long-Term Use Toilets are everyday essentials that need to work reliably. Kingston one-piece toilets are built with durable materials and dependable flushing systems for long-lasting performance. Whether in a primary bath, guest bath, or powder room, they offer consistent function in a clean, streamlined design. Simple Toilet Maintenance Tips Even a properly installed toilet can develop small problems over time. One common issue is a toilet that feels loose or rocks slightly when you sit on it. This can happen if the floor bolts become loose, the wax ring wears out, or the floor around the base is uneven. Fixing the problem early can help prevent leaks, floor damage, and other plumbing issues. If your toilet moves when you sit on it, it\u2019s best to address the issue as soon as possible. To learn how to fix this problem safely, read our guide: How to Tighten a Loose or Rocking Toilet Complete Your Bathroom Setup Match your Kingston one-piece toilet with coordinating faucets, tub and shower systems, towel bars, and hardware. Everything is designed to work together, making it easy to create a clean, cohesive bathroom look. Kingston offers complete bathroom collections designed to bring style, function, and reliability together."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6841416286250",
+   "title": "Kingston Heirloom KTK102P - Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Polished Brass",
+   "description": {
+    "html": "Kingston Heirloom KTK102P-Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Polished Brass This 3-piece toilet supply kit from Kingston Brass provides all the necessary parts in the water flow process of your bathroom toilet. The set includes a single cross 1/2-14 NPT inlet x 3/8\" O.D comp outlet angle stop valve, a 20\" flat head supply line, and a traditional flange. Constructed in solid brass for durability and reliability. Available in multiple finishes to easily coordinate with your existing decor. Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle Easy installation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktk102p-polished-brass",
+   "handle": "kingston-brass-ktk102p-polished-brass",
+   "price_range": {
+    "min": {
+     "amount": 9495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9495,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40260940628010",
+     "sku": "KTK102P",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Heirloom KTK102P-Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Polished Brass This 3-piece toilet supply kit from Kingston Brass provides all the necessary parts in the water flow process of your bathroom toilet. The set includes a single cross 1/2-14 NPT inlet x 3/8\" O.D comp outlet angle stop valve, a 20\" flat head supply line, and a traditional flange. Constructed in solid brass for durability and reliability. Available in multiple finishes to easily coordinate with your existing decor. Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle Easy installation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+     },
+     "price": {
+      "amount": 9495,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK102P_1be6b1d3-d726-4064-b7ae-f20448ae0012.jpg?v=1790097062"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40260940628010:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK102P_1be6b1d3-d726-4064-b7ae-f20448ae0012.jpg?v=1790097062"
+    }
+   ],
+   "tags": [
+    "Category:Parts",
+    "home improvement",
+    "Parcel",
+    "parts",
+    "plumbing",
+    "Room:Bathroom",
+    "social0",
+    "Sub Brand:HEIRLOOM",
+    "Sub Category:Toilet Parts",
+    "toilet parts",
+    "toilet trim kits"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268023103530",
+     "handle": "parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": "Kingston has a large selection of Plumbing Parts for your Kitchen & Bath as well as replacement parts for our own products. Available in popular finishes and styles to match your Decor. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect plumbing part for your project."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268043386922",
+     "handle": "plumbing-parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268958629930",
+     "handle": "toilet-trim-kits",
+     "title": "Toilet Trim Kits",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6841235013674",
+   "title": "Kingston Tulare KTTL2 - Templeton Front Mount Toilet Tank Lever, Polished Brass",
+   "description": {
+    "html": "Kingston Tulare KTTL2-Templeton Front Mount Toilet Tank Lever, Polished Brass Flush away your problems with the Kingston Brass Templeton front mount toilet tank lever. It will instill a timeless and elegant appeal within your bathroom. Featuring a metal lever handle, this decorative piece is installed in minutes and will transform the look of your bathroom. It is available in multiple finishes to easily coordinate with your existing decor. Features Engineered from heavy-duty solid brass to ensure long-lasting durability, exceptional reliability, and maximum resistance against daily wear and rust. Front Mount Design. Engineered to replace and fit standard toilet tanks featuring front-mount levers, ensuring hassle-free compatibility with your existing toilet. Standard Toilet Compatibility. Optimized specifically for single-action, gravity-flush toilets (not compatible with dual-flush or pressure-assisted models). Customizable Tank Fit. Features an 8-11/16\" internal bendable and trimmable internal arm equipped with 4 pre-drilled attachment holes, allowing for precise adjustment to fit multiple tank configurations and ensure quick, secure flapper chain installation. Compatibility. Engineered to seamlessly fit most standard toilet tanks featuring a 5/8\" x 5/8\" square opening for a precise installation. Designed to effortlessly complement your existing decor, this item flawlessly matches and enhances other traditional fixtures within your bathroom ADA-Compliant Lever Handle. Engineered with an ergonomic lever design that meets Americans with Disabilities Act (ADA) guidelines, ensuring effortless, grasp-free operation for users of all mobility levels. PVD Polished Brass offers a rich golden luster paired with exceptional durability that resists tarnish and everyday wear."
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-kttl2-polished-brass",
+   "handle": "kingston-brass-kttl2-polished-brass",
+   "price_range": {
+    "min": {
+     "amount": 9495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9495,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40260586143786",
+     "sku": "KTTL2",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Tulare KTTL2-Templeton Front Mount Toilet Tank Lever, Polished Brass Flush away your problems with the Kingston Brass Templeton front mount toilet tank lever. It will instill a timeless and elegant appeal within your bathroom. Featuring a metal lever handle, this decorative piece is installed in minutes and will transform the look of your bathroom. It is available in multiple finishes to easily coordinate with your existing decor. Features Engineered from heavy-duty solid brass to ensure long-lasting durability, exceptional reliability, and maximum resistance against daily wear and rust. Front Mount Design. Engineered to replace and fit standard toilet tanks featuring front-mount levers, ensuring hassle-free compatibility with your existing toilet. Standard Toilet Compatibility. Optimized specifically for single-action, gravity-flush toilets (not compatible with dual-flush or pressure-assisted models). Customizable Tank Fit. Features an 8-11/16\" internal bendable and trimmable internal arm equipped with 4 pre-drilled attachment holes, allowing for precise adjustment to fit multiple tank configurations and ensure quick, secure flapper chain installation. Compatibility. Engineered to seamlessly fit most standard toilet tanks featuring a 5/8\" x 5/8\" square opening for a precise installation. Designed to effortlessly complement your existing decor, this item flawlessly matches and enhances other traditional fixtures within your bathroom ADA-Compliant Lever Handle. Engineered with an ergonomic lever design that meets Americans with Disabilities Act (ADA) guidelines, ensuring effortless, grasp-free operation for users of all mobility levels. PVD Polished Brass offers a rich golden luster paired with exceptional durability that resists tarnish and everyday wear."
+     },
+     "price": {
+      "amount": 9495,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTTL2.jpg?v=1788214296"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40260586143786:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTTL2.jpg?v=1788214296"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "bathroom accessories",
+    "Category:Accessories",
+    "Certified: ADA",
+    "front mount",
+    "home improvement",
+    "Parcel",
+    "Room:Bathroom",
+    "social0",
+    "Sub Brand:TULARE",
+    "Sub Category:Bathroom Accessories",
+    "toilet tank levers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268015829034",
+     "handle": "bathroom-accessories",
+     "title": "Bathroom Accessories",
+     "description": {
+      "html": "Kingston has a large selection of Bathroom Accessories in a variety of styles and finishes. Available in popular colors like Bronze, Black, Nickel, Bronze and Brass. From Towel Bars to Robe Hooks and Paper Holders, Kingston Brass has what you need. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect Bathroom Accessory for your project. Bathroom Accessories Overview To really make your bathroom into the beautiful space you've always dreamed it to be, it's all in the accessories you choose. Bathrooms are much more than the big fixtures that many believe it to be all about. It's in the bathroom accessories and how you use them. To really complete a bathroom look and make it as whole and perfect as it can be, use only the best bathroom accessories in the business. With the right kind of accessories in hand, you'll be surprised to see just how much your bathroom can change after just one use. Lucky for you, Kingston has everything you need to make your dream bathroom into reality. Here at Kingston, we strive to bring together style and functionality in our bathroom products. So, our bathroom accessories are made to bring you style while also improving the operation and organization of your bathroom. Explore our wide collection of bathroom accessories and discover all of the possibilities our products can bring to your bathroom. Coming in a variety of designer styles and popular finishes, it is safe to say that the only problem you will face with our brand of bathroom accessories is choosing which ones to take home. What are Bathroom Accessories? Sometimes, when it comes designing a bathroom, a lot of people tend to think that they have to give up style over functionality but that doesn't have to be the case for you. With the right accessories in hand, you can have the best of both worlds. You don't have to go to the ends of the earth to find the best bathroom products because Kingston has it all for you. With our wide range of bathroom fixtures, we are sure you will find all you would ever need with us. From bathroom shelves to grab bars and even shower seats, our bathroom products will leave your bathroom impeccably organized and stylish like a picture perfect room. Crafted to be both a high-quality and designer bathroom fixture, our large collection of bathroom accessories are everything you can ever want for your bathroom. Explore all that we have to offer in our bathroom accessories and find your perfect match in soap dishes, toilet paper holders, and much more. Sit back and watch as your bathroom is transformed with your new bathroom accessories and leave all your worries behind. Benefits of Bathroom Accessories Kingston is proud to offer you a wide array of bathroom accessories so you can bring style and functionality back into your bathroom. But we also offer much more than that. At Kingston, we understand that you want bathroom fixtures that resonates with your personality so your bathroom can reflect you and your unique style. So, we are eager for you to explore our even larger collection of bathroom faucets and bathroom sinks. With so many options in style and finish in both categories, we are sure our products will help complete your bathroom look and make it better than ever. From contemporary to traditional styles and popular finishes, your next bathroom faucet and matching bathroom accessories will elevate your bathroom to the next level of style and elegance. No matter if you are looking for something specific or just different from your current style, we are sure we have just about everything you will ever need. Bathroom Accessory Collections No matter what style you are looking for or just want a thousand different option to choose from, Kingston has you covered with our wide array of bathroom accessories collections. If you enjoy the traditional styles of the past, then Kingston's English Vintage collection is the one for you. Or maybe you enjoy the sleek and smooth design of modern style, then Kingston's Milano collection is the perfect collection for you. Choose from the many collections that Kingston has to offer and discover your new favorite bathroom accessory with us. Each collection has possesses nothing but the best and most durable accessories around, our products like robe hooks and towel bars guarantee to make your life in the bathroom all the more easier. Crafted to last you for a very long time while also being easy to maintain and install, your next bathroom accessory will transform your life while giving you the designer style you've been looking for."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041191466",
+     "handle": "toilet-tank-levers",
+     "title": "Toilet Tank Levers",
+     "description": {
+      "html": "Kingston offers toilet tank levers in many styles and finishes, including bronze, black, nickel, and brass, with options to match both modern and traditional bathroom designs. Call our Kitchen & Bath Experts toll-free at 1-877-252-7277 for help selecting the perfect Toilet Handle for your project. Toilet Tank Levers for Everyday Use A toilet tank lever is the handle assembly that starts a flush on a compatible toilet. Also called a toilet trip lever, it has an outside handle and an arm inside the tank. On many standard toilets, pressing the handle lifts a chain and opens the flapper. This lets water flow from the tank into the bowl. The handle is also a visible part of your bathroom. Choosing one that suits the room helps connect the toilet with nearby fixtures. Whether you are replacing a worn part or updating your space, start with the right fit and then choose the look you like. Find the Right Fit for Your Toilet Toilet tank levers are not all the same size or shape. Before ordering, compare your existing handle and tank with the product details. Check these points to help narrow your choices: Mounting position: Check whether the handle sits on the front or side of the tank. Choose a lever designed for that position. Tank opening: Compare the opening\u2019s size and shape with the measurements listed for the replacement lever. Arm length and clearance: Make sure the inside arm has room to move without hitting other tank parts. Flush system: Confirm that the lever works with your toilet\u2019s flushing system. Some models exclude dual-flush and pressure-assisted toilets. Kingston offers models for front mounting, plus options that support both front and side mounting. Even when a product is described as a universal toilet tank lever, check its listed fit requirements before buying. Keep your toilet\u2019s brand and model number nearby when comparing products. Photos of the current handle and the inside of the tank can also help you explain what you need. For more help, read Kingston\u2019s guide to choosing the best toilet tank lever for your bathroom. It explains how arm length, mounting style, and lever angle affect the handle\u2019s fit. Select a Finish for Your Bathroom The finish helps your toilet handle blend in or stand out. Start with the metal finishes already used around your sink and shower. Polished chrome: A bright, reflective finish that pairs well with white fixtures and a wide range of bathroom colors. Brushed nickel: A softer metallic look that works well with neutral walls, natural textures, and simple bathroom hardware. Polished brass: A warm golden finish that can bring a classic touch to a bathroom or brighten a plain space. Oil rubbed bronze: A deep, warm finish that suits rustic details, wood cabinets, and many traditional bathroom designs. Matte black: A low-shine finish that creates contrast against a white toilet and pairs well with black faucets or accessories. Available finishes vary by model. Compare the finish name when shopping, since polished and brushed versions create different looks. Oil rubbed bronze can naturally develop a patina, or change in color, with use. The finish can look a little different on each piece. Comparing finish samples can help you choose a tone that works with your bathroom\u2019s other fixtures and accessories. Choose Classic or Modern Toilet Handle Styles Kingston\u2019s Victorian and Restoration designs offer classic details for traditional bathrooms. They can work well beside curved faucet handles, framed mirrors, and other pieces with a vintage feel. A decorative toilet handle can carry that style into a part of the room that is often overlooked. For a modern bathroom, explore the simple lines of Concord designs. A clean handle shape can suit a plain vanity and minimal accessories. Look at the shape as well as the finish. Rounded details can echo soft curves around the sink, while straighter lines can connect with square fixtures. Think about comfort, too. Choose a handle shape that feels practical for the people who use the bathroom. Check the product details for features that make the handle easier to use. Check What Comes with Your Replacement Handle Some products include a handle and trip lever arm, while others are replacement handles only. Read the product description to see which parts are included. A handle sold on its own must fit the connection on your existing arm. If your current arm still works, a compatible handle may be enough for a style update. If the arm is damaged, look for an assembly that includes the parts you need. Compare the material, measurements, and connection details before placing your order. Bring Your Bathroom Hardware Together A toilet tank lever is a small detail, but it can help the room feel more finished. Coordinate it with your bathroom faucets, towel bars, and toilet paper holders for a consistent look. You can also mix finishes with a clear plan. For example, repeat a black handle\u2019s finish in a mirror frame or cabinet pulls. Browse Kingston bathroom accessories to find pieces that support your style. You can update a few small details without replacing your fixtures. Plan Your Toilet Handle Replacement A cracked handle, damaged arm, or lever that no longer moves properly may need attention. Check the cause before choosing replacement parts. A loose connection or chain problem may need an adjustment. Follow the instructions that come with your Kingston handle. After fitting the lever, check that the handle returns freely and the arm moves without catching. Flush the toilet to confirm that the connected parts work together. If you are unsure about the fit or repair, ask a qualified plumber for help. Care for Your Toilet Tank Lever Keep the handle clean with mild soap and a soft, damp cloth. Wipe away soap and dry the surface after cleaning. Avoid abrasive pads and cleaners containing bleach, ammonia, acids, or alcohol. Follow the care instructions supplied with your product to help protect its finish. Shop Kingston Toilet Tank Levers Explore Kingston toilet tank levers to find a handle that fits your toilet and your bathroom style. Compare mounting options, finishes, and included parts before you choose. For help selecting a toilet handle, call Kingston\u2019s Kitchen & Bath Experts toll-free at 1-877-252-7277."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6849468596266",
+   "title": "Kingston Heirloom KTPKL8 - Duchess Front Mount Toilet Tank Lever, Brushed Nickel",
+   "description": {
+    "html": "Kingston Heirloom KTPKL8-Duchess Front Mount Toilet Tank Lever, Brushed Nickel Flush away your problems with the Kingston Brass Duchess front mount toilet tank lever. It will instill a timeless and elegant appeal within your bathroom. Featuring a porcelain lever handle, this decorative piece is installed in minutes and will transform the look of your bathroom. It is available in multiple finishes to easily coordinate with your existing decor. Features Engineered from heavy-duty solid brass to ensure long-lasting durability, exceptional reliability, and maximum resistance against daily wear and rust. Front Mount Design. Engineered to replace and fit standard toilet tanks featuring front-mount levers, ensuring hassle-free compatibility with your existing toilet. Standard Toilet Compatibility. Optimized specifically for single-action, gravity-flush toilets (not compatible with dual-flush or pressure-assisted models). Customizable Tank Fit. Features an 8-11/16\" internal bendable and trimmable internal arm equipped with 4 pre-drilled attachment holes, allowing for precise adjustment to fit multiple tank configurations and ensure quick, secure flapper chain installation. Compatibility. Engineered to seamlessly fit most standard toilet tanks featuring a 5/8\" x 5/8\" square opening for a precise installation. Designed to effortlessly complement your existing decor, this item flawlessly matches and enhances other traditional fixtures within your bathroom ADA-Compliant Lever Handle. Engineered with an ergonomic lever design that meets Americans with Disabilities Act (ADA) guidelines, ensuring effortless, grasp-free operation for users of all mobility levels. Brushed Nickel provides a fingerprint?friendly, versatile finish that keeps tank levers looking clean while blending seamlessly with most faucet styles Brushed Nickel delivers a subtle, versatile texture that hides fingerprints while maintaining a refined modern look."
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktpkl8-brushed-nickel",
+   "handle": "kingston-brass-ktpkl8-brushed-nickel",
+   "price_range": {
+    "min": {
+     "amount": 6647,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6647,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40284104589354",
+     "sku": "KTPKL8",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Heirloom KTPKL8-Duchess Front Mount Toilet Tank Lever, Brushed Nickel Flush away your problems with the Kingston Brass Duchess front mount toilet tank lever. It will instill a timeless and elegant appeal within your bathroom. Featuring a porcelain lever handle, this decorative piece is installed in minutes and will transform the look of your bathroom. It is available in multiple finishes to easily coordinate with your existing decor. Features Engineered from heavy-duty solid brass to ensure long-lasting durability, exceptional reliability, and maximum resistance against daily wear and rust. Front Mount Design. Engineered to replace and fit standard toilet tanks featuring front-mount levers, ensuring hassle-free compatibility with your existing toilet. Standard Toilet Compatibility. Optimized specifically for single-action, gravity-flush toilets (not compatible with dual-flush or pressure-assisted models). Customizable Tank Fit. Features an 8-11/16\" internal bendable and trimmable internal arm equipped with 4 pre-drilled attachment holes, allowing for precise adjustment to fit multiple tank configurations and ensure quick, secure flapper chain installation. Compatibility. Engineered to seamlessly fit most standard toilet tanks featuring a 5/8\" x 5/8\" square opening for a precise installation. Designed to effortlessly complement your existing decor, this item flawlessly matches and enhances other traditional fixtures within your bathroom ADA-Compliant Lever Handle. Engineered with an ergonomic lever design that meets Americans with Disabilities Act (ADA) guidelines, ensuring effortless, grasp-free operation for users of all mobility levels. Brushed Nickel provides a fingerprint?friendly, versatile finish that keeps tank levers looking clean while blending seamlessly with most faucet styles Brushed Nickel delivers a subtle, versatile texture that hides fingerprints while maintaining a refined modern look."
+     },
+     "price": {
+      "amount": 6647,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTPKL8.jpg?v=1788214219"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40284104589354:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTPKL8.jpg?v=1788214219"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "bathroom accessories",
+    "Category:Accessories",
+    "Certified: ADA",
+    "front mount",
+    "home improvement",
+    "Parcel",
+    "Room:Bathroom",
+    "social0",
+    "Specialoffers: 30% OFF",
+    "Specialoffers: Sale",
+    "Sub Brand:HEIRLOOM",
+    "Sub Category:Bathroom Accessories",
+    "toilet tank levers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268015829034",
+     "handle": "bathroom-accessories",
+     "title": "Bathroom Accessories",
+     "description": {
+      "html": "Kingston has a large selection of Bathroom Accessories in a variety of styles and finishes. Available in popular colors like Bronze, Black, Nickel, Bronze and Brass. From Towel Bars to Robe Hooks and Paper Holders, Kingston Brass has what you need. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect Bathroom Accessory for your project. Bathroom Accessories Overview To really make your bathroom into the beautiful space you've always dreamed it to be, it's all in the accessories you choose. Bathrooms are much more than the big fixtures that many believe it to be all about. It's in the bathroom accessories and how you use them. To really complete a bathroom look and make it as whole and perfect as it can be, use only the best bathroom accessories in the business. With the right kind of accessories in hand, you'll be surprised to see just how much your bathroom can change after just one use. Lucky for you, Kingston has everything you need to make your dream bathroom into reality. Here at Kingston, we strive to bring together style and functionality in our bathroom products. So, our bathroom accessories are made to bring you style while also improving the operation and organization of your bathroom. Explore our wide collection of bathroom accessories and discover all of the possibilities our products can bring to your bathroom. Coming in a variety of designer styles and popular finishes, it is safe to say that the only problem you will face with our brand of bathroom accessories is choosing which ones to take home. What are Bathroom Accessories? Sometimes, when it comes designing a bathroom, a lot of people tend to think that they have to give up style over functionality but that doesn't have to be the case for you. With the right accessories in hand, you can have the best of both worlds. You don't have to go to the ends of the earth to find the best bathroom products because Kingston has it all for you. With our wide range of bathroom fixtures, we are sure you will find all you would ever need with us. From bathroom shelves to grab bars and even shower seats, our bathroom products will leave your bathroom impeccably organized and stylish like a picture perfect room. Crafted to be both a high-quality and designer bathroom fixture, our large collection of bathroom accessories are everything you can ever want for your bathroom. Explore all that we have to offer in our bathroom accessories and find your perfect match in soap dishes, toilet paper holders, and much more. Sit back and watch as your bathroom is transformed with your new bathroom accessories and leave all your worries behind. Benefits of Bathroom Accessories Kingston is proud to offer you a wide array of bathroom accessories so you can bring style and functionality back into your bathroom. But we also offer much more than that. At Kingston, we understand that you want bathroom fixtures that resonates with your personality so your bathroom can reflect you and your unique style. So, we are eager for you to explore our even larger collection of bathroom faucets and bathroom sinks. With so many options in style and finish in both categories, we are sure our products will help complete your bathroom look and make it better than ever. From contemporary to traditional styles and popular finishes, your next bathroom faucet and matching bathroom accessories will elevate your bathroom to the next level of style and elegance. No matter if you are looking for something specific or just different from your current style, we are sure we have just about everything you will ever need. Bathroom Accessory Collections No matter what style you are looking for or just want a thousand different option to choose from, Kingston has you covered with our wide array of bathroom accessories collections. If you enjoy the traditional styles of the past, then Kingston's English Vintage collection is the one for you. Or maybe you enjoy the sleek and smooth design of modern style, then Kingston's Milano collection is the perfect collection for you. Choose from the many collections that Kingston has to offer and discover your new favorite bathroom accessory with us. Each collection has possesses nothing but the best and most durable accessories around, our products like robe hooks and towel bars guarantee to make your life in the bathroom all the more easier. Crafted to last you for a very long time while also being easy to maintain and install, your next bathroom accessory will transform your life while giving you the designer style you've been looking for."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041191466",
+     "handle": "toilet-tank-levers",
+     "title": "Toilet Tank Levers",
+     "description": {
+      "html": "Kingston offers toilet tank levers in many styles and finishes, including bronze, black, nickel, and brass, with options to match both modern and traditional bathroom designs. Call our Kitchen & Bath Experts toll-free at 1-877-252-7277 for help selecting the perfect Toilet Handle for your project. Toilet Tank Levers for Everyday Use A toilet tank lever is the handle assembly that starts a flush on a compatible toilet. Also called a toilet trip lever, it has an outside handle and an arm inside the tank. On many standard toilets, pressing the handle lifts a chain and opens the flapper. This lets water flow from the tank into the bowl. The handle is also a visible part of your bathroom. Choosing one that suits the room helps connect the toilet with nearby fixtures. Whether you are replacing a worn part or updating your space, start with the right fit and then choose the look you like. Find the Right Fit for Your Toilet Toilet tank levers are not all the same size or shape. Before ordering, compare your existing handle and tank with the product details. Check these points to help narrow your choices: Mounting position: Check whether the handle sits on the front or side of the tank. Choose a lever designed for that position. Tank opening: Compare the opening\u2019s size and shape with the measurements listed for the replacement lever. Arm length and clearance: Make sure the inside arm has room to move without hitting other tank parts. Flush system: Confirm that the lever works with your toilet\u2019s flushing system. Some models exclude dual-flush and pressure-assisted toilets. Kingston offers models for front mounting, plus options that support both front and side mounting. Even when a product is described as a universal toilet tank lever, check its listed fit requirements before buying. Keep your toilet\u2019s brand and model number nearby when comparing products. Photos of the current handle and the inside of the tank can also help you explain what you need. For more help, read Kingston\u2019s guide to choosing the best toilet tank lever for your bathroom. It explains how arm length, mounting style, and lever angle affect the handle\u2019s fit. Select a Finish for Your Bathroom The finish helps your toilet handle blend in or stand out. Start with the metal finishes already used around your sink and shower. Polished chrome: A bright, reflective finish that pairs well with white fixtures and a wide range of bathroom colors. Brushed nickel: A softer metallic look that works well with neutral walls, natural textures, and simple bathroom hardware. Polished brass: A warm golden finish that can bring a classic touch to a bathroom or brighten a plain space. Oil rubbed bronze: A deep, warm finish that suits rustic details, wood cabinets, and many traditional bathroom designs. Matte black: A low-shine finish that creates contrast against a white toilet and pairs well with black faucets or accessories. Available finishes vary by model. Compare the finish name when shopping, since polished and brushed versions create different looks. Oil rubbed bronze can naturally develop a patina, or change in color, with use. The finish can look a little different on each piece. Comparing finish samples can help you choose a tone that works with your bathroom\u2019s other fixtures and accessories. Choose Classic or Modern Toilet Handle Styles Kingston\u2019s Victorian and Restoration designs offer classic details for traditional bathrooms. They can work well beside curved faucet handles, framed mirrors, and other pieces with a vintage feel. A decorative toilet handle can carry that style into a part of the room that is often overlooked. For a modern bathroom, explore the simple lines of Concord designs. A clean handle shape can suit a plain vanity and minimal accessories. Look at the shape as well as the finish. Rounded details can echo soft curves around the sink, while straighter lines can connect with square fixtures. Think about comfort, too. Choose a handle shape that feels practical for the people who use the bathroom. Check the product details for features that make the handle easier to use. Check What Comes with Your Replacement Handle Some products include a handle and trip lever arm, while others are replacement handles only. Read the product description to see which parts are included. A handle sold on its own must fit the connection on your existing arm. If your current arm still works, a compatible handle may be enough for a style update. If the arm is damaged, look for an assembly that includes the parts you need. Compare the material, measurements, and connection details before placing your order. Bring Your Bathroom Hardware Together A toilet tank lever is a small detail, but it can help the room feel more finished. Coordinate it with your bathroom faucets, towel bars, and toilet paper holders for a consistent look. You can also mix finishes with a clear plan. For example, repeat a black handle\u2019s finish in a mirror frame or cabinet pulls. Browse Kingston bathroom accessories to find pieces that support your style. You can update a few small details without replacing your fixtures. Plan Your Toilet Handle Replacement A cracked handle, damaged arm, or lever that no longer moves properly may need attention. Check the cause before choosing replacement parts. A loose connection or chain problem may need an adjustment. Follow the instructions that come with your Kingston handle. After fitting the lever, check that the handle returns freely and the arm moves without catching. Flush the toilet to confirm that the connected parts work together. If you are unsure about the fit or repair, ask a qualified plumber for help. Care for Your Toilet Tank Lever Keep the handle clean with mild soap and a soft, damp cloth. Wipe away soap and dry the surface after cleaning. Avoid abrasive pads and cleaners containing bleach, ammonia, acids, or alcohol. Follow the care instructions supplied with your product to help protect its finish. Shop Kingston Toilet Tank Levers Explore Kingston toilet tank levers to find a handle that fits your toilet and your bathroom style. Compare mounting options, finishes, and included parts before you choose. For help selecting a toilet handle, call Kingston\u2019s Kitchen & Bath Experts toll-free at 1-877-252-7277."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7003790114858",
+   "title": "Kingston Heirloom KTGLD7 - Georgian Universal Front or Side Mount Toilet Tank Lever, Brushed Brass",
+   "description": {
+    "html": "Kingston Heirloom KTGLD7-Georgian Universal Front or Side Mount Toilet Tank Lever, Brushed Brass Elevate your bathroom experience with this Georgian Collection universal side or front mount toilet tank lever from Kingston. Designed to combine functionality and style fluidly, this stylish tank lever brings a touch of timeless elegance to your space. Its sleek design and smooth handle make it convenient, while its effortless installation process allows you to quickly transform the look and feel of your bathroom in just minutes. Choose from a range of stunning finishes to effortlessly coordinate with your existing decor, ensuring a cohesive and refined aesthetic. Features Engineered from heavy-duty solid brass to ensure long-lasting durability, exceptional reliability, and maximum resistance against daily wear and rust. Universal Fit Design. Engineered to replace and fit standard toilet tanks featuring either front-mount or side-mount levers, ensuring hassle-free compatibility with your existing hardware. Standard Toilet Compatibility. Optimized specifically for single-action, gravity-flush toilets (not compatible with dual-flush or pressure-assisted models). Customizable Tank Fit. Features an 8-1/4\" bendable and trimmable internal arm equipped with 4 pre-drilled attachment holes, allowing for precise adjustment to fit multiple tank configurations and ensure quick, secure flapper chain installation. Compatibility. Engineered to seamlessly fit most standard toilet tanks featuring a 5/8\" x 5/8\" square opening for a precise installation. Designed to effortlessly complement your existing decor, this item flawlessly matches and enhances other traditional fixtures within your bathroom ADA-Compliant Lever Handle. Engineered with an ergonomic lever design that meets Americans with Disabilities Act (ADA) guidelines, ensuring effortless, grasp-free operation for users of all mobility levels. Brushed Brass brings a soft, satin?gold finish that adds handcrafted character without the high?gloss glare."
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktgld7-brushed-brass",
+   "handle": "kingston-brass-ktgld7-brushed-brass",
+   "price_range": {
+    "min": {
+     "amount": 7347,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7347,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 10495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40733720444970",
+     "sku": "KTGLD7",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Heirloom KTGLD7-Georgian Universal Front or Side Mount Toilet Tank Lever, Brushed Brass Elevate your bathroom experience with this Georgian Collection universal side or front mount toilet tank lever from Kingston. Designed to combine functionality and style fluidly, this stylish tank lever brings a touch of timeless elegance to your space. Its sleek design and smooth handle make it convenient, while its effortless installation process allows you to quickly transform the look and feel of your bathroom in just minutes. Choose from a range of stunning finishes to effortlessly coordinate with your existing decor, ensuring a cohesive and refined aesthetic. Features Engineered from heavy-duty solid brass to ensure long-lasting durability, exceptional reliability, and maximum resistance against daily wear and rust. Universal Fit Design. Engineered to replace and fit standard toilet tanks featuring either front-mount or side-mount levers, ensuring hassle-free compatibility with your existing hardware. Standard Toilet Compatibility. Optimized specifically for single-action, gravity-flush toilets (not compatible with dual-flush or pressure-assisted models). Customizable Tank Fit. Features an 8-1/4\" bendable and trimmable internal arm equipped with 4 pre-drilled attachment holes, allowing for precise adjustment to fit multiple tank configurations and ensure quick, secure flapper chain installation. Compatibility. Engineered to seamlessly fit most standard toilet tanks featuring a 5/8\" x 5/8\" square opening for a precise installation. Designed to effortlessly complement your existing decor, this item flawlessly matches and enhances other traditional fixtures within your bathroom ADA-Compliant Lever Handle. Engineered with an ergonomic lever design that meets Americans with Disabilities Act (ADA) guidelines, ensuring effortless, grasp-free operation for users of all mobility levels. Brushed Brass brings a soft, satin?gold finish that adds handcrafted character without the high?gloss glare."
+     },
+     "price": {
+      "amount": 7347,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTGLD7.jpg?v=1788214250"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40733720444970:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTGLD7.jpg?v=1788214250"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "bathroom accessories",
+    "Category:Accessories",
+    "Certified: ADA",
+    "home improvement",
+    "Parcel",
+    "Room:Bathroom",
+    "social0",
+    "Specialoffers: 30% OFF",
+    "Specialoffers: Sale",
+    "Sub Brand:HEIRLOOM",
+    "Sub Category:Bathroom Accessories",
+    "toilet tank levers",
+    "universal mount"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268015829034",
+     "handle": "bathroom-accessories",
+     "title": "Bathroom Accessories",
+     "description": {
+      "html": "Kingston has a large selection of Bathroom Accessories in a variety of styles and finishes. Available in popular colors like Bronze, Black, Nickel, Bronze and Brass. From Towel Bars to Robe Hooks and Paper Holders, Kingston Brass has what you need. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect Bathroom Accessory for your project. Bathroom Accessories Overview To really make your bathroom into the beautiful space you've always dreamed it to be, it's all in the accessories you choose. Bathrooms are much more than the big fixtures that many believe it to be all about. It's in the bathroom accessories and how you use them. To really complete a bathroom look and make it as whole and perfect as it can be, use only the best bathroom accessories in the business. With the right kind of accessories in hand, you'll be surprised to see just how much your bathroom can change after just one use. Lucky for you, Kingston has everything you need to make your dream bathroom into reality. Here at Kingston, we strive to bring together style and functionality in our bathroom products. So, our bathroom accessories are made to bring you style while also improving the operation and organization of your bathroom. Explore our wide collection of bathroom accessories and discover all of the possibilities our products can bring to your bathroom. Coming in a variety of designer styles and popular finishes, it is safe to say that the only problem you will face with our brand of bathroom accessories is choosing which ones to take home. What are Bathroom Accessories? Sometimes, when it comes designing a bathroom, a lot of people tend to think that they have to give up style over functionality but that doesn't have to be the case for you. With the right accessories in hand, you can have the best of both worlds. You don't have to go to the ends of the earth to find the best bathroom products because Kingston has it all for you. With our wide range of bathroom fixtures, we are sure you will find all you would ever need with us. From bathroom shelves to grab bars and even shower seats, our bathroom products will leave your bathroom impeccably organized and stylish like a picture perfect room. Crafted to be both a high-quality and designer bathroom fixture, our large collection of bathroom accessories are everything you can ever want for your bathroom. Explore all that we have to offer in our bathroom accessories and find your perfect match in soap dishes, toilet paper holders, and much more. Sit back and watch as your bathroom is transformed with your new bathroom accessories and leave all your worries behind. Benefits of Bathroom Accessories Kingston is proud to offer you a wide array of bathroom accessories so you can bring style and functionality back into your bathroom. But we also offer much more than that. At Kingston, we understand that you want bathroom fixtures that resonates with your personality so your bathroom can reflect you and your unique style. So, we are eager for you to explore our even larger collection of bathroom faucets and bathroom sinks. With so many options in style and finish in both categories, we are sure our products will help complete your bathroom look and make it better than ever. From contemporary to traditional styles and popular finishes, your next bathroom faucet and matching bathroom accessories will elevate your bathroom to the next level of style and elegance. No matter if you are looking for something specific or just different from your current style, we are sure we have just about everything you will ever need. Bathroom Accessory Collections No matter what style you are looking for or just want a thousand different option to choose from, Kingston has you covered with our wide array of bathroom accessories collections. If you enjoy the traditional styles of the past, then Kingston's English Vintage collection is the one for you. Or maybe you enjoy the sleek and smooth design of modern style, then Kingston's Milano collection is the perfect collection for you. Choose from the many collections that Kingston has to offer and discover your new favorite bathroom accessory with us. Each collection has possesses nothing but the best and most durable accessories around, our products like robe hooks and towel bars guarantee to make your life in the bathroom all the more easier. Crafted to last you for a very long time while also being easy to maintain and install, your next bathroom accessory will transform your life while giving you the designer style you've been looking for."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041191466",
+     "handle": "toilet-tank-levers",
+     "title": "Toilet Tank Levers",
+     "description": {
+      "html": "Kingston offers toilet tank levers in many styles and finishes, including bronze, black, nickel, and brass, with options to match both modern and traditional bathroom designs. Call our Kitchen & Bath Experts toll-free at 1-877-252-7277 for help selecting the perfect Toilet Handle for your project. Toilet Tank Levers for Everyday Use A toilet tank lever is the handle assembly that starts a flush on a compatible toilet. Also called a toilet trip lever, it has an outside handle and an arm inside the tank. On many standard toilets, pressing the handle lifts a chain and opens the flapper. This lets water flow from the tank into the bowl. The handle is also a visible part of your bathroom. Choosing one that suits the room helps connect the toilet with nearby fixtures. Whether you are replacing a worn part or updating your space, start with the right fit and then choose the look you like. Find the Right Fit for Your Toilet Toilet tank levers are not all the same size or shape. Before ordering, compare your existing handle and tank with the product details. Check these points to help narrow your choices: Mounting position: Check whether the handle sits on the front or side of the tank. Choose a lever designed for that position. Tank opening: Compare the opening\u2019s size and shape with the measurements listed for the replacement lever. Arm length and clearance: Make sure the inside arm has room to move without hitting other tank parts. Flush system: Confirm that the lever works with your toilet\u2019s flushing system. Some models exclude dual-flush and pressure-assisted toilets. Kingston offers models for front mounting, plus options that support both front and side mounting. Even when a product is described as a universal toilet tank lever, check its listed fit requirements before buying. Keep your toilet\u2019s brand and model number nearby when comparing products. Photos of the current handle and the inside of the tank can also help you explain what you need. For more help, read Kingston\u2019s guide to choosing the best toilet tank lever for your bathroom. It explains how arm length, mounting style, and lever angle affect the handle\u2019s fit. Select a Finish for Your Bathroom The finish helps your toilet handle blend in or stand out. Start with the metal finishes already used around your sink and shower. Polished chrome: A bright, reflective finish that pairs well with white fixtures and a wide range of bathroom colors. Brushed nickel: A softer metallic look that works well with neutral walls, natural textures, and simple bathroom hardware. Polished brass: A warm golden finish that can bring a classic touch to a bathroom or brighten a plain space. Oil rubbed bronze: A deep, warm finish that suits rustic details, wood cabinets, and many traditional bathroom designs. Matte black: A low-shine finish that creates contrast against a white toilet and pairs well with black faucets or accessories. Available finishes vary by model. Compare the finish name when shopping, since polished and brushed versions create different looks. Oil rubbed bronze can naturally develop a patina, or change in color, with use. The finish can look a little different on each piece. Comparing finish samples can help you choose a tone that works with your bathroom\u2019s other fixtures and accessories. Choose Classic or Modern Toilet Handle Styles Kingston\u2019s Victorian and Restoration designs offer classic details for traditional bathrooms. They can work well beside curved faucet handles, framed mirrors, and other pieces with a vintage feel. A decorative toilet handle can carry that style into a part of the room that is often overlooked. For a modern bathroom, explore the simple lines of Concord designs. A clean handle shape can suit a plain vanity and minimal accessories. Look at the shape as well as the finish. Rounded details can echo soft curves around the sink, while straighter lines can connect with square fixtures. Think about comfort, too. Choose a handle shape that feels practical for the people who use the bathroom. Check the product details for features that make the handle easier to use. Check What Comes with Your Replacement Handle Some products include a handle and trip lever arm, while others are replacement handles only. Read the product description to see which parts are included. A handle sold on its own must fit the connection on your existing arm. If your current arm still works, a compatible handle may be enough for a style update. If the arm is damaged, look for an assembly that includes the parts you need. Compare the material, measurements, and connection details before placing your order. Bring Your Bathroom Hardware Together A toilet tank lever is a small detail, but it can help the room feel more finished. Coordinate it with your bathroom faucets, towel bars, and toilet paper holders for a consistent look. You can also mix finishes with a clear plan. For example, repeat a black handle\u2019s finish in a mirror frame or cabinet pulls. Browse Kingston bathroom accessories to find pieces that support your style. You can update a few small details without replacing your fixtures. Plan Your Toilet Handle Replacement A cracked handle, damaged arm, or lever that no longer moves properly may need attention. Check the cause before choosing replacement parts. A loose connection or chain problem may need an adjustment. Follow the instructions that come with your Kingston handle. After fitting the lever, check that the handle returns freely and the arm moves without catching. Flush the toilet to confirm that the connected parts work together. If you are unsure about the fit or repair, ask a qualified plumber for help. Care for Your Toilet Tank Lever Keep the handle clean with mild soap and a soft, damp cloth. Wipe away soap and dry the surface after cleaning. Avoid abrasive pads and cleaners containing bleach, ammonia, acids, or alcohol. Follow the care instructions supplied with your product to help protect its finish. Shop Kingston Toilet Tank Levers Explore Kingston toilet tank levers to find a handle that fits your toilet and your bathroom style. Compare mounting options, finishes, and included parts before you choose. For help selecting a toilet handle, call Kingston\u2019s Kitchen & Bath Experts toll-free at 1-877-252-7277."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6841139626026",
+   "title": "Kingston Sona KTCLS18 - Claremont Side Mount Toilet Tank Lever, Brushed Nickel",
+   "description": {
+    "html": "Kingston Sona KTCLS18-Claremont Side Mount Toilet Tank Lever, Brushed Nickel Flush away your problems with the Kingston Brass Claremont side mount toilet tank lever. It will instill a timeless and elegant appeal within your bathroom. Featuring a metal lever handle, this decorative piece is installed in minutes and will transform the look of your bathroom. It is available in multiple finishes to easily coordinate with your existing decor. Features Engineered from heavy-duty solid brass to ensure long-lasting durability, exceptional reliability, and maximum resistance against daily wear and rust. Side Mount Design. Engineered to replace and fit standard toilet tanks featuring side-mount levers, ensuring hassle-free compatibility with your existing toilet. Standard Toilet Compatibility. Optimized specifically for single-action, gravity-flush toilets (not compatible with dual-flush or pressure-assisted models). Customizable Tank Fit. Features an 8-3/4\" bendable and trimmable internal arm equipped with 4 pre-drilled attachment holes, allowing for precise adjustment to fit multiple tank configurations and ensure quick, secure flapper chain installation. Compatibility. Engineered to seamlessly fit most standard toilet tanks featuring a 5/8\" x 5/8\" square opening for a precise installation. Modern design ADA-Compliant Lever Handle. Engineered with an ergonomic lever design that meets Americans with Disabilities Act (ADA) guidelines, ensuring effortless, grasp-free operation for users of all mobility levels. Brushed Nickel provides a fingerprint?friendly, versatile finish that keeps tank levers looking clean while blending seamlessly with most faucet styles Brushed Nickel delivers a subtle, versatile texture that hides fingerprints while maintaining a refined modern look."
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktcls18-brushed-nickel",
+   "handle": "kingston-brass-ktcls18-brushed-nickel",
+   "price_range": {
+    "min": {
+     "amount": 6997,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6997,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40260413915178",
+     "sku": "KTCLS18",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Sona KTCLS18-Claremont Side Mount Toilet Tank Lever, Brushed Nickel Flush away your problems with the Kingston Brass Claremont side mount toilet tank lever. It will instill a timeless and elegant appeal within your bathroom. Featuring a metal lever handle, this decorative piece is installed in minutes and will transform the look of your bathroom. It is available in multiple finishes to easily coordinate with your existing decor. Features Engineered from heavy-duty solid brass to ensure long-lasting durability, exceptional reliability, and maximum resistance against daily wear and rust. Side Mount Design. Engineered to replace and fit standard toilet tanks featuring side-mount levers, ensuring hassle-free compatibility with your existing toilet. Standard Toilet Compatibility. Optimized specifically for single-action, gravity-flush toilets (not compatible with dual-flush or pressure-assisted models). Customizable Tank Fit. Features an 8-3/4\" bendable and trimmable internal arm equipped with 4 pre-drilled attachment holes, allowing for precise adjustment to fit multiple tank configurations and ensure quick, secure flapper chain installation. Compatibility. Engineered to seamlessly fit most standard toilet tanks featuring a 5/8\" x 5/8\" square opening for a precise installation. Modern design ADA-Compliant Lever Handle. Engineered with an ergonomic lever design that meets Americans with Disabilities Act (ADA) guidelines, ensuring effortless, grasp-free operation for users of all mobility levels. Brushed Nickel provides a fingerprint?friendly, versatile finish that keeps tank levers looking clean while blending seamlessly with most faucet styles Brushed Nickel delivers a subtle, versatile texture that hides fingerprints while maintaining a refined modern look."
+     },
+     "price": {
+      "amount": 6997,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTCLS18.jpg?v=1788214305"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40260413915178:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTCLS18.jpg?v=1788214305"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "bathroom accessories",
+    "Category:Accessories",
+    "Certified: ADA",
+    "home improvement",
+    "Parcel",
+    "Room:Bathroom",
+    "side mount",
+    "social0",
+    "Specialoffers: 30% OFF",
+    "Specialoffers: Sale",
+    "Sub Brand:SONA",
+    "Sub Category:Bathroom Accessories",
+    "toilet tank levers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268015829034",
+     "handle": "bathroom-accessories",
+     "title": "Bathroom Accessories",
+     "description": {
+      "html": "Kingston has a large selection of Bathroom Accessories in a variety of styles and finishes. Available in popular colors like Bronze, Black, Nickel, Bronze and Brass. From Towel Bars to Robe Hooks and Paper Holders, Kingston Brass has what you need. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect Bathroom Accessory for your project. Bathroom Accessories Overview To really make your bathroom into the beautiful space you've always dreamed it to be, it's all in the accessories you choose. Bathrooms are much more than the big fixtures that many believe it to be all about. It's in the bathroom accessories and how you use them. To really complete a bathroom look and make it as whole and perfect as it can be, use only the best bathroom accessories in the business. With the right kind of accessories in hand, you'll be surprised to see just how much your bathroom can change after just one use. Lucky for you, Kingston has everything you need to make your dream bathroom into reality. Here at Kingston, we strive to bring together style and functionality in our bathroom products. So, our bathroom accessories are made to bring you style while also improving the operation and organization of your bathroom. Explore our wide collection of bathroom accessories and discover all of the possibilities our products can bring to your bathroom. Coming in a variety of designer styles and popular finishes, it is safe to say that the only problem you will face with our brand of bathroom accessories is choosing which ones to take home. What are Bathroom Accessories? Sometimes, when it comes designing a bathroom, a lot of people tend to think that they have to give up style over functionality but that doesn't have to be the case for you. With the right accessories in hand, you can have the best of both worlds. You don't have to go to the ends of the earth to find the best bathroom products because Kingston has it all for you. With our wide range of bathroom fixtures, we are sure you will find all you would ever need with us. From bathroom shelves to grab bars and even shower seats, our bathroom products will leave your bathroom impeccably organized and stylish like a picture perfect room. Crafted to be both a high-quality and designer bathroom fixture, our large collection of bathroom accessories are everything you can ever want for your bathroom. Explore all that we have to offer in our bathroom accessories and find your perfect match in soap dishes, toilet paper holders, and much more. Sit back and watch as your bathroom is transformed with your new bathroom accessories and leave all your worries behind. Benefits of Bathroom Accessories Kingston is proud to offer you a wide array of bathroom accessories so you can bring style and functionality back into your bathroom. But we also offer much more than that. At Kingston, we understand that you want bathroom fixtures that resonates with your personality so your bathroom can reflect you and your unique style. So, we are eager for you to explore our even larger collection of bathroom faucets and bathroom sinks. With so many options in style and finish in both categories, we are sure our products will help complete your bathroom look and make it better than ever. From contemporary to traditional styles and popular finishes, your next bathroom faucet and matching bathroom accessories will elevate your bathroom to the next level of style and elegance. No matter if you are looking for something specific or just different from your current style, we are sure we have just about everything you will ever need. Bathroom Accessory Collections No matter what style you are looking for or just want a thousand different option to choose from, Kingston has you covered with our wide array of bathroom accessories collections. If you enjoy the traditional styles of the past, then Kingston's English Vintage collection is the one for you. Or maybe you enjoy the sleek and smooth design of modern style, then Kingston's Milano collection is the perfect collection for you. Choose from the many collections that Kingston has to offer and discover your new favorite bathroom accessory with us. Each collection has possesses nothing but the best and most durable accessories around, our products like robe hooks and towel bars guarantee to make your life in the bathroom all the more easier. Crafted to last you for a very long time while also being easy to maintain and install, your next bathroom accessory will transform your life while giving you the designer style you've been looking for."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041191466",
+     "handle": "toilet-tank-levers",
+     "title": "Toilet Tank Levers",
+     "description": {
+      "html": "Kingston offers toilet tank levers in many styles and finishes, including bronze, black, nickel, and brass, with options to match both modern and traditional bathroom designs. Call our Kitchen & Bath Experts toll-free at 1-877-252-7277 for help selecting the perfect Toilet Handle for your project. Toilet Tank Levers for Everyday Use A toilet tank lever is the handle assembly that starts a flush on a compatible toilet. Also called a toilet trip lever, it has an outside handle and an arm inside the tank. On many standard toilets, pressing the handle lifts a chain and opens the flapper. This lets water flow from the tank into the bowl. The handle is also a visible part of your bathroom. Choosing one that suits the room helps connect the toilet with nearby fixtures. Whether you are replacing a worn part or updating your space, start with the right fit and then choose the look you like. Find the Right Fit for Your Toilet Toilet tank levers are not all the same size or shape. Before ordering, compare your existing handle and tank with the product details. Check these points to help narrow your choices: Mounting position: Check whether the handle sits on the front or side of the tank. Choose a lever designed for that position. Tank opening: Compare the opening\u2019s size and shape with the measurements listed for the replacement lever. Arm length and clearance: Make sure the inside arm has room to move without hitting other tank parts. Flush system: Confirm that the lever works with your toilet\u2019s flushing system. Some models exclude dual-flush and pressure-assisted toilets. Kingston offers models for front mounting, plus options that support both front and side mounting. Even when a product is described as a universal toilet tank lever, check its listed fit requirements before buying. Keep your toilet\u2019s brand and model number nearby when comparing products. Photos of the current handle and the inside of the tank can also help you explain what you need. For more help, read Kingston\u2019s guide to choosing the best toilet tank lever for your bathroom. It explains how arm length, mounting style, and lever angle affect the handle\u2019s fit. Select a Finish for Your Bathroom The finish helps your toilet handle blend in or stand out. Start with the metal finishes already used around your sink and shower. Polished chrome: A bright, reflective finish that pairs well with white fixtures and a wide range of bathroom colors. Brushed nickel: A softer metallic look that works well with neutral walls, natural textures, and simple bathroom hardware. Polished brass: A warm golden finish that can bring a classic touch to a bathroom or brighten a plain space. Oil rubbed bronze: A deep, warm finish that suits rustic details, wood cabinets, and many traditional bathroom designs. Matte black: A low-shine finish that creates contrast against a white toilet and pairs well with black faucets or accessories. Available finishes vary by model. Compare the finish name when shopping, since polished and brushed versions create different looks. Oil rubbed bronze can naturally develop a patina, or change in color, with use. The finish can look a little different on each piece. Comparing finish samples can help you choose a tone that works with your bathroom\u2019s other fixtures and accessories. Choose Classic or Modern Toilet Handle Styles Kingston\u2019s Victorian and Restoration designs offer classic details for traditional bathrooms. They can work well beside curved faucet handles, framed mirrors, and other pieces with a vintage feel. A decorative toilet handle can carry that style into a part of the room that is often overlooked. For a modern bathroom, explore the simple lines of Concord designs. A clean handle shape can suit a plain vanity and minimal accessories. Look at the shape as well as the finish. Rounded details can echo soft curves around the sink, while straighter lines can connect with square fixtures. Think about comfort, too. Choose a handle shape that feels practical for the people who use the bathroom. Check the product details for features that make the handle easier to use. Check What Comes with Your Replacement Handle Some products include a handle and trip lever arm, while others are replacement handles only. Read the product description to see which parts are included. A handle sold on its own must fit the connection on your existing arm. If your current arm still works, a compatible handle may be enough for a style update. If the arm is damaged, look for an assembly that includes the parts you need. Compare the material, measurements, and connection details before placing your order. Bring Your Bathroom Hardware Together A toilet tank lever is a small detail, but it can help the room feel more finished. Coordinate it with your bathroom faucets, towel bars, and toilet paper holders for a consistent look. You can also mix finishes with a clear plan. For example, repeat a black handle\u2019s finish in a mirror frame or cabinet pulls. Browse Kingston bathroom accessories to find pieces that support your style. You can update a few small details without replacing your fixtures. Plan Your Toilet Handle Replacement A cracked handle, damaged arm, or lever that no longer moves properly may need attention. Check the cause before choosing replacement parts. A loose connection or chain problem may need an adjustment. Follow the instructions that come with your Kingston handle. After fitting the lever, check that the handle returns freely and the arm moves without catching. Flush the toilet to confirm that the connected parts work together. If you are unsure about the fit or repair, ask a qualified plumber for help. Care for Your Toilet Tank Lever Keep the handle clean with mild soap and a soft, damp cloth. Wipe away soap and dry the surface after cleaning. Avoid abrasive pads and cleaners containing bleach, ammonia, acids, or alcohol. Follow the care instructions supplied with your product to help protect its finish. Shop Kingston Toilet Tank Levers Explore Kingston toilet tank levers to find a handle that fits your toilet and your bathroom style. Compare mounting options, finishes, and included parts before you choose. For help selecting a toilet handle, call Kingston\u2019s Kitchen & Bath Experts toll-free at 1-877-252-7277."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzJPRFF4TVRNNU5qSTJNREkyTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

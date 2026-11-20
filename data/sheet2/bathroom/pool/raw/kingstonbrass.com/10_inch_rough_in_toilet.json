@@ -1,0 +1,1581 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.kingstonbrass.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Kingston Brass",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.kingstonbrass.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "56961040426"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "56961040426"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/6841416286250",
+   "title": "Kingston Heirloom KTK102P - Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Polished Brass",
+   "description": {
+    "html": "Kingston Heirloom KTK102P-Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Polished Brass This 3-piece toilet supply kit from Kingston Brass provides all the necessary parts in the water flow process of your bathroom toilet. The set includes a single cross 1/2-14 NPT inlet x 3/8\" O.D comp outlet angle stop valve, a 20\" flat head supply line, and a traditional flange. Constructed in solid brass for durability and reliability. Available in multiple finishes to easily coordinate with your existing decor. Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle Easy installation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktk102p-polished-brass",
+   "handle": "kingston-brass-ktk102p-polished-brass",
+   "price_range": {
+    "min": {
+     "amount": 9495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9495,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40260940628010",
+     "sku": "KTK102P",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Heirloom KTK102P-Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Polished Brass This 3-piece toilet supply kit from Kingston Brass provides all the necessary parts in the water flow process of your bathroom toilet. The set includes a single cross 1/2-14 NPT inlet x 3/8\" O.D comp outlet angle stop valve, a 20\" flat head supply line, and a traditional flange. Constructed in solid brass for durability and reliability. Available in multiple finishes to easily coordinate with your existing decor. Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle Easy installation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+     },
+     "price": {
+      "amount": 9495,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK102P_1be6b1d3-d726-4064-b7ae-f20448ae0012.jpg?v=1790097062"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40260940628010:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK102P_1be6b1d3-d726-4064-b7ae-f20448ae0012.jpg?v=1790097062"
+    }
+   ],
+   "tags": [
+    "Category:Parts",
+    "home improvement",
+    "Parcel",
+    "parts",
+    "plumbing",
+    "Room:Bathroom",
+    "social0",
+    "Sub Brand:HEIRLOOM",
+    "Sub Category:Toilet Parts",
+    "toilet parts",
+    "toilet trim kits"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268023103530",
+     "handle": "parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": "Kingston has a large selection of Plumbing Parts for your Kitchen & Bath as well as replacement parts for our own products. Available in popular finishes and styles to match your Decor. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect plumbing part for your project."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268043386922",
+     "handle": "plumbing-parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268958629930",
+     "handle": "toilet-trim-kits",
+     "title": "Toilet Trim Kits",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7599942533162",
+   "title": "Kingston Tulare KTK110P0 - Gehry Traditional Plumbing Toilet Trim Kit with Flange, Matte Black",
+   "description": {
+    "html": "Kingston Tulare KTK110P0-Gehry Traditional Plumbing Toilet Trim Kit with Flange, Matte Black Complete your toilet installation with this stylish trim kit from the Gehry Collection\u2122. This all-in-one set includes an angle shut-off valves with flanges, and a rigid supply line. Choose from a variety of finishes to perfectly complement your bathroom decor and achieve a polished look! Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative Square flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle for easy operation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktk110p0-matte-black",
+   "handle": "kingston-brass-ktk110p0-matte-black",
+   "price_range": {
+    "min": {
+     "amount": 11190,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11190,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15985,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15985,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42813611278378",
+     "sku": "KTK110P0",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Tulare KTK110P0-Gehry Traditional Plumbing Toilet Trim Kit with Flange, Matte Black Complete your toilet installation with this stylish trim kit from the Gehry Collection\u2122. This all-in-one set includes an angle shut-off valves with flanges, and a rigid supply line. Choose from a variety of finishes to perfectly complement your bathroom decor and achieve a polished look! Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative Square flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle for easy operation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+     },
+     "price": {
+      "amount": 11190,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15985,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK110P0_77f828f0-fd47-4390-bcce-d0f8e87ca565.jpg?v=1790096492"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/42813611278378:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK110P0_77f828f0-fd47-4390-bcce-d0f8e87ca565.jpg?v=1790096492"
+    }
+   ],
+   "tags": [
+    "Category:Parts",
+    "home improvement",
+    "Parcel",
+    "parts",
+    "plumbing",
+    "Room:Bathroom",
+    "social0",
+    "Specialoffers: 30% OFF",
+    "Specialoffers: New",
+    "Specialoffers: Sale",
+    "Sub Brand:TULARE",
+    "Sub Category:Toilet Parts",
+    "toilet parts",
+    "toilet trim kits"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268023103530",
+     "handle": "parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": "Kingston has a large selection of Plumbing Parts for your Kitchen & Bath as well as replacement parts for our own products. Available in popular finishes and styles to match your Decor. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect plumbing part for your project."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268043386922",
+     "handle": "plumbing-parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268958629930",
+     "handle": "toilet-trim-kits",
+     "title": "Toilet Trim Kits",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7715573596202",
+   "title": "Kingston Tulare BA4818PN - Metropolitan Toilet Paper Holder, Polished Nickel",
+   "description": {
+    "html": "Kingston Tulare BA4818PN-Metropolitan Toilet Paper Holder, Polished Nickel Kingston Brass toilet paper holders are beautifully designed to offer chic and unique styling. Allow the available premium finish options to bring a polished refinery to your home and match your other bathroom accessories. Features High quality brass construction Double post universal design Coordinates perfectly with any modern decor 6-1/4\" toilet paper rod to accommodate most rolls 2-5/8\" base Mounting hardware included"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ba4818pn-polished-nickel",
+   "handle": "kingston-brass-ba4818pn-polished-nickel",
+   "price_range": {
+    "min": {
+     "amount": 12995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12995,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43695403892778",
+     "sku": "BA4818PN",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Tulare BA4818PN-Metropolitan Toilet Paper Holder, Polished Nickel Kingston Brass toilet paper holders are beautifully designed to offer chic and unique styling. Allow the available premium finish options to bring a polished refinery to your home and match your other bathroom accessories. Features High quality brass construction Double post universal design Coordinates perfectly with any modern decor 6-1/4\" toilet paper rod to accommodate most rolls 2-5/8\" base Mounting hardware included"
+     },
+     "price": {
+      "amount": 12995,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/BA4818PN_d4f2bf74-c67b-4092-9a61-0d413e38b030.jpg?v=1790096146"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/43695403892778:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/BA4818PN_d4f2bf74-c67b-4092-9a61-0d413e38b030.jpg?v=1790096146"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "bathroom accessories",
+    "Category:Accessories",
+    "home improvement",
+    "Parcel",
+    "Room:Bathroom",
+    "social0",
+    "Specialoffers: New",
+    "Sub Brand:TULARE",
+    "Sub Category:Bathroom Accessories",
+    "toilet paper holders"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268015829034",
+     "handle": "bathroom-accessories",
+     "title": "Bathroom Accessories",
+     "description": {
+      "html": "Kingston has a large selection of Bathroom Accessories in a variety of styles and finishes. Available in popular colors like Bronze, Black, Nickel, Bronze and Brass. From Towel Bars to Robe Hooks and Paper Holders, Kingston Brass has what you need. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect Bathroom Accessory for your project. Bathroom Accessories Overview To really make your bathroom into the beautiful space you've always dreamed it to be, it's all in the accessories you choose. Bathrooms are much more than the big fixtures that many believe it to be all about. It's in the bathroom accessories and how you use them. To really complete a bathroom look and make it as whole and perfect as it can be, use only the best bathroom accessories in the business. With the right kind of accessories in hand, you'll be surprised to see just how much your bathroom can change after just one use. Lucky for you, Kingston has everything you need to make your dream bathroom into reality. Here at Kingston, we strive to bring together style and functionality in our bathroom products. So, our bathroom accessories are made to bring you style while also improving the operation and organization of your bathroom. Explore our wide collection of bathroom accessories and discover all of the possibilities our products can bring to your bathroom. Coming in a variety of designer styles and popular finishes, it is safe to say that the only problem you will face with our brand of bathroom accessories is choosing which ones to take home. What are Bathroom Accessories? Sometimes, when it comes designing a bathroom, a lot of people tend to think that they have to give up style over functionality but that doesn't have to be the case for you. With the right accessories in hand, you can have the best of both worlds. You don't have to go to the ends of the earth to find the best bathroom products because Kingston has it all for you. With our wide range of bathroom fixtures, we are sure you will find all you would ever need with us. From bathroom shelves to grab bars and even shower seats, our bathroom products will leave your bathroom impeccably organized and stylish like a picture perfect room. Crafted to be both a high-quality and designer bathroom fixture, our large collection of bathroom accessories are everything you can ever want for your bathroom. Explore all that we have to offer in our bathroom accessories and find your perfect match in soap dishes, toilet paper holders, and much more. Sit back and watch as your bathroom is transformed with your new bathroom accessories and leave all your worries behind. Benefits of Bathroom Accessories Kingston is proud to offer you a wide array of bathroom accessories so you can bring style and functionality back into your bathroom. But we also offer much more than that. At Kingston, we understand that you want bathroom fixtures that resonates with your personality so your bathroom can reflect you and your unique style. So, we are eager for you to explore our even larger collection of bathroom faucets and bathroom sinks. With so many options in style and finish in both categories, we are sure our products will help complete your bathroom look and make it better than ever. From contemporary to traditional styles and popular finishes, your next bathroom faucet and matching bathroom accessories will elevate your bathroom to the next level of style and elegance. No matter if you are looking for something specific or just different from your current style, we are sure we have just about everything you will ever need. Bathroom Accessory Collections No matter what style you are looking for or just want a thousand different option to choose from, Kingston has you covered with our wide array of bathroom accessories collections. If you enjoy the traditional styles of the past, then Kingston's English Vintage collection is the one for you. Or maybe you enjoy the sleek and smooth design of modern style, then Kingston's Milano collection is the perfect collection for you. Choose from the many collections that Kingston has to offer and discover your new favorite bathroom accessory with us. Each collection has possesses nothing but the best and most durable accessories around, our products like robe hooks and towel bars guarantee to make your life in the bathroom all the more easier. Crafted to last you for a very long time while also being easy to maintain and install, your next bathroom accessory will transform your life while giving you the designer style you've been looking for."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041945130",
+     "handle": "toilet-paper-holders",
+     "title": "Toilet Paper Holders",
+     "description": {
+      "html": "Explore Kingston toilet paper holders in a variety of styles and finishes, including matte black, nickel, bronze, and brass. Choose a holder that fits your space and matches your bathroom. Make sure the toilet paper is easy to reach. For help choosing the right toilet paper holder for your project, call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Toilet paper holders keep bathroom tissue within reach and give each roll a place of its own. You may also see these accessories called toilet tissue holders or toilet roll holders. Kingston offers styles and finishes for small powder rooms, guest baths, and main bathrooms. Explore options that work with your layout, match your fixtures, and make changing the roll simple. Start by choosing between a wall mount and a freestanding design. Then compare the size, finish, and mounting needs of each model. A well-chosen holder can bring the look of your bathroom accessories together while making your space easier to use. Choose a Mounting Style for Your Space Wall-Mount Toilet Paper Holders A wall-mount toilet paper holder attaches to a surface beside the toilet and keeps the floor clear. This can help in a narrow bathroom where there is little room for a stand. Some designs have one mounting post, while others use two. Check the full width and how far the holder extends from the wall. Leave enough room for a full roll, your hand, and nearby cabinet doors. If you attach the holder to a vanity, make sure the cabinet side is strong enough to hold it. Check that the screws will not block the drawers from opening or closing. Freestanding Toilet Paper Holders A freestanding toilet paper holder rests on the floor and can move when your layout changes. It can be useful when the nearest wall is too far away or you prefer to avoid drilling into tile. Measure the base before choosing a stand. It should fit beside the toilet without blocking the walkway. Some models also hold spare rolls, so check the storage details on the product page. Check Roll Size and Loading Style The holder needs to fit the toilet paper you use. A large roll may need more space between the rod and the wall than a smaller roll. Check both the usable rod length and the room around the roll. Also consider how you change the paper. An open-arm design lets you slide a roll onto the holder from one side. Other designs use a removable roller between two posts. Look at the product photos and instructions to understand how each model works. Check which side the roll slides on from, too. An open end placed against a wall or cabinet may leave too little room to remove the empty tube and add a new roll. For a shared bathroom, choose a style that everyone in your home can reach and reload comfortably. Find a Finish That Fits Your Bathroom A toilet paper holder can match your faucet or add another color to the room. Kingston offers finish options across the collection, including chrome, black, nickel, bronze, and brass tones. Available finishes vary by model. Consider these looks as you compare products: Polished chrome adds a bright, reflective touch. Matte black creates contrast against light walls or tile. Brushed nickel offers a softer metallic look. Oil rubbed bronze brings a darker tone to the room. Brass finishes add warmth, with polished and brushed options offering different levels of shine. Compare the full finish name when pairing pieces. Polished brass and brushed brass have different appearances, even though both belong to the same color family. Match Traditional or Modern Bathroom Styles Shape matters as much as finish. Rounded bases and decorative details can suit a traditional bathroom. Straight lines and simple shapes can work well in a modern space. Choose details that repeat the shapes already found in your faucet, mirror, or cabinet hardware. The Restoration BA3968C toilet paper holder has a traditional look. This polished chrome model has brass construction, a double-post design, and a 6\u00bc-inch toilet paper rod. It also coordinates with other Restoration pieces. Use that example as a starting point, then compare each model\u2019s measurements and features. A similar style does not always mean the same size or mounting layout. Measure and Plan the Location Choose a spot that feels comfortable to reach while seated. Before making holes, hold the paper roll near the planned location and check the space around it. Make sure it does not crowd your leg, touch the vanity, or block a drawer. When replacing an existing holder, compare the mounting points as well as the overall width. A new model may not cover the old holes. Check this before choosing based on appearance alone. Keep the roll away from places where it may get splashed. For more help comparing options, read Kingston\u2019s Tips for Choosing a Toilet Paper Holder. Coordinate Your Bathroom Accessories Plan the holder alongside the other pieces you use each day. Matching finishes and similar shapes can help the room feel connected, even when you update only a few items. Pair your holder with towel bars for bath towels, towel rings near the sink, and robe hooks for extra hanging space. Choose sizes that fit each area without making the walls feel crowded. If you are also replacing your faucet, browse Kingston\u2019s bathroom sink faucets while comparing finishes. Review the exact finish names and product images together before placing your order. Review Materials and Installation Details Check what the holder is made of and how to install it. A brass-colored finish describes the appearance; it does not, by itself, tell you what the holder is made from. Check whether mounting hardware is included and whether it suits your wall surface. Follow the product\u2019s instructions for placement and attachment. If you choose a freestanding holder, check how to put it together. Make sure the base sits flat on the floor. Follow the care directions for your selected finish when cleaning. These details help you choose and look after the right model. Shop Kingston Toilet Paper Holders A bathroom update can start with one useful detail. Compare Kingston toilet paper holders by mounting style, size, finish, and daily use to find an option that fits your room. Our Kitchen & Bath Experts can help you choose a toilet paper holder and matching bathroom accessories. Call toll-free at 1-877-252-7277."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6841416384554",
+   "title": "Kingston Heirloom KTK103P - Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Antique Brass",
+   "description": {
+    "html": "Kingston Heirloom KTK103P-Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Antique Brass This 3-piece toilet supply kit from Kingston Brass provides all the necessary parts in the water flow process of your bathroom toilet. The set includes a single cross 1/2-14 NPT inlet x 3/8\" O.D comp outlet angle stop valve, a 20\" flat head supply line, and a traditional flange. Constructed in solid brass for durability and reliability. Available in multiple finishes to easily coordinate with your existing decor. Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle Easy installation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion Disclaimer Kingston offers several special finishes that fall into two main groups: antiqued/distressed and living. Our antiqued/intentionally distressed finishes include Antique Brass, Antique Copper, Naples Bronze, and Black Stainless. Our living finish is Oil Rubbed Bronze. Antiqued/distressed finishes have had a darkener applied to create the appearance of patina and age. Due to the nature of plating and distressing processes, each production lot of these finishes varies slightly in brightness and tone. Some degree of inconsistency between items in antiqued or distressed finishes should be expected. We cannot guarantee an exact match between items in these finishes. The differences in tone and brightness are a variation rather than a flaw or defect. Living Finishes change over time. Our Oil Rubbed Bronze will patina over time such as taking on highlights in high-touch areas. We consider this dynamic nature a feature that gives each faucet a unique character over its lifetime of use and does not constitute a defect or flaw. Like our antiqued/distressed finishes, some degree of inconsistency between living finish items should be expected. We cannot guarantee an exact match between items in Oil Rubbed Bronze."
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktk103p-antique-brass",
+   "handle": "kingston-brass-ktk103p-antique-brass",
+   "price_range": {
+    "min": {
+     "amount": 16485,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16485,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 16485,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 16485,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40260940791850",
+     "sku": "KTK103P",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Heirloom KTK103P-Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Antique Brass This 3-piece toilet supply kit from Kingston Brass provides all the necessary parts in the water flow process of your bathroom toilet. The set includes a single cross 1/2-14 NPT inlet x 3/8\" O.D comp outlet angle stop valve, a 20\" flat head supply line, and a traditional flange. Constructed in solid brass for durability and reliability. Available in multiple finishes to easily coordinate with your existing decor. Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle Easy installation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion Disclaimer Kingston offers several special finishes that fall into two main groups: antiqued/distressed and living. Our antiqued/intentionally distressed finishes include Antique Brass, Antique Copper, Naples Bronze, and Black Stainless. Our living finish is Oil Rubbed Bronze. Antiqued/distressed finishes have had a darkener applied to create the appearance of patina and age. Due to the nature of plating and distressing processes, each production lot of these finishes varies slightly in brightness and tone. Some degree of inconsistency between items in antiqued or distressed finishes should be expected. We cannot guarantee an exact match between items in these finishes. The differences in tone and brightness are a variation rather than a flaw or defect. Living Finishes change over time. Our Oil Rubbed Bronze will patina over time such as taking on highlights in high-touch areas. We consider this dynamic nature a feature that gives each faucet a unique character over its lifetime of use and does not constitute a defect or flaw. Like our antiqued/distressed finishes, some degree of inconsistency between living finish items should be expected. We cannot guarantee an exact match between items in Oil Rubbed Bronze."
+     },
+     "price": {
+      "amount": 16485,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 16485,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK103P_38b87d2e-765b-49d9-9842-eb43c7b39a60.jpg?v=1790097062"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40260940791850:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK103P_38b87d2e-765b-49d9-9842-eb43c7b39a60.jpg?v=1790097062"
+    }
+   ],
+   "tags": [
+    "Category:Parts",
+    "home improvement",
+    "Parcel",
+    "parts",
+    "plumbing",
+    "Room:Bathroom",
+    "social0",
+    "Sub Brand:HEIRLOOM",
+    "Sub Category:Toilet Parts",
+    "toilet parts",
+    "toilet trim kits"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268023103530",
+     "handle": "parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": "Kingston has a large selection of Plumbing Parts for your Kitchen & Bath as well as replacement parts for our own products. Available in popular finishes and styles to match your Decor. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect plumbing part for your project."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268043386922",
+     "handle": "plumbing-parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268958629930",
+     "handle": "toilet-trim-kits",
+     "title": "Toilet Trim Kits",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6870118793258",
+   "title": "Kingston Tulare BA4818BB - Metropolitan Toilet Paper Holder, Brushed Brass",
+   "description": {
+    "html": "Kingston Tulare BA4818BB-Metropolitan Toilet Paper Holder, Brushed Brass Kingston Brass toilet paper holders are beautifully designed to offer chic and unique styling. Allow the available premium finish options to bring a polished refinery to your home and match your other bathroom accessories. Features High quality brass construction Double post universal design Coordinates perfectly with any modern decor 6-1/4\" toilet paper rod to accommodate most rolls 2-5/8\" base Mounting hardware included"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ba4818bb-brushed-brass",
+   "handle": "kingston-brass-ba4818bb-brushed-brass",
+   "price_range": {
+    "min": {
+     "amount": 12495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12495,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40349521870890",
+     "sku": "BA4818BB",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Tulare BA4818BB-Metropolitan Toilet Paper Holder, Brushed Brass Kingston Brass toilet paper holders are beautifully designed to offer chic and unique styling. Allow the available premium finish options to bring a polished refinery to your home and match your other bathroom accessories. Features High quality brass construction Double post universal design Coordinates perfectly with any modern decor 6-1/4\" toilet paper rod to accommodate most rolls 2-5/8\" base Mounting hardware included"
+     },
+     "price": {
+      "amount": 12495,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/BA4818BB_c8f17e1b-e94d-4022-9188-34bf22add14b.jpg?v=1790096146"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40349521870890:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/BA4818BB_c8f17e1b-e94d-4022-9188-34bf22add14b.jpg?v=1790096146"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "bathroom accessories",
+    "Category:Accessories",
+    "home improvement",
+    "Parcel",
+    "Room:Bathroom",
+    "social0",
+    "Sub Brand:TULARE",
+    "Sub Category:Bathroom Accessories",
+    "toilet paper holders"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268015829034",
+     "handle": "bathroom-accessories",
+     "title": "Bathroom Accessories",
+     "description": {
+      "html": "Kingston has a large selection of Bathroom Accessories in a variety of styles and finishes. Available in popular colors like Bronze, Black, Nickel, Bronze and Brass. From Towel Bars to Robe Hooks and Paper Holders, Kingston Brass has what you need. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect Bathroom Accessory for your project. Bathroom Accessories Overview To really make your bathroom into the beautiful space you've always dreamed it to be, it's all in the accessories you choose. Bathrooms are much more than the big fixtures that many believe it to be all about. It's in the bathroom accessories and how you use them. To really complete a bathroom look and make it as whole and perfect as it can be, use only the best bathroom accessories in the business. With the right kind of accessories in hand, you'll be surprised to see just how much your bathroom can change after just one use. Lucky for you, Kingston has everything you need to make your dream bathroom into reality. Here at Kingston, we strive to bring together style and functionality in our bathroom products. So, our bathroom accessories are made to bring you style while also improving the operation and organization of your bathroom. Explore our wide collection of bathroom accessories and discover all of the possibilities our products can bring to your bathroom. Coming in a variety of designer styles and popular finishes, it is safe to say that the only problem you will face with our brand of bathroom accessories is choosing which ones to take home. What are Bathroom Accessories? Sometimes, when it comes designing a bathroom, a lot of people tend to think that they have to give up style over functionality but that doesn't have to be the case for you. With the right accessories in hand, you can have the best of both worlds. You don't have to go to the ends of the earth to find the best bathroom products because Kingston has it all for you. With our wide range of bathroom fixtures, we are sure you will find all you would ever need with us. From bathroom shelves to grab bars and even shower seats, our bathroom products will leave your bathroom impeccably organized and stylish like a picture perfect room. Crafted to be both a high-quality and designer bathroom fixture, our large collection of bathroom accessories are everything you can ever want for your bathroom. Explore all that we have to offer in our bathroom accessories and find your perfect match in soap dishes, toilet paper holders, and much more. Sit back and watch as your bathroom is transformed with your new bathroom accessories and leave all your worries behind. Benefits of Bathroom Accessories Kingston is proud to offer you a wide array of bathroom accessories so you can bring style and functionality back into your bathroom. But we also offer much more than that. At Kingston, we understand that you want bathroom fixtures that resonates with your personality so your bathroom can reflect you and your unique style. So, we are eager for you to explore our even larger collection of bathroom faucets and bathroom sinks. With so many options in style and finish in both categories, we are sure our products will help complete your bathroom look and make it better than ever. From contemporary to traditional styles and popular finishes, your next bathroom faucet and matching bathroom accessories will elevate your bathroom to the next level of style and elegance. No matter if you are looking for something specific or just different from your current style, we are sure we have just about everything you will ever need. Bathroom Accessory Collections No matter what style you are looking for or just want a thousand different option to choose from, Kingston has you covered with our wide array of bathroom accessories collections. If you enjoy the traditional styles of the past, then Kingston's English Vintage collection is the one for you. Or maybe you enjoy the sleek and smooth design of modern style, then Kingston's Milano collection is the perfect collection for you. Choose from the many collections that Kingston has to offer and discover your new favorite bathroom accessory with us. Each collection has possesses nothing but the best and most durable accessories around, our products like robe hooks and towel bars guarantee to make your life in the bathroom all the more easier. Crafted to last you for a very long time while also being easy to maintain and install, your next bathroom accessory will transform your life while giving you the designer style you've been looking for."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041945130",
+     "handle": "toilet-paper-holders",
+     "title": "Toilet Paper Holders",
+     "description": {
+      "html": "Explore Kingston toilet paper holders in a variety of styles and finishes, including matte black, nickel, bronze, and brass. Choose a holder that fits your space and matches your bathroom. Make sure the toilet paper is easy to reach. For help choosing the right toilet paper holder for your project, call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Toilet paper holders keep bathroom tissue within reach and give each roll a place of its own. You may also see these accessories called toilet tissue holders or toilet roll holders. Kingston offers styles and finishes for small powder rooms, guest baths, and main bathrooms. Explore options that work with your layout, match your fixtures, and make changing the roll simple. Start by choosing between a wall mount and a freestanding design. Then compare the size, finish, and mounting needs of each model. A well-chosen holder can bring the look of your bathroom accessories together while making your space easier to use. Choose a Mounting Style for Your Space Wall-Mount Toilet Paper Holders A wall-mount toilet paper holder attaches to a surface beside the toilet and keeps the floor clear. This can help in a narrow bathroom where there is little room for a stand. Some designs have one mounting post, while others use two. Check the full width and how far the holder extends from the wall. Leave enough room for a full roll, your hand, and nearby cabinet doors. If you attach the holder to a vanity, make sure the cabinet side is strong enough to hold it. Check that the screws will not block the drawers from opening or closing. Freestanding Toilet Paper Holders A freestanding toilet paper holder rests on the floor and can move when your layout changes. It can be useful when the nearest wall is too far away or you prefer to avoid drilling into tile. Measure the base before choosing a stand. It should fit beside the toilet without blocking the walkway. Some models also hold spare rolls, so check the storage details on the product page. Check Roll Size and Loading Style The holder needs to fit the toilet paper you use. A large roll may need more space between the rod and the wall than a smaller roll. Check both the usable rod length and the room around the roll. Also consider how you change the paper. An open-arm design lets you slide a roll onto the holder from one side. Other designs use a removable roller between two posts. Look at the product photos and instructions to understand how each model works. Check which side the roll slides on from, too. An open end placed against a wall or cabinet may leave too little room to remove the empty tube and add a new roll. For a shared bathroom, choose a style that everyone in your home can reach and reload comfortably. Find a Finish That Fits Your Bathroom A toilet paper holder can match your faucet or add another color to the room. Kingston offers finish options across the collection, including chrome, black, nickel, bronze, and brass tones. Available finishes vary by model. Consider these looks as you compare products: Polished chrome adds a bright, reflective touch. Matte black creates contrast against light walls or tile. Brushed nickel offers a softer metallic look. Oil rubbed bronze brings a darker tone to the room. Brass finishes add warmth, with polished and brushed options offering different levels of shine. Compare the full finish name when pairing pieces. Polished brass and brushed brass have different appearances, even though both belong to the same color family. Match Traditional or Modern Bathroom Styles Shape matters as much as finish. Rounded bases and decorative details can suit a traditional bathroom. Straight lines and simple shapes can work well in a modern space. Choose details that repeat the shapes already found in your faucet, mirror, or cabinet hardware. The Restoration BA3968C toilet paper holder has a traditional look. This polished chrome model has brass construction, a double-post design, and a 6\u00bc-inch toilet paper rod. It also coordinates with other Restoration pieces. Use that example as a starting point, then compare each model\u2019s measurements and features. A similar style does not always mean the same size or mounting layout. Measure and Plan the Location Choose a spot that feels comfortable to reach while seated. Before making holes, hold the paper roll near the planned location and check the space around it. Make sure it does not crowd your leg, touch the vanity, or block a drawer. When replacing an existing holder, compare the mounting points as well as the overall width. A new model may not cover the old holes. Check this before choosing based on appearance alone. Keep the roll away from places where it may get splashed. For more help comparing options, read Kingston\u2019s Tips for Choosing a Toilet Paper Holder. Coordinate Your Bathroom Accessories Plan the holder alongside the other pieces you use each day. Matching finishes and similar shapes can help the room feel connected, even when you update only a few items. Pair your holder with towel bars for bath towels, towel rings near the sink, and robe hooks for extra hanging space. Choose sizes that fit each area without making the walls feel crowded. If you are also replacing your faucet, browse Kingston\u2019s bathroom sink faucets while comparing finishes. Review the exact finish names and product images together before placing your order. Review Materials and Installation Details Check what the holder is made of and how to install it. A brass-colored finish describes the appearance; it does not, by itself, tell you what the holder is made from. Check whether mounting hardware is included and whether it suits your wall surface. Follow the product\u2019s instructions for placement and attachment. If you choose a freestanding holder, check how to put it together. Make sure the base sits flat on the floor. Follow the care directions for your selected finish when cleaning. These details help you choose and look after the right model. Shop Kingston Toilet Paper Holders A bathroom update can start with one useful detail. Compare Kingston toilet paper holders by mounting style, size, finish, and daily use to find an option that fits your room. Our Kitchen & Bath Experts can help you choose a toilet paper holder and matching bathroom accessories. Call toll-free at 1-877-252-7277."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6841416319018",
+   "title": "Kingston Heirloom KTK107P - Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Brushed Brass",
+   "description": {
+    "html": "Kingston Heirloom KTK107P-Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Brushed Brass This 3-piece toilet supply kit from Kingston Brass provides all the necessary parts in the water flow process of your bathroom toilet. The set includes a single cross 1/2-14 NPT inlet x 3/8\" O.D comp outlet angle stop valve, a 20\" flat head supply line, and a traditional flange. Constructed in solid brass for durability and reliability. Available in multiple finishes to easily coordinate with your existing decor. Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle Easy installation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktk107p-brushed-brass",
+   "handle": "kingston-brass-ktk107p-brushed-brass",
+   "price_range": {
+    "min": {
+     "amount": 12995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12995,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40260940660778",
+     "sku": "KTK107P",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Heirloom KTK107P-Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Brushed Brass This 3-piece toilet supply kit from Kingston Brass provides all the necessary parts in the water flow process of your bathroom toilet. The set includes a single cross 1/2-14 NPT inlet x 3/8\" O.D comp outlet angle stop valve, a 20\" flat head supply line, and a traditional flange. Constructed in solid brass for durability and reliability. Available in multiple finishes to easily coordinate with your existing decor. Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle Easy installation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+     },
+     "price": {
+      "amount": 12995,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK107P_a4e1e497-12c7-4444-a1e9-4527e54dc6f1.jpg?v=1790097061"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40260940660778:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK107P_a4e1e497-12c7-4444-a1e9-4527e54dc6f1.jpg?v=1790097061"
+    }
+   ],
+   "tags": [
+    "Category:Parts",
+    "home improvement",
+    "Parcel",
+    "parts",
+    "plumbing",
+    "Room:Bathroom",
+    "social0",
+    "Sub Brand:HEIRLOOM",
+    "Sub Category:Toilet Parts",
+    "toilet parts",
+    "toilet trim kits"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268023103530",
+     "handle": "parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": "Kingston has a large selection of Plumbing Parts for your Kitchen & Bath as well as replacement parts for our own products. Available in popular finishes and styles to match your Decor. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect plumbing part for your project."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268043386922",
+     "handle": "plumbing-parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268958629930",
+     "handle": "toilet-trim-kits",
+     "title": "Toilet Trim Kits",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6841416417322",
+   "title": "Kingston Heirloom KTK108P - Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Brushed Nickel",
+   "description": {
+    "html": "Kingston Heirloom KTK108P-Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Brushed Nickel This 3-piece toilet supply kit from Kingston Brass provides all the necessary parts in the water flow process of your bathroom toilet. The set includes a single cross 1/2-14 NPT inlet x 3/8\" O.D comp outlet angle stop valve, a 20\" flat head supply line, and a traditional flange. Constructed in solid brass for durability and reliability. Available in multiple finishes to easily coordinate with your existing decor. Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle Easy installation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktk108p-brushed-nickel",
+   "handle": "kingston-brass-ktk108p-brushed-nickel",
+   "price_range": {
+    "min": {
+     "amount": 13985,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13985,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13985,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13985,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40260940824618",
+     "sku": "KTK108P",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Heirloom KTK108P-Trimscape Toilet Supply Kit, 1/2-Inch IPS Inlet x 3/8-Inch Comp Outlet, Brushed Nickel This 3-piece toilet supply kit from Kingston Brass provides all the necessary parts in the water flow process of your bathroom toilet. The set includes a single cross 1/2-14 NPT inlet x 3/8\" O.D comp outlet angle stop valve, a 20\" flat head supply line, and a traditional flange. Constructed in solid brass for durability and reliability. Available in multiple finishes to easily coordinate with your existing decor. Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle Easy installation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+     },
+     "price": {
+      "amount": 13985,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13985,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK108P_735b1f83-a1ec-4e5f-a530-e404f6c2700e.jpg?v=1790097061"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40260940824618:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK108P_735b1f83-a1ec-4e5f-a530-e404f6c2700e.jpg?v=1790097061"
+    }
+   ],
+   "tags": [
+    "Category:Parts",
+    "home improvement",
+    "Parcel",
+    "parts",
+    "plumbing",
+    "Room:Bathroom",
+    "social0",
+    "Sub Brand:HEIRLOOM",
+    "Sub Category:Toilet Parts",
+    "toilet parts",
+    "toilet trim kits"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268023103530",
+     "handle": "parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": "Kingston has a large selection of Plumbing Parts for your Kitchen & Bath as well as replacement parts for our own products. Available in popular finishes and styles to match your Decor. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect plumbing part for your project."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268043386922",
+     "handle": "plumbing-parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268958629930",
+     "handle": "toilet-trim-kits",
+     "title": "Toilet Trim Kits",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7599942434858",
+   "title": "Kingston Tulare KTK110P7 - Gehry Traditional Plumbing Toilet Trim Kit with Flange, Brushed Brass",
+   "description": {
+    "html": "Kingston Tulare KTK110P7-Gehry Traditional Plumbing Toilet Trim Kit with Flange, Brushed Brass Complete your toilet installation with this stylish trim kit from the Gehry Collection\u2122. This all-in-one set includes an angle shut-off valves with flanges, and a rigid supply line. Choose from a variety of finishes to perfectly complement your bathroom decor and achieve a polished look! Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative Square flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle for easy operation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktk110p7-brushed-brass",
+   "handle": "kingston-brass-ktk110p7-brushed-brass",
+   "price_range": {
+    "min": {
+     "amount": 11190,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11190,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15985,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15985,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42813611212842",
+     "sku": "KTK110P7",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Tulare KTK110P7-Gehry Traditional Plumbing Toilet Trim Kit with Flange, Brushed Brass Complete your toilet installation with this stylish trim kit from the Gehry Collection\u2122. This all-in-one set includes an angle shut-off valves with flanges, and a rigid supply line. Choose from a variety of finishes to perfectly complement your bathroom decor and achieve a polished look! Features Solid brass construction for added durability One piece 1/2\" NPT inlet x 3/8\" O.D. comp quarter turn angle stop valve One piece traditional decorative Square flange One piece 20\" x 3/8\" diameter flat closet supply line Angle stop includes cross handle for easy operation Designed exclusively to be used on toilet installation Premium color finish resist tarnishing and corrosion"
+     },
+     "price": {
+      "amount": 11190,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15985,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK110P7_ae4ed36d-1548-4df1-b9e9-7d9e665445ae.jpg?v=1790096492"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/42813611212842:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTK110P7_ae4ed36d-1548-4df1-b9e9-7d9e665445ae.jpg?v=1790096492"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Category:Parts",
+    "home improvement",
+    "Parcel",
+    "parts",
+    "plumbing",
+    "Room:Bathroom",
+    "social0",
+    "Specialoffers: 30% OFF",
+    "Specialoffers: New",
+    "Specialoffers: Sale",
+    "Sub Brand:TULARE",
+    "Sub Category:Toilet Parts",
+    "toilet parts",
+    "toilet trim kits"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268023103530",
+     "handle": "parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": "Kingston has a large selection of Plumbing Parts for your Kitchen & Bath as well as replacement parts for our own products. Available in popular finishes and styles to match your Decor. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect plumbing part for your project."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268043386922",
+     "handle": "plumbing-parts",
+     "title": "Plumbing Parts",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268958629930",
+     "handle": "toilet-trim-kits",
+     "title": "Toilet Trim Kits",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/6870118858794",
+   "title": "Kingston Tulare BA4818MB - Metropolitan Toilet Paper Holder, Matte Black",
+   "description": {
+    "html": "Kingston Tulare BA4818MB-Metropolitan Toilet Paper Holder, Matte Black Kingston Brass toilet paper holders are beautifully designed to offer chic and unique styling. Allow the available premium finish options to bring a polished refinery to your home and match your other bathroom accessories. Features High quality brass construction Double post universal design Coordinates perfectly with any modern decor 6-1/4\" toilet paper rod to accommodate most rolls 2-5/8\" base Mounting hardware included"
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ba4818mb-matte-black",
+   "handle": "kingston-brass-ba4818mb-matte-black",
+   "price_range": {
+    "min": {
+     "amount": 12495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12495,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 12495,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12495,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40349521936426",
+     "sku": "BA4818MB",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Tulare BA4818MB-Metropolitan Toilet Paper Holder, Matte Black Kingston Brass toilet paper holders are beautifully designed to offer chic and unique styling. Allow the available premium finish options to bring a polished refinery to your home and match your other bathroom accessories. Features High quality brass construction Double post universal design Coordinates perfectly with any modern decor 6-1/4\" toilet paper rod to accommodate most rolls 2-5/8\" base Mounting hardware included"
+     },
+     "price": {
+      "amount": 12495,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 12495,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/BA4818MB_aa074e9e-4473-4b78-a555-60f4e1026c78.jpg?v=1790096148"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/40349521936426:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/BA4818MB_aa074e9e-4473-4b78-a555-60f4e1026c78.jpg?v=1790096148"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "bathroom accessories",
+    "Category:Accessories",
+    "home improvement",
+    "Parcel",
+    "Room:Bathroom",
+    "social0",
+    "Sub Brand:TULARE",
+    "Sub Category:Bathroom Accessories",
+    "toilet paper holders"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268015829034",
+     "handle": "bathroom-accessories",
+     "title": "Bathroom Accessories",
+     "description": {
+      "html": "Kingston has a large selection of Bathroom Accessories in a variety of styles and finishes. Available in popular colors like Bronze, Black, Nickel, Bronze and Brass. From Towel Bars to Robe Hooks and Paper Holders, Kingston Brass has what you need. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect Bathroom Accessory for your project. Bathroom Accessories Overview To really make your bathroom into the beautiful space you've always dreamed it to be, it's all in the accessories you choose. Bathrooms are much more than the big fixtures that many believe it to be all about. It's in the bathroom accessories and how you use them. To really complete a bathroom look and make it as whole and perfect as it can be, use only the best bathroom accessories in the business. With the right kind of accessories in hand, you'll be surprised to see just how much your bathroom can change after just one use. Lucky for you, Kingston has everything you need to make your dream bathroom into reality. Here at Kingston, we strive to bring together style and functionality in our bathroom products. So, our bathroom accessories are made to bring you style while also improving the operation and organization of your bathroom. Explore our wide collection of bathroom accessories and discover all of the possibilities our products can bring to your bathroom. Coming in a variety of designer styles and popular finishes, it is safe to say that the only problem you will face with our brand of bathroom accessories is choosing which ones to take home. What are Bathroom Accessories? Sometimes, when it comes designing a bathroom, a lot of people tend to think that they have to give up style over functionality but that doesn't have to be the case for you. With the right accessories in hand, you can have the best of both worlds. You don't have to go to the ends of the earth to find the best bathroom products because Kingston has it all for you. With our wide range of bathroom fixtures, we are sure you will find all you would ever need with us. From bathroom shelves to grab bars and even shower seats, our bathroom products will leave your bathroom impeccably organized and stylish like a picture perfect room. Crafted to be both a high-quality and designer bathroom fixture, our large collection of bathroom accessories are everything you can ever want for your bathroom. Explore all that we have to offer in our bathroom accessories and find your perfect match in soap dishes, toilet paper holders, and much more. Sit back and watch as your bathroom is transformed with your new bathroom accessories and leave all your worries behind. Benefits of Bathroom Accessories Kingston is proud to offer you a wide array of bathroom accessories so you can bring style and functionality back into your bathroom. But we also offer much more than that. At Kingston, we understand that you want bathroom fixtures that resonates with your personality so your bathroom can reflect you and your unique style. So, we are eager for you to explore our even larger collection of bathroom faucets and bathroom sinks. With so many options in style and finish in both categories, we are sure our products will help complete your bathroom look and make it better than ever. From contemporary to traditional styles and popular finishes, your next bathroom faucet and matching bathroom accessories will elevate your bathroom to the next level of style and elegance. No matter if you are looking for something specific or just different from your current style, we are sure we have just about everything you will ever need. Bathroom Accessory Collections No matter what style you are looking for or just want a thousand different option to choose from, Kingston has you covered with our wide array of bathroom accessories collections. If you enjoy the traditional styles of the past, then Kingston's English Vintage collection is the one for you. Or maybe you enjoy the sleek and smooth design of modern style, then Kingston's Milano collection is the perfect collection for you. Choose from the many collections that Kingston has to offer and discover your new favorite bathroom accessory with us. Each collection has possesses nothing but the best and most durable accessories around, our products like robe hooks and towel bars guarantee to make your life in the bathroom all the more easier. Crafted to last you for a very long time while also being easy to maintain and install, your next bathroom accessory will transform your life while giving you the designer style you've been looking for."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041945130",
+     "handle": "toilet-paper-holders",
+     "title": "Toilet Paper Holders",
+     "description": {
+      "html": "Explore Kingston toilet paper holders in a variety of styles and finishes, including matte black, nickel, bronze, and brass. Choose a holder that fits your space and matches your bathroom. Make sure the toilet paper is easy to reach. For help choosing the right toilet paper holder for your project, call our Kitchen & Bath Experts toll-free at 1-877-252-7277. Toilet paper holders keep bathroom tissue within reach and give each roll a place of its own. You may also see these accessories called toilet tissue holders or toilet roll holders. Kingston offers styles and finishes for small powder rooms, guest baths, and main bathrooms. Explore options that work with your layout, match your fixtures, and make changing the roll simple. Start by choosing between a wall mount and a freestanding design. Then compare the size, finish, and mounting needs of each model. A well-chosen holder can bring the look of your bathroom accessories together while making your space easier to use. Choose a Mounting Style for Your Space Wall-Mount Toilet Paper Holders A wall-mount toilet paper holder attaches to a surface beside the toilet and keeps the floor clear. This can help in a narrow bathroom where there is little room for a stand. Some designs have one mounting post, while others use two. Check the full width and how far the holder extends from the wall. Leave enough room for a full roll, your hand, and nearby cabinet doors. If you attach the holder to a vanity, make sure the cabinet side is strong enough to hold it. Check that the screws will not block the drawers from opening or closing. Freestanding Toilet Paper Holders A freestanding toilet paper holder rests on the floor and can move when your layout changes. It can be useful when the nearest wall is too far away or you prefer to avoid drilling into tile. Measure the base before choosing a stand. It should fit beside the toilet without blocking the walkway. Some models also hold spare rolls, so check the storage details on the product page. Check Roll Size and Loading Style The holder needs to fit the toilet paper you use. A large roll may need more space between the rod and the wall than a smaller roll. Check both the usable rod length and the room around the roll. Also consider how you change the paper. An open-arm design lets you slide a roll onto the holder from one side. Other designs use a removable roller between two posts. Look at the product photos and instructions to understand how each model works. Check which side the roll slides on from, too. An open end placed against a wall or cabinet may leave too little room to remove the empty tube and add a new roll. For a shared bathroom, choose a style that everyone in your home can reach and reload comfortably. Find a Finish That Fits Your Bathroom A toilet paper holder can match your faucet or add another color to the room. Kingston offers finish options across the collection, including chrome, black, nickel, bronze, and brass tones. Available finishes vary by model. Consider these looks as you compare products: Polished chrome adds a bright, reflective touch. Matte black creates contrast against light walls or tile. Brushed nickel offers a softer metallic look. Oil rubbed bronze brings a darker tone to the room. Brass finishes add warmth, with polished and brushed options offering different levels of shine. Compare the full finish name when pairing pieces. Polished brass and brushed brass have different appearances, even though both belong to the same color family. Match Traditional or Modern Bathroom Styles Shape matters as much as finish. Rounded bases and decorative details can suit a traditional bathroom. Straight lines and simple shapes can work well in a modern space. Choose details that repeat the shapes already found in your faucet, mirror, or cabinet hardware. The Restoration BA3968C toilet paper holder has a traditional look. This polished chrome model has brass construction, a double-post design, and a 6\u00bc-inch toilet paper rod. It also coordinates with other Restoration pieces. Use that example as a starting point, then compare each model\u2019s measurements and features. A similar style does not always mean the same size or mounting layout. Measure and Plan the Location Choose a spot that feels comfortable to reach while seated. Before making holes, hold the paper roll near the planned location and check the space around it. Make sure it does not crowd your leg, touch the vanity, or block a drawer. When replacing an existing holder, compare the mounting points as well as the overall width. A new model may not cover the old holes. Check this before choosing based on appearance alone. Keep the roll away from places where it may get splashed. For more help comparing options, read Kingston\u2019s Tips for Choosing a Toilet Paper Holder. Coordinate Your Bathroom Accessories Plan the holder alongside the other pieces you use each day. Matching finishes and similar shapes can help the room feel connected, even when you update only a few items. Pair your holder with towel bars for bath towels, towel rings near the sink, and robe hooks for extra hanging space. Choose sizes that fit each area without making the walls feel crowded. If you are also replacing your faucet, browse Kingston\u2019s bathroom sink faucets while comparing finishes. Review the exact finish names and product images together before placing your order. Review Materials and Installation Details Check what the holder is made of and how to install it. A brass-colored finish describes the appearance; it does not, by itself, tell you what the holder is made from. Check whether mounting hardware is included and whether it suits your wall surface. Follow the product\u2019s instructions for placement and attachment. If you choose a freestanding holder, check how to put it together. Make sure the base sits flat on the floor. Follow the care directions for your selected finish when cleaning. These details help you choose and look after the right model. Shop Kingston Toilet Paper Holders A bathroom update can start with one useful detail. Compare Kingston toilet paper holders by mounting style, size, finish, and daily use to find an option that fits your room. Our Kitchen & Bath Experts can help you choose a toilet paper holder and matching bathroom accessories. Call toll-free at 1-877-252-7277."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270601715754",
+     "handle": "globo_basis_collection",
+     "title": "Globo basis collection - Do not delete",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8008993079338",
+   "title": "Kingston Wendell KTRKZ7 Front Mount Toilet Tank Lever, Brushed Brass",
+   "description": {
+    "html": "Kingston Wendell KTRKZ7 Front Mount Toilet Tank Lever, Brushed Brass Complete your bathroom with this modern front-mount toilet tank lever, designed to complement contemporary spaces with clean, refined styling. Constructed from durable brass material, it features a sophisticated knurled wheel handle for smooth, reliable flushing and enhanced grip. Designed to fit most toilet tanks with a 5/8\" x 5/8\" front-mount square opening, this toilet tank lever offers easy installation and dependable everyday performance. Not compatible with pressure-assisted or dual-flush toilets. Features Engineered from heavy-duty solid brass to ensure long-lasting durability, exceptional reliability, and maximum resistance against daily wear and rust. Front Mount Design. Engineered to replace and fit standard toilet tanks featuring front-mount levers, ensuring hassle-free compatibility with your existing toilet. Standard Toilet Compatibility. Optimized specifically for single-action, gravity-flush toilets (not compatible with dual-flush or pressure-assisted models). Customizable Tank Fit. Features an 8-11/16\" internal bendable and trimmable internal arm equipped with 4 pre-drilled attachment holes, allowing for precise adjustment to fit multiple tank configurations and ensure quick, secure flapper chain installation. Compatibility. Engineered to seamlessly fit most standard toilet tanks featuring a 5/8\" x 5/8\" square opening for a precise installation. Modern design Ergonomic Design, Smoothly engineered wheel handle enables seamless, high-leverage rotation with minimal gripping effort. Brushed Brass brings a soft, satin\u2011gold finish that adds handcrafted character without the high\u2011gloss glare."
+   },
+   "url": "https://www.kingstonbrass.com/products/kingston-brass-ktrkz7-brushed-brass",
+   "handle": "kingston-brass-ktrkz7-brushed-brass",
+   "price_range": {
+    "min": {
+     "amount": 7697,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 7697,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 10995,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 10995,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44773374525482",
+     "sku": "KTRKZ7",
+     "title": "Default Title",
+     "description": {
+      "html": "Kingston Wendell KTRKZ7 Front Mount Toilet Tank Lever, Brushed Brass Complete your bathroom with this modern front-mount toilet tank lever, designed to complement contemporary spaces with clean, refined styling. Constructed from durable brass material, it features a sophisticated knurled wheel handle for smooth, reliable flushing and enhanced grip. Designed to fit most toilet tanks with a 5/8\" x 5/8\" front-mount square opening, this toilet tank lever offers easy installation and dependable everyday performance. Not compatible with pressure-assisted or dual-flush toilets. Features Engineered from heavy-duty solid brass to ensure long-lasting durability, exceptional reliability, and maximum resistance against daily wear and rust. Front Mount Design. Engineered to replace and fit standard toilet tanks featuring front-mount levers, ensuring hassle-free compatibility with your existing toilet. Standard Toilet Compatibility. Optimized specifically for single-action, gravity-flush toilets (not compatible with dual-flush or pressure-assisted models). Customizable Tank Fit. Features an 8-11/16\" internal bendable and trimmable internal arm equipped with 4 pre-drilled attachment holes, allowing for precise adjustment to fit multiple tank configurations and ensure quick, secure flapper chain installation. Compatibility. Engineered to seamlessly fit most standard toilet tanks featuring a 5/8\" x 5/8\" square opening for a precise installation. Modern design Ergonomic Design, Smoothly engineered wheel handle enables seamless, high-leverage rotation with minimal gripping effort. Brushed Brass brings a soft, satin\u2011gold finish that adds handcrafted character without the high\u2011gloss glare."
+     },
+     "price": {
+      "amount": 7697,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 10995,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTRKZ7_ee723d04-5e74-4419-9bec-73401bdbc2cd.jpg?v=1792450172"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://kingston-brass.myshopify.com/cart/44773374525482:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0569/6104/0426/files/KTRKZ7_ee723d04-5e74-4419-9bec-73401bdbc2cd.jpg?v=1792450172"
+    }
+   ],
+   "tags": [
+    "bathroom",
+    "bathroom accessories",
+    "Category:Accessories",
+    "front mount",
+    "home improvement",
+    "knurled",
+    "knurled handle",
+    "knurling",
+    "Parcel",
+    "Room:Bathroom",
+    "social0",
+    "Specialoffers: 30% OFF",
+    "Specialoffers: Sale",
+    "Sub Brand:HEIRLOOM",
+    "Sub Brand:SONA",
+    "Sub Brand:TULARE",
+    "Sub Category:Bathroom Accessories",
+    "toilet tank levers"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/268013207594",
+     "handle": "bathroom",
+     "title": "Bathroom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268015829034",
+     "handle": "bathroom-accessories",
+     "title": "Bathroom Accessories",
+     "description": {
+      "html": "Kingston has a large selection of Bathroom Accessories in a variety of styles and finishes. Available in popular colors like Bronze, Black, Nickel, Bronze and Brass. From Towel Bars to Robe Hooks and Paper Holders, Kingston Brass has what you need. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect Bathroom Accessory for your project. Bathroom Accessories Overview To really make your bathroom into the beautiful space you've always dreamed it to be, it's all in the accessories you choose. Bathrooms are much more than the big fixtures that many believe it to be all about. It's in the bathroom accessories and how you use them. To really complete a bathroom look and make it as whole and perfect as it can be, use only the best bathroom accessories in the business. With the right kind of accessories in hand, you'll be surprised to see just how much your bathroom can change after just one use. Lucky for you, Kingston has everything you need to make your dream bathroom into reality. Here at Kingston, we strive to bring together style and functionality in our bathroom products. So, our bathroom accessories are made to bring you style while also improving the operation and organization of your bathroom. Explore our wide collection of bathroom accessories and discover all of the possibilities our products can bring to your bathroom. Coming in a variety of designer styles and popular finishes, it is safe to say that the only problem you will face with our brand of bathroom accessories is choosing which ones to take home. What are Bathroom Accessories? Sometimes, when it comes designing a bathroom, a lot of people tend to think that they have to give up style over functionality but that doesn't have to be the case for you. With the right accessories in hand, you can have the best of both worlds. You don't have to go to the ends of the earth to find the best bathroom products because Kingston has it all for you. With our wide range of bathroom fixtures, we are sure you will find all you would ever need with us. From bathroom shelves to grab bars and even shower seats, our bathroom products will leave your bathroom impeccably organized and stylish like a picture perfect room. Crafted to be both a high-quality and designer bathroom fixture, our large collection of bathroom accessories are everything you can ever want for your bathroom. Explore all that we have to offer in our bathroom accessories and find your perfect match in soap dishes, toilet paper holders, and much more. Sit back and watch as your bathroom is transformed with your new bathroom accessories and leave all your worries behind. Benefits of Bathroom Accessories Kingston is proud to offer you a wide array of bathroom accessories so you can bring style and functionality back into your bathroom. But we also offer much more than that. At Kingston, we understand that you want bathroom fixtures that resonates with your personality so your bathroom can reflect you and your unique style. So, we are eager for you to explore our even larger collection of bathroom faucets and bathroom sinks. With so many options in style and finish in both categories, we are sure our products will help complete your bathroom look and make it better than ever. From contemporary to traditional styles and popular finishes, your next bathroom faucet and matching bathroom accessories will elevate your bathroom to the next level of style and elegance. No matter if you are looking for something specific or just different from your current style, we are sure we have just about everything you will ever need. Bathroom Accessory Collections No matter what style you are looking for or just want a thousand different option to choose from, Kingston has you covered with our wide array of bathroom accessories collections. If you enjoy the traditional styles of the past, then Kingston's English Vintage collection is the one for you. Or maybe you enjoy the sleek and smooth design of modern style, then Kingston's Milano collection is the perfect collection for you. Choose from the many collections that Kingston has to offer and discover your new favorite bathroom accessory with us. Each collection has possesses nothing but the best and most durable accessories around, our products like robe hooks and towel bars guarantee to make your life in the bathroom all the more easier. Crafted to last you for a very long time while also being easy to maintain and install, your next bathroom accessory will transform your life while giving you the designer style you've been looking for."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268041191466",
+     "handle": "toilet-tank-levers",
+     "title": "Toilet Tank Levers",
+     "description": {
+      "html": "Kingston offers toilet tank levers in many styles and finishes, including bronze, black, nickel, and brass, with options to match both modern and traditional bathroom designs. Call our Kitchen & Bath Experts toll-free at 1-877-252-7277 for help selecting the perfect Toilet Handle for your project. Toilet Tank Levers for Everyday Use A toilet tank lever is the handle assembly that starts a flush on a compatible toilet. Also called a toilet trip lever, it has an outside handle and an arm inside the tank. On many standard toilets, pressing the handle lifts a chain and opens the flapper. This lets water flow from the tank into the bowl. The handle is also a visible part of your bathroom. Choosing one that suits the room helps connect the toilet with nearby fixtures. Whether you are replacing a worn part or updating your space, start with the right fit and then choose the look you like. Find the Right Fit for Your Toilet Toilet tank levers are not all the same size or shape. Before ordering, compare your existing handle and tank with the product details. Check these points to help narrow your choices: Mounting position: Check whether the handle sits on the front or side of the tank. Choose a lever designed for that position. Tank opening: Compare the opening\u2019s size and shape with the measurements listed for the replacement lever. Arm length and clearance: Make sure the inside arm has room to move without hitting other tank parts. Flush system: Confirm that the lever works with your toilet\u2019s flushing system. Some models exclude dual-flush and pressure-assisted toilets. Kingston offers models for front mounting, plus options that support both front and side mounting. Even when a product is described as a universal toilet tank lever, check its listed fit requirements before buying. Keep your toilet\u2019s brand and model number nearby when comparing products. Photos of the current handle and the inside of the tank can also help you explain what you need. For more help, read Kingston\u2019s guide to choosing the best toilet tank lever for your bathroom. It explains how arm length, mounting style, and lever angle affect the handle\u2019s fit. Select a Finish for Your Bathroom The finish helps your toilet handle blend in or stand out. Start with the metal finishes already used around your sink and shower. Polished chrome: A bright, reflective finish that pairs well with white fixtures and a wide range of bathroom colors. Brushed nickel: A softer metallic look that works well with neutral walls, natural textures, and simple bathroom hardware. Polished brass: A warm golden finish that can bring a classic touch to a bathroom or brighten a plain space. Oil rubbed bronze: A deep, warm finish that suits rustic details, wood cabinets, and many traditional bathroom designs. Matte black: A low-shine finish that creates contrast against a white toilet and pairs well with black faucets or accessories. Available finishes vary by model. Compare the finish name when shopping, since polished and brushed versions create different looks. Oil rubbed bronze can naturally develop a patina, or change in color, with use. The finish can look a little different on each piece. Comparing finish samples can help you choose a tone that works with your bathroom\u2019s other fixtures and accessories. Choose Classic or Modern Toilet Handle Styles Kingston\u2019s Victorian and Restoration designs offer classic details for traditional bathrooms. They can work well beside curved faucet handles, framed mirrors, and other pieces with a vintage feel. A decorative toilet handle can carry that style into a part of the room that is often overlooked. For a modern bathroom, explore the simple lines of Concord designs. A clean handle shape can suit a plain vanity and minimal accessories. Look at the shape as well as the finish. Rounded details can echo soft curves around the sink, while straighter lines can connect with square fixtures. Think about comfort, too. Choose a handle shape that feels practical for the people who use the bathroom. Check the product details for features that make the handle easier to use. Check What Comes with Your Replacement Handle Some products include a handle and trip lever arm, while others are replacement handles only. Read the product description to see which parts are included. A handle sold on its own must fit the connection on your existing arm. If your current arm still works, a compatible handle may be enough for a style update. If the arm is damaged, look for an assembly that includes the parts you need. Compare the material, measurements, and connection details before placing your order. Bring Your Bathroom Hardware Together A toilet tank lever is a small detail, but it can help the room feel more finished. Coordinate it with your bathroom faucets, towel bars, and toilet paper holders for a consistent look. You can also mix finishes with a clear plan. For example, repeat a black handle\u2019s finish in a mirror frame or cabinet pulls. Browse Kingston bathroom accessories to find pieces that support your style. You can update a few small details without replacing your fixtures. Plan Your Toilet Handle Replacement A cracked handle, damaged arm, or lever that no longer moves properly may need attention. Check the cause before choosing replacement parts. A loose connection or chain problem may need an adjustment. Follow the instructions that come with your Kingston handle. After fitting the lever, check that the handle returns freely and the arm moves without catching. Flush the toilet to confirm that the connected parts work together. If you are unsure about the fit or repair, ask a qualified plumber for help. Care for Your Toilet Tank Lever Keep the handle clean with mild soap and a soft, damp cloth. Wipe away soap and dry the surface after cleaning. Avoid abrasive pads and cleaners containing bleach, ammonia, acids, or alcohol. Follow the care instructions supplied with your product to help protect its finish. Shop Kingston Toilet Tank Levers Explore Kingston toilet tank levers to find a handle that fits your toilet and your bathroom style. Compare mounting options, finishes, and included parts before you choose. For help selecting a toilet handle, call Kingston\u2019s Kitchen & Bath Experts toll-free at 1-877-252-7277."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/269989085226",
+     "handle": "architectural-collection",
+     "title": "Architectural Collection",
+     "description": {
+      "html": "Kingston has a large selection of Architectural Faucets and Accessories in a variety of styles and finishes. Available in popular colors like Matte Black, Brushed Brass and Nickel. Call our Kitchen & Bath Experts Toll-Free at 1-877-252-7277, for help selecting the perfect Industrial or Nautical design for your project."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/270542209066",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNREE0T1Rrek1EYzVNek00TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}
