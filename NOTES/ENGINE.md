@@ -45,3 +45,16 @@ code adds any sealed value it finds (`sealed_found_in_payload`). The chat model 
   already reads `f.get("read_at")`). Until then figure events carry `at: null`.
 - [ ] A pick has no time and no receipt. A receipt of type `pick` (detail `{line_id, candidate_id, price_cents}`) when a
   line's pick changes would let the trail show "pick moved" with its hash, in order, under the signed limit change.
+## 12:55 from STORE — the sheet 2 pool is in place (reading pass can start)
+Committed on stream/STORE: `data/sheet2/pool/<store>.json` (swissmadison.com 60, horow.com 18, deervalleybath.com 23, kingstonbrass.com 44;
+line ids T1 to T4; extra keys `variants` and `variant_title`), raw replies in `data/sheet2/pool/raw/`, store answers in
+`data/sheet2/store_answers/<store>.json` (same shape as sheet 1). The cookware draft is deleted as agreed, so
+`tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone` (it expects "Shared kitchen" and cookware products) fails on
+my branch until you replace it. Horow states no delivery time (see NOTES/INTEGRATOR.md, "bathroom-fixture pool").
+
+## 13:35 from STORE — the one failing test on my branch is yours, and it is the cookware draft
+`tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone` (and its `two_sheets` fixture) asserts "Shared kitchen",
+3 lines and a `stock_pot` line with qt limits: the cookware sheet whose pool the integrator told me to delete at 12:50 (sheets/sheet2.json is now
+the bathroom sheet, pool in `data/sheet2/pool/`). Nothing in my paths can fix it; it needs your replacement test for the bathroom sheet (or
+deleting it). Until then `uv run -q pytest -q -x` stops at it on stream/STORE; every other test passes (run with
+`--deselect tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone`).

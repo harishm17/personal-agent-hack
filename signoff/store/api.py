@@ -27,7 +27,8 @@ def _engine_state() -> dict | None:
 
 @router.get("/api/sql/passing-box")
 def passing_box(line_id: str):
-    sheet_lines = {l["id"] for l in json.loads((ROOT / "sheets" / "sheet1.json").read_text())["lines"]}
+    from signoff.store import sheetctx
+    sheet_lines = {l["id"] for l in sheetctx.sheet()["lines"]}
     if line_id not in sheet_lines:
         raise HTTPException(404, "unknown line_id")
     state = _engine_state()
@@ -40,16 +41,28 @@ def passing_box(line_id: str):
 
 
 def _do_refresh(live: bool) -> None:
-    from signoff.store import ask, build_pool, fetch
+    from signoff.store import ask, build_pool, fetch, sheet2, sheetctx
     try:
-        out = {"mode": "live" if live else "replay"}
-        if live:
-            out["fetched"] = {f"{s}|{q}": r for (s, q), r in fetch.fetch_raw(force=True).items()}
-        rows = build_pool.build()
+        sid = sheetctx.active_id()
+        out = {"mode": "live" if live else "replay", "sheet": sid}
+        if sid == "sheet1":
+            if live:
+                out["fetched"] = {f"{s}|{q}": r for (s, q), r in fetch.fetch_raw(force=True).items()}
+            rows = build_pool.build()
+        else:  # the other sheets keep their pool under data/<sheet>/ and are built by signoff.store.sheet2
+            if live:
+                out["fetched"] = {f"{s}|{q}": r for (s, q), r in sheet2.fetch(force=True).items()}
+            rows = sheet2.build()
         out["products"] = {s: len(r) for s, r in rows.items()}
         if live:
-            sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
-            out["answers"] = [a["store"] for a in ask.refresh(sheet["stores"])]
+            if sid == "sheet1":
+                sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+                out["answers"] = [a["store"] for a in ask.refresh(sheet["stores"])]
+            else:
+                (sheet2.ANSWERS / "x").parent.mkdir(parents=True, exist_ok=True)
+                for f in sheet2.ANSWERS.glob("*.json"):
+                    f.unlink()
+                out["answers"] = [a["store"] for a in sheet2.ask_stores()]
         try:
             if live:  # reads only the products whose text changed, then reloads the engine
                 out["figures"] = importlib.import_module("signoff.extract.run").refresh()
@@ -109,11 +122,12 @@ if "pytest" not in sys.modules:
 
 
 @router.get("/api/egress")
-def egress_ledger(limit: int = 500):
-    """The outbound ledger: one row per message that left the process (hashes and sizes only, never payloads)."""
+def egress_ledger(limit: int = 500, sheet: str | None = None):
+    """The outbound ledger of the active sheet (or `?sheet=all`): one row per message that left the process, counted from the
+    saved log, so a restart does not reset it. Hashes and sizes only, never payloads."""
     from signoff.obs.egress import rows, summary
-    rs = rows()
-    return {"rows": rs[-max(1, min(limit, 5000)):], "summary": summary(rs)}
+    rs = rows(sheet)
+    return {"sheet": sheet or "active", "rows": rs[-max(1, min(limit, 5000)):], "summary": summary(rs)}
 
 
 def _warm() -> None:
@@ -126,3 +140,9 @@ def _warm() -> None:
 
 if "pytest" not in sys.modules and config.mode() != "replay":
     threading.Thread(target=_warm, name="store-warm", daemon=True).start()
+
+
+@router.get("/api/obs/events")
+def obs_events(n: int = 200, session_id: str | None = None, sheet_id: str | None = None):
+    """The local log of tool-call events (name, at, duration_ms, success), oldest first; the audit trail reads this."""
+    return {"events": obs.recent(max(1, min(n, 5000)), session_id, sheet_id)}

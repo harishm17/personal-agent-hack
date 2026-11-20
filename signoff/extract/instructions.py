@@ -14,6 +14,7 @@ import concurrent.futures
 import datetime
 import hashlib
 import json
+import os
 import pathlib
 import re
 import sys
@@ -131,17 +132,20 @@ def read_planted(model, sheet):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--planted", action="store_true", help="only the planted page")
+    ap.add_argument("--planted", action="store_true", help="only the planted page (sheet 1's invented test page)")
+    ap.add_argument("--sheet", default=os.environ.get("SIGNOFF_SHEET") or "sheet1")
     ap.add_argument("--model", default=config.env("SIGNOFF_READER_MODEL") or reader.DEFAULT_MODEL)
     ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args(argv)
-    sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
-    figures, found = read_planted(args.model, sheet)
-    print("planted page: %d figures, %d instruction passage(s): %s" % (
-        len(figures), len(found), [f["quote"] for f in found]))
+    if args.sheet == "sheet1":
+        sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+        figures, found = read_planted(args.model, sheet)
+        print("planted page: %d figures, %d instruction passage(s): %s" % (
+            len(figures), len(found), [f["quote"] for f in found]))
     if args.planted:
         return 0
-    result = scan(run.pool_files(), args.model, workers=args.workers)
+    out = OUT if args.sheet == "sheet1" else run.sheet_dirs(args.sheet)[1] / "_instructions"
+    result = scan(run.pool_files(sheet_id=args.sheet), args.model, out, workers=args.workers)
     print(json.dumps({k: v for k, v in result.items() if k != "hits"}))
     for hit in result["hits"]:
         for item in hit["instructions"]:

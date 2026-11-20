@@ -124,3 +124,63 @@ def test_the_sentence_around_a_span_holds_the_quote_at_the_stated_place():
     start = long.index("300 lbs")
     sentence, a, b = rules.sentence_around(long, start, start + 7)
     assert len(sentence) < 300 and sentence[a:b] == "300 lbs" and sentence.startswith("… ") and sentence.endswith(" …")
+
+
+def sheet_with(op, bound, kind="single", low=10.0, high=10.0, value=10.0, rule="cheapest_with_delivery_time"):
+    sheet = {"issuer": {"name": "Marco"}, "shopper": {"name": "Priya"}, "need_by": "2026-12-04",
+             "pick_rule": {"id": rule, "label": rule},
+             "shopper_facts": [{"id": "measured", "short": "drain from wall", "label": "x", "value": bound, "unit": "in"}],
+             "lines": [{"id": "T1", "need": "toilet", "room": "bathroom", "fulfilment": "cart", "limits": [
+                 {"id": "T1.rough_in", "name": "rough-in", "terms": [{"source": "store", "figure": "rough_in"}], "op": op,
+                  "bound": {"source": "shopper", "fact": "measured"}, "unit": "in"}]}]}
+    pool = [{"store": "s", "product_id": "p", "variant_id": "v", "title": "t", "price_cents": 100, "url": "u",
+             "fetched_at": "now", "product_key": "k", "line_ids": ["T1"]}]
+    figures = [{"store": "s", "product_id": "p", "figure": "rough_in", "kind": kind, "value": value if kind == "single" else None,
+                "low": low, "high": high, "unit": "in", "quote": "q", "start": 0, "end": 1, "span_found_in_text": True}]
+    return sheet, pool, figures
+
+
+def only_check(sheet, pool, figures, answers=()):
+    state = rules.build_state(sheet, pool, figures, list(answers), [])
+    return state["lines"][0], state["lines"][0]["candidates"][0]["checks"][0]
+
+
+def test_equality_is_a_real_comparison_with_a_margin_of_zero_when_it_matches():
+    line, check = only_check(*sheet_with("==", 10.0))
+    assert (check["expr"], check["pass"], check["margin"], check["state"]) == ("10 == 10", True, 0.0, "pass")
+    line, check = only_check(*sheet_with("==", 10.0, value=12.0))
+    assert (check["expr"], check["pass"], check["margin"]) == ("12 == 10", False, -2.0)
+    assert line["candidates"][0]["status"] == "outside" and line["candidates"][0]["reason"] == "rough-in: 12 == 10 is false"
+    # a spread matches only if both ends do: the end further from the value decides
+    _, check = only_check(*sheet_with("==", 10.0, kind="spread", low=10.0, high=12.0))
+    assert check["expr"] == "12 == 10" and check["pass"] is False
+    # an adjustable range that takes in the value is set to it
+    _, check = only_check(*sheet_with("==", 10.0, kind="adjustable", low=10.0, high=12.0))
+    assert check["expr"] == "10 == 10" and check["pass"] is True
+
+
+def test_an_unknown_comparison_or_pick_rule_is_an_error_not_a_silent_other_one():
+    import pytest
+    sheet, pool, figures = sheet_with("=", 10.0)
+    with pytest.raises(ValueError, match="comparison"):
+        rules.build_state(sheet, pool, figures, [], [])
+    with pytest.raises(ValueError, match="comparison"):
+        rules.validate_sheet(sheet)
+    sheet, pool, figures = sheet_with("==", 10.0, rule="best value")
+    with pytest.raises(ValueError, match="pick rule"):
+        rules.validate_sheet(sheet)
+    rules.validate_sheet(json.loads((ROOT / "sheets" / "sheet1.json").read_text()))
+
+
+def test_the_pick_rule_cheapest_does_not_need_a_delivery_time_and_sheet_ones_rule_still_does():
+    line, _ = only_check(*sheet_with("==", 10.0, rule="cheapest"))
+    assert line["status"] == "ready" and line["pick"] and line["tightest"]["text"] == "matches exactly"
+    assert line["why"]["with_delivery_time"] == 0 and line["candidates"][0]["arrival"]["status"] == "not stated"
+    line, _ = only_check(*sheet_with("==", 10.0))  # the rule that needs a stated time: the same product is not picked
+    assert line["status"] == "open" and line["reason"] == "nothing inside the limits states a delivery time"
+
+
+def test_gallons_per_flush_and_per_minute_are_units_and_litres_convert():
+    assert rules.unit_name("GPF") == "gpf" and rules.unit_name("gallons per minute") == "gpm"
+    assert rules.convert(4.8, "Lpf", "gpf") == 1.27 and rules.convert(1.28, "gpf", "gpf") == 1.28
+    assert rules.convert(1.2, "gpm", "gpf") is None  # a flow is not a flush volume
