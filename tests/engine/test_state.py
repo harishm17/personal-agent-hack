@@ -150,7 +150,7 @@ def test_routes():
     paths = {r.path for r in api.router.routes}
     assert paths == {"/api/state", "/api/events", "/api/shopper/fact", "/api/sheet/canonical", "/api/shopper/say",
                      "/api/drill/session", "/api/drill/say", "/api/drill/state", "/api/receipts", "/api/receipts/verify",
-                     "/api/sheets", "/api/admin/use-sheet"}
+                     "/api/sheets", "/api/admin/use-sheet", "/api/reads/ledger"}
 
 
 def test_the_reader_can_be_switched_to_another_readers_run(tmp_path):

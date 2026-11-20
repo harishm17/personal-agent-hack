@@ -115,6 +115,17 @@ def use_sheet(body: UseSheet):
             "receipts": new["receipts"]}
 
 
+@router.get("/api/reads/ledger")
+def read_ledger(rows: bool = True):
+    """What each reading call behind the running sheet's figures was given and what was withheld: the committed
+    rows (`signoff.extract.ledger`), with a summary. `?rows=false` for the summary alone."""
+    from signoff.extract import ledger
+    made = ledger.rows(state.get_state()["sheet"]["id"])
+    if not rows:
+        made.pop("rows")
+    return made
+
+
 @router.get("/api/receipts")
 def get_receipts():
     """The receipt chain, oldest first (the newest is last): every change applied and every signed request."""

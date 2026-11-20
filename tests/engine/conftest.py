@@ -1,6 +1,7 @@
 import os
 
 os.environ["SIGNOFF_OBS"] = "off"  # tests send no analytics events
+os.environ["SIGNOFF_EGRESS"] = "off"  # and a faked model call leaves no row in the outbound ledger
 os.environ["SIGNOFF_RECEIPTS"] = "memory"  # tests keep the receipt chain in memory; one test writes a file on purpose
 
 import pytest  # noqa: E402

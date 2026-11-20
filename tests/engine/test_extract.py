@@ -234,3 +234,22 @@ def test_a_grade_number_and_a_number_joined_to_a_word_are_not_rival_quantities()
     three = spans.quote_numbers("100 perforated, 3-hole punched sheets each")
     assert [(n["value"], n["family"]) for n in three] == [(100.0, None), (3.0, "other unit")]
     assert spans.quote_numbers("10-inch rough-in")[0]["family"] == "length"
+
+
+def test_a_read_ledger_row_says_what_the_call_was_given_and_what_was_withheld():
+    from signoff.extract import ledger
+    sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+    page = {"store": "s.example", "product_id": "p1", "variant_id": "v1", "title": "Chair", "text": TEXT, "line_ids": ["L1"],
+            "price_cents": 4199}
+    row = ledger.row_for(page, sheet, "claude-sonnet-5-5", "anthropic:claude-sonnet-5-5", "2026-11-20T13:00:00-08:00")
+    sent = json.dumps({"system": reader.SYSTEM, "user": reader.prompt_for(page, ["weight_capacity", "overall_width"], sheet)},
+                      ensure_ascii=False, sort_keys=True)
+    assert row["bytes"] == len(sent.encode()) and row["tools"] == 0 and row["withheld"] == ledger.WITHHELD
+    assert [p["what"].split(" ")[0] for p in row["parts"]] == ["reading", "figure", "the"]
+    assert sum(p["bytes"] for p in row["parts"]) == len(reader.SYSTEM.encode()) + len(reader.prompt_for(page, row["parts"][1]["figures"], sheet).encode())
+    # by construction everything in the prompt that is not the store's own page holds no limit, no measurement,
+    # no price and nobody's name; and the example at the end of the instructions is no sheet's figure or bound
+    ours = sent.replace(json.dumps(TEXT, ensure_ascii=False)[1:-1], "")
+    for withheld in ("300", "21.5", "28", "4199", "41.99", "Dana", "Elena", '"lb"'):
+        assert withheld not in ours
+    assert "added_by_the_command_line" in row  # the command line adds its own note: said, not hidden
