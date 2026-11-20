@@ -76,7 +76,7 @@ function renderRows() {
   const strip = (lit) => `<span class="strip">${all.map((r) => `<i class="${lit(r) ? "on" : ""}"></i>`).join("")}</span>`;
   const cart = all.filter((r) => r.cart).length;
   q("#cover").innerHTML = `<button class="cv" id="cartview" aria-pressed="${ui.cartOnly}"><span>A signature over the cart covers</span><b>${cart} of ${all.length} rows</b>${strip((r) => r.cart)}</button>
-    <div class="cv"><span>This signature covers</span><b>${all.length} of ${all.length} rows</b>${strip(() => true)}</div>`;
+    <div class="cv"><span>${ui.proof.signed ? "This signature covers" : "A signature here will cover"}</span><b>${all.length} of ${all.length} rows</b>${strip(() => true)}</div>`;
 }
 
 // ---------- the fingerprint and the check ----------
@@ -92,7 +92,7 @@ function renderCheck() {
   const onPhone = real.signedFingerprint || real.fingerprint;  // the phone computes it from the same canonical text
   const same = r.fingerprint === onPhone;
   q("#codes").innerHTML = `<span class="code ${same ? "" : "off"}" title="${esc(r.fingerprint)}">${esc(short(r.fingerprint))}</span>
-    <span class="phone">${ICON.phone}<span>${esc(who)}'s phone ${p.signed ? "showed" : "shows"} ${same ? "the same code" : `<code>${esc(short(onPhone))}</code>`}</span></span>`;
+    <span class="phone">${ICON.phone}<span>${esc(who)}'s phone ${p.signed ? "showed" : p.public_key ? "shows" : "will show"} ${same ? "the same code" : `<code>${esc(short(onPhone))}</code>`}</span></span>`;
   q("#sum").textContent = p.summary.text;
   const restore = edited ? `<button class="link" id="restore">Restore</button>` : "";
   let html;
