@@ -16,7 +16,7 @@ function marked(text, spans, tag) {
   return out + esc(text.slice(at));
 }
 
-const withheld = (t) => t.turns.reduce((n, turn) => n + turn.removed.length, 0);
+const withheld = (t) => t.turns.reduce((n, turn) => n + turn.removed.length, 0) || (t.purpose_removed || []).length;
 const notSent = (t) => t.turns.filter((turn) => !turn.sent).length;
 
 function renderTop() {
@@ -50,7 +50,8 @@ function renderList() {
 function turnHtml(t, turn, prev) {
   const key = t.id + ":" + turn.n, open = ui.open.has(key);
   const counts = {};
-  for (const s of turn.removed) counts[s.mark] = (counts[s.mark] || 0) + 1;
+  const said = turn.n === 1 ? t.purpose_removed || [] : [];
+  for (const s of turn.removed.length ? turn.removed : said) counts[s.mark] = (counts[s.mark] || 0) + 1;
   const marks = Object.entries(counts).map(([m, n]) => `<span class="pill">${esc(m)}${n > 1 ? `<i>${n}</i>` : ""}</span>`).join("");
   let ours;
   if (turn.sent) {
@@ -61,8 +62,8 @@ function turnHtml(t, turn, prev) {
   } else {
     ours = `<div class="who ours-who"><span class="bad">Not sent</span></div><div class="msg ours refused">${esc((turn.why || "").replace(/^./, (c) => c.toUpperCase()))}</div>`;
   }
-  const row = turn.removed.length ? `<button class="wh" data-open="${esc(key)}" aria-expanded="${open}">Withheld ${marks}<span class="caret">${open ? "▴" : "▾"}</span></button>` : "";
-  const behind = open ? `<div class="behind">${turn.n === 1 && t.origin === "shopper" ? `<span class="cap">The shopper's words</span>${esc(t.purpose)}` : ""}
+  const row = turn.removed.length || said.length ? `<button class="wh" data-open="${esc(key)}" aria-expanded="${open}">Withheld ${marks}<span class="caret">${open ? "▴" : "▾"}</span></button>` : "";
+  const behind = open ? `<div class="behind">${turn.n === 1 && t.origin === "shopper" ? `<span class="cap">The shopper's words</span>${marked(t.purpose, t.purpose_removed || [], "s")}` : ""}
       <span class="cap">The agent's draft</span>${marked(turn.draft, turn.removed, "s")}
       ${turn.still.length ? `<span class="cap">Rewritten once, still not clean</span>${marked(turn.rewritten || "", turn.still, "s")}` : ""}</div>` : "";
   const reply = turn.reply ? `<div class="who">${esc(t.store)}'s agent</div><div class="msg theirs">${marked(turn.reply, turn.answers || [], "mark")}</div>` : "";

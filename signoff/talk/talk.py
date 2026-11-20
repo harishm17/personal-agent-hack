@@ -161,6 +161,8 @@ def ask(store: str, purpose: str, product_id: str | None = None, sheet: dict | N
               "rule": guard.rule(sheet), "writer": writer.NAME, "span_model": "sie:" + guard.SPAN_MODEL,
               "turns": [], "status": None}
     try:
+        if origin == "shopper":  # the shopper's words are text that would otherwise be forwarded: the guard reads them too
+            thread["purpose_removed"] = guard.check(purpose, sheet, prod, finder)
         first = draft(purpose, known)
         turn = _turn(1, first["message"], first["questions"], thread, sheet, prod, deps)
         if turn["sent"]:
@@ -196,10 +198,16 @@ def plan(state: dict, sheet: dict) -> list:
     return out
 
 
+def _spans(spans: list) -> list:
+    return [{"text": s["text"], "class": s["kind"], "mark": s["mark"], "rule": s["rule"], "by": s["by"],
+             "start": s["start"], "end": s["end"]} for s in spans]
+
+
 def messages(sheet: dict) -> list:
     """Every outbound message of the sheet's saved threads, flat and oldest first: what the model wrote, what the guard
     stopped and by which rule, what left, which permitted facts it carried, and the store agent's reply with the
-    offsets of the answering words."""
+    offsets of the answering words. `purpose_removed`: what the guard finds in the shopper's own words (offsets in
+    `purpose`); null for the agent's own questions, for a follow-up, and for a thread saved before 14:15 on 20 Nov."""
     out = []
     for t in threads(sheet["id"]):
         prod = {"product_id": t.get("product_id"), "title": t.get("title")} if t.get("title") else None
@@ -214,8 +222,8 @@ def messages(sheet: dict) -> list:
                 "store": t["store"], "product": prod and {"id": prod["product_id"], "title": prod["title"]},
                 "at": turn.get("at") or turn.get("reply_at") or t["asked_at"], "purpose": t["purpose"],
                 "draft": turn["draft"],
-                "removed": [{"text": s["text"], "class": s["kind"], "mark": s["mark"], "rule": s["rule"], "by": s["by"],
-                             "start": s["start"], "end": s["end"]} for s in turn["removed"]],
+                "removed": _spans(turn["removed"]),
+                "purpose_removed": _spans(t["purpose_removed"]) if turn["n"] == 1 and "purpose_removed" in t else None,
                 "decision": turn["decision"], "why": turn.get("why"), "sent": turn["sent"],
                 "left": guard.left(turn["sent"], sheet, prod) if turn["sent"] else [],
                 "reply": reply})
