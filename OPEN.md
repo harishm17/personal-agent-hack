@@ -114,6 +114,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | T2 | `/trail/`: the seven steps as a timeline, events one line each, side sheet with quote and hash | open |
 | T4 | context per model call made visible from the ledger: given (one page, figure meanings) and not given (limits, prices, other pages, the order, people); one summary line with real counts | open |
 | T5 | the replay at the top of /trail/: real context as cards moving from where it lives into each step and out to the result; a model call's context window; the guard; memory written and recalled; play, step, scrub; on main by 14:45 | open |
+| T6 | "What left, and what never did": on `/trail/`, a matrix of the classes of fact the agent holds (rows, from the records and the sharing rule) against every recipient in the outbound ledger (columns); each cell sent · N, stopped · N or never, each clickable to its ledger or guard records; "not recorded" where the ledger cannot tell; a leak shown in red; real totals in one line (the builder, 14:40) | open |
 | T3 | the decision screen's visual system; no dots, no arrows | open |
 
 ## MEMORY
