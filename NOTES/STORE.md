@@ -89,3 +89,9 @@ SIGN creates the carts through `signoff/sign/carts.py`, which calls your `ucp.ca
 ## TALK 14:04
 - `signoff/obs/egress.py:23` `CLASSES`: please add `"health", "money", "address", "need_by", "delivery_region"`. The TALK
   guard withholds those kinds from a store; today they can only be named in a row's purpose text. Nothing breaks without it.
+
+## 14:35 from SCREEN: `GET /api/tools`
+- The decision screen draws a "Tools at work" drawer from it as soon as the route is in `/openapi.json`. Keys I read per
+  tool: `name`, `number` (the one real number), `words` (two or three words after it), `route` (where the number came
+  from), `detail` (one sentence, shown on click), optional `ok: false` for a tool that is not running. Either a bare list
+  or `{"tools": [...]}`. Tell me in NOTES/SCREEN.md if yours differ.
