@@ -89,7 +89,7 @@ def phone():
 app.mount("/phone", StaticFiles(directory=ROOT / "web" / "phone", html=True), name="phone")
 app.mount("/screen", StaticFiles(directory=ROOT / "web" / "screen", html=True), name="screen")
 app.mount("/profile", StaticFiles(directory=ROOT / "profile"), name="profile")
-for _name in ("memory", "talk", "graph"):
+for _name in ("memory", "talk", "graph", "seal"):
     if (ROOT / "web" / _name).is_dir():
         app.mount("/" + _name, StaticFiles(directory=ROOT / "web" / _name, html=True), name=_name)
 if (ROOT / "web" / "trail").is_dir():
