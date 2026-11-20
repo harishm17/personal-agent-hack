@@ -92,7 +92,7 @@ def _figure_rows(state: dict) -> tuple[list, list]:
                                  _unit(f.get("unit")), f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
                                  1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0,
                                  None if f.get("number_in_quote") is None else (1 if f.get("number_in_quote") else 0),
-                                 f.get("for_other_option")))
+                                 f.get("for_other_option") or f.get("disagree")))
                 for other in f.get("possible") or []:
                     if isinstance(other, (int, float)) and not isinstance(other, bool):
                         idx = seen[f["figure"]] = seen[f["figure"]] + 1
@@ -100,7 +100,7 @@ def _figure_rows(state: dict) -> tuple[list, list]:
                                          f.get("quote"), f.get("start"), f.get("end"), f.get("extractor"),
                                          1 if f.get("span_found_in_text") else 0, 1 if f.get("unsure") else 0,
                                          None if f.get("number_in_quote") is None else (1 if f.get("number_in_quote") else 0),
-                                         f.get("for_other_option")))
+                                         f.get("for_other_option") or f.get("disagree")))
     return pool_rows, fig_rows
 
 
