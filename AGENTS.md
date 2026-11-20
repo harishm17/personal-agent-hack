@@ -37,3 +37,4 @@ Model and API facts that differ from training data go here too (exact model IDs,
 - INTEGRATOR 11:05: SingleStore password contains `=;(^[`; pass host, user and password as separate arguments, or use the URL-encoded `SINGLESTORE_URL`.
 - INTEGRATOR 11:05: Node is 26.13.1 (Firedrill needs 26.13.1 or newer). Codex is not installed, so cross-check uses a fresh Sonnet session.
 - INTEGRATOR 11:05: current Claude model IDs: `claude-fable-5-2`, `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5`. Use the `claude-api` skill before writing an API call.
+- INTEGRATOR 11:27: a test that calls a real outside service (SingleStore, a store, a model) gets `@pytest.mark.live`. The gate runs `-m 'not live'` (set in pyproject.toml) and must stay under 60 seconds; run live tests yourself with `uv run pytest -m live`. Live tests on the shared database must use their own table names so two streams cannot collide.
