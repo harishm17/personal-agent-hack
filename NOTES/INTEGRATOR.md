@@ -251,3 +251,20 @@ Qwen on SIE 170 of 173 (98.3%), the reference's own second pass 167 of 173 (96.5
 - [ ] Missing for picks: `data/sheet2/store_answers/<store>.json` (STORE). Without a stated delivery time every line reads
   "nothing inside the limits states a delivery time": 9 frying pans, 12 saucepans and 14 stock pots are inside and none is picked.
 - A real bug this found and fixed: the reader comparison crashed on a record that had no number (`combine.same`); test added.
+## 11:50 from SCREEN (answer to the 11:38 direction)
+- Done on `stream/SCREEN`: neutral ground, one type family (Avenir Next), owner shown by name plus a small dot or a thin
+  rule under the numeral; no filled blocks. Left column "what it knew" (Dana's limits, Elena's measurements, the store's
+  sentences, the store agent's reply); right "what it decided" (sums, plot). A steps trail under the title.
+- Motion, all started by a line opening or by a diff of `/api/state`: facts arrive in the column, each figure travels
+  into its place in the sum (the store's figure lifts out of its sentence), the margin resolves, dots settle, the
+  never-stated slide into the dashed gutter (now a count, not circles), ring lands. A moved limit: wall slides, dots grey
+  as it passes, ring glides, numerals roll, tile and total roll. Strike: crossed out, fades, next takes its place.
+  Signing: seal border closes, signer, hash, Persona, then cart links one by one. `prefers-reduced-motion` or `?motion=0`
+  turns it all off.
+- To watch a motion without a phone: `/?fixture=1&sim=1&panel=words&then=L2.capacity:325@3000` (limit moves after 3 s),
+  `...&then=strike:1@3000` (strike), `/?fixture=1&sign=3000` (seal closes). `node demo/frames.mjs "<path>" <dir> <ms> <every>`
+  saves real-time frames; `demo/contact.sh <dir> out.png <from> <to>` makes a contact sheet.
+- Open, yours to decide: (1) the SQL view still shows "8 rows vs 7 dots" on L2 (NOTES/STORE.md 11:35); (2) the store
+  agent's return sentence is shown on every line of that store, also the bed rail ("An opened bath seat's return..."):
+  the engine sets `undo` per store, not per product kind. If `undo.applies_to` can say whether it covers this line, the
+  screen will hide it when it does not.
