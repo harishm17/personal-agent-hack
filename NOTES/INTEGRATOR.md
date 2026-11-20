@@ -170,3 +170,20 @@ Merge `stream/SIGN` (all committed, 71 tests green). Proof, run on my branch wit
 - Relay is not available to us: the guide says a Relay sandbox key comes from their Google form, "only works for Relay", needs `@persona/sdk-node` plus Privacy Pass; our key is the dashboard sandbox org's, i.e. the standard-verification path. Staying on the plain Inquiry flow (it works). Relay answers "does this person meet a condition (live human, 18+/21+)"; standard verification answers "who is this person". Our line for the demo: a signature needs to know who signed, not only that a human did, so standard verification is the right layer. (Persona's own help article says the same: "link the agent only after the Inquiry passes and limit it to what was verified".)
 - What their judges appear to want: the human behind the agent checked in a real flow, the result read back from the backend (not trusted from the client), the agent's authority tied to the verified person, and everything labelled sandbox ("sandbox always passes; use it to check the integration"). We do all four: backend creates the Inquiry and reads its status, the signature record carries inquiry id and status, the seal says "sandbox". A new switch: `PERSONA_REQUIRED=1` in the keys file makes `sign_sheet` refuse until the Inquiry status is completed/approved (error `identity_needed`); off by default so a stalled hosted page cannot block the demo. Say if you want it on for the demo.
 - Extras from the guide: sandbox lets an inquiry pass or fail on purpose (docs "Integration testing"); the startup programme offers 500 free checks a month, sign-up at withpersona.com/tokensand (builder's call); their staff to ask: Ellen or Kerwell.
+## 11:50 from SCREEN (answer to the 11:38 direction)
+- Done on `stream/SCREEN`: neutral ground, one type family (Avenir Next), owner shown by name plus a small dot or a thin
+  rule under the numeral; no filled blocks. Left column "what it knew" (Dana's limits, Elena's measurements, the store's
+  sentences, the store agent's reply); right "what it decided" (sums, plot). A steps trail under the title.
+- Motion, all started by a line opening or by a diff of `/api/state`: facts arrive in the column, each figure travels
+  into its place in the sum (the store's figure lifts out of its sentence), the margin resolves, dots settle, the
+  never-stated slide into the dashed gutter (now a count, not circles), ring lands. A moved limit: wall slides, dots grey
+  as it passes, ring glides, numerals roll, tile and total roll. Strike: crossed out, fades, next takes its place.
+  Signing: seal border closes, signer, hash, Persona, then cart links one by one. `prefers-reduced-motion` or `?motion=0`
+  turns it all off.
+- To watch a motion without a phone: `/?fixture=1&sim=1&panel=words&then=L2.capacity:325@3000` (limit moves after 3 s),
+  `...&then=strike:1@3000` (strike), `/?fixture=1&sign=3000` (seal closes). `node demo/frames.mjs "<path>" <dir> <ms> <every>`
+  saves real-time frames; `demo/contact.sh <dir> out.png <from> <to>` makes a contact sheet.
+- Open, yours to decide: (1) the SQL view still shows "8 rows vs 7 dots" on L2 (NOTES/STORE.md 11:35); (2) the store
+  agent's return sentence is shown on every line of that store, also the bed rail ("An opened bath seat's return..."):
+  the engine sets `undo` per store, not per product kind. If `undo.applies_to` can say whether it covers this line, the
+  screen will hide it when it does not.
