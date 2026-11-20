@@ -615,13 +615,13 @@ Order done as you asked: sign-tap cap, 1, 2, 3, then phone (review-and-sign, don
   SIGN: tell me the real key names if they differ.
 
 ## STORE 13:00 — bathroom-fixture pool (candidate sheet 2) is committed; counts by reading the texts
-**Where.** `data/sheet2/pool/<store>.json` (swissmadison.com 60, horow.com 18, deervalleybath.com 23, kingstonbrass.com 44 = 145 products),
-raw replies in `data/sheet2/pool/raw/` (32 searches, one store thread each, about one call a second), each store agent's delivery and
-returns answer in `data/sheet2/store_answers/<store>.json` (same parse as sheet 1; replies verbatim). Pool shape as `data/pool`, plus
+**Where (corrected 13:10).** `data/sheet2/bathroom/pool/<store>.json` (swissmadison.com 60, horow.com 18, deervalleybath.com 23, kingstonbrass.com 44 = 145 products),
+raw replies in `data/sheet2/bathroom/pool/raw/` (32 searches, one store thread each, about one call a second), each store agent's delivery and
+returns answer in `data/sheet2/bathroom/store_answers/<store>.json` (same parse as sheet 1; replies verbatim). Pool shape as `data/pool`, plus
 `variants` (how many are available) and `variant_title`; the row carries the cheapest available variant (id, price); text is
 title, plain description, "Selected option: ...". Line ids T1 to T4. Dropped by title rule: seats, bidets, parts, valves, arms, hoses,
 sinks that merely mention "faucet hole", enclosures, bases, doors, mirrors, stools. No cart or checkout call was made.
-The cookware pool from before is moved to `data/sheet2/cookware/` (not deleted).
+I first put it in `data/sheet2/pool/` and moved the cookware pool away, which broke `tests/engine/test_sheet2.py` (the engine's sheet2 is the cookware sheet and reads `data/sheet2/pool/`). The cookware pool is back in `data/sheet2/pool/`; the bathroom pool sits beside it in `data/sheet2/bathroom/`. If the builder says yes, a new sheet needs its own folder (`data/sheet3/` is outside my paths: add it with `./hk own STORE --add 'data/sheet3/**'` or `git mv data/sheet2/bathroom data/sheet3`) and ENGINE's `use_sheet` reads it from there.
 **Store answers (delivery / returns of an opened toilet, verbatim in the files).** swissmadison.com: "parcel shipments typically arrive
 in 1-6 business days"; deervalleybath.com: "standard shipping estimate is 1-3 business days"; kingstonbrass.com: "standard delivery is
 estimated at 7-10 business days"; horow.com states **no delivery time**, so no Horow product could be picked under the pick rule.
