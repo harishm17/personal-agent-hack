@@ -11,7 +11,9 @@ const FIXTURE = { 1: "/screen/fixture-state.json", signed: "/screen/fixture-sign
 const q = (sel, root = document) => root.querySelector(sel);
 
 let server = null, state = null, raw = "";
-const ui = { open: new Set(), drawer: null, sim: { limits: {}, facts: {}, strikes: [] } };
+// ?open=unstated,outside expands trays; ?drawer=pick|shopper opens the side sheet (so a view can be linked and pictured)
+const ui = { open: new Set((params.get("open") || "").split(",").filter(Boolean)), drawer: params.get("drawer"), chat: [], busy: false,
+  sim: { limits: {}, facts: {}, strikes: [] } };
 if (SIM) {
   for (const pair of (params.get("set") || "").split(",").filter(Boolean)) {
     const [id, v] = pair.split(":");
@@ -36,11 +38,14 @@ async function load() {
     if (text === raw) return;
     raw = text;
     server = JSON.parse(text);
-    state = SIM && (Object.keys(ui.sim.limits).length || Object.keys(ui.sim.facts).length) ? simulate(server, ui.sim) : server;
-    render();
+    apply();
   } catch (error) {
     if (!state) q("#main").innerHTML = `<p class="wait">Waiting for the engine…</p>`;
   }
+}
+function apply() {
+  state = SIM && (Object.keys(ui.sim.limits).length || Object.keys(ui.sim.facts).length) ? simulate(server, ui.sim) : server;
+  render();
 }
 let live = false;
 if (params.get("live") !== "0") {
@@ -89,6 +94,7 @@ function renderTop() {
     ${mode ? `<span class="pill">${mode}</span>` : ""}${SIM ? `<span class="pill">Simulation</span>` : ""}
     <span class="pill ${seal.signed ? "signed" : ""}">${seal.signed ? "Signed " + time : "Not signed"}</span>
     <span class="total">${money(state.total_cents)}</span>
+    <button class="ghost" data-open="shopper" title="${esc(sheet.shopper.name)}'s measurements and her chat with the agent">${esc(sheet.shopper.name)}</button>
     <a class="ghost" href="/?view=detail${location.hash}">Detail</a>`;
 }
 
@@ -246,9 +252,46 @@ function renderSide(line, s) {
 }
 
 // ---------- the drawer: everything longer than a label ----------
+function factsOfLine(sheetLine) {
+  const ids = new Set();
+  for (const limit of sheetLine.limits) {
+    for (const t of limit.terms) if (t.source === "shopper") ids.add(t.fact);
+    if (limit.bound.source === "shopper") ids.add(limit.bound.fact);
+  }
+  return state.sheet.shopper_facts.filter((f) => ids.has(f.id));
+}
+const slider = (kind, id, label, value, unit, b) => `<label class="field"><span>${esc(cap(label))}</span><output>${num(value, unit)} ${esc(unit)}</output>
+  <input type="range" data-kind="${kind}" data-id="${esc(id)}" data-unit="${esc(unit)}" min="${b.min}" max="${b.max}" step="${b.step}" value="${value}"></label>`;
+const chatHtml = (t) => `<p class="said">\u201c${esc(t.text)}\u201d</p><p>${t.refused ? '<span class="refused">Refused</span> ' : ""}${esc(t.reply)}</p>`;
+
+/** The shopper's sheet: her measurements for this line and her chat with the agent. In ?sim=1 also the limits. */
+function renderShopper(el, line) {
+  if (el.dataset.for === "shopper:" + line.line_id && el.contains(document.activeElement) && document.activeElement !== document.body) {
+    for (const input of el.querySelectorAll("input[type=range]")) {     // keep the control being used; refresh the readouts
+      const f = state.sheet.shopper_facts.find((x) => x.id === input.dataset.id);
+      if (f && input.dataset.kind === "fact") input.previousElementSibling.textContent = `${num(f.value, f.unit)} ${f.unit}`;
+    }
+    return;
+  }
+  el.dataset.for = "shopper:" + line.line_id;
+  const sheetLine = state.sheet.lines.find((l) => l.id === line.line_id), shopper = state.sheet.shopper;
+  const facts = factsOfLine(sheetLine), last = ui.chat[ui.chat.length - 1];
+  el.innerHTML = `<button class="x" data-close>Close</button>
+    <h2><i class="od shopper"></i>${esc(shopper.name)}${shopper.invented ? " \u00b7 invented shopper" : ""}</h2>
+    ${facts.map((f) => slider("fact", f.id, f.label, f.value, f.unit, f)).join("") || `<p>No measurement on this item</p>`}
+    ${SIM ? `<h3>Simulation only, not ${esc(state.sheet.issuer.name)}'s phone</h3>` + sheetLine.limits.filter((l) => l.bound.source === "issuer")
+      .map((l) => slider("limit", l.id, l.label, l.bound.value, l.unit, l.bound)).join("") : ""}
+    <h3>Ask the agent</h3>
+    <form id="say"><input id="sayText" name="say" type="text" autocomplete="off" aria-label="Message to the agent" placeholder="Put the struck one back\u2026"><button class="ghost" type="submit">Send</button></form>
+    <div id="reply" aria-live="polite">${last ? chatHtml(last) : ""}</div>`;
+}
+
 function renderDrawer(line) {
-  const el = q("#drawer"), c = line.candidates.find((x) => x.id === ui.drawer);
+  const el = q("#drawer");
+  if (ui.drawer === "shopper") { el.hidden = false; return renderShopper(el, line); }
+  const c = ui.drawer === "pick" ? pickOf(line) : line.candidates.find((x) => x.id === ui.drawer);
   el.hidden = !c;
+  el.dataset.for = "";
   if (!c) return;
   const seen = new Set(), quotes = [];
   for (const ch of c.checks) for (const t of ch.terms) {
@@ -270,10 +313,49 @@ function renderDrawer(line) {
     <p><a class="link" href="/?view=detail&panel=sql#${line.line_id}">SQL for this line</a></p>`;
 }
 
+// ---------- the shopper's controls ----------
+let factTimer = null;
+document.addEventListener("input", (e) => {
+  const input = e.target.closest("input[type=range]");
+  if (!input) return;
+  const value = parseFloat(input.value), id = input.dataset.id;
+  input.previousElementSibling.textContent = `${num(value, input.dataset.unit)} ${input.dataset.unit}`;
+  if (input.dataset.kind === "limit") { ui.sim.limits[id] = value; return apply(); }
+  if (SIM) { ui.sim.facts[id] = value; return apply(); }
+  clearTimeout(factTimer);
+  factTimer = setTimeout(async () => {
+    try {
+      const res = await fetch("/api/shopper/fact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fact_id: id, value }) });
+      if (!res.ok) throw new Error(res.status);
+      load();
+    } catch (error) { q("#reply").innerHTML = `<p>The engine did not take the change (${esc(error.message)}).</p>`; }
+  }, 60);
+});
+document.addEventListener("submit", async (e) => {
+  if (e.target.id !== "say") return;
+  e.preventDefault();
+  const box = q("#sayText"), text = box.value.trim();
+  if (!text || ui.busy) return;
+  ui.busy = true;
+  q("#reply").innerHTML = `<p class="said">\u201c${esc(text)}\u201d</p><p>\u2026</p>`;
+  try {
+    const res = await fetch("/api/shopper/say", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
+    if (!res.ok) throw new Error(res.status);
+    const out = await res.json();
+    ui.chat.push({ text, reply: out.reply, refused: !!out.refused });
+    box.value = "";
+  } catch (error) {
+    ui.chat.push({ text, reply: `The agent is not connected (${error.message}).`, refused: false });
+  }
+  ui.busy = false;
+  if (q("#reply")) q("#reply").innerHTML = chatHtml(ui.chat[ui.chat.length - 1]);
+  load();
+});
+
 // ---------- interaction ----------
 document.addEventListener("click", (e) => {
   const t = e.target.closest("[data-toggle], [data-open], [data-close], [data-id]");
-  if (!t) return;
+  if (!t || t.matches("input")) return;
   if (t.dataset.toggle) { ui.open.has(t.dataset.toggle) ? ui.open.delete(t.dataset.toggle) : ui.open.add(t.dataset.toggle); }
   else if (t.dataset.close !== undefined) ui.drawer = null;
   else ui.drawer = t.dataset.open || t.dataset.id;
@@ -281,6 +363,8 @@ document.addEventListener("click", (e) => {
 });
 addEventListener("keydown", (e) => {
   if (e.key === "Escape" && ui.drawer) { ui.drawer = null; render(); }
+  if (e.target.tagName === "INPUT") return;
+  if (e.key === "e") { e.preventDefault(); ui.drawer = ui.drawer === "shopper" ? null : "shopper"; render(); q("#sayText")?.focus(); }
   const n = parseInt(e.key, 10);
   if (state && n >= 1 && n <= state.lines.length && !e.metaKey && !e.ctrlKey) location.hash = state.lines[n - 1].line_id;
 });
