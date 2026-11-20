@@ -5,7 +5,7 @@ from signoff.obs import tools
 
 def test_a_row_has_the_agreed_keys_and_a_short_job():
     r = tools._row("X", "Four word job here", 3, "things", "detail.", "/api/x", True, "live")
-    assert set(r) == {"tool", "job", "number", "unit", "detail", "source", "ok", "live", "agrees", "basis"} and r["ok"] is True and r["live"] is True and r["agrees"] is None
+    assert set(r) == {"tool", "job", "number", "unit", "headline", "detail", "source", "ok", "live", "agrees", "basis"} and r["ok"] is True and r["live"] is True and r["agrees"] is None
     try:
         tools._row("X", "this job has far too many words", 1, "u", "d", "s", True, "b")
     except AssertionError:
@@ -31,3 +31,11 @@ def test_a_tool_without_a_real_call_is_absent_not_invented(monkeypatch):
     monkeypatch.setattr(tools, "_firedrill", lambda: None)
     out = asyncio.run(tools.build(object()))
     assert out["tools"] == [] and {a["tool"] for a in out["absent"]} >= {"SingleStore", "Airbyte", "Statsig", "Amplitude", "Senso", "Persona", "Cognee"}
+
+
+def test_every_row_says_what_its_number_counts():
+    r = tools._row("SingleStore", "Candidates inside, in SQL", 8, "candidates pass the limits in one SQL statement", "d", "/api/x", True, "b")
+    assert r["headline"] == "8 candidates pass the limits in one SQL statement"
+    src = open(tools.__file__).read()
+    for bare in ('"rows delivered"', '"candidates inside the limits"', '"sentences checked"', '"datasets",', '"campaigns run"'):
+        assert bare not in src, bare

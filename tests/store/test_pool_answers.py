@@ -85,3 +85,10 @@ def test_returns_and_delivery_are_read_from_the_right_sentences():
     r = ask.parse_reply("x", "q", "The store doesn\u2019t accept returns or exchanges, including for opened drinks.", "t")
     assert r["returns"]["returnable"] == "no"
     assert ask.returnable_from("Returns are accepted within 30 days.") == "unclear"  # nothing about an opened item
+
+
+def test_no_region_is_hard_coded_in_the_question():
+    q = ask.question_for("toilet")
+    assert "California" not in q and " to a " not in q and "how many days will delivery take" in q
+    assert "to a California address" in ask.question_for("toilet", "a California address")
+    assert ask.region_for("sheet2") is None  # none of the sheets names one

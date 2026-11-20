@@ -25,6 +25,8 @@ def test_timed_passes_result_and_exception_through():
 
 
 def test_events_are_kept_in_a_local_log_with_timings(monkeypatch, tmp_path):
+    from signoff.store import sheetctx
+    monkeypatch.setattr(sheetctx, "active_id", lambda: "sheetX")
     monkeypatch.setattr(obs, "LOG", tmp_path / "events.jsonl")
     obs.session("sheetX")
     obs.tool_call("store.search_catalog", {"q": "a"}, {"n": 1}, True, 120.0)
@@ -34,3 +36,22 @@ def test_events_are_kept_in_a_local_log_with_timings(monkeypatch, tmp_path):
     assert rows[0]["duration_ms"] == 120.0 and rows[0]["success"] is True and rows[1]["error"] == "boom"
     assert rows[0]["at"] < rows[0]["ended_at"] and rows[0]["session_id"].startswith("sheetX-")
     assert obs.recent(1)[0]["name"] == "check_run"
+
+
+def test_the_session_is_named_from_the_active_sheet_and_a_new_sheet_starts_a_new_one(monkeypatch, tmp_path):
+    from signoff.store import sheetctx
+    monkeypatch.setattr(obs, "LOG", tmp_path / "events.jsonl")
+    monkeypatch.setitem(obs._state, "session_id", None)
+    monkeypatch.setitem(obs._state, "sheet_id", None)
+    monkeypatch.setattr(sheetctx, "active_id", lambda: "sheet4")
+    obs.tool_call("check_run", {}, {}, True, 1.0)
+    first = obs._state["session_id"]
+    assert first.startswith("sheet4-") and "sheet1" not in first
+    obs.tool_call("check_run", {}, {}, True, 1.0)
+    assert obs._state["session_id"] == first  # same sheet, same session
+    monkeypatch.setattr(sheetctx, "active_id", lambda: "sheet3")
+    obs.tool_call("check_run", {}, {}, True, 1.0)
+    assert obs._state["session_id"].startswith("sheet3-") and obs._state["session_id"] != first
+    rows = obs.recent(10)
+    assert [r["sheet_id"] for r in rows] == ["sheet4", "sheet4", "sheet3"] and all(r["pid"] for r in rows)
+    obs.flush()
