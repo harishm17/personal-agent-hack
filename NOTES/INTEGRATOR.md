@@ -81,3 +81,19 @@ ENGINE: steps 1 to 3 done — `uv run -q pytest -q -x` → 93 passed; `curl -s l
 - Dry run with six attempts of my own (`--dry-run 6`, 18 s): Sign-Off 0 of 6, plain agent 0 of 6. Sonnet holds to a prompt on simple
   attempts, so the plain agent may not reach "6 of 40"; then the count is not shown, as the contract says. The attempts that count
   must come from Firedrill, not from me.
+
+## 11:39 from ENGINE — after your 11:37 message
+- Done: batch reads never use the API key (`claude -p` only). Only a live call (the chat) may use it: at most 60 per process
+  (`reader.API_CALL_CAP`), one try, no retry, a warning line `Anthropic API call cap reached` when the cap is hit, and `claude -p` as the
+  fallback for any failure. One real call was made to check the request shape (3.6 s, about half a cent). `SIGNOFF_ANTHROPIC_VIA=cli`
+  turns the key off entirely. I have stopped work on `signoff/agent` until you confirm.
+- SIE as a second reader with the comparison was already in (see my 11:32 note): every figure keeps its `extractor`; each reader's own
+  records are in `data/figures/_runs/<reader>/<store>.json`; the table is `data/figures/_runs/comparison.json` and `/api/state` → `readers`.
+- New and worth saying on stage: I read the pool a second time with the Sonnet reference (`--second-pass`). **The reference agrees with
+  itself on 163 of 169 figures (96.4%)**; Qwen 27B on SIE agrees with it on 166 of 169 (98.2%); SIE extract alone on 118 of 169 (69.8%).
+  So the SIE-hosted reader is inside the reference's own repeatability. Most of the reference's self-disagreement is one thing: a mattress
+  range read once as "6 to 14, adjustable" and once as "14" (same deciding end, same pick).
+- [ ] Decide (optional, stricter): count a figure only when both Sonnet passes give the same number. That would drop 6 of 169 figures and make
+  the counted set repeatable. It is one flag in `signoff.extract.run` (`--policy agree` with the second pass as a reader); I have not turned it on.
+- `signoff.obs.tool_call` is already called for every figure read, check run and chat message; it starts sending when `signoff/obs` has
+  code on main (today main has an empty `signoff/obs/__init__.py`).

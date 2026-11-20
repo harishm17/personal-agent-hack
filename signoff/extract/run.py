@@ -71,9 +71,9 @@ def read_one(product, sheet, model, assume_unit):
             "read_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds")}
 
 
-def run_reader(products, sheet, model, out, workers=8, force=False, assume_unit=None):
+def run_reader(products, sheet, model, out, workers=8, force=False, assume_unit=None, suffix=""):
     """One reader over one store's products. Returns (figure rows, errors, products read now)."""
-    folder = pathlib.Path(out) / "_runs" / slug(model)
+    folder = pathlib.Path(out) / "_runs" / (slug(model) + suffix)
     folder.mkdir(parents=True, exist_ok=True)
     store = products[0]["store"]
     log_path = folder / (store + ".log")
@@ -155,6 +155,9 @@ def main(argv=None):
     ap.add_argument("--limit", type=int, default=None, help="first N products of each store")
     ap.add_argument("--force", action="store_true", help="read every product again")
     ap.add_argument("--assume-unit", default=None, help="unit for numbers the page gives without one (off by default)")
+    ap.add_argument("--second-pass", action="store_true",
+                    help="read every product once more with the first reader, into _runs/<reader>-pass2, to "
+                         "measure how far the reference agrees with itself; the engine's figures are not touched")
     args = ap.parse_args(argv)
     files = pool_files(args.pool_dir)
     if not files:
@@ -162,6 +165,16 @@ def main(argv=None):
         print("no data/pool yet: reading fixtures/pool.json", file=sys.stderr)
     sheet = json.loads((ROOT / "sheets" / (args.sheet + ".json")).read_text())
     deciding = args.reader or readers()
+    if args.second_pass:
+        errors = []
+        for path in files:
+            products = json.loads(pathlib.Path(path).read_text())[:args.limit]
+            rows, failed, _ = run_reader(products, sheet, deciding[0], args.out, args.workers, True, args.assume_unit, "-pass2")
+            errors += failed
+            print("%s: second pass, %d figures" % (products[0]["store"], len(rows)))
+        from signoff.extract import score
+        print(json.dumps({"second_pass": deciding[0], "errors": errors, "comparison": str(score.write(args.out))}))
+        return 0
     evidence = [] if args.no_evidence or not config.have("SIE_API_KEY") or gliner.EXTRACTOR in deciding else [gliner.EXTRACTOR]
     if evidence:
         gliner.warm()

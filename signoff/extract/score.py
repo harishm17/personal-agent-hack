@@ -33,6 +33,8 @@ def load_run(folder):
     for r in rows:
         index.setdefault((r["store"], r["product_id"], r["figure"]), r)
     name = log[0]["extractor"] if log else (rows[0]["extractor"] if rows else folder.name)
+    if folder.name.endswith("-pass2"):
+        name += " (second pass)"
     return name, index, log
 
 
@@ -91,8 +93,9 @@ def compare(figures=FIGURES, reference=None):
     runs = [load_run(f) for f in sorted((pathlib.Path(figures) / "_runs").iterdir()) if f.is_dir()]
     if not runs:
         raise SystemExit("no reader runs under %s/_runs" % figures)
-    ref = next((r for r in runs if reference and reference in r[0]), None) or \
-        next((r for r in runs if "claude-sonnet" in r[0]), runs[0])
+    first = [r for r in runs if "(second pass)" not in r[0]]
+    ref = next((r for r in first if reference and reference in r[0]), None) or \
+        next((r for r in first if "claude-sonnet" in r[0]), first[0])
     readers = [measure(name, index, log, ref[1]) for name, index, log in runs]
     readers.sort(key=lambda r: (r["extractor"] != ref[0], -(r["agreement"] or 0)))
     return {"made_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
