@@ -231,3 +231,15 @@ tool: the therapist is the first issuer, not the product.
 - Arcee: the key lists models but every completion returns 402 (no credits). Blocked until the builder
   gets credits. Until then the shopper chat also goes through `claude -p`.
 - Persona: the template is published to Sandbox and a real inquiry was created at 11:21.
+
+## Amendment 11:30 — STORE takes observability; no cross-store strike; Senso scope
+- STORE finished its 13:10 list early and now also owns `signoff/obs/**`, `signoff/airbyte/**`,
+  `data/sheet2/**`, `tests/obs/**`. `signoff.obs.tool_call(name, input, output, success, latency_ms)` and
+  `signoff.obs.session(sheet_id)` send Amplitude Agent Analytics events; they never raise and never block.
+  ENGINE calls `tool_call` for each figure read and each check run; STORE for each store call.
+- No product is sold under the same maker and model at two of the three stores, so "the same one from
+  another store" is cut from the demo. A strike still holds for its `product_key`.
+- Senso gives no verdict on another brand's claims. It checks each sentence of the sheet against the
+  therapist's order and the handout in its knowledge base; store sentences are checked by span match in code.
+- First-hour test, coverage: passed at 11:26. Lines with two or more candidates stating every deciding
+  figure: 6 of 6 (L1 19, L2 13, L3 5, L4 14, L5 2, L6 9). The main case stays.
