@@ -140,4 +140,4 @@ def test_refused_requests_are_listed_from_the_receipts():
              {"n": 3, "at": "t3", "type": "request_refused", "detail": {"request": "sign_sheet", "refused_because": "unsigned: x"}}]
     assert [(r["n"], r["request"]) for r in api.refused(chain)] == [(2, "sign_sheet"), (3, "sign_sheet")]
     assert [e["text"] for e in api.events(chain, {})][-1] == "2 requests refused: unsigned"
-    assert [e["text"] for e in api.events(chain[:2], {})][-1] == "sign sheet refused: unsigned"
+    assert [e["text"] for e in api.events(chain[:2], {})][-1] == "signing refused: unsigned"

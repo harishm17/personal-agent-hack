@@ -19,6 +19,9 @@ ALGORITHM = {"signature": "ECDSA P-256, SHA-256, raw r||s (64 bytes), base64url"
              "fingerprint": "SHA-256 (hex) of the UTF-8 bytes of canonical; the message names it as sheet_hash"}
 
 
+ASKED = {"sign_sheet": "signing", "set_limit": "limit change", "strike": "strike", "unstrike": "unstrike"}  # a request's type in plain words
+
+
 def _short(sheet_hash: str | None) -> str:
     h = (sheet_hash or "")[:12]
     return " ".join(h[i:i + 4] for i in range(0, len(h), 4))
@@ -45,7 +48,7 @@ def events(receipts: list, seal: dict) -> list:
                 out.append({"at": r["at"], "from": "phone", "to": "agent", "text": what, "what": what, "count": 1})
         elif kind == "request_refused":
             why = str(d.get("refused_because") or "").split(":")[0].replace("_", " ")
-            text = "%s refused: %s" % ((d.get("request") or "request").replace("_", " "), why)
+            text = "%s refused: %s" % (ASKED.get(d.get("request"), "request"), why)
             if out and out[-1].get("whys"):  # refusals that follow each other are one line with a count and the reasons
                 last = out[-1]
                 last["count"] += 1

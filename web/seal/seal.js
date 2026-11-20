@@ -102,7 +102,7 @@ function renderCheck() {
   const same = r.fingerprint === onPhone;
   q("#codes").innerHTML = `<span class="code ${same ? "" : "off"}" title="${esc(r.fingerprint)}">${esc(short(r.fingerprint))}</span>
     <span class="phone">${ICON.phone}<span>${p.signed
-      ? (same ? "the message her key signed names the same code" : `the message her key signed names <code>${esc(short(onPhone))}</code>`)
+      ? (same ? "her signed message names this code" : `her signed message names <code>${esc(short(onPhone))}</code>`)
       : "no signed message names this code yet"}</span></span>`;
   q("#sum").textContent = p.summary.text;
   const restore = edited ? `<button class="link" id="restore">Restore</button>` : "";
