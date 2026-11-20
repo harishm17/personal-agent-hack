@@ -41,7 +41,7 @@ _DENIED = re.compile(r"cannot be returned|can.t be returned|not (?:be )?returnab
                      r"(?:would not|wouldn.t|does not|doesn.t|do not|don.t|will not|won.t) (?:meet|qualify)", re.I)
 _MODAL = re.compile(r"\bmay\b|\bmight\b|\bcould\b|generally|typically|usually|depends|only if|unless", re.I)
 _CONDITION = re.compile(r"\bif\b|\bmust\b|unused|unopened|original packaging|resalable|provided|conditions?\b", re.I)
-_ABOUT_OPENED = re.compile(r"opened|unboxed|\\bused\\b", re.I)
+_ABOUT_OPENED = re.compile(r"opened|unboxed|\bused\b", re.I)
 _AFFIRMED = re.compile(r"can be returned|is returnable|are returnable|accepts? returns?|returns? (?:are |is )?accepted|"
                        r"eligible for (?:a )?(?:return|refund)|will accept", re.I)
 
