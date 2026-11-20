@@ -85,7 +85,10 @@ def cached(title):
 
 def _save(title, entry):
     DIR.mkdir(parents=True, exist_ok=True)
-    cache_path(title).write_text(json.dumps(entry, ensure_ascii=False, indent=1) + "\n")
+    path = cache_path(title)
+    part = path.with_suffix(".part")  # written whole, then moved into place: a reader never sees half a file
+    part.write_text(json.dumps(entry, ensure_ascii=False, indent=1) + "\n")
+    part.replace(path)
 
 
 def _post(body):
