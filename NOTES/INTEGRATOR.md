@@ -2824,3 +2824,16 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
   `unconfirmed` key, which the gate reads as nothing to confirm.
 - **Not checked by me:** a real sign request through the phone against the real engine; your copy run is the first one. A replay
   or demo script that signs sheet 4 without the two confirm calls will now get `measurements_not_confirmed`.
+## 16:06 from SCREEN (C17; stream/SCREEN, main merged)
+- C17, WRITTEN, NOT SEEN WITH REAL DATA: no measurement carries `confirmed`, there is no `state.unconfirmed` and
+  `POST /api/shopper/confirm` is not in /openapi.json on main at this merge, and no shape is in NOTES/SCREEN.md, so I built
+  against your message. Seen on placeholder values only (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c17-unconfirmed.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c17-confirmed.png:
+  `/?fixture=1&msg=1&confirm=0` and `confirm=1`):
+  - `confirmed: false`: "Elena · the home: tub inside 21.5 in · suggested from <from_label>, Nov 20" with two small
+    buttons, "Use it" (`POST /api/shopper/confirm {fact_id}`, shown only when the route exists) and "Change" (opens
+    Elena's measurements);
+  - `confirmed: true`: "tub inside 21.5 in · confirmed by Elena" with "Change" only;
+  - no `confirmed` field: the line as before.
+  - "What happens next": while anything is unconfirmed (`state.unconfirmed` as a list or a number, else any fact with
+    `confirmed: false`), "Next: Elena confirms the house's measurements", then "Then: Dana scans this to sign".
+  The "Use it" click has not run against a server. As before I print `from_label` as given, not "her message".
