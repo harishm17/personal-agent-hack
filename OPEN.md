@@ -47,6 +47,9 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | S10 | a local log of tool-call events with timings for the trail (`signoff.obs.recent()`) | open |
 | S11 | Amplitude: do home measurements, limits or the order's text ride along in events? Answer and set the content mode | open |
 | S12 | replay mode for sheet 2 | open |
+| S13 | Amplitude: the gate's variant attached to the session from its start (`experiments` is null now); both arms run once; delivered counts checked (only 2 events were delivered in the 13:25 run) | open |
+| S14 | the gate's verdict re-run after the three reading rules; it says "kept" or "switched back" from the numbers, with the evidence; no line claims Amplitude decided it | open |
+| S15 | `/api/sql/passing-box?source=airbyte` runs the same statement on the rows Airbyte delivered (`airbyte_pool`), only if under 20 minutes; otherwise WONTDO and the claim is "delivered beforehand" | open |
 
 ## SIGN
 | id | item | status |
@@ -64,7 +67,9 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | G11 | `obs.egress` for every Senso, Persona and Firedrill request | open |
 | G12 | the Relay result on the signature record (`relay`) | open |
 | G13 | screenshots of every phone state at 390 x 844, looked at | open |
-| G14 | Firedrill: retry until 14:00; if it runs, a campaign and what it found | open |
+| G14 | Firedrill: retry until 14:00; if it runs, a campaign and what it found; if not, Firedrill is not claimed | open |
+| G15 | Senso: resolve and show the `version_id` of the order document beside each verdict (rows carry `content_id` only) | open |
+| G16 | `PERSONA_REQUIRED` on by default for the demo sheet once G7 works; Relay's sandbox passes with nobody present: say "sandbox" beside it | open |
 
 ## SCREEN
 | id | item | status |
@@ -105,7 +110,8 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I7 | repo public and pushed (needs the builder's yes at 15:45); form submitted by 16:10 | open |
 | I8 | a real Senso block shown once (an item that is not on the order) | open |
 | I9 | the SingleStore query on screen with a count that matches | open |
-| I10 | an Amplitude chart of the two reader arms (needs the builder in the Amplitude console) | open |
+| I10 | an Amplitude chart of tool calls by reader arm (needs the builder in the Amplitude console; first confirm events appear there at all) | open |
+| I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
 ## The builder
 | id | item | status |
@@ -114,4 +120,5 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | B2 | five minutes each with Senso, Superlinked, SingleStore, Amplitude and Statsig staff: what "best use" means | open |
 | B3 | Persona: tell Ellen what we are building with Inquiries and Relay | open |
 | B4 | read the figures behind the final cart (I3) | open |
-| B5 | revoke the Persona production key; rotate the keys pasted in chat after the event | open |
+| B5 | revoke the Persona production key; rotate the keys pasted in chat: **after the hackathon ends** (the builder, 13:30) | deferred |
+| B6 | look in Amplitude for events from agent `signoff-shopper` and make one chart of tool calls by variant (I10) | open |
