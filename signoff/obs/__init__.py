@@ -162,6 +162,8 @@ def _handle(item: tuple) -> None:
         stats["dropped"] += 1
         return
     if _ai is None:
+        if kind == "flush":
+            return
         _init()
     if kind == "session":
         _end_session()
@@ -206,6 +208,9 @@ def shutdown() -> None:
     """Flush, end the session, close the SDK. Safe to call twice; runs at interpreter exit."""
     global _closing
     try:
+        if _ai is None and _q.empty():  # nothing was ever sent: do not start the SDK just to close it
+            _closing = True
+            return
         flush(5.0)
         _closing = True
         if _ai is not None:
