@@ -25,9 +25,9 @@ RUNTIME = pathlib.Path(__file__).resolve().parent / "_runtime"
 class Refused(Exception):
     """A request the server will not act on. `code` is stable and shown to the phone; `status` is HTTP."""
 
-    def __init__(self, code: str, detail: str, status: int = 403):
+    def __init__(self, code: str, detail: str, status: int = 403, retry_ok: bool = False):
         super().__init__(detail)
-        self.code, self.detail, self.status = code, detail, status
+        self.code, self.detail, self.status, self.retry_ok = code, detail, status, retry_ok
 
 
 def b64u_decode(text: str) -> bytes:

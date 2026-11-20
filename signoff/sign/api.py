@@ -6,6 +6,8 @@ for them."""
 from __future__ import annotations
 
 import importlib
+import inspect
+import json
 import threading
 import time
 from datetime import datetime, timezone
@@ -35,6 +37,27 @@ def get_cart():
 
 def _now() -> str:
     return datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
+
+
+def receipt(kind: str, outcome: str, detail: str = "", payload: dict | None = None) -> None:
+    """Writes a receipt for a signed request, accepted or refused, if the engine's receipt chain is on main.
+    Never raises, never waits."""
+    try:
+        mod = importlib.import_module("signoff.engine.receipts")
+        fn = getattr(mod, "add", None) or getattr(mod, "record", None) or getattr(mod, "append", None)
+        if fn:
+            key = keystore.key
+            fn(type=kind, actor=key.name if key else None, key_id=key.key_id if key else None,
+               body={"outcome": outcome, "reason": detail, **(payload or {})})
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def _kind_of(body: dict) -> str:
+    try:
+        return str(json.loads(body["payload"]).get("type") or "request")
+    except Exception:  # noqa: BLE001
+        return "request"
 
 
 def _fail(error: Refused) -> JSONResponse:
@@ -144,7 +167,9 @@ def _carts_within(picks: list[dict], budget: float) -> list[dict]:
 
     def work(store: str, items: list[dict]) -> None:
         try:
-            made = get_cart().create_carts(items)
+            create = get_cart().create_carts
+            extra = {k: v for k, v in (("timeout_s", 20), ("tries", 1)) if k in inspect.signature(create).parameters}
+            made = create(items, **extra)
             box[store] = {"carts": made}
         except Exception as error:  # noqa: BLE001
             box[store] = {"error": type(error).__name__}
@@ -205,6 +230,7 @@ def _handle_request(body: dict):
         try:
             engine = get_engine()
             state = engine.get_state()
+            prev_seq = keystore.key.last_seq if keystore.key else None
             payload = verify_request(keystore, body, sheet_id=state["sheet"]["id"], current_hash=engine.sheet_hash())
             if state["seal"].get("signed"):
                 raise Refused("already_signed", "the sheet is signed; reset to sign again", 409)
@@ -213,26 +239,32 @@ def _handle_request(body: dict):
             if payload["type"] != "sign_sheet":
                 result = engine.apply_issuer({**payload, "signer": signer})
                 return {"ok": True, "applied": payload["type"], "version": _version(result, engine)}
-            if config.env("PERSONA_REQUIRED") == "1" and not persona.status().get("verified"):
-                raise Refused("identity_needed", "PERSONA_REQUIRED is on: the signer must pass the identity check first", 403)
+            who = persona.status() if persona.record().get("inquiry_id") else persona.record()  # read from Persona's backend
+            if config.env("PERSONA_REQUIRED") == "1" and not who.get("verified"):
+                raise Refused("identity_not_verified", "identity not verified", 403, retry_ok=True)
             gate = _senso_gate(engine)
             if gate["blocking"]:
-                raise Refused("senso_blocked", "Senso found %d sentence(s) in conflict or unsupported" % len(gate["blocking"]), 409)
+                raise Refused("senso_blocked", "Senso found %d sentence(s) in conflict or unsupported" % len(gate["blocking"]), 409, retry_ok=True)
             picks = _picks(state)
             if not picks:
-                raise Refused("nothing_to_buy", "no line has a pick to put in a cart", 409)
+                raise Refused("nothing_to_buy", "no line has a pick to put in a cart", 409, retry_ok=True)
             carts = _carts_within(picks, CART_BUDGET_S)
             if not any(c["mode"] in ("pending",) or c.get("cart_url") for c in carts):
-                raise Refused("cart_failed", "no store created a cart (%s); nothing is signed" % "; ".join(c.get("note", "") for c in carts), 502)
+                raise Refused("cart_failed", "no store created a cart (%s); nothing is signed" % "; ".join(c.get("note", "") for c in carts), 502, retry_ok=True)
             at = _now()
             signature = {"name": signer["name"], "signer": signer, "at": at, "signed_at": at, "sheet_hash": payload["sheet_hash"], "sig": body["sig"],
-                         "payload": body["payload"], "seq": payload["seq"], "persona": persona.record(),
+                         "payload": body["payload"], "seq": payload["seq"], "persona": who,
                          "senso": {"status": gate["status"], "for_hash": gate.get("for_hash"), "checks": gate["checks"],
                                    "label": "Senso check still running" if gate["status"] == "pending" else None}}
             result = engine.mark_signed(signature, carts)
             _late["ctx"] = {"engine": engine, "signature": signature, "carts": carts, "lock": threading.Lock()}
+            receipt("sign_sheet", "accepted", "", {"sheet_hash": payload["sheet_hash"]})
             return {"ok": True, "applied": "sign_sheet", "carts": carts, "senso": gate["status"], "version": _version(result, engine)}
         except Refused as error:
+            if error.retry_ok and keystore.key and prev_seq is not None:
+                keystore.update(last_seq=prev_seq)  # nothing happened, so the same signed request may be sent again
+            if error.retry_ok or error.code in ("stale_hash", "replayed_seq", "bad_signature", "unsigned", "not_enrolled", "unknown_key", "wrong_sheet", "already_signed"):
+                receipt(_kind_of(body), "refused", error.code + ": " + error.detail)
             return _fail(error)
         except ModuleNotFoundError as error:
             return _fail(Refused("engine_unavailable", "the engine is not loaded (%s)" % error.name, 503))
@@ -352,6 +384,14 @@ def senso_load():
         return {"configured": False}
     result = senso.load_documents()
     return {**result, "processing": senso.wait_processed(timeout=5)}
+
+
+@router.post("/api/admin/persona/simulate")
+async def admin_persona_simulate(request: Request):
+    """Rehearsal control, not on the phone's path: `{"action": "decline"}` or `{"action": "approve"}` on the current
+    sandbox inquiry, so the identity gate can be seen holding and then letting the same signature through."""
+    body = await _json(request)
+    return await run_in_threadpool(persona.simulate, str(body.get("action", "")))
 
 
 @router.post("/api/admin/reset")

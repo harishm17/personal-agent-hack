@@ -268,7 +268,7 @@ function renderSheet() {
       <div class="sub">${esc((seal.signature && seal.signature.at) || "")}</div>
       <div class="hash" style="margin-top:6px">${esc(seal.sheet_hash || "")}</div>
       <div class="label">Carts</div><ul class="plain">${(seal.carts || []).map((c) => `<li><div class="row"><span>${esc(c.store)}</span><span class="num">${money(c.total_cents)}</span></div>${c.cart_url ? `<a href="${esc(c.cart_url)}" target="_blank" rel="noopener">Open the cart</a> <span class="sub">${esc(c.mode || "")}</span>` : `<span class="sub">${c.mode === "pending" ? "still being created at the store" : "not created: " + esc(c.note || "")}</span>`}</li>`).join("")}</ul>
-      <div class="label">Checks</div><div class="sub">${esc(((seal.signature && seal.signature.persona) || {}).label || "identity not checked")}</div>
+      <div class="label">Checks</div><div class="sub">${(() => { const q = (seal.signature && seal.signature.persona) || {}; return q.inquiry_id ? esc(q.label || "") + " · " + esc(q.inquiry_id) + " · " + esc(q.status || "") + " · sandbox" : "identity not checked"; })()}</div>
       <div class="sub">${seal.signature && seal.signature.senso && seal.signature.senso.status === "pending" ? "Senso check still running" : "Checked against the order"}</div>
       <div class="btns"><button class="act danger" id="reset">Reset for rehearsal</button></div>`;
     $("#reset").onclick = resetAll;
