@@ -21,6 +21,18 @@ export async function verifyMessage(jwk, message, sig) {
   return crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, key, fromBase64url(sig), utf8.encode(message));
 }
 
+// The enrolled key's own fingerprint, computed as the phone computes it: SHA-256 of "x.y", the first 16 hex characters.
+export const keyId = async (jwk) => hex(await sha256(jwk.x + "." + jwk.y)).slice(0, 16);
+
+// What a typed value becomes in the text: null when it is not a value of that kind or is the value already there
+// (300, 300.0 and the original spelling are the same number: restoring a value restores the original bytes).
+export function rawFor(node, kind, text) {
+  if (kind === "text") return text === node.value ? null : jsonString(text);
+  if (!/^\s*-?\d+(\.\d+)?\s*$/.test(text)) return null;
+  const number = kind === "money" ? Math.round(Number(text) * 100) : Number(text);
+  return number === node.value ? null : kind === "money" ? String(number) : text.trim();
+}
+
 // One check of a canonical text (the real one or an edited copy) against the proof.
 //   fingerprint       hex SHA-256 of `canonical`, computed here
 //   signedFingerprint the fingerprint the signed message names (null when nothing is signed)
@@ -32,6 +44,7 @@ export async function check(proof, canonical) {
   const out = { fingerprint: hex(bytes), bytes, signedFingerprint: null, messageVerifies: null, coversThis: null, valid: false };
   const s = proof.signature, k = proof.public_key;
   if (!s || !k) return out;
+  out.keyId = await keyId(k.jwk);  // computed here from the key itself, not read from the server's label
   out.signedFingerprint = JSON.parse(s.payload).sheet_hash;
   out.messageVerifies = await verifyMessage(k.jwk, s.payload, s.sig);
   // the message the phone would have had to sign for this text: the same message, naming this fingerprint
