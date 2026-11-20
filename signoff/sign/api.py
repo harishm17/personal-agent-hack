@@ -140,7 +140,7 @@ async def issuer_request(request: Request):
             if payload["type"] != "sign_sheet":
                 result = engine.apply_issuer({**payload, "signer": signer})
                 return {"ok": True, "applied": payload["type"], "version": _version(result, engine)}
-            blocked = senso.blocking()
+            blocked = _senso_for(engine, state)
             if blocked:
                 raise Refused("senso_blocked", "Senso found %d sentence(s) in conflict or unsupported" % len(blocked), 409)
             picks = _picks(state)
@@ -190,9 +190,45 @@ def persona_status():
     return persona.status()
 
 
+def _senso_for(engine, state: dict) -> list[dict]:
+    """Makes sure the verdicts are for the sheet as it is now (runs them if not) and returns the blocking ones.
+    Senso being unreachable does not stop a signature; the row says it was not checked."""
+    if senso.configured() and senso.checks()["for_hash"] != engine.sheet_hash():
+        try:
+            senso.run_checks(state, engine.sheet_hash())
+            if hasattr(engine, "set_senso"):
+                engine.set_senso(senso.checks()["checks"])
+        except Exception as error:  # noqa: BLE001
+            senso.set_checks([], None)
+            senso._meta["error"] = type(error).__name__
+    return senso.blocking()
+
+
 @router.get("/api/senso/checks")
 def senso_checks():
     return senso.checks()
+
+
+@router.post("/api/senso/run")
+def senso_run():
+    """Judge every sentence of the sheet as it stands and hand the rows to the engine for the screen."""
+    with _lock:
+        engine = get_engine()
+        if not senso.configured():
+            return senso.checks()
+        senso.run_checks(engine.get_state(), engine.sheet_hash())
+        if hasattr(engine, "set_senso"):
+            engine.set_senso(senso.checks()["checks"])
+        return senso.checks()
+
+
+@router.post("/api/senso/load")
+def senso_load():
+    """Puts the order, the handout and the store texts in the knowledge base (asynchronous on Senso's side)."""
+    if not senso.configured():
+        return {"configured": False}
+    result = senso.load_documents()
+    return {**result, "processing": senso.wait_processed(timeout=5)}
 
 
 @router.post("/api/admin/reset")
