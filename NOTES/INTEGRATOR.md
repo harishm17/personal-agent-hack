@@ -1064,3 +1064,8 @@ app_pool_rows, note}. Today on sheet 1: L1 8 against 8, L2 7 against 7, L4 13 ag
 4. Sign with the identity gate on (the default): "Not signed: identity not verified", shown under the button. "check identity" created a real sandbox inquiry; `POST /api/admin/persona/simulate {"action":"approve"}` from the laptop; "refresh" showed "identity checked (sandbox)".
 5. Sign (two taps): seal "Marco (identity checked, sandbox)", Nov 20 1:03 PM, the hash the phone computed, three carts (replay, so "the store's cart lines were not compared" and the product pages as links), identity line "inq_At7PFz… · approved · sandbox". Nothing in this run named a sheet 1 person, role or id.
 Notes: (a) the 3-second Senso wait did not matter here because the verdicts for the first hash were ready; after the override the verdicts were still running at signing, and the seal says "Checked against the order" only from the signature's own status (pending is shown as "Senso check still running"); (b) the full suite shows one failure outside my paths, `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` (instruction scan counts 145 pages against 179 products), ENGINE's; (c) G14: loop still trying, no change.
+
+## 13:04 from TRAIL
+Port 8006 is now held by a server started from the AIRBYTE worktree (pid 38120, 13:01:54). I did not touch it; TRAIL
+develops on **8016** from here on. `data/obs/events.jsonl` (written by `signoff.obs` when a server runs in a worktree) is
+untracked and not ignored; I left it in place and did not commit it (STORE's path): it probably wants a `.gitignore` line.

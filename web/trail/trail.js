@@ -42,18 +42,19 @@ const records = (e) => e.items.length + e.more;
 // ---------- top bar and band ----------
 function renderTop() {
   const s = feed.sheet || {};
-  const mode = feed.mode === "fixture" ? "Fixture data" : feed.mode === "replay" ? "Replay, cached" : "";
-  $("#top").innerHTML = `<b>Sign-Off</b><span class="g">/</span><span>${esc(s.title || "")}</span>
-    <span class="g">${s.items ? `${s.items} items` : ""}${s.items && s.invented ? " · invented" : ""}</span>
+  const mode = feed.mode === "fixture" ? "fixture data" : feed.mode === "replay" ? "replay of cached store data" : "";
+  const meta = [s.items ? `${s.items} items` : "", s.invented ? "invented" : "", mode].filter(Boolean).join(" · ");
+  $("#top").innerHTML = `<span class="brand">Sign-Off</span>
     <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/" aria-current="page">Trail</a></nav>
-    <span class="sp"></span>
-    ${mode ? `<span class="pill">${mode}</span>` : ""}
-    <span class="pill ${feed.signed ? "signed" : ""}">${feed.signed ? "Signed " + clock(feed.signed_at, 5) : "Not signed"}</span>`;
+    <span class="sheet">${esc(s.title || "")}</span><span class="meta">${esc(meta)}</span>
+    <span class="grow"></span>
+    <span class="pill ${feed.signed ? "signed" : ""}">${feed.signed ? "Signed " + clock(feed.signed_at, 5) : "Not signed"}</span>
+    ${typeof s.total_cents === "number" ? `<span class="total">$${(s.total_cents / 100).toFixed(2)}</span>` : ""}`;
 }
 
 /** A number with its tick. `ok` true: a black tick; false: a red cross; null: nothing to vouch for yet. */
 function stat(ok, n, words) {
-  const mark = ok === true ? `<span class="tk">${TICK}</span>` : ok === false ? `<span class="tk bad">${CROSS}</span>` : `<span class="tk todo"></span>`;
+  const mark = ok === true ? `<span class="tk">✓</span>` : ok === false ? `<span class="tk bad">${CROSS}</span>` : `<span class="tk todo"></span>`;
   return `<span class="stat">${mark}<b>${esc(n)}</b>${esc(words)}</span>`;
 }
 
@@ -68,8 +69,8 @@ function renderBand() {
   ].join("");
   const all = filter.size === 0;
   const chips = feed.kinds.map((k) => `<button class="chip" data-kind="${k}" aria-pressed="${all || filter.has(k)}">${icon(k)}${cap(k)}<i>${m.kinds[k] || 0}</i></button>`).join("");
-  const lost = gone.map((s) => `<span class="pill miss">${esc(s.id)} missing</span>`).join("") + (missing ? `<span class="pill miss">feed missing</span>` : "");
-  $("#band").innerHTML = `${stats}${lost}<span class="sp"></span><div class="chips" role="group" aria-label="Kinds of event">${chips}</div>`;
+  const lost = gone.map((s) => `<span class="pill">${esc(s.id)} missing</span>`).join("") + (missing ? `<span class="pill">feed missing</span>` : "");
+  $("#band").innerHTML = `${stats}${lost}<span class="grow"></span><div class="chips" role="group" aria-label="Kinds of event">${chips}</div>`;
 }
 
 // ---------- the steps ----------
@@ -91,7 +92,7 @@ function stepRow(s, fresh) {
   const receipts = (s.refused ? `<em>${s.refused} refused</em>` : "") + (s.receipts ? `${s.receipts}<span class="rt">${TICK}</span>` : "");
   return `<div class="step ${s.done ? "done" : "todo"}${isOpen ? " open" : ""}" id="${s.id}">
     <button class="sr" data-step="${s.id}" aria-expanded="${isOpen}" ${mine.length ? "" : "disabled"}>
-      <span class="tk ${s.done ? "" : "todo"}">${s.done ? TICK : s.n}</span>
+      <span class="tk ${s.done ? "" : "todo"}">${s.done ? "✓" : s.n}</span>
       <span class="nm"><b>${esc(s.label)}</b><small>${esc(s.sub)}</small></span>
       <span class="tally">${tally}</span><span class="when">${when}</span>
       <span class="rc" ${s.receipts ? `title="${s.receipts} receipts"` : ""}>${receipts}</span><span class="chev">${mine.length ? CHEV : ""}</span>
@@ -104,7 +105,7 @@ function renderSteps(fresh = new Set()) {
   $("#steps").innerHTML = feed.steps.map((s) => stepRow(s, fresh)).join("");
   if (!MOTION) return;
   for (const row of document.querySelectorAll(".ev.new")) {       // a new event slides in under its step
-    row.animate([{ height: "0px", opacity: 0, transform: "translateY(-4px)" }, { height: "36px", opacity: 1, transform: "none" }],
+    row.animate([{ height: "0px", opacity: 0, transform: "translateY(-4px)" }, { height: row.offsetHeight + "px", opacity: 1, transform: "none" }],
       { duration: 250, easing: EASE });
   }
 }

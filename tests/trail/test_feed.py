@@ -95,6 +95,19 @@ def test_a_record_keeping_message_joins_the_step_in_progress_without_adding_to_i
     assert out["summary"]["messages_out"] == 3 and out["summary"]["limits_to_stores"] == 0
 
 
+def test_measured_tool_calls_add_up_and_an_earlier_runs_checks_are_left_out():
+    tools = [{"name": "check_run", "at": "2026-11-20T11:00:00.000-08:00", "duration_ms": 9.0, "success": True},
+             {"name": "check_run", "at": "2026-11-20T12:00:30.000-08:00", "duration_ms": 3.0, "success": True},
+             {"name": "check_run", "at": "2026-11-20T12:00:31.000-08:00", "duration_ms": 2.0, "success": True},
+             {"name": "figure_read", "at": "2026-11-20T10:00:00.000-08:00", "duration_ms": 3100.0, "success": True}]
+    out = build(tools=tools, receipts=RECEIPTS, receipt_check={"verified": True, "first_bad": None})
+    runs = [e for e in out["events"] if e["label"].startswith("2 check")]
+    assert len(runs) == 1 and runs[0]["duration_ms"] == 5 and runs[0]["timed"] == "measured" and runs[0]["step"] == "checked"
+    assert out["summary"]["earlier_runs"] == 1 and not [e for e in out["events"] if e["label"] == "check run"]
+    read = [e for e in out["events"] if e["step"] == "pages_read"]
+    assert read and read[0]["kind"] == "reading" and read[0]["duration_ms"] == 3100   # cached reading outlives a reset
+
+
 def test_a_blocked_store_message_is_stopped():
     rows = [ledger(1, "2026-11-20T11:30:00-08:00", "shop.example", "search_catalog", "store", ["order"], blocked=True,
                    sealed_hits=[{"class": "limit", "match": "30 in"}])]
