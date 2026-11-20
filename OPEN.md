@@ -156,7 +156,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I1 | main switched to sheet 2 when it holds end to end; sheet 1 intact as the fallback | open |
 | I2 | a hand-read sample of `not_stated` and `unclear` on both sheets before any count is said aloud | open |
 | I3 | the list of figures behind the final cart for the builder to read himself | open |
-| I4 | DEMO.md rewritten for the plumber story and the new screen | open |
+| I4 | DEMO.md rewritten from the director's run (surgery lead, class list second); to be checked against the screen at 15:00 | main |
 | I5 | SUBMISSION.md and README from what runs (after the sponsor audit) | open |
 | I6 | backup clip recorded; three timed rehearsals, one in replay mode with the network off | open |
 | I7 | repo public and pushed (needs the builder's yes at 15:45); form submitted by 16:10 | open |
@@ -166,7 +166,7 @@ Status: `open`, `main` (merged, not yet seen working by the integrator), `ok` (s
 | I12 | the lead example is sheet 3, the teacher's list (the builder, 13:25); sheet 2 is second and the fallback | ok |
 | I13 | main switched to sheet 4 (the lead) when it holds end to end; sheet 3 reachable through the switcher | ok (13:38; sheet 3 through the switcher still to be seen) |
 | I14 | the lead example is sheet 4, surgery short; sheet 3 the class list is the 15-second second; the plumber and six-item sheets are not shown (the builder: "your choice", 13:30) | ok |
-| I15 | the run of show from the demo director, and the flow designer's spec forwarded to TRAIL and SCREEN | open |
+| I15 | the run of show from the demo director, and the flow designer's spec forwarded to TRAIL and SCREEN | ok |
 | I11 | every sponsor sentence in DEMO.md, CONTRACT.md's prize table and the submission checked against the 13:25 sponsor audit: no hand-checked sheet, no Gmail connector, no "Amplitude said", no Senso version ids until G15, no Firedrill unless G14, Airbyte is Core with a File source and MySQL staging, not agent connectors | open |
 
 ## The builder
