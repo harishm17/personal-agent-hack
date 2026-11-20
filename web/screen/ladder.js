@@ -100,6 +100,10 @@ async function loadAux() {
       if (p) p.picked_because = byPrice() ? "the cheapest that passes" : "rated 4.7 from 212 reviews, the highest that passes";
       last.quiet = true; render();
     }
+    if (params.get("confirm") && state && state.sheet.shopper_facts.every((f) => f.confirmed === undefined)) {
+      state.sheet.shopper_facts.forEach((f) => { f.confirmed = params.get("confirm") === "1"; });
+      last.quiet = true; render();
+    }
     if (params.get("msg") && state && !state.sheet.shopper_facts.some((f) => f.suggested_from)) {
       state.sheet.shopper_facts.forEach((f, i) => { f.suggested_from = { message_id: "sample", from_label: "the sample message", at: "2026-11-20T10:41:00-08:00", quote: "Sample message: I measured it this morning.", matches: params.get("msg") === "1" || i > 0 }; });
       last.quiet = true; render();
@@ -491,6 +495,14 @@ async function setRule(id, anchor) {
     await load();
   } catch (error) { toast(anchor, `Not changed <span class="code2">${esc(error.message)}</span>`); }
 }
+async function confirmFact(factId, anchor) {
+  try {
+    const res = await fetch("/api/shopper/confirm", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fact_id: factId }) });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || out.ok === false) throw new Error(out.detail || out.error || res.status);
+    await load();
+  } catch (error) { toast(anchor, `Not confirmed <span class="code2">${esc(clip(error.message, 60))}</span>`); }
+}
 async function choose(candidateId, anchor) {
   try {
     const res = await fetch("/api/shopper/choose", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ line_id: theLine().line_id, candidate_id: candidateId || null }) });
@@ -615,8 +627,17 @@ function renderList(line, pick) {
       ${failing.length ? (ui.open.has("above") ? failing.map(row).join("") : wasRows(failing) + `<button class="more" data-toggle="above" title="Show these rows"><b>${failing.length} ${failing.length === 1 ? "does" : "do"} not pass:</b> ${esc(foldSummary(failing))}</button>`) : ""}`;
   }
   const facts = factsOfLine(sheetLineOf(line)), shopper = state.sheet.shopper;
-  const homeLine = `<button class="homeline" data-open="shopper" title="${esc(facts.map((f) => (f.suggested_from && f.suggested_from.quote ? `“${f.suggested_from.quote}”` : "")).filter(Boolean).join(" ") || shopper.name + "'s measurements and questions to the agent")}"><b>${esc(shopper.name)}</b>${facts.length
-    ? ` · the home: ${facts.map((f) => `${esc(f.short || f.label)} <span data-k="home.${f.id}">${g(f.value)} ${esc(f.unit)}</span>${esc(fromMessage(f))}`).join(" · ")}` : " · no measurement needed"}</button>`;
+  // the home's measurements: whose they are, where each came from, and (when the state says so) whether its owner has confirmed it
+  const canConfirm = aux.routes && aux.routes.has("/api/shopper/confirm") && !state.seal.signed;
+  const factHtml = (f) => {
+    const value = `${esc(f.short || f.label)} <span data-k="home.${f.id}">${g(f.value)} ${esc(f.unit)}</span>`, quote = f.suggested_from && f.suggested_from.quote ? ` title="“${esc(f.suggested_from.quote)}”"` : "";
+    const change = state.seal.signed ? "" : ` <span class="askbtn" role="button" tabindex="0" data-open="shopper">Change</span>`;
+    if (f.confirmed === false) return `<span${quote}>${value} · suggested${esc(fromMessage(f).replace(/^ · /, " "))}</span>${canConfirm || FIXTURE ? ` <span class="askbtn" role="button" tabindex="0" data-confirm="${esc(f.id)}">Use it</span>` : ""}${change}`;
+    if (f.confirmed === true) return `<span${quote}>${value} · confirmed by ${esc(shopper.name)}</span>${change}`;
+    return `<span${quote}>${value}${esc(fromMessage(f))}</span>`;
+  };
+  const homeLine = `<div class="homeline"><span class="hl" role="button" tabindex="0" data-open="shopper" title="${esc(shopper.name)}'s measurements and questions to the agent"><b>${esc(shopper.name)}</b></span>${facts.length
+    ? ` · the home: ${facts.map(factHtml).join(" · ")}` : " · no measurement needed"}</div>`;
   q("#list").innerHTML = `<div class="lhd"><div class="lht"><h1>${esc(cap(line.need))}</h1>${seg}</div><p class="sub">${sub}</p>${homeLine}</div>
     <div class="hd" style="--n:${limits.length}"><span></span><span>Product</span><span>Price</span>${heads}<span>Result</span></div>
     <div class="rows" id="rows">${body}</div>`;
@@ -750,8 +771,10 @@ function signatureHtml() {
     const link = en && (en.url || en.link || en.phone_url || en.phone), qr = !enrolled && link ? qrSvg(link) : "";
     const pending = ((aux.asks && aux.asks.asks) || []).filter((x) => x.status === "pending").length;
     // one place says what happens next, in plain words
-    const next = enrolled ? `<b>Waiting for ${name} to sign</b> · this sheet is on ${name}'s phone now` : `<b>Next:</b> ${name} scans this to sign`;
-    return `<section class="card sign"><div class="cap">What happens next</div>
+    const open = Array.isArray(state.unconfirmed) ? state.unconfirmed.length : typeof state.unconfirmed === "number" ? state.unconfirmed : sheet.shopper_facts.filter((f) => f.confirmed === false).length;
+    const first = open ? `<div class="next"><b>Next:</b> ${esc(sheet.shopper.name)} confirms the house's measurements</div>` : "";
+    const next = open ? `<b>Then:</b> ${name} ${enrolled ? "signs on the phone" : "scans this to sign"}` : enrolled ? `<b>Waiting for ${name} to sign</b> · this sheet is on ${name}'s phone now` : `<b>Next:</b> ${name} scans this to sign`;
+    return `<section class="card sign"><div class="cap">What happens next</div>${first}
       <div class="enrol">${qr && en && en.code ? `<a class="qr" href="${esc(link)}" target="_blank" rel="noopener" aria-label="Open the phone page" title="Scan to open ${name}'s page on a phone · code ${esc(en.code)}">${qr}</a>` : ""}
         <div><div class="next">${next}</div>${pending ? `<div class="muted small">You asked ${name} about ${n_(pending, "limit", "limits")}</div>` : ""}
         ${!enrolled && en && en.code ? `<div class="muted small">It opens ${name}'s page on the phone · code <span class="code">${esc(en.code)}</span></div>` : ""}</div></div>
@@ -1073,9 +1096,10 @@ function askSheet(limitId, line) {
 // ---------- interaction ----------
 document.addEventListener("click", (e) => {
   if (e.target.id === "replay") return closeReplay();             // a click on the dimmed page
-  const t = e.target.closest("[data-replay], [data-replay-close], [data-rule], [data-choose], [data-sheet], [data-menu], [data-toggle], [data-show], [data-open], [data-close], .rowx");
+  const t = e.target.closest("[data-confirm], [data-replay], [data-replay-close], [data-rule], [data-choose], [data-sheet], [data-menu], [data-toggle], [data-show], [data-open], [data-close], .rowx");
   if (ui.menu && !(t && (t.dataset.sheet || t.dataset.menu !== undefined))) { ui.menu = false; ui.confirm = null; if (!t) { last.quiet = true; render(); return; } }
   if (!t || e.target.closest("a, input")) return;
+  if (t.dataset.confirm) return confirmFact(t.dataset.confirm, t);
   if (t.dataset.replay !== undefined) return openReplay();
   if (t.dataset.replayClose !== undefined) return closeReplay();
   if (t.dataset.rule) return setRule(t.dataset.rule, t);
@@ -1095,7 +1119,7 @@ addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !q("#replay").hidden) return closeReplay();
   if (e.key === "Escape" && (ui.drawer || ui.show || ui.menu)) { ui.drawer = null; ui.show = null; ui.menu = false; last.quiet = true; render(); }
   if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("choosebtn")) { e.preventDefault(); return choose(e.target.dataset.choose, e.target); }
-  if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("askbtn")) { e.preventDefault(); e.target.click(); }
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList && (e.target.classList.contains("askbtn") || e.target.classList.contains("hl"))) { e.preventDefault(); e.target.click(); }
   if (e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey || !state) return;
   if (e.key === "e") { e.preventDefault(); ui.drawer = ui.drawer === "shopper" ? null : "shopper"; last.quiet = true; render(); q("#sayText")?.focus(); }
   const n = parseInt(e.key, 10);
