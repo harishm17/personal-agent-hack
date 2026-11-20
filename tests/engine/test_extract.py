@@ -144,3 +144,36 @@ def test_units_come_from_the_sheets_limit_so_another_sheet_needs_no_code():
     wrong = spans.finish({"figure": "capacity", "kind": "single", "value": 8, "unit": "in", "quote": "Holds 8 QT"},
                          product, "test", target_unit="qt")
     assert wrong["unsure"] and "cannot be compared" in wrong["unsure_reason"]
+
+
+def test_code_can_tell_which_labelled_dimension_a_number_was_taken_from():
+    at = spans.dimension_position
+    bench = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
+    assert (at(bench, [31])["label"], at(bench, [14.75])["label"]) == ("w", "d")  # the depth is not the width
+    assert at('Product Dims (h x w x d): 16" - 21" x 21" x 18"', [21])["label"] == "w"  # 21 is also in the height range
+    assert at('Product Dims (h x w x d): 12": 1.5" x 12" x 1.25"', [12])["position"] == 2  # the size name is not a dimension
+    assert at('Overall Footprint: 28.5"W x 17.5"D', [28.5])["label"] == "w"
+    assert at('Dimensions: 23.5”W x 20”L x 32” - 40”H', [23.5])["label"] == "w"
+    assert at("Weight Capacity: 300 lbs.", [300]) is None
+
+
+def test_the_comparison_lists_disagreements_extras_and_wrong_positions(tmp_path):
+    from signoff.extract import score
+    quote = 'Product Dims (h x w x d): 1.63" x 31" x 14.75"'
+    def fig(extractor, figure, value, q=quote):
+        return {"store": "s", "product_id": "p", "figure": figure, "kind": "single", "value": value, "low": value,
+                "high": value, "unit": "in", "quote": q, "start": 0, "end": len(q), "extractor": extractor,
+                "span_found_in_text": True}
+    for name, rows in (("claude-sonnet-5-5", [fig("anthropic:claude-sonnet-5-5", "overall_width", 31)]),
+                       ("small", [fig("small", "overall_width", 14.75), fig("small", "length", 12, "12 in long")])):
+        folder = tmp_path / "_runs" / name
+        folder.mkdir(parents=True)
+        (folder / "s.json").write_text(json.dumps(rows))
+        (folder / "s.log").write_text(json.dumps([{"store": "s", "product_id": "p", "extractor": rows[0]["extractor"],
+                                                   "asked": ["overall_width", "length"], "seconds": 1.0, "usage": {}}]))
+    small = next(r for r in score.compare(tmp_path)["readers"] if r["extractor"] == "small")
+    assert small["statement"] == ("same number on 0 of 1 figures both readers found; the reference alone found 0, "
+                                  "this reader alone found 1")
+    assert small["disagreements"][0]["value"] == "14.75" and small["disagreements"][0]["reference_value"] == "31"
+    assert small["disagreements"][0]["dimension"]["label"] == "d" and small["disagreements"][0]["dimension"]["ok"] is False
+    assert [e["figure"] for e in small["extra"]] == ["length"] and len(small["wrong_dimension_position"]) == 1

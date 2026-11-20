@@ -106,7 +106,7 @@ def _load_readers(from_data):
         made = _read(path)
         return {"reference": made["reference"], "measure": made["measure"], "note": made["note"],
                 "products": made["products"], "made_at": made["made_at"],
-                "readers": [{k: v for k, v in r.items() if k != "differences"} for r in made["readers"]]}
+                "readers": [{k: v for k, v in r.items() if k not in ("differences", "missing")} for r in made["readers"]]}
     except (ValueError, KeyError):
         return None
 
