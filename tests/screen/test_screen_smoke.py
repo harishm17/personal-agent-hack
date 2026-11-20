@@ -14,9 +14,9 @@ def test_screen_fixture_copy_matches_the_fixture():
     assert (ROOT / "web" / "screen" / "fixture-state.json").read_bytes() == (ROOT / "fixtures" / "state.json").read_bytes()
 
 
-def test_screen_files_carry_the_agreed_wording():
-    assert "The model reads the figure; code checks that the quote is in the store's text and does the sums." in \
-        (ROOT / "web" / "screen" / "ladder.js").read_text()
+def test_screen_files_never_say_proves():
+    """The contract's wording rule: "states", never "proves". (The "Method" sentence was removed from the screen at 13:56
+    on the builder's word; what guards a figure is now shown as marks drawn from the state.)"""
     for name in ("model.js", "index.html", "ladder.js"):
         text = (ROOT / "web" / "screen" / name).read_text().lower()
         assert "proves" not in text and "proven" not in text, name

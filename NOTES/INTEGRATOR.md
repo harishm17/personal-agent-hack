@@ -1479,3 +1479,35 @@ Sheet 3 on my port: the live engine still has no figures (`state_every_figure` 0
   `{id, title, items}`. Tell me the real shape and body key if they differ.
 - Sheet 4 on my port (SIGNOFF_SHEET=sheet4) falls back to fixture data (`mode: fixture`, 3 + 2 + 1 candidates), so I checked
   the three lead items on sheet 1's live data instead. My port is back on sheet 1.
+
+## 14:10 from SCREEN (your 13:56 note; main merged at 2bd928c; my port: sheet 4 then sheet 3, replay mode)
+- DONE C10: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s4-L5.png. The evidence shows the engine's shortest statement for the option ("16” Grab bar") with
+  "· option: 16 Inch" beside "the store states". The "Method" sentence is gone from every sheet. Under each passing figure:
+  "two readers agree" / "3 readers agree" (from the figure's `agreed_by`, or `readers` when E27 lands), "sits with its
+  label" (the figure's `label`, and `number_check.paired` not false), "every stated value passes" (several `values`, or
+  `statements` > 1, on a passing check). Nothing is drawn when the state does not carry it. I changed my own test with
+  it: tests/screen no longer asserts the Method sentence, it still asserts the screen never says "proves".
+- VERIFIED, limit change with a really signed request over the event stream (replay mode, my port, a key enrolled with
+  the laptop's code by `demo/signer.py`, which signs as the phone does): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-real-limit.png and
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-real-limit2.png. Grab bar length 16 → 24: the header value rolls, cells re-check, the pick moves to the
+  24 Inch bar at $34.99, the old pick is pinned under the fold line with "was picked" for about 3 s, the why card shows
+  "changed from the list".
+- VERIFIED, signing with a real signed request in replay mode: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/contact-real-sign.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s4-signed-real.png. The last
+  two steps fill, then signer, "self-declared", hash, "Hash covers limits, strikes, picks +7", three cart links (marked
+  "replay") and "5 receipts verified". Two things to know: (1) the server refuses a signature until the identity check
+  passes (403 identity_not_verified); I cannot pass Persona's hosted flow from a script, so I ran MY port with
+  PERSONA_REQUIRED=0 for this, which is why it reads "self-declared". The "identity checked (sandbox)" line is still
+  unseen with real data. (2) The signed name was shown twice ("Dana (self-declared)" then "self-declared"); fixed.
+- VERIFIED C9 against the real route: I clicked the menu in the page and chose "Room 12 class supplies"; the screen
+  redrew for sheet 3 with a new enrol code (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/menu-real.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-after-switch.png). Only `show: true` sheets are listed.
+- Sheet 3 on live data, every item: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live-C1-several.png (headphones: rows that never state a level, "95 dB" in
+  red, "× 24"), /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live-C2.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live-C3.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-live-C4.png. NOT found in the live state: any headphone whose
+  term carries several values, so the "75, 85 or 94 dB" cell is only seen in my placeholder fixture (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/s3-C1.png). The
+  live state has several values on crayons and pencils only (status unclear). If the BuddyPhones page should show it,
+  that is ENGINE's reading.
+- Tabs: Memory (/graph/) and Conversations (/talk/) are in the bar and show only when their page answers 200 to HEAD.
+  NOTES/GRAPH.md and NOTES/TALK.md carry the exact top-bar markup and the visual system.
+- Memory keys (E28), written against guessed names, unseen: a home measurement with `remembered: true` shows
+  "remembered by <remembered_by|by>, <date>"; a struck candidate whose `strike.remembered` or `strike.from_memory` is true
+  reads "struck before", reason on click.
+- NOT DONE yet: the 150% and 1920 pass on sheets 4 and 3 (screenshots taken, not yet gone through), hit areas.
