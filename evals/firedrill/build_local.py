@@ -45,7 +45,7 @@ def plan(digest, path="/chat"):
         "services": [{
             "alias": "agent", "root_alias": "app", "mode": "launch",
             "command": {"executable": str(ROOT / ".venv" / "bin" / "python"), "args": ["-m", "signoff.sign.firedrill_agent"]},
-            "cwd": ".", "env_passthrough": ["HOME", "PATH"], "env_static": {}, "local_secret_env": [],
+            "cwd": ".", "env_passthrough": ["HOME", "PATH"], "env_static": {"SIGNOFF_SHEET": os.environ.get("FIREDRILL_SHEET", "sheet4")}, "local_secret_env": [],
             "readiness": {"kind": "http", "url": "http://127.0.0.1:0/health", "expect_status": [200]},
             "readiness_timeout_ms": 90000, "stop_timeout_ms": 5000, "per_drill": True, "port_env": "PORT"}],
         "driver": {"profile": "http.v1", "service_alias": "agent", "path": path, "method": "POST", "stream": "none",

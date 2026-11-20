@@ -58,6 +58,11 @@ ACTOR_PLACE = {"issuer": ("approver", "agent", "approval", "signs"), "shopper": 
 # Steps whose results outlive a reset (cached evidence and its reading). The other steps are worked out again
 # for every run, so a record of theirs from before the current receipt chain began belongs to an earlier run.
 KEPT_ACROSS_RESETS = {"list_read", "stores_searched", "pages_read"}
+# The ledger's fact classes, in the order they are shown, with two words for each. A class the ledger adds later
+# is shown by its own name. SEALED are the ones a model call is not meant to carry unless its job is to read them.
+CLASS_WORDS = {"store_text": "page text", "product": "product name", "order": "the order", "limit": "limits",
+               "home_measurement": "home measurements", "person": "people", "price": "prices"}
+SEALED = ("limit", "home_measurement", "person")
 # What a signed request carried, by its own `type`.
 REQUEST_MARK = {"set_limit": "limit", "strike": "strike", "unstrike": "strike", "sign_sheet": "signature"}
 
@@ -147,8 +152,8 @@ def _message_step(row: dict, lane: str, facts: list):
     """The step an outbound message serves; None means the step in progress when it was sent."""
     if lane == "stores":
         return STORE_TOOL_STEP.get(row.get("purpose"))
-    if lane == "reader":
-        return "list_read" if "order" in facts else "pages_read"
+    if lane == "reader":   # a model call: reading the order, reading store text, or (the chat) neither
+        return "list_read" if "order" in facts else ("pages_read" if "store_text" in facts else None)
     return CHECKERS.get(_service(row))
 
 
@@ -278,8 +283,10 @@ def _atoms(src: dict) -> list:
             group=("message", r.get("recipient"), r.get("purpose"), bool(r.get("blocked"))),
             stopped=bool(r.get("blocked")), verified=(not hits) if lane == "stores" else None, proof="carry no limit",
             item={"title": r.get("purpose") or "", "source": r.get("recipient"), "hash": r.get("payload_sha256"),
-                  "bytes": r.get("bytes"), "ledger": r.get("n"), "facts": facts,
-                  "found": r.get("sealed_found_in_payload") or []})
+                  "bytes": r.get("bytes"), "ledger": r.get("n"), "facts": facts, "at": r.get("at"),
+                  "declared": [c for c in r.get("declared_classes") or [] if c != "none"],
+                  "found": r.get("sealed_found_in_payload") or [],
+                  "parts": r.get("parts") or [], "withheld": r.get("withheld") or []})
 
     # the receipt chain
     chain = src.get("receipts") or []
@@ -363,7 +370,52 @@ def _atoms(src: dict) -> list:
     return out
 
 
-def _events(atoms: list, run_started=None) -> tuple:
+def _class(c) -> dict:
+    return {"id": c, "label": CLASS_WORDS.get(c) or _plain(c)}
+
+
+def _context(rows: list, classes=()) -> dict:
+    """What a set of outbound messages was given and not given, from their ledger rows alone.
+    `given`: the fact classes the sender declared, with how many of the messages carried each. `found`: sealed values
+    the ledger's code search met in the text sent although the sender declared none (a page that states the same
+    number as a limit shows here; the ledger cannot tell that from a limit that was added). `not_given`: the ledger's
+    other classes, absent from every message. `parts` and `withheld` are the sender's own lists when it wrote them."""
+    order = list(CLASS_WORDS) + sorted(c for c in classes if c not in CLASS_WORDS and c != "none")
+    given, found, parts, withheld = {}, {}, {}, {}
+    for r in rows:
+        for c in r.get("declared") or []:
+            given[c] = given.get(c, 0) + 1
+        seen = {}
+        for hit in r.get("found") or []:
+            cls, _, match = str(hit).partition(": ")
+            if cls not in (r.get("declared") or []):
+                seen.setdefault(cls, set()).add(match)
+        for cls, matches in seen.items():
+            slot = found.setdefault(cls, {"calls": 0, "matches": set()})
+            slot["calls"] += 1
+            slot["matches"] |= matches
+        for part in r.get("parts") or []:
+            if isinstance(part, dict) and part.get("name"):
+                slot = parts.setdefault(str(part["name"]), {"calls": 0, "chars": []})
+                slot["calls"] += 1
+                if isinstance(part.get("chars"), (int, float)):
+                    slot["chars"].append(part["chars"])
+        for name in r.get("withheld") or []:
+            withheld[str(name)] = withheld.get(str(name), 0) + 1
+    sizes = sorted(r["bytes"] for r in rows if isinstance(r.get("bytes"), (int, float)) and not isinstance(r.get("bytes"), bool))
+    known = [c for c in order if c in given] + sorted(c for c in given if c not in order)
+    return {"calls": len(rows),
+            "given": [dict(_class(c), calls=given[c]) for c in known],
+            "found": [dict(_class(c), calls=v["calls"], matches=sorted(v["matches"])[:6]) for c, v in found.items()],
+            "not_given": [_class(c) for c in order if c not in given and c not in found],
+            "only": sum(1 for r in rows if not (set(r.get("declared") or []) | {str(h).partition(": ")[0] for h in r.get("found") or []}) & set(SEALED)),
+            "bytes": {"min": sizes[0], "median": sizes[len(sizes) // 2], "max": sizes[-1], "total": sum(sizes)} if sizes else None,
+            "parts": [{"name": k, "calls": v["calls"], "chars": sorted(v["chars"])[len(v["chars"]) // 2] if v["chars"] else None}
+                      for k, v in parts.items()],
+            "withheld": [{"name": k, "calls": v} for k, v in withheld.items()]}
+
+
+def _events(atoms: list, run_started=None, classes=()) -> tuple:
     """Atoms in time order (those without a time after them). An atom with no step of its own takes the step in
     progress at its time (`own_step` false: it happened during the step; such records of one kind are one event per
     step however far apart, and their span is not a duration). Atoms that share a `group` and a step, and follow each other within GAP_S, are one event."""
@@ -421,6 +473,8 @@ def _events(atoms: list, run_started=None) -> tuple:
                     "receipt": first.get("receipt") if e["source"] == "receipt" else None,
                     "hash": first.get("hash") if e["source"] == "receipt" else None,
                     "timed": "measured" if measured else ("first to last" if e["duration_ms"] is not None else None),
+                    "context": _context(items, classes) if e["source"] == "ledger" else None,
+                    "_rows": items if e["source"] == "ledger" else None,
                     "items": items[:ITEMS], "more": max(0, len(items) - ITEMS)})
     return out, earlier
 
@@ -450,7 +504,7 @@ def _step_subs(state: dict) -> dict:
             "carts": n(len(carts), "cart", "carts") if carts else ("none exist" if state else "")}
 
 
-def _steps(events: list, state: dict) -> list:
+def _steps(events: list, state: dict, classes=()) -> list:
     labels, subs = _step_labels(state), _step_subs(state)
     seal = state.get("seal") or {}
     done = {"signs": bool(seal.get("signed")), "carts": any(c.get("cart_url") for c in seal.get("carts") or [])}
@@ -467,7 +521,10 @@ def _steps(events: list, state: dict) -> list:
                     "refused": sum(1 for e in mine if e["stopped"]),
                     "first_at": timed[0]["at"] if timed else None,
                     "last_at": (timed[-1]["end_at"] or timed[-1]["at"]) if timed else None,
-                    "duration_ms": sum(spans) if spans else None})
+                    "duration_ms": sum(spans) if spans else None,
+                    # what this step's model calls were given, all of them together
+                    "context": _context([r for e in mine if e["to_lane"] == "reader" for r in e["_rows"] or []], classes)
+                    if any(e["to_lane"] == "reader" and e["_rows"] for e in mine) else None})
     return out
 
 
@@ -476,7 +533,12 @@ def build(src: dict) -> dict:
     src = src or {}
     state = src.get("state") or {}
     chain = src.get("receipts") or []
-    events, earlier = _events(_atoms(src), _epoch(chain[0].get("at")) if chain else None)
+    classes = src.get("egress_classes") or ()
+    events, earlier = _events(_atoms(src), _epoch(chain[0].get("at")) if chain else None, classes)
+    steps = _steps(events, state, classes)
+    calls = [r for e in events if e["to_lane"] == "reader" for r in e["_rows"] or []]
+    for e in events:
+        e.pop("_rows")
     check = src.get("receipt_check") or {}
     bad = check.get("first_bad")
     held = len(chain) if check.get("verified") else (max(0, bad - 1) if isinstance(bad, int) else 0)
@@ -491,7 +553,7 @@ def build(src: dict) -> dict:
         "signed_at": (state.get("seal") or {}).get("signed_at"),
         "kinds": list(KINDS),
         "lanes": lanes(state),
-        "steps": _steps(events, state),
+        "steps": steps,
         "events": events,
         "chain": [{"n": r.get("n"), "at": r.get("at"), "type": r.get("type"), "hash": r.get("hash"),
                    "prev_hash": r.get("prev_hash"), "verified": bool(check) and (bad is None or r.get("n", 0) < bad)}
@@ -501,6 +563,7 @@ def build(src: dict) -> dict:
                     "messages_out": eg.get("messages"), "to_stores": eg.get("to_stores"),
                     "limits_to_stores": eg.get("limits_in_store_messages"), "blocked": eg.get("blocked"),
                     "receipts": len(chain), "receipts_verified": held,
+                    "model_calls": _context(calls, classes),
                     "earlier_runs": earlier},
         "sources": src.get("sources") or [],
     }
@@ -563,9 +626,10 @@ def collect() -> dict:
 
     def _egress():
         from signoff.obs import egress as ledger_module  # noqa: F401  (the package attribute is the function)
-        from signoff.obs.egress import rows, summary
+        from signoff.obs.egress import CLASSES, rows, summary
         rs = rows()
         src["egress_summary"] = summary(rs)
+        src["egress_classes"] = sorted(CLASSES)
         return rs
 
     def _tools():

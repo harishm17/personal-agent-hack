@@ -152,6 +152,8 @@ def comparable(fig, limit_unit, unit_required=True):
     if fig.get("kind") not in ("single", "spread", "adjustable") or \
             any(not isinstance(v, (int, float)) or isinstance(v, bool) for v in numbers):
         return "stated without a number code can compare"
+    if fig.get("disagree"):
+        return fig["disagree"]  # the two readers do not report the same value for it
     if fig.get("for_other_option"):
         return fig["for_other_option"]
     if unit_name(fig.get("unit")) is None:
@@ -225,6 +227,10 @@ def check(limit, product, figs, facts, sheet):
             terms.append(term)
             continue
         values, source = [], {}
+        usable.sort(key=lambda f: bool(f.get("option_name")))  # where the page and the option's name agree, the page's words are shown
+        first = usable[0]
+        term.update(kind=first.get("kind"), low=first.get("low"), high=first.get("high"), quote=first.get("quote"),
+                    start=first.get("start"), end=first.get("end"))
         for f in usable:
             for v in tested_values(f, op, alone):
                 if not any(abs(v - w) < 1e-9 for w in values):
@@ -247,6 +253,8 @@ def check(limit, product, figs, facts, sheet):
                         start=f.get("start"), end=f.get("end"), unit=f.get("unit") or term["unit"])
             if f.get("sentence"):
                 term.update(sentence=f["sentence"], quote_in_sentence=f["quote_in_sentence"])
+            if f.get("option_match"):
+                term["option_match"] = f["option_match"]  # which of the page's statements was matched to this option, and why
 
     out = {"limit_id": limit["id"], "name": limit["name"], "terms": terms, "op": op, "bound": bound}
     if missing:

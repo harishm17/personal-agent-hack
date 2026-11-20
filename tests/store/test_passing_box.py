@@ -54,26 +54,28 @@ def _state(sheet, pool, figures, answers, strikes):
 
 
 def _roughen(figures, rnd):
-    """Mark some figures unsure, and add a clean duplicate behind an unsure one for a few: the SQL must follow the engine."""
+    """Make the figures harder: a second statement with another number for some (the page states two: unclear or fails or
+    passes depending on both), a unit the limit is not in for a few (not comparable), a few marked unsure (no longer absent)."""
     out = []
     for f in figures:
         f = dict(f)
         roll = rnd.random()
-        if roll < 0.25:
+        if roll < 0.15:
             f["unsure"] = True
             f["unsure_reason"] = "test: two different numbers on the page"
+        if roll > 0.93:
+            f["unit"] = "cm"
         out.append(f)
-        if roll < 0.08:  # an unsure figure first, then a sound one of the same name: the engine uses the sound one
-            out[-1]["unsure"] = True
-            out.append({**f, "unsure": False})
+        if roll < 0.12 and f.get("kind") == "single" and isinstance(f.get("value"), (int, float)):
+            other = dict(f, value=f["value"] * 1.5, low=f["value"] * 1.5, high=f["value"] * 1.5)
+            out.append(other)
     return out
 
 
 @pytest.mark.live  # talks to SingleStore, about 90 s: run with `uv run pytest -m live`, not in the gate
-def test_sql_agrees_with_engine_on_fixtures_and_random_limits(db, monkeypatch):
+def test_sql_agrees_with_engine_on_fixtures_and_random_limits(db):
     sheet = json.loads((ROOT / "sheets" / "sheet1.json").read_text())
     pool, figures = make_state.build_inputs()
-    monkeypatch.setattr(pool_mod, "load", lambda: (pool, make_state.ANSWERS))
     rnd = random.Random(7)
     checked = 0
     for trial in range(3):
@@ -91,9 +93,9 @@ def test_sql_agrees_with_engine_on_fixtures_and_random_limits(db, monkeypatch):
         state["version"] = trial + 1
         records.write_sync(state)
         for line in state["lines"]:
-            want = sorted((c["product"]["store"], c["product"]["product_id"]) for c in line["candidates"] if c["status"] == "inside")
+            want = sorted(c["id"] for c in line["candidates"] if c["status"] == "inside")
             got = passing.passing_box(line["line_id"])
-            assert sorted((r["store"], r["product_id"]) for r in got["rows"]) == want, (trial, line["line_id"])
+            assert sorted(r["cand_id"] for r in got["rows"]) == want, (trial, line["line_id"])
             assert "SELECT" in got["sql"] and "'" + line["line_id"] + "'" in got["sql"]
             checked += len(want)
     assert checked > 5
@@ -133,7 +135,8 @@ def test_the_same_statement_runs_on_the_airbyte_table_and_the_source_is_checked(
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
     from signoff.store import api
-    assert "FROM {pool_table} p" in passing.PASSING_BOX_SQL and passing.AIRBYTE == "signoff.airbyte_pool"
+    assert "FROM {pool_table} c" in passing.PASSING_BOX_SQL and passing.AIRBYTE == "signoff.airbyte_pool"
+    assert "airbyte_pool" in passing._sql(True) and "airbyte_pool" not in passing._sql(False)
     app = FastAPI()
     app.include_router(api.router)
     assert TestClient(app).get("/api/sql/passing-box?line_id=L1&source=nonsense").status_code == 422
@@ -147,3 +150,43 @@ def test_the_sheets_own_unit_words_are_one_unit_in_the_tables():
     assert records._unit("decibels") != "dB" and records._unit("DB") == "dB"
     assert records._unit("inches") == "in"
     records._learn_units({"sheet": {}})
+
+
+@pytest.mark.live
+def test_sql_tests_every_stated_value_and_every_option_on_sheet3(db):
+    """A page that states two levels, an option that differs from its sibling, `several` largest, and a figure with no number in it."""
+    import copy
+    sheet = copy.deepcopy(json.loads((ROOT / "sheets" / "sheet3.json").read_text()))
+    line = next(l for l in sheet["lines"] if l["id"] == "C1")
+    lim = line["limits"][0]  # volume <= 85 dB
+    def fig(cand, kind, value=None, low=None, high=None, unit="dB", **extra):
+        return {"store": "s.com", "product_id": cand["product_id"], "figure": "max_volume", "kind": kind, "value": value,
+                "low": low if low is not None else value, "high": high if high is not None else value, "unit": unit, "quote": "q",
+                "start": 0, "end": 1, "extractor": "t", "span_found_in_text": True, **extra}
+    def cand(pid, variant, price, figs):
+        product = {"store": "s.com", "product_id": pid, "variant_id": variant, "title": "t", "price_cents": price, "product_key": "k" + pid + (variant or ""), "url": "u"}
+        return {"id": "C1:s.com:%s%s" % (pid, ":" + variant if variant else ""), "product": product, "figures": figs, "status": "x", "picked": False}
+    cases = [  # (id, variant, figures, inside when several is unset)
+        ("a", None, [fig({"product_id": "a"}, "single", 80)], True),
+        ("b", None, [fig({"product_id": "b"}, "single", 80), fig({"product_id": "b"}, "single", 95)], False),   # states both: unclear
+        ("c", None, [fig({"product_id": "c"}, "single", 70), fig({"product_id": "c"}, "single", 85)], True),    # both pass
+        ("d", "v1", [fig({"product_id": "d"}, "single", 85)], True),                                          # option one passes
+        ("d", "v2", [fig({"product_id": "d"}, "single", 94)], False),                                         # its sibling does not
+        ("e", None, [fig({"product_id": "e"}, "single", 60, unit="cm")], False),                              # not in dB: not comparable
+        ("f", None, [fig({"product_id": "f"}, "spread", low=75, high=94)], False),                            # a spread tests both ends
+        ("g", None, [], False),                                                                               # never stated
+        ("h", None, [fig({"product_id": "h"}, "single", 50, number_in_quote=False)], False),                  # no number in its quote
+    ]
+    for several, expect in ((None, [c[0] + (":" + c[1] if c[1] else "") for c in cases if c[3]]),
+                            ("smallest", None), ("largest", None)):
+        lim2 = {**{k: v for k, v in lim.items() if k != "several"}, **({"several": several} if several else {})}
+        sh = {**sheet, "lines": [{**line, "limits": [lim2]}]}
+        state = {"version": 1, "sheet": sh, "lines": [{"line_id": "C1", "struck": [], "candidates": [cand(p, v, 100 + i, f) for i, (p, v, f, _) in enumerate(cases)]}]}
+        records.write_sync(state)
+        got = sorted(r["cand_id"].split("s.com:")[1] for r in passing.passing_box("C1")["rows"])
+        if expect is not None:
+            assert got == sorted(expect), (several, got)
+        elif several == "smallest":  # only the smallest stated value is tested: b (80), c (70), f (75) now pass
+            assert got == sorted(["a", "b", "c", "d:v1", "f"]), got
+        else:  # largest: 80 passes (a), b 95 fails, c 85 passes, d:v2 94 fails, f 94 fails
+            assert got == sorted(["a", "c", "d:v1"]), got
