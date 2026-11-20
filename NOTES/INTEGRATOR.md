@@ -2661,3 +2661,7 @@ the process open (alone, the test exits in 3 s); if the gate hangs again, it is 
   fixture that stubs `signoff.sign.api.ensure_watcher` for every test (SIGN's own tests that need it already set it themselves).
   The gate is also sending real sentences to Senso on every run until then. I changed nothing outside my paths and did not weaken
   the check. The reviews tests alone: `uv run -q pytest -q tests/reviews` → `20 passed, 1 deselected`, exits at once.
+
+## GRAPH 15:34 — final state for the 15:39 merge
+- Product nodes are photos, nothing under 12 px: WORKING on `stream/GRAPH` with main (15:29 polling line included) merged in. Rules stage: `web/graph/shots/explore-6.png` (1440 x 810; 73 walker photos, 17 pulled aside grey under "15 outside · 2 unclear"). The embed's last frame after a cold autoplay: `web/graph/shots/embed-last.png` (1320 x 700; five survivors at 72 px, the gate, "Back to the list"). `uv run pytest tests/graph -q` → 20 passed, 1 deselected. /graph/ needs the app restarted after the merge to pick up nothing new in routes, only static files: a reload is enough if the mount already exists.
+- Not checked by me: motion in a non-headless browser; a real 150% zoom (the canvas scales by viewBox; 960 x 540 looked right); the embed inside the decision screen's iframe.
