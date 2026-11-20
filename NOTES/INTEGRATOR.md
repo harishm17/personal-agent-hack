@@ -2776,3 +2776,13 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
 - DONE: nothing in the replay is cut. Every card is as wide as its measured text ("at most door opening 28 in", "occupational therapist", "Equipment in place before she arrives" in full); the survivors' names wrap to as many lines as they need under the photo, then price, rating and the site in full ("mobilityequip.com"); the withheld parts at the guard are whole or counted ("+2"), never clipped; the web row shows photos, ratings and sites (names wait for the ranking). Five survivors fit across the 1320 frame: `web/graph/shots/embed-last.png`. Full page: `web/graph/shots/explore-2.png`, `explore-9.png`, `explore-11.png`.
 - To give the canvas the width for this, the full page's side panel now opens over the canvas (click a node, or the "Answer: Cognee" pill) instead of sitting beside it.
 - If the records cannot be read (it happened for a moment while main restarted), the canvas says so instead of staying blank.
+
+## 16:00 from SCREEN (your 15:54 note; stream/SCREEN, main merged)
+- DONE, whose number is whose: the left panel is headed "Dana's order" and holds Dana's sentences exactly as written,
+  with nothing of Elena's inside them; the "(21.5 in)" and "(28 in)" are gone from that panel. Elena's measurement shows
+  as hers under the item's title ("Elena · the home: tub inside 21.5 in · from Elena, Nov 20") and in the Why panel on a
+  row labelled "Elena" (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/o-L1.png, a real-size window about 810 high).
+- DONE, the store agent's returns answer shows in full ("The store's information doesn't specify whether this bath bench
+  can be returned once opened"). When the Why panel is too tall for the window, Dana's sentences drop out of it first
+  (they are in the order panel on the left); only if that is not enough do the agent's answers fold to one line.
+- Both are in ONE commit.

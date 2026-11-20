@@ -440,12 +440,12 @@ function renderDoc(current) {
     const who = f && f.suggested_from ? "" : f && f.remembered ? ` · ${shopper.name} measured` : "";      // where it came from is said once, under the item's title
     return f ? ` <span class="home" title="from the home: ${esc(f.label)}">(${g(f.value)} ${esc(f.unit)}${esc(who)})</span>` : "";
   };
-  q("#doc").innerHTML = `<div class="cap">${esc(issuer.name)}'s limits</div>
+  q("#doc").innerHTML = `<div class="cap">${esc(issuer.name)}'s order</div>
     <div class="paper">${state.lines.map((l) => {
       const p = pickOf(l), sl = sheetLineOf(l);
       const right = p ? (l.status === "pick_up" ? "pick up" : money(p.product.price_cents) + times(l)) : "open";
       const seen = new Set();
-      const text = sl.limits.map((limit) => requirement(limit) + home(limit)).filter((t) => !seen.has(t) && seen.add(t)).join(" ")
+      const text = sl.limits.map((limit) => requirement(limit)).filter((t) => !seen.has(t) && seen.add(t)).join(" ")
         + (sl.preferences || []).map((pref) => ` <span class="prefers"><span class="pl">prefers</span> ${requirement(pref)}</span>`).join("");
       const img = p && p.product.image_url ? `<img src="${esc(p.product.image_url)}" alt="" width="28" height="28" onerror="this.remove()">` : "";
       const inCart = p ? `<span class="incart">${img}<span>→ ${esc(p.product.title)}<span class="st2"> · ${esc(p.product.store)}${l.picked_by === "shopper" ? ` · chosen by ${esc(shopper.name)}` : ""}</span></span></span>`
