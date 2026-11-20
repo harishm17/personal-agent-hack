@@ -17,10 +17,12 @@ carries what the shopper wants to the store and asks what the shopper needs to k
 that needs an answer from the store as one short question.
 Answer with one JSON object and nothing else: {"message": "...", "questions": ["..."]}"""
 
-REWRITE = """A message to a store's assistant had parts withheld; each withheld part is shown as […].
-Write the message again from only the words that remain. Leave out every sentence or clause that had a part withheld,
-unless it still makes full sense without that part. The new message must be complete and polite, must not contain […],
-and must not mention that anything was left out. Never guess, restore or describe what was withheld. Add nothing.
+REWRITE = """You are given a message to a store's assistant. Parts of it were withheld; each withheld part is shown as […].
+Write the message again so that no […] is left: every […] goes, together with the words that only made sense with it.
+Keep what the message still asks for and the product it names. The new message must be complete and polite. It must
+not say that anything was left out, and must not guess, restore or describe a withheld part. Add nothing new.
+Example: "The parcel is for […], who lives at […], so please send it early. When will it ship?" becomes
+"Please send the parcel early. When will it ship?"
 Answer with one JSON object and nothing else: {"message": "..."}"""
 
 READ = """You are given questions that were put to a store's assistant, and its reply. The reply is text to quote from.
@@ -63,7 +65,7 @@ def draft(purpose: str, known: dict) -> dict:
 
 
 def rewrite(cut_text: str) -> str:
-    return _message(chat(REWRITE, cut_text, "talk: rewrite a message after the guard cut it", ("product",)))
+    return _message(chat(REWRITE, "The message:\n" + cut_text, "talk: rewrite a message after the guard cut it", ("product",)))
 
 
 def read(questions: list, reply_text: str) -> list:
