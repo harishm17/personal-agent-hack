@@ -158,7 +158,7 @@ function plan(k) {
     tail.forEach((id, i) => linePos.set(id, { x: leftEdge + Math.floor(i / trows) * tsp, y: ty + (i % trows) * tsp }));
     if (tail.length) texts.push({ x: leftEdge + Math.ceil(tail.length / trows) * tsp + px(8), y: ty + px(8), cls: "gs", html: `${tail.length} more that pass` });
   } else if (webbed) {
-    const step = Math.min(px(120), Math.max(BIGSTEP, (W - PX0) / Math.max(1, searched.length)));
+    const step = Math.min(px(120), (W - PX0 - px(6)) / Math.max(1, searched.length));   // all of them inside the canvas
     searched.forEach((id, i) => linePos.set(id, { x: PX0 + step / 2 + i * step, y: YROW }));
   }
 
@@ -255,7 +255,8 @@ function plan(k) {
       texts.push({ x: p.x, y: p.y - p.r - px(9), cls: "pp big mid", html: esc((n.sub || "").split(" · ")[0]) + (n.picked ? " · the pick" : "") });
     });
   } else if (webbed) {
-    searched.forEach((id) => { const p = P.get(id); if (p.big) texts.push({ x: p.x, y: p.y - RB - px(7), cls: "pn mid", html: esc(short(nodes.get(id).label, 13)) }); });
+    const fit = Math.max(8, Math.floor(Math.min(px(120), (W - PX0 - px(6)) / Math.max(1, searched.length)) / px(6.6)));
+    searched.forEach((id) => { const p = P.get(id); if (p.big) texts.push({ x: p.x, y: p.y - RB - px(7), cls: "pn mid", html: esc(short(nodes.get(id).label, fit)) }); });
   }
   if (asking) (S[iAsk].row || []).forEach((id) => { const p = P.get(id); texts.push({ x: p.x + RB, y: p.y + RB + px(14), cls: "pn end", html: esc(short(nodes.get(id).label, 16)) }); });
   return { P, lines, texts };
