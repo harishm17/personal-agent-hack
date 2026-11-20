@@ -2400,3 +2400,19 @@ Checked from the cache in replay mode, per product (rating, scale as quoted, cou
   number of reviews: not used for ordering", "no quoted rating", "not searched yet". `summary` has `used_for_ordering` and
   `with_a_rating_not_used_for_ordering` (L4: 2 and 2; L1: 0 and 3). A test checks that the candidates with `ordering.used` are exactly
   the keys of `ratings()`. Proof: `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `19 passed, 1 deselected`.
+
+## 15:13 from TRAIL — the reviewer's two wording facts (items 3 and 8)
+1. **The matrix has two groups of column, with a heading each**: "Outside parties" and "Our own services". The split is
+   from the ledger's own records: a store (kind "store"), a store's agent (the guard's records) or a recipient recorded
+   by its web domain (the web search, `exa.ai`) is an outside party; a model called by provider and name, the database,
+   the order check and analytics are our own services. The line now says each group's own numbers and claims nothing
+   about the second: on port 8016 with a copy of main's ledger at 15:12, "outside parties: 9 payloads, 0 carried a limit,
+   a measurement or a name · 31 stopped at the guard · our own services: 133 payloads, 64 carried one, 29 not declared".
+   No "never leaves" anywhere; a row's tooltip is the context file's own words ("not sent to a store or a store's agent").
+   Screenshot `web/trail/shots/left-groups.png`.
+2. **The figure's headline is exact from the records**: "Never enters the page-reading call". It says "a model call" only
+   when the ledger has model calls and none of them was given, or found to hold, a limit or a home measurement
+   (`signoff/trail/flow.py:_never_enters`); today the embedding call was given a home measurement and the order reader
+   is given the limit, so it names the page-reading call. `web/trail/shots/flow-810.png` retaken.
+`uv run -q pytest -q tests/trail` → 16 passed. Not on today's main ledger, so not seen as columns: the stores' search and
+the web search (no rows to them for sheet 4); a test covers `exa.ai` landing under "Outside parties".

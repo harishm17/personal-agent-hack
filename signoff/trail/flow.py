@@ -106,6 +106,17 @@ def _read_record(events, extractors):
             "found": [{"label": k, "calls": v} for k, v in found.items()]}
 
 
+def _never_enters(events) -> str:
+    """What the limit and the measurement never enter, as far as the ledger's rows go. "a model call" only when
+    the ledger has model calls and none of them was given, or was found to hold, a limit or a home measurement.
+    Otherwise the claim is about the page-reading call alone (the call the frame shows), which is how its prompt is
+    built: another call, such as the one that reads the order, does receive the limit."""
+    calls = [e["context"] for e in events or [] if e.get("context") and e.get("to_lane") == "reader"]
+    sealed = {"limit", "home_measurement"}
+    held = any(g.get("id") in sealed for c in calls for g in (c.get("given") or []) + (c.get("found") or []))
+    return "a model call" if calls and not held else "the page-reading call"
+
+
 def build(state: dict, steps: list, events: list, talk=None, memory=None) -> dict:
     state = state or {}
     sheet, seal = state.get("sheet") or {}, state.get("seal") or {}
@@ -146,7 +157,8 @@ def build(state: dict, steps: list, events: list, talk=None, memory=None) -> dic
              "page": page["excerpt"] if page else [], "meanings": meanings,
              "quoted": [f.get("quote") for f in figures],
              "outside": record["outside"] if record else None,
-             "found": record["found"] if record else []} if pick else None
+             "found": record["found"] if record else [],
+             "never_enters": _never_enters(events)} if pick else None
 
     # what goes round the model and is compared in code
     checks, bypass = [], []
