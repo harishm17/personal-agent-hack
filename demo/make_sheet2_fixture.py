@@ -57,35 +57,45 @@ ANSWERS = [{"store": s, "asked_at": NOW, "question": "How long does delivery tak
            for i, s in enumerate(STORES)]
 
 
-def main():
-    sheet = json.loads((ROOT / "sheets" / "sheet2.json").read_text())
-    sheet["stores"] = STORES
+def build(sheet_id, raw_rows, stores, prefix):
+    sheet = json.loads((ROOT / "sheets" / (sheet_id + ".json")).read_text())
+    sheet["stores"] = stores
+    sheet.setdefault("shopper_facts", [])
     pool, figures = [], []
-    for n, (line_id, si, price, parts) in enumerate(RAW):
-        pid = "fx2-%02d" % (n + 1)
+    for n, (line_id, si, price, parts) in enumerate(raw_rows):
+        pid = "%s-%02d" % (prefix, n + 1)
         text, spans = "Fixture product %s. " % pid, []
         for part in parts:
             sentence = part if isinstance(part, str) else part[5]
             if not isinstance(part, str):
                 spans.append((part, len(text), len(text) + len(sentence)))
             text += sentence + " "
-        pool.append({"store": STORES[si], "product_id": pid, "variant_id": pid + "-v1", "title": "Fixture product " + pid,
-                     "price_cents": price, "url": "https://%s/products/%s" % (STORES[si], pid), "text": text.strip(),
+        pool.append({"store": stores[si], "product_id": pid, "variant_id": pid + "-v1", "title": "Fixture product " + pid,
+                     "price_cents": price, "url": "https://%s/products/%s" % (stores[si], pid), "text": text.strip(),
                      "fetched_at": NOW, "product_key": "fixture " + pid, "line_ids": [line_id]})
         for (fig, kind, low, high, unit, sentence), start, end in spans:
-            figures.append({"store": STORES[si], "product_id": pid, "figure": fig, "kind": kind,
+            figures.append({"store": stores[si], "product_id": pid, "figure": fig, "kind": kind,
                             "value": low if kind == "single" else None, "low": low, "high": high, "unit": unit,
                             "quote": sentence, "start": start, "end": end, "extractor": "fixture",
                             "span_found_in_text": text[start:end] == sentence})
-    state = ms.build_state(sheet, pool, figures, ANSWERS, [])
-    raw = ROOT / "web" / "screen" / "fixture-sheet2.json"
+    answers = [dict(ANSWERS[i % len(ANSWERS)], store=st) for i, st in enumerate(stores)]
+    state = ms.build_state(sheet, pool, figures, answers, [])
+    for line, sheet_line in zip(state["lines"], sheet["lines"]):
+        if sheet_line.get("quantity"):
+            line["quantity"] = sheet_line["quantity"]
+    raw = ROOT / "web" / "screen" / ("fixture-%s.json" % sheet_id)
     raw.write_text(json.dumps(state))
     script = ("import {readFileSync, writeFileSync} from 'node:fs'; import {simulate} from './web/screen/model.js';"
-              "const p='web/screen/fixture-sheet2.json'; const s=simulate(JSON.parse(readFileSync(p)));"
+              "const p='web/screen/fixture-%s.json'; const s=simulate(JSON.parse(readFileSync(p)));" % sheet_id +
               "writeFileSync(p, JSON.stringify(s, null, 1) + '\\n');"
               "for (const l of s.lines) console.log(l.line_id, l.need, '|', l.status, '|', l.pick, '|', l.tightest && l.tightest.text, '|', JSON.stringify(l.why));"
               "console.log(JSON.stringify(s.counts), s.total_cents);")
     subprocess.run(["node", "--input-type=module", "-e", script], cwd=ROOT, check=True)
+    return raw
+
+
+def main():
+    raw = build("sheet2", RAW, STORES, "fx2")
     # Shapes the reference code does not make, added by hand so the screen can be looked at: a page that states the
     # figure but not one clear value (status `unclear`), and one product sold in two options (two rows, one name).
     state = json.loads(raw.read_text())
@@ -98,6 +108,34 @@ def main():
     for pid, option in (("fx2-01", "10 in rough-in"), ("fx2-02", "12 in rough-in")):
         by[pid]["product"]["title"] = "Fixture product fx2-01"
         by[pid]["product"]["variant_title"] = option
+    raw.write_text(json.dumps(state, indent=1) + "\n")
+
+
+    sheet3()
+
+
+# Sheet 3, the teacher's list: one limit an item, a quantity of 24, units dB, count and sheets.
+DB = lambda v: one("max_volume", v, "dB", "Volume limited to %g dB." % v)
+CR = lambda v: one("crayon_count", v, "count", "%g crayons in the box." % v)
+SH = lambda v: one("sheet_count", v, "sheets", "%g sheets, wide ruled." % v)
+PE = lambda v: one("pencil_count", v, "count", "Pack of %g pencils." % v)
+RAW3 = [
+    ("C1", 0, 1499, ["Wired headphones for kids."]), ("C1", 1, 1799, [DB(94)]), ("C1", 2, 1999, [DB(85)]), ("C1", 0, 2499, [DB(85)]),
+    ("C1", 3, 2999, [DB(75)]), ("C1", 1, 3499, [DB(85)]), ("C1", 4, 1299, [DB(95)]),
+    ("C2", 0, 149, [CR(16)]), ("C2", 1, 179, [CR(64)]), ("C2", 2, 199, [CR(24)]), ("C2", 3, 249, [CR(24)]), ("C2", 4, 129, ["Bright colours."]),
+    ("C3", 0, 99, [SH(50)]), ("C3", 1, 129, ["One subject notebook."]), ("C3", 2, 149, [SH(70)]), ("C3", 3, 189, [SH(100)]), ("C3", 4, 139, [SH(60)]),
+    ("C4", 0, 199, [PE(10)]), ("C4", 1, 249, [PE(12)]), ("C4", 2, 299, [PE(24)]), ("C4", 3, 179, ["Pre-sharpened."]),
+]
+
+
+def sheet3():
+    stores = ["fixture-store-%s.example" % c for c in "abcde"]
+    raw = build("sheet3", RAW3, stores, "fx3")
+    # by hand: a page that states several levels fails on the loudest (the sheet says `several: largest`)
+    state = json.loads(raw.read_text())
+    c1 = next(l for l in state["lines"] if l["line_id"] == "C1")
+    m = next(c for c in c1["candidates"] if c["product"]["product_id"] == "fx3-02")
+    m["checks"][0]["terms"][0].update({"values": [75, 85, 94], "quote": "Three sound levels: 75dB, 85dB, or 94dB."})
     raw.write_text(json.dumps(state, indent=1) + "\n")
 
 

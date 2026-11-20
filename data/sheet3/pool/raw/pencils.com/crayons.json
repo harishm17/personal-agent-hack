@@ -1,0 +1,566 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://pencils.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Pencils.com",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "pencils.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "17254744164"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "17254744164"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/3033129123940",
+   "title": "Blackwing 602 Pencils (12 Pack)",
+   "description": {
+    "html": "Description The iconic Blackwing 602 that once commanded up to $40/pencil and was favored by famous writers like John Steinbeck is back. The Blackwing 602 features a firm and smooth graphite core that is ideal for writers and everyday users who don't like to sharpen often. Includes Blackwing's signature pink extendable eraser and unique ferrule design. Inspired by the past, made for the writers of tomorrow. Each box contains 12 firm and smooth premium graphite pencils, crafted from Genuine Incense-cedar. Details Item #: 105330 Brand Name: Blackwing Pencil Type: Graphite Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Grey Country of Origin: Japan"
+   },
+   "url": "https://pencils.com/products/blackwing-602-pencils-12-pack",
+   "handle": "blackwing-602-pencils-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 3400,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3400,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/25141242789988",
+     "sku": "105330",
+     "title": "Default Title",
+     "description": {
+      "html": "Description The iconic Blackwing 602 that once commanded up to $40/pencil and was favored by famous writers like John Steinbeck is back. The Blackwing 602 features a firm and smooth graphite core that is ideal for writers and everyday users who don't like to sharpen often. Includes Blackwing's signature pink extendable eraser and unique ferrule design. Inspired by the past, made for the writers of tomorrow. Each box contains 12 firm and smooth premium graphite pencils, crafted from Genuine Incense-cedar. Details Item #: 105330 Brand Name: Blackwing Pencil Type: Graphite Package Quantity: 12 Wood Type: Incense-cedar Barrel Shape: Hexagonal Barrel Color: Grey Country of Origin: Japan"
+     },
+     "price": {
+      "amount": 3400,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Blackwing_602.jpg?v=1746750120"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/25141242789988:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/Blackwing_602.jpg?v=1746750120",
+     "alt_text": "Blackwing 602 Pencils"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Back-to-School",
+    "Best seller",
+    "Featured Pencils",
+    "gifts for stationery fans",
+    "Gifts for Students",
+    "Gifts for Teachers",
+    "Gifts for Writers",
+    "Incense-Cedar",
+    "Japanese Graphite"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/112512434276",
+     "handle": "pencils",
+     "title": "Graphite Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/118737469540",
+     "handle": "recommended-graphite-pencils",
+     "title": "Recommended Graphite Pencils",
+     "description": {
+      "html": "Shop our favorite wood-cased, graphite pencils."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158306336828",
+     "handle": "blackwing-rebrand",
+     "title": "Blackwing Rebrand",
+     "description": {
+      "html": "Blackwing recently updated their look with new emblems and logos. Check out some of their new products."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7851831263292",
+   "title": "Blackwing Volume 574 Ledger Notebook",
+   "description": {
+    "html": "The Indigenous peoples of the Plains have kept visual histories for centuries. As they continued to be displaced by settlers throughout the 19th century, this practice became more challenging, and even more essential. Hides and cloth were traditionally used as canvases, but those were soon replaced by a more portable and accessible solution - paper. One of the more popular vessels for these visual histories were the ledger books used by the very settlers that were displacing them. The Native artisans drew in these books with pencils, paints, and sometimes crayons, documenting their histories, important stories and more. What was once used to keep inventory of settler property was repurposed to keep inventory of the cultural practices of the people of the Plains.This Blackwing 574 ledger book is a recreation of the types of ledger books used by the Plains tribes to preserve their identities and histories. This 7.5\u201d x 11.75\u201d book features a multi-textured vegan leather and suede cover and 152 numbered ledger pages. Use it as a ledger of your own or fill it with your own drawings of the important events in your life."
+   },
+   "url": "https://pencils.com/products/blackwing-volume-574-ledger-notebook",
+   "handle": "blackwing-volume-574-ledger-notebook",
+   "price_range": {
+    "min": {
+     "amount": 5000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42349352321084",
+     "sku": "107678",
+     "title": "Default Title",
+     "description": {
+      "html": "The Indigenous peoples of the Plains have kept visual histories for centuries. As they continued to be displaced by settlers throughout the 19th century, this practice became more challenging, and even more essential. Hides and cloth were traditionally used as canvases, but those were soon replaced by a more portable and accessible solution - paper. One of the more popular vessels for these visual histories were the ledger books used by the very settlers that were displacing them. The Native artisans drew in these books with pencils, paints, and sometimes crayons, documenting their histories, important stories and more. What was once used to keep inventory of settler property was repurposed to keep inventory of the cultural practices of the people of the Plains.This Blackwing 574 ledger book is a recreation of the types of ledger books used by the Plains tribes to preserve their identities and histories. This 7.5\u201d x 11.75\u201d book features a multi-textured vegan leather and suede cover and 152 numbered ledger pages. Use it as a ledger of your own or fill it with your own drawings of the important events in your life."
+     },
+     "price": {
+      "amount": 5000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/Blackwing-Volume-574-Holiday2024-staceydoyle-2241x1.png?v=1746749903"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/42349352321084:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/Blackwing-Volume-574-Holiday2024-staceydoyle-2241x1.png?v=1746749903"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/276072038460",
+     "handle": "blackwing-new-arrivals",
+     "title": "Latest Blackwing Arrivals",
+     "description": {
+      "html": "Shop the latest arrivals from Blackwing from exclusive gift sets to limited edition pencils."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/15455650938940",
+   "title": "Blackwing Crate Gift Set",
+   "description": {
+    "html": "This is the ultimate Blackwing gift set. Each Crate includes:- 24 x Blackwing Pencils (6 x Matte - Soft Graphite, 6 x 602 - Firm Graphite, 6 x Pearl - Balanced Graphite & 6 x Natural - Extra-firm Graphite).- 10 x Replacement Erasers (Black) - Replacements for Blackwing's iconic flat eraser.- 1 x Desktop Sharpener - Adjustable helix blade sharpener to sharpen your pencils to perfection.- 1 x One-Step Long Point Sharpener - Pocketable sharpener that creates a curved long point that resists breakage.- 1 x Walnut Gift Box - Store and display your pencils.- 1 x Handheld Eraser + Holder (Black) - Jumbo eraser that cleanly erases our dark, soft graphite.- 1 x Pencil Extender - Extend the life of your pencils.- 1 x Notebook Clip - Attach your pencil to any notebook.- 1 x Medium Blackwing Slate (Dot-Grid Paper) - Matte black hardcover, 160 pages of 100 GSM paper optimized for pencils & a holster loaded with a Blackwing pencil.- 1 x Blackwing A4 Spiral Notebook (Blank Paper) - 160 pages of 80 GSM paper optimized for pencils.- 3 x Point Guards (1 x Gold Point Guard, 1 x Silver Point Guard) - Protect your pencil points in your bag or on the go.All Blackwing pencil products conform to ASTM D-4236."
+   },
+   "url": "https://pencils.com/products/blackwing-crate-gift-set",
+   "handle": "blackwing-crate-gift-set",
+   "price_range": {
+    "min": {
+     "amount": 40000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 40000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/67977580609596",
+     "sku": "108105",
+     "title": "Default Title",
+     "description": {
+      "html": "This is the ultimate Blackwing gift set. Each Crate includes:- 24 x Blackwing Pencils (6 x Matte - Soft Graphite, 6 x 602 - Firm Graphite, 6 x Pearl - Balanced Graphite & 6 x Natural - Extra-firm Graphite).- 10 x Replacement Erasers (Black) - Replacements for Blackwing's iconic flat eraser.- 1 x Desktop Sharpener - Adjustable helix blade sharpener to sharpen your pencils to perfection.- 1 x One-Step Long Point Sharpener - Pocketable sharpener that creates a curved long point that resists breakage.- 1 x Walnut Gift Box - Store and display your pencils.- 1 x Handheld Eraser + Holder (Black) - Jumbo eraser that cleanly erases our dark, soft graphite.- 1 x Pencil Extender - Extend the life of your pencils.- 1 x Notebook Clip - Attach your pencil to any notebook.- 1 x Medium Blackwing Slate (Dot-Grid Paper) - Matte black hardcover, 160 pages of 100 GSM paper optimized for pencils & a holster loaded with a Blackwing pencil.- 1 x Blackwing A4 Spiral Notebook (Blank Paper) - 160 pages of 80 GSM paper optimized for pencils.- 3 x Point Guards (1 x Gold Point Guard, 1 x Silver Point Guard) - Protect your pencil points in your bag or on the go.All Blackwing pencil products conform to ASTM D-4236."
+     },
+     "price": {
+      "amount": 40000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/Blackwing_Crate-13.png?v=1794512246"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/67977580609596:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/Blackwing_Crate-13.png?v=1794512246",
+     "alt_text": "An open black gift box on a light gray background, revealing a wooden pencil box display set, blackwing handheld eraser, blackwing replacement erasers, blackwing point guards, and blackwing notebook clip on the top layer, and a large black spiral bound notebook and medium hardcover notebook with a black pencil in the holster in a lower pull-out drawer with a ribbon string."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/295912898620",
+     "handle": "shop-all-blackwing-products",
+     "title": "Shop All Blackwing Products",
+     "description": {
+      "html": "Shop All Blackwing Products"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

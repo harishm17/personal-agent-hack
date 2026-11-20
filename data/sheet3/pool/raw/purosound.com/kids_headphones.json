@@ -1,0 +1,3056 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://purosound.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Puro Sound Labs",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "purosound.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "11421326"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "11421326"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7415283450011",
+   "title": "BT2200-Plus Volume Limited Kids\u2019 Bluetooth Headphones",
+   "description": {
+    "html": "LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+   },
+   "url": "https://purosound.com/products/bt2200-plus",
+   "handle": "bt2200-plus",
+   "price_range": {
+    "min": {
+     "amount": 8910,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8910,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42554336739483",
+     "sku": "BTBCK",
+     "title": "Black",
+     "description": {
+      "html": "LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 8910,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTBLK1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/42554336739483:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42554336772251",
+     "sku": "BTBLU",
+     "title": "Blue",
+     "description": {
+      "html": "LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 8910,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTBLU1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/42554336772251:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42554336805019",
+     "sku": "BTGRN",
+     "title": "Green",
+     "description": {
+      "html": "LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 8910,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTGRN1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/42554336805019:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42554336837787",
+     "sku": "BTPNK",
+     "title": "Pink",
+     "description": {
+      "html": "LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 8910,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTPNK1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/42554336837787:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42554336870555",
+     "sku": "BTPUR",
+     "title": "Purple",
+     "description": {
+      "html": "LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 8910,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTPUR1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/42554336870555:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42554336903323",
+     "sku": "BTTEL",
+     "title": "Teal",
+     "description": {
+      "html": "LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 8910,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Teal"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTTEL1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/42554336903323:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Green"
+      },
+      {
+       "label": "Pink"
+      },
+      {
+       "label": "Purple"
+      },
+      {
+       "label": "Teal"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTPNK1.png?v=1725567261"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Best Selling",
+    "Bluetooth kid headphones",
+    "BT2200",
+    "BT2200 Plus",
+    "BT2200s",
+    "kids headphones",
+    "new",
+    "OverEar",
+    "pepperjam",
+    "spo-default",
+    "spo-disabled",
+    "volume limited",
+    "Wired",
+    "Wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170497793",
+     "handle": "headphones",
+     "title": "Volume Limited Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58556284962",
+     "handle": "volume-limited-student-1",
+     "title": "Volume Limited Student Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/61246373922",
+     "handle": "best-selling-products",
+     "title": "Best Selling Products",
+     "description": {
+      "html": "Best Selling Volume Limited Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/61246406690",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/159315984456",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Headphones",
+     "description": {
+      "html": "Bluetooth Volume Limited Headphones"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7714390638747",
+   "title": "PuroQuiet-PLUS Active Noise Cancelling Headphones - Built-in Mic",
+   "description": {
+    "html": "USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+   },
+   "url": "https://purosound.com/products/puroquiets-plus-active-noise-cancelling-headphones",
+   "handle": "puroquiets-plus-active-noise-cancelling-headphones",
+   "price_range": {
+    "min": {
+     "amount": 10115,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 11900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 11900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43581785669787",
+     "sku": "PQPRED",
+     "title": "Red",
+     "description": {
+      "html": "USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusRed.png?v=1739912941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43581785669787:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43581785702555",
+     "sku": "PQPTEL",
+     "title": "Teal",
+     "description": {
+      "html": "USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 10115,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Teal"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusTeal.png?v=1739912941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43581785702555:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43581785735323",
+     "sku": "PQPBLU",
+     "title": "Dark Blue",
+     "description": {
+      "html": "USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 10115,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Dark Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusBlue.png?v=1697574807"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43581785735323:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43581785768091",
+     "sku": "PQPPNK",
+     "title": "Light Pink",
+     "description": {
+      "html": "USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 10115,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Light Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusPink.png?v=1739912941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43581785768091:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43581787373723",
+     "sku": "PQPBLK",
+     "title": "Black",
+     "description": {
+      "html": "USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusBlack.png?v=1739912941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43581787373723:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43581787406491",
+     "sku": "PQPPUR",
+     "title": "Purple",
+     "description": {
+      "html": "USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 10115,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 11900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusPurple.png?v=1739912941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43581787406491:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Red"
+      },
+      {
+       "label": "Teal"
+      },
+      {
+       "label": "Dark Blue"
+      },
+      {
+       "label": "Light Pink"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Purple"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusBlue.png?v=1697574807"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Active Noise Cancelling",
+    "All",
+    "best selling",
+    "Bluetooth kid headphones",
+    "pepperjam",
+    "Plus",
+    "PuroQuiet",
+    "PuroQuiets",
+    "PuroQuietsPlus",
+    "spo-default",
+    "spo-disabled",
+    "volume limited",
+    "Wired",
+    "Wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170497793",
+     "handle": "headphones",
+     "title": "Volume Limited Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58556284962",
+     "handle": "volume-limited-student-1",
+     "title": "Volume Limited Student Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/61246373922",
+     "handle": "best-selling-products",
+     "title": "Best Selling Products",
+     "description": {
+      "html": "Best Selling Volume Limited Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/81931927586",
+     "handle": "active-noise-canceling",
+     "title": "Active Noise Canceling",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/159315984456",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Headphones",
+     "description": {
+      "html": "Bluetooth Volume Limited Headphones"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8312081612955",
+   "title": "Scratch & Dent - BT2200-Plus Volume Limited Kids\u2019 Bluetooth Headphones",
+   "description": {
+    "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+   },
+   "url": "https://purosound.com/products/scratch-dent-bt2200-plus-volume-limited-kids-bluetooth-headphones",
+   "handle": "scratch-dent-bt2200-plus-volume-limited-kids-bluetooth-headphones",
+   "price_range": {
+    "min": {
+     "amount": 6900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45711319040155",
+     "sku": "BTBCK-R",
+     "title": "Black",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTBLK1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711319040155:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45711319072923",
+     "sku": "BTBLU-R",
+     "title": "Blue",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTBLU1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711319072923:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45711319105691",
+     "sku": "BTGRN-R",
+     "title": "Green",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTGRN1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711319105691:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45711319138459",
+     "sku": "BTPNK-R",
+     "title": "Pink",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTPNK1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711319138459:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45711319171227",
+     "sku": "BTPUR-R",
+     "title": "Purple",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTPUR1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711319171227:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45711319203995",
+     "sku": "BTTEL-R",
+     "title": "Teal",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. LIMITS VOLUME TO 85dB: Made to help protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. STUDIO-GRADE AUDIO QUALITY: Our patent-pending Puro Balanced Response Curve provides them with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass\u2013all within the safety of 85 dB. BLUETOOTH & WIRED: Enjoy up to 20 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. BACKGROUND NOISE ISOLATION: Our product features a fully passive design that blocks 83% of the ambient noise @ 1 kHz just by wearing them. INTERCHANGEABLE EAR CUPS: Turn on-ear to over-ear for a better seal and more comfort. HIGH-QUALITY DESIGN: Durable, vegan protein leather ear cushions and headband. Designed for a comfortable listening experience"
+     },
+     "price": {
+      "amount": 6900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Teal"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTTEL1.png?v=1725567261"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711319203995:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Green"
+      },
+      {
+       "label": "Pink"
+      },
+      {
+       "label": "Purple"
+      },
+      {
+       "label": "Teal"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTBLK1.png?v=1725567261"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Bluetooth kid headphones",
+    "BT2200",
+    "BT2200 Plus",
+    "BT2200s",
+    "exclude-recommend",
+    "exclude-review",
+    "kids headphones",
+    "OverEar",
+    "Scratch&Dent",
+    "spo-default",
+    "spo-disabled",
+    "volume limited",
+    "Wired",
+    "Wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170497793",
+     "handle": "headphones",
+     "title": "Volume Limited Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58556284962",
+     "handle": "volume-limited-student-1",
+     "title": "Volume Limited Student Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/159315984456",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Headphones",
+     "description": {
+      "html": "Bluetooth Volume Limited Headphones"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/285185704091",
+     "handle": "scratch-dent",
+     "title": "Scratch & Dent",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292589600923",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7698187485339",
+   "title": "PuroFlex Kids Bone Conduction Headphones",
+   "description": {
+    "html": "LIMITS VOLUME TO 85dB: Made to protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. OPEN EAR SAFETY: Bone conduction technology delivers sound through the Bcheekbone. Allowing you to enjoy your music while staying in touch with your surroundings. ALL-DAY COMFORT: Lightweight, silicone-wrapped design provides a comfortable and secure fit. Giving you all-day comfort. BUILT-IN MICROPHONE: Extended microphone that rotates perfectly for 2-way calling and video calls. BLUETOOTH CONNECTION: With Bluetooth 5.3 provides a faster and smoother listening experience. DUST & WATER PROTECTION: With IPX5 water resistance, our headphones are protected from sweat, splashes, moisture, and dust. Perfect for indoor and outdoor exercise without the worry of damage. BATTERY LIFE: Enjoy up to 6 hours of battery life. Easy charging with our one-touch magnetic charging cable."
+   },
+   "url": "https://purosound.com/products/puroflex-kids-bone-conduction-headphones",
+   "handle": "puroflex-kids-bone-conduction-headphones",
+   "price_range": {
+    "min": {
+     "amount": 2900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43525494145179",
+     "sku": "FLXKB",
+     "title": "Blue",
+     "description": {
+      "html": "LIMITS VOLUME TO 85dB: Made to protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. OPEN EAR SAFETY: Bone conduction technology delivers sound through the Bcheekbone. Allowing you to enjoy your music while staying in touch with your surroundings. ALL-DAY COMFORT: Lightweight, silicone-wrapped design provides a comfortable and secure fit. Giving you all-day comfort. BUILT-IN MICROPHONE: Extended microphone that rotates perfectly for 2-way calling and video calls. BLUETOOTH CONNECTION: With Bluetooth 5.3 provides a faster and smoother listening experience. DUST & WATER PROTECTION: With IPX5 water resistance, our headphones are protected from sweat, splashes, moisture, and dust. Perfect for indoor and outdoor exercise without the worry of damage. BATTERY LIFE: Enjoy up to 6 hours of battery life. Easy charging with our one-touch magnetic charging cable."
+     },
+     "price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/PFKBlue1.png?v=1725556747"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43525494145179:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43525494243483",
+     "sku": "FLXKT",
+     "title": "Teal",
+     "description": {
+      "html": "LIMITS VOLUME TO 85dB: Made to protect young listeners\u2019 eardrums from early hearing damage following the World Health Organization\u2019s recommendation of an 85dB limited volume range. OPEN EAR SAFETY: Bone conduction technology delivers sound through the Bcheekbone. Allowing you to enjoy your music while staying in touch with your surroundings. ALL-DAY COMFORT: Lightweight, silicone-wrapped design provides a comfortable and secure fit. Giving you all-day comfort. BUILT-IN MICROPHONE: Extended microphone that rotates perfectly for 2-way calling and video calls. BLUETOOTH CONNECTION: With Bluetooth 5.3 provides a faster and smoother listening experience. DUST & WATER PROTECTION: With IPX5 water resistance, our headphones are protected from sweat, splashes, moisture, and dust. Perfect for indoor and outdoor exercise without the worry of damage. BATTERY LIFE: Enjoy up to 6 hours of battery life. Easy charging with our one-touch magnetic charging cable."
+     },
+     "price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Teal"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/PFKTeal1.png?v=1725556809"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43525494243483:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Teal"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/PFKTeal1.png?v=1725556809"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Bluetooth kid headphones",
+    "Bone Conduction",
+    "BoneConducting",
+    "kids headphones",
+    "new",
+    "PuroFlex",
+    "PuroFree",
+    "PuroSport",
+    "Wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170497793",
+     "handle": "headphones",
+     "title": "Volume Limited Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/61246406690",
+     "handle": "newest-products",
+     "title": "Newest Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/159315984456",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Headphones",
+     "description": {
+      "html": "Bluetooth Volume Limited Headphones"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/210410373275",
+     "handle": "back-to-school",
+     "title": "Back To School",
+     "description": {
+      "html": "Want to compare each headphone? Here is a chart!! Let us know if you have any questions about the bubble in the bottom right corner!!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/238872232091",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7713937981595",
+   "title": "JuniorJams-Plus Volume Limited On-Ear Headphones For Kids",
+   "description": {
+    "html": "USB-C CHARGING: The JuniorJams Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. HEAR TO PROTECT: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with JuniorJams, the headphones that limit harmful volumes over 85 dB! SOUNDS OUTSTANDING: Limiting the volume doesn\u2019t mean suffering through poor sound quality. Puro Sound Labs kid headphones emit crystal-clear sounds thanks to their advanced sound-optimizing Puro Balanced Response Curve that isolates 87% of ambient noise! Built-in microphone, great for online learning. BLUETOOTH & WIRED: Enjoy up to 22 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. COMFORT THAT ADJUSTS: No matter how long people wear these teen and toddler headphones, they stay comfortable song after song. Plush vegan leather covers the ear cups and headband in softness while the durable yet lightweight plastic frame is flexible and adjusts to fit. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+   },
+   "url": "https://purosound.com/products/juniorjams-plus-volume-limited-on-ear-headphones-for-kids",
+   "handle": "juniorjams-plus-volume-limited-on-ear-headphones-for-kids",
+   "price_range": {
+    "min": {
+     "amount": 5850,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 6500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6500,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43580097101979",
+     "sku": "JJPBCK",
+     "title": "Black",
+     "description": {
+      "html": "USB-C CHARGING: The JuniorJams Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. HEAR TO PROTECT: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with JuniorJams, the headphones that limit harmful volumes over 85 dB! SOUNDS OUTSTANDING: Limiting the volume doesn\u2019t mean suffering through poor sound quality. Puro Sound Labs kid headphones emit crystal-clear sounds thanks to their advanced sound-optimizing Puro Balanced Response Curve that isolates 87% of ambient noise! Built-in microphone, great for online learning. BLUETOOTH & WIRED: Enjoy up to 22 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. COMFORT THAT ADJUSTS: No matter how long people wear these teen and toddler headphones, they stay comfortable song after song. Plush vegan leather covers the ear cups and headband in softness while the durable yet lightweight plastic frame is flexible and adjusts to fit. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/JuniorJamsPlusBlack.png?v=1725644784"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43580097101979:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43580110012571",
+     "sku": "JJPPUR",
+     "title": "Purple",
+     "description": {
+      "html": "USB-C CHARGING: The JuniorJams Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. HEAR TO PROTECT: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with JuniorJams, the headphones that limit harmful volumes over 85 dB! SOUNDS OUTSTANDING: Limiting the volume doesn\u2019t mean suffering through poor sound quality. Puro Sound Labs kid headphones emit crystal-clear sounds thanks to their advanced sound-optimizing Puro Balanced Response Curve that isolates 87% of ambient noise! Built-in microphone, great for online learning. BLUETOOTH & WIRED: Enjoy up to 22 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. COMFORT THAT ADJUSTS: No matter how long people wear these teen and toddler headphones, they stay comfortable song after song. Plush vegan leather covers the ear cups and headband in softness while the durable yet lightweight plastic frame is flexible and adjusts to fit. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 5850,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/JuniorJamsPlusPurple.png?v=1734045367"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43580110012571:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43580097069211",
+     "sku": "JJPTEL",
+     "title": "Teal",
+     "description": {
+      "html": "USB-C CHARGING: The JuniorJams Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. HEAR TO PROTECT: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with JuniorJams, the headphones that limit harmful volumes over 85 dB! SOUNDS OUTSTANDING: Limiting the volume doesn\u2019t mean suffering through poor sound quality. Puro Sound Labs kid headphones emit crystal-clear sounds thanks to their advanced sound-optimizing Puro Balanced Response Curve that isolates 87% of ambient noise! Built-in microphone, great for online learning. BLUETOOTH & WIRED: Enjoy up to 22 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. COMFORT THAT ADJUSTS: No matter how long people wear these teen and toddler headphones, they stay comfortable song after song. Plush vegan leather covers the ear cups and headband in softness while the durable yet lightweight plastic frame is flexible and adjusts to fit. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 5850,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Teal"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/JuniorJamsPlusTeal.png?v=1725644736"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43580097069211:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43580097003675",
+     "sku": "JJPBLU",
+     "title": "Blue",
+     "description": {
+      "html": "USB-C CHARGING: The JuniorJams Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. HEAR TO PROTECT: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with JuniorJams, the headphones that limit harmful volumes over 85 dB! SOUNDS OUTSTANDING: Limiting the volume doesn\u2019t mean suffering through poor sound quality. Puro Sound Labs kid headphones emit crystal-clear sounds thanks to their advanced sound-optimizing Puro Balanced Response Curve that isolates 87% of ambient noise! Built-in microphone, great for online learning. BLUETOOTH & WIRED: Enjoy up to 22 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. COMFORT THAT ADJUSTS: No matter how long people wear these teen and toddler headphones, they stay comfortable song after song. Plush vegan leather covers the ear cups and headband in softness while the durable yet lightweight plastic frame is flexible and adjusts to fit. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 5850,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/JuniorJamsPlusBlue.png?v=1725644746"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43580097003675:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43580096970907",
+     "sku": "JJPPNK",
+     "title": "Pink",
+     "description": {
+      "html": "USB-C CHARGING: The JuniorJams Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. HEAR TO PROTECT: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with JuniorJams, the headphones that limit harmful volumes over 85 dB! SOUNDS OUTSTANDING: Limiting the volume doesn\u2019t mean suffering through poor sound quality. Puro Sound Labs kid headphones emit crystal-clear sounds thanks to their advanced sound-optimizing Puro Balanced Response Curve that isolates 87% of ambient noise! Built-in microphone, great for online learning. BLUETOOTH & WIRED: Enjoy up to 22 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. COMFORT THAT ADJUSTS: No matter how long people wear these teen and toddler headphones, they stay comfortable song after song. Plush vegan leather covers the ear cups and headband in softness while the durable yet lightweight plastic frame is flexible and adjusts to fit. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 5850,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/JuniorJamsPlusPink.png?v=1725644706"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43580096970907:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43580097036443",
+     "sku": "JJPGRN",
+     "title": "Green",
+     "description": {
+      "html": "USB-C CHARGING: The JuniorJams Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. HEAR TO PROTECT: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with JuniorJams, the headphones that limit harmful volumes over 85 dB! SOUNDS OUTSTANDING: Limiting the volume doesn\u2019t mean suffering through poor sound quality. Puro Sound Labs kid headphones emit crystal-clear sounds thanks to their advanced sound-optimizing Puro Balanced Response Curve that isolates 87% of ambient noise! Built-in microphone, great for online learning. BLUETOOTH & WIRED: Enjoy up to 22 hours of battery life for music playback and 200 hours of standby. Plus unlimited listening when using the included 3.5mm audio cable to directly plug into devices if you do not want to use Bluetooth or the headphones battery dies. COMFORT THAT ADJUSTS: No matter how long people wear these teen and toddler headphones, they stay comfortable song after song. Plush vegan leather covers the ear cups and headband in softness while the durable yet lightweight plastic frame is flexible and adjusts to fit. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 6500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/JuniorJamsPlus-green.png?v=1725644773"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/43580097036443:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Purple"
+      },
+      {
+       "label": "Teal"
+      },
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Pink"
+      },
+      {
+       "label": "Green"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/JuniorJamsPlusPink.png?v=1725644706"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Best Selling",
+    "Bluetooth kid headphones",
+    "JuniorJams",
+    "JuniorJams Plus",
+    "kids headphones",
+    "pepperjam",
+    "Plus",
+    "spo-default",
+    "spo-disabled",
+    "volume limited",
+    "Wired",
+    "Wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170497793",
+     "handle": "headphones",
+     "title": "Volume Limited Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58556284962",
+     "handle": "volume-limited-student-1",
+     "title": "Volume Limited Student Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/61246373922",
+     "handle": "best-selling-products",
+     "title": "Best Selling Products",
+     "description": {
+      "html": "Best Selling Volume Limited Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/159315984456",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Headphones",
+     "description": {
+      "html": "Bluetooth Volume Limited Headphones"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/210410373275",
+     "handle": "back-to-school",
+     "title": "Back To School",
+     "description": {
+      "html": "Want to compare each headphone? Here is a chart!! Let us know if you have any questions about the bubble in the bottom right corner!!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/3870244241442",
+   "title": "PuroBasic Wired Volume Limited Headphones with In-line Mic",
+   "description": {
+    "html": "MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+   },
+   "url": "https://purosound.com/products/purobasic",
+   "handle": "purobasic",
+   "price_range": {
+    "min": {
+     "amount": 2465,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/29353425862690",
+     "sku": "PBBLU",
+     "title": "Blue",
+     "description": {
+      "html": "MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2465,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PBBLU_1.jpg?v=1680195572"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/29353425862690:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/29624914608162",
+     "sku": "PBPNK",
+     "title": "Pink Light",
+     "description": {
+      "html": "MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2465,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink Light"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PBPNK_1.jpg?v=1680195572"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/29624914608162:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/31248919265352",
+     "sku": "PBRED",
+     "title": "Red",
+     "description": {
+      "html": "MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/Red_PuroBasic.png?v=1680195572"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/31248919265352:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/31248929390664",
+     "sku": "PBGRN",
+     "title": "Bright Green",
+     "description": {
+      "html": "MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2465,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Bright Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/Green_PuroBasic.png?v=1667407996"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/31248929390664:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42964152713371",
+     "sku": "PBBLK",
+     "title": "Black",
+     "description": {
+      "html": "MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroBasicBlack.png?v=1667407844"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/42964152713371:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/42964152975515",
+     "sku": "PBPUR",
+     "title": "Light Purple",
+     "description": {
+      "html": "MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2465,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Light Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroBasicPurple.png?v=1667407917"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/42964152975515:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Pink Light"
+      },
+      {
+       "label": "Red"
+      },
+      {
+       "label": "Bright Green"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Light Purple"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/Green_PuroBasic.png?v=1667407996",
+     "alt_text": "PuroBasic Wired Volume Limited Headphones-Green"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Best Selling",
+    "kids headphones",
+    "pepperjam",
+    "PuroBasic",
+    "spo-default",
+    "spo-disabled",
+    "volume limited",
+    "Wired"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170497793",
+     "handle": "headphones",
+     "title": "Volume Limited Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58556284962",
+     "handle": "volume-limited-student-1",
+     "title": "Volume Limited Student Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/61246373922",
+     "handle": "best-selling-products",
+     "title": "Best Selling Products",
+     "description": {
+      "html": "Best Selling Volume Limited Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/159315886152",
+     "handle": "wired-headphones",
+     "title": "Wired Headphones",
+     "description": {
+      "html": "Wired Volume Limited Headphones"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/210410373275",
+     "handle": "back-to-school",
+     "title": "Back To School",
+     "description": {
+      "html": "Want to compare each headphone? Here is a chart!! Let us know if you have any questions about the bubble in the bottom right corner!!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8312201740443",
+   "title": "Scratch & Dent - PuroQuiet-PLUS Active Noise Cancelling Headphones - Built-in Mic",
+   "description": {
+    "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+   },
+   "url": "https://purosound.com/products/scratch-dent-puroquiet-plus-active-noise-cancelling-headphones-built-in-mic",
+   "handle": "scratch-dent-puroquiet-plus-active-noise-cancelling-headphones-built-in-mic",
+   "price_range": {
+    "min": {
+     "amount": 8900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8900,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 13900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45711756820635",
+     "sku": "PQPRED-R",
+     "title": "Red",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusRed.png?v=1739912941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711756820635:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45711756853403",
+     "sku": "PQPTEL-R",
+     "title": "Teal",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Teal"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusTeal.png?v=1739912941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711756853403:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45711756886171",
+     "sku": "PQPBLU-R",
+     "title": "Dark Blue",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Dark Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusBlue.png?v=1697574807"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711756886171:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45711756918939",
+     "sku": "PQPPNK-R",
+     "title": "Light Pink",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Light Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusPink.png?v=1739912941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711756918939:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45711756951707",
+     "sku": "PQPBLK-R",
+     "title": "Black",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusBlack.png?v=1739912941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711756951707:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45711756984475",
+     "sku": "PQPPUR-R",
+     "title": "Purple",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. USB-C CHARGING: The PuroQuiets Plus has USB-C charging Easily recharge with the latest technology and never worry about being without power. ACTIVE NOISE-CANCELLING HEADPHONES: The ANC switch puts the world on mute so that kids can listen clearly in loud environments without the need to increase the volume beyond safe sound listening levels. These headphones make daily noise and background sound up to 22 dB quieter, complemented by 78% noise isolation (@ 1 kHz). LIMITED VOLUME FOR KIDS\u2019 HEARING SAFETY: A limited volume of 85 dB is the maximum safe sound listening level as recommended by many organizations. Intelligent digital signal processing imperceptibly limits the volume so that listeners don\u2019t even notice. These are the perfect lightweight headphones for boys, girls, and teens! WIRELESS HEADPHONES WITH BLUETOOTH FUNCTION: The one-touch Bluetooth pairing with iPhone, Android, and other compatible devices makes for hassle-free listening, while a 30-foot range allows free movement! The wireless mode eliminates all dangers of entanglement in audio cables. Built-in microphone, great for online learning. LONG BATTERY LIFE: Enjoy up to 35 hours of non-ANC playtime (23 hours with ANC) and 200 hours of standby. The PuroQuiet stands up to all-day play \u2013 and then some. Quickly recharge the lithium-ion battery with an included USB cable or switch to wired use with the included volume-limiting audio cable. DAISY CHAIN SHARING: A unique cable featuring a built-in audio splitter allows two headphones to connect with the same device."
+     },
+     "price": {
+      "amount": 8900,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusPurple.png?v=1739912941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45711756984475:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Red"
+      },
+      {
+       "label": "Teal"
+      },
+      {
+       "label": "Dark Blue"
+      },
+      {
+       "label": "Light Pink"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Purple"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroQuietsPlusPurple.png?v=1739912941"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Active Noise Cancelling",
+    "All",
+    "best selling",
+    "Bluetooth kid headphones",
+    "pepperjam",
+    "Plus",
+    "PuroQuiet",
+    "PuroQuiets",
+    "PuroQuietsPlus",
+    "Scratch&Dent",
+    "spo-default",
+    "spo-disabled",
+    "volume limited",
+    "Wired",
+    "Wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170497793",
+     "handle": "headphones",
+     "title": "Volume Limited Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58556284962",
+     "handle": "volume-limited-student-1",
+     "title": "Volume Limited Student Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/61246373922",
+     "handle": "best-selling-products",
+     "title": "Best Selling Products",
+     "description": {
+      "html": "Best Selling Volume Limited Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/81931927586",
+     "handle": "active-noise-canceling",
+     "title": "Active Noise Canceling",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/159315984456",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Headphones",
+     "description": {
+      "html": "Bluetooth Volume Limited Headphones"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8745851551899",
+   "title": "Scratch & Dent - PuroBasic Wired Volume Limited Headphones with In-line Mic",
+   "description": {
+    "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents or slight discoloration. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. These headphones will not come with a box they will come in a drawstring bag. MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+   },
+   "url": "https://purosound.com/products/scratch-dent-purobasic-wired-volume-limited-headphones-with-in-line-mic",
+   "handle": "scratch-dent-purobasic-wired-volume-limited-headphones-with-in-line-mic",
+   "price_range": {
+    "min": {
+     "amount": 2000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47466292117659",
+     "sku": "PBBLU-R",
+     "title": "Blue",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents or slight discoloration. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. These headphones will not come with a box they will come in a drawstring bag. MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Blue"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PBBLU_1.jpg?v=1680195572"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/47466292117659:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47466292150427",
+     "sku": "PBPNK-R",
+     "title": "Pink Light",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents or slight discoloration. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. These headphones will not come with a box they will come in a drawstring bag. MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Pink Light"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PBPNK_1.jpg?v=1680195572"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/47466292150427:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47466292183195",
+     "sku": "PBRED-R",
+     "title": "Red",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents or slight discoloration. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. These headphones will not come with a box they will come in a drawstring bag. MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Red"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/Red_PuroBasic.png?v=1680195572"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/47466292183195:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47466292215963",
+     "sku": "PBGRN-R",
+     "title": "Bright Green",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents or slight discoloration. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. These headphones will not come with a box they will come in a drawstring bag. MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Bright Green"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/Green_PuroBasic.png?v=1667407996"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/47466292215963:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47466292248731",
+     "sku": "PBBLK-R",
+     "title": "Black",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents or slight discoloration. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. These headphones will not come with a box they will come in a drawstring bag. MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroBasicBlack.png?v=1667407844"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/47466292248731:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/47466292281499",
+     "sku": "PBPUR-R",
+     "title": "Light Purple",
+     "description": {
+      "html": "SCRATCH & DENT: Open box units with some cosmetic damage such as scratches and dents or slight discoloration. Our team has cleaned and fully tested the item to ensure everything is in working order. All scratch & dent sales are final outside of the US. 30-DAY MONEY-BACK GUARANTEE: The warranty period for Scratch & Dent products is 90-days. If you have an issue with one of our products, we want to help! We want to provide your kids with the best hearing experience possible. If that doesn\u2019t happen, we maintain a 30-day money-back guarantee. It\u2019s as simple as that! No returns on orders outside of the US on scratch and dent items. These headphones will not come with a box they will come in a drawstring bag. MAXIMUM PROTECTION FOR KIDS: Ordinary headphones let kids jam out at any volume, including dangerous ones. Over time, those rocking volumes damage their eardrums and can even lead to noise-induced hearing loss. Protect your kid\u2019s hearing with the PuroBasic, the headphones that limit harmful volumes over 85 dB STUDIO-GRADE AUDIO QUALITY THAT IS SAFER FOR KIDS: Our patent-pending Puro Balanced Response Curve provides your kids or teens with the finest genuine studio sound, including clear, crisp vocals and full dynamic bass \u2013 all within the safety of 85dB. Universal Wired Connection: Whether it is an iPad, iPhone, Android device, or a computer, these headphones can connect to it all. Any audio device with a standard 3.5mm audio connection is compatible with PuroBasics. Built-in microphone, great for online learning."
+     },
+     "price": {
+      "amount": 2000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Light Purple"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroBasicPurple.png?v=1667407917"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/47466292281499:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Blue"
+      },
+      {
+       "label": "Pink Light"
+      },
+      {
+       "label": "Red"
+      },
+      {
+       "label": "Bright Green"
+      },
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Light Purple"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/Green_PuroBasic.png?v=1667407996",
+     "alt_text": "PuroBasic Wired Volume Limited Headphones-Green"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "All",
+    "Best Selling",
+    "exclude-recommend",
+    "kids headphones",
+    "pepperjam",
+    "PuroBasic",
+    "Scratch&Dent",
+    "spo-default",
+    "spo-disabled",
+    "volume limited",
+    "Wired"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170497793",
+     "handle": "headphones",
+     "title": "Volume Limited Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58556284962",
+     "handle": "volume-limited-student-1",
+     "title": "Volume Limited Student Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/61246373922",
+     "handle": "best-selling-products",
+     "title": "Best Selling Products",
+     "description": {
+      "html": "Best Selling Volume Limited Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/159315886152",
+     "handle": "wired-headphones",
+     "title": "Wired Headphones",
+     "description": {
+      "html": "Wired Volume Limited Headphones"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/210410373275",
+     "handle": "back-to-school",
+     "title": "Back To School",
+     "description": {
+      "html": "Want to compare each headphone? Here is a chart!! Let us know if you have any questions about the bubble in the bottom right corner!!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4296186986568",
+   "title": "PuroPro Hybrid Active Noise Cancelling Volume Limited Headphones with Built-In Mic",
+   "description": {
+    "html": "Limits Volume To 85dB/95dB: Choose between an 85dB and 95dB max volume to protect your ears against permanent hearing damage. 85dB is the maximum safe sound listening level that is recommended by various organizations (WHO, OSHA, etc.) and allows for up to 8 hours of safe listening. 95dB allows the user to safely listen for 50 minutes. Puro Balanced Response Curve: 40mm dynamic drivers and our Puro Balanced Response\u00ae Curve provide the user with a genuine studio-grade listening experience. Engineered to deliver amazing audio with clear, crisp vocals and full, dynamic bass all within the 85dB & 95dB volume limits. Premium Active Noise Canceling Technology: Significant noise reduction for your daily life. Two levels of ANC allow the user to adjust to ambient noise as needed. Level 1 provides a deep noise reduction of 32dB. Level 2 provides a general noise reduction of 15dB. This allows for the enjoyment of music, movies, podcasts, and videos regardless of your environment. 5 microphones included 4 for ANC and 1 for communicating via calls. Long Battery Life: High-Storage batteries 750mah with playtime up to 28 hours with ANC and 32 hours without ANC. 300 hours of standby time. Bluetooth 5.0 allows for a quick and simple connection to your devices. High-Quality Design: Protein leather ear cushions and headband allow for a comfortable listening experience without compromising durability. Enjoy high-quality audio for long periods of time in comfort. The foldable design makes them easy to store and a great option for travelers."
+   },
+   "url": "https://purosound.com/products/puropro",
+   "handle": "puropro",
+   "price_range": {
+    "min": {
+     "amount": 10000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 14900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 14900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41499872821403",
+     "sku": "PROBLK",
+     "title": "Black",
+     "description": {
+      "html": "Limits Volume To 85dB/95dB: Choose between an 85dB and 95dB max volume to protect your ears against permanent hearing damage. 85dB is the maximum safe sound listening level that is recommended by various organizations (WHO, OSHA, etc.) and allows for up to 8 hours of safe listening. 95dB allows the user to safely listen for 50 minutes. Puro Balanced Response Curve: 40mm dynamic drivers and our Puro Balanced Response\u00ae Curve provide the user with a genuine studio-grade listening experience. Engineered to deliver amazing audio with clear, crisp vocals and full, dynamic bass all within the 85dB & 95dB volume limits. Premium Active Noise Canceling Technology: Significant noise reduction for your daily life. Two levels of ANC allow the user to adjust to ambient noise as needed. Level 1 provides a deep noise reduction of 32dB. Level 2 provides a general noise reduction of 15dB. This allows for the enjoyment of music, movies, podcasts, and videos regardless of your environment. 5 microphones included 4 for ANC and 1 for communicating via calls. Long Battery Life: High-Storage batteries 750mah with playtime up to 28 hours with ANC and 32 hours without ANC. 300 hours of standby time. Bluetooth 5.0 allows for a quick and simple connection to your devices. High-Quality Design: Protein leather ear cushions and headband allow for a comfortable listening experience without compromising durability. Enjoy high-quality audio for long periods of time in comfort. The foldable design makes them easy to store and a great option for travelers."
+     },
+     "price": {
+      "amount": 12500,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/products/PuroProBlack.png?v=1641051889"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/41499872821403:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45044431356059",
+     "sku": "PROORG",
+     "title": "Orange",
+     "description": {
+      "html": "Limits Volume To 85dB/95dB: Choose between an 85dB and 95dB max volume to protect your ears against permanent hearing damage. 85dB is the maximum safe sound listening level that is recommended by various organizations (WHO, OSHA, etc.) and allows for up to 8 hours of safe listening. 95dB allows the user to safely listen for 50 minutes. Puro Balanced Response Curve: 40mm dynamic drivers and our Puro Balanced Response\u00ae Curve provide the user with a genuine studio-grade listening experience. Engineered to deliver amazing audio with clear, crisp vocals and full, dynamic bass all within the 85dB & 95dB volume limits. Premium Active Noise Canceling Technology: Significant noise reduction for your daily life. Two levels of ANC allow the user to adjust to ambient noise as needed. Level 1 provides a deep noise reduction of 32dB. Level 2 provides a general noise reduction of 15dB. This allows for the enjoyment of music, movies, podcasts, and videos regardless of your environment. 5 microphones included 4 for ANC and 1 for communicating via calls. Long Battery Life: High-Storage batteries 750mah with playtime up to 28 hours with ANC and 32 hours without ANC. 300 hours of standby time. Bluetooth 5.0 allows for a quick and simple connection to your devices. High-Quality Design: Protein leather ear cushions and headband allow for a comfortable listening experience without compromising durability. Enjoy high-quality audio for long periods of time in comfort. The foldable design makes them easy to store and a great option for travelers."
+     },
+     "price": {
+      "amount": 10000,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 14900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Orange"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/PuroPro_6.png?v=1717532412"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/45044431356059:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Black"
+      },
+      {
+       "label": "Orange"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/PuroPro_6.png?v=1717532412"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Active Noise Cancelling",
+    "Adult",
+    "All",
+    "Best Selling",
+    "PuroPro",
+    "spo-default",
+    "spo-disabled",
+    "Teen",
+    "volume limited",
+    "Wired",
+    "Wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170497793",
+     "handle": "headphones",
+     "title": "Volume Limited Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58556284962",
+     "handle": "volume-limited-student-1",
+     "title": "Volume Limited Student Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/61246373922",
+     "handle": "best-selling-products",
+     "title": "Best Selling Products",
+     "description": {
+      "html": "Best Selling Volume Limited Products"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/81931927586",
+     "handle": "active-noise-canceling",
+     "title": "Active Noise Canceling",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/159315984456",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Headphones",
+     "description": {
+      "html": "Bluetooth Volume Limited Headphones"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8730565902491",
+   "title": "PuroGamer-BT",
+   "description": {
+    "html": "85dB Volume Limit: Complies with World Health Organization recommendations to help protect hearing by limiting sound output to 85dB without compromising audio clarity. Tri-Mode Connectivity: Supports 2.4GHz wireless, Bluetooth, and Type-C wired connections for flexible compatibility across consoles, PCs, and mobile devices. The included USB transmitter provides ultra-low 25ms latency for smooth, lag-free gameplay. 360\u00b0 Omnidirectional Microphone: Detachable microphone with full-range 360\u00b0 voice pickup ensures accurate, clear communication during gaming and streaming sessions. 53mm Dynamic Drivers: High-performance 53mm drivers deliver powerful bass, detailed mids, and crisp highs for a balanced, immersive sound profile. 32-Hour Battery Life: Long-lasting battery provides up to 32 hours of continuous use with fast recharging in approximately 3 hours via USB-C connection. Comfort-Optimized Design: Breathable ear cushions and a soft, padded headband reduce pressure and heat build-up. Adjustable headband fits comfortably for extended gaming sessions. RGB LED Light-up Logo"
+   },
+   "url": "https://purosound.com/products/purogamer-bt",
+   "handle": "purogamer-bt",
+   "price_range": {
+    "min": {
+     "amount": 6499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 6499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9900,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9900,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47400499675291",
+     "sku": "PGMBT",
+     "title": "Default Title",
+     "description": {
+      "html": "85dB Volume Limit: Complies with World Health Organization recommendations to help protect hearing by limiting sound output to 85dB without compromising audio clarity. Tri-Mode Connectivity: Supports 2.4GHz wireless, Bluetooth, and Type-C wired connections for flexible compatibility across consoles, PCs, and mobile devices. The included USB transmitter provides ultra-low 25ms latency for smooth, lag-free gameplay. 360\u00b0 Omnidirectional Microphone: Detachable microphone with full-range 360\u00b0 voice pickup ensures accurate, clear communication during gaming and streaming sessions. 53mm Dynamic Drivers: High-performance 53mm drivers deliver powerful bass, detailed mids, and crisp highs for a balanced, immersive sound profile. 32-Hour Battery Life: Long-lasting battery provides up to 32 hours of continuous use with fast recharging in approximately 3 hours via USB-C connection. Comfort-Optimized Design: Breathable ear cushions and a soft, padded headband reduce pressure and heat build-up. Adjustable headband fits comfortably for extended gaming sessions. RGB LED Light-up Logo"
+     },
+     "price": {
+      "amount": 6499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9900,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTGM1.jpg?v=1760735135"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://puro-sound-lab.myshopify.com/cart/47400499675291:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/1142/1326/files/BTGM1.jpg?v=1760735135"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "3.5mm Cable",
+    "Adult",
+    "Adult Headphones",
+    "All",
+    "bluetooth",
+    "Bluetooth kid headphones",
+    "exclude-recommend",
+    "exclude-review",
+    "Gamer",
+    "Gaming Headset",
+    "spo-default",
+    "spo-disabled",
+    "Teen",
+    "volume limited",
+    "Wired",
+    "Wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/170497793",
+     "handle": "headphones",
+     "title": "Volume Limited Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/159315984456",
+     "handle": "bluetooth-headphones",
+     "title": "Bluetooth Headphones",
+     "description": {
+      "html": "Bluetooth Volume Limited Headphones"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/197860753563",
+     "handle": "adult-headphones",
+     "title": "Adult Headphones",
+     "description": {
+      "html": "Headphones for Adults"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/238872232091",
+     "handle": "all-products",
+     "title": "All Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292589600923",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzROek13TlRZMU9UQXlORGt4TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

@@ -1,0 +1,328 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.bluesummitsupplies.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Blue Summit Supplies",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.bluesummitsupplies.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "21617289"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "21617289"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/2303079645242",
+   "title": "Blue Summit Supplies Pink Erasers, 36 Pack",
+   "description": {
+    "html": "Our Bulk Latex Free Pencil Eraser Pack is Ideal for Students, Teachers, and School Supply Donations When it comes to buying school supplies, pencils are always at the top of the list, but we know that the tiny pink erasers that come standard with pencils never last as long as the pencil does, leaving you in need of affordable and good erasers to replace them with. Make the safe choice for your kids erasers with our Blue Summit Supplies pink eraser. Latex-free and nontoxic, it was designed with the classroom in mind, but is also ideal for use at home, by artists, or even in the garage as a woodworking pencil to remove pencil marks from wood. Stock Up on School Supplies: Pencil Erasers Bulk Pack We know how frustrating it can be to have to constantly replace broken or used up school supplies. Bulk buying is the answer, and when you choose our economy pack of 36 pink erasers, you can rest easy knowing you're selecting a premium product that can be used as a classroom set or to replace broken erasers as needed for the entire school year. A 36 pack of erasers makes an ideal donation item for school supply drives or teachers. Our attractive box design also makes this pack a perfect addition to your office supply closet, so that staff can grab an eraser as needed. Standard Size Kids Erasers for School in a Convenient Multi Pack Our individual erasers are sized to a standard size of 7/8 inch wide x 2 3/8 inch long x 3/8 inch tall. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/pink-erasers-36-count-764",
+   "handle": "pink-erasers-36-count-764",
+   "price_range": {
+    "min": {
+     "amount": 1799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/22691643097146",
+     "sku": "BSS-92588-764",
+     "title": "Default Title",
+     "description": {
+      "html": "Our Bulk Latex Free Pencil Eraser Pack is Ideal for Students, Teachers, and School Supply Donations When it comes to buying school supplies, pencils are always at the top of the list, but we know that the tiny pink erasers that come standard with pencils never last as long as the pencil does, leaving you in need of affordable and good erasers to replace them with. Make the safe choice for your kids erasers with our Blue Summit Supplies pink eraser. Latex-free and nontoxic, it was designed with the classroom in mind, but is also ideal for use at home, by artists, or even in the garage as a woodworking pencil to remove pencil marks from wood. Stock Up on School Supplies: Pencil Erasers Bulk Pack We know how frustrating it can be to have to constantly replace broken or used up school supplies. Bulk buying is the answer, and when you choose our economy pack of 36 pink erasers, you can rest easy knowing you're selecting a premium product that can be used as a classroom set or to replace broken erasers as needed for the entire school year. A 36 pack of erasers makes an ideal donation item for school supply drives or teachers. Our attractive box design also makes this pack a perfect addition to your office supply closet, so that staff can grab an eraser as needed. Standard Size Kids Erasers for School in a Convenient Multi Pack Our individual erasers are sized to a standard size of 7/8 inch wide x 2 3/8 inch long x 3/8 inch tall. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 1799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/764_PinkErasers36Pk_2.JPG?v=1589984450"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/22691643097146:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/764_PinkErasers36Pk_2.JPG?v=1589984450",
+     "alt_text": "Pink Erasers, 36 Count Accessories Blue Summit Supplies "
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:0",
+    "AvailabilityForB2C:1548",
+    "AvailabilityInWarehouse:0",
+    "AvailableForB2B:Sold out",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:FALSE",
+    "B2C",
+    "BSSSKU:TRUE",
+    "Collection:Erasers",
+    "Collection:Office Supplies",
+    "Collection:Writing and Correction",
+    "CollectionHandle:erasers",
+    "CollectionHandle:office-supplies",
+    "CollectionHandle:writing-and-correction",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551627442",
+     "handle": "writing-and-correction",
+     "title": "Writing and Correction",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271674507442",
+     "handle": "erasers",
+     "title": "Erasers",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

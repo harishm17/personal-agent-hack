@@ -78,6 +78,9 @@ append "Selected option: <options[k].title>." yourself (an option titled "Defaul
 replies are removed, as are `asked.figure_question` and the not_stated targets). If your reader or `asked` key on a candidate still
 reads a figure from those files, drop it: a store agent said "does not specify" for pages that do state the figure.
 
+## 13:15 from AIRBYTE — gate fails: sheet 2's instruction scan covers 145 pages, the pool now has 179
+- `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on `145 == 179` (`instruction_scan.pages_scanned` against `counts.products_found`). Cause: STORE refreshed `data/sheet2/pool/` (145 to 179 products, 34 new), but `data/figures/sheet2/_instructions/` (and presumably the figures and derived limits for those 34) still describe the 145 older pages, so the state counts 179 found and 145 scanned.
+- Fix is in your paths, not a change to the test: re-run the scan (and the figure read) for sheet 2 over the new pool, `uv run python -m signoff.extract.run --sheet sheet2` and the instruction scan, then commit `data/figures/sheet2/**`. If the 34 new products are meant to be excluded, the test's invariant needs the owner's decision. The gate on main is red until then. Nothing in the Airbyte stream reads or writes these folders.
 ## 14:25 from STORE — the pools changed at 13:50 (S2): re-read the new products
 `build_pool.build()` now keeps a product for a line by the store's own labels and title (signoff/store/relevance.py) instead of the old word lists, and carries every
 option. Sheet 1: 132 products (carex 45, vive 34, parentgiving 53); sheet 2: 179 (swiss 66, horow 28, deervalley 37, kingston 48), so 34 products on sheet 2 and about 21 on
@@ -89,3 +92,36 @@ multi-value figure appear in /api/state (candidate id, variant id, `unclear`): p
 - [ ] `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` fails on main as merged
   into stream/SCREEN (3582cd5): `instruction_scan.pages_scanned` is 145 and `counts.products_found` is 179 for sheet 2.
   Not a screen file; the gate reports it on every stream until it is fixed or the scan catches up.
+
+## 14:50 from STORE — sheet 3 pool ("What Leo may buy") is committed (S16)
+`data/sheet3/pool/<store>.json` (+ `raw/`, same shape as the others: `options`, `image_url`, `variants`, `variant_title`, line ids K1 to K3), `data/sheet3/store_answers/<store>.json`,
+`data/sheet3/pool_summary.json` (candidates, kept, dropped with reasons per store and line). Products: jlab 22, purosound 12, onanoff 12, skullcandy 14 (K1 headphones: 60); hiboy 12, gotrax 15
+(K2 scooters: 27); alaninu 10 (K3); guayaki 0 (see NOTES/INTEGRATOR.md). Options: 22, 30, 34, 47, 34, 25, 10. `SIGNOFF_SHEET=sheet3` / `use_sheet("sheet3")` finds them (data/<sheet>/pool).
+Needs your reading pass and instruction scan for the new sheet. The sheet has no shopper facts; limits are `<=` (85 dB, 15 mph, 100 mg), so a figure stated as two levels (a 85 dB / 95 dB switch)
+is a spread for you to judge.
+
+## 14:55 from STORE — two engine tests fail on stream/STORE after merging main (yours, not touched by me)
+`tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched` (instruction scan 145 pages, pool 179: the products my 13:50 rebuild added need reading and scanning)
+and `test_the_toilet_is_decided_by_an_equality_against_the_house_and_by_the_full_flush` (`all(t["value"] == t["high"] for t in spreads)` is false for some dual-flush spread terms on the merged main; it may be
+your rule change for "every stated value is tested" against a test written before it). Everything outside tests/engine passes.
+
+## 15:05 from STORE — sheet 3 (the teacher's list) pool is committed (S16, re-done for the new sheet)
+`data/sheet3/pool/<store>.json` (+ `raw/`; same shape as the others: `options`, `image_url`, `variants`, `variant_title`; line ids C1 to C4), `data/sheet3/store_answers/<store>.json` (11 stores, verbatim),
+`data/sheet3/pool_summary.json` (per store and line: candidates, kept, dropped with the reason). The earlier scooter and energy-drink products are gone; the headphone products are the ones fetched before.
+Products (options): C1 headphones: jlab 22 (22), onanoff 12 (34), purosound 12 (30), skullcandy 14 (47); C2 crayons: bazic 12, ooly 11, schoolsupplyboxes 5 (7), mrpen 1; C3 notebooks: bazic 20 (21), pencils.com 14 (45),
+schoolsupplyboxes 10 (37), yoobi 6, mrpen 5 (12), ooly 4, bluesummit 1; C4 pencils: bazic 17 (18), pencils.com 16 (26), ooly 11, mrpen 10, schoolsupplyboxes 5 (6), yoobi 2. 
+Relevance fix for this sheet: a quantity token ("24", "48pk") is not the head of a phrase, so the query "crayons 24" and titles such as "Crayola Crayons 24pk" are judged by "crayons"/"pencils".
+Your sheet's `units` block is used by the ledger and the SQL tables (ct/pack/crayons are "count"). The reader will meet pages with several stated values (the headphone pages state two or three dB levels). 
+## 13:10 from TRAIL — the gate is red on main's own tests (not from TRAIL's paths; seen after `git merge main` at bbbdc45)
+- [ ] `tests/engine/test_sheet2.py::test_sheet_two_runs_from_its_own_files_and_sheet_one_is_untouched`:
+  `instruction_scan.pages_scanned` is 145 and `counts.products_found` is 179. The sheet 2 pool grew when STORE's pool
+  builder merged (3c50120); the instruction scan (and probably the figures) were read from the 145-page pool.
+- [ ] `tests/engine/test_sheet2.py::test_the_toilet_is_decided_by_an_equality_against_the_house_and_by_the_full_flush`
+  fails in the same run. `uv run -q pytest -q` → 2 failed, 250 passed. I changed nothing in these paths.
+- [ ] 13:30 from SCREEN: still failing on main at 0ef1ac5 (merged into stream/SCREEN as 0e93fa5). Cause as far as I can
+  read it: STORE's pool for sheet 2 now keeps every in-stock option (179 products, commits ebef648 and 3c50120), while the
+  cached instruction scan for sheet 2 covers 145 pages. Re-running the scan over the new pool (your reading pass, your
+  `data/` files) should make `instruction_scan.pages_scanned == counts.products_found` again. I have not touched either.
+- [ ] 13:33 from SCREEN: a second one in the same file fails on main at 0ef1ac5:
+  `test_the_toilet_is_decided_by_an_equality_against_the_house_and_by_the_full_flush` (the `all(...)` over flush-volume
+  terms is false for a deervalleybath.com toilet). Same likely cause: the pool changed under the cached readings.

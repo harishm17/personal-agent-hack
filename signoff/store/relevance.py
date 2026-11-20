@@ -27,12 +27,17 @@ def words(text: str) -> list[str]:
     return [stem(w) for w in re.findall(r"[a-z0-9]+", html.unescape(text or "").lower())]
 
 
+def _is_count(w: str) -> bool:
+    """A size or count token: "24", "48pk", "12ct". It is a quantity, not the name of the thing."""
+    return bool(re.fullmatch(r"\d+[a-z]{0,3}", w))
+
+
 def phrases(label: str) -> list[list[str]]:
     parts = re.split(r"\s*(?:&|,|\||;|\s-\s|\s–\s|\swith\s|\sby\s|\sin\s|\sfor\s|\sand\s)\s*", html.unescape(label or ""), flags=re.I)
     out = []
     for p in parts:
         w = words(p)
-        while w and w[-1].isdigit():  # a trailing size or count ("5-1/2") is not the thing's name
+        while w and _is_count(w[-1]):  # a trailing size or count ("5-1/2", "48pk") is not the thing's name
             w.pop()
         if w:
             out.append(w)
@@ -41,6 +46,8 @@ def phrases(label: str) -> list[list[str]]:
 
 def need_parts(need: str) -> tuple[str, set[str]]:
     w = words(need)
+    while w and _is_count(w[-1]):  # "crayons 24" names crayons; 24 is the quantity wanted
+        w.pop()
     return (w[-1], set(w[:-1])) if w else ("", set())
 
 

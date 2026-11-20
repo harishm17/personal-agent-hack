@@ -49,3 +49,9 @@ def test_the_pool_summary_counts_what_was_dropped_and_why():
             for lid, d in lines.items():
                 assert d["candidates"] >= d["kept"] and d["dropped"] == len(d["dropped_why"])
                 assert all(x["why"] for x in d["dropped_why"])
+
+
+def test_a_count_is_not_the_head_of_a_phrase():
+    assert relevance.belongs(prod("Crayola Crayons 24pk"), "crayons 24")[0]
+    assert relevance.belongs(prod("Yoobi Color Block No.2 Pencils 48pk"), "#2 pencils")[0]
+    assert relevance.belongs(prod("Mini Binder, 4 Pack"), "pencils")[0] is False

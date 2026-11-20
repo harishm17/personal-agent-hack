@@ -1,0 +1,1436 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://mrpen.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Mr. Pen",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "mrpen.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "62824808604"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "62824808604"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7942694437020",
+   "title": "Washable Gel Crayons, 20 Pack, Twistable Crayons, Non-Toxic, Crayons for Kids, Twist Crayons, Kids Crayons, Crayons for Adult Coloring Books, Adult Crayons, Coloring Crayons, Color Crayons",
+   "description": {
+    "html": "Mr. Pen soft crayons, in 20 assorted colors Smooth crayons, easily slide on paper Twistable top, no sharpening needed Great for adult and children, use for drawing and coloring Non-toxic, acid free"
+   },
+   "url": "https://mrpen.com/products/mr-pen-washable-gel-crayons-assorted-colors-20-pack",
+   "handle": "mr-pen-washable-gel-crayons-assorted-colors-20-pack",
+   "price_range": {
+    "min": {
+     "amount": 837,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 837,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1330,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1330,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43364443488412",
+     "sku": "MG20",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen soft crayons, in 20 assorted colors Smooth crayons, easily slide on paper Twistable top, no sharpening needed Great for adult and children, use for drawing and coloring Non-toxic, acid free"
+     },
+     "price": {
+      "amount": 837,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1330,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-4-4.jpg?v=1750100122"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43364443488412:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1-4-4.jpg?v=1750100122",
+     "alt_text": "1-4"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Crayons",
+    "School"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/303058714780",
+     "handle": "pens-more-back-to-school",
+     "title": "Pens + More - Back to School",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056860828",
+     "handle": "crayons",
+     "title": "Gel Crayons",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7942854607004",
+   "title": "Dark Colored Pencil Sharpener for Colored Pencils, 3 Pack, 3 Hole, Manual Pencil Sharpeners, Handheld Pencil Sharpener, Pencil Sharpeners Handheld, Crayon Sharpener, Colored Pencil Sharpener",
+   "description": {
+    "html": "This set includes 3 multipurpose sharpeners, offering a comprehensive solution for all your pencil sharpening needs.Mr. Pen sharpeners are thoughtfully designed to accommodate three different pencil barrel sizes - jumbo, regular, and colored pencil, ensuring optimal sharpening for a range of tools.These sharpeners, equipped with a dedicated storage compartment for pencil shavings, help maintain a clean and tidy workspace for your art projects.The ergonomic triangular shape of the sharpeners allows for an easy and comfortable grip, making them effortless to use for adults and children alike.Fitted with high-quality metal blades with pointed edges, these 3-in-1 sharpeners promise a long-lasting sharp point for your pencils, thereby extending their lifespan."
+   },
+   "url": "https://mrpen.com/products/pencil-sharpener-for-colored-pencils-3-pack-3-hole",
+   "handle": "pencil-sharpener-for-colored-pencils-3-pack-3-hole",
+   "price_range": {
+    "min": {
+     "amount": 795,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 795,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1073,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1073,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43365095145628",
+     "sku": "NCEC036M304",
+     "title": "Default Title",
+     "description": {
+      "html": "This set includes 3 multipurpose sharpeners, offering a comprehensive solution for all your pencil sharpening needs.Mr. Pen sharpeners are thoughtfully designed to accommodate three different pencil barrel sizes - jumbo, regular, and colored pencil, ensuring optimal sharpening for a range of tools.These sharpeners, equipped with a dedicated storage compartment for pencil shavings, help maintain a clean and tidy workspace for your art projects.The ergonomic triangular shape of the sharpeners allows for an easy and comfortable grip, making them effortless to use for adults and children alike.Fitted with high-quality metal blades with pointed edges, these 3-in-1 sharpeners promise a long-lasting sharp point for your pencils, thereby extending their lifespan."
+     },
+     "price": {
+      "amount": 795,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1073,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/w1-2_5ec108f7-7426-4b61-9a21-89be47436bff.jpg?v=1712186965"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/43365095145628:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/w1-2_5ec108f7-7426-4b61-9a21-89be47436bff.jpg?v=1712186965",
+     "alt_text": "w1"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Kids School",
+    "MCF",
+    "School & Office",
+    "Sharpners"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300687982748",
+     "handle": "school-office",
+     "title": "School & Office",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/300688015516",
+     "handle": "kids-school",
+     "title": "Kids School",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301254508700",
+     "handle": "sharpeners",
+     "title": "Sharpeners",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056729756",
+     "handle": "colored-pencils",
+     "title": "Colored Pencils",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8158077223068",
+   "title": "Pencil Sharpener for Colored Pencils, 3 Pack, 3 Hole, Pencil Sharpeners Manual, Handheld Pencil Sharpener, Pencil Sharpeners Handheld, Crayon Sharpener, Colored Pencil Sharpener",
+   "description": {
+    "html": "This set includes 3 multipurpose sharpeners, offering a comprehensive solution for all your pencil sharpening needs. Mr. Pen sharpeners are thoughtfully designed to accommodate three different pencil barrel sizes - jumbo, regular, and colored pencil, ensuring optimal sharpening for a range of tools. These sharpeners, equipped with a dedicated storage compartment for pencil shavings, help maintain a clean and tidy workspace for your art projects. The ergonomic triangular shape of the sharpeners allows for an easy and comfortable grip, making them effortless to use for adults and children alike. Fitted with high-quality metal blades with pointed edges, these 3-in-1 sharpeners promise a long-lasting sharp point for your pencils, thereby extending their lifespan."
+   },
+   "url": "https://mrpen.com/products/mr-pen-pencil-sharpener-for-colored-pencils-3-pack-3-hole",
+   "handle": "mr-pen-pencil-sharpener-for-colored-pencils-3-pack-3-hole",
+   "price_range": {
+    "min": {
+     "amount": 779,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 779,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1079,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1079,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44069823545500",
+     "sku": "WTCO036M328VC",
+     "title": "Default Title",
+     "description": {
+      "html": "This set includes 3 multipurpose sharpeners, offering a comprehensive solution for all your pencil sharpening needs. Mr. Pen sharpeners are thoughtfully designed to accommodate three different pencil barrel sizes - jumbo, regular, and colored pencil, ensuring optimal sharpening for a range of tools. These sharpeners, equipped with a dedicated storage compartment for pencil shavings, help maintain a clean and tidy workspace for your art projects. The ergonomic triangular shape of the sharpeners allows for an easy and comfortable grip, making them effortless to use for adults and children alike. Fitted with high-quality metal blades with pointed edges, these 3-in-1 sharpeners promise a long-lasting sharp point for your pencils, thereby extending their lifespan."
+     },
+     "price": {
+      "amount": 779,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1079,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61sXD4xREYL._AC_SL1500.jpg?v=1718611119"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44069823545500:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61sXD4xREYL._AC_SL1500.jpg?v=1718611119"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "MCF"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304056729756",
+     "handle": "colored-pencils",
+     "title": "Colored Pencils",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8263617020060",
+   "title": "Aesthetic Highlighters, 12 pcs, Chisel Tip, Macaron Colors, Cute Highlighters Assorted Colors, Bible Highlighters and Pens No Bleed, No Bleed Highlighters for Bible Pages No Bleed",
+   "description": {
+    "html": "Make your notes and papers pop with our vibrant highlighters! This package includes 12 highlighters in 12 assorted colors. Our highlighters are perfect for making your work and school life a little bit brighter. The highlighters feature durable, quick-drying ink to prevent smears and smudges. The ink is also resistant to fading so your work stays clean and clear for longer. Our highlighters are comfortable and easy to hold without a sore hand & don't roll around while using. The versatile chisel tip efficiently produces wide and narrow lines. Mr. Pen highlighters are perfect for highlighting your scriptures, notes, journals, or any books you want to read with bright and vibrant colors. These cute highlighters are suitable for school, college, home, office, even travel diary, schedule, work, study, notes, etc. They are also wonderful gifts for family and friends."
+   },
+   "url": "https://mrpen.com/products/mr-pen-aesthetic-highlighters-12-pcs-chisel-tip-macaron-colors",
+   "handle": "mr-pen-aesthetic-highlighters-12-pcs-chisel-tip-macaron-colors",
+   "price_range": {
+    "min": {
+     "amount": 799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1079,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1079,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44458602430620",
+     "sku": "GVGB012M342VQ",
+     "title": "Default Title",
+     "description": {
+      "html": "Make your notes and papers pop with our vibrant highlighters! This package includes 12 highlighters in 12 assorted colors. Our highlighters are perfect for making your work and school life a little bit brighter. The highlighters feature durable, quick-drying ink to prevent smears and smudges. The ink is also resistant to fading so your work stays clean and clear for longer. Our highlighters are comfortable and easy to hold without a sore hand & don't roll around while using. The versatile chisel tip efficiently produces wide and narrow lines. Mr. Pen highlighters are perfect for highlighting your scriptures, notes, journals, or any books you want to read with bright and vibrant colors. These cute highlighters are suitable for school, college, home, office, even travel diary, schedule, work, study, notes, etc. They are also wonderful gifts for family and friends."
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1079,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/612W0-sjUqL._AC_SL1500.jpg?v=1726432011"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44458602430620:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/612W0-sjUqL._AC_SL1500.jpg?v=1726432011"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-4-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "b2b"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/300688146588",
+     "handle": "bible",
+     "title": "Bible & Christian Collection \u2013 Tabs, Pens, Highlighters, Cases & More",
+     "description": {
+      "html": "Discover the Mr. Pen Bible & Christian Collection, your one-stop shop for faith-inspired supplies. From Bible tabs and pens to highlighters, cases, and accessories, this collection brings together everything you need for studying, journaling, and sharing God\u2019s Word."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304123248796",
+     "handle": "chisel-tip-highlighters",
+     "title": "Chisel Tip Highlighters",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/307319341212",
+     "handle": "holiday-gift-guide",
+     "title": "Holiday Gift Guide",
+     "description": {
+      "html": "All the meaningful gifts and stocking stuffers you need in one place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8272992305308",
+   "title": "Mr. Pen- Blank Puzzle, 10 Pack, 63 Pieces/Pack, 8.2\" x 5.6\", White Puzzle",
+   "description": {
+    "html": "Mr. Pen blank puzzle set includes 10 packs of 63-piece puzzles, each measuring 8.2\" x 5.6\", perfect for DIY crafts, art projects, or personalized gifts. These blank puzzles provide a smooth surface, making them ideal for drawing, painting, or decorating with markers, crayons, or stickers. Each puzzle is easy to assemble and disassemble, offering a fun and creative activity for both children and adults. Made from sturdy cardboard, these puzzles are designed to withstand repeated use, ensuring long-lasting durability without bending or tearing. Perfect for school projects, events, or personal art, these blank puzzles offer endless possibilities for customization and creativity."
+   },
+   "url": "https://mrpen.com/products/mr-pen-blank-puzzle-10-pack-63-pieces-pack-8-2-x-5-6-white-puzzle",
+   "handle": "mr-pen-blank-puzzle-10-pack-63-pieces-pack-8-2-x-5-6-white-puzzle",
+   "price_range": {
+    "min": {
+     "amount": 899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1214,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1214,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44493919289500",
+     "sku": "SEDO010M403VQ",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen blank puzzle set includes 10 packs of 63-piece puzzles, each measuring 8.2\" x 5.6\", perfect for DIY crafts, art projects, or personalized gifts. These blank puzzles provide a smooth surface, making them ideal for drawing, painting, or decorating with markers, crayons, or stickers. Each puzzle is easy to assemble and disassemble, offering a fun and creative activity for both children and adults. Made from sturdy cardboard, these puzzles are designed to withstand repeated use, ensuring long-lasting durability without bending or tearing. Perfect for school projects, events, or personal art, these blank puzzles offer endless possibilities for customization and creativity."
+     },
+     "price": {
+      "amount": 899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1214,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71G3qKdPuZL._AC_SL1500.jpg?v=1727838142"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44493919289500:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71G3qKdPuZL._AC_SL1500.jpg?v=1727838142"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/tg-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Mr. Pen New Products 2024"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8272988438684",
+   "title": "Mr. Pen- Blank Puzzle, 10 Pack, 12 Pieces/Pack, 5.5\" x 8.1\", White Puzzle",
+   "description": {
+    "html": "Mr. Pen blank puzzle set includes 10 sets of 12-piece puzzles, each measuring 8.2\" x 5.6\", perfect for creative projects or personalized gifts. These blank puzzles provide a smooth surface, ideal for drawing, painting, or decorating with markers, crayons, or stickers. Each puzzle is easy to assemble and disassemble, making it a fun and engaging activity for kids, adults, or groups. Made from high-quality, durable cardboard, these puzzles are designed to withstand repeated use without bending or tearing. Perfect for DIY crafts, classroom activities, or events, these blank puzzles offer endless possibilities for creativity and customization."
+   },
+   "url": "https://mrpen.com/products/mr-pen-blank-puzzle-10-pack-12-pieces-pack-5-5-x-8-1-white-puzzle",
+   "handle": "mr-pen-blank-puzzle-10-pack-12-pieces-pack-5-5-x-8-1-white-puzzle",
+   "price_range": {
+    "min": {
+     "amount": 899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1214,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1214,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44493915160732",
+     "sku": "EDLI010M403VSQ",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen blank puzzle set includes 10 sets of 12-piece puzzles, each measuring 8.2\" x 5.6\", perfect for creative projects or personalized gifts. These blank puzzles provide a smooth surface, ideal for drawing, painting, or decorating with markers, crayons, or stickers. Each puzzle is easy to assemble and disassemble, making it a fun and engaging activity for kids, adults, or groups. Made from high-quality, durable cardboard, these puzzles are designed to withstand repeated use without bending or tearing. Perfect for DIY crafts, classroom activities, or events, these blank puzzles offer endless possibilities for creativity and customization."
+     },
+     "price": {
+      "amount": 899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1214,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71LMw84dg0L._AC_SL1500.jpg?v=1752259810"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44493915160732:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71LMw84dg0L._AC_SL1500.jpg?v=1752259810"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/tg-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Mr. Pen New Products 2024"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8272989585564",
+   "title": "Mr. Pen- Blank Puzzle, 10 Pack, 28 Pieces/Pack, 5.5\" x 8.1\", White Puzzle",
+   "description": {
+    "html": "Mr. Pen blank puzzle set includes 10 packs of 28-piece puzzles, each measuring 8.1\" x 5.5\", perfect for DIY crafts, art projects, or personalized gifts. These blank puzzles provide a smooth surface, making them ideal for drawing, painting, or decorating with markers, crayons, or stickers. Each puzzle is easy to assemble and disassemble, offering a fun and creative activity for both children and adults. Made from sturdy cardboard, these puzzles are designed to withstand repeated use, ensuring long-lasting durability without bending or tearing. Perfect for school projects, events, or personal art, these blank puzzles offer endless possibilities for customization and creativity."
+   },
+   "url": "https://mrpen.com/products/mr-pen-blank-puzzle-10-pack-28-pieces-pack-5-5-x-8-1-white-puzzle",
+   "handle": "mr-pen-blank-puzzle-10-pack-28-pieces-pack-5-5-x-8-1-white-puzzle",
+   "price_range": {
+    "min": {
+     "amount": 899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1214,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1214,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44493916602524",
+     "sku": "WJQI010M403VQ",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen blank puzzle set includes 10 packs of 28-piece puzzles, each measuring 8.1\" x 5.5\", perfect for DIY crafts, art projects, or personalized gifts. These blank puzzles provide a smooth surface, making them ideal for drawing, painting, or decorating with markers, crayons, or stickers. Each puzzle is easy to assemble and disassemble, offering a fun and creative activity for both children and adults. Made from sturdy cardboard, these puzzles are designed to withstand repeated use, ensuring long-lasting durability without bending or tearing. Perfect for school projects, events, or personal art, these blank puzzles offer endless possibilities for customization and creativity."
+     },
+     "price": {
+      "amount": 899,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1214,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71gNGsmOGZL._AC_SL1500.jpg?v=1727837974"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44493916602524:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71gNGsmOGZL._AC_SL1500.jpg?v=1727837974"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/tg-4-7",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Mr. Pen New Products 2024"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8350894751900",
+   "title": "Mr. Pen- Pencil Box, 4 Pack, Clear, Plastic Pencil Box Case, Pencil Case, Crayon Box, Pencil Case for Kids, Clear Pencil Case",
+   "description": {
+    "html": "Mr. Pen pencil box set includes 2 premium clear storage boxes, offering an ideal solution for organizing school, office, or craft supplies. Crafted from durable, shatter-resistant plastic, these boxes are built to handle daily use while keeping your items safe and secure. Each box measures 7.9\" x 4.5\" x 2.4\", providing generous storage space for pencils, pens, markers, or other small accessories. The transparent design allows for quick identification of contents, while the secure snap closure ensures your items remain in place during storage or transport. Perfect for students, professionals, and hobbyists, this set combines functionality and durability to help keep your workspace neat and organized."
+   },
+   "url": "https://mrpen.com/products/mr-pen-pencil-box-4-pack-clear-plastic-pencil-box-case-pencil-case-crayon-box-pencil-case-for-kids-clear-pencil-case",
+   "handle": "mr-pen-pencil-box-4-pack-clear-plastic-pencil-box-case-pencil-case-crayon-box-pencil-case-for-kids-clear-pencil-case",
+   "price_range": {
+    "min": {
+     "amount": 1499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2024,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2024,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44768180535452",
+     "sku": "HUJW004M432VCQ",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen pencil box set includes 2 premium clear storage boxes, offering an ideal solution for organizing school, office, or craft supplies. Crafted from durable, shatter-resistant plastic, these boxes are built to handle daily use while keeping your items safe and secure. Each box measures 7.9\" x 4.5\" x 2.4\", providing generous storage space for pencils, pens, markers, or other small accessories. The transparent design allows for quick identification of contents, while the secure snap closure ensures your items remain in place during storage or transport. Perfect for students, professionals, and hobbyists, this set combines functionality and durability to help keep your workspace neat and organized."
+     },
+     "price": {
+      "amount": 1499,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2024,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61raAh6IqYL._AC_SL1500.jpg?v=1739390963"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44768180535452:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/61raAh6IqYL._AC_SL1500.jpg?v=1739390963"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-3-10-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Mr. Pen New Products 2025"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304057483420",
+     "handle": "school-box",
+     "title": "Pencil Box",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304123576476",
+     "handle": "bible-pencil-pouches",
+     "title": "Bible Pencil Pouches",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8364841402524",
+   "title": "Mr. Pen- Blank Hardcover Books, 6\" x 8\", 40 Pages, 6 Pack, White, Blank Notebooks for Kids",
+   "description": {
+    "html": "Mr. Pen white hardcover blank books come in a pack of 6, providing ample space for creative expression, sketching, or journaling. Each book measures 8\" x 6\", offering a generous size for a variety of art projects, notes, or story writing. The durable hardcover ensures your creations are protected, making these books ideal for young artists, students, or professionals. With 40 blank pages per book, the high-quality paper is suitable for markers, crayons, colored pencils, and pens without bleeding through. These versatile blank books are perfect for use in classrooms, at home, or as personalized gifts, inspiring creativity and imagination."
+   },
+   "url": "https://mrpen.com/products/mr-pen-blank-hardcover-books-6-x-8-40-pages-6-pack-white-blank-notebooks-for-kids",
+   "handle": "mr-pen-blank-hardcover-books-6-x-8-40-pages-6-pack-white-blank-notebooks-for-kids",
+   "price_range": {
+    "min": {
+     "amount": 1599,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 2024,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2024,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44810297770140",
+     "sku": "JHWV006M412VSQ",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen white hardcover blank books come in a pack of 6, providing ample space for creative expression, sketching, or journaling. Each book measures 8\" x 6\", offering a generous size for a variety of art projects, notes, or story writing. The durable hardcover ensures your creations are protected, making these books ideal for young artists, students, or professionals. With 40 blank pages per book, the high-quality paper is suitable for markers, crayons, colored pencils, and pens without bleeding through. These versatile blank books are perfect for use in classrooms, at home, or as personalized gifts, inspiring creativity and imagination."
+     },
+     "price": {
+      "amount": 1599,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 2024,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71HdnsDEHBL._AC_SL1500.jpg?v=1741177954"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/44810297770140:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/71HdnsDEHBL._AC_SL1500.jpg?v=1741177954"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9317538398364",
+   "title": "Mr. Pen- Candy Pop Pens, 8 Pack, Black Ink Retractable Gel Pens Fine Point Fast Dry, Smooth Writing, Cute Pens for Drawing, Writing Planner and School Supplies",
+   "description": {
+    "html": "Mr. Pen candy pop pens come in an 8 pack with black ink and feature retractable gel pens designed for smooth writing, note-taking, journaling, and everyday use. These gel pens feature smooth-flowing ink that provides clean lines with a comfortable writing experience, while the retractable design helps keep the pen tip protected when not in use. Each pen features a 0.7mm fine point tip that delivers precise lines and controlled writing for detailed notes, lists, and creative projects. The fun candy-inspired barrel colors and playful design add a unique style to your school supplies, office essentials, or journaling collection. The retractable click mechanism allows quick and convenient access to the ink, making these pens easy to carry and ready for daily writing tasks."
+   },
+   "url": "https://mrpen.com/products/mr-pen-candy-pop-pens-8-pack-black-ink-retractable-gel-pens-fine-point-fast-dry-smooth-writing-cute-pens-for-drawing-writing-planner-and-school-supplies",
+   "handle": "mr-pen-candy-pop-pens-8-pack-black-ink-retractable-gel-pens-fine-point-fast-dry-smooth-writing-cute-pens-for-drawing-writing-planner-and-school-supplies",
+   "price_range": {
+    "min": {
+     "amount": 799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 674,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 674,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47856290529436",
+     "sku": "LVIE008M617NP",
+     "title": "Default Title",
+     "description": {
+      "html": "Mr. Pen candy pop pens come in an 8 pack with black ink and feature retractable gel pens designed for smooth writing, note-taking, journaling, and everyday use. These gel pens feature smooth-flowing ink that provides clean lines with a comfortable writing experience, while the retractable design helps keep the pen tip protected when not in use. Each pen features a 0.7mm fine point tip that delivers precise lines and controlled writing for detailed notes, lists, and creative projects. The fun candy-inspired barrel colors and playful design add a unique style to your school supplies, office essentials, or journaling collection. The retractable click mechanism allows quick and convenient access to the ink, making these pens easy to carry and ready for daily writing tasks."
+     },
+     "price": {
+      "amount": 799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 674,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_3e58e0d8-7389-4fe7-b239-3a686a31e6f5.jpg?v=1791575544"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://gomrpen.myshopify.com/cart/47856290529436:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0628/2480/8604/files/1_3e58e0d8-7389-4fe7-b239-3a686a31e6f5.jpg?v=1791575544"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-7-3-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "shoptok"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/301095223452",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/304122986652",
+     "handle": "gel-bible-pens",
+     "title": "Gel Bible Pens",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/307319341212",
+     "handle": "holiday-gift-guide",
+     "title": "Holiday Gift Guide",
+     "description": {
+      "html": "All the meaningful gifts and stocking stuffers you need in one place."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/319286313116",
+     "handle": "stocking-stuffer-sale-2025",
+     "title": "2025 Stocking Stuffer Sale",
+     "description": {
+      "html": "STOCKING STUFFER SALE 2025: BUY 3 GET 1 FREE FOR ITEMS UNDER $12.99! Automatically Applied at Checkout. December 8th - December 17th!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/320412483740",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "2025 Holiday Gift Guide"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzVNekUzTlRNNE16azRNelkwTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

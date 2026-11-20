@@ -1,0 +1,1480 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://schoolsupplyboxes.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "School Supply Boxes",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "schoolsupplyboxes.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "2981593158"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "2981593158"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/2054125256774",
+   "title": "Crayola Crayons 24pk",
+   "description": {
+    "html": "Whether you're just starting school or getting ready to graduate, everyone loves to play with a box of crayons. This 24 pack contains all the colors you know and love and a few extras to help you create works of art... or just play with coloring pages. Crayola crayons are the easiest item to scratch of your back to school list and get into your child's backpack."
+   },
+   "url": "https://schoolsupplyboxes.com/products/crayola-24-pack-crayons",
+   "handle": "crayola-24-pack-crayons",
+   "price_range": {
+    "min": {
+     "amount": 254,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 254,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/20684576718918",
+     "sku": "30004",
+     "title": "Default Title",
+     "description": {
+      "html": "Whether you're just starting school or getting ready to graduate, everyone loves to play with a box of crayons. This 24 pack contains all the colors you know and love and a few extras to help you create works of art... or just play with coloring pages. Crayola crayons are the easiest item to scratch of your back to school list and get into your child's backpack."
+     },
+     "price": {
+      "amount": 254,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/Crayola_Crayons_24_count.png?v=1556734656"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/20684576718918:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/products/Crayola_Crayons_24_count.png?v=1556734656"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#bundle",
+    "#NameBrand",
+    "combo",
+    "writing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/159442960456",
+     "handle": "colors-markers",
+     "title": "Colors & Markers For School",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/9226819174562",
+   "title": "24 Count Crayons",
+   "description": {
+    "html": "This 24-count crayon set offers a classic range of colors for every young artist. The high-quality wax delivers rich pigment for smooth shading and blending on all types of paper. Each crayon is double-wrapped for extra strength and break-resistance, ensuring they stand up to daily classroom use. Non-toxic and organized in a handy tuck box, they are an essential addition to any school supply list."
+   },
+   "url": "https://schoolsupplyboxes.com/products/24-count-crayons",
+   "handle": "24-count-crayons",
+   "price_range": {
+    "min": {
+     "amount": 79,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 79,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/47252951826594",
+     "title": "Default Title",
+     "description": {
+      "html": "This 24-count crayon set offers a classic range of colors for every young artist. The high-quality wax delivers rich pigment for smooth shading and blending on all types of paper. Each crayon is double-wrapped for extra strength and break-resistance, ensuring they stand up to daily classroom use. Non-toxic and organized in a handy tuck box, they are an essential addition to any school supply list."
+     },
+     "price": {
+      "amount": 79,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/Crayons.png?v=1778264289"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/47252951826594:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/Crayons.png?v=1778264289"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-11-11-3-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#GeneralSupplies"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/3981295321158",
+   "title": "Essential Elementary School Supply Kit Bundle - 91 Pieces",
+   "description": {
+    "html": "Back to School shopping is simple with this K-5 school supply pack, perfect for the first day of elementary school. Get your school essentials kit here which includes: (1) 1\" Binders, (5) Folder - 3 Prong, (1) Wide Ruled Loose Leaf Filler Paper, (1) Wide Ruled Composition Notebook, (3) Wide Ruled 1 Subject Notebook, (1) Crayola 24 Pack Crayons, (1) Crayola 10 Count Broadline Markers. This school kit also includes: (1) Pencil Bag, (2) pink erasers, (1) Crayola 12 pack Colored Pencil, (6) BIC Mechanical Pencils - 0.7 MM lead, (2) 0.7 MM Lead Refill, (1) Index Card - 100 count, (6) Dixon #2 Pencils, (3) Pencil Grips, (6) Pencil Top Erasers, (2) Elmer's Disappearing Purple Glue Sticks, (1) 5\" Blunt Tip Scissors, and (1) Kleenex Tissue Pocket Packs. School essentials kit for secondary school students, back to school kit, school supplies for secondary school students, school kit, freshman school supplies, sophomore school supplies, junior school supplies, senior school supplies, high school bundle."
+   },
+   "url": "https://schoolsupplyboxes.com/products/elementary-school-essentials-back-to-school-kit-school-supplies-bundle-includes-1-binder-folder-notebook-filler-paper-mechanical-pencil-note-card-black-blue-pen-stress-ball-47-pieces-1",
+   "handle": "elementary-school-essentials-back-to-school-kit-school-supplies-bundle-includes-1-binder-folder-notebook-filler-paper-mechanical-pencil-note-card-black-blue-pen-stress-ball-47-pieces-1",
+   "price_range": {
+    "min": {
+     "amount": 4499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 789999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 17996,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 809820,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45523800359074",
+     "sku": "NB7",
+     "title": "1 Box",
+     "description": {
+      "html": "Back to School shopping is simple with this K-5 school supply pack, perfect for the first day of elementary school. Get your school essentials kit here which includes: (1) 1\" Binders, (5) Folder - 3 Prong, (1) Wide Ruled Loose Leaf Filler Paper, (1) Wide Ruled Composition Notebook, (3) Wide Ruled 1 Subject Notebook, (1) Crayola 24 Pack Crayons, (1) Crayola 10 Count Broadline Markers. This school kit also includes: (1) Pencil Bag, (2) pink erasers, (1) Crayola 12 pack Colored Pencil, (6) BIC Mechanical Pencils - 0.7 MM lead, (2) 0.7 MM Lead Refill, (1) Index Card - 100 count, (6) Dixon #2 Pencils, (3) Pencil Grips, (6) Pencil Top Erasers, (2) Elmer's Disappearing Purple Glue Sticks, (1) 5\" Blunt Tip Scissors, and (1) Kleenex Tissue Pocket Packs. School essentials kit for secondary school students, back to school kit, school supplies for secondary school students, school kit, freshman school supplies, sophomore school supplies, junior school supplies, senior school supplies, high school bundle."
+     },
+     "price": {
+      "amount": 4499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Unit Count",
+       "label": "1 Box"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6237-Edit-Edit_1.jpg?v=1715174738"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523800359074:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45523800391842",
+     "sku": "NB7-Case",
+     "title": "1 Case (4 Boxes)",
+     "description": {
+      "html": "Back to School shopping is simple with this K-5 school supply pack, perfect for the first day of elementary school. Get your school essentials kit here which includes: (1) 1\" Binders, (5) Folder - 3 Prong, (1) Wide Ruled Loose Leaf Filler Paper, (1) Wide Ruled Composition Notebook, (3) Wide Ruled 1 Subject Notebook, (1) Crayola 24 Pack Crayons, (1) Crayola 10 Count Broadline Markers. This school kit also includes: (1) Pencil Bag, (2) pink erasers, (1) Crayola 12 pack Colored Pencil, (6) BIC Mechanical Pencils - 0.7 MM lead, (2) 0.7 MM Lead Refill, (1) Index Card - 100 count, (6) Dixon #2 Pencils, (3) Pencil Grips, (6) Pencil Top Erasers, (2) Elmer's Disappearing Purple Glue Sticks, (1) 5\" Blunt Tip Scissors, and (1) Kleenex Tissue Pocket Packs. School essentials kit for secondary school students, back to school kit, school supplies for secondary school students, school kit, freshman school supplies, sophomore school supplies, junior school supplies, senior school supplies, high school bundle."
+     },
+     "price": {
+      "amount": 17799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 17996,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Unit Count",
+       "label": "1 Case (4 Boxes)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6237-Edit-Edit_1.jpg?v=1715174738"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523800391842:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45523800424610",
+     "sku": "NB7-Pallet",
+     "title": "1 Pallet (180 Boxes)",
+     "description": {
+      "html": "Back to School shopping is simple with this K-5 school supply pack, perfect for the first day of elementary school. Get your school essentials kit here which includes: (1) 1\" Binders, (5) Folder - 3 Prong, (1) Wide Ruled Loose Leaf Filler Paper, (1) Wide Ruled Composition Notebook, (3) Wide Ruled 1 Subject Notebook, (1) Crayola 24 Pack Crayons, (1) Crayola 10 Count Broadline Markers. This school kit also includes: (1) Pencil Bag, (2) pink erasers, (1) Crayola 12 pack Colored Pencil, (6) BIC Mechanical Pencils - 0.7 MM lead, (2) 0.7 MM Lead Refill, (1) Index Card - 100 count, (6) Dixon #2 Pencils, (3) Pencil Grips, (6) Pencil Top Erasers, (2) Elmer's Disappearing Purple Glue Sticks, (1) 5\" Blunt Tip Scissors, and (1) Kleenex Tissue Pocket Packs. School essentials kit for secondary school students, back to school kit, school supplies for secondary school students, school kit, freshman school supplies, sophomore school supplies, junior school supplies, senior school supplies, high school bundle."
+     },
+     "price": {
+      "amount": 789999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 809820,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Unit Count",
+       "label": "1 Pallet (180 Boxes)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/nb1_7_8_9_cd83fadf-e080-44db-a458-3db36dd691ba.jpg?v=1747838127"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523800424610:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Unit Count",
+     "values": [
+      {
+       "label": "1 Box"
+      },
+      {
+       "label": "1 Case (4 Boxes)"
+      },
+      {
+       "label": "1 Pallet (180 Boxes)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6237-Edit-Edit_1.jpg?v=1715174738"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#bundle",
+    "#HOMEPAGE",
+    "new"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/84970963014",
+     "handle": "elementary-school-k-5",
+     "title": "Elementary School Supplies",
+     "description": {
+      "html": "All of the back to school supply needs for your child in elementary school grades kindergarten, first grade, second grade, third grade, fourth grade or fifth grade. These are custom made boxes ready to ship to your door so you do not have to go to the store to buy your kids back to school supplies again!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158492524616",
+     "handle": "featured-products",
+     "title": "Featured Products",
+     "description": {
+      "html": "These are the top products in all 5 categories. Elementary School, Middle School, High School, College, and our New and Improved Create your own bundle."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/315530018978",
+     "handle": "bulk-supplies",
+     "title": "Bulk Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8194919202978",
+   "title": "17\" Backpack Bundle for Elementary School | Back to School Bookbag with Supplies | Contains Crayons, Colored Pencils, Ruler, Disappearing Glue, Notebook, and More",
+   "description": {
+    "html": "Gear up for the first day of school with a backpack stuffed with back to school supplies! This awesome bundle features one clear, plastic bookbag and pencil pouch with several back to school essentials for kindergarten through 5th grade. The 17\" clear backpack contains (1), 12\" wooden ruler, (4) 3-pronged folders in various colors, (1) 24pk of Crayola Crayons, (1) 12pk of Crayola Colored Pencils, (2) 100 sheet wide-ruled composition notebooks in various colors, (3) wide-ruled single subject notebooks in various colors. The pencil bag / binder pouch (misc color) is filled with a few crafting goodies to get you started on those masterpieces. It features (3) Elmer's Disappearing Purple Glue Sticks, (1) pair of kids blunt tip scissors. and (2) classic pink erasers. Durable, sturdy, and lightweight, the clear backpack measures 17 x 12 x 5.75 inches, a great size for a young student and offers an unobscured view of everything inside. The pockets provide ample space for more school essentials such as water bottles, umbrellas, and more. Put the stress of school supply shopping behind you this summer and pick up a pre-packed bookbag that's ready for your kid's first day of school!"
+   },
+   "url": "https://schoolsupplyboxes.com/products/17-backpack-bundle-for-elementary-school-back-to-school-bookbag-with-supplies-contains-crayons-colored-pencils-ruler-disappearing-glue-notebook-and-more",
+   "handle": "17-backpack-bundle-for-elementary-school-back-to-school-bookbag-with-supplies-contains-crayons-colored-pencils-ruler-disappearing-glue-notebook-and-more",
+   "price_range": {
+    "min": {
+     "amount": 3499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44108097487010",
+     "sku": "EBBKClear",
+     "title": "Clear",
+     "description": {
+      "html": "Gear up for the first day of school with a backpack stuffed with back to school supplies! This awesome bundle features one clear, plastic bookbag and pencil pouch with several back to school essentials for kindergarten through 5th grade. The 17\" clear backpack contains (1), 12\" wooden ruler, (4) 3-pronged folders in various colors, (1) 24pk of Crayola Crayons, (1) 12pk of Crayola Colored Pencils, (2) 100 sheet wide-ruled composition notebooks in various colors, (3) wide-ruled single subject notebooks in various colors. The pencil bag / binder pouch (misc color) is filled with a few crafting goodies to get you started on those masterpieces. It features (3) Elmer's Disappearing Purple Glue Sticks, (1) pair of kids blunt tip scissors. and (2) classic pink erasers. Durable, sturdy, and lightweight, the clear backpack measures 17 x 12 x 5.75 inches, a great size for a young student and offers an unobscured view of everything inside. The pockets provide ample space for more school essentials such as water bottles, umbrellas, and more. Put the stress of school supply shopping behind you this summer and pick up a pre-packed bookbag that's ready for your kid's first day of school!"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Clear"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6567-Edit.jpg?v=1715090396"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/44108097487010:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44108139036834",
+     "sku": "EBBKBlack",
+     "title": "Solid Black",
+     "description": {
+      "html": "Gear up for the first day of school with a backpack stuffed with back to school supplies! This awesome bundle features one clear, plastic bookbag and pencil pouch with several back to school essentials for kindergarten through 5th grade. The 17\" clear backpack contains (1), 12\" wooden ruler, (4) 3-pronged folders in various colors, (1) 24pk of Crayola Crayons, (1) 12pk of Crayola Colored Pencils, (2) 100 sheet wide-ruled composition notebooks in various colors, (3) wide-ruled single subject notebooks in various colors. The pencil bag / binder pouch (misc color) is filled with a few crafting goodies to get you started on those masterpieces. It features (3) Elmer's Disappearing Purple Glue Sticks, (1) pair of kids blunt tip scissors. and (2) classic pink erasers. Durable, sturdy, and lightweight, the clear backpack measures 17 x 12 x 5.75 inches, a great size for a young student and offers an unobscured view of everything inside. The pockets provide ample space for more school essentials such as water bottles, umbrellas, and more. Put the stress of school supply shopping behind you this summer and pick up a pre-packed bookbag that's ready for your kid's first day of school!"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Style",
+       "label": "Solid Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6564-Edit.jpg?v=1715090396"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/44108139036834:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Style",
+     "values": [
+      {
+       "label": "Clear"
+      },
+      {
+       "label": "Solid Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6564-Edit.jpg?v=1715090396"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/84970963014",
+     "handle": "elementary-school-k-5",
+     "title": "Elementary School Supplies",
+     "description": {
+      "html": "All of the back to school supply needs for your child in elementary school grades kindergarten, first grade, second grade, third grade, fourth grade or fifth grade. These are custom made boxes ready to ship to your door so you do not have to go to the store to buy your kids back to school supplies again!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8737031717026",
+   "title": "McKinney PALs Kits",
+   "description": {
+    "html": "This bundle is designed for McKinney North High School PALs program. Below is a content list included in this bundle! Have a great 2026-2027 school year! (1) Dry Erase Marker Chisel Tip (1) Elmer's 4oz Glue Bottle (1) 7\" Adult Scissors (1) Bazic Correction Tape (1) Dry Erase Reusable Pocket (1) Highlighter (2) Sharpie Permanent Markers (1) Crayola Crayons 24 pack (1) Crayola Fine Line Markers 10 pack (1) Crayola Broad Line Markers 10 pack (1) Plastic 12\" Ruler (6) Blue BIC Pens (1) 100 Count Yellow Sticky Notes (1) Standard Index Cards (1) Wide-Ruled 100 Sheet Filler Paper (1) Pencil Bag (1) Clear Pencil Box (1) Pocket Folders"
+   },
+   "url": "https://schoolsupplyboxes.com/products/mckinney-pals-kits",
+   "handle": "mckinney-pals-kits",
+   "price_range": {
+    "min": {
+     "amount": 2999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45738178085026",
+     "title": "Default Title",
+     "description": {
+      "html": "This bundle is designed for McKinney North High School PALs program. Below is a content list included in this bundle! Have a great 2026-2027 school year! (1) Dry Erase Marker Chisel Tip (1) Elmer's 4oz Glue Bottle (1) 7\" Adult Scissors (1) Bazic Correction Tape (1) Dry Erase Reusable Pocket (1) Highlighter (2) Sharpie Permanent Markers (1) Crayola Crayons 24 pack (1) Crayola Fine Line Markers 10 pack (1) Crayola Broad Line Markers 10 pack (1) Plastic 12\" Ruler (6) Blue BIC Pens (1) 100 Count Yellow Sticky Notes (1) Standard Index Cards (1) Wide-Ruled 100 Sheet Filler Paper (1) Pencil Bag (1) Clear Pencil Box (1) Pocket Folders"
+     },
+     "price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/3DBOX1-01_76b7d819-4a33-42be-9341-ce0c38c894b6.jpg?v=1754517585"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45738178085026:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/3DBOX1-01_76b7d819-4a33-42be-9341-ce0c38c894b6.jpg?v=1754517585"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/tg-5-8-12-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/332924911778",
+     "handle": "mckinney-pals",
+     "title": "McKinney PALs",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/1427152896070",
+   "title": "Back to School Supply Kit for Grades K - 5 - 32 Pieces",
+   "description": {
+    "html": "Back to School shopping is simple with this K-5 school supply pack, perfect for the first day of elementary school Contains quality, brand name art supplies including (1) Plastic Pencil Box (1) 10pk Crayola Markers, (1) 24pk Crayola Crayons, (1) 12pk Colored Pencils, & (3) Elmer\u2019s Glue Sticks Supply box also includes (10) #2 pencils, (5) rubber pencil top erasers, (1) rubber eraser, (1) pencil sharpener, (1) pair of scissors, (2) comfortable pencil grips, & (1) standard 12 inch ruler Kit also contains (1) wide-ruled spiral notebook, (1) wide-ruled composition book, & (2) 2-pocket folders with metal prongs. Great first day kit for a kindergartner, first grader, second grader, third grader, or fourth grade"
+   },
+   "url": "https://schoolsupplyboxes.com/products/back-to-school-supply-box-grades-k-4",
+   "handle": "back-to-school-supply-box-grades-k-4",
+   "price_range": {
+    "min": {
+     "amount": 3299,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 559999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 13196,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 593820,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45523791249570",
+     "sku": "NB1",
+     "title": "1 Box",
+     "description": {
+      "html": "Back to School shopping is simple with this K-5 school supply pack, perfect for the first day of elementary school Contains quality, brand name art supplies including (1) Plastic Pencil Box (1) 10pk Crayola Markers, (1) 24pk Crayola Crayons, (1) 12pk Colored Pencils, & (3) Elmer\u2019s Glue Sticks Supply box also includes (10) #2 pencils, (5) rubber pencil top erasers, (1) rubber eraser, (1) pencil sharpener, (1) pair of scissors, (2) comfortable pencil grips, & (1) standard 12 inch ruler Kit also contains (1) wide-ruled spiral notebook, (1) wide-ruled composition book, & (2) 2-pocket folders with metal prongs. Great first day kit for a kindergartner, first grader, second grader, third grader, or fourth grade"
+     },
+     "price": {
+      "amount": 3299,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Units",
+       "label": "1 Box"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/RUMZZN8.jpg?v=1715087574"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523791249570:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45523791282338",
+     "sku": "NB1-Case",
+     "title": "1 Case (4 Boxes)",
+     "description": {
+      "html": "Back to School shopping is simple with this K-5 school supply pack, perfect for the first day of elementary school Contains quality, brand name art supplies including (1) Plastic Pencil Box (1) 10pk Crayola Markers, (1) 24pk Crayola Crayons, (1) 12pk Colored Pencils, & (3) Elmer\u2019s Glue Sticks Supply box also includes (10) #2 pencils, (5) rubber pencil top erasers, (1) rubber eraser, (1) pencil sharpener, (1) pair of scissors, (2) comfortable pencil grips, & (1) standard 12 inch ruler Kit also contains (1) wide-ruled spiral notebook, (1) wide-ruled composition book, & (2) 2-pocket folders with metal prongs. Great first day kit for a kindergartner, first grader, second grader, third grader, or fourth grade"
+     },
+     "price": {
+      "amount": 12799,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 13196,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Units",
+       "label": "1 Case (4 Boxes)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6086-Edit.jpg?v=1715087574"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523791282338:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45523791315106",
+     "sku": "NB1-Pallet",
+     "title": "1 Pallet (180 Boxes)",
+     "description": {
+      "html": "Back to School shopping is simple with this K-5 school supply pack, perfect for the first day of elementary school Contains quality, brand name art supplies including (1) Plastic Pencil Box (1) 10pk Crayola Markers, (1) 24pk Crayola Crayons, (1) 12pk Colored Pencils, & (3) Elmer\u2019s Glue Sticks Supply box also includes (10) #2 pencils, (5) rubber pencil top erasers, (1) rubber eraser, (1) pencil sharpener, (1) pair of scissors, (2) comfortable pencil grips, & (1) standard 12 inch ruler Kit also contains (1) wide-ruled spiral notebook, (1) wide-ruled composition book, & (2) 2-pocket folders with metal prongs. Great first day kit for a kindergartner, first grader, second grader, third grader, or fourth grade"
+     },
+     "price": {
+      "amount": 559999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 593820,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Units",
+       "label": "1 Pallet (180 Boxes)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/nb1_7_8_9.jpg?v=1747838094"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45523791315106:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Units",
+     "values": [
+      {
+       "label": "1 Box"
+      },
+      {
+       "label": "1 Case (4 Boxes)"
+      },
+      {
+       "label": "1 Pallet (180 Boxes)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6086-Edit.jpg?v=1715087574"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "#bundle",
+    "#HOMEPAGE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/84970963014",
+     "handle": "elementary-school-k-5",
+     "title": "Elementary School Supplies",
+     "description": {
+      "html": "All of the back to school supply needs for your child in elementary school grades kindergarten, first grade, second grade, third grade, fourth grade or fifth grade. These are custom made boxes ready to ship to your door so you do not have to go to the store to buy your kids back to school supplies again!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158492524616",
+     "handle": "featured-products",
+     "title": "Featured Products",
+     "description": {
+      "html": "These are the top products in all 5 categories. Elementary School, Middle School, High School, College, and our New and Improved Create your own bundle."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/315530018978",
+     "handle": "bulk-supplies",
+     "title": "Bulk Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8627947339938",
+   "title": "Saugatuck Elementary 3rd Grade",
+   "description": {
+    "html": "This bundle is designed for Saugatuck students entering 3rd Grade. Below is the content list for this bundle! Have a great 2026-2027 school year! (1) Clear Pencil Box (1) 1\" White Binder (1) WR Black Composition Notebook (3) Dixon Oriole #2 Pencil 10 Pack (1) Crayola Colored Pencils 12 Pk (3) 100 Ct. Post-It Yellow Sticky Note Pad (2) EXPO Fine-Tip Dry Eraser Markers (Black) (1) School Supply Boxes 3 Pk Highlighter (1 Blue, 1 Yellow, & 1 Pink) (2) Elmer's Disappearing Purple Glue Stick (2) Pink Erasers (3) BIC Blue Pen (1) Crayola Crayons 24 Pk (1) 2 Pocket Folder (Blue) (1) 2 Pocket Folder (Green) (1) 2 Pocket Folder (Yellow)"
+   },
+   "url": "https://schoolsupplyboxes.com/products/saugatuck-elementary-3rd-grade",
+   "handle": "saugatuck-elementary-3rd-grade",
+   "price_range": {
+    "min": {
+     "amount": 3099,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3099,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45369535168674",
+     "sku": "SAUGATUCK3RDGRADE",
+     "title": "Default Title",
+     "description": {
+      "html": "This bundle is designed for Saugatuck students entering 3rd Grade. Below is the content list for this bundle! Have a great 2026-2027 school year! (1) Clear Pencil Box (1) 1\" White Binder (1) WR Black Composition Notebook (3) Dixon Oriole #2 Pencil 10 Pack (1) Crayola Colored Pencils 12 Pk (3) 100 Ct. Post-It Yellow Sticky Note Pad (2) EXPO Fine-Tip Dry Eraser Markers (Black) (1) School Supply Boxes 3 Pk Highlighter (1 Blue, 1 Yellow, & 1 Pink) (2) Elmer's Disappearing Purple Glue Stick (2) Pink Erasers (3) BIC Blue Pen (1) Crayola Crayons 24 Pk (1) 2 Pocket Folder (Blue) (1) 2 Pocket Folder (Green) (1) 2 Pocket Folder (Yellow)"
+     },
+     "price": {
+      "amount": 3099,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/3DBOX1-01_10bcd9d9-36ca-45d8-bd47-b54b07daead5.jpg?v=1740596959"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45369535168674:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/3DBOX1-01_10bcd9d9-36ca-45d8-bd47-b54b07daead5.jpg?v=1740596959"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/se-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8321730150562",
+   "title": "Back to School Supply Kit for Grades K - 5 - 32 Pieces",
+   "description": {
+    "html": "Back to School shopping is simple with this K-5 school supply pack, perfect for the first day of elementary school Contains quality, brand name art supplies including (1) Plastic Pencil Box (1) 10pk Markers, (1) 24pk Crayons, (1) 12pk Colored Pencils, & (3) Glue Sticks Supply box also includes (10) #2 pencils, (5) rubber pencil top erasers, (1) rubber eraser, (1) pencil sharpener, (1) pair of scissors, (2) comfortable pencil grips, & (1) standard 12 inch ruler Kit also contains (1) wide-ruled spiral notebook, (1) wide-ruled composition book, & (2) 2-pocket folders with metal prongs. Great first day kit for a kindergartner, first grader, second grader, third grader, fourth, or fifth grade"
+   },
+   "url": "https://schoolsupplyboxes.com/products/back-to-school-supply-kit-for-grades-k-5",
+   "handle": "back-to-school-supply-kit-for-grades-k-5",
+   "price_range": {
+    "min": {
+     "amount": 2999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44485125603490",
+     "sku": "",
+     "title": "Default Title",
+     "description": {
+      "html": "Back to School shopping is simple with this K-5 school supply pack, perfect for the first day of elementary school Contains quality, brand name art supplies including (1) Plastic Pencil Box (1) 10pk Markers, (1) 24pk Crayons, (1) 12pk Colored Pencils, & (3) Glue Sticks Supply box also includes (10) #2 pencils, (5) rubber pencil top erasers, (1) rubber eraser, (1) pencil sharpener, (1) pair of scissors, (2) comfortable pencil grips, & (1) standard 12 inch ruler Kit also contains (1) wide-ruled spiral notebook, (1) wide-ruled composition book, & (2) 2-pocket folders with metal prongs. Great first day kit for a kindergartner, first grader, second grader, third grader, fourth, or fifth grade"
+     },
+     "price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6064-Edit.jpg?v=1715087875"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/44485125603490:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/JGP_6064-Edit.jpg?v=1715087875"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8628462780578",
+   "title": "Greens Farms School 1st Grade",
+   "description": {
+    "html": "This bundle is designed for Greens Farms School students entering 1st Grade. Below is a content list included in this bundle! Have a great 2026-2027 school year! (1) 2-Pocket Folders, 2 Pack, (Red & Yellow) (1) Crayola Write Start Colored Pencils, 8 Count (1) Crayola Crayons, Large Size, 16 Count (1) Crayola Ultra-Washable Markers, 12 Count (1) Magic Rub Eraser (7) Expo Markers, Black, Fine-Tip (1) Dry Erase Reusable Pocket, Blue (2) Elmer's Disappearing Purple Glue Sticks, Giant (.77 oz) (1) 2-Pocket Plastic Folder, Green"
+   },
+   "url": "https://schoolsupplyboxes.com/products/green-farm-elementary-1st-grade",
+   "handle": "green-farm-elementary-1st-grade",
+   "price_range": {
+    "min": {
+     "amount": 3499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/45371341734050",
+     "sku": "GREENFARMS1STGRADE",
+     "title": "Default Title",
+     "description": {
+      "html": "This bundle is designed for Greens Farms School students entering 1st Grade. Below is a content list included in this bundle! Have a great 2026-2027 school year! (1) 2-Pocket Folders, 2 Pack, (Red & Yellow) (1) Crayola Write Start Colored Pencils, 8 Count (1) Crayola Crayons, Large Size, 16 Count (1) Crayola Ultra-Washable Markers, 12 Count (1) Magic Rub Eraser (7) Expo Markers, Black, Fine-Tip (1) Dry Erase Reusable Pocket, Blue (2) Elmer's Disappearing Purple Glue Sticks, Giant (.77 oz) (1) 2-Pocket Plastic Folder, Green"
+     },
+     "price": {
+      "amount": 3499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/3DBOX1-01_10bcd9d9-36ca-45d8-bd47-b54b07daead5.jpg?v=1740596959"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/45371341734050:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/3DBOX1-01_10bcd9d9-36ca-45d8-bd47-b54b07daead5.jpg?v=1740596959"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/se-6-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8959847432354",
+   "title": "School Supply Boxes | K-8 Bundle | Back to School Essentials Kit for Students & Teachers | Includes Wide-Ruled Notebooks, Crayons, Glue Sticks, Pens, Pencils & More",
+   "description": {
+    "html": "Make school supply shopping effortless with the Standard K\u20138 Kit, a ready-to-go school supply box thoughtfully designed for elementary and middle school students. This all-in-one bundle includes the essential tools young learners need to succeed\u2014whether they\u2019re in the classroom, learning from home, or attending after-school programs. Perfect for grades K through 8, this curated kit balances creativity, organization, and writing essentials in one compact, convenient package. Each item is packed neatly inside a 12 x 10 x 4 box for easy storage and transport. The kit features wide-ruled notebooks, folders for organizing school subjects, and tools like scissors, glue sticks, and a plastic ruler for daily classroom activities. Writing supplies include pencils, black pens, highlighters, and a pencil pouch to keep everything tidy. An 8-pack of crayons adds a creative touch for younger students. Whether you\u2019re a parent prepping for back-to-school or a teacher stocking up, this kit is a reliable, cost-effective way to ensure students are equipped and ready from day one."
+   },
+   "url": "https://schoolsupplyboxes.com/products/school-supply-boxes-k-8-bundle-back-to-school-essentials-kit-for-students-teachers-includes-wide-ruled-notebooks-crayons-glue-sticks-pens-pencils-more",
+   "handle": "school-supply-boxes-k-8-bundle-back-to-school-essentials-kit-for-students-teachers-includes-wide-ruled-notebooks-crayons-glue-sticks-pens-pencils-more",
+   "price_range": {
+    "min": {
+     "amount": 1999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 319999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46739327549602",
+     "sku": "SSB-NB12-BUNDLE",
+     "title": "1 Box",
+     "description": {
+      "html": "Make school supply shopping effortless with the Standard K\u20138 Kit, a ready-to-go school supply box thoughtfully designed for elementary and middle school students. This all-in-one bundle includes the essential tools young learners need to succeed\u2014whether they\u2019re in the classroom, learning from home, or attending after-school programs. Perfect for grades K through 8, this curated kit balances creativity, organization, and writing essentials in one compact, convenient package. Each item is packed neatly inside a 12 x 10 x 4 box for easy storage and transport. The kit features wide-ruled notebooks, folders for organizing school subjects, and tools like scissors, glue sticks, and a plastic ruler for daily classroom activities. Writing supplies include pencils, black pens, highlighters, and a pencil pouch to keep everything tidy. An 8-pack of crayons adds a creative touch for younger students. Whether you\u2019re a parent prepping for back-to-school or a teacher stocking up, this kit is a reliable, cost-effective way to ensure students are equipped and ready from day one."
+     },
+     "price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "1 Box"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/71r1yeqih_L.jpg?v=1775675695"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/46739327549602:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46739327582370",
+     "sku": "SSB-NB12-CASE",
+     "title": "1 Case (4 Units)",
+     "description": {
+      "html": "Make school supply shopping effortless with the Standard K\u20138 Kit, a ready-to-go school supply box thoughtfully designed for elementary and middle school students. This all-in-one bundle includes the essential tools young learners need to succeed\u2014whether they\u2019re in the classroom, learning from home, or attending after-school programs. Perfect for grades K through 8, this curated kit balances creativity, organization, and writing essentials in one compact, convenient package. Each item is packed neatly inside a 12 x 10 x 4 box for easy storage and transport. The kit features wide-ruled notebooks, folders for organizing school subjects, and tools like scissors, glue sticks, and a plastic ruler for daily classroom activities. Writing supplies include pencils, black pens, highlighters, and a pencil pouch to keep everything tidy. An 8-pack of crayons adds a creative touch for younger students. Whether you\u2019re a parent prepping for back-to-school or a teacher stocking up, this kit is a reliable, cost-effective way to ensure students are equipped and ready from day one."
+     },
+     "price": {
+      "amount": 7499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "1 Case (4 Units)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/71r1yeqih_L.jpg?v=1775675695"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/46739327582370:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46739327615138",
+     "sku": "SSB-NB12-PALLET",
+     "title": "1 Pallet (180 Units)",
+     "description": {
+      "html": "Make school supply shopping effortless with the Standard K\u20138 Kit, a ready-to-go school supply box thoughtfully designed for elementary and middle school students. This all-in-one bundle includes the essential tools young learners need to succeed\u2014whether they\u2019re in the classroom, learning from home, or attending after-school programs. Perfect for grades K through 8, this curated kit balances creativity, organization, and writing essentials in one compact, convenient package. Each item is packed neatly inside a 12 x 10 x 4 box for easy storage and transport. The kit features wide-ruled notebooks, folders for organizing school subjects, and tools like scissors, glue sticks, and a plastic ruler for daily classroom activities. Writing supplies include pencils, black pens, highlighters, and a pencil pouch to keep everything tidy. An 8-pack of crayons adds a creative touch for younger students. Whether you\u2019re a parent prepping for back-to-school or a teacher stocking up, this kit is a reliable, cost-effective way to ensure students are equipped and ready from day one."
+     },
+     "price": {
+      "amount": 319999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "1 Pallet (180 Units)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/71r1yeqih_L.jpg?v=1775675695"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://school-supply-boxes.myshopify.com/cart/46739327615138:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "1 Box"
+      },
+      {
+       "label": "1 Case (4 Units)"
+      },
+      {
+       "label": "1 Pallet (180 Units)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0029/8159/3158/files/71r1yeqih_L.jpg?v=1775675695"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/329866936482",
+     "handle": "all",
+     "title": "All product",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRPVFU1T0RRM05ETXlNelUwTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

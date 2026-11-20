@@ -1,0 +1,2499 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.skullcandy.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Skullcandy",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.skullcandy.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "63551143993"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "63551143993"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8311500865593",
+   "title": "Crusher\u00ae 720",
+   "description": {
+    "html": "THE MOST INTENSE CRUSHER BASS EXPERIENCE YET Meet the next generation of Crusher. Crusher 720 takes everything you loved about Crusher Evo and turns it up with our most intense Crusher\u00ae Bass experience yet. Deeper and smoother than ever, the bass maintains Evo\u2019s signature intensity while delivering more clarity, detail, and musicality. A redesigned Crusher wheel gives you more precise control over the bass, while THX\u00ae Spatial Audio creates a wider, more immersive listening experience. Deeper, softer ear cushions and an improved headband deliver a more comfortable fit, making it easier to listen longer. Add smarter controls, new features, and up to 65 hours of battery life for a Crusher experience that hits harder than ever."
+   },
+   "url": "https://www.skullcandy.com/products/crusher-720-headphones",
+   "handle": "crusher-720-headphones",
+   "price_range": {
+    "min": {
+     "amount": 20999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46077605969977",
+     "sku": "S6CEW-U043",
+     "title": "Future",
+     "description": {
+      "html": "THE MOST INTENSE CRUSHER BASS EXPERIENCE YET Meet the next generation of Crusher. Crusher 720 takes everything you loved about Crusher Evo and turns it up with our most intense Crusher\u00ae Bass experience yet. Deeper and smoother than ever, the bass maintains Evo\u2019s signature intensity while delivering more clarity, detail, and musicality. A redesigned Crusher wheel gives you more precise control over the bass, while THX\u00ae Spatial Audio creates a wider, more immersive listening experience. Deeper, softer ear cushions and an improved headband deliver a more comfortable fit, making it easier to listen longer. Add smarter controls, new features, and up to 65 hours of battery life for a Crusher experience that hits harder than ever."
+     },
+     "price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Future"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/26B_Crusher_720_Future_S6CEW-U043_Web_Buy_Boxes_1.png?v=1782366206"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/46077605969977:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46049432731705",
+     "sku": "S6CEW-T740",
+     "title": "True Black",
+     "description": {
+      "html": "THE MOST INTENSE CRUSHER BASS EXPERIENCE YET Meet the next generation of Crusher. Crusher 720 takes everything you loved about Crusher Evo and turns it up with our most intense Crusher\u00ae Bass experience yet. Deeper and smoother than ever, the bass maintains Evo\u2019s signature intensity while delivering more clarity, detail, and musicality. A redesigned Crusher wheel gives you more precise control over the bass, while THX\u00ae Spatial Audio creates a wider, more immersive listening experience. Deeper, softer ear cushions and an improved headband deliver a more comfortable fit, making it easier to listen longer. Add smarter controls, new features, and up to 65 hours of battery life for a Crusher experience that hits harder than ever."
+     },
+     "price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "True Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/26B_Crusher_720_True_Black_S6CEW-T740_Web_Buy_Boxes_1.png?v=1782329625"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/46049432731705:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46077629366329",
+     "sku": "S6CEW-U987",
+     "title": "Primer",
+     "description": {
+      "html": "THE MOST INTENSE CRUSHER BASS EXPERIENCE YET Meet the next generation of Crusher. Crusher 720 takes everything you loved about Crusher Evo and turns it up with our most intense Crusher\u00ae Bass experience yet. Deeper and smoother than ever, the bass maintains Evo\u2019s signature intensity while delivering more clarity, detail, and musicality. A redesigned Crusher wheel gives you more precise control over the bass, while THX\u00ae Spatial Audio creates a wider, more immersive listening experience. Deeper, softer ear cushions and an improved headband deliver a more comfortable fit, making it easier to listen longer. Add smarter controls, new features, and up to 65 hours of battery life for a Crusher experience that hits harder than ever."
+     },
+     "price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Primer"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/26B_Crusher_720_Primer_S6CEW-U987_Web_Buy_Boxes_1.png?v=1782366681"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/46077629366329:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46077618749497",
+     "sku": "S6CEW-U993",
+     "title": "Cement",
+     "description": {
+      "html": "THE MOST INTENSE CRUSHER BASS EXPERIENCE YET Meet the next generation of Crusher. Crusher 720 takes everything you loved about Crusher Evo and turns it up with our most intense Crusher\u00ae Bass experience yet. Deeper and smoother than ever, the bass maintains Evo\u2019s signature intensity while delivering more clarity, detail, and musicality. A redesigned Crusher wheel gives you more precise control over the bass, while THX\u00ae Spatial Audio creates a wider, more immersive listening experience. Deeper, softer ear cushions and an improved headband deliver a more comfortable fit, making it easier to listen longer. Add smarter controls, new features, and up to 65 hours of battery life for a Crusher experience that hits harder than ever."
+     },
+     "price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cement"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/26B_Crusher_720_Cement_S6CEW-U993_Web_Buy_Boxes_1.png?v=1782366450"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/46077618749497:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46077587750969",
+     "sku": "S6CEW-U995",
+     "title": "Plasma",
+     "description": {
+      "html": "THE MOST INTENSE CRUSHER BASS EXPERIENCE YET Meet the next generation of Crusher. Crusher 720 takes everything you loved about Crusher Evo and turns it up with our most intense Crusher\u00ae Bass experience yet. Deeper and smoother than ever, the bass maintains Evo\u2019s signature intensity while delivering more clarity, detail, and musicality. A redesigned Crusher wheel gives you more precise control over the bass, while THX\u00ae Spatial Audio creates a wider, more immersive listening experience. Deeper, softer ear cushions and an improved headband deliver a more comfortable fit, making it easier to listen longer. Add smarter controls, new features, and up to 65 hours of battery life for a Crusher experience that hits harder than ever."
+     },
+     "price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Plasma"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/26B_Crusher_720_Plasma_S6CEW-U995_Web_Buy_Boxes_1.png?v=1782365980"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/46077587750969:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Future"
+      },
+      {
+       "label": "True Black"
+      },
+      {
+       "label": "Primer"
+      },
+      {
+       "label": "Cement"
+      },
+      {
+       "label": "Plasma"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/26B_Crusher_720_True_Black_S6CEW-T740_Web_Buy_Boxes_1.png?v=1782329625",
+     "alt_text": "Black over-ear headphones on a transparent background | True Black"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "active",
+    "active use",
+    "all day listening",
+    "crusher-bass",
+    "custom equalizer",
+    "headphones",
+    "live-products",
+    "mobile app compatible",
+    "new",
+    "new arrival",
+    "on the go",
+    "sidetone",
+    "stay-aware mode",
+    "style-over-ear",
+    "wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288414072889",
+     "handle": "whats-hot",
+     "title": "What's Hot",
+     "description": {
+      "html": "Discover what's hot at Skullcandy today. From headphones and earbuds to speakers and accessories, these products won't last long. Shop today."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559497273",
+     "handle": "new-arrivals-headphones",
+     "title": "New Arrivals Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559562809",
+     "handle": "over-ear",
+     "title": "Over Ear Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288597377081",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288598327353",
+     "handle": "new-arrivals",
+     "title": "New Arrivals",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7988121665593",
+   "title": "Icon\u00ae 180",
+   "description": {
+    "html": "YOUR EVERYDAY STYLE ICON Icon 180 delivers everyday performance with Skullcandy's signature mix of comfort, durability, and simplicity. Built for your daily routine and ready for anything, it combines long battery life, a rugged build, and an ultra-comfortable on-ear fit. It\u2019s wireless audio that looks clean, feels good, and works hard, all day, every day."
+   },
+   "url": "https://www.skullcandy.com/products/icon-180-wireless-headphones",
+   "handle": "icon-180-wireless-headphones",
+   "price_range": {
+    "min": {
+     "amount": 2999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 4999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44796678864953",
+     "sku": "S5IEW-T740",
+     "title": "True Black",
+     "description": {
+      "html": "YOUR EVERYDAY STYLE ICON Icon 180 delivers everyday performance with Skullcandy's signature mix of comfort, durability, and simplicity. Built for your daily routine and ready for anything, it combines long battery life, a rugged build, and an ultra-comfortable on-ear fit. It\u2019s wireless audio that looks clean, feels good, and works hard, all day, every day."
+     },
+     "price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "True Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Icon180_Black_1.png?v=1769106904"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44796678864953:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45585566629945",
+     "sku": "S5IEW-U993",
+     "title": "Cement",
+     "description": {
+      "html": "YOUR EVERYDAY STYLE ICON Icon 180 delivers everyday performance with Skullcandy's signature mix of comfort, durability, and simplicity. Built for your daily routine and ready for anything, it combines long battery life, a rugged build, and an ultra-comfortable on-ear fit. It\u2019s wireless audio that looks clean, feels good, and works hard, all day, every day."
+     },
+     "price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cement"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/product_color_1_2d34d2e5-695b-4019-969e-33f6ebaadf35.png?v=1773331409"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/45585566629945:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45585565286457",
+     "sku": "S5IEW-U043",
+     "title": "Future",
+     "description": {
+      "html": "YOUR EVERYDAY STYLE ICON Icon 180 delivers everyday performance with Skullcandy's signature mix of comfort, durability, and simplicity. Built for your daily routine and ready for anything, it combines long battery life, a rugged build, and an ultra-comfortable on-ear fit. It\u2019s wireless audio that looks clean, feels good, and works hard, all day, every day."
+     },
+     "price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Future"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/product_color_1_bcc2a87b-44bb-4f28-baf1-4bc9453058a0.png?v=1773330781"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/45585565286457:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45585568071737",
+     "sku": "S5IEW-U046",
+     "title": "Crazy Pink",
+     "description": {
+      "html": "YOUR EVERYDAY STYLE ICON Icon 180 delivers everyday performance with Skullcandy's signature mix of comfort, durability, and simplicity. Built for your daily routine and ready for anything, it combines long battery life, a rugged build, and an ultra-comfortable on-ear fit. It\u2019s wireless audio that looks clean, feels good, and works hard, all day, every day."
+     },
+     "price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Crazy Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/product_color_1_df649dc5-b248-42b2-80d9-ce66d36a9622.png?v=1773330513"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/45585568071737:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44796678897721",
+     "sku": "S5IEW-T001",
+     "title": "Bone",
+     "description": {
+      "html": "YOUR EVERYDAY STYLE ICON Icon 180 delivers everyday performance with Skullcandy's signature mix of comfort, durability, and simplicity. Built for your daily routine and ready for anything, it combines long battery life, a rugged build, and an ultra-comfortable on-ear fit. It\u2019s wireless audio that looks clean, feels good, and works hard, all day, every day."
+     },
+     "price": {
+      "amount": 2999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Bone"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Icon180_Bone_1.png?v=1757622891"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44796678897721:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "True Black"
+      },
+      {
+       "label": "Cement"
+      },
+      {
+       "label": "Future"
+      },
+      {
+       "label": "Crazy Pink"
+      },
+      {
+       "label": "Bone"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Icon180_Bone_1.png?v=1757622891",
+     "alt_text": "Bone"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "coming-soon",
+    "headphones",
+    "on the go",
+    "sidetone",
+    "style-on-ear",
+    "wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288559530041",
+     "handle": "on-ear",
+     "title": "On Ear Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288562020409",
+     "handle": "sale-headphones",
+     "title": "On Sale Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288597377081",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288598163513",
+     "handle": "sale",
+     "title": "Sale",
+     "description": {
+      "html": "BLACK FRIDAY DEALS THAT HIT DIFFERENT Big sound. Bigger savings. Skullcandy Black Friday 2026 is officially ON, with over 50% off select headphones, wired and wireless earbuds, Bluetooth speakers, and more. Whether you're chasing bass you can feel, noise-canceling headphones that block out distractions, or portable speakers that bring the party anywhere, your next sound upgrade just got a whole lot more affordable. Score Black Friday deals on fan favorites like Crusher sensory bass headphones, Method wireless earbuds, and Session Bluetooth speakers. From everyday listening and workouts to gaming, travel, and gifting, find the sound that fits your lifestyle without paying full price. Don't sleep on these deals. Shop Skullcandy's Black Friday sale now and turn up your sound for less."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/292389453881",
+     "handle": "bone",
+     "title": "The Boneyard",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7883339530297",
+   "title": "Crusher\u00ae 540 Active",
+   "description": {
+    "html": "CRUSH THE ACTION WITH MIND-BENDING BASS Meet Crusher 540 Active, the ultimate active-use headphones designed to help you get in the zone to enhance your workout. Feel every beat with Crusher's adjustable sensory bass, pushing you to go harder when the workout gets tough. With a sweat and water-resistant nano-coating, Crusher 540 Active stays durable through your most intense sessions. Plus, its breathable fabric earpads keep you cool and comfortable when things heat up. Crush every beat, crush every workout."
+   },
+   "url": "https://www.skullcandy.com/products/crusher-540-active",
+   "handle": "crusher-540-active",
+   "price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 22999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 20999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 20999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44402118393913",
+     "sku": "S6EVW-T005",
+     "title": "Soft",
+     "description": {
+      "html": "CRUSH THE ACTION WITH MIND-BENDING BASS Meet Crusher 540 Active, the ultimate active-use headphones designed to help you get in the zone to enhance your workout. Feel every beat with Crusher's adjustable sensory bass, pushing you to go harder when the workout gets tough. With a sweat and water-resistant nano-coating, Crusher 540 Active stays durable through your most intense sessions. Plus, its breathable fabric earpads keep you cool and comfortable when things heat up. Crush every beat, crush every workout."
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Soft"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/1_crusher-active_soft-pink.png?v=1762210740"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44402118393913:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44494413594681",
+     "sku": "S6EVW-T992",
+     "title": "Coal",
+     "description": {
+      "html": "CRUSH THE ACTION WITH MIND-BENDING BASS Meet Crusher 540 Active, the ultimate active-use headphones designed to help you get in the zone to enhance your workout. Feel every beat with Crusher's adjustable sensory bass, pushing you to go harder when the workout gets tough. With a sweat and water-resistant nano-coating, Crusher 540 Active stays durable through your most intense sessions. Plus, its breathable fabric earpads keep you cool and comfortable when things heat up. Crush every beat, crush every workout."
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Coal"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/1_crusher-active_gunmetal.png?v=1768499616"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44494413594681:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44402118524985",
+     "sku": "S6EVW-T993",
+     "title": "Concrete",
+     "description": {
+      "html": "CRUSH THE ACTION WITH MIND-BENDING BASS Meet Crusher 540 Active, the ultimate active-use headphones designed to help you get in the zone to enhance your workout. Feel every beat with Crusher's adjustable sensory bass, pushing you to go harder when the workout gets tough. With a sweat and water-resistant nano-coating, Crusher 540 Active stays durable through your most intense sessions. Plus, its breathable fabric earpads keep you cool and comfortable when things heat up. Crush every beat, crush every workout."
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Concrete"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/1_crusher-active_concrete.png?v=1768499616"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44402118524985:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45138862538809",
+     "sku": "S6EVW-T016",
+     "title": "Forest",
+     "description": {
+      "html": "CRUSH THE ACTION WITH MIND-BENDING BASS Meet Crusher 540 Active, the ultimate active-use headphones designed to help you get in the zone to enhance your workout. Feel every beat with Crusher's adjustable sensory bass, pushing you to go harder when the workout gets tough. With a sweat and water-resistant nano-coating, Crusher 540 Active stays durable through your most intense sessions. Plus, its breathable fabric earpads keep you cool and comfortable when things heat up. Crush every beat, crush every workout."
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Forest"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/25C_Crusher_540_Active_Forest_S6EVW-T016_Amazon_Buy_Boxes_1.png?v=1768499616"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/45138862538809:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45146487652409",
+     "sku": "S6EVW-T013",
+     "title": "Smoke",
+     "description": {
+      "html": "CRUSH THE ACTION WITH MIND-BENDING BASS Meet Crusher 540 Active, the ultimate active-use headphones designed to help you get in the zone to enhance your workout. Feel every beat with Crusher's adjustable sensory bass, pushing you to go harder when the workout gets tough. With a sweat and water-resistant nano-coating, Crusher 540 Active stays durable through your most intense sessions. Plus, its breathable fabric earpads keep you cool and comfortable when things heat up. Crush every beat, crush every workout."
+     },
+     "price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 20999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Smoke"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/25C_Crusher_540_Active_Smoke_S6EVW-T013_Amazon_Buy_Boxes_1.png?v=1768499616"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/45146487652409:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/50564609998905",
+     "sku": "S6EVW-U054",
+     "title": "Skullcandy X Baker Skateboards",
+     "description": {
+      "html": "CRUSH THE ACTION WITH MIND-BENDING BASS Meet Crusher 540 Active, the ultimate active-use headphones designed to help you get in the zone to enhance your workout. Feel every beat with Crusher's adjustable sensory bass, pushing you to go harder when the workout gets tough. With a sweat and water-resistant nano-coating, Crusher 540 Active stays durable through your most intense sessions. Plus, its breathable fabric earpads keep you cool and comfortable when things heat up. Crush every beat, crush every workout."
+     },
+     "price": {
+      "amount": 22999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Skullcandy X Baker Skateboards"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/26C_Crusher_540_Active_Baker_S6EVW-U054_Web_Buy_Boxes_1_36989fe7-4fff-4400-9fba-ed60f5c5678e.png?v=1790714375"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/50564609998905:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Soft"
+      },
+      {
+       "label": "Coal"
+      },
+      {
+       "label": "Concrete"
+      },
+      {
+       "label": "Forest"
+      },
+      {
+       "label": "Smoke"
+      },
+      {
+       "label": "Skullcandy X Baker Skateboards"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/1_crusher-active_soft-pink.png?v=1762210740",
+     "alt_text": "Soft"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "active",
+    "active use",
+    "all-day-listening",
+    "category-active",
+    "crusher-bass",
+    "live-products",
+    "style-over-ear",
+    "wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288414072889",
+     "handle": "whats-hot",
+     "title": "What's Hot",
+     "description": {
+      "html": "Discover what's hot at Skullcandy today. From headphones and earbuds to speakers and accessories, these products won't last long. Shop today."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559366201",
+     "handle": "limited-edition-headphones",
+     "title": "Limited Edition Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559562809",
+     "handle": "over-ear",
+     "title": "Over Ear Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288562020409",
+     "handle": "sale-headphones",
+     "title": "On Sale Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288597377081",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7953824874553",
+   "title": "Hesh\u00ae 360",
+   "description": {
+    "html": "YOUR SOUND, YOUR STYLE Hesh 360 brings all the must-haves together: rich, dynamic sound, a super comfortable fit, and a clean, confident design that looks good anywhere. Whether you\u2019re working, commuting, or just vibing out, Hesh 360 keeps things simple without cutting corners. And with access to the Skullcandy App, you can adjust your Stay-Aware levels and customize your EQ for a totally personalized experience."
+   },
+   "url": "https://www.skullcandy.com/products/hesh-360-wireless-headphones",
+   "handle": "hesh-360-wireless-headphones",
+   "price_range": {
+    "min": {
+     "amount": 5999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/50854417465401",
+     "sku": "S6HOW-U043",
+     "title": "Future",
+     "description": {
+      "html": "YOUR SOUND, YOUR STYLE Hesh 360 brings all the must-haves together: rich, dynamic sound, a super comfortable fit, and a clean, confident design that looks good anywhere. Whether you\u2019re working, commuting, or just vibing out, Hesh 360 keeps things simple without cutting corners. And with access to the Skullcandy App, you can adjust your Stay-Aware levels and customize your EQ for a totally personalized experience."
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Future"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Hesh360_future_1.png?v=1792432068"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/50854417465401:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/50854417498169",
+     "sku": "S6HOW-U995",
+     "title": "Plasma",
+     "description": {
+      "html": "YOUR SOUND, YOUR STYLE Hesh 360 brings all the must-haves together: rich, dynamic sound, a super comfortable fit, and a clean, confident design that looks good anywhere. Whether you\u2019re working, commuting, or just vibing out, Hesh 360 keeps things simple without cutting corners. And with access to the Skullcandy App, you can adjust your Stay-Aware levels and customize your EQ for a totally personalized experience."
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Plasma"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Hesh360_plasma_1.png?v=1792432081"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/50854417498169:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44645127323705",
+     "sku": "S6HOW-T001",
+     "title": "Bone",
+     "description": {
+      "html": "YOUR SOUND, YOUR STYLE Hesh 360 brings all the must-haves together: rich, dynamic sound, a super comfortable fit, and a clean, confident design that looks good anywhere. Whether you\u2019re working, commuting, or just vibing out, Hesh 360 keeps things simple without cutting corners. And with access to the Skullcandy App, you can adjust your Stay-Aware levels and customize your EQ for a totally personalized experience."
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Bone"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Hesh360_bone_1.png?v=1792432059"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44645127323705:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44645127290937",
+     "sku": "S6HOW-T740",
+     "title": "True Black",
+     "description": {
+      "html": "YOUR SOUND, YOUR STYLE Hesh 360 brings all the must-haves together: rich, dynamic sound, a super comfortable fit, and a clean, confident design that looks good anywhere. Whether you\u2019re working, commuting, or just vibing out, Hesh 360 keeps things simple without cutting corners. And with access to the Skullcandy App, you can adjust your Stay-Aware levels and customize your EQ for a totally personalized experience."
+     },
+     "price": {
+      "amount": 5999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "True Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Hesh360_black_1.png?v=1792432041"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44645127290937:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Future"
+      },
+      {
+       "label": "Plasma"
+      },
+      {
+       "label": "Bone"
+      },
+      {
+       "label": "True Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Hesh360_bone_1.png?v=1792432059",
+     "alt_text": "White Hesh 360 over-ear wireless headphones shown at an angle on a clean white background. | Bone"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "coming-soon",
+    "headphones",
+    "live-products",
+    "mobile app compatible",
+    "new",
+    "new arrival",
+    "stay-aware mode",
+    "style-over-ear",
+    "wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288559497273",
+     "handle": "new-arrivals-headphones",
+     "title": "New Arrivals Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559562809",
+     "handle": "over-ear",
+     "title": "Over Ear Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288562020409",
+     "handle": "sale-headphones",
+     "title": "On Sale Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288597377081",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288598163513",
+     "handle": "sale",
+     "title": "Sale",
+     "description": {
+      "html": "BLACK FRIDAY DEALS THAT HIT DIFFERENT Big sound. Bigger savings. Skullcandy Black Friday 2026 is officially ON, with over 50% off select headphones, wired and wireless earbuds, Bluetooth speakers, and more. Whether you're chasing bass you can feel, noise-canceling headphones that block out distractions, or portable speakers that bring the party anywhere, your next sound upgrade just got a whole lot more affordable. Score Black Friday deals on fan favorites like Crusher sensory bass headphones, Method wireless earbuds, and Session Bluetooth speakers. From everyday listening and workouts to gaming, travel, and gifting, find the sound that fits your lifestyle without paying full price. Don't sleep on these deals. Shop Skullcandy's Black Friday sale now and turn up your sound for less."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7191196172345",
+   "title": "Riff\u00ae Wireless 2",
+   "description": {
+    "html": "BOLD SOUND, UNPLUGGED.\u2122 On-ear headphones are all about all-day battery and comfort, and Riff 2 is no exception. It delivers the goods affordably with 34 hours of battery life, a backup aux cable and the peace of mind that comes with Tile\u2122 finding technology."
+   },
+   "url": "https://www.skullcandy.com/products/riff-wireless-2-on-ear-headphones",
+   "handle": "riff-wireless-2-on-ear-headphones",
+   "price_range": {
+    "min": {
+     "amount": 5199,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5199,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42010452721721",
+     "sku": "S5PRW-P740",
+     "title": "True Black",
+     "description": {
+      "html": "BOLD SOUND, UNPLUGGED.\u2122 On-ear headphones are all about all-day battery and comfort, and Riff 2 is no exception. It delivers the goods affordably with 34 hours of battery life, a backup aux cable and the peace of mind that comes with Tile\u2122 finding technology."
+     },
+     "price": {
+      "amount": 5199,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "True Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Riff2_buy_box_black_1.png?v=1709649486"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/42010452721721:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "True Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Riff2_buy_box_black_1.png?v=1709649486",
+     "alt_text": "True Black"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "headphones",
+    "live-products",
+    "low-latency-audio",
+    "style-on-ear",
+    "tile-finding-technology",
+    "wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288559530041",
+     "handle": "on-ear",
+     "title": "On Ear Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288597377081",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/293774164025",
+     "handle": "summer-sale",
+     "title": "Summer Sale",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/307571228729",
+     "handle": "skullcandy-x-planet-fitness-summer-2025",
+     "title": "Skullcandy X Planet Fitness Summer 2025",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/309371994169",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7927174332473",
+   "title": "Aviator\u00ae 900 ANC",
+   "description": {
+    "html": "AUDIO ELEVATED Immerse yourself in 360\u00b0 audio soundscapes, premium adaptive noise canceling and cutting-edge performance and features. Wrapped in unrivaled comfort and an iconic, retro-inspired design, Aviator 900 ANC sets a new standard for luxury listening \u2014 effortless, elevated, and unmistakably Skullcandy."
+   },
+   "url": "https://www.skullcandy.com/products/aviator-900-anc-headphones",
+   "handle": "aviator-900-anc-headphones",
+   "price_range": {
+    "min": {
+     "amount": 17999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 17999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 29999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 29999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44557819215929",
+     "sku": "S6AVW-T740",
+     "title": "True Black",
+     "description": {
+      "html": "AUDIO ELEVATED Immerse yourself in 360\u00b0 audio soundscapes, premium adaptive noise canceling and cutting-edge performance and features. Wrapped in unrivaled comfort and an iconic, retro-inspired design, Aviator 900 ANC sets a new standard for luxury listening \u2014 effortless, elevated, and unmistakably Skullcandy."
+     },
+     "price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "True Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Aviator900ANC_Black_1.png?v=1764107969"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44557819215929:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45182422450233",
+     "sku": "S6AVW-T027",
+     "title": "Tortoise",
+     "description": {
+      "html": "AUDIO ELEVATED Immerse yourself in 360\u00b0 audio soundscapes, premium adaptive noise canceling and cutting-edge performance and features. Wrapped in unrivaled comfort and an iconic, retro-inspired design, Aviator 900 ANC sets a new standard for luxury listening \u2014 effortless, elevated, and unmistakably Skullcandy."
+     },
+     "price": {
+      "amount": 17999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 29999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Tortoise"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Aviator900ANC_Tortoise_1_c1cfecaa-1e9b-4b62-91bf-e5d4eaa8d2fe.png?v=1768496325"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/45182422450233:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "True Black"
+      },
+      {
+       "label": "Tortoise"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Aviator900ANC_Black_1.png?v=1764107969",
+     "alt_text": "True Black"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all-day-listening",
+    "ANC",
+    "headphones",
+    "live-products",
+    "style-over-ear",
+    "wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288414072889",
+     "handle": "whats-hot",
+     "title": "What's Hot",
+     "description": {
+      "html": "Discover what's hot at Skullcandy today. From headphones and earbuds to speakers and accessories, these products won't last long. Shop today."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559464505",
+     "handle": "noise-canceling-headphones",
+     "title": "Noise Canceling Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559562809",
+     "handle": "over-ear",
+     "title": "Over Ear Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288562020409",
+     "handle": "sale-headphones",
+     "title": "On Sale Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288597377081",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7928435507257",
+   "title": "Hesh\u00ae 540 ANC",
+   "description": {
+    "html": "Surround Sound In Style Block out the noise. Dial up the vibe. With Active Noise Canceling and THX\u00ae Spatial Audio, Hesh 540 ANC doesn\u2019t just play your music\u2014it drops you right into it. Whether you're jamming, binging, or just zoning out, it\u2019s all immersive, all day."
+   },
+   "url": "https://www.skullcandy.com/products/hesh-540-anc-noise-canceling-headphones",
+   "handle": "hesh-540-anc-noise-canceling-headphones",
+   "price_range": {
+    "min": {
+     "amount": 8999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 8999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 15999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 15999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44561766350905",
+     "sku": "S6HAW-T001",
+     "title": "Bone",
+     "description": {
+      "html": "Surround Sound In Style Block out the noise. Dial up the vibe. With Active Noise Canceling and THX\u00ae Spatial Audio, Hesh 540 ANC doesn\u2019t just play your music\u2014it drops you right into it. Whether you're jamming, binging, or just zoning out, it\u2019s all immersive, all day."
+     },
+     "price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Bone"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Bone_1.png?v=1769032320"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44561766350905:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44561766318137",
+     "sku": "S6HAW-T740",
+     "title": "True Black",
+     "description": {
+      "html": "Surround Sound In Style Block out the noise. Dial up the vibe. With Active Noise Canceling and THX\u00ae Spatial Audio, Hesh 540 ANC doesn\u2019t just play your music\u2014it drops you right into it. Whether you're jamming, binging, or just zoning out, it\u2019s all immersive, all day."
+     },
+     "price": {
+      "amount": 8999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 15999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "True Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Black_1.png?v=1768950277"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44561766318137:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Bone"
+      },
+      {
+       "label": "True Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Black_1.png?v=1768950277",
+     "alt_text": "True Black"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-5",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "headphones",
+    "live-products",
+    "style-over-ear",
+    "wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288414072889",
+     "handle": "whats-hot",
+     "title": "What's Hot",
+     "description": {
+      "html": "Discover what's hot at Skullcandy today. From headphones and earbuds to speakers and accessories, these products won't last long. Shop today."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559464505",
+     "handle": "noise-canceling-headphones",
+     "title": "Noise Canceling Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559562809",
+     "handle": "over-ear",
+     "title": "Over Ear Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288562020409",
+     "handle": "sale-headphones",
+     "title": "On Sale Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288597377081",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7929955385401",
+   "title": "Crusher\u00ae PLYR\u00ae 720",
+   "description": {
+    "html": "CRUSH EVERY LEVEL WITH MIND-BENDING BASS This isn\u2019t just a headset \u2014 it\u2019s your portal to new dimensions of sound. Featuring Crusher Bass, open-back acoustics, and THX Spatial Audio, Crusher PLYR 720 brings the game to life. Step into a 3D virtual world where you can feel the roar of dragons and the rumble of distant artillery. Live the game with Crusher PLYR 720."
+   },
+   "url": "https://www.skullcandy.com/products/crusher-plyr-720-gaming-headphones",
+   "handle": "crusher-plyr-720-gaming-headphones",
+   "price_range": {
+    "min": {
+     "amount": 26999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 28999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44571384938553",
+     "sku": "S6PXW-T964",
+     "title": "Digi-Black Xbox",
+     "description": {
+      "html": "CRUSH EVERY LEVEL WITH MIND-BENDING BASS This isn\u2019t just a headset \u2014 it\u2019s your portal to new dimensions of sound. Featuring Crusher Bass, open-back acoustics, and THX Spatial Audio, Crusher PLYR 720 brings the game to life. Step into a 3D virtual world where you can feel the roar of dragons and the rumble of distant artillery. Live the game with Crusher PLYR 720."
+     },
+     "price": {
+      "amount": 26999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Digi-Black Xbox"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/PLYR720_XBox_1.png?v=1759966184"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44571384938553:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44571384971321",
+     "sku": "S6PCW-T963",
+     "title": "Digi-Black Multi-Platform",
+     "description": {
+      "html": "CRUSH EVERY LEVEL WITH MIND-BENDING BASS This isn\u2019t just a headset \u2014 it\u2019s your portal to new dimensions of sound. Featuring Crusher Bass, open-back acoustics, and THX Spatial Audio, Crusher PLYR 720 brings the game to life. Step into a 3D virtual world where you can feel the roar of dragons and the rumble of distant artillery. Live the game with Crusher PLYR 720."
+     },
+     "price": {
+      "amount": 26999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Digi-Black Multi-Platform"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/PLYR720_multi_1.png?v=1759966184"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44571384971321:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/45137747312697",
+     "sku": "S6PCW-T999",
+     "title": "Realtree Edge Colors Black",
+     "description": {
+      "html": "CRUSH EVERY LEVEL WITH MIND-BENDING BASS This isn\u2019t just a headset \u2014 it\u2019s your portal to new dimensions of sound. Featuring Crusher Bass, open-back acoustics, and THX Spatial Audio, Crusher PLYR 720 brings the game to life. Step into a 3D virtual world where you can feel the roar of dragons and the rumble of distant artillery. Live the game with Crusher PLYR 720."
+     },
+     "price": {
+      "amount": 28999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Realtree Edge Colors Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/PLYR720_realtree_1.png?v=1759966184"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/45137747312697:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Digi-Black Xbox"
+      },
+      {
+       "label": "Digi-Black Multi-Platform"
+      },
+      {
+       "label": "Realtree Edge Colors Black"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/PLYR720_multi_1.png?v=1759966184",
+     "alt_text": "Digi-Black Multi-Platform"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-2-2",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "best-seller",
+    "coming-soon",
+    "crusher-bass",
+    "gaming",
+    "headphones",
+    "live-products",
+    "platform-mobile",
+    "platform-multi-platform",
+    "platform-nintendo",
+    "platform-playstation",
+    "platform-xbox",
+    "style-over-ear",
+    "wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288414072889",
+     "handle": "whats-hot",
+     "title": "What's Hot",
+     "description": {
+      "html": "Discover what's hot at Skullcandy today. From headphones and earbuds to speakers and accessories, these products won't last long. Shop today."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288560578617",
+     "handle": "multi-platform",
+     "title": "Multi-Platform Gaming Headsets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288560611385",
+     "handle": "xbox",
+     "title": "Xbox\u00ae Gaming Headsets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288560644153",
+     "handle": "playstation",
+     "title": "PlayStation Gaming Headsets",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288560676921",
+     "handle": "mobile-gaming",
+     "title": "Mobile Gaming Headsets",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7686092161081",
+   "title": "Icon\u00ae ANC",
+   "description": {
+    "html": "COMFORT, ACTION, NO DISTRACTIONS Almost 20 years ago, the OG Icon headphone blew up the boardsports world. The new Icon ANC is built better than ever with active noise canceling, sweat- and water-resistance and up to 60 hours of battery time. Icon ANC is just like the original, except it looks better, sounds better, and does way more cool stuff."
+   },
+   "url": "https://www.skullcandy.com/products/icon-anc",
+   "handle": "icon-anc",
+   "price_range": {
+    "min": {
+     "amount": 4999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 12999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 9999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 9999,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44470942859321",
+     "sku": "S5IOW-T987",
+     "title": "Primer",
+     "description": {
+      "html": "COMFORT, ACTION, NO DISTRACTIONS Almost 20 years ago, the OG Icon headphone blew up the boardsports world. The new Icon ANC is built better than ever with active noise canceling, sweat- and water-resistance and up to 60 hours of battery time. Icon ANC is just like the original, except it looks better, sounds better, and does way more cool stuff."
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Primer"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/1_iconANC-primer.png?v=1768951057"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44470942859321:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43838997037113",
+     "sku": "S5IOW-S740",
+     "title": "True Black",
+     "description": {
+      "html": "COMFORT, ACTION, NO DISTRACTIONS Almost 20 years ago, the OG Icon headphone blew up the boardsports world. The new Icon ANC is built better than ever with active noise canceling, sweat- and water-resistance and up to 60 hours of battery time. Icon ANC is just like the original, except it looks better, sounds better, and does way more cool stuff."
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "True Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/1_iconANC-black.png?v=1768951066"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/43838997037113:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43838997069881",
+     "sku": "S5IOW-S951",
+     "title": "Bone/Orange",
+     "description": {
+      "html": "COMFORT, ACTION, NO DISTRACTIONS Almost 20 years ago, the OG Icon headphone blew up the boardsports world. The new Icon ANC is built better than ever with active noise canceling, sweat- and water-resistance and up to 60 hours of battery time. Icon ANC is just like the original, except it looks better, sounds better, and does way more cool stuff."
+     },
+     "price": {
+      "amount": 4999,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 9999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Bone/Orange"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/1_iconANC-bone.png?v=1768951057"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/43838997069881:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/44522494492729",
+     "sku": "S5IOW-T991",
+     "title": "Realtree APX Black/Orange",
+     "description": {
+      "html": "COMFORT, ACTION, NO DISTRACTIONS Almost 20 years ago, the OG Icon headphone blew up the boardsports world. The new Icon ANC is built better than ever with active noise canceling, sweat- and water-resistance and up to 60 hours of battery time. Icon ANC is just like the original, except it looks better, sounds better, and does way more cool stuff."
+     },
+     "price": {
+      "amount": 12999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Realtree APX Black/Orange"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/1_iconANC_realtree-apx-black.png?v=1768951057"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/44522494492729:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Primer"
+      },
+      {
+       "label": "True Black"
+      },
+      {
+       "label": "Bone/Orange"
+      },
+      {
+       "label": "Realtree APX Black/Orange"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/1_iconANC-black.png?v=1768951066",
+     "alt_text": "True Black"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "all-day-listening",
+    "limited",
+    "live-products",
+    "style-on-ear",
+    "wireless"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288414072889",
+     "handle": "whats-hot",
+     "title": "What's Hot",
+     "description": {
+      "html": "Discover what's hot at Skullcandy today. From headphones and earbuds to speakers and accessories, these products won't last long. Shop today."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559366201",
+     "handle": "limited-edition-headphones",
+     "title": "Limited Edition Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559464505",
+     "handle": "noise-canceling-headphones",
+     "title": "Noise Canceling Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559530041",
+     "handle": "on-ear",
+     "title": "On Ear Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288562020409",
+     "handle": "sale-headphones",
+     "title": "On Sale Headphones",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8317667606585",
+   "title": "Icon\u00ae 180 Wired",
+   "description": {
+    "html": "SAFE SOUND, SIMPLE COMFORTIcon 180 is your everyday essential headphone\u2014lightweight, comfortable, and simple by design. With an adjustable fit for all ages and a reliable wired connection, it\u2019s ready for school, work, travel, and everything in between. Just plug in and press play for safe, easy listening whenever you need it."
+   },
+   "url": "https://www.skullcandy.com/products/icon-180-wired",
+   "handle": "icon-180-wired",
+   "price_range": {
+    "min": {
+     "amount": 1899,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1899,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/46134514188345",
+     "sku": "S5IIW-U046",
+     "title": "Crazy Pink",
+     "description": {
+      "html": "SAFE SOUND, SIMPLE COMFORTIcon 180 is your everyday essential headphone\u2014lightweight, comfortable, and simple by design. With an adjustable fit for all ages and a reliable wired connection, it\u2019s ready for school, work, travel, and everything in between. Just plug in and press play for safe, easy listening whenever you need it."
+     },
+     "price": {
+      "amount": 1899,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Crazy Pink"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Icon180Wired_CrazyPink_1.png?v=1782850442"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/46134514188345:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46134514122809",
+     "sku": "S5IIW-U740",
+     "title": "True Black",
+     "description": {
+      "html": "SAFE SOUND, SIMPLE COMFORTIcon 180 is your everyday essential headphone\u2014lightweight, comfortable, and simple by design. With an adjustable fit for all ages and a reliable wired connection, it\u2019s ready for school, work, travel, and everything in between. Just plug in and press play for safe, easy listening whenever you need it."
+     },
+     "price": {
+      "amount": 1899,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "True Black"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Icon180Wired_Black_1.png?v=1782850425"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/46134514122809:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/46134514155577",
+     "sku": "S5IIW-U993",
+     "title": "Cement",
+     "description": {
+      "html": "SAFE SOUND, SIMPLE COMFORTIcon 180 is your everyday essential headphone\u2014lightweight, comfortable, and simple by design. With an adjustable fit for all ages and a reliable wired connection, it\u2019s ready for school, work, travel, and everything in between. Just plug in and press play for safe, easy listening whenever you need it."
+     },
+     "price": {
+      "amount": 1899,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Color",
+       "label": "Cement"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Icon180Wired_Cement_1.png?v=1782850435"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://f822a6-3.myshopify.com/cart/46134514155577:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      {
+       "label": "Crazy Pink"
+      },
+      {
+       "label": "True Black"
+      },
+      {
+       "label": "Cement"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0635/5114/3993/files/Icon180Wired_Black_1.png?v=1782850425",
+     "alt_text": "Black over-ear wired headphones with cushioned ear pads and a padded headband, shown at an angle on a solid black background. A small white skull logo is visible on the headband. |True Black"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/el-2-2-7-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "kids",
+    "live-products",
+    "sidetone",
+    "style-on-ear",
+    "wired"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/288559530041",
+     "handle": "on-ear",
+     "title": "On Ear Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288559595577",
+     "handle": "kids",
+     "title": "Kids' Headphones",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/288597377081",
+     "handle": "shop-all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/309371994169",
+     "handle": "all",
+     "title": "All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/468426096697",
+     "handle": "wireless-wired-bluetooth-headphones",
+     "title": "Wireless, Wired & Bluetooth Headphones",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzRNekUzTmpZM05qQTJOVGcxTENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

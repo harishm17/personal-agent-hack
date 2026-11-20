@@ -1,0 +1,848 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.bluesummitsupplies.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Blue Summit Supplies",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.bluesummitsupplies.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": true
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "21617289"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "21617289"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/8323523346610",
+   "title": "College Ruled Spiral Notebooks, 70ct, Pastel Colors, 12 Pack",
+   "description": {
+    "html": "COLLEGE RULED SPIRAL NOTEBOOKS, 70CT, PASTEL COLORS, 12 PACK"
+   },
+   "url": "https://www.bluesummitsupplies.com/products/college-ruled-spiral-notebooks-70ct-pastel-colors-12-pack",
+   "handle": "college-ruled-spiral-notebooks-70ct-pastel-colors-12-pack",
+   "price_range": {
+    "min": {
+     "amount": 2599,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2599,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/44775573061810",
+     "sku": "BSS-10289-12PK",
+     "title": "Default Title",
+     "description": {
+      "html": "COLLEGE RULED SPIRAL NOTEBOOKS, 70CT, PASTEL COLORS, 12 PACK"
+     },
+     "price": {
+      "amount": 2599,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/44775573061810:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4390258212922",
+   "title": "Blue Summit Supplies Travel Journals, Lined Pages, 30-Sheet, 12 Pack",
+   "description": {
+    "html": "Blank Travel Journal Bulk 12 Pack with Kraft Covers and Lined Pages Notebook lovers: Do you prefer to buy your travel journals in bulk? This kraft journal 12 pack features a dozen perfectly sized notebooks designed for taking on the go. Made using recycled paper and flexible lightweight kraft covers, these inexpensive paper cahier journals are small and thin, making them ideal for a variety of uses: Writing journals Mini student notebooks Bullet journal Office notebooks Conference journals Food diary Lined journal for kids Craft projects and DIY Perfectly Sized Journal Notebooks with Stitched Binding Journal size measures approximately 8.25\u201d x 5.5\u201d (21cm x 14cm), which is approximately an A5 notebook size Cover stock is a flexible brown kraft paper, while inside pages are a lightweight 11pt off white stock The 60 pages (30 sheets) inside are lined, while the stitched binding and thin notebook construction makes it easy to lay these journals flat open on your desk Ideal for customizing creatively using markers, stickers, or other mixed media art supplies 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying; however, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/bulk-travel-journals-lined-1078",
+   "handle": "bulk-travel-journals-lined-1078",
+   "price_range": {
+    "min": {
+     "amount": 1999,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1999,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31305756016698",
+     "sku": "BSS-92588-1078",
+     "title": "Default Title",
+     "description": {
+      "html": "Blank Travel Journal Bulk 12 Pack with Kraft Covers and Lined Pages Notebook lovers: Do you prefer to buy your travel journals in bulk? This kraft journal 12 pack features a dozen perfectly sized notebooks designed for taking on the go. Made using recycled paper and flexible lightweight kraft covers, these inexpensive paper cahier journals are small and thin, making them ideal for a variety of uses: Writing journals Mini student notebooks Bullet journal Office notebooks Conference journals Food diary Lined journal for kids Craft projects and DIY Perfectly Sized Journal Notebooks with Stitched Binding Journal size measures approximately 8.25\u201d x 5.5\u201d (21cm x 14cm), which is approximately an A5 notebook size Cover stock is a flexible brown kraft paper, while inside pages are a lightweight 11pt off white stock The 60 pages (30 sheets) inside are lined, while the stitched binding and thin notebook construction makes it easy to lay these journals flat open on your desk Ideal for customizing creatively using markers, stickers, or other mixed media art supplies 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying; however, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 1999,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1078_Lined_12Pack_2.jpg?v=1589985451"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/31305756016698:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1078_Lined_12Pack_2.jpg?v=1589985451",
+     "alt_text": "Travel Journals, Lined Pages, 12 Pack Notebooks Blue Summit Supplies "
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:0",
+    "AvailabilityForB2C:281",
+    "AvailabilityInWarehouse:0",
+    "AvailableForB2B:Sold out",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:FALSE",
+    "B2C",
+    "BSSSKU:TRUE",
+    "Collection:Journals",
+    "Collection:Office Supplies",
+    "Collection:Planners and Journals",
+    "CollectionHandle:journals",
+    "CollectionHandle:office-supplies",
+    "CollectionHandle:planners-and-journals",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271563653298",
+     "handle": "planners-and-journals",
+     "title": "Planners and Journals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271575482546",
+     "handle": "journals",
+     "title": "Journals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4390262505530",
+   "title": "Blue Summit Supplies Travel Journals, Dot Grid Pages, 30-Sheet, 12 Pack",
+   "description": {
+    "html": "Blank Travel Journal Bulk 12 Pack with Kraft Covers and Dot Grid Pages Notebook lovers: Do you prefer to buy your travel journals in bulk? This kraft journal 12 pack features a dozen perfectly sized notebooks designed for taking on the go. Made using recycled paper and flexible lightweight kraft covers, these inexpensive paper cahier journals are small and thin, making them ideal for a variety of uses: Writing journals Mini student notebooks Bullet journal Office notebooks Conference journals Food diary Journal for kids Craft projects and DIY Perfectly Sized Journal Notebooks with Stitched Binding Journal size measures approximately 8.25\u201d x 5.5\u201d (21cm x 14cm), which is approximately an A5 notebook size Cover stock is a flexible brown kraft paper, while inside pages are a lightweight 11pt off white stock The 60 pages (30 sheets) inside feature a faint dot grid, while the stitched binding and thin notebook construction makes it easy to lay these journals flat open on your desk Ideal for customizing creatively using markers, stickers, or other mixed media art supplies 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying; however, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/bulk-travel-journals-dot-grid-1080",
+   "handle": "bulk-travel-journals-dot-grid-1080",
+   "price_range": {
+    "min": {
+     "amount": 2499,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2499,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31305797042234",
+     "sku": "BSS-92588-1080",
+     "title": "Default Title",
+     "description": {
+      "html": "Blank Travel Journal Bulk 12 Pack with Kraft Covers and Dot Grid Pages Notebook lovers: Do you prefer to buy your travel journals in bulk? This kraft journal 12 pack features a dozen perfectly sized notebooks designed for taking on the go. Made using recycled paper and flexible lightweight kraft covers, these inexpensive paper cahier journals are small and thin, making them ideal for a variety of uses: Writing journals Mini student notebooks Bullet journal Office notebooks Conference journals Food diary Journal for kids Craft projects and DIY Perfectly Sized Journal Notebooks with Stitched Binding Journal size measures approximately 8.25\u201d x 5.5\u201d (21cm x 14cm), which is approximately an A5 notebook size Cover stock is a flexible brown kraft paper, while inside pages are a lightweight 11pt off white stock The 60 pages (30 sheets) inside feature a faint dot grid, while the stitched binding and thin notebook construction makes it easy to lay these journals flat open on your desk Ideal for customizing creatively using markers, stickers, or other mixed media art supplies 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying; however, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 2499,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1080_DotGrid_12Pack_2.jpg?v=1589985444"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/31305797042234:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1080_DotGrid_12Pack_2.jpg?v=1589985444",
+     "alt_text": "Travel Journals, Dot Grid Pages, 12 Pack Notebooks Blue Summit Supplies "
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:2",
+    "AvailabilityForB2C:81",
+    "AvailabilityInWarehouse:2",
+    "AvailableForB2B:In stock",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:TRUE",
+    "B2C",
+    "BSSSKU:TRUE",
+    "Collection:Journals",
+    "Collection:Office Supplies",
+    "Collection:Planners and Journals",
+    "CollectionHandle:journals",
+    "CollectionHandle:office-supplies",
+    "CollectionHandle:planners-and-journals",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271563653298",
+     "handle": "planners-and-journals",
+     "title": "Planners and Journals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271575482546",
+     "handle": "journals",
+     "title": "Journals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4542842339386",
+   "title": "Blue Summit Supplies Navy Linen Executive Journals, Lined Paper, 32-Sheet, 3 Pack",
+   "description": {
+    "html": "Keep Your Business Ideas and Notes With You at All Times Journal lovers, this dark blue executive journal 3 pack features perfectly sized notebooks designed for taking on the go. Made with a linen cover and lined paper inside, they're perfect for taking notes, jotting down ideas, or just writing down your thoughts. These inexpensive paper cahier journals are small and thin, making them ideal for a variety of uses, including: Writing journals Mini notebooks Bullet journal Office notebooks Conference journals Food or recipe diary Lined journal for bosses Craft projects and DIY Look Professional on the Go With These Executive Journals Journal size measures approximately 9\u201d x 6\u201d Cover stock is a soft, dark blue linen paper, while inside pages are a light yellow color with lines on them. The 64 pages (32 sheets) inside are lined, while the stitched binding and thin notebook construction makes it easy to lay these journals flat open on your desk Each notebook also includes a cover page for identifying, and an index page so you can easily find where you wrote something down. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying; however, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/linen-executive-journals-lined-1092",
+   "handle": "linen-executive-journals-lined-1092",
+   "price_range": {
+    "min": {
+     "amount": 1699,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1699,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/31918790869050",
+     "sku": "BSS-92588-1092",
+     "title": "Default Title",
+     "description": {
+      "html": "Keep Your Business Ideas and Notes With You at All Times Journal lovers, this dark blue executive journal 3 pack features perfectly sized notebooks designed for taking on the go. Made with a linen cover and lined paper inside, they're perfect for taking notes, jotting down ideas, or just writing down your thoughts. These inexpensive paper cahier journals are small and thin, making them ideal for a variety of uses, including: Writing journals Mini notebooks Bullet journal Office notebooks Conference journals Food or recipe diary Lined journal for bosses Craft projects and DIY Look Professional on the Go With These Executive Journals Journal size measures approximately 9\u201d x 6\u201d Cover stock is a soft, dark blue linen paper, while inside pages are a light yellow color with lines on them. The 64 pages (32 sheets) inside are lined, while the stitched binding and thin notebook construction makes it easy to lay these journals flat open on your desk Each notebook also includes a cover page for identifying, and an index page so you can easily find where you wrote something down. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying; however, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 1699,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1092_ExecutiiveJournal3pkLined_3.jpg?v=1598295216"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/31918790869050:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/1092_ExecutiiveJournal3pkLined_3.jpg?v=1598295216",
+     "alt_text": "Linen Executive Journals, Lined Paper, 3 Pack Notebooks Blue Summit Supplies "
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:5",
+    "AvailabilityForB2C:170",
+    "AvailabilityInWarehouse:5",
+    "AvailableForB2B:In stock",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:TRUE",
+    "B2C",
+    "BSSSKU:TRUE",
+    "Collection:Journals",
+    "Collection:Office Supplies",
+    "Collection:Planners and Journals",
+    "CollectionHandle:journals",
+    "CollectionHandle:office-supplies",
+    "CollectionHandle:planners-and-journals",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271563653298",
+     "handle": "planners-and-journals",
+     "title": "Planners and Journals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271575482546",
+     "handle": "journals",
+     "title": "Journals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4571842478138",
+   "title": "Blue Summit Supplies Visitor Badge Log-Book with Duplicate Record, 250 Pack",
+   "description": {
+    "html": "Easily identify visitors to your school or office Keeping track of visitors to your building can be a hassle, but with our Visitor Badge Log Book you can easily keep track of who visits, while keeping their information secure. Log book includes 250 stickers that guests can wear on clothing. Stickers include lines for name, company, date, and arrival time. Inside the book, visitor information is protected by pages that do not allow guests to see other visitor names, inside a cover for added protection. Our Visitor Badge Log Book also includes duplicate copies of each badge for your records and tracking. Top bound binding allows you to easily tear out previously used sticker sheets and log pages that have been filled. Great for any building to track visitors, regardless of their visit. Visitor tracking and identifying without being invasive It can be frustrating for you and building keeping track of visitors. This log book allows guests to easily sign in, get a badge to wear that identifies them as a guest, while protecting the privacy of their visit. 250 stickers ensure plenty of badges for even the busiest buildings.. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+   },
+   "url": "https://www.bluesummitsupplies.com/products/visitor-badge-log-book-396",
+   "handle": "visitor-badge-log-book-396",
+   "price_range": {
+    "min": {
+     "amount": 3799,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3799,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32066817196090",
+     "sku": "BSS-92588-396",
+     "title": "Default Title",
+     "description": {
+      "html": "Easily identify visitors to your school or office Keeping track of visitors to your building can be a hassle, but with our Visitor Badge Log Book you can easily keep track of who visits, while keeping their information secure. Log book includes 250 stickers that guests can wear on clothing. Stickers include lines for name, company, date, and arrival time. Inside the book, visitor information is protected by pages that do not allow guests to see other visitor names, inside a cover for added protection. Our Visitor Badge Log Book also includes duplicate copies of each badge for your records and tracking. Top bound binding allows you to easily tear out previously used sticker sheets and log pages that have been filled. Great for any building to track visitors, regardless of their visit. Visitor tracking and identifying without being invasive It can be frustrating for you and building keeping track of visitors. This log book allows guests to easily sign in, get a badge to wear that identifies them as a guest, while protecting the privacy of their visit. 250 stickers ensure plenty of badges for even the busiest buildings.. 100% Money Back Guarantee We stand behind our products completely. We understand that sometimes buying physical products can be difficult if you cannot physically see what you are buying. However, if our product is not exactly what you are looking for or does not meet your expectations, then send it back anytime for a 100% refund."
+     },
+     "price": {
+      "amount": 3799,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/396_VisitorBadgeLogBook_1.jpg?v=1603305826"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://bluesummitsupplies.myshopify.com/cart/32066817196090:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2161/7289/products/396_VisitorBadgeLogBook_1.jpg?v=1603305826",
+     "alt_text": "Visitor Badge Log Book, 250 Stickers Business Forms Blue Summit Supplies "
+    }
+   ],
+   "tags": [
+    "AvailabilityForB2B:0",
+    "AvailabilityForB2C:184",
+    "AvailabilityInWarehouse:0",
+    "AvailableForB2B:Sold out",
+    "AvailableForB2C:In stock",
+    "AvailableInWarehouse:FALSE",
+    "B2C",
+    "BSSSKU:TRUE",
+    "Collection:Office Supplies",
+    "Collection:Planners and Journals",
+    "Collection:Visitor's Log",
+    "CollectionHandle:office-supplies",
+    "CollectionHandle:planners-and-journals",
+    "CollectionHandle:visitors-log",
+    "LoyaltyRedeem:YES",
+    "MCF",
+    "ShowAvailabilityBadge:FALSE"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/81388437562",
+     "handle": "recently-added",
+     "title": "Recently Added",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271551660210",
+     "handle": "office-supplies",
+     "title": "Office Supplies",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271563653298",
+     "handle": "planners-and-journals",
+     "title": "Planners and Journals",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/271679029426",
+     "handle": "visitors-log",
+     "title": "Visitor's Log",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/283972042930",
+     "handle": "shop-all-products",
+     "title": "Shop All Products",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

@@ -8,6 +8,7 @@ Serverless; `claude...` is Anthropic (the `claude -p` command line until `ANTHRO
 `arcee:<model>` or any other id is Arcee. SIE and Arcee are both OpenAI-compatible chat endpoints.
 """
 import json
+import os
 import logging
 import pathlib
 import subprocess
@@ -23,65 +24,44 @@ DEFAULT_MODEL = "claude-sonnet-5-5"  # the reference reader (CONTRACT.md, amendm
 ARCEE_URL = "https://api.arcee.ai/api/v1/chat/completions"
 SIE_URL = "https://api.superlinked.com/v1/chat/completions"
 
-# What each figure name means. A sheet may carry its own under "figures": {name: definition}.
-GLOSSARY = {
-    "weight_capacity": "The heaviest person (or load) the product is rated to hold, e.g. 'supports up to 300 lbs'. "
-                       "Not the product's own weight, not shipping weight.",
-    "added_height": "How much height the product adds on top of what it sits on, e.g. a riser that 'adds 5 inches'. "
-                    "Not the product's overall height and not the finished seat height.",
-    "seat_height": "The height of the seat above the floor. Usually adjustable: report the range as 'adjustable'.",
-    "overall_width": "The widest outside measurement of the whole product: 'overall width', the width in the overall "
-                     "or product dimensions, or the width outside the legs or base. Seat width, the width between "
-                     "the arms, inside width and depth are different measures: never report them as overall width.",
-    "length": "The length of the product itself. When the page sells the product in several sizes, report only the "
-              "length of the selected option (the text may end with 'Selected option: ...'), quoting the passage "
-              "that states that option's length. If the selected option's length is not given, it is not stated.",
-    "mattress_thickness_max": "The thickest mattress the product fits. 'Fits mattresses 12 to 16 inches' is an "
-                              "adjustable range.",
-}
+SYSTEM = """You read the text of one product page from an online store and report what it states about some figures.
+You report what is written; code decides what counts. You never fill a gap and never judge the product.
 
-SYSTEM_BEFORE_LABEL = """You read the text of one product page from an online store and report specific figures from it.
-You only report what the text states. You do not judge the product and you never fill a gap.
-
-For each figure asked for, return one entry:
-- "stated": true only if the text states this exact measure for this product. A different measure does not
-  count, however close (seat width is not overall width; the product's own weight is not its weight capacity).
-  If it is not stated, return "stated": false and nulls. Not stated is a normal, useful answer.
+You are given the figures to look for, each with what it means. For each figure, return one entry for every
+place the text states it. A page may state a figure once, several times, with different numbers, or not at
+all: return every statement you find, and nothing for a figure the text does not state. Each entry:
+- "figure": the figure's name as given.
 - "quote": the words of the text that state it, copied character for character (same spelling, punctuation,
-  spacing and symbols; do not tidy it). One short contiguous passage that contains the number or numbers and
-  the words saying what they measure. Code will search for this quote in the text; a quote that is not
-  found is thrown away.
-- "kind": "single" for one number. "adjustable" when the user can set it anywhere in a range ("seat height
-  adjusts from 16 to 21 inches"): give "low" and "high". "spread" when the product has one fixed size that the
-  text gives loosely as a range ("adds 5 to 5.5 inches"): give "low" and "high". For "single" give "value".
-- "unit": the unit as written, one of "lb", "kg", "in", "cm", "mm", "ft". If the text gives the number with
-  no unit at all, use null. Report the number as written; do not convert.
-- "unsure": true, with a short "unsure_reason", when the text gives different numbers for different sizes,
-  models or options and it is not clear which applies to the selected option (the text may end with
-  "Selected option: ..."), or when the passage is ambiguous in any other way. When the selected option does
-  settle it, report that option's number and leave "unsure" false.
+  spacing and symbols). One short contiguous passage that contains the number or numbers and the words that
+  say what they measure. Code searches for the quote in the text; a quote that is not found is thrown away.
+- "kind": "single" for one number. "adjustable" when the text gives a range the user can set the product to:
+  give "low" and "high". "spread" when the text gives one size loosely as a range, or gives several values
+  together for the one figure: give "low" and "high". For "single" give "value".
+- "unit": the unit as the text writes it beside the number, or null when the text gives the number without
+  a unit. Report the number as written; do not convert.
+- "label": the word or words the text itself puts on the number you report, copied from the quote (the name
+  written beside the number, or its heading in a list of headings); null when the quote has none.
+- "note": null, or a few words when something about this statement should be known: the option, size or
+  model it is given for, or what else on the page speaks against it.
+The text may end with "Selected option: ...": that is the option this page is for. When the text gives the
+figure per option, report the statement for that option, and say so in "note".
 
 Answer with one JSON object and nothing else:
-{"figures": [{"figure": "<name>", "stated": true, "kind": "single", "value": 300, "low": null, "high": null,
-"unit": "lb", "quote": "...", "unsure": false, "unsure_reason": null}]}"""
-
-# The current instructions: the same, plus one general line. When a quote holds more than one number the reader
-# also returns the label the text itself puts on the number it reports; code then checks that pairing from the
-# quote alone (`spans.apply_unambiguous_rule`). Readings made before this line existed stay cached wherever
-# their quote holds a single number, since the line could not have changed them.
-LABEL_LINE = """- "label": when your quote contains more than one number, the word or words that the text itself puts on
-  the number you report, copied from the quote exactly (the name written beside the number, or its heading in
-  a list of headings). Otherwise null. Code checks from the quote alone that this label belongs to that number.
-
-"""
-SYSTEM = SYSTEM_BEFORE_LABEL.replace("Answer with one JSON object and nothing else:", LABEL_LINE +
-                                     "Answer with one JSON object and nothing else:").replace(
-    '"unsure": false, "unsure_reason": null}]}', '"label": null, "unsure": false, "unsure_reason": null}]}')
-assert SYSTEM != SYSTEM_BEFORE_LABEL and LABEL_LINE in SYSTEM and '"label": null' in SYSTEM
+{"figures": [{"figure": "<name>", "quote": "...", "kind": "single", "value": 300, "low": null, "high": null,
+"unit": "lb", "label": "...", "note": null}]}"""
 
 
-# Raised when a figure's meaning above is reworded, so only the products asked for that figure are read again.
-GLOSSARY_REVISION = {"length": 3}
+class NoMeaning(ValueError):
+    """The sheet names a figure without saying what it means. The reader is not given a bare word to guess from."""
+
+
+def meanings(names, sheet):
+    """What each figure means, in the sheet's own words (`figures` in the sheet file). No built-in list."""
+    given = sheet.get("figures") or {}
+    missing = [n for n in names if not given.get(n)]
+    if missing:
+        raise NoMeaning("sheets/%s.json gives no meaning for %s under \"figures\"" % (sheet.get("id"), ", ".join(missing)))
+    return {n: given[n] for n in names}
 
 
 def wanted_figures(product, sheet):
@@ -108,13 +88,12 @@ def figure_units(sheet):
 
 
 def prompt_for(product, names, sheet):
-    meanings = dict(GLOSSARY, **(sheet.get("figures") or {}))
-    asked = "\n".join("- %s: %s" % (n, meanings.get(n, n.replace("_", " "))) for n in names)
-    units = sorted({u for n, u in figure_units(sheet).items() if n in names and u not in ("lb", "in")})
-    more = ("\nOn this sheet a unit may also be one of: %s (and the metric unit of the same kind). Report it as "
-            "written.\n" % ", ".join(units)) if units else ""
-    return "Figures to report:\n%s\n%s\nProduct page text, between the markers:\n<<<TEXT\n%s\nTEXT>>>" % (
-        asked, more, product.get("text") or "")
+    """The user message of a figure read: the figures with their meanings and units, and the page's text.
+    Nothing else: no limit, no measurement of the home, no person."""
+    given, units = meanings(names, sheet), figure_units(sheet)
+    asked = "\n".join("- %s (%s): %s" % (n, units.get(n, "a number"), given[n]) for n in names)
+    return "Figures to report:\n%s\n\nProduct page text, between the markers:\n<<<TEXT\n%s\nTEXT>>>" % (
+        asked, product.get("text") or "")
 
 
 def parse(reply):
@@ -149,6 +128,12 @@ def ask_openai_style(url, key, model, system, user, timeout=120.0, max_tokens=20
 _CLI_CWD = pathlib.Path(tempfile.gettempdir()) / "signoff-reader-cwd"
 
 
+def _cli_env():
+    """The command line must run on its own login. The keys file puts ANTHROPIC_API_KEY into this process's
+    environment; passed on, the command line would bill every batch read to that key instead."""
+    return {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")}
+
+
 def ask_claude_cli(model, system, user, timeout=180.0):
     """`claude -p` with no tools, no project settings and no session file, run outside the repo."""
     _CLI_CWD.mkdir(exist_ok=True)
@@ -156,7 +141,7 @@ def ask_claude_cli(model, system, user, timeout=180.0):
         ["claude", "-p", "--model", model, "--output-format", "json", "--tools", "", "--strict-mcp-config",
          "--setting-sources", "", "--disable-slash-commands", "--no-session-persistence",
          "--system-prompt", system],
-        input=user, capture_output=True, text=True, timeout=timeout, cwd=_CLI_CWD)
+        input=user, capture_output=True, text=True, timeout=timeout, cwd=_CLI_CWD, env=_cli_env())
     if done.returncode != 0:
         raise RuntimeError("claude -p failed: %s" % (done.stderr or done.stdout)[:300])
     body = json.loads(done.stdout)
@@ -240,11 +225,11 @@ def read(product, sheet, model=None, tries=2):
     names = wanted_figures(product, sheet)
     if not names:
         return [], "none", {}, names
-    user, error = prompt_for(product, names, sheet), None
+    user, error = prompt_for(product, names, sheet), None  # raises NoMeaning when the sheet does not say what a figure is
     for _ in range(tries):
         try:
             reply, usage, extractor = ask(model, SYSTEM, user)
-            proposals = [p for p in parse(reply) if p.get("stated") and p.get("figure") in names]
+            proposals = [p for p in parse(reply) if p.get("stated", True) and p.get("figure") in names and p.get("quote")]
             return proposals, extractor, usage, names
         except Exception as e:  # noqa: BLE001  (a bad reply or a network error: try once more, then report)
             error = e

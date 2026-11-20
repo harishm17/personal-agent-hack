@@ -1,0 +1,2419 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://pencils.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "Pencils.com",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "pencils.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "17254744164"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "17254744164"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7645249830972",
+   "title": "Small Blackwing Slate Notebook - Black",
+   "description": {
+    "html": "The small Blackwing Slate is an A6 hardcover notebook (105 x 148 mm, or half the size of our Medium Slate) that can fit comfortably in your pocket. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Small Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+   },
+   "url": "https://pencils.com/products/small-blackwing-slate-notebook-black",
+   "handle": "small-blackwing-slate-notebook-black",
+   "price_range": {
+    "min": {
+     "amount": 2500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41835307925564",
+     "sku": "105133",
+     "title": "Blank",
+     "description": {
+      "html": "The small Blackwing Slate is an A6 hardcover notebook (105 x 148 mm, or half the size of our Medium Slate) that can fit comfortably in your pocket. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Small Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 2500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Blank"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-small-black-2.jpg?v=1746749952"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835307925564:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835307958332",
+     "sku": "105134",
+     "title": "Ruled",
+     "description": {
+      "html": "The small Blackwing Slate is an A6 hardcover notebook (105 x 148 mm, or half the size of our Medium Slate) that can fit comfortably in your pocket. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Small Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 2500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-small-black-2.jpg?v=1746749952"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835307958332:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835307991100",
+     "sku": "105135",
+     "title": "Dot Grid",
+     "description": {
+      "html": "The small Blackwing Slate is an A6 hardcover notebook (105 x 148 mm, or half the size of our Medium Slate) that can fit comfortably in your pocket. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Small Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 2500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Dot Grid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-small-black-2.jpg?v=1746749952"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835307991100:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835308023868",
+     "sku": "105771",
+     "title": "Graph (Limited Edition)",
+     "description": {
+      "html": "The small Blackwing Slate is an A6 hardcover notebook (105 x 148 mm, or half the size of our Medium Slate) that can fit comfortably in your pocket. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Small Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 2500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Graph (Limited Edition)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-small-black-2.jpg?v=1746749952"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835308023868:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Paper Type",
+     "values": [
+      {
+       "label": "Blank"
+      },
+      {
+       "label": "Ruled"
+      },
+      {
+       "label": "Dot Grid"
+      },
+      {
+       "label": "Graph (Limited Edition)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-small-black-2.jpg?v=1746749952",
+     "alt_text": "Small Blackwing Slate Notebook - Black"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "2020",
+    "__with:blackwing-set-of-12",
+    "Gifts for Students",
+    "Gifts for Writers",
+    "Paper",
+    "Standard Slate Notebook"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262622642236",
+     "handle": "gifts-for-teachers-and-students",
+     "title": "Gifts for Students and Teachers",
+     "description": {
+      "html": "Crafted for success in the classroom. Shop high-quality tools for studying, grading, and more."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7197456695356",
+   "title": "Blackwing Spiral Notebook",
+   "description": {
+    "html": "The Blackwing Spiral is our take on the classic spiral-bound notebook. Each A4 notebook features a black chipboard cover and a sturdy black wire spiral binding. Inside you'll find 160 pages of 80GSM paper that is available in blank, ruled, dot-grid, or graph. The notebook comes with an elastic strap and features the Blackwing \"B\" emblem debossed on its cover."
+   },
+   "url": "https://pencils.com/products/blackwing-spiral-notebook",
+   "handle": "blackwing-spiral-notebook",
+   "price_range": {
+    "min": {
+     "amount": 2200,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2200,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/40808435056700",
+     "sku": "105795",
+     "title": "Blank",
+     "description": {
+      "html": "The Blackwing Spiral is our take on the classic spiral-bound notebook. Each A4 notebook features a black chipboard cover and a sturdy black wire spiral binding. Inside you'll find 160 pages of 80GSM paper that is available in blank, ruled, dot-grid, or graph. The notebook comes with an elastic strap and features the Blackwing \"B\" emblem debossed on its cover."
+     },
+     "price": {
+      "amount": 2200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Blank"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/21deb958-f5cc-6c4f-ec88-37901ef824b4.jpg?v=1746749987"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/40808435056700:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40808435089468",
+     "sku": "105796",
+     "title": "Ruled",
+     "description": {
+      "html": "The Blackwing Spiral is our take on the classic spiral-bound notebook. Each A4 notebook features a black chipboard cover and a sturdy black wire spiral binding. Inside you'll find 160 pages of 80GSM paper that is available in blank, ruled, dot-grid, or graph. The notebook comes with an elastic strap and features the Blackwing \"B\" emblem debossed on its cover."
+     },
+     "price": {
+      "amount": 2200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/21deb958-f5cc-6c4f-ec88-37901ef824b4.jpg?v=1746749987"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/40808435089468:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40808435122236",
+     "sku": "105797",
+     "title": "Dot Grid",
+     "description": {
+      "html": "The Blackwing Spiral is our take on the classic spiral-bound notebook. Each A4 notebook features a black chipboard cover and a sturdy black wire spiral binding. Inside you'll find 160 pages of 80GSM paper that is available in blank, ruled, dot-grid, or graph. The notebook comes with an elastic strap and features the Blackwing \"B\" emblem debossed on its cover."
+     },
+     "price": {
+      "amount": 2200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Dot Grid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/21deb958-f5cc-6c4f-ec88-37901ef824b4.jpg?v=1746749987"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/40808435122236:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/40808435155004",
+     "sku": "105798",
+     "title": "Graph",
+     "description": {
+      "html": "The Blackwing Spiral is our take on the classic spiral-bound notebook. Each A4 notebook features a black chipboard cover and a sturdy black wire spiral binding. Inside you'll find 160 pages of 80GSM paper that is available in blank, ruled, dot-grid, or graph. The notebook comes with an elastic strap and features the Blackwing \"B\" emblem debossed on its cover."
+     },
+     "price": {
+      "amount": 2200,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Graph"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/21deb958-f5cc-6c4f-ec88-37901ef824b4.jpg?v=1746749987"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/40808435155004:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Paper Type",
+     "values": [
+      {
+       "label": "Blank"
+      },
+      {
+       "label": "Ruled"
+      },
+      {
+       "label": "Dot Grid"
+      },
+      {
+       "label": "Graph"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/products/21deb958-f5cc-6c4f-ec88-37901ef824b4.jpg?v=1746749987"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Gifts for Students",
+    "Gifts for Writers",
+    "Paper"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262622642236",
+     "handle": "gifts-for-teachers-and-students",
+     "title": "Gifts for Students and Teachers",
+     "description": {
+      "html": "Crafted for success in the classroom. Shop high-quality tools for studying, grading, and more."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7645254713404",
+   "title": "Medium Blackwing Slate Notebook - Grey",
+   "description": {
+    "html": "The medium Blackwing Slate is an A5 hardcover notebook that is a bit wider than a standard notebook (148 x 210 mm). It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The medium Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+   },
+   "url": "https://pencils.com/products/medium-blackwing-slate-notebook-grey",
+   "handle": "medium-blackwing-slate-notebook-grey",
+   "price_range": {
+    "min": {
+     "amount": 3000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41835312316476",
+     "sku": "105154",
+     "title": "Blank",
+     "description": {
+      "html": "The medium Blackwing Slate is an A5 hardcover notebook that is a bit wider than a standard notebook (148 x 210 mm). It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The medium Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Blank"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-medium-grey-3.jpg?v=1746749945"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835312316476:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835312349244",
+     "sku": "105155",
+     "title": "Ruled",
+     "description": {
+      "html": "The medium Blackwing Slate is an A5 hardcover notebook that is a bit wider than a standard notebook (148 x 210 mm). It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The medium Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-medium-grey-3.jpg?v=1746749945"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835312349244:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835312382012",
+     "sku": "105156",
+     "title": "Dot Grid",
+     "description": {
+      "html": "The medium Blackwing Slate is an A5 hardcover notebook that is a bit wider than a standard notebook (148 x 210 mm). It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The medium Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Dot Grid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-medium-grey-3.jpg?v=1746749945"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835312382012:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835312414780",
+     "sku": "105778",
+     "title": "Graph (Limited Edition)",
+     "description": {
+      "html": "The medium Blackwing Slate is an A5 hardcover notebook that is a bit wider than a standard notebook (148 x 210 mm). It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The medium Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Graph (Limited Edition)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-medium-grey-3.jpg?v=1746749945"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835312414780:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Paper Type",
+     "values": [
+      {
+       "label": "Blank"
+      },
+      {
+       "label": "Ruled"
+      },
+      {
+       "label": "Dot Grid"
+      },
+      {
+       "label": "Graph (Limited Edition)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-medium-grey-3.jpg?v=1746749945",
+     "alt_text": "Medium Blackwing Slate Notebook - Grey"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "2020",
+    "__with:blackwing-602-set-of-12",
+    "Back-to-School",
+    "Gifts for Writers",
+    "Paper",
+    "Standard Slate Notebook"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262107725884",
+     "handle": "back-to-school-favorites",
+     "title": "Back-to-School Favorites",
+     "description": {
+      "html": "Shop back-to-school favorites and quality tools that will set students up for success."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7645255598140",
+   "title": "Large Blackwing Slate Notebook - White",
+   "description": {
+    "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+   },
+   "url": "https://pencils.com/products/large-blackwing-slate-notebook-white",
+   "handle": "large-blackwing-slate-notebook-white",
+   "price_range": {
+    "min": {
+     "amount": 3500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41835313430588",
+     "sku": "105148",
+     "title": "Blank",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Blank"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-white-2_56d9f007-f779-4589-bd13-c814be2d4b38.jpg?v=1746749941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835313430588:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835313463356",
+     "sku": "105149",
+     "title": "Ruled",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-white-2_56d9f007-f779-4589-bd13-c814be2d4b38.jpg?v=1746749941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835313463356:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835313496124",
+     "sku": "105150",
+     "title": "Dot Grid",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Dot Grid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-white-2_56d9f007-f779-4589-bd13-c814be2d4b38.jpg?v=1746749941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835313496124:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835313528892",
+     "sku": "105776",
+     "title": "Graph (Limited Edition)",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Graph (Limited Edition)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-white-2_56d9f007-f779-4589-bd13-c814be2d4b38.jpg?v=1746749941"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835313528892:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Paper Type",
+     "values": [
+      {
+       "label": "Blank"
+      },
+      {
+       "label": "Ruled"
+      },
+      {
+       "label": "Dot Grid"
+      },
+      {
+       "label": "Graph (Limited Edition)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-white-2_56d9f007-f779-4589-bd13-c814be2d4b38.jpg?v=1746749941",
+     "alt_text": "Large Slate Notebook - White"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "2020",
+    "__with:blackwing-pearl-set-of-12",
+    "Back-to-School",
+    "Gifts for Artists",
+    "Gifts for Writers",
+    "Paper",
+    "Standard Slate Notebook"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262107725884",
+     "handle": "back-to-school-favorites",
+     "title": "Back-to-School Favorites",
+     "description": {
+      "html": "Shop back-to-school favorites and quality tools that will set students up for success."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/8719156936764",
+   "title": "Blackwing A5 Spiral Notebook",
+   "description": {
+    "html": "This is our take on the classic spiral-bound notebook in a compact A5 size. Each notebook features a black chipboard cover and a sturdy black wire spiral binding. Inside, you'll find 160 pages of 80GSM paper that is available in blank, ruled, or dot-grid paper types. The notebook comes with an elastic strap to secure all of your quick notes and new ideas. The notebook features the Blackwing \"B\" emblem debossed on its cover."
+   },
+   "url": "https://pencils.com/products/blackwing-a5-spiral-notebook",
+   "handle": "blackwing-a5-spiral-notebook",
+   "price_range": {
+    "min": {
+     "amount": 1600,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1600,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/43661857587260",
+     "sku": "107440",
+     "title": "Blank",
+     "description": {
+      "html": "This is our take on the classic spiral-bound notebook in a compact A5 size. Each notebook features a black chipboard cover and a sturdy black wire spiral binding. Inside, you'll find 160 pages of 80GSM paper that is available in blank, ruled, or dot-grid paper types. The notebook comes with an elastic strap to secure all of your quick notes and new ideas. The notebook features the Blackwing \"B\" emblem debossed on its cover."
+     },
+     "price": {
+      "amount": 1600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Blank"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/A5_Spiral_SquareShadowed.png?v=1762900446"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/43661857587260:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43661857620028",
+     "sku": "107441",
+     "title": "Ruled",
+     "description": {
+      "html": "This is our take on the classic spiral-bound notebook in a compact A5 size. Each notebook features a black chipboard cover and a sturdy black wire spiral binding. Inside, you'll find 160 pages of 80GSM paper that is available in blank, ruled, or dot-grid paper types. The notebook comes with an elastic strap to secure all of your quick notes and new ideas. The notebook features the Blackwing \"B\" emblem debossed on its cover."
+     },
+     "price": {
+      "amount": 1600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/A5_Spiral_SquareShadowed.png?v=1762900446"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/43661857620028:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/43661857652796",
+     "sku": "107442",
+     "title": "Dot Grid",
+     "description": {
+      "html": "This is our take on the classic spiral-bound notebook in a compact A5 size. Each notebook features a black chipboard cover and a sturdy black wire spiral binding. Inside, you'll find 160 pages of 80GSM paper that is available in blank, ruled, or dot-grid paper types. The notebook comes with an elastic strap to secure all of your quick notes and new ideas. The notebook features the Blackwing \"B\" emblem debossed on its cover."
+     },
+     "price": {
+      "amount": 1600,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Dot Grid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/A5_Spiral_SquareShadowed.png?v=1762900446"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/43661857652796:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Paper Type",
+     "values": [
+      {
+       "label": "Blank"
+      },
+      {
+       "label": "Ruled"
+      },
+      {
+       "label": "Dot Grid"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/A5_Spiral_SquareShadowed.png?v=1762900446",
+     "alt_text": "Blackwing A5 Spiral Notebook in black"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "Paper"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/268373917756",
+     "handle": "blackwing-essentials",
+     "title": "Blackwing New Arrivals",
+     "description": {
+      "html": "New limited-edition pencils and favorites from Blackwing"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7645255106620",
+   "title": "Large Blackwing Slate Notebook - Black",
+   "description": {
+    "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+   },
+   "url": "https://pencils.com/products/large-blackwing-slate-notebook-black",
+   "handle": "large-blackwing-slate-notebook-black",
+   "price_range": {
+    "min": {
+     "amount": 3500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41835312873532",
+     "sku": "105139",
+     "title": "Blank",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Blank"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-black-2.jpg?v=1746749943"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835312873532:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835312906300",
+     "sku": "105140",
+     "title": "Ruled",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-black-2.jpg?v=1746749943"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835312906300:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835312939068",
+     "sku": "105141",
+     "title": "Dot Grid",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Dot Grid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-black-2.jpg?v=1746749943"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835312939068:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835312971836",
+     "sku": "105773",
+     "title": "Graph (Limited Edition)",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Graph (Limited Edition)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-black-2.jpg?v=1746749943"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835312971836:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Paper Type",
+     "values": [
+      {
+       "label": "Blank"
+      },
+      {
+       "label": "Ruled"
+      },
+      {
+       "label": "Dot Grid"
+      },
+      {
+       "label": "Graph (Limited Edition)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-black-2.jpg?v=1746749943",
+     "alt_text": "Large Blackwing Slate Notebook - Black"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "2020",
+    "__with:blackwing-set-of-12",
+    "Back-to-School",
+    "Gifts for Artists",
+    "Gifts for Writers",
+    "Paper",
+    "Standard Slate Notebook"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262107725884",
+     "handle": "back-to-school-favorites",
+     "title": "Back-to-School Favorites",
+     "description": {
+      "html": "Shop back-to-school favorites and quality tools that will set students up for success."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7645255991356",
+   "title": "Large Blackwing Slate Notebook - Grey",
+   "description": {
+    "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+   },
+   "url": "https://pencils.com/products/large-blackwing-slate-notebook-grey",
+   "handle": "large-blackwing-slate-notebook-grey",
+   "price_range": {
+    "min": {
+     "amount": 3500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41835313954876",
+     "sku": "105157",
+     "title": "Blank",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Blank"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-grey-4.jpg?v=1746749939"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835313954876:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835313987644",
+     "sku": "105158",
+     "title": "Ruled",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-grey-4.jpg?v=1746749939"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835313987644:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835314020412",
+     "sku": "105159",
+     "title": "Dot Grid",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Dot Grid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-grey-4.jpg?v=1746749939"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835314020412:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835314053180",
+     "sku": "105794",
+     "title": "Graph (Limited Edition)",
+     "description": {
+      "html": "The large Blackwing Slate is an A4 hardcover notebook (210 x 297 mm, or double the size of our Medium Slate) that works beautifully on a desk. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Large Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Graph (Limited Edition)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-grey-4.jpg?v=1746749939"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835314053180:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Paper Type",
+     "values": [
+      {
+       "label": "Blank"
+      },
+      {
+       "label": "Ruled"
+      },
+      {
+       "label": "Dot Grid"
+      },
+      {
+       "label": "Graph (Limited Edition)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-large-grey-4.jpg?v=1746749939",
+     "alt_text": "Large Blackwing Slate Notebook - Grey"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "2020",
+    "__with:blackwing-602-set-of-12",
+    "Back-to-School",
+    "Gifts for Artists",
+    "Gifts for Writers",
+    "Paper",
+    "Standard Slate Notebook"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262107725884",
+     "handle": "back-to-school-favorites",
+     "title": "Back-to-School Favorites",
+     "description": {
+      "html": "Shop back-to-school favorites and quality tools that will set students up for success."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7645252714556",
+   "title": "Medium Blackwing Slate Notebook - Black",
+   "description": {
+    "html": "The medium Blackwing Slate is an A5 hardcover notebook that is a bit wider than a standard notebook (148 x 210 mm). It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The medium Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+   },
+   "url": "https://pencils.com/products/medium-blackwing-slate-notebook-black",
+   "handle": "medium-blackwing-slate-notebook-black",
+   "price_range": {
+    "min": {
+     "amount": 3000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 3000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41835310350396",
+     "sku": "105136",
+     "title": "Blank",
+     "description": {
+      "html": "The medium Blackwing Slate is an A5 hardcover notebook that is a bit wider than a standard notebook (148 x 210 mm). It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The medium Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Blank"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-medium-black-4.jpg?v=1746749948"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835310350396:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835310383164",
+     "sku": "105137",
+     "title": "Ruled",
+     "description": {
+      "html": "The medium Blackwing Slate is an A5 hardcover notebook that is a bit wider than a standard notebook (148 x 210 mm). It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The medium Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-medium-black-4.jpg?v=1746749948"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835310383164:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835310415932",
+     "sku": "105138",
+     "title": "Dot Grid",
+     "description": {
+      "html": "The medium Blackwing Slate is an A5 hardcover notebook that is a bit wider than a standard notebook (148 x 210 mm). It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The medium Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Dot Grid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-medium-black-4.jpg?v=1746749948"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835310415932:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835310448700",
+     "sku": "105772",
+     "title": "Graph (Limited Edition)",
+     "description": {
+      "html": "The medium Blackwing Slate is an A5 hardcover notebook that is a bit wider than a standard notebook (148 x 210 mm). It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The medium Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 3000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": false
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Graph (Limited Edition)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-medium-black-4.jpg?v=1746749948"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835310448700:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Paper Type",
+     "values": [
+      {
+       "label": "Blank"
+      },
+      {
+       "label": "Ruled"
+      },
+      {
+       "label": "Dot Grid"
+      },
+      {
+       "label": "Graph (Limited Edition)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-medium-black-4.jpg?v=1746749948",
+     "alt_text": "Blackwing Slate Notebook - Medium Black"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "2020",
+    "__with:blackwing-set-of-12",
+    "Back-to-School",
+    "Gifts for Writers",
+    "Paper",
+    "Standard Slate Notebook"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262107725884",
+     "handle": "back-to-school-favorites",
+     "title": "Back-to-School Favorites",
+     "description": {
+      "html": "Shop back-to-school favorites and quality tools that will set students up for success."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7645250650172",
+   "title": "Small Blackwing Slate Notebook - White",
+   "description": {
+    "html": "The small Blackwing Slate is an A6 hardcover notebook (105 x 148 mm, or half the size of our Medium Slate) that can fit comfortably in your pocket. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Small Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+   },
+   "url": "https://pencils.com/products/small-blackwing-slate-notebook-white",
+   "handle": "small-blackwing-slate-notebook-white",
+   "price_range": {
+    "min": {
+     "amount": 2500,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 2500,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41835308744764",
+     "sku": "105142",
+     "title": "Blank",
+     "description": {
+      "html": "The small Blackwing Slate is an A6 hardcover notebook (105 x 148 mm, or half the size of our Medium Slate) that can fit comfortably in your pocket. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Small Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 2500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Blank"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-small-white-2.jpg?v=1746749951"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835308744764:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835308777532",
+     "sku": "105143",
+     "title": "Ruled",
+     "description": {
+      "html": "The small Blackwing Slate is an A6 hardcover notebook (105 x 148 mm, or half the size of our Medium Slate) that can fit comfortably in your pocket. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Small Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 2500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Ruled"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-small-white-2.jpg?v=1746749951"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835308777532:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835308810300",
+     "sku": "105144",
+     "title": "Dot Grid",
+     "description": {
+      "html": "The small Blackwing Slate is an A6 hardcover notebook (105 x 148 mm, or half the size of our Medium Slate) that can fit comfortably in your pocket. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Small Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 2500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Dot Grid"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-small-white-2.jpg?v=1746749951"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835308810300:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/41835308843068",
+     "sku": "105774",
+     "title": "Graph (Limited Edition)",
+     "description": {
+      "html": "The small Blackwing Slate is an A6 hardcover notebook (105 x 148 mm, or half the size of our Medium Slate) that can fit comfortably in your pocket. It features 160 pages of 100 GSM ivory paper that is perfect for graphite or ink. Every Slate notebook features our signature lay-flat binding, matte cover, and pencil holster that comes loaded with a Blackwing pencil. The Small Slate is available in black, white, or grey, and with dot-grid, blank, ruled, or graph paper."
+     },
+     "price": {
+      "amount": 2500,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Paper Type",
+       "label": "Graph (Limited Edition)"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-small-white-2.jpg?v=1746749951"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/41835308843068:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Paper Type",
+     "values": [
+      {
+       "label": "Blank"
+      },
+      {
+       "label": "Ruled"
+      },
+      {
+       "label": "Dot Grid"
+      },
+      {
+       "label": "Graph (Limited Edition)"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/newslate-small-white-2.jpg?v=1746749951",
+     "alt_text": "A Small Blackwing Slate Notebook - White on a surface."
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "2020",
+    "__with:blackwing-pearl-set-of-12",
+    "Featured Accessories",
+    "Gifts for Students",
+    "Gifts for Writers",
+    "Paper",
+    "Standard Slate Notebook"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/262622642236",
+     "handle": "gifts-for-teachers-and-students",
+     "title": "Gifts for Students and Teachers",
+     "description": {
+      "html": "Crafted for success in the classroom. Shop high-quality tools for studying, grading, and more."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7851831263292",
+   "title": "Blackwing Volume 574 Ledger Notebook",
+   "description": {
+    "html": "The Indigenous peoples of the Plains have kept visual histories for centuries. As they continued to be displaced by settlers throughout the 19th century, this practice became more challenging, and even more essential. Hides and cloth were traditionally used as canvases, but those were soon replaced by a more portable and accessible solution - paper. One of the more popular vessels for these visual histories were the ledger books used by the very settlers that were displacing them. The Native artisans drew in these books with pencils, paints, and sometimes crayons, documenting their histories, important stories and more. What was once used to keep inventory of settler property was repurposed to keep inventory of the cultural practices of the people of the Plains.This Blackwing 574 ledger book is a recreation of the types of ledger books used by the Plains tribes to preserve their identities and histories. This 7.5\u201d x 11.75\u201d book features a multi-textured vegan leather and suede cover and 152 numbered ledger pages. Use it as a ledger of your own or fill it with your own drawings of the important events in your life."
+   },
+   "url": "https://pencils.com/products/blackwing-volume-574-ledger-notebook",
+   "handle": "blackwing-volume-574-ledger-notebook",
+   "price_range": {
+    "min": {
+     "amount": 5000,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 5000,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 0,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 0,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42349352321084",
+     "sku": "107678",
+     "title": "Default Title",
+     "description": {
+      "html": "The Indigenous peoples of the Plains have kept visual histories for centuries. As they continued to be displaced by settlers throughout the 19th century, this practice became more challenging, and even more essential. Hides and cloth were traditionally used as canvases, but those were soon replaced by a more portable and accessible solution - paper. One of the more popular vessels for these visual histories were the ledger books used by the very settlers that were displacing them. The Native artisans drew in these books with pencils, paints, and sometimes crayons, documenting their histories, important stories and more. What was once used to keep inventory of settler property was repurposed to keep inventory of the cultural practices of the people of the Plains.This Blackwing 574 ledger book is a recreation of the types of ledger books used by the Plains tribes to preserve their identities and histories. This 7.5\u201d x 11.75\u201d book features a multi-textured vegan leather and suede cover and 152 numbered ledger pages. Use it as a ledger of your own or fill it with your own drawings of the important events in your life."
+     },
+     "price": {
+      "amount": 5000,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/Blackwing-Volume-574-Holiday2024-staceydoyle-2241x1.png?v=1746749903"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://pencils-com.myshopify.com/cart/42349352321084:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/0172/5474/4164/files/Blackwing-Volume-574-Holiday2024-staceydoyle-2241x1.png?v=1746749903"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/113058775140",
+     "handle": "blackwing",
+     "title": "Blackwing Products",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/113638506596",
+     "handle": "notebooks",
+     "title": "Notebooks",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/119824941156",
+     "handle": "all",
+     "title": "Shop Pencils.com",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/132612882492",
+     "handle": "paper-goods",
+     "title": "Paper Goods",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/276072038460",
+     "handle": "blackwing-new-arrivals",
+     "title": "Latest Blackwing Arrivals",
+     "description": {
+      "html": "Shop the latest arrivals from Blackwing from exclusive gift sets to limited edition pencils."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": true,
+  "cursor": "eyJncmFwaHFsX2N1cnNvciI6ImV5SndZV2RsSWpveUxDSnNZWE4wWDJsa0lqbzNPRFV4T0RNeE1qWXpNamt5TENKeVpYWmxjbk5sSWpwMGNuVmxMQ0p2Wm1aelpYUWlPamw5IiwicGFnZSI6Mn0="
+ },
+ "messages": []
+}

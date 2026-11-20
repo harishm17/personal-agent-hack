@@ -1,0 +1,1537 @@
+{
+ "ucp": {
+  "version": "2026-08-25",
+  "status": "success",
+  "services": {
+   "dev.ucp.shopping": []
+  },
+  "capabilities": {
+   "dev.ucp.shopping.checkout": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/checkout/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/checkout.json"
+    }
+   ],
+   "dev.ucp.shopping.cart": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/cart/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/cart.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.search": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_search.json"
+    }
+   ],
+   "dev.ucp.shopping.catalog.lookup": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/catalog/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/catalog_lookup.json"
+    }
+   ],
+   "dev.shopify.catalog": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://shopify.dev/docs/agents/catalog/storefront-catalog",
+     "schema": "https://shopify.dev/ucp/schemas/2026-08-25/shopify_catalog.json",
+     "extends": [
+      "dev.ucp.shopping.catalog.search",
+      "dev.ucp.shopping.catalog.lookup"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     }
+    }
+   ],
+   "dev.ucp.common.ask": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/common/ask/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/common/ask.json"
+    }
+   ],
+   "dev.ucp.shopping.permalink": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/permalink/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/permalink.json",
+     "config": {
+      "endpoint": "https://www.ooly.com/buy"
+     }
+    }
+   ],
+   "dev.ucp.shopping.fulfillment": [
+    {
+     "version": "2026-08-25",
+     "spec": "https://ucp.dev/2026-08-25/specification/shopping/extensions/fulfillment/",
+     "schema": "https://ucp.dev/2026-08-25/schemas/shopping/fulfillment.json",
+     "extends": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.cart"
+     ],
+     "requires": {
+      "protocol": {
+       "min": "2026-08-25"
+      }
+     },
+     "config": {
+      "multi_destination": [],
+      "method_combinations": [
+       [
+        "shipping"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  "payment_handlers": {
+   "com.google.pay": [
+    {
+     "id": "gpay",
+     "version": "2026-01-11",
+     "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+     "schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+     "config": {
+      "api_version": 2,
+      "api_version_minor": 0,
+      "merchant_info": {
+       "merchant_name": "OOLY",
+       "merchant_id": "16708973830884969730",
+       "merchant_origin": "www.ooly.com",
+       "auth_jwt": ""
+      },
+      "allowed_payment_methods": [
+       {
+        "type": "CARD",
+        "parameters": {
+         "allowed_auth_methods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+         ],
+         "allowed_card_networks": [
+          "VISA",
+          "MASTERCARD",
+          "AMEX",
+          "DISCOVER",
+          "JCB"
+         ],
+         "billing_address_required": true,
+         "billing_address_parameters": {
+          "format": "FULL",
+          "phone_number_required": false
+         }
+        },
+        "tokenization_specification": {
+         "type": "PAYMENT_GATEWAY",
+         "parameters": {
+          "gateway": "shopify",
+          "gatewayMerchantId": "24862582"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.card": [
+    {
+     "id": "shopify.card",
+     "version": "2026-01-15",
+     "spec": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/spec.md",
+     "schema": "https://shopify.dev/ucp/card-payment-handler/2026-01-15/schema.json",
+     "config": {
+      "payment_methods": [
+       {
+        "type": "card",
+        "enabled_card_brands": [
+         "visa",
+         "master",
+         "american_express",
+         "discover",
+         "diners_club",
+         "elo",
+         "jcb",
+         "unionpay"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "dev.shopify.shop_pay": [
+    {
+     "id": "shop_pay",
+     "version": "2026-04-08",
+     "spec": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/spec.md",
+     "schema": "https://shopify.dev/ucp/shop-pay-handler/2026-04-08/schema.json",
+     "config": {
+      "shop_id": "24862582"
+     }
+    }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "gid://shopify/Product/7203735076899",
+   "title": "Artful Notes Reverse Coloring Notebook - Geoscape - 100 Pages 2 Sticker Sheets",
+   "description": {
+    "html": "Color first. Planning next. The Artful Notes reverse coloring notebook is designed for ideas that zig when you expect them to zag. Instead of starting with blank pages, each reverse coloring spread arrives already dressed in bold geometric and abstract color. Your job is to add the lines, patterns, and finishing touches that make the page feel complete. It's coloring with a twist and just the right amount of surprise. This coloring notebook keeps things flexible because that's how real notebooks get used. Creative pages and lined pages sit side by side, making it easy to bounce between writing and drawing without overthinking it. Jot down a thought. Add a shape. Circle an idea. Come back later and keep going. There's no pressure to be perfect and no expectation to finish everything in one go. Built as a playful yet practical diy notebook, Artful Notes features a roomy 8x10 inch format that gives ideas space to stretch. The sturdy 128gsm paper handles pens and markers with confidence, while the spiral binding keeps pages flat and friendly. Two sticker sheets add an extra pop of personality, perfect for decorating pages or marking your favorites. Geoscape's repeating shapes and shifting colors create a visual rhythm that feels calming, modern, and quietly fun. It's structured enough to feel satisfying and playful enough to invite experimentation. A notebook that meets you where you are and makes everyday notes feel a little more exciting. Reverse coloring pages feature bold geometric and abstract backgrounds ready for outlining and detailing Alternating spreads pair creative pages with lined pages for notes, lists, or journaling Includes 50 reverse coloring pages and 50 lined pages for flexible use Large 8 x 10 inch size offers plenty of room to draw, write, and explore Printed on sturdy 128gsm paper that holds up to pens and markers Spiral binding allows pages to lay flat while working Includes two vinyl sticker sheets for decorating, labeling, or marking favorites Suitable for ages 6 and up"
+   },
+   "url": "https://www.ooly.com/products/artful-notes-reverse-coloring-notebook-geoscape",
+   "handle": "artful-notes-reverse-coloring-notebook-geoscape",
+   "price_range": {
+    "min": {
+     "amount": 971,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 971,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1295,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1295,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42002378260515",
+     "sku": "118-325",
+     "title": "Default Title",
+     "description": {
+      "html": "Color first. Planning next. The Artful Notes reverse coloring notebook is designed for ideas that zig when you expect them to zag. Instead of starting with blank pages, each reverse coloring spread arrives already dressed in bold geometric and abstract color. Your job is to add the lines, patterns, and finishing touches that make the page feel complete. It's coloring with a twist and just the right amount of surprise. This coloring notebook keeps things flexible because that's how real notebooks get used. Creative pages and lined pages sit side by side, making it easy to bounce between writing and drawing without overthinking it. Jot down a thought. Add a shape. Circle an idea. Come back later and keep going. There's no pressure to be perfect and no expectation to finish everything in one go. Built as a playful yet practical diy notebook, Artful Notes features a roomy 8x10 inch format that gives ideas space to stretch. The sturdy 128gsm paper handles pens and markers with confidence, while the spiral binding keeps pages flat and friendly. Two sticker sheets add an extra pop of personality, perfect for decorating pages or marking your favorites. Geoscape's repeating shapes and shifting colors create a visual rhythm that feels calming, modern, and quietly fun. It's structured enough to feel satisfying and playful enough to invite experimentation. A notebook that meets you where you are and makes everyday notes feel a little more exciting. Reverse coloring pages feature bold geometric and abstract backgrounds ready for outlining and detailing Alternating spreads pair creative pages with lined pages for notes, lists, or journaling Includes 50 reverse coloring pages and 50 lined pages for flexible use Large 8 x 10 inch size offers plenty of room to draw, write, and explore Printed on sturdy 128gsm paper that holds up to pens and markers Spiral binding allows pages to lay flat while working Includes two vinyl sticker sheets for decorating, labeling, or marking favorites Suitable for ages 6 and up"
+     },
+     "price": {
+      "amount": 971,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1295,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Artful-Notes-Notebook-Reverse-Color-Take-Notes-Geoscape-Product-Front.png?v=1773334460"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/42002378260515:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Artful-Notes-Notebook-Reverse-Color-Take-Notes-Geoscape-Product-Front.png?v=1773334460"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/me-1-3",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "adults",
+    "art",
+    "art + diy",
+    "bts26",
+    "elementary",
+    "middle",
+    "new",
+    "paper",
+    "retro",
+    "travel",
+    "writing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30992203809",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": "Unleash an explosion of excitement with the new OOLY collection! It's cuteness and fun rolled into one! Newly OOLY fun is here! Discover everything new OOLY has to offer! Our newest OOLY products are here to bring you endless joy and creativity. Get ready to explore the adorable and fun Stickiville sticker collection, where cute characters and vibrant designs come to life. Create delightful and personalized trinkets with our Shrink-its! DIY Shrink Art Kits, providing hours of entertainment for all ages. The vivid colors of our Vivid Pop! Water Based Paint Markers are perfect for your artistic endeavors, or dive into the world of watercolors with the Scenic Hues DIY Watercolor Art Kits, allowing you to create breathtaking scenes with ease. And don't forget to spread joy with our Tiny Tadas! Note Cards and Sticker Sets, featuring charming mini notes and stickers. Whether you're a seasoned artist or just looking for some creative fun, the new OOLY range has something for everyone. Get ready to experience the magic of creativity with our latest and greatest cute and fun products that will brighten your day and inspire your imagination."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31131893793",
+     "handle": "stickers",
+     "title": "Stickers",
+     "description": {
+      "html": "Everything in this beautiful world could always use a little more flair! Use OOLY\u2019s collection of cute stickers to transform projects, artworks, clothes and more into creations of fun and personal expression. Cute stickers to add color and fun From fun to functional, these cute stickers will do everything from decorating your folders to keeping tabs on the proper page, and seal envelopes to pen pals. Take your pick of stickers that range in design from animals both big and small, colorful fruit, food, candy and much more. Also take a peek at our scented stickers too. Decorate just about anything with Itsy Bitsy super cute stickers. Discover Note Pals Sticky Tabs which are by far the cutest color-filled way to take notes and keep your place in your next read. Organize with Itsy Bitsy Super Cute Happy Planner stickers. Turn your own notes into an array of colors with decorative sticky tape. Amazing shapes and colors await Sticker Stash sheets. No matter which you choose, these stickers are sure to be full of fun!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263663616035",
+     "handle": "stickiville",
+     "title": "Stickiville",
+     "description": {
+      "html": "Welcome to Stickiville, an expansive collection of sticker sheets and sticker books from OOLY that are jam packed with themes, finishes and flair. Check them out, collect them all, and get stickin\u2019! Stickiville Collection of Sticker Sheets and Sticker Books Welcome to Stickiville from OOLY - the cutest, most fun, and of course, stickiest place to be! In Stickiville you can take a walk through town square with playful pandas, Easter bunnies, and friendly monsters. Pop in at one of the tasty treat cafes stuffed with snacks, sweets, or ramen. Hop a ride to school on one of the workin\u2019 wheels trucks, but watch out for PURRfect kitties meowing their way across the street. With a smorgasbord of cute sticker themes and an assortment of finishes like holographic stickers, glitter stickers and puffy stickers, Stickville is bustling with whimsy and full of surprise. No matter what kind of sticker you\u2019re looking for, Stickiville is here for you!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273696063523",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7203736256547",
+   "title": "Artful Notes Reverse Coloring Notebook - Wildscape - 100 Pages 2 Sticker Sheets",
+   "description": {
+    "html": "Color first. Planning next. Some notebooks ask you to stay in the lines. This one invites you to make your own. The Artful Notes Reverse Coloring Notebook \u2013 Wildscape flips the script on traditional coloring with bold, floral-inspired pages that are already bursting with color. Instead of filling in outlines, you draw the details yourself, turning every page into a one-of-a-kind pattern playground. This reverse coloring experience pairs beautifully with everyday note taking. Jot lists, write reminders, or let your pen wander between thoughts as you add lines, shapes, and textures to the artwork beside them. It's a coloring notebook designed for moments when ideas don't arrive in straight rows and creativity feels better when it's a little free-form. Wildscape blends painterly florals with a relaxed, expressive vibe that feels fresh without being fussy. Inside, you'll find a thoughtful mix of reverse coloring pages and lined pages, making this DIY notebook as practical as it is playful. Use it as a journal, a planner, a doodle-friendly notebook, or all three at once. Finished with sturdy paper and cheerful sticker sheets, this notebook is ready for busy desks, backpacks, and creative breaks wherever they happen. It's a place to write things down, color things in, and enjoy the happy in-between moments when both happen at once. Reverse coloring notebook with vibrant floral artwork that invites you to add lines and details Combines creative expression with everyday writing in one versatile coloring notebook Includes 50 pages of reverse coloring and 50 pages of lined notebook paper Total 100 pages for writing, coloring, and creative play Features a Wildscape theme inspired by bold blooms and expressive patterns Includes two colorful vinyl sticker sheets for decorating pages and personalizing notes Made with sturdy 128gsm paper that feels smooth and durable Book size measures 8\" x 10\" for plenty of space to write and draw Suitable for ages 6 and up"
+   },
+   "url": "https://www.ooly.com/products/artful-notes-reverse-coloring-notebook-wildscape",
+   "handle": "artful-notes-reverse-coloring-notebook-wildscape",
+   "price_range": {
+    "min": {
+     "amount": 971,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 971,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1295,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1295,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42002385371171",
+     "sku": "118-326",
+     "title": "Default Title",
+     "description": {
+      "html": "Color first. Planning next. Some notebooks ask you to stay in the lines. This one invites you to make your own. The Artful Notes Reverse Coloring Notebook \u2013 Wildscape flips the script on traditional coloring with bold, floral-inspired pages that are already bursting with color. Instead of filling in outlines, you draw the details yourself, turning every page into a one-of-a-kind pattern playground. This reverse coloring experience pairs beautifully with everyday note taking. Jot lists, write reminders, or let your pen wander between thoughts as you add lines, shapes, and textures to the artwork beside them. It's a coloring notebook designed for moments when ideas don't arrive in straight rows and creativity feels better when it's a little free-form. Wildscape blends painterly florals with a relaxed, expressive vibe that feels fresh without being fussy. Inside, you'll find a thoughtful mix of reverse coloring pages and lined pages, making this DIY notebook as practical as it is playful. Use it as a journal, a planner, a doodle-friendly notebook, or all three at once. Finished with sturdy paper and cheerful sticker sheets, this notebook is ready for busy desks, backpacks, and creative breaks wherever they happen. It's a place to write things down, color things in, and enjoy the happy in-between moments when both happen at once. Reverse coloring notebook with vibrant floral artwork that invites you to add lines and details Combines creative expression with everyday writing in one versatile coloring notebook Includes 50 pages of reverse coloring and 50 pages of lined notebook paper Total 100 pages for writing, coloring, and creative play Features a Wildscape theme inspired by bold blooms and expressive patterns Includes two colorful vinyl sticker sheets for decorating pages and personalizing notes Made with sturdy 128gsm paper that feels smooth and durable Book size measures 8\" x 10\" for plenty of space to write and draw Suitable for ages 6 and up"
+     },
+     "price": {
+      "amount": 971,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1295,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Artful-Notes-Notebook-Reverse-Color-Take-Notes-Wildscape-Product-Front.png?v=1773335001"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/42002385371171:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Artful-Notes-Notebook-Reverse-Color-Take-Notes-Wildscape-Product-Front.png?v=1773335001"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "adults",
+    "art",
+    "art + diy",
+    "bts26",
+    "elementary",
+    "middle",
+    "new",
+    "paper",
+    "retro",
+    "travel",
+    "writing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30992203809",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": "Unleash an explosion of excitement with the new OOLY collection! It's cuteness and fun rolled into one! Newly OOLY fun is here! Discover everything new OOLY has to offer! Our newest OOLY products are here to bring you endless joy and creativity. Get ready to explore the adorable and fun Stickiville sticker collection, where cute characters and vibrant designs come to life. Create delightful and personalized trinkets with our Shrink-its! DIY Shrink Art Kits, providing hours of entertainment for all ages. The vivid colors of our Vivid Pop! Water Based Paint Markers are perfect for your artistic endeavors, or dive into the world of watercolors with the Scenic Hues DIY Watercolor Art Kits, allowing you to create breathtaking scenes with ease. And don't forget to spread joy with our Tiny Tadas! Note Cards and Sticker Sets, featuring charming mini notes and stickers. Whether you're a seasoned artist or just looking for some creative fun, the new OOLY range has something for everyone. Get ready to experience the magic of creativity with our latest and greatest cute and fun products that will brighten your day and inspire your imagination."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31131893793",
+     "handle": "stickers",
+     "title": "Stickers",
+     "description": {
+      "html": "Everything in this beautiful world could always use a little more flair! Use OOLY\u2019s collection of cute stickers to transform projects, artworks, clothes and more into creations of fun and personal expression. Cute stickers to add color and fun From fun to functional, these cute stickers will do everything from decorating your folders to keeping tabs on the proper page, and seal envelopes to pen pals. Take your pick of stickers that range in design from animals both big and small, colorful fruit, food, candy and much more. Also take a peek at our scented stickers too. Decorate just about anything with Itsy Bitsy super cute stickers. Discover Note Pals Sticky Tabs which are by far the cutest color-filled way to take notes and keep your place in your next read. Organize with Itsy Bitsy Super Cute Happy Planner stickers. Turn your own notes into an array of colors with decorative sticky tape. Amazing shapes and colors await Sticker Stash sheets. No matter which you choose, these stickers are sure to be full of fun!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263663616035",
+     "handle": "stickiville",
+     "title": "Stickiville",
+     "description": {
+      "html": "Welcome to Stickiville, an expansive collection of sticker sheets and sticker books from OOLY that are jam packed with themes, finishes and flair. Check them out, collect them all, and get stickin\u2019! Stickiville Collection of Sticker Sheets and Sticker Books Welcome to Stickiville from OOLY - the cutest, most fun, and of course, stickiest place to be! In Stickiville you can take a walk through town square with playful pandas, Easter bunnies, and friendly monsters. Pop in at one of the tasty treat cafes stuffed with snacks, sweets, or ramen. Hop a ride to school on one of the workin\u2019 wheels trucks, but watch out for PURRfect kitties meowing their way across the street. With a smorgasbord of cute sticker themes and an assortment of finishes like holographic stickers, glitter stickers and puffy stickers, Stickville is bustling with whimsy and full of surprise. No matter what kind of sticker you\u2019re looking for, Stickiville is here for you!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273696063523",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7199235276835",
+   "title": "Write On Notebook - Calendar Journal - 120 Pages",
+   "description": {
+    "html": "Small notebook for big plans This small notebook has a big personality. The Write On Notebook brings a burst of color to every idea, list, and doodle. Wrapped in a cheerful rainbow-striped cover, it\u2019s proof that productivity can be bright and full of style. Inside are 120 pages of lined paper, perfect for capturing plans, goals, and everyday thoughts. With an easy-to-circle date section at the top of each page, this perpetual dates notebook offers flexible organization by mood, month, or moment. This writing notebook fits neatly in any tote or backpack, keeping inspiration close at hand. Its sturdy design keeps pages crisp and ready for whatever comes next. Paired with the Write On Graphite Pencil Set, it becomes a matching moment of color and creativity designed to make writing a little more joyful. 120 lined pages for notes, plans, and creative ideas Easy-to-circle date section for flexible use Compact small notebook size: 5.8\" x 8.3\" Doubles as a calendar notebook or journal Rainbow cover adds a bright personality Complements the Write On Graphite Pencil Set"
+   },
+   "url": "https://www.ooly.com/products/write-on-notebook",
+   "handle": "write-on-notebook",
+   "price_range": {
+    "min": {
+     "amount": 596,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 596,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 795,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 795,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/41961160245283",
+     "sku": "118-328",
+     "title": "Default Title",
+     "description": {
+      "html": "Small notebook for big plans This small notebook has a big personality. The Write On Notebook brings a burst of color to every idea, list, and doodle. Wrapped in a cheerful rainbow-striped cover, it\u2019s proof that productivity can be bright and full of style. Inside are 120 pages of lined paper, perfect for capturing plans, goals, and everyday thoughts. With an easy-to-circle date section at the top of each page, this perpetual dates notebook offers flexible organization by mood, month, or moment. This writing notebook fits neatly in any tote or backpack, keeping inspiration close at hand. Its sturdy design keeps pages crisp and ready for whatever comes next. Paired with the Write On Graphite Pencil Set, it becomes a matching moment of color and creativity designed to make writing a little more joyful. 120 lined pages for notes, plans, and creative ideas Easy-to-circle date section for flexible use Compact small notebook size: 5.8\" x 8.3\" Doubles as a calendar notebook or journal Rainbow cover adds a bright personality Complements the Write On Graphite Pencil Set"
+     },
+     "price": {
+      "amount": 596,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 795,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Write-On-Notebook-Front-Cover.png?v=1771874503"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/41961160245283:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Write-On-Notebook-Front-Cover.png?v=1771874503",
+     "alt_text": "OOLY Write On Notebook front cover"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "adults",
+    "bts26",
+    "category planning",
+    "elementary",
+    "her",
+    "him",
+    "hs college",
+    "kids",
+    "middle",
+    "mirakl",
+    "new",
+    "rebuyall",
+    "retro",
+    "school",
+    "teens",
+    "writing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30992203809",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": "Unleash an explosion of excitement with the new OOLY collection! It's cuteness and fun rolled into one! Newly OOLY fun is here! Discover everything new OOLY has to offer! Our newest OOLY products are here to bring you endless joy and creativity. Get ready to explore the adorable and fun Stickiville sticker collection, where cute characters and vibrant designs come to life. Create delightful and personalized trinkets with our Shrink-its! DIY Shrink Art Kits, providing hours of entertainment for all ages. The vivid colors of our Vivid Pop! Water Based Paint Markers are perfect for your artistic endeavors, or dive into the world of watercolors with the Scenic Hues DIY Watercolor Art Kits, allowing you to create breathtaking scenes with ease. And don't forget to spread joy with our Tiny Tadas! Note Cards and Sticker Sets, featuring charming mini notes and stickers. Whether you're a seasoned artist or just looking for some creative fun, the new OOLY range has something for everyone. Get ready to experience the magic of creativity with our latest and greatest cute and fun products that will brighten your day and inspire your imagination."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31338528801",
+     "handle": "gifts-for-mom",
+     "title": "gifts for mom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80352346147",
+     "handle": "calendar-planner-supplies",
+     "title": "Calendar and Planner Supplies",
+     "description": {
+      "html": "When you\u2019re looking to add a little flair to your personal planner, OOLY\u2019s planner supplies make organizing fun and oh so pretty! Decorate in style with colored gel pens, pastel highlighters, stickers and more. Style your planner and bring it to life with colorful pens, markers and creative art supplies. OOLY makes staying on top of tasks and to-do\u2019s colorful and easy! With a rainbow of different planner supplies that add color and fun to your , planning your days, projects, and everything in between just got very exciting! Plot your next project with your decorated personal planner. Enhance your schedule of important appointments in perfect color-coded order using silky-smooth gel pens or pack in all the color you need into one magical multicolor pen. Dual tipped markers are also great for traveling with more color options than you can imagine. And of course you need a place to keep everything and there is no better place than one of our many amazing journals for people of all ages."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83893157923",
+     "handle": "teacher-school-supplies",
+     "title": "Teacher School Supplies",
+     "description": {
+      "html": "Our teachers encourage us to follow our dreams and inspire us to become our best person possible. Shop these school necessities and classroom supplies (or gifts) for teachers. Plan, organize and excel with our list of essential teacher supplies Who said school has to be boring? Find everything on your teacher supply list that is both practical and pretty. The right arts and crafts supplies will make the right impression for all grade levels. Find the right teacher supplies online here at OOLY. Leave grades and comments that make an impression with the Note Pals Sticky Tabs and glitter gel pens. Use Do-Overs Erasable Highlighters to really make a mark on the page. Our huge collection of Jot-It! Notebooks are the perfect place to keep track of the day; use Modern Script fountain pens to make sure nothing is left behind."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/7227591524387",
+   "title": "Rewind Mini Notebooks - Retro - Set of 3",
+   "description": {
+    "html": "Mini notebooks. Major throwback fun. Hit play on your ideas with the Rewind Cassette Notebook Set. This set of three cassette notebooks turns everyday note-taking into a throwback moment, inspired by classic mixtapes and packed with personality. Each cassette notebook features a bold, retro-style cassette cover complete with playful, music-themed puns printed on both the front and back. It\u2019s all the nostalgia of rewinding your favorite track, now remixed for writing, doodling, and list-making. Each small notebook measures approximately 5\" x 3.25\", making it easy to tuck into backpacks, pencil cases, jacket pockets, or desk drawers. These compact notebooks are perfect for capturing ideas on the go, whether you\u2019re jotting down notes, making to-do lists, or scribbling lyrics, thoughts, and reminders as they come to you. Inside, every notebook includes 68 lined pages, offering plenty of space without feeling bulky. Use one small notebook for school notes, another for reminders, and save the third for creative writing or personal thoughts. Or rotate between notebooks like your favorite albums, depending on your mood. Lightweight, colorful, and full of character, this cassette notebook set brings fun, retro flair to everyday writing. Perfect for kids, teens, and anyone who loves a nostalgic twist on classic stationery, the Rewind Cassette Notebook Set proves that good ideas never go out of style \u2014 they just get rewound. Set of three retro-inspired cassette notebooks, shrink wrapped together Compact small notebook size measures approximately 5\" x 3.25\" Each notebook includes 68 lined pages for notes, lists, and ideas Music-themed cassette covers feature funny, pun-filled phrases on both front and back Bright colors and bold graphics give each notebook its own mixtape personality Lightweight and easy to toss into backpacks, totes, or desk drawers Use one notebook or split the set by mood, subject, or purpose A fun alternative to standard notebooks with a nostalgic twist Suitable for ages 6 and up"
+   },
+   "url": "https://www.ooly.com/products/rewind-mini-notebooks-set-of-3",
+   "handle": "rewind-mini-notebooks-set-of-3",
+   "price_range": {
+    "min": {
+     "amount": 446,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 446,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 595,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 595,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/42432059965475",
+     "sku": "118-329",
+     "title": "Default Title",
+     "description": {
+      "html": "Mini notebooks. Major throwback fun. Hit play on your ideas with the Rewind Cassette Notebook Set. This set of three cassette notebooks turns everyday note-taking into a throwback moment, inspired by classic mixtapes and packed with personality. Each cassette notebook features a bold, retro-style cassette cover complete with playful, music-themed puns printed on both the front and back. It\u2019s all the nostalgia of rewinding your favorite track, now remixed for writing, doodling, and list-making. Each small notebook measures approximately 5\" x 3.25\", making it easy to tuck into backpacks, pencil cases, jacket pockets, or desk drawers. These compact notebooks are perfect for capturing ideas on the go, whether you\u2019re jotting down notes, making to-do lists, or scribbling lyrics, thoughts, and reminders as they come to you. Inside, every notebook includes 68 lined pages, offering plenty of space without feeling bulky. Use one small notebook for school notes, another for reminders, and save the third for creative writing or personal thoughts. Or rotate between notebooks like your favorite albums, depending on your mood. Lightweight, colorful, and full of character, this cassette notebook set brings fun, retro flair to everyday writing. Perfect for kids, teens, and anyone who loves a nostalgic twist on classic stationery, the Rewind Cassette Notebook Set proves that good ideas never go out of style \u2014 they just get rewound. Set of three retro-inspired cassette notebooks, shrink wrapped together Compact small notebook size measures approximately 5\" x 3.25\" Each notebook includes 68 lined pages for notes, lists, and ideas Music-themed cassette covers feature funny, pun-filled phrases on both front and back Bright colors and bold graphics give each notebook its own mixtape personality Lightweight and easy to toss into backpacks, totes, or desk drawers Use one notebook or split the set by mood, subject, or purpose A fun alternative to standard notebooks with a nostalgic twist Suitable for ages 6 and up"
+     },
+     "price": {
+      "amount": 446,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 595,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Rewind-Notebook-Front.png?v=1780357366"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/42432059965475:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Rewind-Notebook-Front.png?v=1780357366"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/os-4-9-9-6",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "adults",
+    "art",
+    "art + diy",
+    "bts26",
+    "elementary",
+    "middle",
+    "new",
+    "paper",
+    "retro",
+    "travel",
+    "writing"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/30992203809",
+     "handle": "new",
+     "title": "New",
+     "description": {
+      "html": "Unleash an explosion of excitement with the new OOLY collection! It's cuteness and fun rolled into one! Newly OOLY fun is here! Discover everything new OOLY has to offer! Our newest OOLY products are here to bring you endless joy and creativity. Get ready to explore the adorable and fun Stickiville sticker collection, where cute characters and vibrant designs come to life. Create delightful and personalized trinkets with our Shrink-its! DIY Shrink Art Kits, providing hours of entertainment for all ages. The vivid colors of our Vivid Pop! Water Based Paint Markers are perfect for your artistic endeavors, or dive into the world of watercolors with the Scenic Hues DIY Watercolor Art Kits, allowing you to create breathtaking scenes with ease. And don't forget to spread joy with our Tiny Tadas! Note Cards and Sticker Sets, featuring charming mini notes and stickers. Whether you're a seasoned artist or just looking for some creative fun, the new OOLY range has something for everyone. Get ready to experience the magic of creativity with our latest and greatest cute and fun products that will brighten your day and inspire your imagination."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/79825109027",
+     "handle": "stocking-stuffers",
+     "title": "Stocking Stuffers",
+     "description": {
+      "html": "Fill their stockings with color, cuteness, and oh so much fun! Whether you need stocking stuffer ideas for kids, adults, or your favorite teacher, we\u2019ve selected tiny presents that\u2019ll surprise and delight each."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/273696063523",
+     "handle": "all",
+     "title": "Shop All",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/470297313315",
+     "handle": "color-draw",
+     "title": "Color & Draw",
+     "description": {
+      "html": "Markers, crayons, and coloring books for hours of creative fun."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4616416985123",
+   "title": "Carry Along Sketchbook - Cat - 60 Pages",
+   "description": {
+    "html": "Purr-fectly cute kitty cat sketchbook for kids The Carry Along Cat Sketchbook is made for the little kitty enthusiast in your life who loves to draw and doodle wherever they go! This cute sketchbook features a charming cat cover that adds extra fun and inspiration in every opportunity to create. With its compact size and easy-to-carry handle, this travel sketchbook is perfect for on-the-go creativity, from car rides to classroom. With 60 pages of high quality 100gsm paper, each sturdy, perforated page is designed to handle crayons, markers, and pencils, making it the ideal sketchbook for drawing all kinds of colorful cat-inspired creations. Whether capturing scenes of playful kittens or dreaming up their own whiskered critters, kids will find endless joy filling each page. The Carry Along Cat Sketchbook is a must-have for any feline fan. Fun cat sketchbook with a purrfectly playful kitty cover design Write, draw, and create on over 60 individual pages 9\" x 7\" paper - the perfect compact size and easy-to-carry handle for traveling artists 100 gsm paper weight - Sturdy pages ideal for crayons, markers, and pencils Perforated pages for easy tear and share Acid free paper - lasts longer and friendlier on the environment Suitable for ages 3 and up See the full collection"
+   },
+   "url": "https://www.ooly.com/products/carry-along-sketchbook-cat",
+   "handle": "carry-along-sketchbook-cat",
+   "price_range": {
+    "min": {
+     "amount": 1271,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1271,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1695,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1695,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32322022866979",
+     "sku": "118-199",
+     "title": "Default Title",
+     "description": {
+      "html": "Purr-fectly cute kitty cat sketchbook for kids The Carry Along Cat Sketchbook is made for the little kitty enthusiast in your life who loves to draw and doodle wherever they go! This cute sketchbook features a charming cat cover that adds extra fun and inspiration in every opportunity to create. With its compact size and easy-to-carry handle, this travel sketchbook is perfect for on-the-go creativity, from car rides to classroom. With 60 pages of high quality 100gsm paper, each sturdy, perforated page is designed to handle crayons, markers, and pencils, making it the ideal sketchbook for drawing all kinds of colorful cat-inspired creations. Whether capturing scenes of playful kittens or dreaming up their own whiskered critters, kids will find endless joy filling each page. The Carry Along Cat Sketchbook is a must-have for any feline fan. Fun cat sketchbook with a purrfectly playful kitty cover design Write, draw, and create on over 60 individual pages 9\" x 7\" paper - the perfect compact size and easy-to-carry handle for traveling artists 100 gsm paper weight - Sturdy pages ideal for crayons, markers, and pencils Perforated pages for easy tear and share Acid free paper - lasts longer and friendlier on the environment Suitable for ages 3 and up See the full collection"
+     },
+     "price": {
+      "amount": 1271,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1695,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Carry-Along-Sketchbook-Cat-Front.png?v=1750365856"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/32322022866979:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/files/OOLY-Carry-Along-Sketchbook-Cat-Front.png?v=1750365856",
+     "alt_text": "Front cover of OOLY Cat Carry Along Sketchbook"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/ae-2-1-2-1-4",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "art",
+    "art + diy",
+    "bts26",
+    "elementary",
+    "girl",
+    "her",
+    "him",
+    "kids",
+    "mirakl",
+    "organize",
+    "school",
+    "top seller",
+    "travel"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/151799660579",
+     "handle": "gifts-for-kids",
+     "title": "Gifts for Kids",
+     "description": {
+      "html": "Whether they\u2019re aspiring astronauts, curious crafters, or the next Picasso, discover gifts in every color of the rainbow that will spark creativity and delight the little artists in your life."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/153008963619",
+     "handle": "gifts-for-traveling",
+     "title": "Gifts for Traveling",
+     "description": {
+      "html": "Avoid the \"Are we there yets?\" From on-the-go kits to imaginative sticker play scenes, to sketchbooks and clay kits. We've got everything you need to keep the kiddos busy until you get to where you're going! Keep the kids busy with OOLY's on-the-go goodies There\u2019s no better way to fuel your little ones interest in exploration than with thoughtful, travel-inspired gifts. Find everything you need to make family travel easier, more creative, and definitely more fun!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158119919651",
+     "handle": "kindergarten-graduation-gifts",
+     "title": "Kindergarten Graduation Gifts",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/263928709155",
+     "handle": "homeschool-supplies",
+     "title": "Homeschool Supplies",
+     "description": {
+      "html": "When it comes to setting your kids on a road to homeschool success, look no further than the colorful world of OOLY school supplies. Inspire your school students with a world of writing supplies, colored pencils, markers and organizational products for a more personal education and fun with learning. Colorful and inspirational supplies for homeschool success OOLY has the homeschool supplies you need for an at-home education like no other. The expected school needs are all here but with all the cute and colorfulness from OOLY you love such as graphite pencils, erasers, gel pens and more. But a homeschool education can offer a more personal touch and OOLY has the homeschool supplies that inspire throughout the school year. Children learn and retain school lessons when more of their senses are stimulated. Engage your homeschool children with the Creatibles Air Dry Clay Kit for any creative lesson ideas you may have. And Stampables Double-Ended Markers offer a creative way to apply fun stamping action with any math problem solving. Pencil mistakes are going to be made; that\u2019s a given in any school setting. So why not have cute erasers for your homeschool kids? ClickIt erasers make erasing pencil mistakes a quick click away. Rainbow Glitter Gem erasers offer a dazzling pencil eraser option with strawberry scented erasers inside a glittery barrel."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4618722672675",
+   "title": "Sketch & Show Standing Sketchbook - Awesome Doodles - 45 Pages",
+   "description": {
+    "html": "Sharks, spaceships and rockin\u2019 guitars make an inviting cover to a stand-out sketchbook. The Awesome Doodles sketchbook not only has room for plenty of sketching, it will display it too! This outstanding sketchbook has its own easel-type stand built right in. With the fun laminated accented doodle cover, inspiration starts here! Show off your art to the world with a Sketch and Show standing sketchbook. Awesome Doodles sketchbook comes with a built-in stand so after you\u2019re done making your art you can share it with everyone. This kids sketchbook features 45 perforated pages of 120 gsm acid-free white paper sized at 8x10 inches. A colorful cover has laminated accents featuring sharks, spaceships and cheeseburgers that make this sketchbook extra special! These standing sketchbooks for kids make for an inspired gift of imagination when paired with crayons, markers or colored pencils. Awesome Doodles Sketch and Show Sketchbook Standing Sketchbook Sketchbook has built in easel type stand for displaying artwork 45 perforated pages 8 x 10 inch paper size Suitable for ages 8 and up See the full collection"
+   },
+   "url": "https://www.ooly.com/products/sketch-show-standing-sketchbook-awesome-doodles",
+   "handle": "sketch-show-standing-sketchbook-awesome-doodles",
+   "price_range": {
+    "min": {
+     "amount": 971,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 971,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1295,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1295,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32327283605539",
+     "sku": "118-214",
+     "title": "Default Title",
+     "description": {
+      "html": "Sharks, spaceships and rockin\u2019 guitars make an inviting cover to a stand-out sketchbook. The Awesome Doodles sketchbook not only has room for plenty of sketching, it will display it too! This outstanding sketchbook has its own easel-type stand built right in. With the fun laminated accented doodle cover, inspiration starts here! Show off your art to the world with a Sketch and Show standing sketchbook. Awesome Doodles sketchbook comes with a built-in stand so after you\u2019re done making your art you can share it with everyone. This kids sketchbook features 45 perforated pages of 120 gsm acid-free white paper sized at 8x10 inches. A colorful cover has laminated accents featuring sharks, spaceships and cheeseburgers that make this sketchbook extra special! These standing sketchbooks for kids make for an inspired gift of imagination when paired with crayons, markers or colored pencils. Awesome Doodles Sketch and Show Sketchbook Standing Sketchbook Sketchbook has built in easel type stand for displaying artwork 45 perforated pages 8 x 10 inch paper size Suitable for ages 8 and up See the full collection"
+     },
+     "price": {
+      "amount": 971,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1295,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/118-214-Sketch-and-Show-Standing-Sketchbook-Awesome-Doodles-B3_1a49c070-3baf-4bfa-aee3-8444764df053.png?v=1597079186"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/32327283605539:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/118-214-Sketch-and-Show-Standing-Sketchbook-Awesome-Doodles-B3_1a49c070-3baf-4bfa-aee3-8444764df053.png?v=1597079186",
+     "alt_text": "Awesome Duo Sketch and Show Standing Sketchbook cover"
+    }
+   ],
+   "tags": [
+    "art",
+    "art + diy",
+    "elementary",
+    "girl",
+    "her",
+    "him",
+    "kids",
+    "middle",
+    "mirakl",
+    "rebuyall",
+    "school art",
+    "travel"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58396606499",
+     "handle": "school-art-supplies",
+     "title": "School Art Supplies",
+     "description": {
+      "html": "Discover colorful art supplies for school that will bring color and life to your school projects. Paints, markers, colored pencils and more are available to elevate your artistic imagination. Imagine, create and color with art supplies for school Bringing your imagination to life through art is amplified by the tools with which you choose to create. OOLY has come up with every possible option for bringing color to life in the most creative and special of ways. Whether you\u2019re looking for Modern Metallics, going for a huge color splash, or like the dustless look of chalk crayons and markers, OOLY has unique and fun craft supplies for you. Deepen your perspective with less messy oil pastels. Get glamorous with glitter and neon lil\u2019 Poster Paint Pods to deck out your best poster, whether it be to sell lemonade, display a school project or advertise a local event. Color and texture options are nearly limitless. Choose from cute and creative gel pens, puffy paint pens, watercolor pencils, Chunkies Paint Sticks, or Seriously Fine Tip markers. Create on more than paper with Marvelous Multi-purpose markers and Fabric Doodlers markers."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83893157923",
+     "handle": "teacher-school-supplies",
+     "title": "Teacher School Supplies",
+     "description": {
+      "html": "Our teachers encourage us to follow our dreams and inspire us to become our best person possible. Shop these school necessities and classroom supplies (or gifts) for teachers. Plan, organize and excel with our list of essential teacher supplies Who said school has to be boring? Find everything on your teacher supply list that is both practical and pretty. The right arts and crafts supplies will make the right impression for all grade levels. Find the right teacher supplies online here at OOLY. Leave grades and comments that make an impression with the Note Pals Sticky Tabs and glitter gel pens. Use Do-Overs Erasable Highlighters to really make a mark on the page. Our huge collection of Jot-It! Notebooks are the perfect place to keep track of the day; use Modern Script fountain pens to make sure nothing is left behind."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158119919651",
+     "handle": "kindergarten-graduation-gifts",
+     "title": "Kindergarten Graduation Gifts",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158436196387",
+     "handle": "elementary-school-graduation-gifts",
+     "title": "Elementary School Graduation Gifts",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/546557198369",
+   "title": "White DIY Cover Sketchbook",
+   "description": {
+    "html": "A very nice, easy-to-manage, white paper sketchbook for all of your wonderful works of art. This White DIY Cover Sketchbook is great for holding all of your amazing creations. Make your sketchbook your own by putting your art right on the cover. The 75 sheets of perforated paper are (8\" x 10.5\" for large) and (5\" x 7.5\" for small). It comes with a built-in elastic strap. Heavy white paper, 110g. Available in two sizes; Large and Small. White paper sketchbook Designable cover Hard bound with built-in elastic strap 75 perforated sheets (8\" x 10.5\" for large) and (5\" x 7.5\" for small) 110g paper weight"
+   },
+   "url": "https://www.ooly.com/products/white-diy-cover-sketchbook",
+   "handle": "white-diy-cover-sketchbook",
+   "price_range": {
+    "min": {
+     "amount": 971,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1346,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1295,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1795,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/7068649488417",
+     "sku": "118-101",
+     "title": "Small",
+     "description": {
+      "html": "A very nice, easy-to-manage, white paper sketchbook for all of your wonderful works of art. This White DIY Cover Sketchbook is great for holding all of your amazing creations. Make your sketchbook your own by putting your art right on the cover. The 75 sheets of perforated paper are (8\" x 10.5\" for large) and (5\" x 7.5\" for small). It comes with a built-in elastic strap. Heavy white paper, 110g. Available in two sizes; Large and Small. White paper sketchbook Designable cover Hard bound with built-in elastic strap 75 perforated sheets (8\" x 10.5\" for large) and (5\" x 7.5\" for small) 110g paper weight"
+     },
+     "price": {
+      "amount": 971,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1295,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Small"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/118-101-White-DIY-Cover-Sketchbook-Small-B.png?v=1574543262"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/7068649488417:1"
+    },
+    {
+     "id": "gid://shopify/ProductVariant/7068649521185",
+     "sku": "118-SK-WHT",
+     "title": "Large",
+     "description": {
+      "html": "A very nice, easy-to-manage, white paper sketchbook for all of your wonderful works of art. This White DIY Cover Sketchbook is great for holding all of your amazing creations. Make your sketchbook your own by putting your art right on the cover. The 75 sheets of perforated paper are (8\" x 10.5\" for large) and (5\" x 7.5\" for small). It comes with a built-in elastic strap. Heavy white paper, 110g. Available in two sizes; Large and Small. White paper sketchbook Designable cover Hard bound with built-in elastic strap 75 perforated sheets (8\" x 10.5\" for large) and (5\" x 7.5\" for small) 110g paper weight"
+     },
+     "price": {
+      "amount": 1346,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1795,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Size",
+       "label": "Large"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/118-SK-WHT-White-DIY-Cover-Sketchbook-Large-B.png?v=1574543262"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/7068649521185:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      {
+       "label": "Small"
+      },
+      {
+       "label": "Large"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/118-101-White-DIY-Cover-Sketchbook-B.png?v=1574543262"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "adults",
+    "art",
+    "art + diy",
+    "bts24",
+    "bts26",
+    "coloring book",
+    "her",
+    "him",
+    "kids",
+    "middle",
+    "mirakl",
+    "school art",
+    "studio",
+    "teens",
+    "top seller",
+    "travel"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/31338528801",
+     "handle": "gifts-for-mom",
+     "title": "gifts for mom",
+     "description": {
+      "html": ""
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58396606499",
+     "handle": "school-art-supplies",
+     "title": "School Art Supplies",
+     "description": {
+      "html": "Discover colorful art supplies for school that will bring color and life to your school projects. Paints, markers, colored pencils and more are available to elevate your artistic imagination. Imagine, create and color with art supplies for school Bringing your imagination to life through art is amplified by the tools with which you choose to create. OOLY has come up with every possible option for bringing color to life in the most creative and special of ways. Whether you\u2019re looking for Modern Metallics, going for a huge color splash, or like the dustless look of chalk crayons and markers, OOLY has unique and fun craft supplies for you. Deepen your perspective with less messy oil pastels. Get glamorous with glitter and neon lil\u2019 Poster Paint Pods to deck out your best poster, whether it be to sell lemonade, display a school project or advertise a local event. Color and texture options are nearly limitless. Choose from cute and creative gel pens, puffy paint pens, watercolor pencils, Chunkies Paint Sticks, or Seriously Fine Tip markers. Create on more than paper with Marvelous Multi-purpose markers and Fabric Doodlers markers."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80352346147",
+     "handle": "calendar-planner-supplies",
+     "title": "Calendar and Planner Supplies",
+     "description": {
+      "html": "When you\u2019re looking to add a little flair to your personal planner, OOLY\u2019s planner supplies make organizing fun and oh so pretty! Decorate in style with colored gel pens, pastel highlighters, stickers and more. Style your planner and bring it to life with colorful pens, markers and creative art supplies. OOLY makes staying on top of tasks and to-do\u2019s colorful and easy! With a rainbow of different planner supplies that add color and fun to your , planning your days, projects, and everything in between just got very exciting! Plot your next project with your decorated personal planner. Enhance your schedule of important appointments in perfect color-coded order using silky-smooth gel pens or pack in all the color you need into one magical multicolor pen. Dual tipped markers are also great for traveling with more color options than you can imagine. And of course you need a place to keep everything and there is no better place than one of our many amazing journals for people of all ages."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83893157923",
+     "handle": "teacher-school-supplies",
+     "title": "Teacher School Supplies",
+     "description": {
+      "html": "Our teachers encourage us to follow our dreams and inspire us to become our best person possible. Shop these school necessities and classroom supplies (or gifts) for teachers. Plan, organize and excel with our list of essential teacher supplies Who said school has to be boring? Find everything on your teacher supply list that is both practical and pretty. The right arts and crafts supplies will make the right impression for all grade levels. Find the right teacher supplies online here at OOLY. Leave grades and comments that make an impression with the Note Pals Sticky Tabs and glitter gel pens. Use Do-Overs Erasable Highlighters to really make a mark on the page. Our huge collection of Jot-It! Notebooks are the perfect place to keep track of the day; use Modern Script fountain pens to make sure nothing is left behind."
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4838764871715",
+   "title": "Sketch & Show Standing Sketchbook - Sugar Joy - 45 Pages",
+   "description": {
+    "html": "Sugar Joy kids art sketchbook cover has delightful sweet treat designs accented with glitter that are sure to please. And Sketch and Show Standing glitter sketchbook allows you to draw and then display your art! This cute sketchbook has its own easel-type stand built right in. Let the sparkly cover inspire your own artwork! Super cute Sugar Joy sketchbook comes with a built-in stand so after you\u2019re done making your art you can share it with everyone. This kids sketchbook features 45 perforated pages of 120 gsm acid-free white paper sized at 8 x 10 inches. A sparkly cover has fun glittery rainbows, ice cream, gummi bears and other yummy goodies that make this sketchbook extra special! These standing sketchbooks for kids make for an inspired gift of imagination when paired with crayons, markers or colored pencils. Sugar Joy Sketch and Show Sketchbook Standing Sketchbook Sketchbook has built in easel type stand for displaying artwork 45 perforated pages 8 x 10 inch paper size Suitable for ages 8 and up See the full collection"
+   },
+   "url": "https://www.ooly.com/products/sketch-show-standing-sketchbook-sugar-joy",
+   "handle": "sketch-show-standing-sketchbook-sugar-joy",
+   "price_range": {
+    "min": {
+     "amount": 971,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 971,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1295,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1295,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32979520454691",
+     "sku": "118-253",
+     "title": "Default Title",
+     "description": {
+      "html": "Sugar Joy kids art sketchbook cover has delightful sweet treat designs accented with glitter that are sure to please. And Sketch and Show Standing glitter sketchbook allows you to draw and then display your art! This cute sketchbook has its own easel-type stand built right in. Let the sparkly cover inspire your own artwork! Super cute Sugar Joy sketchbook comes with a built-in stand so after you\u2019re done making your art you can share it with everyone. This kids sketchbook features 45 perforated pages of 120 gsm acid-free white paper sized at 8 x 10 inches. A sparkly cover has fun glittery rainbows, ice cream, gummi bears and other yummy goodies that make this sketchbook extra special! These standing sketchbooks for kids make for an inspired gift of imagination when paired with crayons, markers or colored pencils. Sugar Joy Sketch and Show Sketchbook Standing Sketchbook Sketchbook has built in easel type stand for displaying artwork 45 perforated pages 8 x 10 inch paper size Suitable for ages 8 and up See the full collection"
+     },
+     "price": {
+      "amount": 971,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1295,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/118-253-Sketch-and-Show-Standing-Sketchbook-Sugar-Joy-B1.png?v=1607978513"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/32979520454691:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/118-253-Sketch-and-Show-Standing-Sketchbook-Sugar-Joy-B1.png?v=1607978513",
+     "alt_text": "OOLY Standing Sketch book with Sugar Joy"
+    }
+   ],
+   "tags": [
+    "art",
+    "art + diy",
+    "bts26",
+    "elementary",
+    "fresh picks",
+    "girl",
+    "her",
+    "him",
+    "kids",
+    "middle",
+    "mirakl",
+    "rebuyall",
+    "school art",
+    "sweet",
+    "teens",
+    "top seller",
+    "travel"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58396606499",
+     "handle": "school-art-supplies",
+     "title": "School Art Supplies",
+     "description": {
+      "html": "Discover colorful art supplies for school that will bring color and life to your school projects. Paints, markers, colored pencils and more are available to elevate your artistic imagination. Imagine, create and color with art supplies for school Bringing your imagination to life through art is amplified by the tools with which you choose to create. OOLY has come up with every possible option for bringing color to life in the most creative and special of ways. Whether you\u2019re looking for Modern Metallics, going for a huge color splash, or like the dustless look of chalk crayons and markers, OOLY has unique and fun craft supplies for you. Deepen your perspective with less messy oil pastels. Get glamorous with glitter and neon lil\u2019 Poster Paint Pods to deck out your best poster, whether it be to sell lemonade, display a school project or advertise a local event. Color and texture options are nearly limitless. Choose from cute and creative gel pens, puffy paint pens, watercolor pencils, Chunkies Paint Sticks, or Seriously Fine Tip markers. Create on more than paper with Marvelous Multi-purpose markers and Fabric Doodlers markers."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80355098659",
+     "handle": "pastel",
+     "title": "Pastel",
+     "description": {
+      "html": "Turn your pastel hued dreams into a positively pretty reality with this candy-colored collection of pastel art supplies, pastel highlighters, and pastel school supplies from OOLY! Pretty pastels pack a punch of positivity Don\u2019t be fooled by the softness of these pretty sweet shades. The power of pastels is that their soft, pretty nature packs a punch of positivity. That\u2019s why at OOLY, we love to celebrate all things pastel! From pastel art supplies, pastel paints, Chunkies, pastel school supplies, and pastel highlighters, we have everything you need to create your happy\u2026.in the sweetest pastel shades! We love pastels because they radiate with positive vibes. They bring candy colored dreams to life with a gentle vibrancy that can\u2019t be ignored. Pastels work for any project, introducing an entirely new color scheme, while injecting your art with a new angle, a positive energy, and a happy, feel good vibe that can\u2019t help but make you smile. Seriously - do a project in pastels, highlight your notes in pastels, erase your mistakes with pastel erasers - and your mood is immediately boosted. Don\u2019t believe us? Give it a try and get pasteling (and smiling!) right away!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83893157923",
+     "handle": "teacher-school-supplies",
+     "title": "Teacher School Supplies",
+     "description": {
+      "html": "Our teachers encourage us to follow our dreams and inspire us to become our best person possible. Shop these school necessities and classroom supplies (or gifts) for teachers. Plan, organize and excel with our list of essential teacher supplies Who said school has to be boring? Find everything on your teacher supply list that is both practical and pretty. The right arts and crafts supplies will make the right impression for all grade levels. Find the right teacher supplies online here at OOLY. Leave grades and comments that make an impression with the Note Pals Sticky Tabs and glitter gel pens. Use Do-Overs Erasable Highlighters to really make a mark on the page. Our huge collection of Jot-It! Notebooks are the perfect place to keep track of the day; use Modern Script fountain pens to make sure nothing is left behind."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/158119919651",
+     "handle": "kindergarten-graduation-gifts",
+     "title": "Kindergarten Graduation Gifts",
+     "description": {
+      "html": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/4618723524643",
+   "title": "Sketch & Show Standing Sketchbook - Cute Doodle World - 45 Pages",
+   "description": {
+    "html": "Cute Doodle World kids art sketchbook cover has delightful doodles accented with glitter that are sure to please. And Sketch and Show Standing sketchbook allows you to doodle and then display your art! This cute sketchbook has its own easel-type stand built right in. Let the sparkly cover inspire your own artwork! Show off your art to the world with a Sketch and Show standing sketchbook. Cute Doodle World sketchbook comes with a built-in stand so after you\u2019re done making your art you can share it with everyone. This kids sketchbook features 45 perforated pages of 120 gsm acid-free white paper sized at 8x10 inches. A sparkly cover has fun glittery unicorns, ice cream, narwhals and other yummy goodies that make this sketchbook extra special! These standing sketchbooks for kids make for an inspired gift of imagination when paired with crayons, markers or colored pencils. Cute Doodle World Sketch and Show Sketchbook Standing Sketchbook Sketchbook has built in easel type stand for displaying artwork 45 perforated pages 8 x 10 inch paper size Suitable for ages 8 and up See the full collection"
+   },
+   "url": "https://www.ooly.com/products/sketch-and-show-sketchbook-cute-doodle-world",
+   "handle": "sketch-and-show-sketchbook-cute-doodle-world",
+   "price_range": {
+    "min": {
+     "amount": 971,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 971,
+     "currency": "USD"
+    }
+   },
+   "list_price_range": {
+    "min": {
+     "amount": 1295,
+     "currency": "USD"
+    },
+    "max": {
+     "amount": 1295,
+     "currency": "USD"
+    }
+   },
+   "variants": [
+    {
+     "id": "gid://shopify/ProductVariant/32327290093603",
+     "sku": "118-215",
+     "title": "Default Title",
+     "description": {
+      "html": "Cute Doodle World kids art sketchbook cover has delightful doodles accented with glitter that are sure to please. And Sketch and Show Standing sketchbook allows you to doodle and then display your art! This cute sketchbook has its own easel-type stand built right in. Let the sparkly cover inspire your own artwork! Show off your art to the world with a Sketch and Show standing sketchbook. Cute Doodle World sketchbook comes with a built-in stand so after you\u2019re done making your art you can share it with everyone. This kids sketchbook features 45 perforated pages of 120 gsm acid-free white paper sized at 8x10 inches. A sparkly cover has fun glittery unicorns, ice cream, narwhals and other yummy goodies that make this sketchbook extra special! These standing sketchbooks for kids make for an inspired gift of imagination when paired with crayons, markers or colored pencils. Cute Doodle World Sketch and Show Sketchbook Standing Sketchbook Sketchbook has built in easel type stand for displaying artwork 45 perforated pages 8 x 10 inch paper size Suitable for ages 8 and up See the full collection"
+     },
+     "price": {
+      "amount": 971,
+      "currency": "USD"
+     },
+     "list_price": {
+      "amount": 1295,
+      "currency": "USD"
+     },
+     "availability": {
+      "available": true
+     },
+     "options": [
+      {
+       "name": "Title",
+       "label": "Default Title"
+      }
+     ],
+     "media": [
+      {
+       "type": "image",
+       "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/118-215-Sketch-and-Show-Standing-Sketchbook-Cute-Doodle-World-B3_0c23e622-3f4b-41dc-9d07-662e98b0d747.png?v=1597079400"
+      }
+     ],
+     "requires": {
+      "shipping": true
+     },
+     "checkout_url": "https://ooly-store.myshopify.com/cart/32327290093603:1"
+    }
+   ],
+   "options": [
+    {
+     "name": "Title",
+     "values": [
+      {
+       "label": "Default Title"
+      }
+     ]
+    }
+   ],
+   "media": [
+    {
+     "type": "image",
+     "url": "https://cdn.shopify.com/s/files/1/2486/2582/products/118-215-Sketch-and-Show-Standing-Sketchbook-Cute-Doodle-World-B3_0c23e622-3f4b-41dc-9d07-662e98b0d747.png?v=1597079400",
+     "alt_text": "Cute Doodles Sketch and Show Standing Sketchbook cover"
+    }
+   ],
+   "categories": [
+    {
+     "value": "gid://shopify/TaxonomyCategory/na",
+     "taxonomy": "shopify"
+    }
+   ],
+   "tags": [
+    "art",
+    "art + diy",
+    "bts26",
+    "elementary",
+    "fresh picks",
+    "girl",
+    "her",
+    "him",
+    "kids",
+    "middle",
+    "mirakl",
+    "rebuyall",
+    "school art",
+    "travel"
+   ],
+   "gift_card": false,
+   "collections": [
+    {
+     "id": "gid://shopify/Collection/31030837281",
+     "handle": "writing",
+     "title": "Writing Supplies",
+     "description": {
+      "html": "Put your amazing thoughts, stories, journal entries and imaginative words down with OOLY writing supplies. Unlock your creative confidence with stylish, cute and very colorful collection of fabulous writing tools and accessories. OOLY writing supplies are for teachers, artists, parents, & kids. Take charge of your day and give yourself the power to write with emotion. With writing tools like pencils, pens, & markers, you have everything you need to succeed. Writing supplies are accessible to everyone, and should be. Maybe start with the basics, then color your world with this vast array of writing supplies. Bring life to your sticky notes and lists. Vicarious, uninhibited highlighting helps you stay organized. Color-coordinated chore charts keep everyone on track. Maybe. :) You live an exciting life. Let your writing reflect the expressive rainbow you feel inside. Bring joy to those around you with friendly notes. Let loose. Let your paper experience life with you. Better yet, let it be a part of everything you do with OOLY writing supplies as outgoing as you are."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/58396606499",
+     "handle": "school-art-supplies",
+     "title": "School Art Supplies",
+     "description": {
+      "html": "Discover colorful art supplies for school that will bring color and life to your school projects. Paints, markers, colored pencils and more are available to elevate your artistic imagination. Imagine, create and color with art supplies for school Bringing your imagination to life through art is amplified by the tools with which you choose to create. OOLY has come up with every possible option for bringing color to life in the most creative and special of ways. Whether you\u2019re looking for Modern Metallics, going for a huge color splash, or like the dustless look of chalk crayons and markers, OOLY has unique and fun craft supplies for you. Deepen your perspective with less messy oil pastels. Get glamorous with glitter and neon lil\u2019 Poster Paint Pods to deck out your best poster, whether it be to sell lemonade, display a school project or advertise a local event. Color and texture options are nearly limitless. Choose from cute and creative gel pens, puffy paint pens, watercolor pencils, Chunkies Paint Sticks, or Seriously Fine Tip markers. Create on more than paper with Marvelous Multi-purpose markers and Fabric Doodlers markers."
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80355000355",
+     "handle": "hearts",
+     "title": "All the Hearts",
+     "description": {
+      "html": "We heart LOVE at OOLY so get ready to love on some of our absolute favorite heart themed products sure to leave you with all the XO feels. At OOLY we LOVE a good theme (see what we did there?) At OOLY we are in love with hearts. And while we know that hearts rule Valentine\u2019s Day, we really don\u2019t think February 14th should get all the fun. We believe in sharing the love all year round, 365 days a year. So whether you\u2019re someone who\u2019s into vibrant hearts, pastel hearts, rainbow hearts, hearts on stickers, hearts on tattoos, stampable hearts, stackable hearts, heart themed jewelry, or hearts made of cotton candy (ok that last one we made up to see if you were paying attention), we have nothing but love to share at OOLY. From art supplies, to school supplies, to giftable bundles and on-the-go projects, we want you to love every minute you spend while you create your happy. Created with hearts and made with love - there\u2019s no use trying to hide it - we love our creators big and small and can\u2019t wait to see what you make with love!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/80355098659",
+     "handle": "pastel",
+     "title": "Pastel",
+     "description": {
+      "html": "Turn your pastel hued dreams into a positively pretty reality with this candy-colored collection of pastel art supplies, pastel highlighters, and pastel school supplies from OOLY! Pretty pastels pack a punch of positivity Don\u2019t be fooled by the softness of these pretty sweet shades. The power of pastels is that their soft, pretty nature packs a punch of positivity. That\u2019s why at OOLY, we love to celebrate all things pastel! From pastel art supplies, pastel paints, Chunkies, pastel school supplies, and pastel highlighters, we have everything you need to create your happy\u2026.in the sweetest pastel shades! We love pastels because they radiate with positive vibes. They bring candy colored dreams to life with a gentle vibrancy that can\u2019t be ignored. Pastels work for any project, introducing an entirely new color scheme, while injecting your art with a new angle, a positive energy, and a happy, feel good vibe that can\u2019t help but make you smile. Seriously - do a project in pastels, highlight your notes in pastels, erase your mistakes with pastel erasers - and your mood is immediately boosted. Don\u2019t believe us? Give it a try and get pasteling (and smiling!) right away!"
+     }
+    },
+    {
+     "id": "gid://shopify/Collection/83893157923",
+     "handle": "teacher-school-supplies",
+     "title": "Teacher School Supplies",
+     "description": {
+      "html": "Our teachers encourage us to follow our dreams and inspire us to become our best person possible. Shop these school necessities and classroom supplies (or gifts) for teachers. Plan, organize and excel with our list of essential teacher supplies Who said school has to be boring? Find everything on your teacher supply list that is both practical and pretty. The right arts and crafts supplies will make the right impression for all grade levels. Find the right teacher supplies online here at OOLY. Leave grades and comments that make an impression with the Note Pals Sticky Tabs and glitter gel pens. Use Do-Overs Erasable Highlighters to really make a mark on the page. Our huge collection of Jot-It! Notebooks are the perfect place to keep track of the day; use Modern Script fountain pens to make sure nothing is left behind."
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "has_next_page": false
+ },
+ "messages": []
+}

@@ -25,6 +25,19 @@ TO_BASE = {("cm", "in"): 1 / 2.54, ("mm", "in"): 1 / 25.4, ("ft", "in"): 12.0, (
 FAMILY = {"lb": "weight", "kg": "weight", "oz": "weight", "in": "length", "cm": "length", "mm": "length",
           "ft": "length", "qt": "volume", "L": "volume", "°F": "temperature", "°C": "temperature",
           "gpf": "volume per flush", "Lpf": "volume per flush", "gpm": "flow", "Lpm": "flow"}
+DECLARED = {}  # units a sheet declares itself: {name: [spellings]}; each is its own kind of measure
+
+
+def declare_units(sheet):
+    """A sheet may name its own units and how stores spell them (`"units": {"dB": ["db", "decibels"], ...}`), so a
+    new sheet needs no change here. The table above stays as the default for units a sheet does not declare."""
+    for name, spellings in (sheet.get("units") or {}).items():
+        DECLARED[name] = sorted({str(x).lower() for x in list(spellings) + [name]}, key=len, reverse=True)
+        for spelling in DECLARED[name]:
+            ALIASES[spelling] = name
+        FAMILY.setdefault(name, name)
+
+
 OPS = (">=", "<=", "==")
 PICK_RULES = ("cheapest_with_delivery_time", "cheapest")
 
@@ -33,6 +46,9 @@ def validate_sheet(sheet):
     """A sheet the rules cannot run is refused when it is loaded, with the reason: an unknown comparison or an
     unknown pick rule is an error, never quietly treated as something else."""
     for line in sheet["lines"]:
+        q = line.get("quantity", 1)
+        if isinstance(q, bool) or not isinstance(q, int) or q < 1:
+            raise ValueError("line %s has the quantity %r; it must be a whole number of at least 1" % (line.get("id"), q))
         for limit in line["limits"]:
             if limit.get("op") not in OPS:
                 raise ValueError("limit %s has the comparison %r; the rules know %s" % (limit.get("id"), limit.get("op"), ", ".join(OPS)))
@@ -294,7 +310,8 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
     for f in figures:
         by_product.setdefault((f["store"], f["product_id"]), []).append(f)
     ans = {a["store"]: a for a in answers}
-    lines, found, every, inside_n, ready = [], len(pool), 0, 0, 0
+    # products found are pages; a product sold in several options is one page and several candidates
+    lines, found, every, inside_n, ready = [], len({(p["store"], p["product_id"]) for p in pool}), 0, 0, 0
     for line in sheet["lines"]:
         struck = [s for s in strikes if s["line_id"] == line["id"]]
         struck_by_key = {s["product_key"]: s for s in struck}
@@ -373,7 +390,8 @@ def build_state(sheet, pool, figures, answers, strikes, mode="fixture"):
                               "rule": sheet["pick_rule"]["label"],
                               "pick_price_cents": pick["product"]["price_cents"] if pick else None},
                       "struck": struck, "candidates": cands})
-    total = sum(c["product"]["price_cents"] for l in lines for c in l["candidates"]
+    quantity = {line["id"]: line.get("quantity", 1) for line in sheet["lines"]}  # how many of the pick the list asks for
+    total = sum(c["product"]["price_cents"] * quantity[l["line_id"]] for l in lines for c in l["candidates"]
                 if c["picked"] and l["status"] in ("ready", "next_candidate"))
     return {"version": 1, "mode": mode, "sheet": sheet,
             "seal": {"signed": False, "text": "Not signed. No cart exists at any store.", "sheet_hash": None,
