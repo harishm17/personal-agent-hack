@@ -34,3 +34,10 @@ I called `create_cart` once for real to read its reply: `cart.line_items[]` is `
            "title": l["item"].get("title")} for l in c.get("line_items", [])],
 ```
 SIGN's comparison reads exactly those keys (variant id, quantity, unit price) and shows both values on a difference; until `lines` is there every cart says "lines_checked: false". Replay mode: the replayed cart should return its lines the same way.
+## 12:52 from TRAIL — S10 (`signoff.obs.recent()`), the shape the trail will read
+- [ ] A list of the tool-call events already sent to Amplitude, kept locally: `[{at (ISO with zone), name, success,
+  latency_ms, error}]`, newest last, a few thousand at most. The feed will read it in `signoff/trail/feed.py:collect()`
+  and use `latency_ms` as the measured duration of each search, question, figure read and check. Until it exists the
+  trail shows only spans between records' own times.
+- Note: in this worktree's `data/egress/ledger.jsonl` the row number `n` restarts (several rows have `n: 1`), so
+  "ledger 1" is not unique as a reference. If that is also true on main, a row needs a unique `n`.

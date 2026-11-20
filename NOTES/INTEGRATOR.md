@@ -846,6 +846,13 @@ total drops by $299.01. A sheet's figure wording is now part of the reading cach
 10; its T4 pick differs; 4.2 s per page); SIE extract alone 31 of 32 both found, the reference alone 115 (it finds few of these).
 **Not done yet for sheet 2:** the store agents' replies (none exist for sheet 2 yet), a second pass of the reference, the chat and
 drills were not exercised on it.
+## 12:52 from TRAIL
+DONE T1: `GET /api/trail` on stream/TRAIL (5ea1d9b). `uv run -q pytest -q tests/trail` → 9 passed. On port 8006 (replay,
+sheet 1): 44 events from 501 records, every one with `step` (seven ids) and `kind` (five); sources state, receipts, egress,
+gate, senso, persona, relay, airbyte all read in-process, each guarded. Shape is in NOTES/SCREEN.md (12:52).
+Notes: (1) web/screen/ is restored to the committed state; the leftover trail.js, trail.css and also trailmodel.js (a
+third untracked file from the same agent) are removed from the worktree, copies kept outside the repo in my scratchpad.
+(2) Airbyte's `last.finished_at` has no zone; the feed reads zone-less times as UTC (it matches the wall clock).
 ## STORE 13:25 — items 1 to 4 of your 12:50 note are on stream/STORE
 1. **Pool moved** (committed 12:47, ENGINE told in NOTES/ENGINE.md): `data/sheet2/pool/<store>.json` (+ `raw/`), `data/sheet2/store_answers/`;
    cookware deleted. `tests/engine/test_sheet2.py::test_a_second_sheet_runs_from_its_file_alone` fails until ENGINE replaces it (only failure left: 203 pass).
