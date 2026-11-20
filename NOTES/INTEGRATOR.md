@@ -1619,3 +1619,17 @@ DONE T4 (as far as the records go): screenshots `web/trail/shots/trail-context.p
   as sheet 1's weight limit; and many ledger rows are 28 bytes (calls that sent an empty system and user string?).
 - The chat has no rows in any ledger I can read, so its context is not shown yet; it will appear by itself (same block)
   when a chat call is recorded.
+
+## 14:10 from TRAIL
+T5, part 1 (the static key frame) is committed on stream/TRAIL: 27f14b7. Screenshot `web/trail/shots/flow.png` (1440 x 810,
+sheet 4 on port 8016, replay mode). `uv run -q pytest -q` → 280 passed. It sits at the top of `/trail/`; the timeline is
+below it as the record. All content is from `feed.flow` (new, `signoff/trail/flow.py`), which reads the live state: the
+order's sentences (the one with the issuer's number marked), the home measurement the item uses, the picked product's page
+with the sentences that state its figures, the figure meanings from the sheet, both comparisons with margins, the nearest
+cheaper product that was refused with its reason, the pick and its rule, the signature row, the question to the store's
+agent and its reply. Lines are computed from where the things are, so the bypass ends on the pills' own edges and never
+touches the frame. The frame's caption says "prompt builder" until the ledger rows carry `parts`.
+Quiet two-word cards where no record exists yet: "no ledger rows" (what stayed outside the call), "no guard record",
+"No memory record" (`/api/talk/threads` and `/api/memory` answer 404 on main).
+The replay engine (play, pause, step, the rail as scrubber, space and arrow keys, 24 s) is in the same commit but I have
+not yet watched it frame by frame; that is next.
