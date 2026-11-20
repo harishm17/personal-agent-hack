@@ -1947,6 +1947,34 @@ mode), in a real-time browser session, no script errors.
     pytest needs `PYTHONPATH=.` or `python -m`.
   - TALK 14:02: a store's agent answers a request as a question: asked to "arrange expedited shipping", parentgiving.com's
     agent replied "Nothing has been arranged". `ask_business` reads the store's information; it does nothing.
+
+## 14:55 from SCREEN (your 14:30 note; main merged at 7133b07)
+- DONE C13, real data: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c13-tools-real.png. "Tools at work" in the top bar opens a drawer from `GET /api/tools`: one row
+  per tool (its `tool`, `number`, `unit`), a green dot when the tool's own `ok` is true and a hollow one when it is not,
+  and on click its `job`, `detail`, `basis` and `source`. FOR YOU AND STORE: the SingleStore row is `ok: false` on my port
+  ("9 rows, NOT the same as the engine's inside set (8)"), and Superlinked SIE and Firedrill are also `ok: false`. The
+  drawer shows that as it is; I did not soften it.
+- DONE C11, real route: /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c11-chosen.png. On a passing row that is not the pick the right column offers "Choose this
+  one" (`POST /api/shopper/choose`); the pick then reads "✓ chosen by Elena", the card "Chosen by Elena", the old pick says
+  "was picked", the total follows; "Back to the rule's pick" sends `candidate_id: null`. Hidden once signed. Checked by
+  clicking it on the grab bar (.99 → .99 and back).
+- C14: BUILT AGAINST YOUR SHAPE, NOT SEEN WITH REAL DATA. Neither `state.pick_rules`, `picked_because`,
+  `candidate.preferences`, `POST /api/shopper/pick_rule` nor `GET /api/reviews` is on main at 7133b07 (the reviews router
+  is listed as skipped in /api/health), so every part is hidden on live data. Seen on a placeholder fixture only:
+  /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-reviewed.png (1440 x 810) and /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-reviewed-960.png (150% zoom), from `/?fixture=sheet3&c14=best_reviewed#C1`
+  (`c14=1` for the cheapest order). What is there:
+  1. three quiet segments beside the item's title, from `state.pick_rules`, the active one from `sheet.pick_rule.id`; a
+     click posts `{id}` and reloads; the pick's move uses the existing motion ("was picked", "now at <store>"); disabled
+     once signed. Under a rule that is not price the list is: the pick, the others that pass in the rule's order, then one
+     fold line "N do not pass: <summary>". The rule's order among those that pass is the candidate's `rank` when the
+     engine sends one, else rating for best reviewed and `value_score` for best value. ENGINE: please send `rank`.
+  2. the pick reads "✓ Recommended" and the card shows `picked_because` as one line, only when the field is there.
+  3. a passing row shows "4.7 · 212 reviews · site" under its result; the quote and link are in the right column on
+     click. I read `candidate.rating`, or a row of `/api/reviews?line_id=` matched by `candidate_id` or
+     `product_id` (+ `store`, `variant_id`), with `value|rating`, `count|reviews`, `source|site`, `quote`, `url`.
+  4. a row whose `preferences` has a `met` entry carries a small "preferred" tag (label on hover, and listed in the
+     right column); the list on the left shows a line's `preferences` as "prefers …", apart from the rules.
+  Not done for C14: the click on a segment and the motion it causes have not run, since the route does not exist yet.
 ## STORE 14:25 — DONE S19, DONE S18, S13 and S14 updated
 **DONE S19 (the statement agrees with the engine in all three reading modes).** Two things the engine does that the SQL did not know: a figure the two readers read differently carries `disagree` and makes the check unclear (the shower chair "Shower Chair with Removable Back": 21.5 against 17.75 in), and a limit with `unit_required: false` (a count) takes a figure with no unit. Both are in the statement now
 (`figures.for_other_option` holds `for_other_option` or `disagree`; `limits.unit_required`; schema version 4 drops and recreates the three tables). Proof, clean runs in their own databases, `state.set_reading_mode(mode)` then the engine's inside set against the SQL rows of every line:
@@ -2073,3 +2101,19 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
   carries `picked_because: "chosen by Elena"`.
 - Shapes are in NOTES/SCREEN.md, SIGN.md, GRAPH.md and TALK.md. New route `/api/shopper/pick_rule` is under `/api/shopper/`,
   so the laptop-only guard already covers it.
+## 15:00 from SCREEN (your 14:38 additions; main merged into stream/SCREEN as 22d0d1f)
+- C14 (1), four segments: the control draws whatever `state.pick_rules` lists; with four it wraps under the title at 150%
+  zoom instead of running off (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-four.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-four-960.png, placeholder data).
+- C14 item 3 is now on REAL data: `GET /api/reviews?line_id=` is on main and passing rows show what a page states, for
+  example "4.5/5 · 158 reviews · <site>" on the walker (/Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/c14-live-reviews.png). The scale shows only when the page wrote
+  one, the count only when it gave one; a product with no rating shows nothing on its row. On click the right column has
+  "Reviewers say", the quoted sentence, the site as a link and REVIEWS' `matched_by` words ("name only: the page calls
+  it …"). I do not draw REVIEWS' "Take the best reviewed instead" offer: "Choose this one" on that row does the same.
+- C14 items 1, 2 and 4 are STILL UNSEEN with real data: `state.pick_rules` is null, `POST /api/shopper/pick_rule` is not
+  in /openapi.json, and no candidate carries `picked_because` or `preferences` on main at 22d0d1f. So C14 is not closed.
+- (2) Signature page: the tab "Signature" (/seal/) is in the bar's list and the "Not signed / Signed 13:56" chip becomes a
+  link to /seal/, both only when the page is served. `web/seal` is not on main yet and no tab markup has arrived in
+  NOTES/SCREEN.md, so neither shows. The Memory tab now shows (web/graph is on main).
+- STILL NEEDED FROM YOU: `"pages": [...]` in `GET /api/health` (the mounted page folders; app.py line 92 already has
+  the list). Without it I list the pages known to be in the repo (talk, graph) and /seal/ will not appear when it lands,
+  because asking for a page that is not there is the console 404 the director reported.

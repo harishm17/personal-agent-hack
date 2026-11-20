@@ -28,8 +28,8 @@ const last = { line: null, pick: null, signed: null, quiet: false };
 const aux = { egress: null, gate: null, enroll: null, trail: null, sheets: null, pages: {}, key: "" };
 // The last two tabs show only when their page is served: from /api/health's `pages` when it has that key; until then
 // from the routers it lists, for the pages known to be in the repo (asking for a page that is not there would log a 404).
-const TABS = [["/", "Decision"], ["/trail/", "Trail"], ["/graph/", "Memory", "signoff.graph.api"], ["/talk/", "Conversations", "signoff.talk.api"]];
-const KNOWN_PAGES = new Set(["/talk/"]);
+const TABS = [["/", "Decision"], ["/trail/", "Trail"], ["/graph/", "Memory", "signoff.graph.api"], ["/talk/", "Conversations", "signoff.talk.api"], ["/seal/", "Signature", "signoff.talk.api"]];
+const KNOWN_PAGES = new Set(["/talk/", "/graph/"]);      // pages that are in the repo on main; /seal/ joins when its folder lands, or at once through `pages`
 let introUntil = 0;
 
 if (SIM) {
@@ -87,6 +87,18 @@ function apply() {
 // Optional extras from their own routes; any may be missing, and the screen draws only what exists.
 async function loadAux() {
   if (FIXTURE) {     // ?fixture=..&menu=1: a sample of the sheet menu, to look at it without the route
+    if (params.get("c14") && state && !state.pick_rules) {
+      state.pick_rules = [{ id: "cheapest", label: "cheapest that meets the list" }, { id: "best_reviewed", label: "best reviewed among those that pass" }, { id: "most_popular", label: "Most reviewed" }, { id: "best_value", label: "best value among those that pass" }];
+      state.sheet.pick_rule = { ...state.sheet.pick_rule, id: params.get("c14") === "1" ? "cheapest" : params.get("c14") };
+      const line = theLine(), pass = line.candidates.filter((c) => c.status === "inside").sort((a, b) => a.product.price_cents - b.product.price_cents);
+      pass.forEach((c, i) => { c.rating = { found: true, rating: [4.1, 4.7, 4.4, 3.9][i % 4], out_of: 5, review_count: [58, 212, 96, 12][i % 4], rating_site: "sample.example", sentence: { quote: "Sample review text for the layout.", site: "sample.example", url: "#" } }; });
+      if (pass[1]) pass[1].preferences = [{ id: "sample", label: "Sample preference: 100 sheets if they have them", status: "met" }];
+      (sheetLineOf(line).preferences = [{ id: "sample", name: "sheets", label: "100 if they have them", terms: [], op: ">=", bound: { source: "issuer", value: 100 }, unit: "sheets", from_order: { quote: "100 sheets if they have them.", value: 100 } }]);
+      if (!byPrice()) { const best = [...pass].sort((a, b) => b.rating.rating - a.rating.rating)[0]; pass.forEach((c) => { c.picked = c === best; }); line.pick = best.id; }
+      const p = pickOf(line);
+      if (p) p.picked_because = byPrice() ? "the cheapest that passes" : "rated 4.7 from 212 reviews, the highest that passes";
+      last.quiet = true; render();
+    }
     if (params.get("tools") === "1" && state && !aux.tools) { aux.tools = { tools: [
       { name: "SingleStore", number: 1, words: "statement, 9 rows, same as the screen", route: "/api/sql/passing-box", detail: "Sample row: the one statement returns the rows the engine shows as passing." },
       { name: "Statsig", number: 1, words: "gate checked, reader switched back", route: "/api/gate/status", detail: "Sample row." },
@@ -102,12 +114,21 @@ async function loadAux() {
   const health = (await get("/api/health")) || {};
   const served = Array.isArray(health.pages) ? health.pages.map((x) => "/" + String(x).replace(/^\/|\/$/g, "") + "/") : null;
   aux.pages = Object.fromEntries(TABS.slice(2).map(([href, , router]) => [href, served ? served.includes(href) : (health.routers || []).includes(router) && KNOWN_PAGES.has(href)]));
-  aux.tools = has("/api/tools") ? await get("/api/tools") : null;
+  // the tools route runs live queries and can take seconds: it never holds up the rest
+  if (has("/api/tools") && !aux.toolsBusy) {
+    aux.toolsBusy = true;
+    get("/api/tools").then((t) => { aux.toolsBusy = false; const first = !aux.tools && t; aux.tools = t || aux.tools; if (first && state) { last.quiet = true; render(); } });
+  }
+  if (has("/api/reviews") && state) {
+    const id = theLine().line_id, got = await get("/api/reviews?line_id=" + encodeURIComponent(id));
+    const list = Array.isArray(got) ? got : got && (got.candidates || got.reviews || got.rows);
+    aux.reviews = { line: id, rows: Array.isArray(list) ? list : [], offer: (got && got.best_reviewed) || null };
+  }
   const needCode = state && !(state.issuer_key && state.issuer_key.enrolled) && !state.seal.signed;
   const opt = (path, url) => (has(path) ? get(url || path) : null);
   const [egress, gate, enroll, trail, sheets] = await Promise.all([opt("/api/egress", "/api/egress?limit=5000"), opt("/api/gate/status"),
     needCode ? opt("/api/issuer/enroll-code") : null, opt("/api/trail"), opt("/api/sheets")]);
-  const key = JSON.stringify([aux.pages, aux.tools, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
+  const key = JSON.stringify([aux.pages, aux.reviews, egress && egress.summary, gate && [gate.arm, gate.value, gate.verdict, (gate.history || []).length], enroll, trail && trail.summary, sheets]);
   Object.assign(aux, { egress, gate, enroll, trail, sheets });
   if (key !== aux.key && state) {       // redraw quietly, and never in the middle of the opening motion
     aux.key = key;
@@ -125,7 +146,7 @@ if (params.get("live") !== "0") {
 setInterval(() => { if (!live) load(); }, 2000);
 let resizeTimer = null;
 addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (state) { last.quiet = true; render(); } }, 150); });
-addEventListener("hashchange", () => { ui.drawer = null; ui.show = null; ui.open.clear(); render(); });
+addEventListener("hashchange", () => { ui.drawer = null; ui.show = null; ui.open.clear(); render(); loadAux(); });
 
 // ---------- the model of one item ----------
 const theLine = () => state.lines.find((l) => l.line_id === location.hash.slice(1)) || state.lines[0];
@@ -193,14 +214,14 @@ function failWords(ch) {
 
 /** The row's result: the pick, a rejection with its reason, or one that passes but was not needed. */
 function verdict(c, line, pick) {
-  if (c.picked) return { kind: "pick", text: "picked" };
+  if (c.picked) return { kind: "pick", text: line.picked_by === "shopper" ? `chosen by ${state.sheet.shopper.name}` : c.picked_because ? "Recommended" : "picked", why: c.picked_because || "" };
   if (c.status === "struck") {
     const st = c.strike || {}, before = st.remembered || st.from_memory || c.remembered || c.from_memory;
     return { kind: "no", text: before ? "struck before" : `struck by ${state.sheet.issuer.name}`, why: c.reason };
   }
   const i = firstFail(c);
   if (i < 0 && c.status === "inside") {
-    if (pick && c.product.price_cents >= pick.product.price_cents) return { kind: "also", text: "also passes" };
+    if (pick && (!byPrice() || line.picked_by === "shopper" || c.product.price_cents >= pick.product.price_cents)) return { kind: "also", text: "also passes" };
     return { kind: "no", text: needsDelivery() && !(c.arrival && c.arrival.status === "stated") ? "no delivery time stated" : "passes" };
   }
   const ch = c.checks[Math.max(0, i)], reason = c.reason || "";
@@ -255,11 +276,12 @@ function renderTop() {
   q("#top").innerHTML = `<span class="brand">Sign-Off</span>
     ${sheetMenu()}
     <nav class="tabs" aria-label="Views">${TABS.filter(([href]) => href === "/" || href === "/trail/" || aux.pages[href]).map(([href, label]) => `<a href="${href}"${href === "/" ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav>
-    <span class="meta">${[n_(state.lines.length, "item", "items"), sheet.invented ? "invented people" + real : "", ...mode].filter(Boolean).join(" · ")}</span>
+    <span class="meta">${[sheet.invented ? "invented people" + real : n_(state.lines.length, "item", "items"), ...mode].filter(Boolean).join(" · ")}</span>
     <span class="grow"></span>
     ${toolRows().length ? `<button class="toolsbtn" data-open="tools" aria-expanded="${ui.drawer === "tools"}">Tools at work</button>` : ""}
-    <span class="pill ${seal.signed ? "signed" : ""}">${seal.signed ? "Signed " + time : "Not signed"}</span>
-    <span class="total" data-k="total">${money(state.total_cents)}</span>`;
+    ${aux.pages["/seal/"] ? `<a class="pill ${seal.signed ? "signed" : ""}" href="/seal/" title="The signature, on its own page">${seal.signed ? "Signed" : "Not signed"}</a>`
+      : `<span class="pill ${seal.signed ? "signed" : ""}">${seal.signed ? "Signed" : "Not signed"}</span>`}
+    <span class="total"><span class="tl">Total</span> <span data-k="total">${money(state.total_cents)}</span></span>`;
 }
 
 // ---------- the sheet switcher: the title is a small menu when the engine offers more than one sheet (laptop only) ----------
@@ -302,15 +324,16 @@ async function useSheet(id, confirmed) {
 function toolRows() {
   const t = aux.tools, list = Array.isArray(t) ? t : t && (t.tools || t.items || t.rows);
   if (!Array.isArray(list)) return [];
-  return list.map((x) => ({ name: x.name || x.tool || x.id || "", number: x.number ?? x.value ?? x.count ?? "", words: x.words || x.label || x.text || x.what || "",
-    route: x.route || x.source || x.from || "", detail: x.detail || x.note || x.how || "", ok: x.ok !== false && x.working !== false })).filter((x) => x.name);
+  return list.map((x) => ({ name: x.tool || x.name || x.id || "", job: x.job || "", number: x.number ?? x.value ?? x.count ?? "", words: x.unit || x.words || x.label || "",
+    route: x.source || x.route || "", detail: x.detail || x.note || "", basis: x.basis || "", ok: x.ok !== false })).filter((x) => x.name);
 }
 function toolsSheet() {
   const rows = toolRows();
-  return `<h2>Tools at work</h2><p>One real number per tool, each from the route named under it.</p>
+  return `<h2>Tools at work</h2>
     ${rows.map((r, i) => `<button class="tool" data-toggle="tool:${i}" aria-expanded="${ui.open.has("tool:" + i)}">
-      <span class="tn">${esc(r.name)}</span><span class="tv">${r.number !== "" ? `<b>${esc(r.number)}</b> ` : ""}${esc(r.words)}${r.ok ? "" : ' <span class="faint">not running</span>'}</span></button>
-      ${ui.open.has("tool:" + i) ? `<p class="small tooldetail">${esc(r.detail)}${r.detail && r.route ? " · " : ""}${r.route ? `<code>${esc(r.route)}</code>` : ""}</p>` : ""}`).join("")}`;
+      <span class="tn"><i class="tm ${r.ok ? "ok" : ""}"></i>${esc(r.name)}</span><span class="tv">${r.number !== "" ? `<b>${esc(r.number)}</b> ` : ""}${esc(r.words)}</span></button>
+      ${ui.open.has("tool:" + i) ? `<p class="small tooldetail">${r.job ? `<b>${esc(r.job)}.</b> ` : ""}${esc(r.detail)}${r.basis ? ` <span class="faint">${esc(cap(r.basis))}.</span>` : ""}${r.route ? `<br><code>${esc(r.route)}</code>` : ""}</p>` : ""}`).join("")}
+    <p class="small"><i class="tm ok"></i>the tool's own check holds · <i class="tm"></i>read the detail</p>`;
 }
 
 // ---------- the stepper: the run across the top. Every number is from the state ----------
@@ -324,16 +347,16 @@ function stepList(line, pick) {
     { id: "list_read", label: "List read", small: limits ? `${n_(limits, "limit", "limits")}, quoted` : "limits on the sheet", done: true },
     { id: "stores_searched", label: "Stores searched", small: n_(sheet.stores.length, "store", "stores"), done: pages > 0 },
     { id: "pages_read", label: "Pages read", small: n_(pages, "page", "pages"), done: pages > 0 },
-    { id: "checked", label: "Checked", small: "cheapest first", done: state.lines.some((l) => l.candidates.length > 0) },
+    { id: "checked", label: "Checked", small: `${line.candidates.filter((c) => c.status !== "inside").length} rejected, with reasons`, done: state.lines.some((l) => l.candidates.length > 0), k: "step.rej" },
     { id: "picked", label: "Picked", small: pick ? money(pick.product.price_cents) + times(line) : "nothing passes", done: !!pick, k: "step.pick" },
-    { id: "signs", label: `${cap(sheet.issuer.role || "approver")} signs`, small: seal.signed ? `${sheet.issuer.name}, ${time}` : "from the phone", done: !!seal.signed },
+    { id: "signs", label: `${cap(sheet.issuer.role || "approver")} signs`, small: seal.signed ? `signed by ${sheet.issuer.name}` : "from the phone", done: !!seal.signed },
     { id: "carts", label: "Carts", small: seal.signed ? `${(seal.carts || []).length} created` : "none exist yet", done: !!seal.signed && (seal.carts || []).length > 0 },
   ];
 }
 
 function renderSteps(line, pick) {
   const steps = stepList(line, pick), current = steps.findIndex((s) => !s.done);
-  q("#steps").innerHTML = steps.map((s, i) => `<button class="step ${s.done ? "done" : "todo"}${i === current ? " now" : ""}" data-open="step:${s.id}" ${i === current ? 'aria-current="step"' : ""}>
+  q("#steps").innerHTML = steps.map((s, i) => `<button class="step ${s.done ? "done" : "todo"}${i === current ? " now" : ""}${s.id === "signs" || s.id === "carts" ? " key" : ""}" data-open="step:${s.id}" ${i === current ? 'aria-current="step"' : ""}>
     <span class="n">${s.done ? "✓" : i + 1}</span><span class="t"><span class="l">${esc(s.label)}</span><small ${s.k ? `data-k="${s.k}"` : ""}>${esc(s.small)}</small></span></button>`).join("");
 }
 
@@ -354,19 +377,64 @@ function renderDoc(current) {
   const { issuer, shopper } = state.sheet;
   const home = (limit) => {                           // a requirement that points at the house carries the measurement beside it
     const f = limit.bound.source === "shopper" && state.sheet.shopper_facts.find((x) => x.id === limit.bound.fact);
-    const who = f && f.remembered ? ` · remembered${f.remembered_by || f.by ? " by " + (f.remembered_by || f.by) : ""}${f.remembered_at || f.at ? ", " + String(f.remembered_at || f.at).slice(0, 10) : ""}` : "";
+    const who = f && f.remembered ? " · measured last time" : "";
     return f ? ` <span class="home" title="from the home: ${esc(f.label)}">(${g(f.value)} ${esc(f.unit)}${esc(who)})</span>` : "";
   };
-  q("#doc").innerHTML = `<div class="cap">${esc(issuer.name)}'s list · ${esc(issuer.role_label || issuer.role || "")}${issuer.invented ? " · invented" : ""}</div>
+  q("#doc").innerHTML = `<div class="cap">${esc(issuer.name)} · ${esc(issuer.role || issuer.role_label || "")} · the order</div>
     <div class="paper">${state.lines.map((l) => {
       const p = pickOf(l), sl = sheetLineOf(l);
       const right = p ? (l.status === "pick_up" ? "pick up" : money(p.product.price_cents) + times(l)) : "open";
       const seen = new Set();
-      const text = sl.limits.map((limit) => requirement(limit) + home(limit)).filter((t) => !seen.has(t) && seen.add(t)).join(" ");
+      const text = sl.limits.map((limit) => requirement(limit) + home(limit)).filter((t) => !seen.has(t) && seen.add(t)).join(" ")
+        + (sl.preferences || []).map((pref) => ` <span class="prefers"><span class="pl">prefers</span> ${requirement(pref)}</span>`).join("");
       return `<a class="it" href="#${l.line_id}" aria-current="${l.line_id === current.line_id}">
         <span class="stt" data-k="doc.${l.line_id}">${right}</span><h4>${esc(cap(l.need))}</h4><p>${text}</p></a>`;
     }).join("")}</div>
-    <button class="link asker" data-open="shopper">${esc(shopper.name)}: ${state.sheet.shopper_facts && state.sheet.shopper_facts.length ? "measurements, chat" : "ask the agent"}</button>`;
+`;
+}
+
+// ---------- ordering, ratings, preferences (all optional: each part is drawn only when the state or its route carries it) ----------
+const ruleId = () => (state.sheet.pick_rule && state.sheet.pick_rule.id) || "cheapest";
+const byPrice = () => !Array.isArray(state.pick_rules) || /^cheapest/.test(ruleId());
+/** What reviewers say of a product, from GET /api/reviews for this item (or the candidate itself): only what a page states. */
+function ratingOf(c) {
+  const list = aux.reviews && aux.reviews.line === c.order_line.id ? aux.reviews.rows : [];
+  const r = c.rating && typeof c.rating === "object" ? c.rating : list.find((x) => x.candidate_id === c.id);
+  if (!r || r.found === false) return null;
+  const value = r.rating ?? r.value, sentence = r.sentence || {}, first = (r.sources || [])[0] || {};
+  if (value == null && !sentence.quote && !r.quote) return null;
+  return { value: value == null ? null : +value, outOf: r.out_of ?? null, count: r.review_count ?? r.count ?? null, source: r.rating_site || r.source || sentence.site || "",
+    quote: sentence.quote || r.quote || "", url: sentence.url || r.url || first.url || "", site: sentence.site || first.site || "", matched: first.matched_by || "", note: r.note || "" };
+}
+/** "4.6/5 · 58 reviews · parentgiving.com": the scale only when the page wrote one, the count only when it gave one. */
+const ratingText = (r) => (r.value == null ? "" : `${+(+r.value).toFixed(1)}${r.outOf ? "/" + g(r.outOf) : ""}${r.count != null ? ` · ${n_(r.count, "review", "reviews")}` : ""}${r.source ? ` · ${r.source}` : ""}`);
+const prefsMet = (c) => (c.preferences || []).filter((x) => x.status === "met");
+/** The order of the rows under the active rule: the engine's own rank when it gives one, else price, or the rule's key among those that pass. */
+function ordered(line) {
+  const rows = priced(line);
+  if (byPrice()) return rows;
+  const pass = rows.filter((c) => c.status === "inside"), rest = rows.filter((c) => c.status !== "inside");
+  const key = (c) => (c.rank != null ? c.rank : /review/.test(ruleId()) ? -((ratingOf(c) || {}).value || 0) : c.value_score != null ? -c.value_score : 0);
+  pass.sort((a, b) => (b.picked ? 1 : 0) - (a.picked ? 1 : 0) || key(a) - key(b) || prefsMet(b).length - prefsMet(a).length || a.product.price_cents - b.product.price_cents);
+  return [...pass, ...rest];
+}
+async function setRule(id, anchor) {
+  if (id === ruleId() || state.seal.signed) return;
+  try {
+    const res = await fetch("/api/shopper/pick_rule", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || out.ok === false) throw new Error(out.detail || out.error || res.status);
+    await load();
+  } catch (error) { toast(anchor, `Not changed <span class="code2">${esc(error.message)}</span>`); }
+}
+async function choose(candidateId, anchor) {
+  try {
+    const res = await fetch("/api/shopper/choose", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ line_id: theLine().line_id, candidate_id: candidateId || null }) });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || out.ok === false) throw new Error(out.detail || out.error || res.status);
+    ui.show = null;
+    await load();
+  } catch (error) { toast(anchor, `Not chosen <span class="code2">${esc(clip(error.message, 60))}</span>`); }
 }
 
 // ---------- centre: the candidates, cheapest first ----------
@@ -407,8 +475,10 @@ function rowHtml(c, line, pick, limits) {
   }).join("");
   const option = c.product.variant_title && !/^default/i.test(c.product.variant_title) ? `${c.product.variant_title} · ` : "";
   const img = c.product.image_url ? `<img src="${esc(c.product.image_url)}" alt="" loading="lazy" width="44" height="44" onerror="this.outerHTML='<span class=ph></span>'">` : `<span class="ph" aria-hidden="true"></span>`;
-  const result = v.kind === "pick" ? `<span class="res pickd">✓ picked</span>`
-    : v.kind === "also" ? `<span class="res also">✓ ${esc(v.text)}</span>`
+  const r = c.status === "inside" ? ratingOf(c) : null, met = c.status === "inside" ? prefsMet(c) : [];
+  const extra = (r && r.value != null ? `<small class="rate">${esc(ratingText(r))}</small>` : "") + (met.length ? `<small class="tag pref" title="${esc(met.map((x) => x.label).join("; "))}">preferred</small>` : "");
+  const result = v.kind === "pick" ? `<span class="res"><span class="pickd" title="${esc(v.why || "")}">✓ ${esc(v.text)}</span>${extra}</span>`
+    : v.kind === "also" ? `<span class="res also">✓ ${esc(v.text)}${extra}</span>`
     : `<span class="res no" title="${esc(v.why || "")}">✕ ${esc(v.text)}${v.extra ? ` <span class="faint">${esc(v.extra)}</span>` : ""}</span>`;
   const was = ui.was && ui.was.id === c.id && !c.picked ? `<span class="was">was picked</span>` : "";
   return `<button class="rowx ${c.picked ? "picked" : v.kind === "also" ? "also" : "rej"}${c.id === ui.show ? " shown" : ""}${was ? " waspick" : ""}" data-id="${esc(c.id)}" style="--n:${limits.length}">${was}
@@ -417,31 +487,51 @@ function rowHtml(c, line, pick, limits) {
 }
 
 function renderList(line, pick) {
-  const limits = sheetLineOf(line).limits, rows = priced(line), at = pick ? rows.indexOf(pick) : -1;
-  const cheaper = at >= 0 ? rows.slice(0, at) : rows, dearer = at >= 0 ? rows.slice(at + 1) : [];
-  const also = dearer.filter((c) => c.status === "inside").length;
-  // as many rejected rows as fit above the pick without scrolling (two to eight), the rest behind the fold line
-  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), room = q("#list").clientHeight - (innerWidth < 1180 ? 9.4 : 7.6) * rem;
+  const limits = sheetLineOf(line).limits, ladder = byPrice(), rows = ordered(line), at = pick ? rows.indexOf(pick) : -1;
+  const passing = rows.filter((c) => c.status === "inside"), failing = rows.filter((c) => c.status !== "inside");
+  // price order: the rows before the pick, the pick, the dearer ones. Another rule: the pick first, the others that pass, then those that do not.
+  const before = ladder ? (at >= 0 ? rows.slice(0, at) : rows) : [];
+  const after = ladder ? (at >= 0 ? rows.slice(at + 1) : []) : passing.filter((c) => c !== pick);
+  const rejectedBefore = before.filter((c) => c.status !== "inside").length, also = after.filter((c) => c.status === "inside").length;
+  // as many rows as fit around the pick without scrolling (one to eight), the rest behind a fold line
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), room = q("#list").clientHeight - (innerWidth < 1180 ? 11 : 9.2) * rem;
   const fit = Math.max(1, Math.min(8, Math.floor((room - 4.6 * rem - 5.6 * rem) / (3.9 * rem))));
-  let fold = cheaper.length > fit && !ui.open.has("above") && at >= 0 ? cheaper.length - fit : 0;
-  // while the old pick says "was picked" it stays in view: if it sits in the folded part, it is shown just under the fold line
-  const pinned = fold && ui.was ? cheaper.slice(0, fold).filter((c) => c.id === ui.was.id) : [];
+  let fold = before.length > fit && !ui.open.has("above") && at >= 0 ? before.length - fit : 0;
+  // while the old pick says "was picked" it stays in view: if it sits in a folded part, it is shown beside the fold line
+  const pinned = fold && ui.was ? before.slice(0, fold).filter((c) => c.id === ui.was.id) : [];
   if (pinned.length) fold += 1;
   const forged = (limit) => limit.bound.source === "issuer" && !state.seal.signed
-    ? `<span class="forge" role="button" tabindex="0" data-forge="${esc(limit.id)}" title="Try to change this limit from here, without the approver's key" aria-label="Try to change this limit from here">change</span>` : "";
+    ? (ui.refusal && ui.refusal.id === limit.id ? `<span class="refline" role="status">${ui.refusal.html}</span>`
+      : `<span class="forge" role="button" tabindex="0" data-forge="${esc(limit.id)}" title="${esc(state.sheet.shopper.name)} tries to change this limit from here, without ${esc(state.sheet.issuer.name)}'s phone">try to change</span>`) : "";
   const heads = limits.map((limit) => { const h = limitHead(limit); return `<span class="lh"><span>${esc(h.name)} <b data-k="head.${limit.id}">${esc(h.rule)}</b></span>${forged(limit)}</span>`; }).join("");
-  const sub = at >= 0 ? `Cheapest first. ${rows.length} read · <span data-k="sub.rej">${cheaper.length}</span> cheaper ${cheaper.length === 1 ? "one" : "ones"} rejected · <span data-k="sub.also">${also}</span> dearer ${also === 1 ? "one also passes" : "ones also pass"}`
-    : rows.length ? `Cheapest first. ${rows.length} read · nothing passes` : "No page has been read for this item yet";
+  const rules = Array.isArray(state.pick_rules) && state.pick_rules.length > 1 ? state.pick_rules : null;
+  const short = (r) => cap(String(r.short || r.label || r.id).replace(/ (that|inside|among) .*$/, "").replace(/_/g, " "));
+  const seg = rules ? `<div class="seg" role="group" aria-label="Order of the products that pass">${rules.map((r) => `<button data-rule="${esc(r.id)}" aria-pressed="${r.id === ruleId()}" ${state.seal.signed ? "disabled" : ""} title="${esc(r.label || "")}">${esc(short(r))}</button>`).join("")}</div>` : "";
+  const lead = ladder ? "Cheapest first" : `${short((rules || []).find((r) => r.id === ruleId()) || { id: ruleId() })} first`;
+  const sub = !rows.length ? "No page has been read for this item yet" : at < 0 ? `${lead}. ${rows.length} read · nothing passes`
+    : ladder ? `${rows.length} read · <span data-k="sub.rej">${rejectedBefore}</span> cheaper rejected`
+    : `${lead}. ${rows.length} read · <span data-k="sub.pass">${passing.length}</span> ${passing.length === 1 ? "passes" : "pass"} · <span data-k="sub.fail">${failing.length}</span> ${failing.length === 1 ? "does" : "do"} not`;
   const keep = q("#rows") && last.line === line.line_id ? q("#rows").scrollTop : 0;      // a redraw never moves the list under the viewer
-  q("#list").innerHTML = `<div class="lhd"><h1>${esc(cap(line.need))}</h1><p class="sub">${sub}</p></div>
+  const row = (c) => rowHtml(c, line, pick, limits), wasRows = (list) => list.filter((c) => ui.was && ui.was.id === c.id).map(row).join("");
+  let body;
+  if (ladder) {
+    body = `${fold ? `<button class="more" data-toggle="above" title="Show these rows"><b>${fold - pinned.length} cheaper above:</b> ${esc(foldSummary(before.slice(0, fold).filter((c) => !pinned.includes(c))))}</button>` : ""}
+      ${pinned.map(row).join("")}${before.slice(fold).map(row).join("")}
+      ${pick ? row(pick) : (rows.length ? `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>` : "")}
+      ${after.length ? (ui.open.has("below") ? after.map(row).join("") : wasRows(after) + `<button class="more" data-toggle="below">+ ${after.length} dearer${also ? ` (${also} ${also === 1 ? "passes" : "pass"})` : ""}, not needed</button>`) : ""}`;
+  } else {
+    const showN = ui.open.has("below") ? after.length : Math.max(0, fit - 1), hidden = after.slice(showN);
+    body = `${pick ? row(pick) : `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>`}
+      ${after.slice(0, showN).map(row).join("")}${wasRows(hidden)}
+      ${hidden.length ? `<button class="more" data-toggle="below">+ ${hidden.length} more ${hidden.length === 1 ? "passes" : "pass"}</button>` : ""}
+      ${failing.length ? (ui.open.has("above") ? failing.map(row).join("") : wasRows(failing) + `<button class="more" data-toggle="above" title="Show these rows"><b>${failing.length} ${failing.length === 1 ? "does" : "do"} not pass:</b> ${esc(foldSummary(failing))}</button>`) : ""}`;
+  }
+  const facts = factsOfLine(sheetLineOf(line)), shopper = state.sheet.shopper;
+  const homeLine = `<button class="homeline" data-open="shopper" title="${esc(shopper.name)}'s measurements and questions to the agent"><b>${esc(shopper.name)}</b>${facts.length
+    ? ` · the home: ${facts.map((f) => `${esc(f.short || f.label)} <span data-k="home.${f.id}">${g(f.value)} ${esc(f.unit)}</span>`).join(" · ")}` : " · ask the agent"}</button>`;
+  q("#list").innerHTML = `<div class="lhd"><div class="lht"><h1>${esc(cap(line.need))}</h1>${seg}</div><p class="sub">${sub}</p>${homeLine}</div>
     <div class="hd" style="--n:${limits.length}"><span></span><span>Product</span><span>Price</span>${heads}<span>Result</span></div>
-    <div class="rows" id="rows">
-      ${fold ? `<button class="more" data-toggle="above" title="Show these rows"><b>${fold - pinned.length} cheaper above:</b> ${esc(foldSummary(cheaper.slice(0, fold).filter((c) => !pinned.includes(c))))}</button>` : ""}
-      ${pinned.map((c) => rowHtml(c, line, pick, limits)).join("")}${cheaper.slice(fold).map((c) => rowHtml(c, line, pick, limits)).join("")}
-      ${pick ? rowHtml(pick, line, pick, limits) : (rows.length ? `<div class="more none">Nothing passes: ${esc(line.reason || "no product meets every limit")}</div>` : "")}
-      ${dearer.length ? (ui.open.has("below") ? dearer.map((c) => rowHtml(c, line, pick, limits)).join("")
-        : dearer.filter((c) => ui.was && ui.was.id === c.id).map((c) => rowHtml(c, line, pick, limits)).join("") + `<button class="more" data-toggle="below">+ ${dearer.length} dearer, not needed</button>`) : ""}
-    </div>`;
+    <div class="rows" id="rows">${body}</div>`;
   q("#rows").dataset.fit = `${fit} rows for ${Math.round(room)} px at ${rem} px`;      // for checking the fold at a given size
   q("#rows").scrollTop = keep;
 }
@@ -462,37 +552,43 @@ function fragment(quote, term, before = 44, after = 30) {
 /** What the state can show for one figure being the right number: two or three marks with two-word labels. Nothing is claimed that the state does not carry. */
 function guards(c, ch, t) {
   const fig = (c.figures || []).find((f) => f.figure === t.figure && f.quote === t.quote) || (c.figures || []).find((f) => f.figure === t.figure) || {};
-  const out = [], readers = t.readers || ch.readers || fig.readers;
-  const agreeing = Array.isArray(readers) && readers.length ? readers.filter((r) => r && (r.agrees !== false) && (r.value == null || t.value == null || +r.value === +t.value)).length
-    : Array.isArray(fig.agreed_by) ? fig.agreed_by.length : 0;
-  if (agreeing >= 2) out.push([agreeing === 2 ? "two readers agree" : `${agreeing} readers agree`, (Array.isArray(readers) && readers.length ? readers.map((r) => r.extractor || r.reader || r) : fig.agreed_by).join(", ")]);
-  const nc = fig.number_check || t.number_check, label = (nc && nc.label) || fig.label;
-  if (label && (!nc || nc.paired !== false)) out.push(["sits with its label", `“${label}”${nc && nc.how ? ": " + nc.how : ""}`]);
-  const many = severalOf(t);
-  if (ch.pass && ((many && many.length > 1) || t.statements > 1)) out.push(["every stated value passes", many ? many.map(g).join(", ") : `${t.statements} statements on the page`]);
-  return out.length ? `<div class="guards">${out.map(([text, title]) => `<span title="${esc(title)}"><span class="tickmark">✓</span> ${esc(text)}</span>`).join("")}</div>` : "";
+  const readers = t.readers || ch.readers || fig.readers;
+  const names = Array.isArray(readers) && readers.length ? readers.filter((r) => r && r.agrees !== false && (r.value == null || t.value == null || +r.value === +t.value)).map((r) => r.extractor || r.reader || String(r))
+    : Array.isArray(fig.agreed_by) ? fig.agreed_by : [];
+  // one plain line: the quote is in the page (a figure counts only then), and how many models read the same number
+  return `<div class="guards" title="${esc(names.join(", "))}"><span class="tickmark">✓</span> quoted from the page${names.length >= 2 ? ` · ${names.length} models agree` : ""}</div>`;
 }
 const optionOf = (c) => (c.product.variant_title && !/^default/i.test(c.product.variant_title) ? c.product.variant_title : "");
 
 function pairHtml(ch, limit, c) {
   const order = limit && limit.from_order, t = ch.terms.find((x) => x.owner === "store") || {};
   const ok = ch.pass, word = ch.op === "==" ? "matches" : ch.op === "<=" ? "within" : "enough";
-  const src = (label, html) => `<div class="k">${label}</div><div class="qt">${html}</div>`;
-  const homeRow = (part) => src("from the home", `${esc(part.label)} <mark>${g(part.value)} ${esc(part.unit)}</mark>`);
+  const src = (label, html) => `<div class="kv"><span class="k">${label}</span><span class="qt">${html}</span></div>`;      // who says it, then the words
+  const homeRow = (part) => src(esc(state.sheet.shopper.name), `${esc(part.label)} <mark>${g(part.value)} ${esc(part.unit)}</mark>`);
   const head = limit ? limitHead(limit) : { name: cap(ch.name), rule: "" };
   let store;
   const f = unsureFigure(c, ch);
   if (isUnclear(c, ch)) {
     const quote = (f && f.quote) || t.quote, why = ch.unclear_why || ch.missing_why || (f && f.unsure_reason) || "";
-    store = src("the store states", quote ? fragment(quote, f || t) : `<span class="chip unclear">${esc(statedText(ch, c) || "unclear")}</span>`)
+    store = src("the store", quote ? fragment(quote, f || t) : `<span class="chip unclear">${esc(statedText(ch, c) || "unclear")}</span>`)
       + (why ? src("why it is unclear", esc(clip(why.replace(/^stated, but not clearly[^:]*:\s*/, ""), 120))) : "");
-  } else if (ch.state === "not_stated") store = src("the store states", `<span class="chip none">not stated on the page</span>`);
-  else store = t.quote ? src(`the store states${optionOf(c) ? ` <span class="opt">· option: ${esc(optionOf(c))}</span>` : ""}`, fragment(t.quote, t)) + (ch.pass ? guards(c, ch, t) : "") : "";
+  } else if (ch.state === "not_stated") store = src("the store", `<span class="chip none">not stated on the page</span>`);
+  else store = t.quote ? src(`<span title="${esc(optionOf(c) ? "option: " + optionOf(c) : "")}">the store</span>`, fragment(t.quote, t)) + (ch.pass ? guards(c, ch, t) : "") : "";
   return `<div class="pair" data-open="${esc(c.id)}">
     <div class="ph2"><span>${esc(head.name)} <span class="faint">${esc(head.rule)}</span></span><span class="${ok ? "okw" : isUnclear(c, ch) || ch.state === "not_stated" ? "greyw" : "badw"}">${ok ? "✓ " + word : "✕ " + esc(isUnclear(c, ch) ? "unclear" : failWords(ch))}</span></div>
-    ${order && order.quote ? src("the list says", fragment(order.quote, { value: order.value ?? (ch.bound.owner === "issuer" ? ch.bound.value : undefined) }) + orderTags(order, ch)) : ""}
+    ${order && order.quote ? src(esc(state.sheet.issuer.name), fragment(order.quote, { value: order.value ?? (ch.bound.owner === "issuer" ? ch.bound.value : undefined) }) + orderTags(order, ch)) : ""}
     ${ch.bound.owner === "shopper" ? homeRow(ch.bound) : ""}${ch.terms.filter((x) => x.owner === "shopper").map(homeRow).join("")}
     ${store}</div>`;
+}
+
+const canChoose = (line, c) => !c.picked && c.status === "inside" && !state.seal.signed && !FIXTURE && aux.routes && aux.routes.has("/api/shopper/choose");
+/** Under the limits: the preferences this product meets, and what its reviews say (the quote and its link). */
+function extrasHtml(c) {
+  const met = prefsMet(c), r = ratingOf(c);
+  return (met.length ? `<div class="pair"><div class="ph2"><span>Preferred</span><span class="okw">✓ ${n_(met.length, "preference", "preferences")} met</span></div>${met.map((x) => `<div class="qt">${esc(x.label)}</div>`).join("")}</div>` : "")
+    + (r ? `<div class="pair"><div class="ph2"><span>Reviewers say</span><span class="greyw">${esc(ratingText(r))}</span></div>
+        ${r.quote ? `<div class="qt">“${esc(clip(r.quote, 140))}”</div>` : ""}
+        ${r.url ? `<div class="k"><a class="link" href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.site || "the page")} ↗</a>${r.matched ? ` · matched by ${esc(clip(r.matched, 70))}` : ""}</div>` : ""}</div>` : "");
 }
 
 /** Small quiet tags beside the list's sentence: the document's version at Senso, and whether the limit was changed since. */
@@ -509,14 +605,17 @@ function renderSide(line, c) {
     const fail = c.status === "struck" ? -1 : firstFail(c), shown = fail >= 0 ? c.checks.slice(0, fail + 1) : c.checks;
     const option = c.product.variant_title && !/^default/i.test(c.product.variant_title) ? `${c.product.variant_title} · ` : "";
     const a = c.arrival, u = c.undo, scope = (x) => (x && x.scope ? ` <span class="faint">(${esc(x.scope)})</span>` : "");
-    const agent = c.picked && ((a && a.quote) || (u && u.quote)) ? `<div class="pair agent" data-open="${esc(c.id)}"><div class="ph2"><span>The store's agent said</span></div>
-        ${a && a.quote ? `<div class="k">delivery${scope(a)} · stated, not guaranteed</div><div class="qt">“${esc(clip(a.quote, 90))}”</div>` : ""}
-        ${u && u.quote ? `<div class="k">returns${scope(u)}</div><div class="qt">“${esc(clip(u.quote, 90))}”</div>` : ""}</div>` : "";
-    card = `<section class="card why"><div class="cap">${c.picked ? "Why this one" : "Why not this one"}${c.picked && ui.was && ui.was.store !== c.product.store ? ` <span class="nowat">now at ${esc(c.product.store)}</span>` : ""}</div>
+    const agent = c.picked && ((a && a.quote) || (u && u.quote)) ? `<div class="pair agent" data-open="${esc(c.id)}"><div class="ph2"><span>The store's agent states</span></div>
+        ${a && a.quote ? `<div class="kv"><span class="k">delivery</span><span class="qt">“${esc(clip(a.quote, 90))}”</span></div>` : ""}
+        ${u && u.quote ? `<div class="kv"><span class="k">returns</span><span class="qt">“${esc(clip(u.quote, 90))}”</span></div>` : ""}</div>` : "";
+    card = `<section class="card why"><div class="cap">${c.picked ? (line.picked_by === "shopper" ? `Chosen by ${esc(state.sheet.shopper.name)}` : c.picked_because ? "Recommended" : "Why this one") : c.status === "inside" ? "Passes, not the pick" : "Why not this one"}${c.picked && ui.was && ui.was.store !== c.product.store ? ` <span class="nowat">now at ${esc(c.product.store)}</span>` : ""}</div>
       <h2 title="${esc(c.product.title)}">${esc(c.product.title)}</h2>
       <div class="meta2">${esc(option + c.product.store)} · <span data-k="why.price">${money(c.product.price_cents)}</span>${qty(line) > 1 ? `${esc(times(line))} = ${money(c.product.price_cents * qty(line))}` : ""} · <a class="link" href="${esc(c.product.url)}" target="_blank" rel="noopener">store page ↗</a></div>
+      ${c.picked && c.picked_because && line.picked_by !== "shopper" ? `<div class="because">${esc(cap(c.picked_because))}</div>` : ""}
       ${c.status === "struck" ? `<div class="pair"><div class="ph2"><span>Struck by ${esc(state.sheet.issuer.name)}</span></div><div class="qt">“${esc(c.reason || "")}”</div></div>` : ""}
-      ${shown.map((ch) => pairHtml(ch, limits.find((l) => l.id === ch.limit_id), c)).join("")}${agent}
+      ${shown.map((ch) => pairHtml(ch, limits.find((l) => l.id === ch.limit_id), c)).join("")}${extrasHtml(c)}${agent}
+      ${canChoose(line, c) ? `<button class="btn choose" data-choose="${esc(c.id)}">Choose this one</button>` : ""}
+      ${c.picked && line.picked_by === "shopper" && !state.seal.signed && aux.routes && aux.routes.has("/api/shopper/choose") ? `<button class="link" data-choose="">Back to the rule's pick</button>` : ""}
       ${!c.picked && pickOf(line) ? `<button class="link" data-show="">Back to the pick</button>` : ""}</section>`;
   } else {
     card = `<section class="card why"><div class="cap">Why this one</div><h2>${line.candidates.length ? "Nothing passes" : "Nothing to show yet"}</h2><div class="muted">${line.candidates.length ? esc(cap(line.reason || "no product meets every limit")) + ". Select a row to read why." : "No page has been read for this item."}</div></section>`;
@@ -528,10 +627,8 @@ function renderSide(line, c) {
 function receiptsRow() {
   const r = state.receipts;
   if (!r || !r.count) return "";
-  const good = typeof r.verified === "number" ? r.verified : r.verified ? r.count : (r.first_bad ? r.first_bad - 1 : 0);
-  const n = Math.min(r.count, 48);
-  return `<div class="rcpt" title="Tamper-evident: each receipt carries the hash of the one before"><span class="ticks">${Array.from({ length: n }, (_, i) => `<i class="${i < Math.round((good / r.count) * n) ? "" : "bad"}"></i>`).join("")}</span>
-    <span class="muted small">${good === r.count ? `${r.count} ${r.count === 1 ? "receipt" : "receipts"} verified` : `${good} of ${r.count} receipts verified`}</span></div>`;
+  const good = typeof r.verified === "number" ? r.verified : r.verified ? r.count : (r.first_bad ? r.first_bad - 1 : 0), all = good === r.count;
+  return `<div class="rcpt muted small" title="Tamper-evident: each receipt carries the hash of the one before"><span class="${all ? "tickmark" : "badw"}">${all ? "✓" : "✕"}</span> ${all ? `${n_(r.count, "receipt", "receipts")} verified` : `${good} of ${r.count} receipts verified`}</div>`;
 }
 
 /** The phone link as a code to scan (the vendored qrcode-generator), or nothing if the library is missing. */
@@ -546,16 +643,23 @@ function qrSvg(text) {
   }
 }
 
+/** What the signature covers, counted from the state: the limits, the quotes, the picks and the total. */
+function whatIsSigned() {
+  const limits = state.sheet.lines.reduce((n, l) => n + l.limits.length, 0);
+  const picks = state.lines.filter((l) => l.pick && l.status !== "pick_up").length;
+  return `${n_(limits, "limit", "limits")} · the quotes · ${n_(picks, "pick", "picks")} · <span data-k="sig.total">${money(state.total_cents)}</span>`;
+}
+
 function signatureHtml() {
   const { sheet, seal } = state;
   if (!seal.signed) {
     const en = aux.enroll, enrolled = state.issuer_key && state.issuer_key.enrolled;
     const link = en && (en.url || en.link || en.phone_url || en.phone), qr = !enrolled && link ? qrSvg(link) : "";
     return `<section class="card sign"><div class="cap">Signature</div>
-      <div class="who"><i class="pending"></i>${esc(sheet.issuer.name)} must sign · no cart exists</div>
+      <div class="signs"><b>${esc(sheet.issuer.name)} signs:</b> ${whatIsSigned()}</div>
+      <div class="muted small">${enrolled ? "From the enrolled phone" : "From the phone"} · no cart exists until then</div>
       ${!enrolled && en && en.code ? `<div class="enrol">${qr ? `<a class="qr" href="${esc(link)}" target="_blank" rel="noopener" aria-label="Open the phone page">${qr}</a>` : ""}
-        <div><div>Scan to enrol the phone</div><div class="muted">code <span class="code">${esc(en.code)}</span></div></div></div>`
-        : enrolled ? `<div class="muted small">Phone enrolled · waiting for the signature</div>` : ""}
+        <div class="muted small"><div>Scan to enrol the phone</div><div>code <span class="code">${esc(en.code)}</span></div></div></div>` : ""}
       ${receiptsRow()}</section>`;
   }
   const sig = seal.signature || {}, persona = sig.persona || (state.issuer_key && state.issuer_key.persona) || {};
@@ -566,7 +670,7 @@ function signatureHtml() {
   const covers = Array.isArray(seal.covers) && seal.covers.length ? seal.covers.map(words) : [];
   const differs = (c) => c.signed_total_cents != null && c.total_cents != null && c.signed_total_cents !== c.total_cents;
   return `<section class="card sign signed"><div class="cap">Signature</div>
-    <div class="row part"><span class="who"><span class="tickmark">✓</span> Signed by ${esc(who)}</span><span>${time}</span></div>
+    <div class="row part"><span class="who"><span class="tickmark">✓</span> Signed by ${esc(who)}</span></div>
     <div class="muted small part">${esc(identity)}</div>
     ${hash ? `<div class="row part"><span class="muted">Sheet hash</span><code title="${esc(hash)}">${esc(hash.slice(0, 12))}</code></div>` : ""}
     ${covers.length ? `<div class="muted small part" title="${esc(covers.join(", "))}">Hash covers ${esc(covers.slice(0, 3).join(", "))}${covers.length > 3 ? ` +${covers.length - 3}` : ""}</div>` : ""}
@@ -603,7 +707,7 @@ function shopperSheet(el, line) {
     ${facts.length ? `<h3>From the home</h3>` + facts.map((f) => slider("fact", f.id, f.label, f.value, f.unit, f)).join("") : ""}
     ${SIM ? `<h3>Simulation only, not ${esc(state.sheet.issuer.name)}'s phone</h3>` + sheetLine.limits.filter((l) => l.bound.source === "issuer").map((l) => slider("limit", l.id, l.label, l.bound.value, l.unit, l.bound)).join("") : ""}
     <h3>Ask the agent</h3>
-    <form id="say"><input id="sayText" name="say" type="text" autocomplete="off" aria-label="Message to the agent" placeholder="Put the struck one back…"><button class="btn" type="submit">Send</button></form>
+    <form id="say"><input id="sayText" name="say" type="text" autocomplete="off" aria-label="Message to the agent" placeholder="Ask the agent…"><button class="btn" type="submit">Send</button></form>
     <div id="reply" aria-live="polite">${turn ? chatHtml(turn) : ""}</div>`;
 }
 
@@ -637,7 +741,7 @@ function trailRows(id) {
   const rows = t.events.filter((e) => e.step === id && e.own_step !== false);
   if (!rows.length) return "";
   const time = (e) => (e.at ? String(e.at).slice(11, 19) : "");
-  return `<h3>Records of this step</h3>${rows.slice(0, 10).map((e) => `<p class="rec"><span>${e.stopped ? '<b class="badw">refused</b> ' : ""}${esc(e.label || e.kind || "")}${e.detail ? ` <span class="muted">${esc(clip(e.detail, 34))}</span>` : ""}</span><span class="faint">${time(e)}</span></p>`).join("")}
+  return `<h3>Records of this step</h3>${rows.slice(0, 10).map((e) => `<p class="rec"><span>${e.stopped ? '<b class="badw">refused</b> ' : ""}${esc(e.label || e.kind || "")}${e.detail ? ` <span class="muted">${esc(clip(e.detail, 34))}</span>` : ""}</span></p>`).join("")}
     <p class="small">${rows.length > 10 ? `${rows.length - 10} more. ` : ""}<a class="link" href="/trail/#${esc(id)}">Open on the Trail</a></p>`;
 }
 
@@ -840,6 +944,7 @@ function toast(anchor, html) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { el.hidden = true; }, 6000);
 }
+let refusalTimer = null;
 async function forgeChange(anchor) {
   const line = theLine(), limit = sheetLineOf(line).limits.find((l) => l.id === anchor.dataset.forge);
   const payload = JSON.stringify({ type: "set_limit", sheet_id: state.sheet.id, seq: Date.now(), at: new Date().toISOString(), limit_id: limit.id, value: limit.bound.min });
@@ -849,20 +954,28 @@ async function forgeChange(anchor) {
     const res = await fetch("/api/issuer/request", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ payload, sig, key_id: (state.issuer_key && state.issuer_key.key_id) || "this-screen" }) });
     const out = await res.json().catch(() => ({}));
-    html = res.ok && out.ok !== false ? `<b class="badw">Accepted</b> <span class="code2">${res.status}</span>`
-      : `<b>Refused</b> · ${esc(REFUSAL[out.error] || words(out.error || "no reason given"))} <span class="code2" title="${esc(out.detail || "")}">${res.status}</span>`;
+    // the server's answer, said plainly; its own code and reason are on hover
+    html = res.ok && out.ok !== false ? `<b>Accepted</b> <span class="code2">${res.status}</span>`
+      : `<b>Refused:</b> only ${esc(state.sheet.issuer.name)}'s phone can change this <span class="code2" title="${esc((REFUSAL[out.error] || words(out.error || "")) + (out.detail ? ": " + out.detail : ""))}">${res.status}</span>`;
   } catch (error) {
     html = "No answer from the server";
   }
-  toast(q(`[data-forge="${CSS.escape(limit.id)}"]`) || anchor, html);
+  ui.refusal = { id: limit.id, html };
+  clearTimeout(refusalTimer);
+  refusalTimer = setTimeout(() => { ui.refusal = null; last.quiet = true; render(); }, 4200);
+  last.quiet = true;
+  render();
+  fx.arrive(q(".refline"), 0, 240, 3);
   load();
 }
 
 // ---------- interaction ----------
 document.addEventListener("click", (e) => {
-  const t = e.target.closest("[data-sheet], [data-menu], [data-forge], [data-toggle], [data-show], [data-open], [data-close], .rowx");
+  const t = e.target.closest("[data-rule], [data-choose], [data-sheet], [data-menu], [data-forge], [data-toggle], [data-show], [data-open], [data-close], .rowx");
   if (ui.menu && !(t && (t.dataset.sheet || t.dataset.menu !== undefined))) { ui.menu = false; ui.confirm = null; if (!t) { last.quiet = true; render(); return; } }
   if (!t || e.target.closest("a, input")) return;
+  if (t.dataset.rule) return setRule(t.dataset.rule, t);
+  if (t.dataset.choose !== undefined) return choose(t.dataset.choose, t);
   if (t.dataset.sheet) return useSheet(t.dataset.sheet, t.dataset.sure === "1");
   if (t.dataset.menu !== undefined) { ui.menu = !ui.menu; ui.confirm = null; last.quiet = true; return render(); }
   if (t.dataset.forge) return forgeChange(t);
