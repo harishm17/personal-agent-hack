@@ -387,7 +387,8 @@ def _handle_request(body: dict):
             signature = {"name": "%s (%s)" % (signer["name"], basis), "name_basis": basis, "signer": signer, "at": at, "signed_at": at, "sheet_hash": payload["sheet_hash"], "sig": body["sig"],
                          "payload": body["payload"], "seq": payload["seq"], "persona": who, **({"relay": relay} if relay else {}),
                          "senso": {"status": gate["status"], "for_hash": gate.get("for_hash"), "checks": gate["checks"],
-                                   "label": "Senso check still running" if gate["status"] == "pending" else None}}
+                                   "label": {"pending": "Senso check still running", "unavailable": gate.get("label"),
+                                             "not_connected": "not checked: Senso is not connected"}.get(gate["status"])}}
             try:
                 result = engine.mark_signed(signature, carts)
             except ValueError as error:  # the engine's own refusal: the sheet no longer has the signed hash
@@ -501,6 +502,9 @@ def _senso_gate(engine) -> dict:
     c = senso.checks()
     if c["for_hash"] == h:
         return {"status": "complete", "blocking": c["blocking"], "checks": c["checks"], "for_hash": h}
+    if c.get("error") and not c.get("running"):  # Senso is on but did not answer: say so, never "checked"
+        return {"status": "unavailable", "blocking": [], "checks": [], "for_hash": h,
+                "label": "not checked: Senso not reachable (%s)" % c["error"]}
     return {"status": "pending", "blocking": [], "checks": [], "for_hash": h}
 
 

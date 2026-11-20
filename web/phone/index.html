@@ -290,6 +290,7 @@ function sensoLine() {
   const s = (issuer && issuer.senso) || {};
   if (s.configured === false) return { text: "Senso is not connected", rows: [] };
   const fresh = s.for_hash && s.for_hash === serverHashNow();
+  if (!sensoRunning && !fresh && s.error && !s.running) return { text: "not checked: Senso not reachable", rows: [] };
   if (sensoRunning || !fresh) return { text: "Checking the sheet against the " + O() + "…", rows: [] };
   const rows = s.checks || [], ok = rows.filter((r) => r.verdict === "verified").length;
   if (!rows.length) return { text: "Nothing to check against the " + O() + " yet", rows };
@@ -308,6 +309,23 @@ async function ensureSenso() {
   sensoRunning = false;
   if (tab === "sheet" && !busy) renderSheet();
 }
+/* senso-seal-text:start */
+function sensoSealText(sg, word) {
+  const s = sg && sg.senso, o = word || "order";
+  if (!s) return "not checked: no Senso result on this signature";
+  if (s.status === "pending") return "Senso check still running";
+  if (s.status === "not_connected") return "not checked: Senso is not connected";
+  if (s.status === "unavailable") return "not checked: Senso not reachable";
+  if (s.status !== "complete") return "not checked";
+  const rows = s.checks || [];
+  if (!rows.length) return "nothing to check against the " + o;
+  const ok = rows.filter((r) => r.verdict === "verified").length, bad = rows.filter((r) => r.verdict === "error").length;
+  const vs = {};
+  rows.forEach((r) => { if (r.source && r.source.version_id) vs[r.source.version_id] = r.source.version_num || String(r.source.version_id).slice(0, 8); });
+  const ids = Object.keys(vs), ver = ids.length === 1 ? " (version " + vs[ids[0]] + ")" : "";
+  return "Checked against the " + o + ver + ": " + ok + " of " + rows.length + " verified" + (bad ? ", " + bad + " not checked (Senso did not answer)" : "");
+}
+/* senso-seal-text:end */
 function renderSheet() {
   const seal = state.seal || {};
   if (signed) {
@@ -319,7 +337,7 @@ function renderSheet() {
       <div class="card"><div class="cap">Checks</div>
       <div class="sub">${(() => { const q = (seal.signature && seal.signature.persona) || {}; return q.inquiry_id ? esc(q.label || "") + " · " + esc(q.inquiry_id) + " · " + esc(q.status || "") + " · sandbox" : "identity not checked"; })()}</div>
       ${seal.signature && seal.signature.relay ? `<div class="sub">Live human: ${esc(seal.signature.relay.result)} (sandbox: a sandbox claim passes with nobody present)</div>` : ""}
-      <div class="sub">${seal.signature && seal.signature.senso && seal.signature.senso.status === "pending" ? "Senso check still running" : "Checked against the " + O()}</div></div>
+      <div class="sub">${esc(sensoSealText(seal.signature, O()))}</div></div>
       <div class="sub">To start over, reset from the laptop.</div>`);
     return;
   }
