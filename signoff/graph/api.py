@@ -76,7 +76,7 @@ def explore(line_id: str | None = None):
     sheet = r["state"].get("sheet") or {}
     lines = [{"line_id": l["id"], "need": l["need"]} for l in sheet.get("lines") or []]
     line_id = line_id or (lines[0]["line_id"] if lines else None)
-    body = exploring.explore(r, line_id, records.reviews(line_id)) if line_id else None
+    body = exploring.explore(r, line_id, records.reviews(line_id), records.recall(line_id), records.talk()) if line_id else None
     if body is None:
         return JSONResponse({"backend": "records", "error": "no item %r on this sheet" % line_id, "lines": lines},
                             status_code=404, headers=NO_STORE)

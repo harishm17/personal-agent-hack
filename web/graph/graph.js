@@ -21,6 +21,7 @@ const STATUS = { inside: "meets the order", outside: "outside", unclear: "unclea
 
 let data = null, cognee = null, answer = null, stamp = "", sel = params.get("node"), line = params.get("line_id");
 // Two views of one item: the run growing as a graph (the default), and the five-column detail of the decision.
+let whole = false;
 let view = params.get("view") === "detail" ? "detail" : "explore", xdata = null, xkey = "", opened = false;
 const active = () => (view === "explore" && xdata?.nodes ? xdata : data);
 
@@ -76,9 +77,8 @@ function layout() {
   said.forEach((n, i) => pos.set(n.id, { x: x(1), w: WIDTHS[1], y: stackTop + i * ROW }));
   limits.forEach((n, i) => pos.set(n.id, { x: x(2), w: WIDTHS[2], y: (block * (i + 0.5)) / limits.length - H / 2 }));
   // the stores, below everything: each has its own lane along the bottom and up the right side
-  const stores = data.nodes.filter((n) => n.kind === "store");
-  stores.forEach((n, i) => pos.set(n.id, { x: x(0), w: WIDTHS[0], y: block + GROUP + 10 + i * ROW }));
-  const height = block + GROUP + 10 + stores.length * ROW;
+  const stores = [];                                                 // a store is named on its product, not drawn apart
+  const height = block + GROUP;
   return { nodes, pos, ghosts, fold, width, height, gap, x, stores };
 }
 
@@ -157,7 +157,7 @@ function draw() {
     const p = pos.get(n.id);
     if (!p) continue;
     let sub = n.sub || "", mark = "";
-    if (n.kind === "product") sub = [n.picked ? "the pick" : STATUS[n.status] || n.status, n.sub].filter(Boolean).join(" · ");
+    if (n.kind === "product") sub = [n.picked ? "the pick" : STATUS[n.status] || n.status, (n.sub || "").split(" · ")[0], n.owner].filter(Boolean).join(" · ");
     if (n.kind === "statement" && n.state) mark = `<span class="v ${n.state}">${n.state === "pass" ? "✓" : n.state === "fail" ? "✕" : "?"}</span>`;
     if (n.kind === "product" && n.picked) mark = `<span class="v pass">✓</span>`;
     const cls = ["n", n.picked ? "pick" : "", sel === n.id ? "sel" : "", sel && nodes.has(sel) && !near.has(n.id) ? "dim" : ""].filter(Boolean).join(" ");
@@ -178,7 +178,7 @@ function renderTop() {
   const mode = b.mode === "fixture" ? "fixture data" : b.mode === "replay" ? "replay of cached store data" : "";
   const meta = [b.items ? `${b.items} items` : "", s.invented ? "invented people, real stores" : "", mode].filter(Boolean).join(" · ");
   $("#top").innerHTML = `<span class="brand">Sign-Off</span><span class="sheet">${esc(s.title || "")}</span>
-    <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/" aria-current="page">Memory</a><a href="/talk/">Conversations</a></nav>
+    <nav class="tabs" aria-label="Views"><a href="/">Decision</a><a href="/trail/">Trail</a><a href="/graph/" aria-current="page">Memory</a><a href="/talk/">Conversations</a><a href="/seal/">Signature</a></nav>
     <span class="meta">${esc(meta)}</span><span class="grow"></span>
     <span class="pill ${b.signed ? "signed" : ""}">${b.signed ? "Signed " + clock(b.signed_at) : "Not signed"}</span>
     ${typeof b.total_cents === "number" ? `<span class="total">$${(b.total_cents / 100).toFixed(2)}</span>` : ""}`;
@@ -246,18 +246,21 @@ function renderSide() {
   // nothing selected: what Cognee answered for this item, and its permission record
   const need = (data.lines.find((l) => l.line_id === data.line_id) || {}).need || "item";
   const refused = (cognee?.refused || []).slice(-1)[0], ingest = (cognee?.ingests || []).slice(-1)[0];
+  const parts = (answer?.parts?.length ? answer.parts : [{ owner: "system", text: answer?.answer || "" }])
+    .map((p) => ({ owner: p.owner, text: String(p.text || "").replace(/\*\*/g, "").trim() })).filter((p) => p.text);
+  const first = (t) => { const line = t.split("\n")[0]; return line.split(/(?<=[.!?])\s+/)[0] || line; };
+  const brief = parts.filter((p) => !/^I could not find/i.test(p.text)).slice(0, 3).map((p) => ({ owner: p.owner, text: first(p.text) }));
   const body = answer?.answered
-    ? `<p class="quote answer">${(answer.parts?.length ? answer.parts : [{ owner: "system", text: answer.answer }]).filter((p) => p.text)
-        .map((p) => `${dot(p.owner)}${esc(p.text.replace(/\*\*/g, ""))}`).join("\n\n")}</p>
-       <div class="cap">Cognee · ${answer.datasets.length} datasets · ${dur(answer.seconds)} · ${esc(clock(answer.at))}</div>`
+    ? `<p class="quote answer">${(whole ? parts : brief).map((p) => `${dot(p.owner)}${esc(p.text)}`).join("\n\n")}</p>
+       <div class="cap">Answered by Cognee<button class="link more" data-whole>${whole ? "shorter" : "the whole answer"}</button></div>`
     : `<p class="quote muted">${esc(answer?.error || answer?.note || "Cognee has not answered.")}</p>`;
   const perm = refused
-    ? `<li><span class="no">✕</span><span class="grow">${esc(data.people[refused.identity] || refused.identity)}'s key writes to ${esc(data.people[refused.dataset_owner] || refused.dataset_owner)}'s dataset</span><span class="when">refused ${esc(clock(refused.at))}</span></li>` : "";
+    ? `<li><span class="no">✕</span><span class="grow">${esc(data.people[refused.identity] || refused.identity)}'s key writes to ${esc(data.people[refused.dataset_owner] || refused.dataset_owner)}'s dataset</span><span class="when">refused</span></li>` : "";
   const own = refused && (cognee?.log || []).filter((e) => e.action === "write" && e.accepted && e.identity === refused.dataset_owner && e.dataset_owner === refused.dataset_owner).slice(-1)[0];
-  const ok = own ? `<li><span class="yes">✓</span><span class="grow">${esc(data.people[own.identity] || own.identity)}'s key writes to ${esc(data.people[own.identity] || own.identity)}'s dataset</span><span class="when">accepted ${esc(clock(own.at))}</span></li>` : "";
+  const ok = own ? `<li><span class="yes">✓</span><span class="grow">${esc(data.people[own.identity] || own.identity)}'s key writes to ${esc(data.people[own.identity] || own.identity)}'s dataset</span><span class="when">accepted</span></li>` : "";
   el.innerHTML = `<div class="cap">Asked of Cognee</div><h2>What decides the ${esc(need)}, and from whom?</h2>${body}
     <hr><div class="cap">One dataset per owner</div><ul>${perm}${ok}</ul>
-    ${ingest ? `<div class="cap">Cognee built its graph in ${dur(ingest.seconds_total)}</div>` : ""}`;
+`;
 }
 
 function render() { renderTop(); renderBand(); draw(); renderSide(); }
@@ -281,6 +284,7 @@ async function load() {
 
 document.addEventListener("click", (e) => {
   const chip = e.target.closest("[data-line]"), node = e.target.closest("[data-id]"), seg = e.target.closest("[data-view]");
+  if (e.target.closest("[data-whole]")) { whole = !whole; renderSide(); return; }
   if (seg) { view = seg.dataset.view; sel = null; XP.play(false); render(); return; }
   if (e.target.closest("[data-play]")) { XP.play(!XP.playing()); e.target.closest("[data-play]").textContent = XP.playing() ? "Pause" : "Play"; return; }
   if (e.target.closest("[data-step]")) { XP.play(false); XP.step(Number(e.target.closest("[data-step]").dataset.step)); return; }

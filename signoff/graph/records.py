@@ -64,3 +64,34 @@ def reviews(line_id: str):
         return body if isinstance(body, dict) else json.loads(body.body)
     except Exception:  # noqa: BLE001
         return None
+
+
+def _route(path: str, params: dict, local):
+    """One of the product's own GET routes: over HTTP on the development port, in process in the app. None when
+    the route is absent or fails; the stage that needs it is then left out."""
+    base = config.env("SIGNOFF_GRAPH_FROM")
+    try:
+        if base:
+            import httpx
+            got = httpx.get(base.rstrip("/") + path, params=params, timeout=30)
+            return got.json() if got.status_code == 200 else None
+        body = local()
+        return body if isinstance(body, (dict, list)) else json.loads(body.body)
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def recall(line_id: str):
+    """GET /api/memory/recall?line_id=: what the agent already knew that bears on this item."""
+    def local():
+        from signoff.memory import api as memory_api
+        return memory_api.recall(line_id)
+    return _route("/api/memory/recall", {"line_id": line_id}, local)
+
+
+def talk():
+    """GET /api/talk/threads: every message to a store's agent, what the guard withheld, and the replies."""
+    def local():
+        from signoff.talk import api as talk_api
+        return talk_api.threads()
+    return _route("/api/talk/threads", {}, local)

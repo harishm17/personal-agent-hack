@@ -14,7 +14,13 @@ def _plural(n, one, many=None):
     return "%d %s" % (n, one if n == 1 else (many or one + "s"))
 
 
-def explore(records: dict, line_id: str, reviews: dict | None = None) -> dict | None:
+def _short(text, n=28):
+    text = " ".join(str(text or "").split())
+    return text if len(text) <= n else text[:n - 1].rstrip() + "…"
+
+
+def explore(records: dict, line_id: str, reviews: dict | None = None, recall: dict | None = None,
+            talk: dict | None = None) -> dict | None:
     state = records["state"]
     sheet = state.get("sheet") or {}
     g = build.build(state, records["receipts"], records["order_text"], records["memory"])
@@ -43,7 +49,13 @@ def explore(records: dict, line_id: str, reviews: dict | None = None) -> dict | 
             continue
         wanted = ASIDE.get(status)
         at = next((l["id"] for l in limits if checks.get(p["id"], {}).get(l["id"].split(":", 1)[1]) == wanted), None)
-        aside[p["id"]] = {"reason": WORDS.get(status, status), "limit": at or (limits[-1]["id"] if limits else None),
+        reason = WORDS.get(status, status)
+        if status == "struck":  # struck by the approver: now, or remembered from an earlier run
+            strike = next((n for n in g["nodes"] if n["kind"] == "strike" and any(
+                e["from"] == n["id"] and e["to"] == p["id"] for e in g["edges"])), None)
+            reason = "struck before" if (strike or {}).get("remembered") else "struck"
+            at = limits[0]["id"] if limits else None
+        aside[p["id"]] = {"reason": reason, "limit": at or (limits[-1]["id"] if limits else None),
                           "why": p.get("reason")}
 
     # the searches: the item's own queries, to each store that returned something
@@ -77,6 +89,67 @@ def explore(records: dict, line_id: str, reviews: dict | None = None) -> dict | 
             web_added.append(rid)
             edges.append({"from": "web:search", "verb": "searches", "to": pid, "owner": "system", "source": extra["web:search"]["source"]})
             edges.append({"from": rid, "verb": "rates", "to": pid, "owner": "web", "source": extra[rid]["source"]})
+
+    # what it already knows: each recalled memory, attached to what it is about
+    pid_of = {}
+    for c in run.get("candidates") or []:
+        pid_of.setdefault((c.get("product") or {}).get("product_id"), "product:" + c["id"])
+    key_of = {}
+    for p in products:
+        key_of.setdefault(p.get("product_key"), p["id"])
+    known, memory_of_talk = [], {}
+    for m in (recall or {}).get("recalled") or []:
+        src = m.get("source") if isinstance(m.get("source"), dict) else None
+        if not src or not m.get("memory_id"):
+            continue
+        key = str(m.get("key") or "")
+        about = (("fact:%s" % (m.get("fact_id") or key)) if m.get("kind") == "home_measurement" else None)
+        if about not in by_id:
+            about = key_of.get(m.get("product_key") or key) or next((v for k, v in pid_of.items() if k and k in key), None)
+        if about is None and "store:%s" % m.get("store") in stores:
+            about = "store:%s" % m.get("store")
+        about = about or item
+        topic = {"home_measurement": "measured", "strike": "struck before", "purchase": "bought before"}.get(m.get("kind")) \
+            or key.split(":")[0].replace("_and_", ", ").replace("_", " ").replace("talk", "said to us")
+        mid = "memory:" + m["memory_id"]
+        extra[mid] = {"id": mid, "kind": "memory", "owner": m.get("owner"), "label": topic,
+                      "sub": " · ".join(x for x in (m.get("store"), (m.get("age") or {}).get("text") or "remembered") if x),
+                      "text": m.get("text"), "about": about, "why": m.get("why"), "at": m.get("asked_at") or src.get("at"),
+                      "source": dict(src, record="memory", memory_id=m["memory_id"])}
+        known.append(mid)
+        edges.append({"from": mid, "verb": "about", "to": about, "owner": m.get("owner"), "source": extra[mid]["source"]})
+        if key.startswith("talk:"):
+            memory_of_talk[tuple(key.split(":")[-2:])] = mid
+
+    # asking the store's agent: every message about one of this item's products, what the guard withheld, the reply
+    asked, said = [], []
+    for m in (talk or {}).get("messages") or []:
+        target = pid_of.get((m.get("product") or {}).get("id"))
+        if not target or not m.get("id"):
+            continue
+        store = "store:%s" % m.get("store")
+        src = {"record": "talk", "thread": m.get("thread"), "n": m.get("n"), "route": "/api/talk/threads", "at": m.get("at")}
+        removed = [{"text": x.get("text"), "mark": x.get("mark") or x.get("class"), "rule": x.get("rule")} for x in m.get("removed") or [] if isinstance(x, dict)]
+        stopped = not m.get("sent")
+        qid = "message:" + m["id"]
+        extra[qid] = {"id": qid, "kind": "message", "owner": "system", "label": "stopped" if stopped else m.get("decision") or "sent",
+                      "sub": _short(m.get("purpose"), 40), "text": m.get("sent") or m.get("draft"), "product": target, "store": store,
+                      "removed": removed, "stopped": stopped, "why": m.get("why"), "at": m.get("at"), "source": src}
+        asked.append(qid)
+        if not stopped and store in by_id:
+            edges.append({"from": qid, "verb": "asks", "to": store, "owner": "system", "source": src})
+        edges.append({"from": target, "verb": "asked about", "to": qid, "owner": "system", "source": src})
+        reply = m.get("reply") if isinstance(m.get("reply"), dict) else None
+        if reply and reply.get("text") and not stopped:
+            rid = "reply:" + m["id"]
+            extra[rid] = {"id": rid, "kind": "reply", "owner": m.get("store"), "label": "reply", "sub": _short(reply["text"], 40),
+                          "text": reply["text"], "message": qid, "at": reply.get("at"), "source": src}
+            said.append(rid)
+            edges.append({"from": rid, "verb": "answers", "to": qid, "owner": m.get("store"), "source": src})
+            held = memory_of_talk.get((str(m.get("thread")), str(m.get("n"))))
+            if held:
+                extra[rid]["remembered"] = held
+                edges.append({"from": rid, "verb": "remembered", "to": held, "owner": m.get("store"), "source": extra[held]["source"]})
 
     # the ranking: the order the engine's own ordering gives. For "cheapest" that is the price; for any other
     # ordering the engine's rank is used when a candidate carries one, and the reply says which was used.
@@ -138,6 +211,10 @@ def explore(records: dict, line_id: str, reviews: dict | None = None) -> dict | 
          "node_ids_added": [s["id"] for s in statements], "node_ids_set_aside": [], "reason_counts": {},
          "not_stated": [p["id"] for p in products if any(v == "not_stated" for v in checks.get(p["id"], {}).values())]},
     ]
+    if known:
+        stages.insert(1, {"id": "known", "title": "What it already knows", "at": None,
+                          "caption": "%s recalled, of %s held." % (_plural(len(known), "memory", "memories"), (recall.get("counts") or {}).get("of", len(known))),
+                          "node_ids_added": known, "node_ids_set_aside": [], "reason_counts": {}})
     left = len(products)
     for l in limits:
         out = [pid for pid, a in aside.items() if a["limit"] == l["id"]]
@@ -148,6 +225,13 @@ def explore(records: dict, line_id: str, reviews: dict | None = None) -> dict | 
         stages.append({"id": "rule:" + l["id"], "title": "The rules", "at": None, "limit": l["id"], "rule": l["label"],
                        "caption": "%s: %d set aside, %d left." % (str(l.get("sub") or l["label"]).capitalize(), len(out), left),
                        "node_ids_added": [l["id"]], "node_ids_set_aside": out, "reason_counts": counts})
+    if asked:
+        withheld = sum(len(extra[i]["removed"]) for i in asked)
+        stopped = sum(1 for i in asked if extra[i]["stopped"])
+        stages.append({"id": "asking", "title": "Asking the store", "at": min((extra[i].get("at") or "" for i in asked), default=None) or None,
+                       "caption": "%s to the store's agent; %s withheld; %d stopped." % (_plural(len(asked), "message"), _plural(withheld, "part"), stopped),
+                       "node_ids_added": asked + said, "node_ids_set_aside": [], "reason_counts": {},
+                       "row": sorted({extra[i]["product"] for i in asked})})
     if web_added:
         rated = sum(1 for i in web_added if (extra[i].get("rating") is not None))
         stages.append({"id": "web", "title": "The web", "at": min((c.get("fetched_at") or "" for c in searched), default=None) or None,
@@ -165,4 +249,5 @@ def explore(records: dict, line_id: str, reviews: dict | None = None) -> dict | 
     return {"line_id": line_id, "need": line.get("need"), "nodes": nodes, "edges": edges, "stages": stages,
             "totals": {"products": len(products), "passing": len(passing), "set_aside": len(aside),
                        "pages": len({(cands[p["id"]].get("product") or {}).get("product_id") for p in products})},
-            "reviews_available": reviews is not None}
+            "reviews_available": reviews is not None, "recall_available": recall is not None, "talk_available": talk is not None,
+            "counts": {"memory": len(known), "message": len(asked), "reply": len(said)}}
