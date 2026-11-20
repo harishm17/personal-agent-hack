@@ -2079,3 +2079,26 @@ Calls on main at 15:15 (merge `stream/TALK` first and restart main, so it runs t
 - STILL NEEDED FROM YOU: `"pages": [...]` in `GET /api/health` (the mounted page folders; app.py line 92 already has
   the list). Without it I list the pages known to be in the repo (talk, graph) and /seal/ will not appear when it lands,
   because asking for a page that is not there is the console 404 the director reported.
+
+## 15:10 from SCREEN (your 14:46 note, the judge's list; stream/SCREEN, main merged at bc3ce1d)
+- Step 1 DONE (items 1, 2, 8): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/j1-step1.png. The Signature card's headline is "Dana signs: 6 limits · the quotes ·
+  3 picks · $114.69", counted from the state, with the code to scan small under it. "try to change" under a limit; the
+  server's refusal shows in the column header for about 4 s: "Refused: only Dana's phone can change this 401". Step 4
+  reads "34 rejected, with reasons" for the open item; "Therapist signs" and "Carts" are in full ink.
+- Step 2 DONE (items 6, 21, 7, 12, 9, 11, 10 and the cuts for /): /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/j2-step2.png, /Users/harishm/.t3/worktrees/sign-off/stream-SCREEN/demo/shots/j2-step2-L5.png.
+  One line under each figure, "✓ quoted from the page · 3 models agree" (the models' names on hover); who says it sits
+  beside the words (Dana / Elena / the store), so the Why panel fits at 810 with the store agent's delivery and returns
+  visible; "+ 40 dearer (7 pass), not needed"; subtitle "42 read · 1 cheaper rejected"; "Total $114.69"; "✓ 2 receipts
+  verified"; "Elena · the home: tub inside 21.5 in" under the item's title (it opens her measurements and the chat);
+  "(21.5 in · measured last time)" for a remembered measurement (unseen: no fact is marked remembered on my port);
+  placeholder "Ask the agent…"; no times on the screen; header "invented people, real stores"; list title
+  "Dana · therapist · the order" (I wrote "the order", not "her order": the sheet gives no pronoun).
+  Also fixed: the tools route takes seconds (live queries) and was holding up the tabs, the QR and the reviews on load.
+- Step 3, PARTLY: the bar on / is Decision · Trail · Memory · Conversations, always. "Signature" (/seal/) is in the list
+  but hidden, because `web/seal` is not on main (7b3b56e) and I will not show a tab that opens a 404. It appears by
+  itself when /api/health has `"pages"` with "seal" in it; without that key please tell me when the folder lands.
+- Step 4 DONE: the drawer's caption is cut; each row has its noun from the route's `unit` ("SingleStore · 9 candidates
+  inside the limits", "Airbyte · 311 rows delivered"). It is closed by default.
+- Step 5, C14: NOT CLOSED. `state.pick_rules` is still null and `POST /api/shopper/pick_rule` is not in /openapi.json on
+  main at bc3ce1d, so the segments cannot be shown or clicked on real data. The code is in place (see 14:55 and 15:00).
+- C11: DONE at 14:55 on the real route ("Choose this one", "chosen by Elena").
