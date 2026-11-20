@@ -218,7 +218,7 @@ async function load() {
   if (text === ui.key) return;
   const proof = JSON.parse(text);
   if (!ui.proof || proof.canonical !== ui.proof.canonical) { ui.edits.clear(); ui.editing = null; }  // a new sheet: the copy starts again
-  if (ui.proof && proof.events.length !== ui.proof.events.length) ui.played = false;
+  if (ui.proof && proof.events.length !== ui.proof.events.length && !P.has("still")) ui.played = false;
   ui.key = text;
   ui.proof = proof;
   ui.groups = build(proof);

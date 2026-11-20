@@ -2239,3 +2239,33 @@ open matrix is being checked now. `web/trail/shots/flow.png` and `flow-810.png` 
   second quote is used only if code finds it on the page with the rating and the scale in it (10 pages asked, 1 changed: Best Buy).
   (2) When the reader rounds ("4.6" for the page's "4.5915494"), the page's own number is kept, with `value_as_reported` beside it.
   `best_reviewed` and `ratings()` now use one rule (out of five, at least 5 reviews); the tie-break text is updated in the reply.
+
+## TALK 15:04 — K6 done on `stream/TALK`: "Try to get a cart without her"
+- DONE K6: a card on `/seal/` with four buttons. Each sends a real request to `POST /api/issuer/request` (the one route
+  that can change a limit or make a cart; SIGN's code has no other, and I added none) and prints the server's own answer:
+  | attempt | what is sent | the server's answer, signed run | unsigned run, no key |
+  |---|---|---|---|
+  | Ask for carts with no signature | `sign_sheet`, no `sig` | 401 `unsigned` "not signed by the approver's key" | the same |
+  | Sign with a key made in this browser | `sign_sheet` signed by a new WebCrypto P-256 key, claiming her key id | 401 `unsigned` | 401 `no_key` "no approver key is enrolled on this server; enrol this phone again" |
+  | Replay her signed request | the exact `payload` and `sig` of her signature | 409 `replayed_seq` "seq 4 is not greater than the last one (4)" | disabled: "no signed request in this run yet" |
+  | Change her limit from the laptop | `set_limit L1.capacity 300 → 250`, no `sig` | 401 `unsigned` | the same |
+- No finding: every attempt was refused. Nothing in the page decides the text shown: it is `status`, `error` and `detail`
+  from the response. If one ever came back 2xx the row says "NOT refused: tell the integrator" in red.
+- They do not disturb a real run. Checked on my port against a signed state, before and after the four attempts:
+  `{'version': 7, 'hash': '3ac94ba1…', 'signed': True, 'current': True, 'carts': 3, 'key': '06c1fbf5b174582c', 'last_seq': 3, 'limit': 300}`
+  both times → `UNCHANGED`. Why, from `signoff/sign/verify.py`: `last_seq` is advanced only after the signature verifies
+  and `seq` is greater; a refusal of these kinds is raised before that, and before the engine is touched. Also a unit
+  test on SIGN's own check: `test_each_attempt_without_her_key_is_refused_and_changes_nothing`. No attempt touches
+  enrolment (five wrong codes would lock the phone out for a minute), so there is no button for it.
+- In the records: each refusal is a `request_refused` receipt in the run's chain. The card's count ("5 attempts refused in
+  this run") is the number of those receipts; the lanes show them ("4 requests refused: unsigned, replayed seq").
+  `GET /api/seal/proof` → `refused: [{n, at, request, why}]`.
+- The limit attempt goes to the signing route, not to `/api/shopper/fact`: that route changes only Elena's own
+  measurements, answers 404 for a limit id and writes no receipt for it, so it would not be in the records.
+- Order on the page: (1) Change one thing, with what the signature covers, in one card, since the covered rows are the
+  values you change; (2) Try to get a cart without her; (3) the lanes. All four parts made it; the lanes are last.
+- Proof: `uv run pytest tests/seal -q` → `8 passed`; `./hk check` → `PASS (default) uv run -q pytest -q -x`. Shots, looked
+  at: `web/seal/shots/seal-attempts-signed.png`, `seal-attempts-unsigned.png`, `seal-attempts-150.png`; all earlier
+  states retaken with the final page. Chrome made the attempts in the shots itself (`?try=nosig,newkey,replay,limit`).
+- On main: merge, restart main once (new route fields, the mount). Pressing the buttons on main is safe by the above; each
+  press adds a refused receipt to main's chain, which is the point. `?still&try=…` is for a screenshot only.

@@ -46,11 +46,13 @@ def events(receipts: list, seal: dict) -> list:
         elif kind == "request_refused":
             why = str(d.get("refused_because") or "").split(":")[0].replace("_", " ")
             text = "%s refused: %s" % ((d.get("request") or "request").replace("_", " "), why)
-            if out and out[-1].get("what") == text:  # the same refusal again: one line with a count
-                out[-1]["count"] += 1
-                out[-1].update(at=r["at"], text="%s · %d times" % (text, out[-1]["count"]))
+            if out and out[-1].get("whys"):  # refusals that follow each other are one line with a count and the reasons
+                last = out[-1]
+                last["count"] += 1
+                last["whys"] += [why] if why not in last["whys"] else []
+                last.update(at=r["at"], text="%d requests refused: %s" % (last["count"], ", ".join(last["whys"])))
             else:
-                out.append({"at": r["at"], "from": "agent", "to": "agent", "bad": True, "text": text, "what": text, "count": 1})
+                out.append({"at": r["at"], "from": "agent", "to": "agent", "bad": True, "text": text, "whys": [why], "count": 1})
         elif kind == "request_accepted" and d.get("request") == "sign_sheet":
             sent = None
             try:
@@ -72,6 +74,7 @@ def events(receipts: list, seal: dict) -> list:
                                 "text": "cart lines match the signed picks · %d of %d" % (ok, len(checked))})
     for e in out:
         e.pop("what", None)
+        e.pop("whys", None)
         e.pop("count", None)
     return out
 
