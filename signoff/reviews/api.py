@@ -31,7 +31,9 @@ def read(line_id: str | None = None):
     if line_id:
         return out[0]
     short = ("found", "searched", "rating", "out_of", "review_count", "rating_site", "sentence", "note")
-    return {"sheet": (state.get("sheet") or {}).get("id"), "lines": out,
+    return {"sheet": (state.get("sheet") or {}).get("id"), "lines": out, "minimum_reviews": reviews.MINIMUM_REVIEWS,
+            "ratings_rule": reviews.RATINGS_RULE,
+            "ratings": {cid: r for line in out for cid, r in line["ratings"].items()},
             "by_candidate": {c["candidate_id"]: dict({k: c.get(k) for k in short}, line_id=line["line_id"],
                                                      best_reviewed=bool(line["best_reviewed"]) and line["best_reviewed"]["candidate_id"] == c["candidate_id"])
                              for line in out for c in line["candidates"]}}
