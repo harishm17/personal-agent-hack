@@ -30,14 +30,23 @@ DECLARED = {}  # units a sheet declares itself: {name: [spellings]}; each is its
 
 def declare_units(sheet):
     """A sheet may name its own units and how stores spell them (`"units": {"dB": ["db", "decibels"], ...}`), so a
-    new sheet needs no change here. The table above stays as the default for units a sheet does not declare."""
+    new sheet needs no change here. The table above stays as the default for units a sheet does not declare.
+    The units of the sheet declared before are taken out first: one sheet's units never linger into another's."""
+    for name, spellings in list(DECLARED.items()):
+        for spelling in spellings:
+            if ALIASES.get(spelling) == name and spelling not in _BUILT_IN:
+                ALIASES.pop(spelling, None)
+        if name not in _BUILT_IN_FAMILY:
+            FAMILY.pop(name, None)
+        DECLARED.pop(name, None)
     for name, spellings in (sheet.get("units") or {}).items():
         DECLARED[name] = sorted({str(x).lower() for x in list(spellings) + [name]}, key=len, reverse=True)
         for spelling in DECLARED[name]:
-            ALIASES[spelling] = name
+            ALIASES.setdefault(spelling, name) if spelling in _BUILT_IN else ALIASES.__setitem__(spelling, name)
         FAMILY.setdefault(name, name)
 
 
+_BUILT_IN, _BUILT_IN_FAMILY = frozenset(ALIASES), frozenset(FAMILY)
 OPS = (">=", "<=", "==")
 PICK_RULES = ("cheapest_with_delivery_time", "cheapest")
 

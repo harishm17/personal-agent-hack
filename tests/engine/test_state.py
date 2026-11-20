@@ -150,7 +150,7 @@ def test_routes():
     paths = {r.path for r in api.router.routes}
     assert paths == {"/api/state", "/api/events", "/api/shopper/fact", "/api/sheet/canonical", "/api/shopper/say",
                      "/api/drill/session", "/api/drill/say", "/api/drill/state", "/api/receipts", "/api/receipts/verify",
-                     "/api/sheets", "/api/admin/use-sheet"}
+                     "/api/sheets", "/api/admin/use-sheet", "/api/reads/ledger", "/api/shopper/choose"}
 
 
 def test_the_reader_can_be_switched_to_another_readers_run(tmp_path):
@@ -291,3 +291,36 @@ def test_what_memory_recalls_is_applied_at_the_start_of_a_run_and_nowhere_else(m
     s = state.reset()
     assert "memory" not in s and [d["what"] for d in s["degraded"]] == ["memory"]
     assert next(f for f in s["sheet"]["shopper_facts"] if f["id"] == "toilet_rim_height")["value"] == 15.0
+
+
+def test_the_shopper_may_choose_any_candidate_that_passes_and_nothing_that_does_not():
+    s = state.get_state()
+    l2 = line(s, "L2")
+    rule_pick, before = l2["pick"], state.sheet_hash()
+    assert l2["picked_by"] == "rule" and rule_pick.endswith("fx-A")
+    by = {c["product"]["product_id"]: c for c in l2["candidates"]}
+    assert by["fx-D"]["status"] == "inside" and by["fx-F"]["status"] == "outside" and by["fx-H"]["status"] == "not_stated"
+    for refused in ("fx-F", "fx-H"):                                   # outside, not stated: she cannot choose past a limit
+        with pytest.raises(state.EngineError) as error:
+            state.set_shopper_choice("L2", by[refused]["id"])
+        assert error.value.status == 409 and "cannot be chosen" in str(error.value)
+    with pytest.raises(state.EngineError):
+        state.set_shopper_choice("L3", next(c["id"] for c in line(s, "L3")["candidates"] if c["status"] == "struck"))
+    s = state.set_shopper_choice("L2", by["fx-D"]["id"])               # D is dearer, and inside: her choice
+    l2 = line(s, "L2")
+    assert l2["pick"] == by["fx-D"]["id"] and l2["picked_by"] == "shopper" and l2["why"]["pick_price_cents"] == 7999
+    assert [c["product"]["product_id"] for c in l2["candidates"] if c["picked"]] == ["fx-D"]
+    assert state.sheet_hash() != before and '"picked_by":"shopper"' in state.canonical_sheet()  # the approver signs it knowingly
+    assert s["total_cents"] == sum(c["product"]["price_cents"] for l in s["lines"] for c in l["candidates"]
+                                   if c["picked"] and l["status"] in ("ready", "next_candidate"))
+    # a limit change that puts her choice outside drops it back to the rule, and says so
+    s = state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 475})   # D holds 450
+    l2 = line(s, "L2")
+    assert l2["picked_by"] in ("rule", None) and l2["pick"] != by["fx-D"]["id"]
+    assert "no longer inside the limits" in l2["choice_dropped"]["why"] and by["fx-D"]["id"] not in state._s["choices"].values()
+    state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 300})
+    s = state.set_shopper_choice("L2", by["fx-D"]["id"])
+    s = state.set_shopper_choice("L2", None)                           # back to the rule
+    assert line(s, "L2")["pick"] == rule_pick and line(s, "L2")["picked_by"] == "rule" and state.sheet_hash() == before
+    from signoff.engine import receipts
+    assert [r["type"] for r in receipts.chain()["receipts"]].count("shopper_choice") == 3

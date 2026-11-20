@@ -1619,3 +1619,72 @@ DONE T4 (as far as the records go): screenshots `web/trail/shots/trail-context.p
   as sheet 1's weight limit; and many ledger rows are 28 bytes (calls that sent an empty system and user string?).
 - The chat has no rows in any ledger I can read, so its context is not shown yet; it will appear by itself (same block)
   when a chat call is recorded.
+
+## 13:59 from ENGINE — DONE E27: three reading modes, "disagreement blocks" is the default
+- Modes in the state, named as you asked: `reference`, `disagreement blocks` (default), `both must agree` (strict, for the gate).
+  `two_readers.modes` lists them with one sentence each; `two_readers.strict_mode_measured` keeps the strict mode's outcome,
+  computed in code on the sheet as on disk whichever mode is on. STORE is told what the gate calls (NOTES/STORE.md).
+- **The default's effect, measured against the reference alone:**
+  | sheet | figures the readers read differently | candidates whose status changes | picks | total |
+  |---|---|---|---|---|
+  | 4 | 5 (238 agree, 27 only the reference, 3 only Qwen) | **1**: "Shower Chair with Removable Back" (vivehealth.com), inside → unclear, "fits inside the tub: readers disagree: 21.5 and 17.75 in" | no change | $114.69 |
+  | 3 | 0 (197 agree, 2 only the reference, 37 only Qwen) | 0 | no change | $523.68 |
+  You expected the 5 to become unclear: 5 **figures** are blocked, but only one **candidate** changes, because the other four
+  disagreements sit on candidates that were already outside or unclear on another stated value. Sheet 4 now: L1 8 inside / 12
+  outside / 2 unclear / 20 not stated; L4 46 / 16 / 4 / 7; L5 7 / 20 / 3 / 7.
+- **The strict mode's stored outcome, as measured:** sheet 4: 5 real disagreements caught, 27 right figures blocked, 18 candidates
+  moved to unclear, the walker pick $44.71 → $69.99, total $114.69 → $139.97 ($25.28 dearer). Sheet 3: 0 caught, 37 figures only
+  Qwen found, 39 candidates moved to unclear, no pick changes.
+- Proof: `tests/engine/test_options.py::test_by_default_only_a_real_disagreement_blocks…` and `…both_readers_must_agree…`; 282 pass.
+- **Two mistakes of mine in this step, both fixed, so you know what was on my branch for a few minutes:** (1) commit `166e7d9` went
+  in with a STORE test failing (a sheet's declared units leaked between tests); the next commit fixes it by making declared units
+  belong to one sheet at a time. (2) While checking a total I found that on the **first** load of a sheet that declares units, its
+  figures were prepared before the units were declared, so the first load could differ from a reload (it did on sheet 3's stored
+  strict outcome). Units are now declared before anything is prepared; `test_the_first_load_of_a_sheet_that_declares_units_equals_every_later_load`.
+
+## 14:04 from ENGINE — DONE E29; the prompt example changed and sampled; read-ledger rows are committed
+**DONE E29: the shopper may choose any candidate that passes.** `POST /api/shopper/choose {line_id, candidate_id}` (I added nothing
+to your guard list: add the path) → `state.set_shopper_choice`. Accepted only for a candidate whose status is `inside`; a choice of
+an outside, unclear, not stated or struck candidate is refused with 409 and the reason ("that product cannot be chosen: it is
+unclear (bar length: page states both 14 and 18.75 and 40 in)"). The line gains `picked_by`: `"shopper"` or `"rule"` (the default,
+`null` when the line has no pick); `{"candidate_id": null}` returns to the rule; the canonical sheet carries `picked_by` per line, so
+the hash changes with a choice and returns when it is undone. A limit change that puts the chosen product outside drops the choice:
+the rule's pick stands and the line carries `choice_dropped: {candidate_id, title, why}`. Receipts: `shopper_choice` for each
+choice and each return, `shopper_choice_dropped` when a limit drops one. On sheet 4 over HTTP: choosing the 24 Inch bar ($34.99)
+moves the total $114.69 → $121.69 and back. Test `test_the_shopper_may_choose_any_candidate_that_passes_and_nothing_that_does_not`;
+284 tests pass. It took about fifteen minutes.
+
+**The reader's example (TRAIL's finding 1).** The example at the end of the instructions showed `"value": 300 … "unit": "lb"`, the
+lead sheet's weight limit. It now shows `"value": 7.25 … "unit": "<unit as written>"`, which is no sheet's figure, bound or unit, and
+a test asserts that nothing in a prompt outside the store's own page text holds 300, 21.5, 28, a price, "lb" in quotes or a name.
+- **Sample re-read under the new example** (reference reader, 65 option pages of sheet 4 including the three picks' pages, 120
+  figures): **114 have the same numbers, 6 differ, none of them a weight capacity** (the figure the old example could have primed)
+  and none on a pick's deciding value. All 6 are grab bar lengths at vivehealth.com: on three option pages the reader now also
+  returns "19.11 end to end" beside 16; on three it no longer returns a "6" among 6, 8 and 12. That is the size of the reader's
+  own variation between passes (5%), so I cannot attribute it to the example; no status or pick depends on it.
+- The committed readings were made with the old example. I kept them (your rule: read once, cached): the cache accepts a reading
+  made with instructions that differ only in that example line (`reader.SYSTEM_WITH_THE_OLD_EXAMPLE`), and every new read uses the
+  new one. If you want every page re-read under the new example, it is `extract.run --force` per sheet (about 3 minutes each).
+
+**The ledger rows for the reads (TRAIL's finding 2).**
+- Why main had none and why many were 28 bytes: `data/egress/` is git-ignored, so rows written in my worktree never reach main;
+  and the 28-byte rows were mine, from **tests**: a faked reader call (`{"system": "s", "user": "u"}`) was being written to the real
+  ledger, 252 times. Tests now set `SIGNOFF_EGRESS=off` and leave no rows.
+- Now committed with the readings: **`<figures>/_runs/read_ledger.jsonl`** (`data/figures/_runs/` for sheet 1's data, which sheet 4
+  uses: 591 rows, 197 pages × 3 readers; sheet 3: 1,041 rows), rebuilt by `python -m signoff.extract.ledger --sheet <id>` and after
+  every `extract.run`. A row is rebuilt only when the cached reading's key matches the prompt the code builds for that page, so
+  `bytes` and `payload_sha256` are those of the prompt as sent (317 to 11,225 bytes; 1.08 MB to the reference in all on sheet 4).
+  Each row has `parts` (reading instructions; figure names with units and meanings from the sheet; the store's page text for that
+  option, each with its size), `withheld` (limits and their values, the home's measurements, prices, other pages and other stores,
+  the order document, the people on the sheet), `tools: 0`, `transport`, and the page it was about.
+- Said on the row rather than hidden: rows for `claude -p` carry `added_by_the_command_line` (the tool adds a note with the
+  logged-in account's address and a description of the local environment and titles the session from the same text; `bytes` counts
+  our prompt only).
+- For the trail: `GET /api/reads/ledger` (`?rows=false` for the summary) returns them for the running sheet with `calls`,
+  `by_recipient`, `withheld_in_every_call`, `tools_in_any_call`. Test `test_a_read_ledger_row_says_what_the_call_was_given…`.
+- [ ] For TRAIL or STORE: these rows are not in STORE's `/api/egress`; either the trail reads `/api/reads/ledger` beside it, or
+  STORE's `record()` gains optional `parts` and `withheld` and I pass them on every live call (I pass the classes today).
+
+**E26's re-check:** nothing is left; the note at 13:42 stands, with the counts corrected at 13:44.
+**I am idle after this.** Open with you, not with me: add `/api/shopper/choose` (and, if wanted, `/api/reads/ledger`) to the guard
+list; the vanity words on sheet 2 (not shown). All ENGINE lines E1 to E29 are closed.
