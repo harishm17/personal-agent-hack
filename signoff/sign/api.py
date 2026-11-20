@@ -12,10 +12,11 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
-from . import persona, senso
+from . import handcheck, persona, senso
 from .verify import KeyStore, Refused, verify_request
 
 router = APIRouter()
+router.include_router(handcheck.router)
 keystore = KeyStore()
 _lock = threading.RLock()
 
