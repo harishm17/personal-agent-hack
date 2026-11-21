@@ -23,6 +23,12 @@ def fixture_inputs(monkeypatch, tmp_path):
     state._s["loaded"] = False
 
 
+def as_on_disk(sheet):
+    """The running sheet without what the state adds to each measurement about this run (confirmed or not)."""
+    return dict(sheet, shopper_facts=[{k: v for k, v in f.items() if k not in ("confirmed", "confirmed_at")}
+                                      for f in sheet["shopper_facts"]])
+
+
 def line(s, line_id):
     return next(l for l in s["lines"] if l["line_id"] == line_id)
 
@@ -118,7 +124,7 @@ def test_reset_puts_the_sheet_back_as_on_disk():
     assert state.get_state()["issuer_key"]["enrolled"] is True
     s = state.reset()
     assert s["issuer_key"]["enrolled"] is False
-    assert s["sheet"] == json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+    assert as_on_disk(s["sheet"]) == json.loads((ROOT / "sheets" / "sheet1.json").read_text())
 
 
 def test_reload_keeps_the_issuers_changes():
@@ -151,7 +157,7 @@ def test_routes():
     assert paths == {"/api/state", "/api/events", "/api/shopper/fact", "/api/sheet/canonical", "/api/shopper/say",
                      "/api/drill/session", "/api/drill/say", "/api/drill/state", "/api/receipts", "/api/receipts/verify",
                      "/api/sheets", "/api/admin/use-sheet", "/api/reads/ledger", "/api/shopper/choose",
-                     "/api/shopper/pick_rule"}
+                     "/api/shopper/pick_rule", "/api/shopper/confirm"}
 
 
 def test_the_reader_can_be_switched_to_another_readers_run(tmp_path):
@@ -176,7 +182,7 @@ def test_reset_is_complete_and_text_checks_follow_the_sheet_they_were_run_on():
     assert time.perf_counter() - started < 0.2
     assert state.sheet_hash() == original and s["senso_current"] is True and s["seal"]["signed"] is False
     assert s["issuer_key"]["enrolled"] is False and [k["product_key"] for k in line(s, "L2")["struck"]] == []
-    assert s["sheet"] == json.loads((ROOT / "sheets" / "sheet1.json").read_text())
+    assert as_on_disk(s["sheet"]) == json.loads((ROOT / "sheets" / "sheet1.json").read_text())
     assert state.set_shopper_fact("mattress_thickness", 12.0)["version"] > s["version"]  # open for changes again
 
 
@@ -364,6 +370,8 @@ def test_one_value_has_one_fingerprint_however_it_arrived():
     state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 325.0})
     state.apply_issuer({"type": "set_limit", "limit_id": "L2.capacity", "value": 300.0})  # 300 in the file, back as a decimal
     assert state.sheet_hash() == first
+    state.confirm_shopper_fact("toilet_rim_height")   # confirming is itself signed (E34), so the measurement starts confirmed
+    first, text = state.sheet_hash(), state.canonical_sheet()
     was = next(f for f in state.get_state()["sheet"]["shopper_facts"] if f["id"] == "toilet_rim_height")["value"]
     state.set_shopper_fact("toilet_rim_height", was + 0.5)
     assert state.sheet_hash() != first
@@ -402,9 +410,62 @@ def test_a_home_measurement_says_which_message_its_number_was_quoted_from(monkey
     assert "suggested_from" not in json.dumps(s["sheet"]["lines"])                    # a limit is prescribed, never suggested
     assert state.sheet_hash() == first_hash and state.canonical_sheet() == first_text  # shown, not signed: no hash moves
     was = facts[1]["value"]
+    state.confirm_shopper_fact(facts[1]["id"])                                        # confirming is signed (E34); provenance is not
+    first_hash = state.sheet_hash()
     s = state.set_shopper_fact(facts[1]["id"], was + 0.5)                             # she changes it: her value stands
     fact = s["sheet"]["shopper_facts"][1]
     assert fact["value"] == was + 0.5 and fact["suggested_from"]["matches"] is False and fact["suggested_from"]["value"] == was
     assert "suggested_from" not in state.canonical_sheet()
     s = state.set_shopper_fact(facts[1]["id"], was)
     assert s["sheet"]["shopper_facts"][1]["suggested_from"]["matches"] is True and state.sheet_hash() == first_hash
+
+
+def test_a_suggested_measurement_is_unconfirmed_until_its_owner_confirms_it():
+    """E34: the agent's value is a suggestion; picks use it, the state says so, and confirming is the owner's act."""
+    s = state.get_state()
+    facts = s["sheet"]["shopper_facts"]
+    assert all(f["confirmed"] is False and f["confirmed_at"] is None for f in facts)
+    used = {l["bound"].get("fact") for ln in s["sheet"]["lines"] for l in ln["limits"]} | \
+        {t.get("fact") for ln in s["sheet"]["lines"] for l in ln["limits"] for t in l["terms"]}
+    assert s["unconfirmed"] == [f["id"] for f in facts if f["id"] in used] and len(s["unconfirmed"]) >= 2
+    assert s["unconfirmed_facts"] == [{"id": f["id"], "label": f["label"]} for f in facts if f["id"] in used]
+    assert s["unconfirmed_text"] == "%s has not confirmed: %s" % (s["sheet"]["shopper"]["name"],
+                                                                 ", ".join(f["label"] for f in facts if f["id"] in used))
+    assert line(s, "L2")["pick"] and s["total_cents"] > 0                              # the list does not go empty
+    assert '"confirmed"' not in json.dumps(s["sheet"]["lines"])                         # a limit is prescribed, never confirmed
+    before, total = state.sheet_hash(), s["total_cents"]
+    sheet = json.loads(state.canonical_sheet())
+    assert sheet["measurements"] == [{"id": f["id"], "value": state._one_form(f["value"]), "unit": f["unit"], "confirmed": False}
+                                     for f in facts]
+    first, second = s["unconfirmed"][0], s["unconfirmed"][1]
+    app = FastAPI()
+    app.include_router(api.router)
+    client = TestClient(app)
+    r = client.post("/api/shopper/confirm", json={"fact_id": first}).json()             # as it stands
+    s = state.get_state()
+    assert r == {"ok": True, "version": s["version"], "fact_id": first, "confirmed": True, "unconfirmed": s["unconfirmed"]}
+    fact = next(f for f in s["sheet"]["shopper_facts"] if f["id"] == first)
+    assert fact["confirmed"] is True and fact["confirmed_at"] and first not in s["unconfirmed"] and second in s["unconfirmed"]
+    assert state.sheet_hash() != before and s["total_cents"] == total                   # what is signed says it was confirmed
+    assert next(m for m in json.loads(state.canonical_sheet())["measurements"] if m["id"] == first)["confirmed"] is True
+    value = next(f for f in s["sheet"]["shopper_facts"] if f["id"] == second)["value"]
+    s = state.set_shopper_fact(second, value)                                           # setting a value is confirming it
+    assert next(f for f in s["sheet"]["shopper_facts"] if f["id"] == second)["confirmed"] is True
+    assert client.post("/api/shopper/confirm", json={"fact_id": "no_such_fact"}).status_code == 404
+    from signoff.engine import receipts
+    assert [x["type"] for x in receipts.chain()["receipts"]].count("shopper_confirm") == 1
+    for fact_id in list(s["unconfirmed"]):
+        s = state.confirm_shopper_fact(fact_id)
+    assert s["unconfirmed"] == [] and s["unconfirmed_facts"] == [] and s["unconfirmed_text"] is None
+    state.mark_signed({"name": "Dana", "at": "2026-11-20T16:00:00-08:00", "sheet_hash": state.sheet_hash()}, [])
+    assert client.post("/api/shopper/confirm", json={"fact_id": first}).status_code == 409   # refused once signed
+    s = state.reset()                                                                   # a new run starts unconfirmed
+    assert all(f["confirmed"] is False for f in s["sheet"]["shopper_facts"]) and state.sheet_hash() == before
+
+
+def test_a_sheet_with_no_measurements_is_unaffected_by_confirmation():
+    bare = {"sheet": {"id": "x", "shopper": {"name": "Sam"}, "shopper_facts": [], "lines": [],
+                      "pick_rule": {"id": "cheapest", "label": "cheapest"}}, "lines": [], "total_cents": 0}
+    state._confirmations(bare)
+    assert bare["unconfirmed"] == [] and bare["unconfirmed_text"] is None
+    assert "measurements" not in state._canonical_obj(bare)

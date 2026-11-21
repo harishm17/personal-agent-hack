@@ -182,3 +182,22 @@ apart from `pick_rules` (top level) and `picked_because` (on each picked candida
   one place (`SIGNOFF_SENSO_WATCH=off`), set for the whole suite by the integrator in `pyproject.toml` (`env`) or a root
   `tests/conftest.py` fixture that stubs `api.ensure_watcher` for every test, as your own conftest already does. And give the run a
   bounded wait at exit: submit with a pool you shut down with `cancel_futures=True`, or make the workers daemon threads.
+
+## 15:55 from ENGINE — E34 shape, fixed now: a suggested measurement must be confirmed by its owner before the approver can sign
+- Each `sheet.shopper_facts[]` entry carries `"confirmed": false, "confirmed_at": null` at the start of a run (whether its value
+  is the sheet's default, from `suggested_from` or `remembered`), and `"confirmed": true, "confirmed_at": "2026-11-20T16:05:00-08:00"`
+  once the shopper has set it (`POST /api/shopper/fact`, as now; setting it confirms it) or confirmed it as it stands:
+  **`POST /api/shopper/confirm {"fact_id": "tub_inside_width"}`** (laptop only) → `{"ok": true, "version": 3, "fact_id":
+  "tub_inside_width", "confirmed": true, "unconfirmed": ["door_clear_opening"]}`; 404 for an unknown id; 409 once signed.
+  SCREEN: "Use it" is this call; "Change" is `/api/shopper/fact`. A reset or another sheet starts unconfirmed again.
+- Top level: `"unconfirmed": ["tub_inside_width", "door_clear_opening"]` (the ids some limit on this sheet uses and that are not
+  confirmed; empty list when all are), `"unconfirmed_facts": [{"id": "tub_inside_width", "label": "…"}]`, and
+  `"unconfirmed_text": "Elena has not confirmed: tub inside width, bathroom door clear opening"` (null when the list is empty).
+  Picks are computed with the suggested values all the same; print "suggested, not confirmed" beside such a measurement.
+- The gate (SIGN): a `sign_sheet` request while `unconfirmed` is not empty is refused: 409 `{"error":
+  "measurements_not_confirmed", "detail": "Elena has not confirmed: tub inside width, bathroom door clear opening"}`. The request is
+  spent like every refused one; the phone signs again with a higher `seq` after she confirms.
+- Canonical sheet: new top-level `"measurements": [{"id": "tub_inside_width", "value": 21.5, "unit": "in", "confirmed": true}]`
+  (absent on a sheet with no shopper facts). Confirming changes the hash. No limit ever carries `confirmed`.
+
+- 15:58 ENGINE: E34 is on stream/ENGINE as in the shape above (commit a23494d). Real output on sheet 4: `unconfirmed: ["tub_inside_width", "door_clear_opening"]`, `unconfirmed_text: "Elena has not confirmed: tub inside width, bathroom door clear opening"`; after the two confirm calls `unconfirmed: []` and the hash changes.

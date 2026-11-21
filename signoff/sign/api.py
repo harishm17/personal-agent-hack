@@ -402,6 +402,10 @@ def _handle_request(body: dict):
             payload = verify_request(keystore, body, sheet_id=state["sheet"]["id"], current_hash=snap_hash)
             if state["seal"].get("signed"):
                 raise Refused("already_signed", "the sheet is signed; reset to sign again", 409)
+            if payload["type"] == "sign_sheet" and state.get("unconfirmed"):
+                # a measurement the agent suggested is not the owner's until the owner confirms it; nothing is signed over one
+                raise Refused("measurements_not_confirmed", state.get("unconfirmed_text") or
+                              "not confirmed: %s" % ", ".join(state["unconfirmed"]), 409)
             _check_action(payload, state)
             signer = {"key_id": keystore.key.key_id, "name": keystore.key.name}
             sid = state["sheet"]["id"]
