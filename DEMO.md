@@ -93,18 +93,18 @@ Rules for the stage:
 | The replay looks wrong | skip it; go straight from the grab bar to Ask Dana |
 | The app will not start | the backup clip; say it is a recording |
 
-## One true sentence per sponsor (questions and the form only; none of these is in the three minutes)
-| Tool | True sentence |
-|---|---|
-| Senso | "Before she signs, Senso checks the sheet's sentences against her order document; a conflict on an item blocks the signature." |
-| Superlinked SIE | "A second, smaller model reads the same pages, and a disagreement makes the product unclear. The same service writes the question to a store's agent and finds names in it for the guard, and embeds the memories." |
-| Statsig | "We put 'both readers must agree' behind a gate and measured it: it caught five misreads and blocked twenty-seven right figures, so we kept 'a disagreement blocks'." |
-| Amplitude | say only the delivered count the drawer shows [verify] |
-| SingleStore | "The limit test runs as one SQL statement; its rows equal the screen's. Memory and its vectors live there." |
-| Persona | "An identity inquiry gates the signature. It is the sandbox: nobody is really checked." |
-| Firedrill | "A simulated shopper tried to get a struck product back. The refusal held; it scored below the bar on saying who can change it, so we changed the wording. The second run still missed one criterion." |
-| Airbyte | "A local Airbyte sync delivered the stores' records for the first list" [verify the row count the drawer shows] |
-| Cognee | "The run's knowledge is in Cognee, a dataset per owner; a write by the wrong identity was refused." |
+## Each sponsor's tool: the exact feature used, and one true sentence (questions and the form; not in the three minutes)
+| Tool | The feature of it we use | Say |
+|---|---|---|
+| Senso | Knowledge base raw content (`POST /org/kb/raw`; a changed text becomes a new version of the same document) and Evals (`POST /org/evals/text`, evaluator `kb_accuracy`; `GET /org/evals/runs/`) | "Before she signs, Senso's evaluator checks each sentence of the sheet against her order in the knowledge base; a conflict on an item blocks the signature." |
+| SingleStore | A Helios cluster through the `singlestoredb` client: rowstore tables, a `VECTOR(n)` column and the `<*>` dot-product operator | "The limit test is one SQL statement and its rows equal the screen's. Memory is ranked with a vector column and filtered by owner in the same statement." |
+| Superlinked SIE | Three functions, three models: chat completions (`/v1/chat/completions`, `Qwen/Qwen3.8-27B-FP8`), `extract` for entity spans (`urchade/gliner_multi-v2.1`), `encode` for embeddings (`Qwen/Qwen3-Embedding-4B`) | "Three SIE models do three jobs: Qwen is the second reader of every page, GLiNER finds names and health details for the guard, and Qwen embeddings rank the memory." |
+| Statsig | A feature gate, `sie_reader`, read with the server SDK (`statsig_python_core`: `check_gate`, `get_feature_gate`); `override_gate` for rehearsal | "We put 'both readers must agree' behind a gate and measured it: it caught five misreads and blocked twenty-seven right figures, so we did not adopt it." |
+| Amplitude | Agent Analytics: a session per run and a tool-call event per tool use, with the Statsig variant attached to the session | "Each tool call is an Agent Analytics event in a session that carries the Statsig variant." Say the delivered count only as the drawer shows it. |
+| Persona | Inquiries API in sandbox (`POST /inquiries` from an inquiry template, `GET /inquiries/{id}`, `perform-simulate-actions`) and Relay | "A sandbox inquiry on the approver can gate the signature. It is the sandbox: nobody is really checked." Only if the gate is on in the build being shown. |
+| Airbyte | Airbyte Core, self-hosted, through its public API (`/applications/token`, `/sources` with `sourceType: file` over HTTPS for JSONL and CSV, `/destinations` with `destinationType: mysql`, `/connections`, manual sync jobs) | "A self-hosted Airbyte syncs the stores' records and the order's limits from files into MySQL; the same query gives the same rows on the synced data." |
+| Firedrill | The CLI: `firedrill register` with an agent descriptor, `plan` and `apply` for a world, `runner enroll`, `run --campaign`, `report`; saved personas, scenarios and evaluations | "A simulated shopper pressed the agent to put a struck product back. The refusal held; it scored under the bar on saying who can change it." |
+| Cognee | The REST API: `/api/v1/datasets/` (one per owner), `/agents/create` and `/permissions/datasets/{agent}`, `/add_text`, `/cognify`, search with `GRAPH_COMPLETION`, `/datasets/{id}/graph` | "The run's knowledge is a graph in Cognee, one dataset per owner; a write by the wrong identity was refused." |
 
 ## Hard questions
 | Question | Answer (short, true) |

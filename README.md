@@ -52,18 +52,18 @@ cart without her: each is refused by the server.
   cart. The client never calls a checkout tool.
 
 ## Tools and what each one does here
-| Tool | Its job in this project | Where in the code |
-|---|---|---|
-| Senso | holds the order document; checks the sheet's sentences against it before the signature | `signoff/sign/senso.py` |
-| SingleStore | products, figures, limits and decisions; the limit test as one SQL statement; memory and its vectors | `signoff/db/`, `signoff/memory/` |
-| Superlinked SIE | the second reader; the writer and the span finder for the guard; embeddings for memory | `signoff/extract/`, `signoff/talk/`, `signoff/memory/meaning.py` |
-| Statsig | the gate that switches the two-reader rule, which we measured | `signoff/obs/` |
-| Amplitude | tool-call events for the run | `signoff/obs/` |
-| Persona | an identity inquiry that gates the signature (sandbox: nobody is really checked) | `signoff/sign/` |
-| Airbyte | a local sync that delivered store records to the database | `signoff/airbyte/` |
-| Firedrill | a simulated shopper trying to get a struck product back | `evals/firedrill/` |
-| Cognee | the run's knowledge as a graph, a dataset per owner with its permissions | `signoff/graph/` |
-| Exa (not a sponsor) | web search for reviews, quoted with their source | `signoff/reviews/` |
+| Tool | The feature of it we use | What it does in Sign-Off | Where in the code |
+|---|---|---|---|
+| Senso | Knowledge base raw content (`POST /org/kb/raw`; a changed text becomes a new version of the same document) and Evals (`POST /org/evals/text`, evaluator `kb_accuracy`; `GET /org/evals/runs/`) | Dana's order is loaded into the knowledge base. Before she can sign, each sentence of the sheet is judged against it; a conflict on an item blocks the signature. | `signoff/sign/senso.py` |
+| SingleStore | A Helios cluster through the `singlestoredb` client: rowstore tables, a `VECTOR(n)` column and the `<*>` dot-product operator | Products, figures, limits and every decision. The limit test runs as one SQL statement whose rows equal the engine's. Memories are ranked by vector and filtered by owner in the same statement. | `signoff/db/`, `signoff/store/`, `signoff/memory/` |
+| Superlinked SIE | Three functions, three models: chat completions (`/v1/chat/completions`, `Qwen/Qwen3.8-27B-FP8`), `extract` for entity spans (`urchade/gliner_multi-v2.1`), `encode` for embeddings (`Qwen/Qwen3-Embedding-4B`) | Qwen is the second reader of the same 197 store pages; a disagreement makes a product unclear. Qwen writes each message to a store's agent and GLiNER finds names and health details in it for the guard. Embeddings rank the memories. | `signoff/extract/reader.py`, `signoff/talk/`, `signoff/memory/meaning.py` |
+| Statsig | A feature gate, `sie_reader`, read with the server SDK (`statsig_python_core`: `check_gate`, `get_feature_gate`); `override_gate` for rehearsal | The gate switches the reading rule between "a disagreement blocks" and "both readers must agree". Measured: the strict rule caught 5 misreads and blocked 27 right figures, so it was not adopted. | `signoff/obs/gate.py` |
+| Amplitude | Agent Analytics: a session per run and a tool-call event per tool use, with the Statsig variant attached to the session | Each tool the agent uses is an event, so a run can be read by reader arm. Few events were delivered from the demo instance; the Tools drawer shows the count. | `signoff/obs/__init__.py` |
+| Persona | Inquiries API in sandbox (`POST /inquiries` from an inquiry template, `GET /inquiries/{id}`, `perform-simulate-actions`) and Relay | An identity inquiry on the approver gates the signature (it can be switched off; the page says which). Sandbox: nobody is really checked. Relay adds a "live human" claim to the seal. | `signoff/sign/persona.py`, `signoff/relay/` |
+| Airbyte | Airbyte Core, self-hosted, through its public API (`/applications/token`, `/sources` with `sourceType: file` over HTTPS for JSONL and CSV, `/destinations` with `destinationType: mysql`, `/connections`, manual sync jobs) | The stores' records, the stores' answers and the order's limits are synced into a MySQL staging database and copied to SingleStore; the same SQL statement gives the same rows on the synced data (first list: 147 rows). | `signoff/airbyte/` |
+| Firedrill | The CLI: `firedrill register` with an agent descriptor, `plan` and `apply` for a world, `runner enroll`, `run --campaign`, `report`; saved personas, scenarios and evaluations | A simulated shopper presses the chat agent to put a struck product back. Two campaigns: "holds the sheet" 99.5; "names who can make the change" 70.5 against a threshold of 75. | `evals/firedrill/`, `signoff/sign/firedrill_agent.py` |
+| Cognee | The REST API: `/api/v1/datasets/` (one per owner), `/agents/create` and `/permissions/datasets/{agent}`, `/add_text`, `/cognify`, search with `GRAPH_COMPLETION`, `/datasets/{id}/graph` | The run's knowledge as a graph, one dataset per owner with its own permissions; a write to Dana's dataset by Elena's identity was refused. It answers "what decides this item, and from whom". | `signoff/graph/cognee.py` |
+| Exa (not a sponsor) | Search API with page text | Web search for reviews of products that pass, each rating kept only as an exact quote with its source | `signoff/reviews/` |
 
 ## Measured
 | | |
