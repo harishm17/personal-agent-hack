@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign-Off</title>
+<style>
+  :root {
+    --paper: #ffffff;
+    --ink: #14161a;
+    --soft: #5b616b;
+    --faint: #8b919b;
+    --rule: #dfe2e6;
+    --red: #b3261e;
+    --font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #101114; overflow: hidden; }
+  body { font-family: var(--font); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+  /* The stage is always 1920 x 1080 and is scaled to the window. */
+  .stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px;
+           transform-origin: 0 0; }
+  .slide { position: absolute; inset: 0; background: var(--paper); padding: 110px 140px 100px;
+           display: none; flex-direction: column; }
+  .slide.on { display: flex; }
+
+  .label { font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint);
+           font-weight: 500; }
+  h1 { font-size: 150px; font-weight: 600; letter-spacing: -0.035em; line-height: 1; }
+  h2 { font-size: 68px; font-weight: 600; letter-spacing: -0.022em; line-height: 1.12; text-wrap: balance; }
+  .lead { font-size: 60px; line-height: 1.18; letter-spacing: -0.018em; font-weight: 400; text-wrap: balance; }
+  .small { font-size: 30px; color: var(--soft); line-height: 1.35; }
+  .foot { position: absolute; left: 140px; right: 140px; bottom: 56px; display: flex;
+          justify-content: space-between; font-size: 24px; color: var(--faint); }
+  .red { color: var(--red); }
+
+  /* 1 title */
+  .title { justify-content: center; }
+  .title h1 { margin-bottom: 56px; }
+  .title .lead { max-width: 1500px; }
+  .title .small { margin-top: 72px; padding-top: 34px; border-top: 2px solid var(--rule); max-width: 1500px; }
+
+  /* 2 three people */
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 76px;
+           border-top: 2px solid var(--ink); }
+  .three > div { padding: 40px 48px 0 0; }
+  .three > div + div { padding-left: 48px; border-left: 2px solid var(--rule); }
+  .three .who { font-size: 54px; font-weight: 600; letter-spacing: -0.02em; }
+  .three .role { font-size: 28px; color: var(--faint); margin-top: 6px; }
+  .three .knows { font-size: 46px; line-height: 1.22; margin-top: 44px; text-wrap: balance; }
+  .today { margin-top: auto; margin-bottom: 40px; display: flex; align-items: baseline; gap: 36px;
+           border-top: 2px solid var(--rule); padding-top: 40px; }
+  .today .lead { font-size: 54px; }
+
+  /* 3 steps + screenshot */
+  .steps { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 0; border-top: 2px solid var(--ink); }
+  .steps > div { padding: 22px 28px 0 0; font-size: 31px; line-height: 1.25; text-wrap: balance; }
+  .steps > div + div { padding-left: 28px; border-left: 2px solid var(--rule); }
+  .steps b { display: block; font-size: 24px; font-weight: 500; color: var(--faint); margin-bottom: 8px; }
+  .shot { border: 2px solid var(--rule); border-radius: 10px; overflow: hidden; background: #fff; }
+  .shot { position: relative; }
+  .shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+  .shot.more::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 90px;
+                      background: linear-gradient(to bottom, rgba(255,255,255,0), #fff); }
+
+  /* 5 sponsor table */
+  table { border-collapse: collapse; width: 100%; margin-top: 44px; }
+  td { font-size: 32px; line-height: 1.28; padding: 22px 0; border-top: 2px solid var(--rule); vertical-align: top; }
+  tr:first-child td { border-top: 2px solid var(--ink); }
+  td:first-child { width: 330px; font-weight: 600; padding-right: 30px; white-space: nowrap; }
+
+  /* 6 built / not built */
+  .ledger { display: grid; grid-template-columns: 300px 1fr; margin-top: 8px; }
+  .ledger > div { padding: 34px 0; border-top: 2px solid var(--rule); font-size: 40px; line-height: 1.28; text-wrap: balance; }
+  .ledger > div:nth-child(-n+2) { border-top: 2px solid var(--ink); }
+  .ledger .k { font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint);
+               font-weight: 500; padding-top: 46px; }
+  .last { margin-top: auto; margin-bottom: 34px; font-size: 84px; font-weight: 600; letter-spacing: -0.028em;
+          line-height: 1.05; }
+
+  @page { size: 1920px 1080px; margin: 0; }
+  @media print {
+    html, body { height: auto; overflow: visible; background: #fff; }
+    .stage { position: static; width: auto; height: auto; transform: none !important; }
+    .slide { position: relative; display: flex !important; width: 1920px; height: 1080px;
+             page-break-after: always; break-after: page; overflow: hidden; }
+    .slide:last-child { page-break-after: auto; break-after: auto; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- 1 -->
+  <section class="slide title on">
+    <h1>Sign-Off</h1>
+    <p class="lead">The person who wrote the rules is&nbsp;not the one shopping.</p>
+    <p class="small">Invented example: a therapist's order, a daughter shopping, three real&nbsp;stores.</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <p class="label">The problem</p>
+    <h2 style="margin-top:26px">Three people. Each knows one&nbsp;part.</h2>
+    <div class="three">
+      <div><p class="who">Dana</p><p class="role">therapist</p><p class="knows">Prescribes the&nbsp;rules.</p></div>
+      <div><p class="who">Elena</p><p class="role">daughter</p><p class="knows">Measures the house and&nbsp;shops.</p></div>
+      <div><p class="who">The stores</p><p class="role">three, real</p><p class="knows">State the product's own&nbsp;words.</p></div>
+    </div>
+    <div class="today">
+      <p class="label" style="white-space:nowrap">An approval today</p>
+      <p class="lead">A total.</p>
+    </div>
+    <div class="foot"><span>Sign-Off</span><span>The people are invented.</span></div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide" style="padding-top:80px">
+    <p class="label">What it does</p>
+    <div class="shot more" style="margin-top:26px;height:600px"><img src="img/decision.png" alt="The decision screen, unsigned"></div>
+    <div class="steps" style="margin-top:38px">
+      <div><b>1</b>Reads her order</div>
+      <div><b>2</b>Shops and reads every page</div>
+      <div><b>3</b>Code compares, nothing on a guess</div>
+      <div><b>4</b>She signs the reasons from her phone</div>
+      <div><b>5</b>Carts only then</div>
+    </div>
+    <div class="foot"><span>Sign-Off</span><span>The decision screen, before she signs.</span></div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide" style="padding-top:80px">
+    <p class="label">The signature</p>
+    <div class="shot" style="margin-top:26px;height:560px"><img src="img/seal-fail.png" alt="The signature page with one value changed"></div>
+    <h2 style="margin-top:64px;font-size:60px">Change one value and her signature no&nbsp;longer covers the&nbsp;sheet.</h2>
+    <div class="foot"><span>Sign-Off</span><span>A signature over the cart covers 7 of 23 rows. Hers covers 23 of 23.</span></div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide" style="padding-top:84px">
+    <p class="label">How the sponsors' tools are used</p>
+    <table>
+      <tr><td>Senso</td><td>Checks the sheet's sentences against her order before she signs.</td></tr>
+      <tr><td>SingleStore</td><td>The limit test runs as one SQL statement; its rows equal the screen's.</td></tr>
+      <tr><td>Superlinked SIE</td><td>A second, smaller model reads the same pages; a disagreement makes the product unclear.</td></tr>
+      <tr><td>Statsig</td><td>A gate tested "both readers must agree". Measured, and not adopted.</td></tr>
+      <tr><td>Amplitude</td><td>Receives the agent's tool-call events, with the gate's variant.</td></tr>
+      <tr><td>Airbyte</td><td>A local sync delivered the stores' records for the first list.</td></tr>
+      <tr><td>Firedrill</td><td>A simulated shopper asked for a struck product back. Refused; one criterion missed.</td></tr>
+      <tr><td>Cognee</td><td>Holds the run's facts, a dataset per owner; a wrong identity's write was refused.</td></tr>
+    </table>
+    <div class="foot"><span>Sign-Off</span><span></span></div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide" style="padding-top:96px">
+    <div class="ledger">
+      <div class="k">Built today</div>
+      <div>Her order, the stores' own words, her signature, real carts. Nothing checked&nbsp;out.</div>
+      <div class="k">Not built</div>
+      <div>Anyone on the other side checking that signature: no store or payer verifies it&nbsp;yet.</div>
+      <div class="k">Next</div>
+      <div>Anyone whose rules someone else spends against: a manager, a grant holder, a&nbsp;payer.</div>
+    </div>
+    <p class="last">She signed the reasons, not&nbsp;the&nbsp;total.</p>
+    <div class="foot"><span>Sign-Off</span><span>The people and messages are invented. The stores, pages, prices and carts are real.</span></div>
+  </section>
+
+</div>
+<script>
+  (function () {
+    var stage = document.getElementById('stage');
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    var i = 0;
+    function fit() {
+      var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      stage.style.transform = 'scale(' + s + ') translate(-50%, -50%)';
+    }
+    function show(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach(function (el, k) { el.classList.toggle('on', k === i); });
+      if (history.replaceState) history.replaceState(null, '', '#' + (i + 1));
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { show(i + 1); e.preventDefault(); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') { show(i - 1); e.preventDefault(); }
+      else if (e.key === 'Home') show(0);
+      else if (e.key === 'End') show(slides.length - 1);
+    });
+    document.addEventListener('click', function (e) {
+      show(e.clientX < window.innerWidth / 3 ? i - 1 : i + 1);
+    });
+    window.addEventListener('resize', fit);
+    window.addEventListener('hashchange', function () { show((parseInt(location.hash.slice(1), 10) || 1) - 1); });
+    fit();
+    show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+  })();
+</script>
+</body>
+</html>
