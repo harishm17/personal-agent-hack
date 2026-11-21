@@ -26,12 +26,12 @@ How it works.
 Tools.
 Senso: checks the sheet against Dana's order before she signs.
 SingleStore: records, memory, the limit test in SQL.
-Superlinked: second reader of every page; guard on messages to stores.
-Statsig: gate on a stricter reading rule, measured.
+Superlinked SIE, three models: Qwen re-reads all pages; GLiNER guards messages to stores; Qwen embeddings for memory.
+Statsig: gated a stricter rule, measured.
 Amplitude: agent tool-call events.
-Airbyte: syncs store records to the database.
-Firedrill: simulated shopper attacking the refusal.
-Cognee: knowledge graph, a dataset per owner.
+Airbyte: syncs store records.
+Firedrill: simulated shopper attacks.
+Cognee: knowledge graph per owner.
 Persona: sandbox identity check before signing.
 
 People are invented. Stores, pages and prices are real.
@@ -66,7 +66,8 @@ What to try: on the decision screen, "Replay the run" shows how the agent got to
 Known limits: store pages were fetched once on the day and read by two models, not by a person. The identity check is Persona's sandbox and checks nobody. No store checks the signature. The guard on outgoing messages uses a small model to find names and health details and stops some messages it need not.
 
 ## Technical architecture (optional, max 1200)
-A FastAPI engine with plain JavaScript pages: the shopper's screen, the approver's phone, the trail, the signature page. A reading model with no tools gets one store page and the names of the figures and proposes a figure, unit and quote; code finds the quote in the page and applies one set of number rules to every reader (Claude Sonnet, and Qwen on Superlinked SIE; a disagreement makes the product unclear). Limits are read from the written order with their sentence quoted, compared in code and again in one SingleStore statement. Stores are reached over their own MCP endpoints: search, product details, ask the store's agent, create cart. Records: a decision per candidate and state version, hash-chained receipts, a ledger of every outbound payload. The phone holds an ECDSA P-256 key; each request is signed against the SHA-256 fingerprint of the canonical sheet. Senso checks the sheet's sentences against the order document before signing; a Persona sandbox inquiry gates it; carts are then created for the signed picks only. A Statsig gate switches the two-reader rule. Memory rows carry an owner and the receipt that made them (SingleStore, SIE embeddings, Cognee datasets per owner).
+Superlinked SIE does three jobs. (1) Second reader: Qwen3.8-27B read the same 197 store pages as Claude Sonnet (666 statements); where the two read a figure differently (5 cases) the product is marked unclear and is not bought. (2) Guard: before our agent messages a store's own agent, Qwen writes the message and GLiNER finds names, health details, limits and measurements in it; code removes them or stops the message (4 of 13 were stopped). (3) Memory: Qwen3-Embedding-4B embeds each memory; SingleStore ranks them by vector for recall.
+Engine: FastAPI with plain JavaScript pages. A reading model with no tools proposes a figure, unit and quote; code finds the quote on the page and compares it with the limit, in code and again in one SingleStore statement. Stores are reached over their own MCP endpoints. The phone holds an ECDSA P-256 key and signs the SHA-256 fingerprint of the canonical sheet; Senso checks the sheet against the order document first; a Persona sandbox inquiry gates signing; carts are created for the signed picks only. Statsig gates the two-reader rule. Cognee holds the knowledge graph, a dataset per owner.
 
 ## Setup instructions (optional, max 1200)
 Needs Python 3.12+ and uv.
