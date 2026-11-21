@@ -11,22 +11,30 @@ Sign-Off
 A shopping agent that works under someone else's signature: a therapist writes what a patient's home needs, the agent keeps a store's figure only as an exact quote that code can find, code compares it with her limits, and carts exist at the real stores only after she signs from her phone.
 
 ## Project description (required, max 1500)
-What it is. Sign-Off shops real stores to an order someone else wrote and must sign. Invented example: Rosa comes home after a hip replacement. Dana, her therapist, wrote the order: each item must hold 300 lb and fit the tub or the door. Her daughter Elena's agent shops.
+The problem. The person who knows what is right to buy is often not the one buying. Invented example: Rosa comes home after a hip replacement. Dana, her therapist, wrote what the house needs. Her daughter Elena shops with an agent.
 
-How it works. The agent read 91 product pages at three real stores. A figure counts only when code finds its exact quote on the store's page; code compares it with the limit; nothing is bought on a guess. Elena cannot change a limit: she asks, and Dana decides on her phone. Dana signs one fingerprint over the limits, measurements, quotes, picks and prices; one changed value fails the check. Carts are created only then. Nothing is checked out.
+What it does. The agent buys only what Dana's order allows, and only after Dana signs.
 
-Where each tool is used.
-Senso: holds Dana's order and checks the sheet's sentences against it before she signs.
-SingleStore: products, figures and decisions; the limit test as one SQL statement; memory and its vectors.
-Superlinked: second reader of every page; the guard on messages to stores' agents; memory embeddings.
-Statsig: gate on "both readers must agree", measured, not adopted.
-Amplitude: the agent's tool-call events.
-Airbyte: local sync of store records into the database.
-Firedrill: a simulated shopper attacking the refusal.
-Cognee: the run's knowledge graph, one dataset per owner.
-Persona: sandbox identity check before the signature.
+How it works.
+1. Dana's limits come from her order, such as "must hold 300 lb".
+2. The agent searches three real stores and reads all 91 product pages. It must quote the exact words where the store states each figure, and code checks the quote is on the page.
+3. Code, not the model, compares the figure with the limit. If a page does not state it, nothing is bought on a guess.
+4. Elena cannot change a limit. She can ask; Dana decides on her phone.
+5. Dana signs on her phone. The signature covers every limit, measurement, quote, pick and price, so any later change fails the check.
+6. Only then are carts created. Nothing is checked out.
 
-People and messages are invented. Stores, pages, prices and carts are real.
+Tools.
+Senso: checks the sheet against Dana's order before she signs.
+SingleStore: records, memory, the limit test in SQL.
+Superlinked: second reader of every page; guard on messages to stores.
+Statsig: gate on a stricter reading rule, measured.
+Amplitude: agent tool-call events.
+Airbyte: syncs store records to the database.
+Firedrill: simulated shopper attacking the refusal.
+Cognee: knowledge graph, a dataset per owner.
+Persona: sandbox identity check before signing.
+
+People are invented. Stores, pages and prices are real.
 
 ## Tools and sponsors used (required)
 Senso
@@ -44,7 +52,7 @@ Persona
 https://github.com/harishm17/personal-agent-hack
 
 ## Demo video URL (required, url)
-<a link that opens while logged out>
+https://drive.google.com/file/d/1jaXve6-VmpkpN8dDHf_cIZa50rg27KWv/view?usp=sharing
 
 ## Live app URL (optional, url)
 

@@ -2,7 +2,7 @@
 
 **A shopping agent that works under someone else's signature.**
 
-▶ **[Demo video](<link>)**
+▶ **[Demo video](https://drive.google.com/file/d/1jaXve6-VmpkpN8dDHf_cIZa50rg27KWv/view?usp=sharing)**
 
 ## The problem
 The person who wrote the rules is not the one shopping, and at the moment of buying the rules get bent
