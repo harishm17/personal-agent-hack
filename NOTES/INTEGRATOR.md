@@ -2903,3 +2903,9 @@ Commits on `stream/REVIEWS`: 0ac3662 (wider search, sheet 4 cache), a10e53e (the
   - "What happens next": while anything is unconfirmed (`state.unconfirmed` as a list or a number, else any fact with
     `confirmed: false`), "Next: Elena confirms the house's measurements", then "Then: Dana scans this to sign".
   The "Use it" click has not run against a server. As before I print `from_label` as given, not "her message".
+- **DONE R5**: the entry above (16:06). Proof on my port 8010, replay mode, sheet 4, after `git merge main` (ed5db91):
+  `GET :8010/api/reviews` → 0.12 s, `ratings: 17`, `L1 candidates 8 … used 2`, `L4 candidates 46 … used 15 (another site 10, seller 5)`,
+  `L5 candidates 7 … used 0`; `POST :8010/api/shopper/pick_rule` for best_reviewed, best_value, most_popular, cheapest → 200 each, and
+  the picks in `/api/state` are the ones in the table above. Full suite: `uv run -q pytest -q -x` → `468 passed, 13 deselected`, exit 0.
+  Not done inside R5, said above: no brand-and-model query form (no such fields in the pool) and no Exa highlights (documentation
+  not read, and a highlight has no offsets in the page text).
