@@ -11,7 +11,22 @@ Sign-Off
 A shopping agent that works under someone else's signature: a therapist writes what a patient's home needs, the agent keeps a store's figure only as an exact quote that code can find, code compares it with her limits, and carts exist at the real stores only after she signs from her phone.
 
 ## Project description (required, max 1500)
-Sign-Off shops real stores to an order that someone else wrote and must sign. Lead example (invented people): Rosa is coming home after a hip replacement. Dana, her occupational therapist, wrote the order: a shower chair, a walker and a grab bar, each to hold at least 300 lb; the chair must fit inside the tub, the walker must pass the bathroom door. Her daughter Elena shops; the agent takes the house's measurements from her messages and she confirms them. The agent searched three real stores and read 91 product pages. A figure counts only when code finds its exact quote in the store's text; code, not the model, compares it with the limit. A product that does not state a figure is not bought on a guess: of 152 options, 61 pass, 48 fail, 9 are unclear and 34 never state it. Elena cannot change a limit; she can ask, and Dana decides from her phone, and the pick moves. Dana signs one fingerprint covering the limits, the measurements, the stores' quotes, the picks, the prices and the ordering; a browser can recompute it, and one changed value fails the check. Only then are carts created at the stores. Nothing is checked out. When the agent asks a store's own agent about delivery and returns, a guard in code removes limits, measurements, names and health details first, and every outbound payload is in a ledger. A teacher's class supply list runs on the same engine. The people and their messages are invented; the stores, pages, prices and carts are real. No person read every page.
+What it is. Sign-Off shops real stores to an order someone else wrote and must sign. Invented example: Rosa comes home after a hip replacement. Dana, her therapist, wrote the order: each item must hold 300 lb and fit the tub or the door. Her daughter Elena's agent shops.
+
+How it works. The agent read 91 product pages at three real stores. A figure counts only when code finds its exact quote on the store's page; code compares it with the limit; nothing is bought on a guess. Elena cannot change a limit: she asks, and Dana decides on her phone. Dana signs one fingerprint over the limits, measurements, quotes, picks and prices; one changed value fails the check. Carts are created only then. Nothing is checked out.
+
+Where each tool is used.
+Senso: holds Dana's order and checks the sheet's sentences against it before she signs.
+SingleStore: products, figures and decisions; the limit test as one SQL statement; memory and its vectors.
+Superlinked: second reader of every page; the guard on messages to stores' agents; memory embeddings.
+Statsig: gate on "both readers must agree", measured, not adopted.
+Amplitude: the agent's tool-call events.
+Airbyte: local sync of store records into the database.
+Firedrill: a simulated shopper attacking the refusal.
+Cognee: the run's knowledge graph, one dataset per owner.
+Persona: sandbox identity check before the signature.
+
+People and messages are invented. Stores, pages, prices and carts are real.
 
 ## Tools and sponsors used (required)
 Senso
