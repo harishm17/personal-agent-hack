@@ -2795,6 +2795,72 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
 - Frames: `web/graph/shots/embed-rule-beat3.png` (the third beat), `web/graph/shots/embed-last.png`.
 - NOT done (it is in `signoff/graph/build.py`, not web): the rule's sub "at most tub inside 21.5 in" should read "at most 21.5 in". One line when a server change is allowed.
 - Not seen by eye: the motion itself in a real browser; I checked it by page state and stills in headless Chrome at both speeds.
+## REVIEWS 16:06 — the wider search (the builder's 15:59 request). Code in `signoff/reviews/` changed: main needs a restart to load it
+Commits on `stream/REVIEWS`: 0ac3662 (wider search, sheet 4 cache), a10e53e (the two-way name rule), then the sheet 3 cache and this note.
+- **1 Coverage, done**: every product that passes an item's limits, on sheet 4 (3 items, 30 distinct products, 61 passing candidates)
+  and sheet 3 (4 items, 79 products, 115 candidates). The cap of six is gone (`passing()`).
+- **2 Depth, done with two differences from your wording**: 10 results per query, `maxCharacters` 10000 (was 4 and 3000), three
+  query forms per product: `<title> review`, `<title> reviews rating`, `<title> customer reviews`. (a) There is no "brand and
+  model" form: the pool has no brand or model field (`product_key` is the title), so every form is the title plus fixed words.
+  (b) Exa highlights are not used: I did not have time to read Exa's documentation and would not guess a parameter; and a highlight
+  is not the page text, so a quote found in one would have no offsets in the text. Full text to 10000 characters is what found the
+  ratings that were "far down".
+- **4 Calls and cost**: 327 new searches since 15:55 for $2.289; 358 searches in the cache in all for $2.506 (the replies' own
+  `costDollars`; $0.007 a search at this size too). All answered by EXA_API_KEY; the backup was not needed. 3,394 result pages
+  returned, 696 of them (those whose title names the product) read by the reader, sie:Qwen/Qwen3.8-27B-FP8. Calls start at least
+  0.25 s apart, four products at a time; one file per product and request, nothing fetched twice. `GET /api/reviews/log` (sheet 4
+  on the table): only product titles and the fixed review words sent: True; every body matches its ledger hash: True; sealed values
+  found: [].
+- **3 The rule for what counts, and one thing I had to add**. Unchanged: rating, scale and count only as exact quotes at their
+  offsets; no scale supplied; minimum 5 reviews. Added, because the wider search made it necessary: with 30 pages per product the
+  one-way name check let in other makers' products ("Knee Walker" matched ELENKER, Equate and KneeRover scooters on walmart.com;
+  "Textured Grab Bars" matched DMI and Carex bars; "Carex Rolling Walker" matched the Trio and the Step 'N Rest). The first wide
+  run counted 5 orderable products on L1 and 32 orderable candidates on L4, and many were not the product. The rule is now two-way
+  and general: every word of the name the page gives the product must be on the store's own page for that product (its title and
+  text, from the pool); a page that names anything the store does not say is taken as another product, with the missing words in
+  `dropped[].reason`. The seller's own page is exempt. On sheet 4 this drops 118 of 145 rating sources. It also refuses true pages
+  worded differently from the store (Walmart's "Carex Aluminium Folding Walker for Adults…" for the Carex Folding Walker): I chose
+  fewer and right over more and doubtful. The numbers below are after this rule.
+- **Several sources, none averaged**: each product has `ratings_by_source: [{site, url, rating, out_of, review_count, quote,
+  independent, seller_page, can_be_ordered, shown_as_the_products_rating}]`, `sources_disagree`, and `combined_how`: one source is
+  shown as the product's rating: one that can be ordered first; among those another site before the seller's own page; then the
+  most reviews. This is a change from 15:16 (then: most reviews, whoever's page).
+- **5 The report** (distinct products; `ratings()` equals the route's `ratings` on every line, checked in replay mode):
+
+  | sheet | item | products that pass | with any review page kept | with any quoted rating | orderable | of those: another site / seller's own page | candidates in `ratings()` |
+  |---|---|---|---|---|---|---|---|
+  | 4 | L1 shower chair | 8 | 5 | 4 | 2 | 0 / 2 | 2 |
+  | 4 | L4 walker | 20 | 18 | 12 | 5 | 3 / 2 | 15 |
+  | 4 | L5 grab bar | 2 | 0 | 0 | 0 | 0 / 0 | 0 |
+  | 3 | C1 headphones | 13 | 10 | 9 | 1 | 1 / 0 | 1 |
+  | 3 | C2 crayons | 6 | 2 | 1 | 0 | 0 / 0 | 0 |
+  | 3 | C3 notebook | 29 | 9 | 6 | 1 | 1 / 0 | 1 |
+  | 3 | C4 pencils | 31 | 14 | 14 | 2 | 2 / 0 | 2 |
+  | | **both sheets** | **109** | **58** | **46** | **11** | **7 / 4** | |
+
+  Before this request: 3 of 31 products orderable. Now 11 of 109 (sheet 4: 7 of 30). The grab bar still has none: both products
+  have generic titles and every page found names another maker's bar.
+- **Sheet 4's orderable products**: L1 Deluxe Aluminum Bath Bench by Drive $41.99, 4.5 of 5 from 6 (parentgiving.com, the seller's
+  own page); L1 Drive Premium Series Bath Bench with Back and Arms $79.99, 4.5 from 13 (seller's own page). L4 Drive rollator
+  $119.99, 4.6 from 58 (seller's own page); Lightweight Rollator $119.99, 4.6 from 34 (carbonultralightrollators.com); 3 Wheel
+  Aluminum Rollator by Drive $144.99, 3.2 from 5 (seller's own page); Carex Crosstour Rolling Walker $199.99, 4.2 from 47
+  (deal.ai); Drive Duet Transport Chair & Rollator $224.99, 4.0 from 242 (hsn.com).
+  **One of these I do not trust and you should know it**: Vive's "Lightweight Rollator" is matched to a page that calls its product
+  "Lightweight Foldable Rollator Walker with Seat" on carbonultralightrollators.com, which looks like that site's own rollator.
+  Every word of that name is on Vive's page, so the rule passes it. This is the limit in `summary.limit_of_the_name_rule`: the match
+  is by words, and a product with a generic title can still collect another maker's page. It does not win any ordering today.
+- **What the orderings pick for sheet 4** (the engine in my own process, replay mode, `set_pick_rule`, then back to cheapest):
+
+  | ordering | L1 shower chair | L4 walker | L5 grab bar |
+  |---|---|---|---|
+  | cheapest | Deluxe Aluminum Bath Bench by Drive $41.99 | Carex Classics Dual-Button Walker $44.71 | Textured Grab Bars $27.99 |
+  | best_reviewed | Drive Premium Series Bath Bench with Back and Arms $79.99, "rated 4.5 from 13 reviews, the highest that passes" (seller's own page) | Drive Medical Aluminum Rollator Walker $119.99, "rated 4.6 from 58 reviews" (seller's own page) | Textured Grab Bars $27.99, "cheapest that passes; none of them has a quoted rating" |
+  | best_value | Deluxe Aluminum Bath Bench by Drive $41.99, "rated 4.5 from 6 reviews, the best rated that passes and the cheapest within 0.3 stars of it" (seller's own page) | Drive Medical Aluminum Rollator Walker $119.99 (seller's own page) | Textured Grab Bars $27.99, none rated |
+  | most_popular ("most reviewed") | Drive Premium Series Bath Bench $79.99, "13 reviews (rated 4.5)" (seller's own page) | Drive Duet Transport Chair & Rollator $224.99, "242 reviews (rated 4)" (hsn.com, another site) | Textured Grab Bars $27.99, none counted |
+
+  Say it as it is: on L1 every orderable rating is on the seller's own page; on L4 "best reviewed" and "best value" rest on the
+  seller's own page and only "most reviewed" rests on another site; L5 has nothing to order by.
+- Tests: `SIGNOFF_OBS=off uv run pytest tests/reviews -q` → `23 passed, 1 deselected`.
 
 ## 15:58 from ENGINE — DONE E34 (commit a23494d on stream/ENGINE)
 - DONE E34: tests `tests/engine/test_state.py::test_a_suggested_measurement_is_unconfirmed_until_its_owner_confirms_it`,
@@ -2837,3 +2903,9 @@ a remembered measurement on the shelf seen only in code (the shopper's slot is e
   - "What happens next": while anything is unconfirmed (`state.unconfirmed` as a list or a number, else any fact with
     `confirmed: false`), "Next: Elena confirms the house's measurements", then "Then: Dana scans this to sign".
   The "Use it" click has not run against a server. As before I print `from_label` as given, not "her message".
+- **DONE R5**: the entry above (16:06). Proof on my port 8010, replay mode, sheet 4, after `git merge main` (ed5db91):
+  `GET :8010/api/reviews` → 0.12 s, `ratings: 17`, `L1 candidates 8 … used 2`, `L4 candidates 46 … used 15 (another site 10, seller 5)`,
+  `L5 candidates 7 … used 0`; `POST :8010/api/shopper/pick_rule` for best_reviewed, best_value, most_popular, cheapest → 200 each, and
+  the picks in `/api/state` are the ones in the table above. Full suite: `uv run -q pytest -q -x` → `468 passed, 13 deselected`, exit 0.
+  Not done inside R5, said above: no brand-and-model query form (no such fields in the pool) and no Exa highlights (documentation
+  not read, and a highlight has no offsets in the page text).

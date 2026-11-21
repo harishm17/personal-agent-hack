@@ -231,6 +231,11 @@ in the canonical sheet, so no hash moves. Print for example "from Elena's messag
   `tub_inside_width` → `{"message_id": "m6", "from_label": "Elena", "at": "2026-11-20T10:41:00-08:00", "quote": "The tub is 21.5
   inches wide inside", "value": 21.5, "matches": true}`; `door_clear_opening` → the same message, quote "the bathroom door
   opening is 28 inches". (The time in my example above was made up; this one is the file's.)
+## REVIEWS 16:07
+- The search is wider (every passing product, not six). New per candidate in `GET /api/reviews`: `ratings_by_source: [{site, url,
+  rating, out_of, review_count, quote, independent, seller_page, can_be_ordered, shown_as_the_products_rating}]`, `sources_disagree`
+  and `combined_how` (one source is shown, none is averaged; the words say which). On click, list every source with its own quote;
+  when `sources_disagree` is true say "sources differ" and show each. `matched_by` now reads "name, both ways: …" for other sites.
 
 ## 15:55 from ENGINE — E34 shape, fixed now: a suggested measurement must be confirmed by its owner before the approver can sign
 - Each `sheet.shopper_facts[]` entry carries `"confirmed": false, "confirmed_at": null` at the start of a run (whether its value
