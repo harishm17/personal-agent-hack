@@ -301,3 +301,23 @@ def test_several_sources_are_listed_not_averaged_and_another_site_comes_before_t
     assert [(r["site"], r["can_be_ordered"], r["independent"]) for r in got["ratings_by_source"]] == [
         ("b.example", True, True), ("shop.example", True, False), ("c.example", False, True)]
     assert "none is averaged" in got["combined_how"] and "none is averaged" in got["note"]
+
+
+def test_a_page_that_names_what_the_store_does_not_say_is_another_product(monkeypatch):
+    title = "Knee Walker"
+    own = frozenset(reviews._words("Knee Walker\nSteerable knee walker with a basket, by Acme. Holds 300 lb."))
+    page = {"title": "Otherco Folding Knee Walker", "url": "https://m.example/p", "text": "Otherco Folding Knee Walker\n4.6 out of 5 stars\n562 reviews\n"}
+    said = {"about": {"quote": "Otherco Folding Knee Walker"}, "rating": {"quote": "4.6 out of 5 stars", "value": 4.6, "out_of": 5},
+            "review_count": {"quote": "562 reviews", "value": 562}}
+    ok, reason = reviews.rates_product(title, said, page, own)
+    assert not ok and "never says: otherco, folding" in reason
+    assert reviews.rates_product(title, said, page, own, own_page=True)[0]          # the seller's own page names it its own way
+    same = dict(page, text="Acme Steerable Knee Walker\n4.6 out of 5 stars\n562 reviews\n")
+    assert reviews.rates_product(title, dict(said, about={"quote": "Acme Steerable Knee Walker"}), same, own) == (True, "Acme Steerable Knee Walker")
+    reviews._save(title, entry(title, [page], {page["url"]: said}))
+    monkeypatch.setattr(reviews, "store_words", lambda store, product_id: own)
+    got = reviews.product_reviews(title, "acme.example", None, "p1")
+    assert got["found"] is False and "never says" in got["dropped"][0]["reason"]
+    monkeypatch.setattr(reviews, "store_words", lambda store, product_id: None)   # no store page to compare: said plainly
+    got = reviews.product_reviews(title, "acme.example", None, "p2")
+    assert got["found"] is True and got["sources"][0]["matched_by"].startswith("name only (the store's own page was not available")

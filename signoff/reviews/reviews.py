@@ -41,14 +41,19 @@ SPACING_SECONDS = 0.25
 SENTENCE_MOST = 300
 READER = "sie:Qwen/Qwen3.8-27B-FP8"
 TIE_BREAK = "highest quoted rating out of five; then more reviews; then lower price; then candidate id"
-NAME_RULE = ("a page counts only if its title holds every word of the product's title (words of three letters "
-             "or more, and numbers), and only if the name the page itself gives to the product it rates, quoted "
-             "from the page, holds every one of those words too")
-LIMIT = ("a page on another site is matched by name only: a product whose title names no maker can match another "
-         "maker's product of the same name, so every source shows the name the page gives it (rated_as)")
+NAME_RULE = ("a page counts only if (1) its title holds every word of the product's title (words of three letters or "
+             "more, and numbers), (2) the name the page itself gives to the product it rates, quoted from the page, "
+             "holds every one of those words too, and (3) every word of that name is on the store's own page for the "
+             "product (its title and text): a page that names anything the store does not say is taken as another "
+             "product. The seller's own page needs only (1) and (2).")
+LIMIT = ("the match is by words, both ways, and nothing stronger: the stores give no maker or model field. It refuses "
+         "pages that are right but worded differently from the store, and it could still accept another product "
+         "whose whole name the store's page happens to contain, so every source shows the name the page gives it "
+         "(rated_as) and how it was matched (matched_by)")
 _lock = threading.Lock()
 _ilock = threading.RLock()
 _index = {"sig": None, "dir": None, "by_title": {}, "memo": {}}
+_pool = {}
 _last_call = [0.0]
 
 SYSTEM = """You read one web page about a product and propose quotes. Reply with one JSON object and nothing else:
@@ -202,7 +207,29 @@ def names_product(title, result):
     return True, None
 
 
-def rates_product(title, proposal, result):
+def store_words(store, product_id):
+    """The words of the store's own page for a product (its title and text), from the pool of the sheet on the
+    table; None when the pool has no such product, and then the match is by name one way only, and says so."""
+    try:
+        from signoff.engine import paths, state as engine
+        from signoff.store import sheetctx
+        folder = paths.of(sheetctx.active_id(), engine.DATA)["pool"]
+        files = sorted(folder.glob("*.json"))
+        sig = (str(folder), tuple((f.name, f.stat().st_mtime_ns) for f in files))
+        with _ilock:
+            if _pool.get("sig") != sig:
+                words = {}
+                for f in files:
+                    for row in json.loads(f.read_text()):
+                        words[(row.get("store"), row.get("product_id"))] = frozenset(
+                            _words("%s\n%s" % (row.get("title") or "", row.get("text") or "")))
+                _pool.update(sig=sig, words=words)
+            return _pool["words"].get((store, product_id))
+    except Exception:  # noqa: BLE001  (no pool to read: the reply says the match is by name only)
+        return None
+
+
+def rates_product(title, proposal, result, own_words=None, own_page=False):
     """(True, the name as the page writes it) when the product the page rates, by the name quoted from the page,
     is this product; else (False, the reason). A page that lists several products rates each under its own name."""
     about = (proposal or {}).get("about") if isinstance(proposal, dict) else None
@@ -215,6 +242,11 @@ def rates_product(title, proposal, result):
     missing = _lacks(title, span["quote"])
     if missing:
         return False, "what the page rates is named %r, not this product (lacks: %s)" % (span["quote"][:120], ", ".join(missing))
+    if own_words is not None and not own_page:
+        extra = [w for w in dict.fromkeys(_words(span["quote"])) if (len(w) >= 3 or w.isdigit()) and w not in own_words]
+        if extra:
+            return False, "the page names it %r; the store's own page for this product never says: %s" % (
+                span["quote"][:120], ", ".join(extra[:8]))
     return True, span["quote"]
 
 
@@ -445,10 +477,11 @@ def read_pages(title, found):
 
 # --- per product, per line ----------------------------------------------------------------------------------
 
-def product_reviews(title, store=None, errors=None):
+def product_reviews(title, store=None, errors=None, product_id=None):
     """Everything kept for one product from its cached searches, checked again by code when the cache changes."""
     found = entries(title)
-    key = (title, store)
+    key = (title, store, product_id)
+    own_words = store_words(store, product_id) if store and product_id else None
     with _ilock:
         if errors is None and key in _index["memo"]:
             return _index["memo"][key]
@@ -475,7 +508,8 @@ def product_reviews(title, store=None, errors=None):
         if not any(isinstance(proposal.get(k), dict) for k in ("rating", "review_count", "sentence")):
             dropped.append({"url": url, "site": site, "reason": "the page states no rating, count or reviewer sentence"})
             continue
-        ok, reason = rates_product(title, proposal, result)
+        own = same_seller(site, store)
+        ok, reason = rates_product(title, proposal, result, own_words, own)
         if not ok:
             dropped.append({"url": url, "site": site, "reason": reason})
             continue
@@ -488,8 +522,10 @@ def product_reviews(title, store=None, errors=None):
                 dropped.append({"url": url, "site": site, "reason": "the page states no rating, count or reviewer sentence"})
             continue
         shown, _ = page_title(result)
-        own = same_seller(site, store)
-        matched_by = "the seller's own page" if own else "name only: the page calls it %r" % rated_as[:120]
+        matched_by = ("the seller's own page" if own else
+                      "name, both ways: the page calls it %r, and every word of that name is on the store's own page" % rated_as[:120]
+                      if own_words is not None else
+                      "name only (the store's own page was not available to compare): the page calls it %r" % rated_as[:120])
         page = {"site": site, "url": url, "page_title": shown, "rated_as": rated_as, "fetched_at": entry_of_page["fetched_at"], "kept": kept,
                 "seller_page": own, "sellers_own_page": own, "matched_by": matched_by}
         pages.append(page)
@@ -608,7 +644,7 @@ def for_line(line, errors=None):
     rows = []
     for c in passing(line):
         p = c["product"]
-        got = product_reviews(p["title"], p.get("store"), errors)
+        got = product_reviews(p["title"], p.get("store"), errors, p.get("product_id"))
         rows.append(dict(got, candidate_id=c["id"], store=p.get("store"), title=p["title"],
                          variant_title=p.get("variant_title"), price_cents=p.get("price_cents"),
                          picked=bool(c.get("picked")), ordering=ordering(got)))
@@ -699,10 +735,12 @@ def log(state=None):
     serves = {}
     for line in (state or {}).get("lines", []):
         for c in passing(line):
-            serves.setdefault(c["product"]["title"], {"line_id": line["line_id"], "candidate_ids": []})["candidate_ids"].append(c["id"])
+            serves.setdefault(c["product"]["title"], {"line_id": line["line_id"], "candidate_ids": [], "store": c["product"].get("store"),
+                                                      "product_id": c["product"].get("product_id")})["candidate_ids"].append(c["id"])
     out = []
     for title, found in entries().items():
-        got = product_reviews(title)
+        of = serves.get(title) or {}
+        got = product_reviews(title, of.get("store"), None, of.get("product_id"))
         for entry in found:
             sent = entry.get("sent") or {}
             out.append({"step": "Reviews read", "at": entry["fetched_at"], "service": entry.get("service"), "query": entry["query"],
