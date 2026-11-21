@@ -11,7 +11,7 @@ def ratings(line_id, line=None):
 
     From the cache under data/reviews/ only: it never touches the network, and returns {} when nothing is cached
     (or the line does not exist). A candidate appears only when all of this holds: it passes the order's rules and
-    is among the six cheapest that do (only those are ever searched); a page that names the product states its
+    has been searched (every passing product is, three query forms each); a page that names the product states its
     rating out of five as an exact quote that code found in the page's text, with the rating and the scale both
     written in the quote; and the same page states, in a quote code found, a count of at least MINIMUM_REVIEWS (5)
     reviews. A rating whose page writes no scale, or fewer than five reviews, is left out; nothing is filled in.

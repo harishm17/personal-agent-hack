@@ -29,11 +29,15 @@ EXA_URL = "https://api.exa.ai/search"
 RECIPIENT = "exa.ai"
 KEYS = ("EXA_API_KEY", "EXA_API_KEY_BACKUP")  # the second only when the first is refused for key or quota
 KEY_OR_QUOTA = (401, 402, 403, 429)
-RESULTS = 4
-MAX_CHARS = 3000
-MOST_CANDIDATES = 6
+RESULTS = 10
+MAX_CHARS = 10000  # a rating is often far down the page
+# every query is the product's own title and fixed words about reviews: no limit, no measurement, no person
+QUERY_FORMS = ("%s review", "%s reviews rating", "%s customer reviews")
+COMBINE = ("several sources are kept for a product and none is averaged. One is shown as the product's rating: a source "
+           "that can be ordered (out of five, at least %d reviews) first; among those, another site before the seller's "
+           "own page; then the one with the most reviews. Every source is listed in ratings_by_source with its own quote.")
 from signoff.reviews import MINIMUM_REVIEWS  # noqa: E402  (stated once, in the package)
-SPACING_SECONDS = 0.6
+SPACING_SECONDS = 0.25
 SENTENCE_MOST = 300
 READER = "sie:Qwen/Qwen3.8-27B-FP8"
 TIE_BREAK = "highest quoted rating out of five; then more reviews; then lower price; then candidate id"
@@ -43,6 +47,8 @@ NAME_RULE = ("a page counts only if its title holds every word of the product's 
 LIMIT = ("a page on another site is matched by name only: a product whose title names no maker can match another "
          "maker's product of the same name, so every source shows the name the page gives it (rated_as)")
 _lock = threading.Lock()
+_ilock = threading.RLock()
+_index = {"sig": None, "dir": None, "by_title": {}, "memo": {}}
 _last_call = [0.0]
 
 SYSTEM = """You read one web page about a product and propose quotes. Reply with one JSON object and nothing else:
@@ -65,27 +71,55 @@ def _now():
     return datetime.datetime.now().astimezone().isoformat(timespec="seconds")
 
 
+def queries_for(title):
+    """Every search made for a product: its title and fixed words about reviews, nothing else."""
+    name = " ".join(str(title).split())
+    return [form % name for form in QUERY_FORMS]
+
+
 def query_for(title):
-    """The whole search: the product's title and the word "review"."""
-    return "%s review" % " ".join(str(title).split())
+    return queries_for(title)[0]
 
 
-def cache_path(title):
-    query = query_for(title)
+def body_for(query):
+    return {"query": query, "numResults": RESULTS, "contents": {"text": {"maxCharacters": MAX_CHARS}}}
+
+
+def cache_path(title, query=None, body=None):
+    """One file per product and request: the same request is never sent twice."""
+    query = query or query_for(title)
+    body = body or body_for(query)
     slug = re.sub(r"[^a-z0-9]+", "-", str(title).lower()).strip("-")[:60]
-    return DIR / ("%s-%s.json" % (slug, hashlib.sha256(query.encode()).hexdigest()[:10]))
+    return DIR / ("%s-%s.json" % (slug, _payload_hash(body)[:10]))
+
+
+def entries(title=None):
+    """Every cached search, by product title, oldest first. Read again only when a file in the folder changed."""
+    with _ilock:
+        files = sorted(DIR.glob("*.json")) if DIR.exists() else []
+        sig = tuple((f.name, f.stat().st_mtime_ns) for f in files)
+        if sig != _index["sig"] or _index["dir"] != DIR:
+            by = {}
+            for f in files:
+                entry = json.loads(f.read_text())
+                entry["file"] = f.name
+                by.setdefault(entry["title"], []).append(entry)
+            for found in by.values():
+                found.sort(key=lambda e: e["fetched_at"])
+            _index.update(sig=sig, dir=DIR, by_title=by, memo={})
+        return _index["by_title"] if title is None else list(_index["by_title"].get(title, []))
 
 
 def cached(title):
-    path = cache_path(title)
-    if not path.exists():
-        return None
-    return json.loads(path.read_text())
+    found = entries(title)
+    return found[0] if found else None
 
 
 def _save(title, entry):
     DIR.mkdir(parents=True, exist_ok=True)
-    path = cache_path(title)
+    if not entry.get("file"):
+        entry["file"] = cache_path(title, entry.get("query"), entry.get("sent")).name
+    path = DIR / entry["file"]
     part = path.with_suffix(".part")  # written whole, then moved into place: a reader never sees half a file
     part.write_text(json.dumps(entry, ensure_ascii=False, indent=1) + "\n")
     part.replace(path)
@@ -109,31 +143,31 @@ def _post(body):
     raise RuntimeError("the search service answered no key: " + "; ".join(refused))
 
 
-def search(title):
-    """The cached entry for this product's search, fetching it once when it is not there. In replay mode
-    nothing is fetched: an uncached product returns None."""
+def search(title, query=None):
+    """The cached entry for one search of a product, fetching it once when it is not there. In replay mode
+    nothing is fetched: an uncached search returns None. Calls start at least SPACING_SECONDS apart."""
+    query = query or query_for(title)
+    body = body_for(query)
+    path = cache_path(title, query, body)
+    if path.exists():
+        return dict(json.loads(path.read_text()), file=path.name, from_cache=True)
+    if config.mode() != "live":
+        return None
+    # the ledger looks in the payload for the sheet's sealed values; the title is the store's own words
+    row = obs.egress(RECIPIENT, "search the web for reviews of one product", body, ["product"], mask=[str(title)])
     with _lock:
-        entry = cached(title)
-        if entry is not None or config.mode() != "live":
-            return entry
-        query = query_for(title)
-        body = {"query": query, "numResults": RESULTS, "contents": {"text": {"maxCharacters": MAX_CHARS}}}
-        # the ledger looks in the payload for the sheet's sealed values; the title is the store's own words
-        row = obs.egress(RECIPIENT, "search the web for reviews of one product", body, ["product"], mask=[str(title)])
         wait = SPACING_SECONDS - (time.monotonic() - _last_call[0])
         if wait > 0:
             time.sleep(wait)
-        try:
-            reply, key_name, refused = _post(body)
-        finally:
-            _last_call[0] = time.monotonic()
-        entry = {"title": title, "query": query, "sent": body, "fetched_at": _now(), "service": RECIPIENT,
-                 "key_used": key_name, "keys_refused": refused,
-                 "ledger": {k: row.get(k) for k in ("n", "at", "recipient", "kind", "purpose", "bytes", "payload_sha256",
-                                                    "fact_classes", "sealed_found_in_payload")},
-                 "reply": reply, "proposals": {}, "reader": READER}
-        _save(title, entry)
-        return entry
+        _last_call[0] = time.monotonic()
+    reply, key_name, refused = _post(body)
+    entry = {"title": title, "query": query, "sent": body, "fetched_at": _now(), "service": RECIPIENT,
+             "key_used": key_name, "keys_refused": refused, "file": path.name,
+             "ledger": {k: row.get(k) for k in ("n", "at", "recipient", "kind", "purpose", "bytes", "payload_sha256",
+                                                "fact_classes", "sealed_found_in_payload")},
+             "reply": reply, "proposals": {}, "reader": READER}
+    _save(title, entry)
+    return entry
 
 
 # --- code decides -------------------------------------------------------------------------------------------
@@ -367,49 +401,72 @@ def quote_again(title, result, said):
     return said
 
 
-def read_pages(title, entry):
+def pages_of(found, to_read=False):
+    """Each page once across a product's searches: [(entry, result)]. To show: the copy the reader has read, the
+    longest of those; to read: the copy with the most text (so a longer copy fetched later is read too)."""
+    best = {}
+    for entry in found:
+        for result in entry["reply"].get("results", []):
+            url = result.get("url")
+            if not url:
+                continue
+            read = (entry["proposals"].get(url) or {}).get("asked") == ASKED
+            size = len(result.get("text") or "")
+            rank = (size, read) if to_read else (read, size)
+            if url not in best or rank > best[url][0]:
+                best[url] = (rank, entry, result)
+    return [(entry, result) for _rank, entry, result in best.values()]
+
+
+def read_pages(title, found):
     """Ask the reader about every page that names the product and has no proposal yet; save what it said.
     Returns the errors of this run (a failed page is asked again next time; it is never filled in)."""
-    pages = [r for r in entry["reply"].get("results", [])
-             if r.get("url") and names_product(title, r)[0] and (r.get("text") or "").strip()]
-    todo = [(propose, r) for r in pages if (entry["proposals"].get(r["url"]) or {}).get("asked") != ASKED]
-    todo += [(lambda t, r: quote_again(t, r, entry["proposals"][r["url"]]), r) for r in pages
-             if (entry["proposals"].get(r["url"]) or {}).get("asked") == ASKED
-             and not entry["proposals"][r["url"]].get("asked_again") and lacks_scale(entry["proposals"][r["url"]], r)]
+    found = [found] if isinstance(found, dict) else found
+    pages = [(e, r) for e, r in pages_of(found, to_read=True) if names_product(title, r)[0] and (r.get("text") or "").strip()]
+    todo = [(propose, e, r) for e, r in pages if (e["proposals"].get(r["url"]) or {}).get("asked") != ASKED]
+    todo += [(lambda t, r, e=e: quote_again(t, r, e["proposals"][r["url"]]), e, r) for e, r in pages
+             if (e["proposals"].get(r["url"]) or {}).get("asked") == ASKED
+             and not e["proposals"][r["url"]].get("asked_again") and lacks_scale(e["proposals"][r["url"]], r)]
     errors = {}
     if not todo or config.mode() != "live":
         return errors
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
-        jobs = {pool.submit(job, title, r): r["url"] for job, r in todo}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
+        jobs = {pool.submit(job, title, r): (e, r["url"]) for job, e, r in todo}
         for job in concurrent.futures.as_completed(jobs):
+            entry, url = jobs[job]
             try:
-                entry["proposals"][jobs[job]] = job.result()
+                entry["proposals"][url] = job.result()
             except Exception as error:  # noqa: BLE001  (shown in the reply, never hidden)
-                errors[jobs[job]] = "%s: %s" % (type(error).__name__, str(error)[:160])
-    with _lock:
-        _save(title, entry)
+                errors[url] = "%s: %s" % (type(error).__name__, str(error)[:160])
+    for entry in {id(e): e for _job, e, _r in todo}.values():
+        _save(title, {k: v for k, v in entry.items() if k != "from_cache"})
     return errors
 
 
 # --- per product, per line ----------------------------------------------------------------------------------
 
 def product_reviews(title, store=None, errors=None):
-    """Everything kept for one product from its cached search, checked again by code on every load."""
-    entry = cached(title)
+    """Everything kept for one product from its cached searches, checked again by code when the cache changes."""
+    found = entries(title)
+    key = (title, store)
+    with _ilock:
+        if errors is None and key in _index["memo"]:
+            return _index["memo"][key]
     query = query_for(title)
-    if entry is None:
+    if not found:
         return {"found": False, "searched": False, "query": query, "rating": None, "out_of": None, "review_count": None,
                 "rating_site": None, "independent": None, "rating_from": None,
                 "sentence": None, "sources": [], "dropped": [], "note": "not searched yet"}
     pages, sources, dropped = [], [], []
-    for result in entry["reply"].get("results", []):
+    entry = found[-1]
+    for entry_of_page, result in pages_of(found):
         url, text = result.get("url"), result.get("text") or ""
         site = site_of(url)
         ok, reason = names_product(title, result)
         if not ok:
             dropped.append({"url": url, "site": site, "reason": reason})
             continue
-        said = entry["proposals"].get(url)
+        said = entry_of_page["proposals"].get(url)
         if said is None:
             dropped.append({"url": url, "site": site, "reason": "the reader has not read this page"
                             + ((" (%s)" % errors[url]) if errors and url in errors else "")})
@@ -433,25 +490,35 @@ def product_reviews(title, store=None, errors=None):
         shown, _ = page_title(result)
         own = same_seller(site, store)
         matched_by = "the seller's own page" if own else "name only: the page calls it %r" % rated_as[:120]
-        page = {"site": site, "url": url, "page_title": shown, "rated_as": rated_as, "fetched_at": entry["fetched_at"], "kept": kept,
+        page = {"site": site, "url": url, "page_title": shown, "rated_as": rated_as, "fetched_at": entry_of_page["fetched_at"], "kept": kept,
                 "seller_page": own, "sellers_own_page": own, "matched_by": matched_by}
         pages.append(page)
         for what, span in kept.items():
             sources.append({"site": site, "url": url, "page_title": shown, "rated_as": rated_as, "what": what, "quote": span["quote"],
                             "start": span["start"], "end": span["end"], "value": span.get("value"),
-                            "out_of": span.get("out_of"), "fetched_at": entry["fetched_at"],
+                            "out_of": span.get("out_of"), "fetched_at": entry_of_page["fetched_at"],
                             "span_found_in_text": True, "seller_page": own, "sellers_own_page": own, "matched_by": matched_by})
     out = {"found": bool(sources), "searched": True, "query": query, "fetched_at": entry["fetched_at"],
            "rating": None, "out_of": None, "review_count": None, "rating_site": None, "independent": None,
            "rating_from": None, "sentence": None,
            "sources": sources, "dropped": dropped, "reader": entry.get("reader"), "key_used": entry.get("key_used"),
-           "ledger_row": (entry.get("ledger") or {}).get("n")}
+           "ledger_row": (entry.get("ledger") or {}).get("n"), "queries": [e["query"] for e in found],
+           "pages_returned": len(pages_of(found)), "ratings_by_source": [], "sources_disagree": False, "combined_how": COMBINE % MINIMUM_REVIEWS}
     # the headline: the page that states both a rating and how many reviews it rests on, most reviews first
     # (a rating whose scale is stated comes before one whose scale is not)
+    def orderable(p):
+        return p["kept"]["rating"]["out_of"] == 5 and p["kept"].get("review_count", {}).get("value", 0) >= MINIMUM_REVIEWS
+
     alone = sorted((p for p in pages if "rating" in p["kept"]),
-                   key=lambda p: (p["kept"]["rating"]["out_of"] is None, "review_count" not in p["kept"],
-                                  -p["kept"].get("review_count", {}).get("value", 0), p["site"], p["url"]))
+                   key=lambda p: (not orderable(p), p["kept"]["rating"]["out_of"] is None, "review_count" not in p["kept"],
+                                  p["seller_page"], -p["kept"].get("review_count", {}).get("value", 0), p["site"], p["url"]))
     head = alone[0] if alone else None
+    out["ratings_by_source"] = [{"site": p["site"], "url": p["url"], "rating": p["kept"]["rating"]["value"],
+                                 "out_of": p["kept"]["rating"]["out_of"], "quote": p["kept"]["rating"]["quote"],
+                                 "review_count": p["kept"].get("review_count", {}).get("value"),
+                                 "independent": not p["seller_page"], "seller_page": p["seller_page"],
+                                 "can_be_ordered": orderable(p), "shown_as_the_products_rating": p is head} for p in alone]
+    out["sources_disagree"] = len({(p["kept"]["rating"]["value"], p["kept"]["rating"]["out_of"]) for p in alone}) > 1
     if head:
         r = head["kept"]["rating"]
         n = head["kept"].get("review_count", {}).get("value")
@@ -462,7 +529,10 @@ def product_reviews(title, store=None, errors=None):
     if said:
         out["sentence"] = {"quote": said["kept"]["sentence"]["quote"], "site": said["site"], "url": said["url"],
                            "said_by": said["kept"]["sentence"]["said_by"]}
-    out["note"] = _note(out, head, len({p["site"] for p in alone}))
+    out["note"] = _note(out, head, len(alone))
+    if errors is None:
+        with _ilock:
+            _index["memo"][key] = out
     return out
 
 
@@ -474,7 +544,7 @@ def _note(out, head, rating_sites):
     own = " (%s)" % head["matched_by"]
     count = ("from %d review%s" % (out["review_count"], "" if out["review_count"] == 1 else "s")
              if out["review_count"] is not None else "the page does not state how many reviews")
-    more = "" if rating_sites <= 1 else "; %d sites state a rating, this is the one with the most reviews" % rating_sites
+    more = "" if rating_sites <= 1 else "; %d sources state a rating, each is listed, none is averaged" % rating_sites
     scale = ("out of %g" % out["out_of"]) if out["out_of"] is not None else "(the page does not state the scale)"
     return "%g %s, %s, on one site: %s%s%s" % (out["rating"], scale, count, head["site"], own, more)
 
@@ -520,10 +590,10 @@ def ratings(line_id, line=None):
 
 
 def passing(line):
-    """The candidates of a line that pass every rule (the ones the shopper may choose), six cheapest at most."""
+    """Every candidate of a line that passes every rule (the ones the shopper may choose), cheapest first."""
     inside = [c for c in line.get("candidates", []) if c.get("status") == "inside"]
     inside.sort(key=lambda c: (c["product"].get("price_cents") or 0, c["id"]))
-    return inside[:MOST_CANDIDATES]
+    return inside
 
 
 def _line(state, line_id):
@@ -582,24 +652,39 @@ def for_line(line, errors=None):
                                 "best reviewed product herself."}}
 
 
-def fetch(state, line_id):
-    """Search and read for one line's passing products (one search per distinct title), then the line's reply."""
-    line = _line(state, line_id)
-    errors, searches = {}, []
-    for title in dict.fromkeys(c["product"]["title"] for c in passing(line)):
-        was_cached = cached(title) is not None
+def fetch_product(title):
+    """Every query form for one product (cached ones are not sent again), then the reader on its pages."""
+    found, searches, errors = [], [], {}
+    known = {e["file"] for e in entries(title)}
+    for query in queries_for(title):
         try:
-            entry = search(title)
+            entry = search(title, query)
         except Exception as error:  # noqa: BLE001  (shown in the reply, never hidden)
-            searches.append({"query": query_for(title), "error": "%s: %s" % (type(error).__name__, str(error)[:160])})
+            searches.append({"query": query, "error": "%s: %s" % (type(error).__name__, str(error)[:160])})
             continue
         if entry is None:
-            searches.append({"query": query_for(title), "skipped": "replay mode: nothing is fetched"})
+            searches.append({"query": query, "skipped": "replay mode: nothing is fetched"})
             continue
-        errors.update(read_pages(title, entry))
-        searches.append({"query": entry["query"], "from_cache": was_cached, "key_used": entry.get("key_used"),
+        found.append(entry)
+        searches.append({"query": entry["query"], "from_cache": bool(entry.get("from_cache")), "key_used": entry.get("key_used"),
                          "keys_refused": entry.get("keys_refused") or [], "results": len(entry["reply"].get("results", [])),
+                         "cost_dollars": (entry["reply"].get("costDollars") or {}).get("total"),
                          "ledger_row": (entry.get("ledger") or {}).get("n")})
+    found += [e for e in entries(title) if e["file"] in known and e["file"] not in {f["file"] for f in found}]
+    if found:
+        errors = read_pages(title, found)
+    return searches, errors
+
+
+def fetch(state, line_id):
+    """Search and read for every passing product of one line (a few products at a time), then the line's reply."""
+    line = _line(state, line_id)
+    errors, searches = {}, []
+    titles = list(dict.fromkeys(c["product"]["title"] for c in passing(line)))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        for made, failed in pool.map(fetch_product, titles):
+            searches += made
+            errors.update(failed)
     return dict(for_line(line, errors), searches=searches, reader_errors=errors)
 
 
@@ -614,23 +699,23 @@ def log(state=None):
     serves = {}
     for line in (state or {}).get("lines", []):
         for c in passing(line):
-            serves.setdefault(query_for(c["product"]["title"]), {"line_id": line["line_id"], "candidate_ids": []})["candidate_ids"].append(c["id"])
+            serves.setdefault(c["product"]["title"], {"line_id": line["line_id"], "candidate_ids": []})["candidate_ids"].append(c["id"])
     out = []
-    for path in sorted(DIR.glob("*.json")) if DIR.exists() else []:
-        entry = json.loads(path.read_text())
-        got = product_reviews(entry["title"])
-        sent = entry.get("sent") or {}
-        out.append({"step": "Reviews read", "at": entry["fetched_at"], "service": entry.get("service"), "query": entry["query"],
-                    "sent": sent, "sent_is_only_the_product_title_and_review": sent.get("query") == query_for(entry["title"])
-                    and set(sent) == {"query", "numResults", "contents"},
-                    "ledger": entry.get("ledger"), "ledger_is": "the outbound ledger's row, written by the process that made the search "
-                    "(a search answered from the cache sends nothing and adds no row)",
-                    "sent_matches_the_ledger_hash": _payload_hash(sent) == (entry.get("ledger") or {}).get("payload_sha256"),
-                    "key_used": entry.get("key_used"),
-                    "pages_returned": len(entry["reply"].get("results", [])),
-                    "pages_read": len(entry.get("proposals") or {}), "quotes_kept": len(got["sources"]),
-                    "dropped": len(got["dropped"]), "found": got["found"], "note": got["note"],
-                    "cost_dollars": (entry["reply"].get("costDollars") or {}).get("total"),
-                    "serves": serves.get(entry["query"])})
+    for title, found in entries().items():
+        got = product_reviews(title)
+        for entry in found:
+            sent = entry.get("sent") or {}
+            out.append({"step": "Reviews read", "at": entry["fetched_at"], "service": entry.get("service"), "query": entry["query"],
+                        "sent": sent, "sent_is_only_the_product_title_and_review": sent.get("query") in queries_for(title)
+                        and set(sent) == {"query", "numResults", "contents"},
+                        "ledger": entry.get("ledger"), "ledger_is": "the outbound ledger's row, written by the process that made the search "
+                        "(a search answered from the cache sends nothing and adds no row)",
+                        "sent_matches_the_ledger_hash": _payload_hash(sent) == (entry.get("ledger") or {}).get("payload_sha256"),
+                        "key_used": entry.get("key_used"),
+                        "pages_returned": len(entry["reply"].get("results", [])),
+                        "pages_read": len(entry.get("proposals") or {}), "product_quotes_kept": len(got["sources"]),
+                        "product_found": got["found"], "product_note": got["note"],
+                        "cost_dollars": (entry["reply"].get("costDollars") or {}).get("total"),
+                        "serves": serves.get(title)})
     out.sort(key=lambda e: e["at"])
     return out

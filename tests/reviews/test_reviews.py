@@ -127,7 +127,7 @@ def test_the_log_shows_what_was_sent_and_the_ledger_row():
     reviews._save(TITLE, entry(TITLE, [{"title": TITLE, "url": "https://a.example/p", "text": PAGE}], {"https://a.example/p": GOOD}))
     step = reviews.log()[0]
     assert step["step"] == "Reviews read" and step["sent"]["query"] == "Acme Folding Walker review"
-    assert step["sent_is_only_the_product_title_and_review"] is True and step["quotes_kept"] == 3
+    assert step["sent_is_only_the_product_title_and_review"] is True and step["product_quotes_kept"] == 3
 
 
 def test_the_sent_body_shown_is_the_one_the_ledger_hashed():
@@ -272,3 +272,32 @@ def test_a_rating_on_the_sellers_own_page_is_marked_and_still_ordered_the_same()
     assert out["best_reviewed"]["candidate_id"] == "L4:c" and out["best_reviewed"]["independent"] is False
     line["candidates"][0]["product"]["store"] = "elsewhere.example"   # the same page, sold by another store
     assert reviews.for_line(line)["ratings"]["L4:c"]["independent"] is True
+
+
+def test_every_query_is_the_title_and_fixed_words_and_the_same_request_has_one_file():
+    assert reviews.queries_for("Acme  Folding Walker") == ["Acme Folding Walker review", "Acme Folding Walker reviews rating",
+                                                           "Acme Folding Walker customer reviews"]
+    paths = {reviews.cache_path(TITLE, q) for q in reviews.queries_for(TITLE)}
+    assert len(paths) == 3 and reviews.cache_path(TITLE, reviews.query_for(TITLE)) in paths
+
+
+def test_several_sources_are_listed_not_averaged_and_another_site_comes_before_the_sellers_page():
+    title = "Crest Folding Walker"
+
+    def page(site, rating, count):
+        text = "%s\nRated %s out of 5 stars\nBased on %d reviews\n" % (title, rating, count)
+        said = {"about": {"quote": title}, "rating": {"quote": "Rated %s out of 5 stars" % rating, "value": rating, "out_of": 5},
+                "review_count": {"quote": "Based on %d reviews" % count, "value": count}}
+        return {"title": title, "url": "https://%s/p" % site, "text": text}, said
+    (own, own_said), (other, other_said), (few, few_said) = page("shop.example", 4.9, 500), page("b.example", 4.1, 40), page("c.example", 5.0, 2)
+    first = entry(title, [own, few], {own["url"]: own_said, few["url"]: few_said})
+    second = dict(entry(title, [other, own], {other["url"]: other_said}), query=reviews.queries_for(title)[1])
+    second["sent"] = dict(second["sent"], query=second["query"])
+    reviews._save(title, first)
+    reviews._save(title, second)
+    got = reviews.product_reviews(title, "shop.example")
+    assert (got["rating"], got["review_count"], got["rating_site"], got["independent"]) == (4.1, 40, "b.example", True)
+    assert got["sources_disagree"] is True and len(got["ratings_by_source"]) == 3 and len(got["queries"]) == 2
+    assert [(r["site"], r["can_be_ordered"], r["independent"]) for r in got["ratings_by_source"]] == [
+        ("b.example", True, True), ("shop.example", True, False), ("c.example", False, True)]
+    assert "none is averaged" in got["combined_how"] and "none is averaged" in got["note"]
