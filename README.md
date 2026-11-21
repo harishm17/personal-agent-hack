@@ -29,6 +29,13 @@ Her daughter Elena's agent shops three real stores.
 On `/seal/` anyone can change one covered value and watch the check fail, and fire real attempts to get a
 cart without her: each is refused by the server.
 
+| | |
+|---|---|
+| ![The decision screen](docs/decision.png) | ![The run replayed, last frame](docs/replay-last.png) |
+| **The decision screen.** Dana's limits, each product's figures, the recommended pick and what happens next. | **Replay the run.** How the agent got to the pick, stage by stage; the last frame waits for Dana. |
+| ![The Signature page with one value changed](docs/seal-changed.png) | <img src="docs/phone-sign.png" alt="The approver's phone" width="260"> |
+| **`/seal/` with one limit changed.** The fingerprint differs and her signature no longer checks. | **Dana's phone.** What she signs, the short code that matches the laptop, and Sign. |
+
 ## How it works
 - **A reading model with no tools** gets one store page and the names of the figures, and proposes a
   figure, a unit and a quote. Code finds the quote at stated offsets and applies one set of number rules
@@ -72,6 +79,7 @@ page. The identity check is a sandbox. No store checks the signature. The guard 
 need not. A rating on the seller's own page is labelled as that.
 
 ## Run it
+Needs [uv](https://docs.astral.sh/uv/) (it fetches the Python version the project pins).
 ```bash
 uv sync
 SIGNOFF_MODE=replay SIGNOFF_SHEET=sheet4 uv run uvicorn signoff.app:app --port 8800
